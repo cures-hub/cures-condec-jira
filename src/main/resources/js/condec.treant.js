@@ -61,14 +61,14 @@
     };
 
     function changeColorForNodes() {
-        var redStatus = new Array("discarded", "rejected", "unresolved", "challenged");
+        var redStatus = ["discarded", "rejected", "unresolved", "challenged"];
         var treantNodes = document.getElementsByClassName("node");
         for (var i = 0; i < treantNodes.length; i++) {
             var node = treantNodes[i];
             var status = node.data.treenode.text.status;
             if (redStatus.includes(status.toLowerCase())) {
                 for (var j = 1; j < node.childNodes.length - 1; j++) {
-                    node.childNodes[j].style.color = "gray";
+                    node.childNodes[j].style.color = "crimson";
                 }
             }
         }

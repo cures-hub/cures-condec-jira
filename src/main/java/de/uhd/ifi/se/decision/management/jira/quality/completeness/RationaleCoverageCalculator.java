@@ -61,15 +61,19 @@ public class RationaleCoverageCalculator {
 		}
 
 		if (!sourceKnowledgeTypes.isEmpty()) {
-			this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-					sourceKnowledgeTypes, KnowledgeType.DECISION);
-			this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-					sourceKnowledgeTypes, KnowledgeType.ISSUE);
-			this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-					sourceKnowledgeTypes, KnowledgeType.DECISION);
-			this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-					sourceKnowledgeTypes, KnowledgeType.ISSUE);
+			fillRationaleCoverageCalculator(sourceKnowledgeTypes);
 		}
+	}
+
+	private void fillRationaleCoverageCalculator(Set<String> sourceKnowledgeTypes) {
+		this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+			sourceKnowledgeTypes, KnowledgeType.DECISION);
+		this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+			sourceKnowledgeTypes, KnowledgeType.ISSUE);
+		this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+			sourceKnowledgeTypes, KnowledgeType.DECISION);
+		this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+			sourceKnowledgeTypes, KnowledgeType.ISSUE);
 	}
 
 	private void fillLinkedElementMap(KnowledgeElement sourceElement) {
