@@ -22,7 +22,9 @@
 		var projectKey = conDecAPI.getProjectKey();
 		var issueKey = conDecAPI.getIssueKey();
 
-		updateView(projectKey, issueKey, viewIdentifier);
+		if (projectKey && issueKey) {
+			updateView(projectKey, issueKey, viewIdentifier);
+		}
 	};
 
 	ConDecQualityCheck.prototype.build = function (node, viewIdentifier) {
@@ -31,7 +33,9 @@
 		var projectKey = conDecAPI.getProjectKey();
 		var issueKey = node.key;
 
-		updateView(projectKey, issueKey, viewIdentifier);
+		if (projectKey && issueKey) {
+			updateView(projectKey, issueKey, viewIdentifier);
+		}
 	};
 
 	function updateView(projectKey, issueKey, viewIdentifier) {
@@ -43,8 +47,20 @@
 				var numberOfIssues = result.Issue;
 				var numberOfDecisions = result.Decision;
 
-				conDecDoDCheckingAPI.hasIncompleteKnowledgeLinked(issueKey, function(result) {
-					var hasIncompleteKnowledgeLinked = result;
+				var newFilterSettings = {
+					"projectKey": projectKey,
+					"selectedElement": issueKey,
+				};
+
+				conDecDoDCheckingAPI.getFailedDefinitionOfDoneCriteria(newFilterSettings, function(result) {
+					var hasIncompleteKnowledgeLinked = false;
+					var doesNotHaveMinimumCoverage = false
+					if (result.includes("hasIncompleteKnowledgeLinked")) {
+						hasIncompleteKnowledgeLinked = true;
+					}
+					if (result.includes("doesNotHaveMinimumCoverage")) {
+						doesNotHaveMinimumCoverage = true;
+					}
 
 					getHTMLNodes("menu-item-quality-check-" + viewIdentifier
 						, "condec-tab-minimum-coverage-" + viewIdentifier
@@ -53,7 +69,7 @@
 						, "quality-check-issue-text-" + viewIdentifier
 						, "quality-check-decision-text-" + viewIdentifier);
 
-					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, numberOfIssues, numberOfDecisions, minimumCoverage);
+					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions, minimumCoverage);
 					updateLabel(minimumCoverageText, minimumCoverage);
 					updateLabel(linkDistanceText, linkDistance);
 					updateText(issueText, "issues", numberOfIssues, minimumCoverage);
@@ -68,8 +84,8 @@
 		label.innerText = text;
 	}
 
-	function updateTab(tab, hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum) {
-		if (checkComplete(hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum)) {
+	function updateTab(tab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, coverageOfIssues, coverageOfDecisions) {
+		if (!hasIncompleteKnowledgeLinked && !doesNotHaveMinimumCoverage) {
 			addToken(tab, "condec-fine");
 		} else if ((coverageOfIssues > 0) || (coverageOfDecisions > 0)) {
 			addToken(tab, "condec-warning");
@@ -78,10 +94,6 @@
 		} else {
 			addToken(tab, "condec-default");
 		}
-	}
-
-	function checkComplete(hasIncompleteKnowledgeLinked, coverageOfIssues, coverageOfDecisions, minimum) {
-		return (coverageOfIssues >= minimum) && (coverageOfDecisions >= minimum) && !hasIncompleteKnowledgeLinked;
 	}
 
 	function updateText(textField, type, coverage, minimum) {
