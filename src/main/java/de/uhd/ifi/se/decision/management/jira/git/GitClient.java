@@ -456,23 +456,23 @@ public class GitClient {
 		return allRemoteBranches;
 	}
 
-	public List<KnowledgeElement> getElements(Ref branch) {
+	public List<KnowledgeElement> getRationaleElements(Ref branch) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
 		if (featureBranchCommits.isEmpty()) {
 			return elements;
 		}
 		for (RevCommit commit : featureBranchCommits) {
-			elements.addAll(getElementsFromMessage(commit));
+			elements.addAll(getRationaleElementsFromCommitMessage(commit));
 		}
 
 		RevCommit baseCommit = featureBranchCommits.get(0);
 		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
-		elements.addAll(getElementsFromCode(baseCommit, lastFeatureBranchCommit));
+		elements.addAll(getRationaleElementsFromCode(baseCommit, lastFeatureBranchCommit));
 		return elements;
 	}
 
-	public List<KnowledgeElement> getElementsFromMessage(RevCommit commit) {
+	public List<KnowledgeElement> getRationaleElementsFromCommitMessage(RevCommit commit) {
 		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
 				commit.getFullMessage());
 		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
@@ -483,7 +483,7 @@ public class GitClient {
 		return elementsFromMessage;
 	}
 
-	public List<KnowledgeElement> getElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
+	public List<KnowledgeElement> getRationaleElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
 		Diff diff = getDiff(revCommitStart, revCommitEnd);
 		return diff.getRationaleElementsFromCodeComments();
 	}

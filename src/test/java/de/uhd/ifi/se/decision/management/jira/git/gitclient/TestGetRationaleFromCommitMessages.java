@@ -1,22 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.git.gitclient;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Ref;
-import org.junit.Assert;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
-public class TestGitDecXtract extends TestSetUpGit {
+public class TestGetRationaleFromCommitMessages extends TestSetUpGit {
 
 	@Test
 	public void nullOrEmptyFeatureBranchCommits() {
 		int numberExpectedElements = 0;
-		List<KnowledgeElement> gotElements = gitClient.getElements(null);
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
+		List<KnowledgeElement> gotElements = gitClient.getRationaleElements(null);
+		assertEquals(numberExpectedElements, gotElements.size());
 	}
 
 	@Test
@@ -38,20 +40,18 @@ public class TestGitDecXtract extends TestSetUpGit {
 			}
 		}
 
-		List<KnowledgeElement> gotElements = gitClient.getElements(featureBranch);
-		Assert.assertEquals(numberExpectedElements, gotElements.size());
+		List<KnowledgeElement> gotElements = gitClient.getRationaleElements(featureBranch);
+		assertEquals(numberExpectedElements, gotElements.size());
 	}
 
 	@Test
 	public void fromFeatureBranchCommitsNullInput() {
-		List<KnowledgeElement> gotElements = gitClient.getElements(null);
-		Assert.assertNotNull(gotElements);
-		Assert.assertEquals(0, gotElements.size());
+		List<KnowledgeElement> gotElements = gitClient.getRationaleElements(null);
+		assertNotNull(gotElements);
+		assertEquals(0, gotElements.size());
 
-		gotElements = gitClient.getElements((Ref) null);
-		Assert.assertNotNull(gotElements);
-		Assert.assertEquals(0, gotElements.size());
-
+		gotElements = gitClient.getRationaleElements((Ref) null);
+		assertNotNull(gotElements);
+		assertEquals(0, gotElements.size());
 	}
-
 }
