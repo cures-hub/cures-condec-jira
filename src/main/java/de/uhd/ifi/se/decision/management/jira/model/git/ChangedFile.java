@@ -434,7 +434,7 @@ public class ChangedFile extends KnowledgeElement {
 	 *         file.
 	 */
 	public List<KnowledgeElement> getRationaleElementsFromCodeComments() {
-		return new RationaleFromCodeCommentParser().getElementsFromCode(this);
+		return new RationaleFromCodeCommentParser().getRationaleElementsFromCode(this);
 	}
 
 	public boolean isCorrect() {

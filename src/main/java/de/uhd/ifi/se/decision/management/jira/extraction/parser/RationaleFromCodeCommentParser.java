@@ -64,12 +64,8 @@ public class RationaleFromCodeCommentParser {
 	 * @return all decision knowledge elements within the comments of the given code
 	 *         file.
 	 */
-	public List<KnowledgeElement> getElementsFromCode(ChangedFile codeFile) {
-		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
-		for (CodeComment codeComment : codeFile.getCodeComments()) {
-			elementsFromCode.addAll(getElements(codeComment));
-		}
-
+	public List<KnowledgeElement> getRationaleElementsFromCode(ChangedFile codeFile) {
+		List<KnowledgeElement> elementsFromCode = getRationaleElementsFromCodeComments(codeFile.getCodeComments());
 		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
 			element.setProject(codeFile.getProject());
 			element.setDescription(codeFile.getName() + ":" + element.getKey());
@@ -85,10 +81,10 @@ public class RationaleFromCodeCommentParser {
 	 *            elements.
 	 * @return all decision knowledge elements within the comments.
 	 */
-	public List<KnowledgeElement> getElements(List<CodeComment> codeComments) {
+	public List<KnowledgeElement> getRationaleElementsFromCodeComments(List<CodeComment> codeComments) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		for (CodeComment codeComment : codeComments) {
-			elements.addAll(getElements(codeComment));
+			elements.addAll(getRationaleElementsFromCodeComment(codeComment));
 		}
 		return elements;
 	}
@@ -98,7 +94,7 @@ public class RationaleFromCodeCommentParser {
 	 *            {@link CodeComment} which contains decision knowledge elements.
 	 * @return all decision knowledge elements within the comment.
 	 */
-	public List<KnowledgeElement> getElements(CodeComment comment) {
+	public List<KnowledgeElement> getRationaleElementsFromCodeComment(CodeComment comment) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.getCommentContent());
 
@@ -181,10 +177,10 @@ public class RationaleFromCodeCommentParser {
 		if (twoLinesPos >= 0 && spaceAtCharPos >= 0)
 			return Math.min(twoLinesPos, spaceAtCharPos);
 		// found only two line
-		if (twoLinesPos >= 0 && spaceAtCharPos < 0)
+		if (twoLinesPos >= 0)
 			return twoLinesPos;
 		// found space char
-		if (twoLinesPos < 0 && spaceAtCharPos >= 0)
+		if (spaceAtCharPos >= 0)
 			return spaceAtCharPos;
 		// neither found
 		return -1;

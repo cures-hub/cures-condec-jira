@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
@@ -117,10 +118,6 @@ public class CodeCommentParser {
 		return false;
 	}
 
-	private boolean isCommentInStringsOfTestCase(String line, int positionOfCommentTag) {
-		return positionOfCommentTag > 0 && line.substring(positionOfCommentTag - 1, positionOfCommentTag).matches("\"");
-	}
-
 	private CodeComment parseMultiLineComment(String line, String comment, String multiLineCommentCharEnd) {
 		int multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
 		if (multiLineCommentCharEndPos != -1) {
@@ -130,5 +127,17 @@ public class CodeCommentParser {
 			return new CodeComment(commentContent, beginLineOfCurrentComment, lineNumber);
 		}
 		return null;
+	}
+
+	/**
+	 * @param line
+	 *            in the {@link ChangedFile}.
+	 * @param positionOfCommentTag
+	 *            position of starting tag of the comment within the line.
+	 * @return true if the comment is only a mock comment for unit testing in
+	 *         ConDec. Then, it will not be added to the {@link KnowledgeGraph}.
+	 */
+	private boolean isCommentInStringsOfTestCase(String line, int positionOfCommentTag) {
+		return positionOfCommentTag > 0 && line.substring(positionOfCommentTag - 1, positionOfCommentTag).matches("\"");
 	}
 }
