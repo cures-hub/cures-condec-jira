@@ -76,8 +76,12 @@ public class VisNode {
 
 	private Map<String, String> determineFont(KnowledgeElement element) {
 		String color = "";
+		String projectKey = "";
+		if ((element.getProject() != null) && (element.getProject().getProjectKey() != null)) {
+			projectKey = element.getProject().getProjectKey();
+		}
 		if (!DefinitionOfDoneCheck.execute(element,
-			new FilterSettings(element.getProject().getProjectKey(), "")).isEmpty()) {
+			new FilterSettings(projectKey, "")).isEmpty()) {
 			color = "crimson";
 		}
 		if (!color.isBlank()) {
