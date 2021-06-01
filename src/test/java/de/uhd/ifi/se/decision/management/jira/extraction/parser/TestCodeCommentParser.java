@@ -86,4 +86,21 @@ public class TestCodeCommentParser extends TestSetUp {
 		assertEquals(1, codeComments.size());
 		assertEquals(fileContent.trim(), codeComments.get(0).getCommentContent());
 	}
+
+	@Test
+	public void testMultiLineCommentInStringOfTestCaseSuchAsHere() {
+		String fileContent = "\"<!--@issue How to ...?\n" //
+				+ "@alternative We could...-->\n";
+		CodeCommentParser parser = new CodeCommentParser();
+		List<CodeComment> codeComments = parser.getComments(fileContent, CommentStyleType.HTML);
+		assertEquals(0, codeComments.size());
+	}
+
+	@Test
+	public void testSingleLineCommentInStringOfTestCaseSuchAsHere() {
+		String fileContent = "\"//@issue Small code issue in GodClass\n";
+		CodeCommentParser parser = new CodeCommentParser();
+		List<CodeComment> codeComments = parser.getComments(fileContent, CommentStyleType.JAVA_C);
+		assertEquals(0, codeComments.size());
+	}
 }

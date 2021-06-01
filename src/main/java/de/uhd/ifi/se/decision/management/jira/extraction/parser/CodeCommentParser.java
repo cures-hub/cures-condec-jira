@@ -62,7 +62,9 @@ public class CodeCommentParser {
 				int singleLineCommentCharPos = singleLineCommentChar == null ? -1 : line.indexOf(singleLineCommentChar);
 				int multiLineCommentCharStartPos = multiLineCommentCharStart == null ? -1
 						: line.indexOf(multiLineCommentCharStart);
-				if (multiLineCommentCharStartPos != -1) { // a multi-line comment starts in this line
+				if (multiLineCommentCharStartPos != -1
+						&& !isCommentInStringsOfTestCase(line, multiLineCommentCharStartPos)) {
+					// a multi-line comment starts in this line
 					inMultiLineComment = true;
 					beginLineOfCurrentComment = lineNumber;
 					addCommentIfPresent(createCodeComment(currentCommentText, beginLineOfCurrentComment, lineNumber));
@@ -70,7 +72,9 @@ public class CodeCommentParser {
 							multiLineCommentCharEnd);
 					currentCommentText += line;
 					inMultiLineComment = !addCommentIfPresent(multilineComment);
-				} else if (singleLineCommentCharPos != -1) { // a single-line comment starts in this line
+				} else if (singleLineCommentCharPos != -1
+						&& !isCommentInStringsOfTestCase(line, singleLineCommentCharPos)) {
+					// a single-line comment starts in this line
 					if (currentCommentText.length() == 0) { // there is no single-line comment present
 						beginLineOfCurrentComment = lineNumber;
 					}
@@ -113,9 +117,14 @@ public class CodeCommentParser {
 		return false;
 	}
 
+	private boolean isCommentInStringsOfTestCase(String line, int positionOfCommentTag) {
+		return positionOfCommentTag > 0 && line.substring(positionOfCommentTag - 1, positionOfCommentTag).matches("\"");
+	}
+
 	private CodeComment parseMultiLineComment(String line, String comment, String multiLineCommentCharEnd) {
 		int multiLineCommentCharEndPos = line.indexOf(multiLineCommentCharEnd);
-		if (multiLineCommentCharEndPos != -1) { // the multi-line comment ends in this line
+		if (multiLineCommentCharEndPos != -1) {
+			// the multi-line comment ends in this line
 			String commentContent = comment
 					+ line.substring(0, multiLineCommentCharEndPos + multiLineCommentCharEnd.length());
 			return new CodeComment(commentContent, beginLineOfCurrentComment, lineNumber);
