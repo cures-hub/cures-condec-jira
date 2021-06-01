@@ -83,7 +83,7 @@ public class TestVisGraphNode extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setProject((DecisionKnowledgeProject) null);
 		VisNode node = new VisNode(element, false, 1);
-		assertEquals("", node.getFont().values().iterator().next());
+		assertEquals("crimson", node.getFont().values().iterator().next());
 	}
 
 	@Test
