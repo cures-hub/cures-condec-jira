@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import net.java.ao.test.jdbc.NonTransactional;
 

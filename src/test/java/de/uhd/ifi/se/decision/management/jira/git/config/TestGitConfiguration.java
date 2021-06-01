@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.git.FileType;
+import de.uhd.ifi.se.decision.management.jira.git.model.FileType;
 
 public class TestGitConfiguration {
 	private GitConfiguration gitConfig;

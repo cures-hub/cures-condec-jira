@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.git;
+package de.uhd.ifi.se.decision.management.jira.git.model;
 
 /**
  * Type of {@link ChangedFile} depending on the programming language (e.g. java,

@@ -3,10 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.git.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
+import de.uhd.ifi.se.decision.management.jira.git.model.CommentStyleType;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
 
 /**
  * Extracts {@link CodeComment}s from code file content. This is necessary to

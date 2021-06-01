@@ -11,9 +11,9 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.git.TestDiff;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.TestDiff;
 
 public class TestTangledChangeDetector extends TestSetUpGit {
 

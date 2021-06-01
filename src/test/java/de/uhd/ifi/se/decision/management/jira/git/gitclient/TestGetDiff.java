@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 
 public class TestGetDiff extends TestSetUpGit {
 

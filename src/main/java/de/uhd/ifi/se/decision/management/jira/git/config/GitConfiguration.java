@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.CommentStyleType;
+import de.uhd.ifi.se.decision.management.jira.git.model.FileType;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
-import de.uhd.ifi.se.decision.management.jira.model.git.FileType;
 
 /**
  * Contains the configuration details for the git connection for one Jira

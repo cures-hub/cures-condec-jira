@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.git;
+package de.uhd.ifi.se.decision.management.jira.git.model;
 
 /**
  * Necessary to identify decision knowledge in code comments for different

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.git;
+package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import java.util.ArrayList;
 import java.util.List;

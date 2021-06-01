@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.git;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 
 /**
  * Estimates whether a {@link Diff} of {@ChangedFile}s contains wrong links,

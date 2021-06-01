@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
 
 public class TestRationaleFromCodeCommentParser {
 	private RationaleFromCodeCommentParser rationaleFromCodeCommentExtractor;

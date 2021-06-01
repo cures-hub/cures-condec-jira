@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.git.CommentStyleType;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
+import de.uhd.ifi.se.decision.management.jira.git.model.CommentStyleType;
 
 public class TestCodeCommentParser extends TestSetUp {
 

@@ -35,9 +35,9 @@ import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
-import de.uhd.ifi.se.decision.management.jira.model.git.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
 
 /**
  * Retrieves commits and code changes (diffs) from one git repository.

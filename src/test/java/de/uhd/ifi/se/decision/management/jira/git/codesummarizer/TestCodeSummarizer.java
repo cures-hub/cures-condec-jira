@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.model.git.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 
 public class TestCodeSummarizer extends TestSetUpGit {
 

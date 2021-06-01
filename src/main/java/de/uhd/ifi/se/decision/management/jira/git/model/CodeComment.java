@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.git;
+package de.uhd.ifi.se.decision.management.jira.git.model;
 
 /**
  * Model class for comment text and the area it occupies in a source code file.
