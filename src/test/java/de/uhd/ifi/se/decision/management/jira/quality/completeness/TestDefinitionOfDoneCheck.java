@@ -27,7 +27,7 @@ public class TestDefinitionOfDoneCheck  extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void TestDefinitionOfDoneCheck() {
+	public void testDefinitionOfDoneCheck() {
 		assertEquals(DefinitionOfDoneCheck.execute(knowledgeElement, filterSettings), new ArrayList<>());
 	}
 }
