@@ -24,6 +24,8 @@
 
 		if (projectKey && issueKey) {
 			updateView(projectKey, issueKey, viewIdentifier);
+		} else {
+			resetView(projectKey, viewIdentifier);
 		}
 	};
 
@@ -35,8 +37,31 @@
 
 		if (projectKey && issueKey) {
 			updateView(projectKey, issueKey, viewIdentifier);
+		} else {
+			resetView(projectKey, viewIdentifier);
 		}
 	};
+
+	function resetView(projectKey, viewIdentifier) {
+		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
+			var minimumCoverage = filterSettings.minimumDecisionCoverage;
+			var linkDistance = filterSettings.linkDistance;
+
+			getHTMLNodes("menu-item-quality-check-" + viewIdentifier
+				, "condec-tab-minimum-coverage-" + viewIdentifier
+				, "condec-tab-link-distance-" + viewIdentifier
+				, "quality-check-knowledge-complete-text-" + viewIdentifier
+				, "quality-check-issue-text-" + viewIdentifier
+				, "quality-check-decision-text-" + viewIdentifier);
+
+			updateTab(qualityCheckTab, true, true, null, null);
+			updateLabel(minimumCoverageText, minimumCoverage);
+			updateLabel(linkDistanceText, linkDistance);
+			updateText(issueText, "issues", null, minimumCoverage);
+			updateText(decisionText, "decisions", null, minimumCoverage);
+			updateIsKnowledgeComplete(null);
+		});
+	}
 
 	function updateView(projectKey, issueKey, viewIdentifier) {
 		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
@@ -69,7 +94,7 @@
 						, "quality-check-issue-text-" + viewIdentifier
 						, "quality-check-decision-text-" + viewIdentifier);
 
-					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions, minimumCoverage);
+					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions);
 					updateLabel(minimumCoverageText, minimumCoverage);
 					updateLabel(linkDistanceText, linkDistance);
 					updateText(issueText, "issues", numberOfIssues, minimumCoverage);
@@ -78,10 +103,6 @@
 				});
 			});
 		});
-	}
-
-	function updateLabel(label, text) {
-		label.innerText = text;
 	}
 
 	function updateTab(tab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, coverageOfIssues, coverageOfDecisions) {
@@ -94,6 +115,10 @@
 		} else {
 			addToken(tab, "condec-default");
 		}
+	}
+
+	function updateLabel(label, text) {
+		label.innerText = text;
 	}
 
 	function updateText(textField, type, coverage, minimum) {
@@ -111,12 +136,15 @@
 	}
 
 	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked) {
-		if (hasIncompleteKnowledgeLinked) {
+		if (hasIncompleteKnowledgeLinked === true) {
 			knowledgeCompleteText.textContent = KNOWLEDGE_INCOMPLETE;
 			addToken(knowledgeCompleteText, "condec-empty");
-		} else {
+		} else if (hasIncompleteKnowledgeLinked === false) {
 			knowledgeCompleteText.textContent = KNOWLEDGE_COMPLETE;
 			addToken(knowledgeCompleteText, "condec-fine");
+		} else {
+			knowledgeCompleteText.textContent = "";
+			addToken(knowledgeCompleteText, "condec-default");
 		}
 	}
 
