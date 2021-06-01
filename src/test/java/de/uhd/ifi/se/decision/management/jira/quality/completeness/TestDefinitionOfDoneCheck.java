@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TestDefinitionOfDoneCheck  extends TestSetUp {
 
@@ -28,6 +29,9 @@ public class TestDefinitionOfDoneCheck  extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDefinitionOfDoneCheck() {
-		assertEquals(DefinitionOfDoneCheck.execute(knowledgeElement, filterSettings), new ArrayList<>());
+		List<String> list = new ArrayList<>();
+		list.add("hasIncompleteKnowledgeLinked");
+		list.add("doesNotHaveMinimumCoverage");
+		assertEquals(DefinitionOfDoneCheck.execute(knowledgeElement, filterSettings), list);
 	}
 }
