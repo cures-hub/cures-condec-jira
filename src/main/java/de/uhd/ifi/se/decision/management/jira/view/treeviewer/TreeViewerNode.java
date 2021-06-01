@@ -1,10 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import com.google.common.collect.ImmutableMap;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneCheck;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
@@ -55,7 +57,11 @@ public class TreeViewerNode {
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
-		String textColor = knowledgeElement.getStatus().getColor();
+		String textColor = "";
+		if (!DefinitionOfDoneCheck.execute(knowledgeElement,
+			new FilterSettings(knowledgeElement.getProject().getProjectKey(), "")).isEmpty()) {
+			textColor = "crimson";
+		}
 		if (!textColor.isBlank()) {
 			if (a_attr == null) {
 				a_attr = ImmutableMap.of("style", "color:" + textColor);

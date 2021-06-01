@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import com.google.common.collect.ImmutableMap;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneCheck;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -73,8 +75,11 @@ public class VisNode {
 	}
 
 	private Map<String, String> determineFont(KnowledgeElement element) {
-		KnowledgeStatus status = element.getStatus();
-		String color = status.getColor();
+		String color = "";
+		if (!DefinitionOfDoneCheck.execute(element,
+			new FilterSettings(element.getProject().getProjectKey(), "")).isEmpty()) {
+			color = "crimson";
+		}
 		if (!color.isBlank()) {
 			return ImmutableMap.of("color", color);
 		}
