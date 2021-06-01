@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -73,10 +74,16 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testGetFont() {
-		element.setStatus(KnowledgeStatus.DISCARDED);
 		VisNode node = new VisNode(element, false, 1);
 		assertEquals("crimson", node.getFont().values().iterator().next());
-		element.setStatus(KnowledgeStatus.UNDEFINED);
+	}
+
+	@Test
+	public void testGetFontProjectNull() {
+		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		knowledgeElement.setProject((DecisionKnowledgeProject) null);
+		VisNode node = new VisNode(element, false, 1);
+		assertEquals("", node.getFont().values().iterator().next());
 	}
 
 	@Test
