@@ -76,7 +76,7 @@
 					node.childNodes[j].style.color = "crimson";
 				}
 			}
-		})
+		});
 	}
 
     function addDragAndDropSupportForTreant() {

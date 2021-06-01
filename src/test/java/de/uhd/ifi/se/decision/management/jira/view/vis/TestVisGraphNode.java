@@ -75,7 +75,7 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testGetFont() {
 		element.setStatus(KnowledgeStatus.DISCARDED);
 		VisNode node = new VisNode(element, false, 1);
-		assertEquals("gray", node.getFont().values().iterator().next());
+		assertEquals("crimson", node.getFont().values().iterator().next());
 		element.setStatus(KnowledgeStatus.UNDEFINED);
 	}
 
