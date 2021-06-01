@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
  * 
  * Decision knowledge is documented in code comments using the following syntax:
  * 
- * <b>@decisionKnowledgeTag</b> knowledge summary text
+ * <b>{@literal @}decisionKnowledgeTag</b> knowledge summary text
  * <p>
  * where <b>decisionKnowledgeTag</b> belongs to set of {@link KnowledgeType}s,
  * for example issue, alternative, decision, pro, and con. Empty two lines
@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.model.git.CodeComment;
  * tag ends the element, too. Comment end ends also the decision knowledge
  * element.
  * <p>
- * e.g. <b>@decision</b> We decided to...
+ * e.g. <b>{@literal @}decision</b> We decided to...
  */
 public class RationaleFromCodeCommentParser {
 	private final Pattern TAGS_SEARCH_PATTERN;
@@ -160,7 +160,10 @@ public class RationaleFromCodeCommentParser {
 	}
 
 	/**
-	 * Either rationale is delimited by two new lines or @ gets observed
+	 * @param rationaleText
+	 *            text of the code comment.
+	 * @return position where rationale elements ends. A rationale element is
+	 *         delimited by two new lines or when {@literal @} gets observed.
 	 */
 	private int getRationaleTextEndPosition(String rationaleText) {
 		int twoLinesPos = -1;
@@ -188,7 +191,7 @@ public class RationaleFromCodeCommentParser {
 
 	/**
 	 * @param rationaleTypeStartTag
-	 *            e.g. @decision
+	 *            e.g. {@literal @}decision
 	 * @return {@link KnowledgeType} instance for the tag.
 	 */
 	public static KnowledgeType getRationaleTypeFromTag(String rationaleTypeStartTag) {
