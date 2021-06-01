@@ -11,7 +11,7 @@ import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 
 import de.uhd.ifi.se.decision.management.jira.eventlistener.IssueEventListener;
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**

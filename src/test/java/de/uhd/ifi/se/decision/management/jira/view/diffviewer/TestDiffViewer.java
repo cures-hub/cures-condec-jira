@@ -8,7 +8,7 @@ import java.util.List;
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 
 public class TestDiffViewer extends TestSetUpGit {
 	private DiffViewer viewer;

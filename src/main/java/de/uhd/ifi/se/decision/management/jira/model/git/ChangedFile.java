@@ -31,10 +31,10 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.CodeCommentParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.JiraIssueKeyFromCommitMessageParser;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.MethodVisitor;
-import de.uhd.ifi.se.decision.management.jira.extraction.parser.RationaleFromCodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.git.parser.CodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
+import de.uhd.ifi.se.decision.management.jira.git.parser.MethodVisitor;
+import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;

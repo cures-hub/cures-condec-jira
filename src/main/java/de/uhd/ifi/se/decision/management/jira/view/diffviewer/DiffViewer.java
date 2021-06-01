@@ -12,7 +12,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 
 /**
  * Creates diff viewer content for a list of git repository branches

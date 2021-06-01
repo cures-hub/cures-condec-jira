@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 
 public class TestDiff extends TestSetUpGit {
 
