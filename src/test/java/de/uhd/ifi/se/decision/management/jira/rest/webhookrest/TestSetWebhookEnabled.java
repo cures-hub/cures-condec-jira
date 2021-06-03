@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.webhookrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,18 +11,18 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.WebhookRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestSetWebhookEnabled extends TestSetUp {
 
 	private HttpServletRequest request;
-	private ConfigRest configRest;
+	private WebhookRest webhookRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		webhookRest = new WebhookRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -30,18 +30,18 @@ public class TestSetWebhookEnabled extends TestSetUp {
 	@Test
 	public void testRequestNullProjectKeyNullActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setWebhookEnabled(null, null, false).getStatus());
+				webhookRest.setWebhookEnabled(null, null, false).getStatus());
 	}
 
 	@Test
 	public void testRequestFilledProjectKeyNullActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setWebhookEnabled(request, null, false).getStatus());
+				webhookRest.setWebhookEnabled(request, null, false).getStatus());
 	}
 
 	@Test
 	public void testRequestNullProjectKeyValidActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setWebhookEnabled(null, "TEST", false).getStatus());
+				webhookRest.setWebhookEnabled(null, "TEST", false).getStatus());
 	}
 }
