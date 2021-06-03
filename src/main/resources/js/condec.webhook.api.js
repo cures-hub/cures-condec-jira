@@ -28,12 +28,12 @@
 			});
 	};
 
-	ConDecWebhookAPI.prototype.setWebhookType = function(webhookType, projectKey, isWebhookTypeEnabled) {
-		generalApi.postJSON(this.restPrefix + "/setWebhookType.json?projectKey=" + projectKey
-			+ "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled, null, function(
+	ConDecWebhookAPI.prototype.setObservedType = function(knowledgeType, projectKey, isTypeObserved) {
+		generalApi.postJSON(this.restPrefix + "/setObservedType.json?projectKey=" + projectKey
+			+ "&knowledgeType=" + knowledgeType + "&isTypeObserved=" + isTypeObserved, null, function(
 				error, response) {
 			if (error === null) {
-				conDecAPI.showFlag("success", "The webhook root element type was changed for this project.");
+				conDecAPI.showFlag("success", "The observation of type " + knowledgeType + " is set to " + isTypeObserved);
 			}
 		});
 	};

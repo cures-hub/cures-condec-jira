@@ -30,30 +30,30 @@ public class TestSetWebhookType extends TestSetUp {
 	@Test
 	public void testReqNullProNullTypNullActFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookType(null, null, null, false).getStatus());
+				webhookRest.setObservedType(null, null, null, false).getStatus());
 	}
 
 	@Test
 	public void testReqFilledProNullTypNullActFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookType(request, null, null, false).getStatus());
+				webhookRest.setObservedType(request, null, null, false).getStatus());
 	}
 
 	@Test
 	public void testReqNullProFilledTypNullActFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookType(null, "TEST", null, false).getStatus());
+				webhookRest.setObservedType(null, "TEST", null, false).getStatus());
 	}
 
 	@Test
 	public void testReqNullProNullTypFilledActFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookType(null, null, "TEST", false).getStatus());
+				webhookRest.setObservedType(null, null, "TEST", false).getStatus());
 	}
 
 	@Test
 	public void testReqNullProNullTypNullActTrue() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookType(null, null, null, true).getStatus());
+				webhookRest.setObservedType(null, null, null, true).getStatus());
 	}
 }

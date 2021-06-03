@@ -50,7 +50,7 @@ public class WebhookConnector {
 	public WebhookConnector(String projectKey) {
 		this(projectKey, ConfigPersistenceManager.getWebhookConfiguration(projectKey).getWebhookUrl(),
 				ConfigPersistenceManager.getWebhookConfiguration(projectKey).getWebhookSecret(),
-				ConfigPersistenceManager.getWebhookConfiguration(projectKey).getObservedTypes());
+				ConfigPersistenceManager.getWebhookConfiguration(projectKey).getObservedKnowledgeTypes());
 	}
 
 	public boolean sendElement(KnowledgeElement sendElement) {

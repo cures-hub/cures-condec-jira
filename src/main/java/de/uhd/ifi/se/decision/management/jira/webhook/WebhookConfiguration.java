@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  * Contains the configuration details for the webhook for one Jira project (see
@@ -21,7 +23,7 @@ public class WebhookConfiguration {
 		setActivated(false);
 		setWebhookUrl("");
 		setWebhookSecret("");
-		setObservedTypes(new HashSet<>());
+		setObservedKnowledgeTypes(new HashSet<>());
 	}
 
 	/**
@@ -71,29 +73,49 @@ public class WebhookConfiguration {
 		this.webhookSecret = webhookSecret;
 	}
 
-	public Set<String> getObservedTypes() {
+	/**
+	 * @return observed {@link KnowledgeType}s. If a {@link KnowledgeElement} of an
+	 *         observed type changes, the webhook is fired. Also, if a {@link Link}
+	 *         to or from a {@link KnowledgeElement} of an observed type is created
+	 *         or deleted, the webhook is fired.
+	 */
+	public Set<String> getObservedKnowledgeTypes() {
 		return observedTypes;
 	}
 
-	public void setObservedTypes(Set<String> observedTypes) {
+	/**
+	 * @param observedTypes
+	 *            observed {@link KnowledgeType}s. If a {@link KnowledgeElement} of
+	 *            an observed type changes, the webhook is fired. Also, if a
+	 *            {@link Link} to or from a {@link KnowledgeElement} of an observed
+	 *            type is created or deleted, the webhook is fired.
+	 */
+	public void setObservedKnowledgeTypes(Set<String> observedTypes) {
 		this.observedTypes = observedTypes;
 	}
 
-	public boolean isWebhookTypeEnabled(String webhookType) {
-		if (webhookType == null || webhookType.isBlank()) {
-			return false;
-		}
-		return observedTypes.contains(webhookType);
+	/**
+	 * @param observedType
+	 *            {@link KnowledgeType} as a String, e.g. "Issue".
+	 * @return true if the {@link KnowledgeType} is observed, see
+	 *         {@link #getObservedKnowledgeTypes()}.
+	 */
+	public boolean isKnowledgeTypeObserved(String observedType) {
+		return observedTypes.contains(observedType);
 	}
 
-	public void setWebhookType(String webhookType, boolean isWebhookTypeEnabled) {
-		if (webhookType == null || webhookType.isBlank()) {
-			return;
-		}
-		if (isWebhookTypeEnabled) {
-			observedTypes.add(webhookType);
+	/**
+	 * @param knowledgeType
+	 *            {@link KnowledgeType} as a String, e.g. "Issue".
+	 * @param isTypeObserved
+	 *            true if the {@link KnowledgeType} should be observed, see
+	 *            {@link #getObservedKnowledgeTypes()}.
+	 */
+	public void setKnowledgeTypeObserved(String knowledgeType, boolean isTypeObserved) {
+		if (isTypeObserved) {
+			observedTypes.add(knowledgeType);
 		} else {
-			observedTypes.remove(webhookType);
+			observedTypes.remove(knowledgeType);
 		}
 	}
 }

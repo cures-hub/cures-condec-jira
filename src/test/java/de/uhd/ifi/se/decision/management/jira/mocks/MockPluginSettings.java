@@ -31,9 +31,6 @@ public class MockPluginSettings implements PluginSettings {
 	public static Map<String, Object> getDefaultSettings() {
 		String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put(subfix + "webhookUrl", "http://true");
-		settings.put(subfix + "webhookSecret", "myhoneybee");
-		settings.put(subfix + "isWebhookEnabled", "false");
 		settings.put(subfix + "users", "user");
 		settings.put(subfix + "criteriaQuery", "project=CONDEC and type = \"Non functional requirement\"");
 		return settings;

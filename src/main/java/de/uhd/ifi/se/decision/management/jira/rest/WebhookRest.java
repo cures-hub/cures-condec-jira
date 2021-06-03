@@ -58,17 +58,16 @@ public class WebhookRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setWebhookType")
+	@Path("/setObservedType")
 	@POST
-	public Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("webhookType") String webhookType,
-			@QueryParam("isWebhookTypeEnabled") boolean isWebhookTypeEnabled) {
+	public Response setObservedType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("knowledgeType") String knowledgeType, @QueryParam("isTypeObserved") boolean isTypeObserved) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		WebhookConfiguration webhookConfig = ConfigPersistenceManager.getWebhookConfiguration(projectKey);
-		webhookConfig.setWebhookType(webhookType, isWebhookTypeEnabled);
+		webhookConfig.setKnowledgeTypeObserved(knowledgeType, isTypeObserved);
 		ConfigPersistenceManager.saveWebhookConfiguration(projectKey, webhookConfig);
 		return Response.ok().build();
 	}
