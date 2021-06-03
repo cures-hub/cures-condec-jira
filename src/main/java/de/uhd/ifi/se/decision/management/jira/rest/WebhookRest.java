@@ -49,7 +49,8 @@ public class WebhookRest {
 			return isValidDataResponse;
 		}
 		if (webhookUrl == null || webhookSecret == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null")).build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Webhook URL and secret must not be null.")).build();
 		}
 		WebhookConfiguration webhookConfig = ConfigPersistenceManager.getWebhookConfiguration(projectKey);
 		webhookConfig.setWebhookUrl(webhookUrl);
@@ -65,6 +66,10 @@ public class WebhookRest {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
+		}
+		if (knowledgeType == null || knowledgeType.isBlank()) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Knowledge type must be a non-empty String.")).build();
 		}
 		WebhookConfiguration webhookConfig = ConfigPersistenceManager.getWebhookConfiguration(projectKey);
 		webhookConfig.setKnowledgeTypeObserved(knowledgeType, isTypeObserved);

@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.WebhookRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestSetWebhookType extends TestSetUp {
+public class TestSetObservedType extends TestSetUp {
 
 	private HttpServletRequest request;
 	private WebhookRest webhookRest;
@@ -28,32 +28,38 @@ public class TestSetWebhookType extends TestSetUp {
 	}
 
 	@Test
-	public void testReqNullProNullTypNullActFalse() {
+	public void testRequestNullProjectKeyNullTypeNullActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setObservedType(null, null, null, false).getStatus());
 	}
 
 	@Test
-	public void testReqFilledProNullTypNullActFalse() {
+	public void testRequestValidProjectKeyNullTypeNullActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setObservedType(request, null, null, false).getStatus());
 	}
 
 	@Test
-	public void testReqNullProFilledTypNullActFalse() {
+	public void testRequestNullProjectKeyValidTypeNullActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setObservedType(null, "TEST", null, false).getStatus());
 	}
 
 	@Test
-	public void testReqNullProNullTypFilledActFalse() {
+	public void testRequestValidProjectKeyValidTypeNullActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setObservedType(null, null, "TEST", false).getStatus());
+				webhookRest.setObservedType(request, "TEST", null, false).getStatus());
 	}
 
 	@Test
-	public void testReqNullProNullTypNullActTrue() {
+	public void testRequestValidProjectKeyValidTypeBlankActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setObservedType(null, null, null, true).getStatus());
+				webhookRest.setObservedType(request, "TEST", "", false).getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectKeyValidTypeValidActivationFalse() {
+		assertEquals(Response.Status.OK.getStatusCode(),
+				webhookRest.setObservedType(request, "TEST", "Issue", false).getStatus());
 	}
 }

@@ -28,6 +28,18 @@ public class TestSetWebhookEnabled extends TestSetUp {
 	}
 
 	@Test
+	public void testRequestFilledProjectKeyValidActivationFalse() {
+		assertEquals(Response.Status.OK.getStatusCode(),
+				webhookRest.setWebhookEnabled(request, "TEST", false).getStatus());
+	}
+
+	@Test
+	public void testRequestFilledProjectKeyValidActivationTrue() {
+		assertEquals(Response.Status.OK.getStatusCode(),
+				webhookRest.setWebhookEnabled(request, "TEST", true).getStatus());
+	}
+
+	@Test
 	public void testRequestNullProjectKeyNullActivationFalse() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setWebhookEnabled(null, null, false).getStatus());

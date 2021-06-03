@@ -28,17 +28,23 @@ public class TestSendTestPost extends TestSetUp {
 	}
 
 	@Test
-	public void testReqNullProNull() {
+	public void testRequestNullProjectKeyNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), webhookRest.sendTestPost(null, null).getStatus());
 	}
 
 	@Test
-	public void testReqFilledProNull() {
+	public void testRequestValidProjectKeyNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), webhookRest.sendTestPost(request, null).getStatus());
 	}
 
 	@Test
-	public void testReqNullProFilled() {
+	public void testRequestNullProjectKeyValid() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), webhookRest.sendTestPost(null, "TEST").getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectKeyValid() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				webhookRest.sendTestPost(request, "TEST").getStatus());
 	}
 }

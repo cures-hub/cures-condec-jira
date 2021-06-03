@@ -28,102 +28,50 @@ public class TestSetWebhookData extends TestSetUp {
 	}
 
 	@Test
-	public void testReqNullProNullAdrNullSecNull() {
+	public void testRequestNullProjectKeyNullUrlNullSecretNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setWebhookData(null, null, null, null).getStatus());
 	}
 
 	@Test
-	public void testReqNullProNullAdrNullSecFilled() {
+	public void testRequestNullProjectKeyNullUrlNullSecretValid() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(null, null, null, "TEST").getStatus());
+				webhookRest.setWebhookData(null, null, null, "42").getStatus());
 	}
 
 	@Test
-	public void testReqNullProNullAdrFilledSecNull() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(null, null, "TEST", null).getStatus());
-	}
-
-	@Test
-	public void testReqNullProNullAdrFilledSecFilled() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(null, null, "TEST", "TEST").getStatus());
-	}
-
-	@Test
-	public void testReqNullProFilledAdrNullSecNull() {
+	public void testRequestNullProjectKeyValidUrlNullSecretNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setWebhookData(null, "TEST", null, null).getStatus());
 	}
 
 	@Test
-	public void testReqNullProFilledAdrNullSecFilled() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(null, "TEST", null, "TEST").getStatus());
-	}
-
-	@Test
-	public void testReqNullProFilledAdrFilledSecNull() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(null, "TEST", "TEST", null).getStatus());
-	}
-
-	@Test
-	public void testReqNullProFilledAdrFilledSecFilled() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(null, "TEST", "TEST", "TEST").getStatus());
-	}
-
-	@Test
-	public void testReqFilledProNullAdrNullSecNull() {
+	public void testRequestFilledProjectKeyNullUrlNullSecretNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setWebhookData(request, null, null, null).getStatus());
 	}
 
 	@Test
-	public void testReqFilledProNullAdrNullSecFilled() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(request, null, null, "TEST").getStatus());
-	}
-
-	@Test
-	public void testReqFilledProNullAdrFilledSecNull() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(request, null, "TEST", null).getStatus());
-	}
-
-	@Test
-	public void testReqFilledProNullAdrFilledSecFilled() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(request, null, "TEST", "TEST").getStatus());
-	}
-
-	@Test
-	public void testReqFilledProFilledAdrNullSecNull() {
-		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+	public void testRequestFilledProjectKeyValidUrlNullSecretNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				webhookRest.setWebhookData(request, "TEST", null, null).getStatus());
 	}
 
 	@Test
-	public void testReqFilledProFilledAdrNullSecFilled() {
-		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+	public void testRequestFilledProjectKeyValidUrlNullSecretValid() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(request, "TEST", null, "TEST").getStatus());
+				webhookRest.setWebhookData(request, "TEST", null, "42").getStatus());
 	}
 
 	@Test
-	public void testReqFilledProFilledAdrFilledSecNull() {
-		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+	public void testRequestFilledProjectKeyValidUrlValidSecretNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				webhookRest.setWebhookData(request, "TEST", "TEST", null).getStatus());
+				webhookRest.setWebhookData(request, "TEST", "http://", null).getStatus());
 	}
 
 	@Test
-	public void testReqFilledProFilledAdrFilledSecFilled() {
-		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+	public void testRequestFilledProjectKeyValidUrlValidSecretValid() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				webhookRest.setWebhookData(request, "TEST", "TEST", "TEST").getStatus());
+				webhookRest.setWebhookData(request, "TEST", "http://", "42").getStatus());
 	}
 }
