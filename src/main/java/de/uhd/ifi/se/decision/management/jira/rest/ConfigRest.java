@@ -46,6 +46,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -369,17 +370,14 @@ public class ConfigRest {
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
+			@QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
-		}
-		boolean isActivated = Boolean.parseBoolean(isActivatedString);
-		ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
+		WebhookConfiguration webhookConfig = ConfigPersistenceManager.getWebhookConfiguration(projectKey);
+		webhookConfig.setActivated(isActivated);
+		ConfigPersistenceManager.saveWebhookConfiguration(projectKey, webhookConfig);
 		return Response.ok().build();
 	}
 
@@ -394,8 +392,10 @@ public class ConfigRest {
 		if (webhookUrl == null || webhookSecret == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null")).build();
 		}
-		ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
-		ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
+		WebhookConfiguration webhookConfig = ConfigPersistenceManager.getWebhookConfiguration(projectKey);
+		webhookConfig.setWebhookUrl(webhookUrl);
+		webhookConfig.setWebhookSecret(webhookSecret);
+		ConfigPersistenceManager.saveWebhookConfiguration(projectKey, webhookConfig);
 		return Response.ok(Status.OK).build();
 	}
 

@@ -5,11 +5,27 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-public class TestSetWebhookData extends TestConfigSuper {
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+
+public class TestSetWebhookData extends TestSetUp {
+
+	private HttpServletRequest request;
+	private ConfigRest configRest;
+
+	@Before
+	public void setUp() {
+		init();
+		configRest = new ConfigRest();
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+	}
 
 	@Test
 	public void testReqNullProNullAdrNullSecNull() {
@@ -85,8 +101,6 @@ public class TestSetWebhookData extends TestConfigSuper {
 
 	@Test
 	public void testReqFilledProFilledAdrNullSecNull() {
-		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", null, null).getStatus());
@@ -94,8 +108,6 @@ public class TestSetWebhookData extends TestConfigSuper {
 
 	@Test
 	public void testReqFilledProFilledAdrNullSecFilled() {
-		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", null, "TEST").getStatus());
@@ -103,8 +115,6 @@ public class TestSetWebhookData extends TestConfigSuper {
 
 	@Test
 	public void testReqFilledProFilledAdrFilledSecNull() {
-		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", "TEST", null).getStatus());
@@ -112,8 +122,6 @@ public class TestSetWebhookData extends TestConfigSuper {
 
 	@Test
 	public void testReqFilledProFilledAdrFilledSecFilled() {
-		HttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute("user", user);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(),
 				configRest.setWebhookData(request, "TEST", "TEST", "TEST").getStatus());

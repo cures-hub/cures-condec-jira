@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEve
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
 /**
  * Models a Jira project and its configuration. The Jira project is extended
@@ -142,28 +143,6 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true if the webhook is enabled for this project.
-	 */
-	public boolean isWebhookEnabled() {
-		return ConfigPersistenceManager.isWebhookEnabled(getProjectKey());
-	}
-
-	/**
-	 * @return webhook URL where the decision knowledge is sent to if the webhook is
-	 *         enabled.
-	 */
-	public String getWebhookUrl() {
-		return ConfigPersistenceManager.getWebhookUrl(getProjectKey());
-	}
-
-	/**
-	 * @return secret key for the submission of the decision knowledge via webhook.
-	 */
-	public String getWebhookSecret() {
-		return ConfigPersistenceManager.getWebhookSecret(getProjectKey());
-	}
-
-	/**
 	 * @return configuration of the {@link TextClassifier} to automatically classify
 	 *         the text of Jira issue descriptions and comments.
 	 */
@@ -200,6 +179,14 @@ public class DecisionKnowledgeProject {
 	 */
 	public PromptingEventConfiguration getPromptingEventConfiguration() {
 		return ConfigPersistenceManager.getPromptingEventConfiguration(getProjectKey());
+	}
+
+	/**
+	 * @return configuration information of the webhook to post changed decision
+	 *         knowledge to a given URL (e.g. chat channel).
+	 */
+	public WebhookConfiguration getWebhookConfiguration() {
+		return ConfigPersistenceManager.getWebhookConfiguration(getProjectKey());
 	}
 
 	/**
