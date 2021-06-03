@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -122,129 +121,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
 		assertTrue(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
-	}
-
-	@Test
-	public void testSetWebhookTypeNullNullFalse() {
-		ConfigPersistenceManager.setWebhookType(null, null, false);
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, null));
-	}
-
-	@Test
-	public void testSetWebhookTypeNullNullTrue() {
-		ConfigPersistenceManager.setWebhookType(null, null, true);
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, null));
-	}
-
-	@Test
-	public void testSetWebhookTypeNullEmptyFalse() {
-		ConfigPersistenceManager.setWebhookType(null, "", false);
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, ""));
-	}
-
-	@Test
-	public void testSetWebhookTypeNullEmptyTrue() {
-		ConfigPersistenceManager.setWebhookType(null, "", true);
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, ""));
-	}
-
-	@Test
-	public void testSetWebhookTypeNullFilledFalse() {
-		ConfigPersistenceManager.setWebhookType(null, "Task", false);
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, "Task"));
-	}
-
-	@Test
-	public void testSetWebhookTypeNullFilledTrue() {
-		ConfigPersistenceManager.setWebhookType(null, "Task", true);
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, "Task"));
-	}
-
-	@Test
-	public void testSetWebhookTypeFilledNullFalse() {
-		ConfigPersistenceManager.setWebhookType("TEST", null, false);
-	}
-
-	@Test
-	public void testSetWebhookTypeFilledNullTrue() {
-		ConfigPersistenceManager.setWebhookType("TEST", null, true);
-	}
-
-	@Test
-	public void testSetWebhookTypeFilledEmptyFalse() {
-		ConfigPersistenceManager.setWebhookType("TEST", "", false);
-	}
-
-	@Test
-	public void testSetWebhookTypeFilledEmptyTrue() {
-		ConfigPersistenceManager.setWebhookType("TEST", "", true);
-	}
-
-	@Test
-	public void testSetWebhookTypeFilledFilledFalse() {
-		ConfigPersistenceManager.setWebhookType("TEST", "Task", false);
-	}
-
-	@Test
-	public void testSetWebhookTypeFilledFilledTrue() {
-		ConfigPersistenceManager.setWebhookType("TEST", "Task", true);
-		assertNotNull(ConfigPersistenceManager.getEnabledWebhookTypes("TEST"));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledNullNull() {
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, null));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledNullEmpty() {
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, ""));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledEmptyNull() {
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("", null));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledNullFilled() {
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, "Task"));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledFilledNull() {
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", null));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledEmptyFilled() {
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("", "Task"));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledFilledEmpty() {
-		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", ""));
-	}
-
-	@Test
-	public void testIsWebhookTypeEnabledFilledFilled() {
-		ConfigPersistenceManager.setWebhookType("TEST", "Task", true);
-		assertTrue(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", "Task"));
-	}
-
-	@Test
-	public void testGetEnabledWebhookTypesNull() {
-		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes(null).size());
-	}
-
-	@Test
-	public void testGetEnabledWebhookTypesEmpty() {
-		assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes("").size());
-	}
-
-	@Test
-	public void testGetEnabledWebhookTypesFilled() {
-		assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size());
 	}
 
 	@Test

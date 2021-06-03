@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
@@ -12,11 +15,13 @@ public class WebhookConfiguration {
 	private boolean isActivated;
 	private String webhookUrl;
 	private String webhookSecret;
+	private Set<String> observedTypes;
 
 	public WebhookConfiguration() {
 		setActivated(false);
 		setWebhookUrl("");
 		setWebhookSecret("");
+		setObservedTypes(new HashSet<>());
 	}
 
 	/**
@@ -66,4 +71,29 @@ public class WebhookConfiguration {
 		this.webhookSecret = webhookSecret;
 	}
 
+	public Set<String> getObservedTypes() {
+		return observedTypes;
+	}
+
+	public void setObservedTypes(Set<String> observedTypes) {
+		this.observedTypes = observedTypes;
+	}
+
+	public boolean isWebhookTypeEnabled(String webhookType) {
+		if (webhookType == null || webhookType.isBlank()) {
+			return false;
+		}
+		return observedTypes.contains(webhookType);
+	}
+
+	public void setWebhookType(String webhookType, boolean isWebhookTypeEnabled) {
+		if (webhookType == null || webhookType.isBlank()) {
+			return;
+		}
+		if (isWebhookTypeEnabled) {
+			observedTypes.add(webhookType);
+		} else {
+			observedTypes.remove(webhookType);
+		}
+	}
 }

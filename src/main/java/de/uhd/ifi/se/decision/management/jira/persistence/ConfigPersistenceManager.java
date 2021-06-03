@@ -1,17 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -41,18 +37,6 @@ public class ConfigPersistenceManager {
 			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
 			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
-
-	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		Collection<String> issueTypeNames = new ArrayList<>();
-		for (IssueType issueType : issueTypes) {
-			if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
-				issueTypeNames.add(issueType.getName());
-			}
-		}
-		return issueTypeNames;
-	}
 
 	public static String getValue(String projectKey, String parameter) {
 		if (projectKey == null || projectKey.isBlank()) {
@@ -116,14 +100,6 @@ public class ConfigPersistenceManager {
 			return new TextClassificationConfiguration();
 		}
 		return textClassificationConfiguration;
-	}
-
-	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
-		if (webhookType == null || webhookType.isBlank()) {
-			return false;
-		}
-		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
-		return "true".equals(isWebhookTypeEnabled);
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
@@ -191,13 +167,6 @@ public class ConfigPersistenceManager {
 	public static void saveObject(String projectKey, String parameter, Object value, Type type) {
 		Gson gson = new Gson();
 		setValue(projectKey, parameter, gson.toJson(value, type));
-	}
-
-	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
-		if (webhookType == null || webhookType.isBlank()) {
-			return;
-		}
-		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,

@@ -1,0 +1,22 @@
+<div class="field-group">
+	<label for="isWebhookEnabled-toggle">Webhook Activated?</label>
+	<aui-toggle id="isWebhookEnabled-toggle"
+	    value="$projectKey" label="Webhook Activated?"
+		#if($webhookConfig.isActivated())
+			checked
+		#end    
+	></aui-toggle>
+	<div class="description">Activates or deactivates the webhook for this project. If the webhook
+	    is activated, it is triggered whenever a decision knowledge element or a link between
+	    elements is changed. Then, a key value JSON string is sent to the URL.
+	    The key is the key of the root element and the value is the Treant JSON string.
+	</div>
+</div>
+
+<script>
+	document.getElementById("isWebhookEnabled-toggle").addEventListener("change", function(error) {
+		this.busy = true;
+		conDecWebhookAPI.setWebhookEnabled(this.checked, this.value);
+		this.busy = false;
+	});
+</script>

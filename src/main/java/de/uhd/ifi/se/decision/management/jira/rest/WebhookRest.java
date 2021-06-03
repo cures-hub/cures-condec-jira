@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
- * REST resource for the configuration of the webhook (see
+ * REST resource for the configuration and testing of the webhook (see
  * {@link WebhookConfiguration}.
  */
 @Path("/webhook")
@@ -67,7 +67,9 @@ public class WebhookRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
+		WebhookConfiguration webhookConfig = ConfigPersistenceManager.getWebhookConfiguration(projectKey);
+		webhookConfig.setWebhookType(webhookType, isWebhookTypeEnabled);
+		ConfigPersistenceManager.saveWebhookConfiguration(projectKey, webhookConfig);
 		return Response.ok().build();
 	}
 
