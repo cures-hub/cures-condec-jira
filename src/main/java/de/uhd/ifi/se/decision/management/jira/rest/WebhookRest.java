@@ -55,7 +55,7 @@ public class WebhookRest {
 		webhookConfig.setWebhookUrl(webhookUrl);
 		webhookConfig.setWebhookSecret(webhookSecret);
 		ConfigPersistenceManager.saveWebhookConfiguration(projectKey, webhookConfig);
-		return Response.ok(Status.OK).build();
+		return Response.ok().build();
 	}
 
 	@Path("/setWebhookType")
