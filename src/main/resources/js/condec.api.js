@@ -601,55 +601,6 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setWebhookData = function(projectKey, webhookUrl, webhookSecret) {
-		generalApi.postJSON(this.restPrefix + "/config/setWebhookData.json?projectKey=" + projectKey
-			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function(error, response) {
-				if (error === null) {
-					showFlag("success", "The webhook for this project has been set.");
-				}
-			});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.setWebhookEnabled = function(isActivated, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setWebhookEnabled.json?projectKey=" + projectKey
-			+ "&isActivated=" + isActivated, null, function(error, response) {
-				if (error === null) {
-					showFlag("success", "The webhook activation for this project has been changed.");
-				}
-			});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.setWebhookType = function(webhookType, projectKey, isWebhookTypeEnabled) {
-		generalApi.postJSON(this.restPrefix + "/config/setWebhookType.json?projectKey=" + projectKey
-			+ "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled, null, function(
-				error, response) {
-			if (error === null) {
-				showFlag("success", "The webhook root element type was changed for this project.");
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.sendTestPost = function(projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/sendTestPost.json?projectKey="
-			+ projectKey, null, function(error, response) {
-				if (error === null) {
-					showFlag("success", "The webhook test was send.");
-				}
-			});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
 	ConDecAPI.prototype.cleanDatabases = function(projectKey) {
 		generalApi.postJSON(this.restPrefix + "/config/cleanDatabases.json?projectKey="
 			+ projectKey, null, function(error, response) {

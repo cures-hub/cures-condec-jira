@@ -10,7 +10,6 @@ import org.junit.Test;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -67,19 +66,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testIsWebhookEnabled() {
-		assertEquals(false, project.isWebhookEnabled());
-	}
-
-	@Test
-	public void testGetWebhookUrl() {
-		assertEquals("http://true", project.getWebhookUrl());
-	}
-
-	@Test
-	public void testGetWebhookSecret() {
-		ConfigPersistenceManager.setWebhookSecret(project.getProjectKey(), "myhoneybee");
-		assertEquals("myhoneybee", project.getWebhookSecret());
+	public void testGetWebhookConfiguration() {
+		assertEquals(false, project.getWebhookConfiguration().isActivated());
 	}
 
 	@Test

@@ -1,17 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -29,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
@@ -40,18 +37,6 @@ public class ConfigPersistenceManager {
 			.getOSGiComponentInstanceOfType(PluginSettingsFactory.class);
 	private static TransactionTemplate transactionTemplate = ComponentAccessor
 			.getOSGiComponentInstanceOfType(TransactionTemplate.class);
-
-	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		Collection<String> issueTypeNames = new ArrayList<>();
-		for (IssueType issueType : issueTypes) {
-			if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
-				issueTypeNames.add(issueType.getName());
-			}
-		}
-		return issueTypeNames;
-	}
 
 	public static String getValue(String projectKey, String parameter) {
 		if (projectKey == null || projectKey.isBlank()) {
@@ -80,14 +65,6 @@ public class ConfigPersistenceManager {
 			LOGGER.error("Saved config could not be read: " + e.getMessage());
 		}
 		return object;
-	}
-
-	public static String getWebhookSecret(String projectKey) {
-		return getValue(projectKey, "webhookSecret");
-	}
-
-	public static String getWebhookUrl(String projectKey) {
-		return getValue(projectKey, "webhookUrl");
 	}
 
 	public static String getDecisionTableCriteriaQuery(String projectKey) {
@@ -123,19 +100,6 @@ public class ConfigPersistenceManager {
 			return new TextClassificationConfiguration();
 		}
 		return textClassificationConfiguration;
-	}
-
-	public static boolean isWebhookEnabled(String projectKey) {
-		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
-		return "true".equals(isWebhookEnabled);
-	}
-
-	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
-		if (webhookType == null || webhookType.isBlank()) {
-			return false;
-		}
-		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
-		return "true".equals(isWebhookTypeEnabled);
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
@@ -203,25 +167,6 @@ public class ConfigPersistenceManager {
 	public static void saveObject(String projectKey, String parameter, Object value, Type type) {
 		Gson gson = new Gson();
 		setValue(projectKey, parameter, gson.toJson(value, type));
-	}
-
-	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
-		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
-	}
-
-	public static void setWebhookSecret(String projectKey, String webhookSecret) {
-		setValue(projectKey, "webhookSecret", webhookSecret);
-	}
-
-	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
-		if (webhookType == null || webhookType.isBlank()) {
-			return;
-		}
-		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
-	}
-
-	public static void setWebhookUrl(String projectKey, String webhookUrl) {
-		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 
 	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
@@ -319,5 +264,22 @@ public class ConfigPersistenceManager {
 			ciaSettings = new CiaSettings();
 		}
 		return ciaSettings;
+	}
+
+	public static void saveWebhookConfiguration(String projectKey, WebhookConfiguration webhookConfiguration) {
+		Type type = new TypeToken<WebhookConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "webhookConfiguration", webhookConfiguration, type);
+	}
+
+	public static WebhookConfiguration getWebhookConfiguration(String projectKey) {
+		Type type = new TypeToken<WebhookConfiguration>() {
+		}.getType();
+		WebhookConfiguration webhookConfiguration = (WebhookConfiguration) getSavedObject(projectKey,
+				"webhookConfiguration", type);
+		if (webhookConfiguration == null) {
+			return new WebhookConfiguration();
+		}
+		return webhookConfiguration;
 	}
 }

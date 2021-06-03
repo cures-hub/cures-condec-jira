@@ -1,0 +1,11 @@
+<div class="field-group">
+	<label for="Test Webhook">Test Webhook</label>
+	<input type="button" id="testWebhook" class="aui-button aui-button-primary" value="Send Webhook" onclick="sendTestPost()"/>
+	<div class="description">Sends test data to the given URL.</div>
+</div>
+
+<script>
+	function sendTestPost() {
+		conDecWebhookAPI.sendTestPost("$projectKey");
+	}
+</script>

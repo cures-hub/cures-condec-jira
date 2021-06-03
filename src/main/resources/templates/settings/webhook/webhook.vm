@@ -1,0 +1,6 @@
+<h2>Webhook</h2>
+#set($webhookConfig = $project.getWebhookConfiguration())
+
+#parse("templates/settings/webhook/webhookActivation.vm")
+#parse("templates/settings/webhook/webhookConfiguration.vm")
+#parse("templates/settings/webhook/webhookTest.vm")

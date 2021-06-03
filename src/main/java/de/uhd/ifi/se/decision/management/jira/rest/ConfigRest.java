@@ -46,7 +46,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * REST resource for basic plug-in configuration
@@ -364,63 +363,6 @@ public class ConfigRest {
 	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
 		List<String> groups = DecisionGroupManager.getAllDecisionGroups(projectKey);
 		return Response.ok(groups).build();
-	}
-
-	@Path("/setWebhookEnabled")
-	@POST
-	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivatedString == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
-		}
-		boolean isActivated = Boolean.parseBoolean(isActivatedString);
-		ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
-		return Response.ok().build();
-	}
-
-	@Path("/setWebhookData")
-	@POST
-	public Response setWebhookData(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("webhookUrl") String webhookUrl, @QueryParam("webhookSecret") String webhookSecret) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (webhookUrl == null || webhookSecret == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null")).build();
-		}
-		ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
-		ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
-		return Response.ok(Status.OK).build();
-	}
-
-	@Path("/setWebhookType")
-	@POST
-	public Response setWebhookType(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("webhookType") String webhookType,
-			@QueryParam("isWebhookTypeEnabled") boolean isWebhookTypeEnabled) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
-		return Response.ok().build();
-	}
-
-	@Path("/sendTestPost")
-	@POST
-	public Response sendTestPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		WebhookConnector connector = new WebhookConnector(projectKey);
-		if (connector.sendTestPost()) {
-			return Response.ok().build();
-		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Test webhook post failed."))
-				.build();
 	}
 
 	@Path("/setReleaseNoteMapping")

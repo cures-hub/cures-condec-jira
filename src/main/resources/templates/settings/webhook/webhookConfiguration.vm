@@ -1,0 +1,49 @@
+<div class="field-group">
+	<label for="select-root-types">Observed Types:</label>
+	<select class="multi-select" size="8" multiple="multiple" id="select-root-types" name="select-root-types">
+		#foreach ($issueType in $project.getJiraIssueTypeNames())
+			<option name="$issueType"
+				#if ( $webhookConfig.getObservedKnowledgeTypes().contains($issueType) )
+					selected
+				#end
+                	>
+				$issueType</option>
+		#end
+	</select>
+	<div class="description">
+		If a knowledge element of an observed knowledge type is changed, the webhook is fired. 
+		Also, if a link to or from a knowledge element of an observed knowledge type is created or deleted, 
+		the webhook is fired.
+	</div>
+	<input type="button" value="Set Root Element Types" onclick="getMultipleSelectedValue()" class="aui-button aui-button-primary"/>
+</div>
+
+<div class="field-group">
+	<label for="webhook-url">URL</label> <input type="text"
+		class="text long-field" id="webhook-url" value="$webhookConfig.getWebhookUrl()" />
+	<div class="description">URL that decision knowledge is posted
+		to when updated.</div>
+</div>
+
+<div class="field-group">
+	<label for="webhook-secret">Shared Secret</label> <input type="text"
+		class="text long-field" id="webhook-secret" value="$webhookConfig.getWebhookSecret()" />
+	<div class="description">Key to authenticate with remote server.</div>
+	<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook URL and Secret" />
+</div>
+
+<script>
+	document.getElementById("submitWebhook").addEventListener("click", function() {
+		var urlInput = document.getElementById("webhook-url");
+		var secretInput = document.getElementById("webhook-secret");
+		conDecWebhookAPI.setWebhookData("$projectKey", urlInput.value, secretInput.value);
+		window.onbeforeunload = null;
+	});
+
+    function getMultipleSelectedValue() {
+        var x = document.getElementById("select-root-types");
+        for (var i = 0; i < x.options.length; i++) {
+        	conDecWebhookAPI.setObservedType(x.options[i].value, "$projectKey", x.options[i].selected);
+        }
+    }
+</script>

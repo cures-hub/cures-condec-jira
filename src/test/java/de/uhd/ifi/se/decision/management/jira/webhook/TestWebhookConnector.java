@@ -1,23 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class TestWebhookConnector extends TestSetUp {
 	private WebhookConnector webhookConnector;
@@ -67,7 +69,7 @@ public class TestWebhookConnector extends TestSetUp {
 	@NonTransactional
 	public void testConstructorWrongProjectKey() {
 		WebhookConnector connector = new WebhookConnector("NoTest");
-		assertEquals("http://true", connector.getUrl());
+		assertEquals("", connector.getUrl());
 		assertFalse(connector.sendElement(null));
 	}
 
@@ -75,7 +77,7 @@ public class TestWebhookConnector extends TestSetUp {
 	@NonTransactional
 	public void testConstructorCorrectProjectKey() {
 		WebhookConnector connector = new WebhookConnector("TEST");
-		assertEquals("http://true", connector.getUrl());
+		assertEquals("", connector.getUrl());
 		assertFalse(connector.sendElement(null));
 	}
 
