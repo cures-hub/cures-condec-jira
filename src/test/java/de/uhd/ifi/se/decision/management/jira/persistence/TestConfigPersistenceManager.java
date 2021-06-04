@@ -37,19 +37,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		init();
 	}
 
-	// configure persistence in Jira issues
-	@Test
-	public void testSetIssueStrategyNullFalse() {
-		ConfigPersistenceManager.setIssueStrategy(null, false);
-		assertFalse(ConfigPersistenceManager.isIssueStrategy(null));
-	}
-
-	@Test
-	public void testSetIssueStrategyValidTrue() {
-		ConfigPersistenceManager.setIssueStrategy("TEST", true);
-		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
-	}
-
 	// isKnowledgeTypeEnabled
 	@Test
 	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled() {

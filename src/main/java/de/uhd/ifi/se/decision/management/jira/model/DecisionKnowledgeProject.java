@@ -22,7 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
@@ -87,16 +86,6 @@ public class DecisionKnowledgeProject {
 	 */
 	public BasicConfiguration getBasicConfiguration() {
 		return ConfigPersistenceManager.getBasicConfiguration(getProjectKey());
-	}
-
-	/**
-	 * @see JiraIssuePersistenceManager
-	 * @return true if decision knowledge is stored in entire Jira issues in this
-	 *         Jira project. If this is true, you need make sure that the project is
-	 *         associated with the decision knowledge issue type scheme.
-	 */
-	public boolean isIssueStrategy() {
-		return ConfigPersistenceManager.isIssueStrategy(this.getProjectKey());
 	}
 
 	/**

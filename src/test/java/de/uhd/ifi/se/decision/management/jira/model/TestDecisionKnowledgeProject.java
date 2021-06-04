@@ -60,11 +60,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testIsJiraIssueStorage() {
-		assertEquals(true, project.isIssueStrategy());
-	}
-
-	@Test
 	public void testGetDecisionKnowledgeTypes() {
 		assertEquals(18, project.getConDecKnowledgeTypes().size());
 		assertEquals(18, project.getNamesOfConDecKnowledgeTypes().size());

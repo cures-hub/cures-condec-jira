@@ -97,7 +97,8 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
+		boolean isIssueStrategy = ConfigPersistenceManager.getBasicConfiguration(projectKey)
+				.isJiraIssueDocumentationLocationActivated();
 		return Response.ok(isIssueStrategy).build();
 	}
 
@@ -109,7 +110,9 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
+		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfiguration.setJiraIssueDocumentationLocationActivated(isIssueStrategy);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfiguration);
 		manageDefaultIssueTypes(projectKey, isIssueStrategy);
 		return Response.ok().build();
 	}
@@ -160,7 +163,7 @@ public class ConfigRest {
 					.build();
 		}
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
-		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+		if (ConfigPersistenceManager.getBasicConfiguration(projectKey).isJiraIssueDocumentationLocationActivated()) {
 			JiraSchemeManager jiraSchemeManager = new JiraSchemeManager(projectKey);
 			if (isKnowledgeTypeEnabled) {
 				IssueType jiraIssueType = JiraSchemeManager.createIssueType(knowledgeType);

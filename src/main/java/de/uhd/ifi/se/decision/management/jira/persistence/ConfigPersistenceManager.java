@@ -72,11 +72,6 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "criteriaQuery");
 	}
 
-	public static boolean isIssueStrategy(String projectKey) {
-		String isIssueStrategy = getValue(projectKey, "isIssueStrategy");
-		return "true".equals(isIssueStrategy);
-	}
-
 	// TODO Testing
 	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
 		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
@@ -96,10 +91,6 @@ public class ConfigPersistenceManager {
 			return new TextClassificationConfiguration();
 		}
 		return textClassificationConfiguration;
-	}
-
-	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
-		setValue(projectKey, "isIssueStrategy", Boolean.toString(isIssueStrategy));
 	}
 
 	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
