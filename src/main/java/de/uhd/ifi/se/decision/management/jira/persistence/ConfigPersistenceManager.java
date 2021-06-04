@@ -19,7 +19,6 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
@@ -72,16 +71,6 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "criteriaQuery");
 	}
 
-	// TODO Testing
-	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
-		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
-	}
-
-	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
-		String isKnowledgeTypeEnabled = getValue(projectKey, knowledgeType);
-		return "true".equals(isKnowledgeTypeEnabled);
-	}
-
 	public static TextClassificationConfiguration getTextClassificationConfiguration(String projectKey) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
 		}.getType();
@@ -128,11 +117,6 @@ public class ConfigPersistenceManager {
 			return new GitConfiguration();
 		}
 		return gitConfiguration;
-	}
-
-	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
-			boolean isKnowledgeTypeEnabled) {
-		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
 	public static void setTextClassifierActivated(String projectKey, boolean isActivated) {

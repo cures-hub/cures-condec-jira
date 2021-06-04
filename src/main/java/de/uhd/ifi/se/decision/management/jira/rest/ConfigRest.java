@@ -75,7 +75,9 @@ public class ConfigRest {
 	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
+			BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+			basicConfig.setKnowledgeTypeEnabled(knowledgeType, isActivated);
+			ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
 		}
 	}
 
@@ -122,7 +124,9 @@ public class ConfigRest {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			if (isIssueStrategy) {
-				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
+				BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+				basicConfig.setKnowledgeTypeEnabled(knowledgeType, true);
+				ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
 				IssueType jiraIssueType = JiraSchemeManager.createIssueType(knowledgeType.toString());
 				jiraSchemeManager.addIssueTypeToScheme(jiraIssueType);
 			} else {
@@ -143,7 +147,8 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The knowledge type is null."))
 					.build();
 		}
-		boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+		boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.getBasicConfiguration(projectKey)
+				.isKnowledgeTypeEnabled(KnowledgeType.getKnowledgeType(knowledgeType));
 		return Response.ok(isKnowledgeTypeEnabled).build();
 	}
 
@@ -162,7 +167,9 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "The knowledge type could not be enabled because it is null."))
 					.build();
 		}
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfig.setKnowledgeTypeEnabled(KnowledgeType.getKnowledgeType(knowledgeType), isKnowledgeTypeEnabled);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
 		if (ConfigPersistenceManager.getBasicConfiguration(projectKey).isJiraIssueDocumentationLocationActivated()) {
 			JiraSchemeManager jiraSchemeManager = new JiraSchemeManager(projectKey);
 			if (isKnowledgeTypeEnabled) {

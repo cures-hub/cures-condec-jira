@@ -94,7 +94,7 @@ public class DecisionKnowledgeProject {
 	public Set<KnowledgeType> getConDecKnowledgeTypes() {
 		Set<KnowledgeType> enabledKnowledgeTypes = new LinkedHashSet<KnowledgeType>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(getProjectKey(), knowledgeType);
+			boolean isEnabled = getBasicConfiguration().isKnowledgeTypeEnabled(knowledgeType);
 			if (isEnabled) {
 				enabledKnowledgeTypes.add(knowledgeType);
 			}

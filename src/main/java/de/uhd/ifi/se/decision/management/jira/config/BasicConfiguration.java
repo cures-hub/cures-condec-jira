@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import java.util.Set;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
@@ -12,6 +15,7 @@ public class BasicConfiguration {
 
 	private boolean isActivated;
 	private boolean isJiraIssueDocumentationLocationActivated;
+	private Set<KnowledgeType> activatedKnowledgeTypes;
 
 	/**
 	 * Constructs an object with default values.
@@ -24,6 +28,7 @@ public class BasicConfiguration {
 	public BasicConfiguration() {
 		setActivated(true);
 		setJiraIssueDocumentationLocationActivated(false);
+		setActivatedKnowledgeTypes(KnowledgeType.getDefaultTypes());
 	}
 
 	/**
@@ -68,6 +73,26 @@ public class BasicConfiguration {
 	 */
 	public void setJiraIssueDocumentationLocationActivated(boolean isJiraIssueDocumentationLocationActivated) {
 		this.isJiraIssueDocumentationLocationActivated = isJiraIssueDocumentationLocationActivated;
+	}
+
+	public Set<KnowledgeType> getActivatedKnowledgeTypes() {
+		return activatedKnowledgeTypes;
+	}
+
+	public void setActivatedKnowledgeTypes(Set<KnowledgeType> activatedKnowledgeTypes) {
+		this.activatedKnowledgeTypes = activatedKnowledgeTypes;
+	}
+
+	public boolean isKnowledgeTypeEnabled(KnowledgeType knowledgeType) {
+		return activatedKnowledgeTypes.contains(knowledgeType);
+	}
+
+	public void setKnowledgeTypeEnabled(KnowledgeType knowledgeType, boolean isKnowledgeTypeEnabled) {
+		if (isKnowledgeTypeEnabled) {
+			activatedKnowledgeTypes.add(knowledgeType);
+		} else {
+			activatedKnowledgeTypes.remove(knowledgeType);
+		}
 	}
 
 }

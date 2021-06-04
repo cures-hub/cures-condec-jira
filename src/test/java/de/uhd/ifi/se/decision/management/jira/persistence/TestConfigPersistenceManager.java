@@ -15,7 +15,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
@@ -35,66 +34,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
-	}
-
-	// isKnowledgeTypeEnabled
-	@Test
-	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled() {
-		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString()));
-	}
-
-	@Test
-	public void testIsKnowledgeTypeEnabledKeyFilledTypeFilled() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
-	}
-
-	// setKnowledgeTypeEnabled
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledFalse() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, null, false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null, ""));
-	}
-
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledTrue() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, null, true);
-		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null, ""));
-	}
-
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledFalse() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null, ""));
-	}
-
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledTrue() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), true);
-		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null, ""));
-	}
-
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledFalse() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", null, false);
-		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", ""));
-	}
-
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledTrue() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", null, true);
-		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", ""));
-	}
-
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledFalse() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), false);
-	}
-
-	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue() {
-		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
-		assertTrue(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
 	}
 
 	@Test
