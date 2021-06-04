@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -93,13 +92,7 @@ public class DecisionKnowledgeProject {
 	 * @return {@link KnowledgeType}s that are used in this project.
 	 */
 	public Set<KnowledgeType> getConDecKnowledgeTypes() {
-		Set<KnowledgeType> enabledKnowledgeTypes = new LinkedHashSet<KnowledgeType>();
-		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			boolean isEnabled = getBasicConfiguration().isKnowledgeTypeEnabled(knowledgeType);
-			if (isEnabled) {
-				enabledKnowledgeTypes.add(knowledgeType);
-			}
-		}
+		Set<KnowledgeType> enabledKnowledgeTypes = getBasicConfiguration().getActivatedKnowledgeTypes();
 		enabledKnowledgeTypes.remove(KnowledgeType.OTHER);
 		return enabledKnowledgeTypes;
 	}
