@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -63,7 +64,9 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		LOGGER.info("ConDec activation was set to " + isActivated + " for project " + projectKey);
-		ConfigPersistenceManager.setActivated(projectKey, isActivated);
+		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfiguration.setActivated(isActivated);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfiguration);
 		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 		ComponentGetter.removeInstances(projectKey);
 		return Response.ok().build();
@@ -83,7 +86,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isActivated = ConfigPersistenceManager.isActivated(projectKey);
+		boolean isActivated = ConfigPersistenceManager.getBasicConfiguration(projectKey).isActivated();
 		return Response.ok(isActivated).build();
 	}
 

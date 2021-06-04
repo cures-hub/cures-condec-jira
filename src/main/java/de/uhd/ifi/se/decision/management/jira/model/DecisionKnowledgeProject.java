@@ -19,6 +19,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
@@ -81,10 +82,11 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true if the ConDec plug-in is activated for the Jira project.
+	 * @return configuration information of the git connection including the git
+	 *         repositories for this project as a {@link GitConfiguration} object.
 	 */
-	public boolean isActivated() {
-		return ConfigPersistenceManager.isActivated(this.getProjectKey());
+	public BasicConfiguration getBasicConfiguration() {
+		return ConfigPersistenceManager.getBasicConfiguration(getProjectKey());
 	}
 
 	/**
@@ -253,7 +255,7 @@ public class DecisionKnowledgeProject {
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			boolean hasPermission = ComponentAccessor.getPermissionManager()
 					.hasPermission(ProjectPermissions.BROWSE_PROJECTS, project, user);
-			if (ConfigPersistenceManager.isActivated(project.getKey()) && hasPermission) {
+			if (ConfigPersistenceManager.getBasicConfiguration(project.getKey()).isActivated() && hasPermission) {
 				projects.add(project);
 			}
 		}

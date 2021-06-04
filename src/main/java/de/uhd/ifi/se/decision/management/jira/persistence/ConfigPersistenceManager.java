@@ -17,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
@@ -71,11 +72,6 @@ public class ConfigPersistenceManager {
 		return getValue(projectKey, "criteriaQuery");
 	}
 
-	public static boolean isActivated(String projectKey) {
-		String isActivated = getValue(projectKey, "isActivated");
-		return "true".equals(isActivated);
-	}
-
 	public static boolean isIssueStrategy(String projectKey) {
 		String isIssueStrategy = getValue(projectKey, "isIssueStrategy");
 		return "true".equals(isIssueStrategy);
@@ -102,16 +98,29 @@ public class ConfigPersistenceManager {
 		return textClassificationConfiguration;
 	}
 
-	public static void setActivated(String projectKey, boolean isActivated) {
-		setValue(projectKey, "isActivated", Boolean.toString(isActivated));
-	}
-
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
 		setValue(projectKey, "isIssueStrategy", Boolean.toString(isIssueStrategy));
 	}
 
 	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
 		setValue(projectKey, "criteriaQuery", query);
+	}
+
+	public static void saveBasicConfiguration(String projectKey, BasicConfiguration basicConfiguration) {
+		Type type = new TypeToken<BasicConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "basicConfiguration", basicConfiguration, type);
+	}
+
+	public static BasicConfiguration getBasicConfiguration(String projectKey) {
+		Type type = new TypeToken<BasicConfiguration>() {
+		}.getType();
+		BasicConfiguration basicConfiguration = (BasicConfiguration) getSavedObject(projectKey, "basicConfiguration",
+				type);
+		if (basicConfiguration == null) {
+			return new BasicConfiguration();
+		}
+		return basicConfiguration;
 	}
 
 	public static void saveGitConfiguration(String projectKey, GitConfiguration gitConfiguration) {

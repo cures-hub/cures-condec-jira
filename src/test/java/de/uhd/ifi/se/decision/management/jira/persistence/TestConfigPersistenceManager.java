@@ -50,19 +50,6 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
 	}
 
-	// plugin activation
-	@Test
-	public void testSetActivatedNullFalse() {
-		ConfigPersistenceManager.setActivated("TEST", false);
-		assertFalse(ConfigPersistenceManager.isActivated("TEST"));
-	}
-
-	@Test
-	public void testSetActivatedValid() {
-		ConfigPersistenceManager.setActivated("TEST", true);
-		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
-	}
-
 	// isKnowledgeTypeEnabled
 	@Test
 	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled() {

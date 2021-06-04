@@ -50,8 +50,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testIsActivated() {
-		assertEquals(true, project.isActivated());
+	public void testGetBasicConfiguration() {
+		assertEquals(false, project.getBasicConfiguration().isActivated());
 	}
 
 	@Test
