@@ -16,8 +16,10 @@ import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -36,6 +38,9 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration("TEST");
+		basicConfiguration.setActivated(true);
+		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfiguration);
 	}
 
 	protected Comment createComment(String comment) {

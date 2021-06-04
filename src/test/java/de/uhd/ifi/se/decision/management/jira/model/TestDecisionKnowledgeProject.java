@@ -10,6 +10,8 @@ import org.junit.Test;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -24,6 +26,9 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public void setUp() {
 		init();
 		this.project = new DecisionKnowledgeProject(JiraProjects.getTestProject());
+		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration("TEST");
+		basicConfiguration.setActivated(true);
+		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfiguration);
 	}
 
 	@Test
@@ -51,7 +56,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetBasicConfiguration() {
-		assertEquals(false, project.getBasicConfiguration().isActivated());
+		assertEquals(true, project.getBasicConfiguration().isActivated());
 	}
 
 	@Test
