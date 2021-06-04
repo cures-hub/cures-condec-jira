@@ -81,8 +81,9 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return configuration information of the git connection including the git
-	 *         repositories for this project as a {@link GitConfiguration} object.
+	 * @return configuration information for the basic settings for the ConDec
+	 *         plug-in, e.g. whether it is activated and which
+	 *         {@link KnowledgeType}s are documented.
 	 */
 	public BasicConfiguration getBasicConfiguration() {
 		return ConfigPersistenceManager.getBasicConfiguration(getProjectKey());

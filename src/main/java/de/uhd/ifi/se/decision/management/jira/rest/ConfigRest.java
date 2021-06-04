@@ -148,7 +148,7 @@ public class ConfigRest {
 					.build();
 		}
 		boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.getBasicConfiguration(projectKey)
-				.isKnowledgeTypeEnabled(KnowledgeType.getKnowledgeType(knowledgeType));
+				.isKnowledgeTypeEnabled(knowledgeType);
 		return Response.ok(isKnowledgeTypeEnabled).build();
 	}
 

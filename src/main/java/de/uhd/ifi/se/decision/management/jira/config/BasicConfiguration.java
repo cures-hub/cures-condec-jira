@@ -87,6 +87,10 @@ public class BasicConfiguration {
 		return activatedKnowledgeTypes.contains(knowledgeType);
 	}
 
+	public boolean isKnowledgeTypeEnabled(String knowledgeType) {
+		return isKnowledgeTypeEnabled(KnowledgeType.getKnowledgeType(knowledgeType));
+	}
+
 	public void setKnowledgeTypeEnabled(KnowledgeType knowledgeType, boolean isKnowledgeTypeEnabled) {
 		if (isKnowledgeTypeEnabled) {
 			activatedKnowledgeTypes.add(knowledgeType);
