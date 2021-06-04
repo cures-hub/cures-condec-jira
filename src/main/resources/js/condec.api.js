@@ -434,14 +434,13 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm
+	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setIssueStrategy = function(isIssueStrategy, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setIssueStrategy.json?projectKey=" + projectKey
-			+ "&isIssueStrategy=" + isIssueStrategy, null, function(error, response) {
+	ConDecAPI.prototype.setJiraIssueDocumentationLocationActivated = function(isActivated, projectKey) {
+		generalApi.postJSON(this.restPrefix + "/config/setJiraIssueDocumentationLocationActivated.json?projectKey=" + projectKey
+			+ "&isActivated=" + isActivated, null, function(error, response) {
 				if (error === null) {
-					showFlag("success", "Strategy has been selected.");
+					showFlag("success", "Documentation of rationale in entire Jira has been set to " + isActivated);
 				}
 			});
 	};
@@ -449,11 +448,11 @@
 	/*
 	 * external references: condec.dialog, condec.context.menu
 	 */
-	ConDecAPI.prototype.isIssueStrategy = function(callback) {
-		generalApi.getJSON(this.restPrefix + "/config/isIssueStrategy.json?projectKey=" + projectKey,
-			function(error, isIssueStrategyBoolean) {
+	ConDecAPI.prototype.isJiraIssueDocumentationLocationActivated = function(callback) {
+		generalApi.getJSON(this.restPrefix + "/config/isJiraIssueDocumentationLocationActivated.json?projectKey=" + projectKey,
+			function(error, isActivated) {
 				if (error === null) {
-					callback(isIssueStrategyBoolean);
+					callback(isActivated);
 				}
 			});
 	};

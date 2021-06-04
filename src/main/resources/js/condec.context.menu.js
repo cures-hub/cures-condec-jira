@@ -202,7 +202,7 @@
 		// customize context menu for documentation locations
 		if (documentationLocation === "s") {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
-			conDecAPI.isIssueStrategy(function(isEnabled) {
+			conDecAPI.isJiraIssueDocumentationLocationActivated(function(isEnabled) {
 				if (isEnabled) {
 					document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
 				} else {

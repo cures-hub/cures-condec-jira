@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestIsIssueStrategy extends TestSetUp {
+public class TestIsJiraIssueDocumentationLocationActivated extends TestSetUp {
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
 
@@ -27,22 +27,26 @@ public class TestIsIssueStrategy extends TestSetUp {
 	}
 
 	@Test
-	public void testIsIssueStrategyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isIssueStrategy(null).getStatus());
+	public void testProjectKeyNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.isJiraIssueDocumentationLocationActivated(null).getStatus());
 	}
 
 	@Test
-	public void testIsIssueStrategyProjectKeyEmpty() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isIssueStrategy("").getStatus());
+	public void testProjectKeyEmpty() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.isJiraIssueDocumentationLocationActivated("").getStatus());
 	}
 
 	@Test
-	public void testIsIssueStrategyProjectKeyFalse() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isIssueStrategy("InvalidKey").getStatus());
+	public void testProjectKeyInvalid() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				configRest.isJiraIssueDocumentationLocationActivated("InvalidKey").getStatus());
 	}
 
 	@Test
-	public void testIsIssueStrategyProjectKeyOK() {
-		assertEquals(Status.OK.getStatusCode(), configRest.isIssueStrategy("TEST").getStatus());
+	public void testProjectKeyValid() {
+		assertEquals(Status.OK.getStatusCode(),
+				configRest.isJiraIssueDocumentationLocationActivated("TEST").getStatus());
 	}
 }

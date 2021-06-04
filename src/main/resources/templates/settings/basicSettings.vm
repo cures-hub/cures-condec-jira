@@ -59,15 +59,11 @@
 	
 <script>	
 	document.getElementById("isActivated-toggle").addEventListener("change", function(error) {
-		this.busy = true;
 		conDecAPI.setActivated(this.checked, this.value);
-		this.busy = false;
 	});
 	
 	document.getElementById("isIssueStrategy-toggle").addEventListener("change", function(error) {
-		this.busy = true;
-		conDecAPI.setIssueStrategy(this.checked, this.value);
-		this.busy = false;
+		conDecAPI.setJiraIssueDocumentationLocationActivated(this.checked, this.value);
 	});
 	
     var cleanDatabasesButton = document.getElementById("cleanDatabases");

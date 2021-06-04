@@ -90,30 +90,30 @@ public class ConfigRest {
 		return Response.ok(isActivated).build();
 	}
 
-	@Path("/isIssueStrategy")
+	@Path("/isJiraIssueDocumentationLocationActivated")
 	@GET
-	public Response isIssueStrategy(@QueryParam("projectKey") String projectKey) {
+	public Response isJiraIssueDocumentationLocationActivated(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isIssueStrategy = ConfigPersistenceManager.getBasicConfiguration(projectKey)
+		boolean isActivated = ConfigPersistenceManager.getBasicConfiguration(projectKey)
 				.isJiraIssueDocumentationLocationActivated();
-		return Response.ok(isIssueStrategy).build();
+		return Response.ok(isActivated).build();
 	}
 
-	@Path("/setIssueStrategy")
+	@Path("/setJiraIssueDocumentationLocationActivated")
 	@POST
-	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") boolean isIssueStrategy) {
+	public Response setJiraIssueDocumentationLocationActivated(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration(projectKey);
-		basicConfiguration.setJiraIssueDocumentationLocationActivated(isIssueStrategy);
+		basicConfiguration.setJiraIssueDocumentationLocationActivated(isActivated);
 		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfiguration);
-		manageDefaultIssueTypes(projectKey, isIssueStrategy);
+		manageDefaultIssueTypes(projectKey, isActivated);
 		return Response.ok().build();
 	}
 

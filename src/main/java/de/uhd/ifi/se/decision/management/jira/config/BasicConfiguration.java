@@ -27,7 +27,7 @@ public class BasicConfiguration {
 	}
 
 	/**
-	 * @return true if the ConDec plug-in is activated for the Jira project.
+	 * @return true if the ConDec plug-in is activated/enabled for the Jira project.
 	 */
 	public boolean isActivated() {
 		return isActivated;
@@ -35,7 +35,8 @@ public class BasicConfiguration {
 
 	/**
 	 * @param isActivated
-	 *            true if the ConDec plug-in is activated for the Jira project.
+	 *            true if the ConDec plug-in is activated/enabled for the Jira
+	 *            project.
 	 */
 	public void setActivated(boolean isActivated) {
 		this.isActivated = isActivated;
