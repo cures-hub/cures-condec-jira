@@ -9,7 +9,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHelper;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestActivationCondition {
@@ -18,9 +17,6 @@ public class TestActivationCondition {
 	@BeforeClass
 	public static void setUp() {
 		TestSetUp.init();
-		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration("TEST");
-		basicConfiguration.setActivated(true);
-		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfiguration);
 		condition = new ActivationCondition();
 	}
 

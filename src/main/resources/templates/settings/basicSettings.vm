@@ -36,7 +36,7 @@
 <div class="field-group">
 	<label for="isIssueStrategy-toggle">Store in Jira Issues?</label>
 	<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"	label="Store in Jira Issues?"
-		#if($project.isIssueStrategy())
+		#if($project.getBasicConfiguration().isJiraIssueDocumentationLocationActivated())
 			checked
 		#end
 	></aui-toggle>
@@ -64,14 +64,7 @@
 		this.busy = false;
 	});
 	
-	var strategyToggle = document.getElementById("isIssueStrategy-toggle");
-	if ($project.isIssueStrategy() == true) {
-		strategyToggle.checked = true;
-	} else {
-		strategyToggle.checked = false;
-	}
-	
-	strategyToggle.addEventListener("change", function(error) {
+	document.getElementById("isIssueStrategy-toggle").addEventListener("change", function(error) {
 		this.busy = true;
 		conDecAPI.setIssueStrategy(this.checked, this.value);
 		this.busy = false;

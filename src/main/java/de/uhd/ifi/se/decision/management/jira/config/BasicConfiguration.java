@@ -15,9 +15,14 @@ public class BasicConfiguration {
 
 	/**
 	 * Constructs an object with default values.
+	 * 
+	 * @issue Should ConDec be enabled or disabled for a Jira project per default?
+	 * @decision Enable ConDec for a Jira project per default!
+	 * @pro Supports the rationale manager in setting up the rationale management
+	 *      process, opt-out nudging.
 	 */
 	public BasicConfiguration() {
-		setActivated(false);
+		setActivated(true);
 		setJiraIssueDocumentationLocationActivated(false);
 	}
 

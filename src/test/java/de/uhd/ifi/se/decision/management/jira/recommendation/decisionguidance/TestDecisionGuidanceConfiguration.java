@@ -12,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
 public class TestDecisionGuidanceConfiguration extends TestSetUp {
@@ -24,9 +22,6 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	public void setUp() {
 		init();
 		config = new DecisionGuidanceConfiguration();
-		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration("TEST");
-		basicConfiguration.setActivated(true);
-		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfiguration);
 	}
 
 	@Test
