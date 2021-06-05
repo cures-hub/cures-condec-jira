@@ -445,7 +445,7 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
 
-		ConfigPersistenceManager.setCiaSettings(projectKey, ciaSettings);
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaSettings);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
@@ -457,6 +457,6 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getCiaSettings(projectKey)).build();
+		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
 	}
 }

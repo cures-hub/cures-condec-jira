@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -34,6 +35,26 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		init();
+	}
+
+	@Test
+	public void testConstructor() {
+		assertNotNull(new ConfigPersistenceManager());
+	}
+
+	@Test
+	public void testProjectKeyNull() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMaximumLinkDistanceToDecisions(42);
+		ConfigPersistenceManager.saveDefinitionOfDone(null, definitionOfDone);
+		definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(null);
+		assertFalse(definitionOfDone.getMaximumLinkDistanceToDecisions() == 42);
+	}
+
+	@Test
+	public void testValueNull() {
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", null);
+		assertNotNull(ConfigPersistenceManager.getDefinitionOfDone("TEST"));
 	}
 
 	@Test
@@ -78,8 +99,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		settings.setDecayValue(0.75f);
 		settings.setThreshold(0.2f);
 		settings.setLinkImpact(Map.of("comment", 0.5f));
-		ConfigPersistenceManager.setCiaSettings("TEST", settings);
-		CiaSettings loaded = ConfigPersistenceManager.getCiaSettings("TEST");
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", settings);
+		CiaSettings loaded = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration("TEST");
 		assertEquals(0.75, loaded.getDecayValue(), 0.01);
 		assertEquals(0.2, loaded.getThreshold(), 0.01);
 		assertEquals(1, loaded.getLinkImpact().size());

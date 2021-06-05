@@ -26,11 +26,22 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
 /**
  * Stores and reads configuration settings such as whether the ConDec plug-in is
  * activated for a specific project (see {@link DecisionKnowledgeProject}).
+ * 
+ * @see BasicConfiguration
+ * @see GitConfiguration
+ * @see TextClassificationConfiguration
+ * @see DecisionGuidanceConfiguration
+ * @see LinkRecommendationConfiguration
+ * @see PromptingEventConfiguration
+ * @see CiaSettings
+ * @see WebhookConfiguration
+ * @see ReleaseNotesConfiguration
  */
 public class ConfigPersistenceManager {
 
@@ -51,7 +62,7 @@ public class ConfigPersistenceManager {
 	 *            format, see {@link #saveObject(String, String, Object, Type)}.
 	 */
 	private static void saveValue(String projectKey, String parameter, String value) {
-		if (projectKey == null || value == null) {
+		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
@@ -85,14 +96,10 @@ public class ConfigPersistenceManager {
 	 *         see {@link #getSavedObject(String, String, Type)}.
 	 */
 	private static String getValue(String projectKey, String parameter) {
-		if (projectKey == null || projectKey.isBlank()) {
+		if (projectKey == null) {
 			return "";
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-
-		if (parameter == null || parameter.isBlank()) {
-			return "";
-		}
 		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
@@ -125,12 +132,25 @@ public class ConfigPersistenceManager {
 		return object;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param basicConfiguration
+	 *            basic settings for the ConDec plug-in as a
+	 *            {@link BasicConfiguration} object.
+	 */
 	public static void saveBasicConfiguration(String projectKey, BasicConfiguration basicConfiguration) {
 		Type type = new TypeToken<BasicConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "basicConfiguration", basicConfiguration, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return basic settings for the ConDec plug-in as a {@link BasicConfiguration}
+	 *         object.
+	 */
 	public static BasicConfiguration getBasicConfiguration(String projectKey) {
 		Type type = new TypeToken<BasicConfiguration>() {
 		}.getType();
@@ -142,12 +162,24 @@ public class ConfigPersistenceManager {
 		return basicConfiguration;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param gitConfiguration
+	 *            settings for the git connection as a {@link GitConfiguration}
+	 *            object.
+	 */
 	public static void saveGitConfiguration(String projectKey, GitConfiguration gitConfiguration) {
 		Type type = new TypeToken<GitConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "gitConfiguration", gitConfiguration, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for the git connection as a {@link GitConfiguration} object.
+	 */
 	public static GitConfiguration getGitConfiguration(String projectKey) {
 		Type type = new TypeToken<GitConfiguration>() {
 		}.getType();
@@ -158,6 +190,13 @@ public class ConfigPersistenceManager {
 		return gitConfiguration;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param textClassificationConfiguration
+	 *            settings for the automatic text classification as a
+	 *            {@link TextClassificationConfiguration} object.
+	 */
 	public static void saveTextClassificationConfiguration(String projectKey,
 			TextClassificationConfiguration textClassificationConfiguration) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
@@ -165,6 +204,12 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "textClassificationConfiguration", textClassificationConfiguration, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for the automatic text classification as a
+	 *         {@link TextClassificationConfiguration} object.
+	 */
 	public static TextClassificationConfiguration getTextClassificationConfiguration(String projectKey) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
 		}.getType();
@@ -271,28 +316,42 @@ public class ConfigPersistenceManager {
 		return promptingEventConfiguration;
 	}
 
-	public static void setCiaSettings(String projectKey, CiaSettings ciaSettings) {
+	public static void saveChangeImpactAnalysisConfiguration(String projectKey,
+			CiaSettings changeImpactAnalysisConfiguration) {
 		Type type = new TypeToken<CiaSettings>() {
 		}.getType();
-		saveObject(projectKey, "ciaSettings", ciaSettings, type);
+		saveObject(projectKey, "changeImpactAnalysisConfiguration", changeImpactAnalysisConfiguration, type);
 	}
 
-	public static CiaSettings getCiaSettings(String projectKey) {
+	public static CiaSettings getChangeImpactAnalysisConfiguration(String projectKey) {
 		Type type = new TypeToken<CiaSettings>() {
 		}.getType();
-		CiaSettings ciaSettings = (CiaSettings) getSavedObject(projectKey, "ciaSettings", type);
-		if (ciaSettings == null) {
-			ciaSettings = new CiaSettings();
+		CiaSettings changeImpactAnalysisConfiguration = (CiaSettings) getSavedObject(projectKey,
+				"changeImpactAnalysisConfiguration", type);
+		if (changeImpactAnalysisConfiguration == null) {
+			changeImpactAnalysisConfiguration = new CiaSettings();
 		}
-		return ciaSettings;
+		return changeImpactAnalysisConfiguration;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for the webhook (used for knowledge sharing) as a
+	 *         {@link WebhookConfiguration} object.
+	 */
 	public static void saveWebhookConfiguration(String projectKey, WebhookConfiguration webhookConfiguration) {
 		Type type = new TypeToken<WebhookConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "webhookConfiguration", webhookConfiguration, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for the webhook (used for knowledge sharing) as a
+	 *         {@link WebhookConfiguration} object.
+	 */
 	public static WebhookConfiguration getWebhookConfiguration(String projectKey) {
 		Type type = new TypeToken<WebhookConfiguration>() {
 		}.getType();
