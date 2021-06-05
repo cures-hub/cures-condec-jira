@@ -227,7 +227,9 @@ public class ConfigRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
 		int numberOfCriteria = queryHandler.getJiraIssuesFromQuery().size();
-		ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfig.setCriteriaJiraQuery(query);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
 		return Response.ok(numberOfCriteria).build();
 	}
 

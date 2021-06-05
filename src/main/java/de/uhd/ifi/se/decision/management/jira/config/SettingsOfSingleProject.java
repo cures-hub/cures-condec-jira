@@ -12,7 +12,6 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
 
 /**
@@ -51,7 +50,6 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("request", request);
 		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
-		velocityParameters.put("criteriaQuery", ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey));
 
 		velocityParameters.put("isClassifierTraining", TextClassifier.getInstance(projectKey).isTraining());
 		velocityParameters.put("isClassifierTrained", TextClassifier.getInstance(projectKey).isTrained());

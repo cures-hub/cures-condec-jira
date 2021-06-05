@@ -89,20 +89,11 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return {@link KnowledgeType}s that are used in this project.
-	 */
-	public Set<KnowledgeType> getConDecKnowledgeTypes() {
-		Set<KnowledgeType> enabledKnowledgeTypes = getBasicConfiguration().getActivatedKnowledgeTypes();
-		enabledKnowledgeTypes.remove(KnowledgeType.OTHER);
-		return enabledKnowledgeTypes;
-	}
-
-	/**
 	 * @return names of {@link KnowledgeType}s that are used in this project as
 	 *         Strings.
 	 */
 	public Set<String> getNamesOfConDecKnowledgeTypes() {
-		Set<KnowledgeType> knowledgeTypes = getConDecKnowledgeTypes();
+		Set<KnowledgeType> knowledgeTypes = getBasicConfiguration().getActivatedKnowledgeTypes();
 		Set<String> knowledgeTypesAsString = knowledgeTypes.stream().map(KnowledgeType::toString)
 				.collect(Collectors.toSet());
 		return knowledgeTypesAsString;

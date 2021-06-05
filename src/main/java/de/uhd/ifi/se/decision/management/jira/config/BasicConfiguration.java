@@ -16,6 +16,7 @@ public class BasicConfiguration {
 	private boolean isActivated;
 	private boolean isJiraIssueDocumentationLocationActivated;
 	private Set<KnowledgeType> activatedKnowledgeTypes;
+	private String criteriaJiraQuery;
 
 	/**
 	 * Constructs an object with default values.
@@ -29,6 +30,7 @@ public class BasicConfiguration {
 		setActivated(true);
 		setJiraIssueDocumentationLocationActivated(false);
 		setActivatedKnowledgeTypes(KnowledgeType.getDefaultTypes());
+		setCriteriaJiraQuery("");
 	}
 
 	/**
@@ -99,4 +101,22 @@ public class BasicConfiguration {
 		}
 	}
 
+	/**
+	 * @return Jira query that determines which Jira issue types can be used as
+	 *         criteria in the decision table, e.g. project=CON AND type =
+	 *         "Non-Functional Requirement"
+	 */
+	public String getCriteriaJiraQuery() {
+		return criteriaJiraQuery;
+	}
+
+	/**
+	 * @param criteriaJiraQuery
+	 *            Jira query that determines which Jira issue types can be used as
+	 *            criteria in the decision table, e.g. project=CON AND type =
+	 *            "Non-Functional Requirement"
+	 */
+	public void setCriteriaJiraQuery(String criteriaJiraQuery) {
+		this.criteriaJiraQuery = criteriaJiraQuery;
+	}
 }

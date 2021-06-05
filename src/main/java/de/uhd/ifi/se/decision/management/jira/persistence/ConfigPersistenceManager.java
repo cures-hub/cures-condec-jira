@@ -67,10 +67,6 @@ public class ConfigPersistenceManager {
 		return object;
 	}
 
-	public static String getDecisionTableCriteriaQuery(String projectKey) {
-		return getValue(projectKey, "criteriaQuery");
-	}
-
 	public static TextClassificationConfiguration getTextClassificationConfiguration(String projectKey) {
 		Type type = new TypeToken<TextClassificationConfiguration>() {
 		}.getType();
@@ -80,10 +76,6 @@ public class ConfigPersistenceManager {
 			return new TextClassificationConfiguration();
 		}
 		return textClassificationConfiguration;
-	}
-
-	public static void setDecisionTableCriteriaQuery(String projectKey, String query) {
-		setValue(projectKey, "criteriaQuery", query);
 	}
 
 	public static void saveBasicConfiguration(String projectKey, BasicConfiguration basicConfiguration) {

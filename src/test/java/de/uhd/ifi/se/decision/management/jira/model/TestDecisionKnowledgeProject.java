@@ -56,7 +56,6 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeTypes() {
-		assertEquals(4, project.getConDecKnowledgeTypes().size());
 		assertEquals(4, project.getNamesOfConDecKnowledgeTypes().size());
 	}
 
