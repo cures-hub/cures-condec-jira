@@ -12,7 +12,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -73,12 +72,11 @@ public class TreantNode {
 				"desc", knowledgeElement.getKey());
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = knowledgeElement.getId();
-		DecisionKnowledgeProject project = knowledgeElement.getProject();
 		this.link = new HashMap<String, String>();
 		if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()) {
 			this.link.put("title", knowledgeElement.getDescription());
 		}
-		if (project.isIssueStrategy() && isHyperlinked) {
+		if (isHyperlinked) {
 			this.link.put("href", knowledgeElement.getUrl());
 			this.link.put("target", "_blank");
 		}

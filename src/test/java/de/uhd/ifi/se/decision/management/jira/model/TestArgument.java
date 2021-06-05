@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
@@ -20,6 +22,10 @@ public class TestArgument extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration("TEST");
+		basicConfig.setCriteriaJiraQuery("project=CONDEC and type = \"Non functional requirement\"");
+		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfig);
+
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.PRO);
 		knowledgeElement.setSummary(summary);

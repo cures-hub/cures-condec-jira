@@ -2,11 +2,14 @@
 <div class="field-group">
 	<label for="criteria-query">Decision Table Criteria Query</label>
 	<div class="aui-group">
- 		<input class="text long-field" type="text" id="criteria-query" placeholder="project=CON AND type = &quot;Non-Functional Requirement&quot;" 
-		 	title="JQL input" value="$criteriaQuery">
+ 		<input class="text long-field" type="text" id="criteria-query" placeholder="project=CONDEC AND type = &quot;Non-Functional Requirement&quot;" 
+		 	title="JQL input" value="$project.getBasicConfiguration().getCriteriaJiraQuery()">
  		<button type="button" class="aui-button aui-button-primary" id="btn_save_query" onclick="saveQuery(event)">Save</button>
  	</div>
- 	<div class="description">Enables to configure which Jira issue types can be used as criteria in the decision table.</div>
+ 	<div class="description">
+ 		Enables to configure which Jira issue types can be used as criteria in the decision table.<br/>
+ 		Example: project=CONDEC AND type = "Non-Functional Requirement"
+ 	</div>
 </div>
 <script>
 	html = "<p id='additional-types-text'> The default decision knowledge types are:";

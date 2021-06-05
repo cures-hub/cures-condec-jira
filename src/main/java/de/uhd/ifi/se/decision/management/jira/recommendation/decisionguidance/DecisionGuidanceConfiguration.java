@@ -177,7 +177,7 @@ public class DecisionGuidanceConfiguration {
 		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			DecisionKnowledgeProject conDecProject = new DecisionKnowledgeProject(project);
-			if (!conDecProject.isActivated()) {
+			if (!conDecProject.getBasicConfiguration().isActivated()) {
 				continue;
 			}
 			ProjectSource projectSource = getProjectSource(conDecProject.getProjectKey());

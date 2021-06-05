@@ -37,20 +37,17 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			</td>			
 			<td>
 				<aui-toggle id="$project.getProjectKey()-isActivated-toggle"
-					value="$project.getProjectKey()">
+					value="$project.getProjectKey()"
+					#if($project.getBasicConfiguration().isActivated())
+						checked
+					#end	
+				>
 				</aui-toggle> 
 				<script>
                     $(document).ready(function () {
-                    	var toggle = document.getElementById("$project.getProjectKey()-isActivated-toggle");
-                    	#if ($project.isActivated() == true)
-                            toggle.checked = true;
-                        #else
-                            toggle.checked = false;
-                        #end
-                            toggle.addEventListener("change", function (error) {
-                            this.busy = true;
-                            conDecAPI.setActivated(this.checked, this.value);
-                            this.busy = false;
+                    		var toggle = document.getElementById("$project.getProjectKey()-isActivated-toggle");
+							toggle.addEventListener("change", function (error) {
+							conDecAPI.setActivated(this.checked, this.value);
                         });
                     });
 				</script>

@@ -2,7 +2,11 @@
 	
 <div class="field-group">
 	<label for="isActivated-toggle">ConDec Activated?</label>
-	<aui-toggle id="isActivated-toggle" value="$projectKey"	label="ConDec Activated?"></aui-toggle>
+	<aui-toggle id="isActivated-toggle" value="$projectKey"	label="ConDec Activated?"
+		#if($project.getBasicConfiguration().isActivated())
+			checked
+		#end
+	></aui-toggle>
 	<div class="description">Enables or disables the plug-in for this project. 
 		<br/>Disabling deletes the knowledge graph singleton object. 
 		The knowledge graph can be recreated by disabling and enabling this setting.
@@ -31,7 +35,11 @@
 
 <div class="field-group">
 	<label for="isIssueStrategy-toggle">Store in Jira Issues?</label>
-	<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"	label="Store in Jira Issues?"></aui-toggle>
+	<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"	label="Store in Jira Issues?"
+		#if($project.getBasicConfiguration().isJiraIssueDocumentationLocationActivated())
+			checked
+		#end
+	></aui-toggle>
 	<div class="description">Sets the persistence strategy for this
 		project (either Jira issue strategy or active object strategy). If
 		enabled, decision knowledge can be stored in entire Jira issues. If you choose
@@ -49,31 +57,13 @@
 </div>
 </div>
 	
-<script>
-	var activationToggle = document.getElementById("isActivated-toggle");
-	if ($project.isActivated() == true) {
-		activationToggle.checked = true;
-	} else {
-		activationToggle.checked = false;
-	}
-	
-	activationToggle.addEventListener("change", function(error) {
-		this.busy = true;
+<script>	
+	document.getElementById("isActivated-toggle").addEventListener("change", function(error) {
 		conDecAPI.setActivated(this.checked, this.value);
-		this.busy = false;
 	});
 	
-	var strategyToggle = document.getElementById("isIssueStrategy-toggle");
-	if ($project.isIssueStrategy() == true) {
-		strategyToggle.checked = true;
-	} else {
-		strategyToggle.checked = false;
-	}
-	
-	strategyToggle.addEventListener("change", function(error) {
-		this.busy = true;
-		conDecAPI.setIssueStrategy(this.checked, this.value);
-		this.busy = false;
+	document.getElementById("isIssueStrategy-toggle").addEventListener("change", function(error) {
+		conDecAPI.setJiraIssueDocumentationLocationActivated(this.checked, this.value);
 	});
 	
     var cleanDatabasesButton = document.getElementById("cleanDatabases");

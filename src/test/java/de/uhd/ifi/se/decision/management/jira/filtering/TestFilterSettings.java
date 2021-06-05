@@ -116,7 +116,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfJiraIssueTypes() {
-		assertEquals(20, filterSettings.getKnowledgeTypes().size());
+		assertEquals(6, filterSettings.getKnowledgeTypes().size());
 		filterSettings = new FilterSettings("TEST", "?jql=issuetype in (Decision, Issue)", null);
 		assertEquals(2, filterSettings.getKnowledgeTypes().size());
 	}
@@ -124,7 +124,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetJiraIssueTypes() {
 		filterSettings.setKnowledgeTypes(null);
-		assertEquals(20, filterSettings.getKnowledgeTypes().size());
+		assertEquals(6, filterSettings.getKnowledgeTypes().size());
 		assertFalse(filterSettings.getKnowledgeTypes().contains("Other"));
 	}
 

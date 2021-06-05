@@ -78,13 +78,22 @@ public class TestSetKnowledgeTypeEnabled extends TestSetUp {
 	}
 
 	@Test
-	public void tesRequestExistsProjectKeyExistsIsActivatedTrueKnowledgeTypeFilled() {
+	public void testRequestExistsProjectKeyExistsIsActivatedTrueKnowledgeTypeFilledDocumentationInJiraIssuesTrue() {
+		configRest.setJiraIssueDocumentationLocationActivated(request, "TEST", true);
 		assertEquals(Response.Status.OK.getStatusCode(), configRest
 				.setKnowledgeTypeEnabled(request, "TEST", true, KnowledgeType.SOLUTION.toString()).getStatus());
 	}
 
 	@Test
-	public void testRequestExistsProjectKeyExistsIsActivatedFalseKnowledgeTypeFilled() {
+	public void testRequestExistsProjectKeyExistsIsActivatedFalseKnowledgeTypeFilledDocumentationInJiraIssuesTrue() {
+		configRest.setJiraIssueDocumentationLocationActivated(request, "TEST", true);
+		assertEquals(Response.Status.OK.getStatusCode(), configRest
+				.setKnowledgeTypeEnabled(request, "TEST", false, KnowledgeType.SOLUTION.toString()).getStatus());
+	}
+
+	@Test
+	public void testRequestExistsProjectKeyExistsIsActivatedFalseKnowledgeTypeFilledDocumentationInJiraIssuesFalse() {
+		configRest.setJiraIssueDocumentationLocationActivated(request, "TEST", false);
 		assertEquals(Response.Status.OK.getStatusCode(), configRest
 				.setKnowledgeTypeEnabled(request, "TEST", false, KnowledgeType.SOLUTION.toString()).getStatus());
 	}

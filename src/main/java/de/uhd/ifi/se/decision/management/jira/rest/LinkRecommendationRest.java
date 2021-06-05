@@ -193,7 +193,7 @@ public class LinkRecommendationRest {
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}
 
@@ -212,7 +212,7 @@ public class LinkRecommendationRest {
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration(projectKey, linkSuggestionConfiguration);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}
 }

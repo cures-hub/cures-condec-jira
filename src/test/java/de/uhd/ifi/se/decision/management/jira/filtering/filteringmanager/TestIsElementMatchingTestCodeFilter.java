@@ -20,6 +20,7 @@ public class TestIsElementMatchingTestCodeFilter extends TestSetUp {
 	public void setUp() {
 		init();
 		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.getKnowledgeTypes().add("Code");
 		filteringManager = new FilteringManager(settings);
 	}
 

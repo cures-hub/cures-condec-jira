@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -48,7 +49,8 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 /**
- * REST resource for basic plug-in configuration
+ * REST resource for basic plug-in configuration (see
+ * {@link BasicConfiguration}) and other basic REST methods.
  */
 @Path("/config")
 public class ConfigRest {
@@ -63,17 +65,11 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		LOGGER.info("ConDec activation was set to " + isActivated + " for project " + projectKey);
-		ConfigPersistenceManager.setActivated(projectKey, isActivated);
-		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
+		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfiguration.setActivated(isActivated);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfiguration);
 		ComponentGetter.removeInstances(projectKey);
 		return Response.ok().build();
-	}
-
-	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
-		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
-		}
 	}
 
 	@Path("/isActivated")
@@ -83,31 +79,34 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isActivated = ConfigPersistenceManager.isActivated(projectKey);
+		boolean isActivated = ConfigPersistenceManager.getBasicConfiguration(projectKey).isActivated();
 		return Response.ok(isActivated).build();
 	}
 
-	@Path("/isIssueStrategy")
+	@Path("/isJiraIssueDocumentationLocationActivated")
 	@GET
-	public Response isIssueStrategy(@QueryParam("projectKey") String projectKey) {
+	public Response isJiraIssueDocumentationLocationActivated(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
-		return Response.ok(isIssueStrategy).build();
+		boolean isActivated = ConfigPersistenceManager.getBasicConfiguration(projectKey)
+				.isJiraIssueDocumentationLocationActivated();
+		return Response.ok(isActivated).build();
 	}
 
-	@Path("/setIssueStrategy")
+	@Path("/setJiraIssueDocumentationLocationActivated")
 	@POST
-	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") boolean isIssueStrategy) {
+	public Response setJiraIssueDocumentationLocationActivated(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
-		manageDefaultIssueTypes(projectKey, isIssueStrategy);
+		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfiguration.setJiraIssueDocumentationLocationActivated(isActivated);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfiguration);
+		manageDefaultIssueTypes(projectKey, isActivated);
 		return Response.ok().build();
 	}
 
@@ -116,7 +115,9 @@ public class ConfigRest {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			if (isIssueStrategy) {
-				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
+				BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+				basicConfig.setKnowledgeTypeEnabled(knowledgeType, true);
+				ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
 				IssueType jiraIssueType = JiraSchemeManager.createIssueType(knowledgeType.toString());
 				jiraSchemeManager.addIssueTypeToScheme(jiraIssueType);
 			} else {
@@ -137,7 +138,8 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "The knowledge type is null."))
 					.build();
 		}
-		boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+		boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.getBasicConfiguration(projectKey)
+				.isKnowledgeTypeEnabled(knowledgeType);
 		return Response.ok(isKnowledgeTypeEnabled).build();
 	}
 
@@ -156,8 +158,10 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "The knowledge type could not be enabled because it is null."))
 					.build();
 		}
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
-		if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfig.setKnowledgeTypeEnabled(KnowledgeType.getKnowledgeType(knowledgeType), isKnowledgeTypeEnabled);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
+		if (ConfigPersistenceManager.getBasicConfiguration(projectKey).isJiraIssueDocumentationLocationActivated()) {
 			JiraSchemeManager jiraSchemeManager = new JiraSchemeManager(projectKey);
 			if (isKnowledgeTypeEnabled) {
 				IssueType jiraIssueType = JiraSchemeManager.createIssueType(knowledgeType);
@@ -214,7 +218,9 @@ public class ConfigRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, "?jql=" + query);
 		int numberOfCriteria = queryHandler.getJiraIssuesFromQuery().size();
-		ConfigPersistenceManager.setDecisionTableCriteriaQuery(projectKey, query);
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfig.setCriteriaJiraQuery(query);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
 		return Response.ok(numberOfCriteria).build();
 	}
 
@@ -430,7 +436,7 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
 		}
 
-		ConfigPersistenceManager.setCiaSettings(projectKey, ciaSettings);
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaSettings);
 		return Response.ok(Status.ACCEPTED).build();
 	}
 
@@ -442,6 +448,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getCiaSettings(projectKey)).build();
+		return Response.ok(Status.ACCEPTED)
+				.entity(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
 	}
 }

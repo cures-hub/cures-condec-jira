@@ -24,15 +24,11 @@ public class MockPluginSettings implements PluginSettings {
 	}
 
 	/**
-	 * Returns the map of parameter name and default value, e.g.: isActivated:true
-	 * 
 	 * @return map of parameter name and default value, e.g.: isActivated:true
 	 */
 	public static Map<String, Object> getDefaultSettings() {
-		String subfix = ComponentGetter.PLUGIN_KEY + ".";
+		// String subfix = ComponentGetter.PLUGIN_KEY + ".";
 		Map<String, Object> settings = new HashMap<String, Object>();
-		settings.put(subfix + "users", "user");
-		settings.put(subfix + "criteriaQuery", "project=CONDEC and type = \"Non functional requirement\"");
 		return settings;
 	}
 

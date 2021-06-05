@@ -37,7 +37,7 @@ public class TestContextInformation extends TestSetUp {
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration("TEST");
 		linkSuggestionConfiguration.setMinProbability(0.9);
-		ConfigPersistenceManager.saveLinkSuggestionConfiguration("TEST", linkSuggestionConfiguration);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", linkSuggestionConfiguration);
 
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();

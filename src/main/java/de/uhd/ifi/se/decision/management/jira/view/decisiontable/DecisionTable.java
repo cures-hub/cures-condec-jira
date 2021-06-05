@@ -66,7 +66,7 @@ public class DecisionTable {
 	}
 
 	public static String getCriteriaQuery(String projectKey) {
-		return ConfigPersistenceManager.getDecisionTableCriteriaQuery(projectKey);
+		return ConfigPersistenceManager.getBasicConfiguration(projectKey).getCriteriaJiraQuery();
 	}
 
 	/**

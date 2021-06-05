@@ -474,7 +474,7 @@
 			return;
 		}
 		selectField.innerHTML = "";
-		conDecAPI.isIssueStrategy(function(isEnabled) {
+		conDecAPI.isJiraIssueDocumentationLocationActivated(function(isEnabled) {
 			if (documentationLocationOfParentElement !== null) {
 				selectField.insertAdjacentHTML("beforeend", "<option selected value = 's'>Jira issue comment</option>");
 			}

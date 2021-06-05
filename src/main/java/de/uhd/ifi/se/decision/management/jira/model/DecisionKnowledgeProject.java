@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,9 +18,9 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
@@ -81,35 +80,12 @@ public class DecisionKnowledgeProject {
 	}
 
 	/**
-	 * @return true if the ConDec plug-in is activated for the Jira project.
+	 * @return configuration information for the basic settings for the ConDec
+	 *         plug-in, e.g. whether it is activated and which
+	 *         {@link KnowledgeType}s are documented.
 	 */
-	public boolean isActivated() {
-		return ConfigPersistenceManager.isActivated(this.getProjectKey());
-	}
-
-	/**
-	 * @see JiraIssuePersistenceManager
-	 * @return true if decision knowledge is stored in entire Jira issues in this
-	 *         Jira project. If this is true, you need make sure that the project is
-	 *         associated with the decision knowledge issue type scheme.
-	 */
-	public boolean isIssueStrategy() {
-		return ConfigPersistenceManager.isIssueStrategy(this.getProjectKey());
-	}
-
-	/**
-	 * @return {@link KnowledgeType}s that are used in this project.
-	 */
-	public Set<KnowledgeType> getConDecKnowledgeTypes() {
-		Set<KnowledgeType> enabledKnowledgeTypes = new LinkedHashSet<KnowledgeType>();
-		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(getProjectKey(), knowledgeType);
-			if (isEnabled) {
-				enabledKnowledgeTypes.add(knowledgeType);
-			}
-		}
-		enabledKnowledgeTypes.remove(KnowledgeType.OTHER);
-		return enabledKnowledgeTypes;
+	public BasicConfiguration getBasicConfiguration() {
+		return ConfigPersistenceManager.getBasicConfiguration(getProjectKey());
 	}
 
 	/**
@@ -117,7 +93,7 @@ public class DecisionKnowledgeProject {
 	 *         Strings.
 	 */
 	public Set<String> getNamesOfConDecKnowledgeTypes() {
-		Set<KnowledgeType> knowledgeTypes = getConDecKnowledgeTypes();
+		Set<KnowledgeType> knowledgeTypes = getBasicConfiguration().getActivatedKnowledgeTypes();
 		Set<String> knowledgeTypesAsString = knowledgeTypes.stream().map(KnowledgeType::toString)
 				.collect(Collectors.toSet());
 		return knowledgeTypesAsString;
@@ -253,7 +229,7 @@ public class DecisionKnowledgeProject {
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			boolean hasPermission = ComponentAccessor.getPermissionManager()
 					.hasPermission(ProjectPermissions.BROWSE_PROJECTS, project, user);
-			if (ConfigPersistenceManager.isActivated(project.getKey()) && hasPermission) {
+			if (ConfigPersistenceManager.getBasicConfiguration(project.getKey()).isActivated() && hasPermission) {
 				projects.add(project);
 			}
 		}

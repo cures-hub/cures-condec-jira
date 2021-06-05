@@ -64,7 +64,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
-		if (!ConfigPersistenceManager.isActivated(projectKey)) {
+		if (!ConfigPersistenceManager.getBasicConfiguration(projectKey).isActivated()) {
 			return;
 		}
 

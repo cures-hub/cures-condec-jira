@@ -22,12 +22,14 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
@@ -53,7 +55,10 @@ public class GitRest {
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration(projectKey);
 		gitConfig.setActivated(isKnowledgeExtractedFromGit);
 		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
-		ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, "Code", isKnowledgeExtractedFromGit);
+
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
+		basicConfig.setKnowledgeTypeEnabled(KnowledgeType.CODE, isKnowledgeExtractedFromGit);
+		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
 
 		if (!isKnowledgeExtractedFromGit) {
 			// destroy singleton object of GitClient
