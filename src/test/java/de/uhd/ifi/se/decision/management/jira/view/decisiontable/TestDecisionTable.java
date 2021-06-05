@@ -8,8 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
@@ -18,6 +20,9 @@ public class TestDecisionTable extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration("TEST");
+		basicConfig.setCriteriaJiraQuery("project=CONDEC and type = \"Non functional requirement\"");
+		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfig);
 	}
 
 	@Test

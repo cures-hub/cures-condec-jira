@@ -103,7 +103,7 @@ public class BasicConfiguration {
 
 	/**
 	 * @return Jira query that determines which Jira issue types can be used as
-	 *         criteria in the decision table, e.g. project=CON AND type =
+	 *         criteria in the decision table, e.g. project=CONDEC AND type =
 	 *         "Non-Functional Requirement"
 	 */
 	public String getCriteriaJiraQuery() {
@@ -113,7 +113,7 @@ public class BasicConfiguration {
 	/**
 	 * @param criteriaJiraQuery
 	 *            Jira query that determines which Jira issue types can be used as
-	 *            criteria in the decision table, e.g. project=CON AND type =
+	 *            criteria in the decision table, e.g. project=CONDEC AND type =
 	 *            "Non-Functional Requirement"
 	 */
 	public void setCriteriaJiraQuery(String criteriaJiraQuery) {
