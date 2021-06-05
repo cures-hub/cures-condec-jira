@@ -67,18 +67,8 @@ public class ConfigRest {
 		BasicConfiguration basicConfiguration = ConfigPersistenceManager.getBasicConfiguration(projectKey);
 		basicConfiguration.setActivated(isActivated);
 		ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfiguration);
-		setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 		ComponentGetter.removeInstances(projectKey);
 		return Response.ok().build();
-	}
-
-	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
-		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration(projectKey);
-			basicConfig.setKnowledgeTypeEnabled(knowledgeType, isActivated);
-			ConfigPersistenceManager.saveBasicConfiguration(projectKey, basicConfig);
-		}
 	}
 
 	@Path("/isActivated")
@@ -457,6 +447,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		return Response.ok(Status.ACCEPTED).entity(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
+		return Response.ok(Status.ACCEPTED)
+				.entity(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
 	}
 }

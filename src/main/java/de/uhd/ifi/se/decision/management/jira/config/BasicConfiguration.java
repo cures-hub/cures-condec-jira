@@ -47,6 +47,7 @@ public class BasicConfiguration {
 	 */
 	public void setActivated(boolean isActivated) {
 		this.isActivated = isActivated;
+		setDefaultKnowledgeTypesEnabled(isActivated);
 	}
 
 	/**
@@ -98,6 +99,13 @@ public class BasicConfiguration {
 			activatedKnowledgeTypes.add(knowledgeType);
 		} else {
 			activatedKnowledgeTypes.remove(knowledgeType);
+		}
+	}
+
+	private void setDefaultKnowledgeTypesEnabled(boolean isActivated) {
+		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
+		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
+			setKnowledgeTypeEnabled(knowledgeType, isActivated);
 		}
 	}
 

@@ -58,6 +58,12 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
+	public void testParameterUnknown() {
+		// because of MockPluginSettings
+		assertEquals("true", ConfigPersistenceManager.getValue("TEST", "unknown"));
+	}
+
+	@Test
 	public void testSetAndGetReleaseNoteMapping() {
 		List<String> input = new ArrayList<>();
 		input.add("someOtherString");

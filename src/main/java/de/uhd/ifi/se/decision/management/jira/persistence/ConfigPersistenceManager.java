@@ -35,6 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
  * 
  * @see BasicConfiguration
  * @see GitConfiguration
+ * @see DefinitionOfDone
  * @see TextClassificationConfiguration
  * @see DecisionGuidanceConfiguration
  * @see LinkRecommendationConfiguration
@@ -95,7 +96,7 @@ public class ConfigPersistenceManager {
 	 * @return setting/configuration value. Can be an entire object in JSON format,
 	 *         see {@link #getSavedObject(String, String, Type)}.
 	 */
-	private static String getValue(String projectKey, String parameter) {
+	public static String getValue(String projectKey, String parameter) {
 		if (projectKey == null) {
 			return "";
 		}
@@ -246,24 +247,45 @@ public class ConfigPersistenceManager {
 		return Arrays.asList(joinedIssueNames.split(","));
 	}
 
-	public static void saveLinkSuggestionConfiguration(String projectKey,
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param linkSuggestionConfiguration
+	 *            settings for link recommendation and duplicate recognition as a
+	 *            {@link LinkRecommendationConfiguration} object.
+	 */
+	public static void saveLinkRecommendationConfiguration(String projectKey,
 			LinkRecommendationConfiguration linkSuggestionConfiguration) {
 		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
-		saveObject(projectKey, "linkSuggestionConfiguration", linkSuggestionConfiguration, type);
+		saveObject(projectKey, "linkRecommendationConfiguration", linkSuggestionConfiguration, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for link recommendation and duplicate recognition as a
+	 *         {@link LinkRecommendationConfiguration} object.
+	 */
 	public static LinkRecommendationConfiguration getLinkRecommendationConfiguration(String projectKey) {
 		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
 		LinkRecommendationConfiguration linkSuggestionConfiguration = (LinkRecommendationConfiguration) getSavedObject(
-				projectKey, "linkSuggestionConfiguration", type);
+				projectKey, "linkRecommendationConfiguration", type);
 		if (linkSuggestionConfiguration == null) {
 			return new LinkRecommendationConfiguration();
 		}
 		return linkSuggestionConfiguration;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param decisionGuidanceConfiguration
+	 *            settings for the recommendation of knowledge elements from
+	 *            external knowledge sources as a
+	 *            {@link DecisionGuidanceConfiguration} object.
+	 */
 	public static void saveDecisionGuidanceConfiguration(String projectKey,
 			DecisionGuidanceConfiguration decisionGuidanceConfiguration) {
 		Type type = new TypeToken<DecisionGuidanceConfiguration>() {
@@ -271,6 +293,12 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "decisionGuidanceConfiguration", decisionGuidanceConfiguration, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for the recommendation of knowledge elements from external
+	 *         knowledge sources as a {@link DecisionGuidanceConfiguration} object.
+	 */
 	public static DecisionGuidanceConfiguration getDecisionGuidanceConfiguration(String projectKey) {
 		Type type = new TypeToken<DecisionGuidanceConfiguration>() {
 		}.getType();
@@ -282,12 +310,23 @@ public class ConfigPersistenceManager {
 		return decisionGuidanceConfiguration;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param definitionOfDone
+	 *            {@link DefinitionOfDone} wrt. the knowledge documentation.
+	 */
 	public static void saveDefinitionOfDone(String projectKey, DefinitionOfDone definitionOfDone) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
 		saveObject(projectKey, "definitionOfDone", definitionOfDone, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return {@link DefinitionOfDone} wrt. the knowledge documentation.
+	 */
 	public static DefinitionOfDone getDefinitionOfDone(String projectKey) {
 		Type type = new TypeToken<DefinitionOfDone>() {
 		}.getType();
@@ -298,6 +337,13 @@ public class ConfigPersistenceManager {
 		return definitionOfDone;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param promptingEventConfiguration
+	 *            settings for the just-in-time prompts as a
+	 *            {@link PromptingEventConfiguration} object.
+	 */
 	public static void savePromptingEventConfiguration(String projectKey,
 			PromptingEventConfiguration promptingEventConfiguration) {
 		Type type = new TypeToken<PromptingEventConfiguration>() {
@@ -305,6 +351,12 @@ public class ConfigPersistenceManager {
 		saveObject(projectKey, "promptingEventConfiguration", promptingEventConfiguration, type);
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for the just-in-time prompts as a
+	 *         {@link PromptingEventConfiguration} object.
+	 */
 	public static PromptingEventConfiguration getPromptingEventConfiguration(String projectKey) {
 		Type type = new TypeToken<PromptingEventConfiguration>() {
 		}.getType();
