@@ -14,11 +14,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
 /**
  * Test class for the persistence of the plugin settings. The plugin settings
@@ -59,41 +62,35 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testParameterUnknown() {
-		// because of MockPluginSettings
+		// because of MockPluginSettings, true is returned, not ""
 		assertEquals("true", ConfigPersistenceManager.getValue("TEST", "unknown"));
 	}
 
 	@Test
-	public void testSetAndGetReleaseNoteMapping() {
-		List<String> input = new ArrayList<>();
-		input.add("someOtherString");
-		ReleaseNotesCategory category = ReleaseNotesCategory.IMPROVEMENTS;
-		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
-		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
+	public void testGetAndSaveBasicConfiguration() {
+		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration("TEST");
+		assertTrue(basicConfig.isActivated());
+		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfig);
+		basicConfig = ConfigPersistenceManager.getBasicConfiguration("TEST");
+		assertTrue(basicConfig.isActivated());
 	}
 
 	@Test
-	public void testSetAndGetDefinitionOfDone() {
-		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+	public void testGetAndSaveGitConfiguration() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		assertFalse(gitConfig.isActivated());
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		assertFalse(gitConfig.isActivated());
+	}
+
+	@Test
+	public void testGetAndSaveDefinitionOfDone() {
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
+		assertFalse(definitionOfDone.isDecisionIsLinkedToPro());
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
-		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
-		assertFalse(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
-		assertEquals(50, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
-		assertEquals(4, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMaximumLinkDistanceToDecisions());
-		definitionOfDone.setAlternativeLinkedToArgument(true);
-		definitionOfDone.setDecisionLinkedToPro(true);
-		definitionOfDone.setIssueLinkedToAlternative(true);
-		definitionOfDone.setLineNumbersInCodeFile(20);
-		definitionOfDone.setMaximumLinkDistanceToDecisions(3);
-		definitionOfDone.setMinimumDecisionsWithinLinkDistance(3);
-		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isAlternativeIsLinkedToArgument());
-		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isDecisionIsLinkedToPro());
-		assertTrue(ConfigPersistenceManager.getDefinitionOfDone("TEST").isIssueIsLinkedToAlternative());
-		assertEquals(20, ConfigPersistenceManager.getDefinitionOfDone("TEST").getLineNumbersInCodeFile());
-		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMaximumLinkDistanceToDecisions());
-		assertEquals(3, ConfigPersistenceManager.getDefinitionOfDone("TEST").getMinimumDecisionsWithinLinkDistance());
+		definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
+		assertFalse(definitionOfDone.isDecisionIsLinkedToPro());
 	}
 
 	@Test
@@ -111,6 +108,24 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertEquals(0.2, loaded.getThreshold(), 0.01);
 		assertEquals(1, loaded.getLinkImpact().size());
 		assertEquals(0.5f, loaded.getLinkImpact().getOrDefault("comment", 0.0f), 0.01);
+	}
+
+	@Test
+	public void testSetAndGetReleaseNoteMapping() {
+		List<String> input = new ArrayList<>();
+		input.add("someOtherString");
+		ReleaseNotesCategory category = ReleaseNotesCategory.IMPROVEMENTS;
+		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
+		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
+	}
+
+	@Test
+	public void testGetAndSaveWebhookConfiguration() {
+		WebhookConfiguration webhookConfig = ConfigPersistenceManager.getWebhookConfiguration("TEST");
+		assertFalse(webhookConfig.isActivated());
+		ConfigPersistenceManager.saveWebhookConfiguration("TEST", webhookConfig);
+		webhookConfig = ConfigPersistenceManager.getWebhookConfiguration("TEST");
+		assertFalse(webhookConfig.isActivated());
 	}
 
 	@AfterClass
