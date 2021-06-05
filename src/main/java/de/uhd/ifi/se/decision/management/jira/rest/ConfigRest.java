@@ -49,7 +49,8 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 /**
- * REST resource for basic plug-in configuration
+ * REST resource for basic plug-in configuration (see
+ * {@link BasicConfiguration}) and other basic REST methods.
  */
 @Path("/config")
 public class ConfigRest {

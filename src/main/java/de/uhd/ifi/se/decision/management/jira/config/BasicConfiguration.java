@@ -27,10 +27,10 @@ public class BasicConfiguration {
 	 *      process, opt-out nudging.
 	 */
 	public BasicConfiguration() {
-		setActivated(true);
 		setJiraIssueDocumentationLocationActivated(false);
 		setActivatedKnowledgeTypes(KnowledgeType.getDefaultTypes());
 		setCriteriaJiraQuery("");
+		setActivated(true);
 	}
 
 	/**
