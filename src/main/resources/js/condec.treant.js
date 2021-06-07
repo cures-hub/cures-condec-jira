@@ -55,7 +55,9 @@
                 addContextMenuToTreant();
                 addTooltip();
             }
-            changeColorForNodes();
+            if (!filterSettings["noColors"]) {
+				changeColorForNodes();
+			}
         });
     };
 

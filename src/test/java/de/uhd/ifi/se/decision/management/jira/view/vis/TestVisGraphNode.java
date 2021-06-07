@@ -21,6 +21,27 @@ public class TestVisGraphNode extends TestSetUp {
 	}
 
 	@Test
+	public void testConstructorNoColors() {
+		VisNode node = new VisNode(element, true);
+		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
+		assertEquals(expectedLabel, node.getLabel());
+	}
+
+	@Test
+	public void testConstructorColors() {
+		VisNode node = new VisNode(element, false);
+		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
+		assertEquals(expectedLabel, node.getLabel());
+	}
+
+	@Test
+	public void testConstructorLevelNoColors() {
+		VisNode node = new VisNode(element, true);
+		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
+		assertEquals(expectedLabel, node.getLabel());
+	}
+
+	@Test
 	public void testNodeSummary() {
 		VisNode node = new VisNode(element, false, 1);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();

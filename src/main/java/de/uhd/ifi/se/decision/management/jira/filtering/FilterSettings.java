@@ -77,7 +77,7 @@ public class FilterSettings {
 	private long context;
 	private double decayValue;
 	private double threshold;
-	private boolean colorNodes;
+	private boolean noColors;
 
 	private String displayType;
 
@@ -121,6 +121,7 @@ public class FilterSettings {
 		this.threshold = 0.25;
 		this.context = 0;
 		this.isCiaRequest = false;
+		this.noColors = true;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -671,12 +672,12 @@ public class FilterSettings {
 		}
 	}
 
-	public boolean doColorNodes() {
-		return colorNodes;
+	public boolean isNoColors() {
+		return noColors;
 	}
 
-	@JsonProperty("colorNodes")
-	public void setColorNodes(boolean colorNodes) {
-		this.colorNodes = colorNodes;
+	@JsonProperty("noColors")
+	public void setNoColors(boolean noColors) {
+		this.noColors = noColors;
 	}
 }

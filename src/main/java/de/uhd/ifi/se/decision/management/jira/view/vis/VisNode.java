@@ -38,21 +38,33 @@ public class VisNode {
 	private Map<String, String> color;
 
 	public VisNode(KnowledgeElement element) {
-		this(element, false, 0);
+		this(element, false, 0, true);
+	}
+
+	public VisNode(KnowledgeElement element, boolean noColors) {
+		this(element, false, 0, noColors);
 	}
 
 	public VisNode(KnowledgeElement element, int level) {
-		this(element, false, level);
+		this(element, false, level, true);
+	}
+
+	public VisNode(KnowledgeElement element, int level, boolean noColors) {
+		this(element, false, level, noColors);
 	}
 
 	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
+		this(element, isCollapsed, level, true);
+	}
+
+	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, boolean noColors) {
 		this.element = element;
 		this.level = level;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
 		this.title = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
 				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
-		this.font = determineFont(element);
+		this.font = determineFont(element, noColors);
 		this.color = determineColor(element);
 	}
 
@@ -74,7 +86,10 @@ public class VisNode {
 		return element.getTypeAsString().toLowerCase();
 	}
 
-	private Map<String, String> determineFont(KnowledgeElement element) {
+	private Map<String, String> determineFont(KnowledgeElement element, boolean noColors) {
+		if (noColors) {
+			return ImmutableMap.of("color", "black");
+		}
 		String color = "";
 		String projectKey = "";
 		if ((element.getProject() != null) && (element.getProject().getProjectKey() != null)) {
