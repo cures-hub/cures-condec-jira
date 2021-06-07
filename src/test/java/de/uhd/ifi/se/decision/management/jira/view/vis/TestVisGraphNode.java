@@ -95,7 +95,7 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testGetFont() {
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, false, 1, false);
 		assertEquals("crimson", node.getFont().values().iterator().next());
 	}
 
@@ -103,7 +103,7 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testGetFontProjectNull() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setProject((DecisionKnowledgeProject) null);
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, false, 1, false);
 		assertEquals("crimson", node.getFont().values().iterator().next());
 	}
 
