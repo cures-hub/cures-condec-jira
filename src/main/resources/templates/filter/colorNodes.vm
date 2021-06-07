@@ -1,0 +1,4 @@
+<div class="condec-filter-criterion">
+    <label for="color-nodes-input-$viewIdentifier">$i18n.getText('condec.label.color.nodes')</label>
+    <input class="checkbox" type="checkbox" id="color-nodes-input-$viewIdentifier"/>
+</div>

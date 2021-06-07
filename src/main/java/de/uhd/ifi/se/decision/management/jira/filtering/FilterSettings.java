@@ -77,6 +77,7 @@ public class FilterSettings {
 	private long context;
 	private double decayValue;
 	private double threshold;
+	private boolean colorNodes;
 
 	private String displayType;
 
@@ -668,5 +669,14 @@ public class FilterSettings {
 		for (String stringRule : rule) {
 			passRule.add(PassRule.getPropagationRule(stringRule));
 		}
+	}
+
+	public boolean doColorNodes() {
+		return colorNodes;
+	}
+
+	@JsonProperty("colorNodes")
+	public void setColorNodes(boolean colorNodes) {
+		this.colorNodes = colorNodes;
 	}
 }
