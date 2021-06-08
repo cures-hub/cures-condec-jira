@@ -85,7 +85,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		assertEquals(1, workItem.getLinks().size());
 		assertEquals(1, anotherWorkItem.getLinks().size());
 		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(workItem, "TEST"));
-		assertTrue(DefinitionOfDoneChecker.checkDefinitionOfDone(anotherWorkItem, "TEST"));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(anotherWorkItem, "TEST"));
 		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
@@ -126,7 +126,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
 		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 

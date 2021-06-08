@@ -54,6 +54,6 @@ public class TestIsElementMatchingDocumentationCompletenessFilter extends TestSe
 		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(true);
 		assertTrue(
 				filteringManager.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getDecision()));
-		assertFalse(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getDecision()));
+		assertTrue(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getDecision()));
 	}
 }
