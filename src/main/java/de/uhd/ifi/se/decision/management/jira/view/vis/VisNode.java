@@ -95,7 +95,7 @@ public class VisNode {
 		if ((element.getProject() != null) && (element.getProject().getProjectKey() != null)) {
 			projectKey = element.getProject().getProjectKey();
 		}
-		if (!DefinitionOfDoneChecker.execute(element,
+		if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(element,
 			new FilterSettings(projectKey, "")).isEmpty()) {
 			color = "crimson";
 		}

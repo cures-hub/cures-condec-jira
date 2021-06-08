@@ -59,7 +59,7 @@ public class TreeViewerNode {
 		}
 		if (!noColors) {
 			String textColor = "";
-			if (!DefinitionOfDoneChecker.execute(knowledgeElement,
+			if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement,
 				new FilterSettings(knowledgeElement.getProject().getProjectKey(), "")).isEmpty()) {
 				textColor = "crimson";
 			}
