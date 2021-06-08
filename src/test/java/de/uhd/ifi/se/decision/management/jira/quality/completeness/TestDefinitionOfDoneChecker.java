@@ -51,7 +51,7 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 		List<String> list = new ArrayList<>();
 		list.add("hasIncompleteKnowledgeLinked");
 		list.add("doesNotHaveMinimumCoverage");
-		assertEquals(DefinitionOfDoneChecker.execute(knowledgeElement, filterSettings), list);
+		assertEquals(DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings), list);
 	}
 
 	@Test

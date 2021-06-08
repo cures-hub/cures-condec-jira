@@ -45,10 +45,10 @@ public final class DefinitionOfDoneChecker {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean isIncomplete(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
-			return true;
+			return false;
 		}
 		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
-		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
+		return !(completenessCheck == null || completenessCheck.execute(knowledgeElement));
 	}
 
 	/**
@@ -104,14 +104,14 @@ public final class DefinitionOfDoneChecker {
 	/**
 	 * Returns a list of failed definition of done criteria.
 	 */
-	public static List<String> execute(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
-		List<String> failedCompletenessCriteria = new ArrayList<>();
+	public static List<String> getFailedDefinitionOfDoneCheckCriteria(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
+		List<String> failedCheckCriteria = new ArrayList<>();
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			failedCompletenessCriteria.add("hasIncompleteKnowledgeLinked");
+			failedCheckCriteria.add("hasIncompleteKnowledgeLinked");
 		}
 		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings)) {
-			failedCompletenessCriteria.add("doesNotHaveMinimumCoverage");
+			failedCheckCriteria.add("doesNotHaveMinimumCoverage");
 		}
-		return failedCompletenessCriteria;
+		return failedCheckCriteria;
 	}
 }

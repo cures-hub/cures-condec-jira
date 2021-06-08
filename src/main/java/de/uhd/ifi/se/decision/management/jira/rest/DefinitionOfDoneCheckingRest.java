@@ -67,7 +67,8 @@ public class DefinitionOfDoneCheckingRest {
 					"DoD check could not be performed because the element could not be found.")).build();
 		}
 
-		return Response.ok().entity(DefinitionOfDoneChecker.execute(knowledgeElement, filterSettings)).build();
+		return Response.ok().entity(DefinitionOfDoneChecker.
+			getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings)).build();
 	}
 
 	@Path("/getCoverageOfJiraIssue")
