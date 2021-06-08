@@ -1,7 +1,7 @@
 (function(global) {
 
 	const ConDecDoDCheckingAPI = function() {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/dodchecking";
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/dodChecking";
 	};
 
 	/*

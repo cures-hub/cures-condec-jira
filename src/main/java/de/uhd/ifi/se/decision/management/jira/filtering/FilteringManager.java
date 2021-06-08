@@ -334,7 +334,7 @@ public class FilteringManager {
 	 *         False otherwise.
 	 */
 	public boolean isElementMatchingDocumentationCompletenessFilter(KnowledgeElement element) {
-		return !filterSettings.isOnlyIncompleteKnowledgeShown() || element.isIncomplete();
+		return !filterSettings.isOnlyIncompleteKnowledgeShown() || element.failsDefinitionOfDone();
 	}
 
 	/**

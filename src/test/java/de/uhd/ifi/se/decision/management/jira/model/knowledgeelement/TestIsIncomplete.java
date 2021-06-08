@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
@@ -25,7 +24,7 @@ public class TestIsIncomplete extends TestSetUp {
 	}
 
 	@Test
-	public void testIsIncompleteTrue() {
+	public void testIsIncomplete() {
 		KnowledgeElement decision = KnowledgeElements.getTestKnowledgeElements().get(6);
 		Set<Link> links = decision.getLinks();
 		for (Link link : links) {
@@ -33,7 +32,7 @@ public class TestIsIncomplete extends TestSetUp {
 				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
-		assertTrue(decision.isIncomplete());
+		assertFalse(decision.failsDefinitionOfDone());
 	}
 
 	@Test
@@ -43,6 +42,6 @@ public class TestIsIncomplete extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 		element.setStatus(KnowledgeStatus.RESOLVED);
 		assertEquals(KnowledgeStatus.RESOLVED, element.getStatus());
-		assertFalse(element.isIncomplete());
+		assertFalse(element.failsDefinitionOfDone());
 	}
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -95,7 +95,7 @@ public class VisNode {
 		if ((element.getProject() != null) && (element.getProject().getProjectKey() != null)) {
 			projectKey = element.getProject().getProjectKey();
 		}
-		if (!DefinitionOfDoneCheck.execute(element,
+		if (!DefinitionOfDoneChecker.execute(element,
 			new FilterSettings(projectKey, "")).isEmpty()) {
 			color = "crimson";
 		}

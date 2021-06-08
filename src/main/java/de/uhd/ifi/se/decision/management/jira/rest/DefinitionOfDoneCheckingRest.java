@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * REST resource for definition of done (DoD) configuration and checking.
  */
-@Path("/dodchecking")
+@Path("/dodChecking")
 public class DefinitionOfDoneCheckingRest {
 
 	@Path("/setDefinitionOfDone")
@@ -67,7 +67,7 @@ public class DefinitionOfDoneCheckingRest {
 					"DoD check could not be performed because the element could not be found.")).build();
 		}
 
-		return Response.ok().entity(DefinitionOfDoneCheck.execute(knowledgeElement, filterSettings)).build();
+		return Response.ok().entity(DefinitionOfDoneChecker.execute(knowledgeElement, filterSettings)).build();
 	}
 
 	@Path("/getCoverageOfJiraIssue")

@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class TreeViewerNode {
 		}
 		if (!noColors) {
 			String textColor = "";
-			if (!DefinitionOfDoneCheck.execute(knowledgeElement,
+			if (!DefinitionOfDoneChecker.execute(knowledgeElement,
 				new FilterSettings(knowledgeElement.getProject().getProjectKey(), "")).isEmpty()) {
 				textColor = "crimson";
 			}
