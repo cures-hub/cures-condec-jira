@@ -84,7 +84,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		}
 		assertEquals(1, workItem.getLinks().size());
 		assertEquals(1, anotherWorkItem.getLinks().size());
-		assertTrue(DefinitionOfDoneChecker.checkDefinitionOfDone(workItem, "TEST"));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(workItem, "TEST"));
 		assertTrue(DefinitionOfDoneChecker.checkDefinitionOfDone(anotherWorkItem, "TEST"));
 		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
@@ -120,7 +120,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
 		assertNotNull(decision.getLink(issue));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
 		KnowledgeGraph.getInstance("TEST").removeEdge(issue.getLink(alternative));
 		assertNull(issue.getLink(alternative));
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();

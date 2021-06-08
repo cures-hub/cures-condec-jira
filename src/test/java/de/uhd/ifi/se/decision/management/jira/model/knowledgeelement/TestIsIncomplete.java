@@ -24,7 +24,7 @@ public class TestIsIncomplete extends TestSetUp {
 	}
 
 	@Test
-	public void testIsIncomplete() {
+	public void testIsIncompleteTrue() {
 		KnowledgeElement decision = KnowledgeElements.getTestKnowledgeElements().get(6);
 		Set<Link> links = decision.getLinks();
 		for (Link link : links) {
@@ -32,7 +32,7 @@ public class TestIsIncomplete extends TestSetUp {
 				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
-		assertFalse(decision.failsDefinitionOfDone());
+		assertTrue(decision.failsDefinitionOfDone());
 	}
 
 	@Test
@@ -42,6 +42,6 @@ public class TestIsIncomplete extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 		element.setStatus(KnowledgeStatus.RESOLVED);
 		assertEquals(KnowledgeStatus.RESOLVED, element.getStatus());
-		assertFalse(element.failsDefinitionOfDone());
+		assertTrue(element.failsDefinitionOfDone());
 	}
 }
