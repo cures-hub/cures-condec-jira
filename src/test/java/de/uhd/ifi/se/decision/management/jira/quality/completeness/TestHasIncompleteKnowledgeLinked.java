@@ -62,7 +62,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(decision));
 		assertEquals(0, workItem.isLinked());
-		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
+		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		assertEquals(1, anotherWorkItem.getLinks().size());
 		assertTrue(DefinitionOfDoneChecker.checkDefinitionOfDone(workItem, "TEST"));
 		assertTrue(DefinitionOfDoneChecker.checkDefinitionOfDone(anotherWorkItem, "TEST"));
-		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
+		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
-		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertTrue(DefinitionOfDoneChecker.isIncomplete(decision));
 		assertNotNull(workItem.getLink(decision));
 		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
@@ -117,7 +117,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@NonTransactional
 	public void testIncompleteLinkDistanceTwo() {
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
-		assertTrue(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
 		assertNotNull(decision.getLink(issue));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertTrue(DefinitionOfDoneChecker.isIncomplete(decision));

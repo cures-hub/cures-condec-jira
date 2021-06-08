@@ -38,8 +38,8 @@ public final class DefinitionOfDoneChecker {
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
 	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, String projectKey) {
-		return hasIncompleteKnowledgeLinked(knowledgeElement) ||
-			doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, new FilterSettings(projectKey, ""));
+		return !hasIncompleteKnowledgeLinked(knowledgeElement) &&
+			!doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, new FilterSettings(projectKey, ""));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
