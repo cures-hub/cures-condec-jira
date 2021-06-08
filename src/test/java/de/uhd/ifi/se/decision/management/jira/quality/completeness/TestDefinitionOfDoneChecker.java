@@ -22,7 +22,6 @@ import java.util.List;
 public class TestDefinitionOfDoneChecker extends TestSetUp {
 
 	private FilterSettings filterSettings;
-	private String projectKey;
 	private KnowledgeElement knowledgeElement;
 	private KnowledgeElement issue;
 	private KnowledgeElement decision;
@@ -33,8 +32,7 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		projectKey = "TEST";
-		filterSettings = new FilterSettings(projectKey, "");
+		filterSettings = new FilterSettings("TEST", "");
 		knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		issue = KnowledgeElements.getSolvedDecisionProblem();

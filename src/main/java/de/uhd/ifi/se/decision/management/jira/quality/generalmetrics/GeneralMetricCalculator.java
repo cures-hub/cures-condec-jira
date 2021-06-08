@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
