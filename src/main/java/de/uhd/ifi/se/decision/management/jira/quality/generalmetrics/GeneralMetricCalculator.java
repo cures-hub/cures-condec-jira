@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class GeneralMetricCalculator {
 	private Map<String, String> elementsFromDifferentOrigins;
 	private Map<String, Integer> numberOfRelevantComments;
 	private Map<String, Integer> numberOfCommits;
+	private Map<String, String> definitionOfDoneCheckResults;
 
 	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
@@ -57,6 +59,7 @@ public class GeneralMetricCalculator {
 		this.elementsFromDifferentOrigins = calculateElementsFromDifferentOrigins();
 		this.numberOfRelevantComments = calculateNumberOfRelevantComments();
 		this.numberOfCommits = calculateNumberOfCommits();
+		this.definitionOfDoneCheckResults = calculateDefinitionOfDoneCheckResults();
 	}
 
 	private Map<String, Integer> calculateNumberOfCommentsPerIssue() {
@@ -135,6 +138,26 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
+	private Map<String, String> calculateDefinitionOfDoneCheckResults() {
+		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
+		Map<String, String> resultMap = new HashMap<>();
+
+		String elementsWithDoDCheckSuccess = "";
+		String elementsWithDoDCheckFail = "";
+		Set<KnowledgeElement> elements = graph.vertexSet();
+		for (KnowledgeElement element : elements) {
+			if (element.failsDefinitionOfDone(filterSettings)) {
+				elementsWithDoDCheckFail += element.getKey() + " ";
+			} else {
+				elementsWithDoDCheckSuccess += element.getKey() + " ";
+			}
+		}
+		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess.trim());
+		resultMap.put("Definition of Done Failed", elementsWithDoDCheckFail.trim());
+
+		return resultMap;
+	}
+
 	@JsonProperty("numberOfCommentsPerIssue")
 	public Map<String, Integer> getNumberOfCommentsPerIssue() {
 		return numberOfCommentsPerIssue;
@@ -163,5 +186,10 @@ public class GeneralMetricCalculator {
 	@JsonProperty("numberOfCommits")
 	public Map<String, Integer> getNumberOfCommits() {
 		return numberOfCommits;
+	}
+
+	@JsonProperty("definitionOfDoneCheckResults")
+	public Map<String, String> getDefinitionOfDoneCheckResults() {
+		return definitionOfDoneCheckResults;
 	}
 }

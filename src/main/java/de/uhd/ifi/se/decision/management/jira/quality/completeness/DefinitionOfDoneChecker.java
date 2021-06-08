@@ -37,9 +37,9 @@ public final class DefinitionOfDoneChecker {
 	 * @return true if the element is completely documented according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
-	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, String projectKey) {
+	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		return !hasIncompleteKnowledgeLinked(knowledgeElement) &&
-			!doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, new FilterSettings(projectKey, ""));
+			!doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

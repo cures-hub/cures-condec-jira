@@ -106,6 +106,7 @@
 		var decSources = new Map();
 		var relevantSentences = new Map();
 		var knowledgeTypeDistribution = new Map();
+		var definitionOfDoneCheckResults = new Map();
 
 		/* set something in case no data will be added to them */
 		commentsPerIssue.set("none", 0);
@@ -115,6 +116,7 @@
 		decSources.set("no rationale elements", "");
 		relevantSentences.set("no Jira issue", "");
 		knowledgeTypeDistribution.set("no knowledge type", "");
+		definitionOfDoneCheckResults.set("no rationale elements", "");
 
 		/* form data for charts */
 		commentsPerIssue = calculator.numberOfCommentsPerIssue;
@@ -123,6 +125,7 @@
 		decSources = calculator.elementsFromDifferentOrigins;
 		relevantSentences = calculator.numberOfRelevantComments;
 		knowledgeTypeDistribution = calculator.distributionOfKnowledgeTypes;
+		definitionOfDoneCheckResults = calculator.definitionOfDoneCheckResults;
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
@@ -138,6 +141,8 @@
 			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
 		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
+		ConDecReqDash.initializeChart("piechartRich-DoDCheck",
+			"", "Definition of Done Check", definitionOfDoneCheckResults);
 	}
 
 	global.conDecGeneralMetricsDashboard = new ConDecGeneralMetricsDashboard();

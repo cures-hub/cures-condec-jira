@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.util.List;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,8 +85,8 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		}
 		assertEquals(1, workItem.getLinks().size());
 		assertEquals(1, anotherWorkItem.getLinks().size());
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(workItem, "TEST"));
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(anotherWorkItem, "TEST"));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(workItem, new FilterSettings("TEST", "")));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(anotherWorkItem, new FilterSettings("TEST", "")));
 		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 

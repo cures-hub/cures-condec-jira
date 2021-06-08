@@ -57,31 +57,31 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCompleteIssue() {
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(issue, projectKey));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(issue, filterSettings));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteDecision() {
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(decision, projectKey));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(decision, filterSettings));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteAlternative() {
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(alternative, projectKey));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(alternative, filterSettings));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteArgument() {
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(proArgument, projectKey));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(proArgument, filterSettings));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCompleteCodeFile() {
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(codeFile, projectKey));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(codeFile, filterSettings));
 	}
 
 	@Test

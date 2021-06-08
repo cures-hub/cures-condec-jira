@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +33,7 @@ public class TestIsIncomplete extends TestSetUp {
 				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
-		assertTrue(decision.failsDefinitionOfDone());
+		assertTrue(decision.failsDefinitionOfDone(new FilterSettings("TEST", "")));
 	}
 
 	@Test
@@ -42,6 +43,6 @@ public class TestIsIncomplete extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, element.getType());
 		element.setStatus(KnowledgeStatus.RESOLVED);
 		assertEquals(KnowledgeStatus.RESOLVED, element.getStatus());
-		assertTrue(element.failsDefinitionOfDone());
+		assertTrue(element.failsDefinitionOfDone(new FilterSettings("TEST", "")));
 	}
 }
