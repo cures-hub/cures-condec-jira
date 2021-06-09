@@ -95,6 +95,10 @@ a:focus a:hover {
   width: 500px;
 }
 
+.condec-prompt {
+    display: none
+}
+
 #close-fullscreen {
   z-index: 999;
   display:none;

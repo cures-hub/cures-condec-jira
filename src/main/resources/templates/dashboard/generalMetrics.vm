@@ -51,6 +51,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     <div id="piechartRich-DecSources" class="piechart"></div>
     <div id="piechartInteger-RelevantSentences" class="piechart"></div>
     <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
+    <div id="piechartRich-DoDCheck" class="piechart"></div>
 </div>
 
 <div id="condec-general-metrics-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">

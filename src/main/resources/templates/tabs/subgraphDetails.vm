@@ -21,6 +21,9 @@
         <li class="menu-item">
             <a href="#decision-table-$viewIdentifier">Decision Table</a>
         </li>
+        <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
+            <a href="#quality-check-$viewIdentifier">$i18n.getText('condec.label.quality')</a>
+        </li>
     </ul>
      <div class="tabs-pane active-pane treant" id="treant-tab-$viewIdentifier">
          <div id="treant-$viewIdentifier" class="treant"></div>
@@ -34,5 +37,8 @@
      </div>
      <div class="tabs-pane" id="decision-table-$viewIdentifier">
          #parse("templates/tabs/decisiontable/decisionTable.vm")
+     </div>
+     <div class="tabs-pane" id="quality-check-$viewIdentifier">
+         #parse("templates/tabs/qualityCheck.vm")
      </div>
  </div>

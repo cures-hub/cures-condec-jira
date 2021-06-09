@@ -10,8 +10,7 @@
 		if (isJiraIssueView) {
 			conDecFiltering.fillFilterElements("graph");
 			conDecFiltering.addOnClickEventToFilterButton("graph", function (filterSettings) {
-				var issueKey = conDecAPI.getIssueKey();
-				filterSettings["selectedElement"] = issueKey;
+				filterSettings["selectedElement"] = conDecAPI.getIssueKey();
 				conDecVis.buildVis(filterSettings, "vis-graph-container");
 			});
 		} else {

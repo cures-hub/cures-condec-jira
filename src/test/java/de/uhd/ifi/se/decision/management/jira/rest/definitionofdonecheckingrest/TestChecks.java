@@ -33,18 +33,18 @@ public class TestChecks extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testDoesIssueNeedCompletenessApproval() {
+	public void testGetFailedDefinitionOfDoneCriteria() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement(knowledgeElement);
-		Response response = dodCheckingRest.doesElementNeedCompletenessApproval(request, settings);
+		Response response = dodCheckingRest.getFailedDefinitionOfDoneCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 
 		settings.setSelectedElement((KnowledgeElement) null);
-		response = dodCheckingRest.doesElementNeedCompletenessApproval(request, settings);
+		response = dodCheckingRest.getFailedDefinitionOfDoneCriteria(request, settings);
 		assertEquals(400, response.getStatus());
 
-		response = dodCheckingRest.doesElementNeedCompletenessApproval(request, null);
+		response = dodCheckingRest.getFailedDefinitionOfDoneCriteria(request, null);
 		assertEquals(400, response.getStatus());
 	}
 }

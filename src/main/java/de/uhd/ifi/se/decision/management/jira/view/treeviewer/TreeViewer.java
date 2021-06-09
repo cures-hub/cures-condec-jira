@@ -43,6 +43,9 @@ public class TreeViewer {
 	@XmlElement
 	private boolean multiple;
 
+	@XmlElement
+	private boolean noColors;
+
 	@XmlElement(name = "check_callback")
 	private boolean checkCallback;
 
@@ -63,6 +66,7 @@ public class TreeViewer {
 
 	public TreeViewer() {
 		this.multiple = false;
+		this.noColors = false;
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 		this.ids = new ArrayList<String>();
@@ -87,6 +91,8 @@ public class TreeViewer {
 		}
 		LOGGER.info(filterSettings.toString());
 
+		this.noColors = filterSettings.isNoColors();
+
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		graph = filteringManager.getFilteredGraph();
 
@@ -102,7 +108,7 @@ public class TreeViewer {
 		// many trees are shown in overview and rationale backlog
 		Set<KnowledgeElement> rootElements = graph.vertexSet();
 		if (filteringManager.getFilterSettings().getLinkDistance() == 0) {
-			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element)));
+			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element, noColors)));
 			return;
 		}
 
@@ -139,7 +145,7 @@ public class TreeViewer {
 
 		Map<KnowledgeElement, TreeViewerNode> elementToTreeViewerNodeMap = new HashMap<>();
 
-		TreeViewerNode rootNode = new TreeViewerNode(rootElement);
+		TreeViewerNode rootNode = new TreeViewerNode(rootElement, noColors);
 		rootNode = this.makeIdUnique(rootNode);
 
 		elementToTreeViewerNodeMap.put(rootElement, rootNode);
@@ -155,7 +161,7 @@ public class TreeViewer {
 				continue;
 			}
 			Link edge = undirectedGraph.getEdge(childElement, parentElement);
-			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge));
+			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge, noColors));
 			childNode = this.makeIdUnique(childNode);
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 
@@ -182,7 +188,7 @@ public class TreeViewer {
 				continue;
 			}
 
-			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge));
+			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge, noColors));
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 			parentNode.getChildren().add(childNode);
 		}

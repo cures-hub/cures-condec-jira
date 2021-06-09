@@ -29,11 +29,10 @@
 
     ConDecTreant.prototype.updateView = function() {
         console.log("ConDecTreant updateView");
-        var issueKey = conDecAPI.getIssueKey();
         var filterSettings = conDecFiltering.getFilterSettings("treant");
-        filterSettings["selectedElement"] = issueKey;
-        var isTestCodeShown = document.getElementById("is-test-code-input-treant").checked;
-        filterSettings["isTestCodeShown"] = isTestCodeShown;
+        filterSettings["projectKey"] = conDecAPI.getProjectKey();
+        filterSettings["selectedElement"] = conDecAPI.getIssueKey();
+		filterSettings["isTestCodeShown"] = document.getElementById("is-test-code-input-treant").checked;
         conDecTreant.buildTreant(filterSettings, true);
     };
 
@@ -56,23 +55,31 @@
                 addContextMenuToTreant();
                 addTooltip();
             }
-            changeColorForNodes();
+            if (!filterSettings["noColors"]) {
+				changeColorForNodes();
+			}
         });
     };
 
     function changeColorForNodes() {
-        var redStatus = new Array("discarded", "rejected", "unresolved", "challenged");
         var treantNodes = document.getElementsByClassName("node");
         for (var i = 0; i < treantNodes.length; i++) {
-            var node = treantNodes[i];
-            var status = node.data.treenode.text.status;
-            if (redStatus.includes(status.toLowerCase())) {
-                for (var j = 1; j < node.childNodes.length - 1; j++) {
-                    node.childNodes[j].style.color = "gray";
-                }
-            }
+            changeColorForNode(treantNodes[i]);
         }
     }
+
+    function changeColorForNode(node) {
+		var filterSettings = conDecFiltering.getFilterSettings("treant");
+		filterSettings["projectKey"] = conDecAPI.getProjectKey();
+		filterSettings["selectedElement"] = node.getElementsByClassName("node-desc")[0].textContent;
+		conDecDoDCheckingAPI.getFailedDefinitionOfDoneCriteria(filterSettings, function(result) {
+			if (result && result.length) {
+				for (var j = 1; j < node.childNodes.length - 1; j++) {
+					node.childNodes[j].style.color = "crimson";
+				}
+			}
+		});
+	}
 
     function addDragAndDropSupportForTreant() {
         console.log("conDecTreant addDragAndDropSupportForTreant");

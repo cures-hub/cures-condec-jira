@@ -135,7 +135,12 @@
 		var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
 		if (isTestCodeShownInput !== null) {
 			filterElements.push(isTestCodeShownInput);
-		}        
+		}
+
+		var isNoColorsInput = document.getElementById("no-colors-input-" + viewIdentifier);
+		if (isNoColorsInput !== null) {
+			filterElements.push(isNoColorsInput);
+		}
 
 		filterElements.forEach(function (filterElement) {
 			filterElement.addEventListener("input", () => callback());
@@ -247,6 +252,12 @@
         if (isTestCodeShownInput !== null) {
             filterSettings["isTestCodeShown"] = isTestCodeShownInput.checked;
         }
+
+		// Read whether nodes should be colored
+		var isNoColorsInput = document.getElementById("no-colors-input-" + viewIdentifier);
+		if (isNoColorsInput !== null) {
+			filterSettings["noColors"] = isNoColorsInput.checked;
+		}
         
 		// Read whether knowledge graph should be shown with CIA Context or not
 		var displayType = document.getElementById("select2-display-type-" + viewIdentifier);

@@ -14,7 +14,8 @@
         	#parse("templates/filter/isTestCode.vm")    
 			#if($showTransitiveFilter)
         	#parse("templates/filter/isTransitiveLinks.vm")
-			#end			   
+			#end
+            #parse("templates/filter/colorNodes.vm")
         </form>
     </div>
 </div>
