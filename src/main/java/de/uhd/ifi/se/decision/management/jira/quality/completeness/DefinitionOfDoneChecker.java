@@ -2,16 +2,19 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static java.util.Map.entry;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
-public final class CompletenessHandler {
+public final class DefinitionOfDoneChecker {
 
-	private CompletenessHandler() {
+	private DefinitionOfDoneChecker() {
 	}
 
 	private static final Map<KnowledgeType, CompletenessCheck<? extends KnowledgeElement>> completenessCheckMap = Map
@@ -34,13 +37,18 @@ public final class CompletenessHandler {
 	 * @return true if the element is completely documented according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
+	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
+		return !hasIncompleteKnowledgeLinked(knowledgeElement) &&
+			!doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings);
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static boolean checkForCompleteness(KnowledgeElement knowledgeElement) {
+	public static boolean isIncomplete(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
-			return true;
+			return false;
 		}
 		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
-		return completenessCheck == null || completenessCheck.execute(knowledgeElement);
+		return !(completenessCheck == null || completenessCheck.execute(knowledgeElement));
 	}
 
 	/**
@@ -51,12 +59,12 @@ public final class CompletenessHandler {
 	 *         element, else it returns false.
 	 */
 	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement knowledgeElement) {
-		if (knowledgeElement.isIncomplete()) {
+		if (isIncomplete(knowledgeElement)) {
 			return true;
 		}
 		for (Link link : knowledgeElement.getLinks()) {
 			KnowledgeElement oppositeElement = link.getOppositeElement(knowledgeElement);
-			if (oppositeElement.isIncomplete()) {
+			if (isIncomplete(oppositeElement)) {
 				return true;
 			} else if (hasIncompleteKnowledgeLinked(oppositeElement, knowledgeElement)) {
 				return true;
@@ -71,10 +79,39 @@ public final class CompletenessHandler {
 			KnowledgeElement nextElement = link.getOppositeElement(oppositeElement);
 			if (nextElement.getId() == knowledgeElement.getId()) {
 				continue;
-			} else if (nextElement.isIncomplete()) {
+			} else if (isIncomplete(nextElement)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Iterates recursively over the knowledge graph of the
+	 * {@link KnowledgeElement}.
+	 *
+	 * @return true if there are at least as many issues and decisions as the minimum coverage
+	 * 		   demands, else it returns false.
+	 */
+	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
+													 FilterSettings filterSettings) {
+		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings.getProjectKey());
+		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement, knowledgeType);
+		int minimumCoverage = filterSettings.getMinimumDecisionCoverage();
+		return result < minimumCoverage;
+	}
+
+	/**
+	 * Returns a list of failed definition of done criteria.
+	 */
+	public static List<String> getFailedDefinitionOfDoneCheckCriteria(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
+		List<String> failedCheckCriteria = new ArrayList<>();
+		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
+			failedCheckCriteria.add("hasIncompleteKnowledgeLinked");
+		}
+		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings)) {
+			failedCheckCriteria.add("doesNotHaveMinimumCoverage");
+		}
+		return failedCheckCriteria;
 	}
 }

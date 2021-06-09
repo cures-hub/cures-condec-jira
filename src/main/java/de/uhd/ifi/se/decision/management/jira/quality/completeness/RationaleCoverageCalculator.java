@@ -61,15 +61,19 @@ public class RationaleCoverageCalculator {
 		}
 
 		if (!sourceKnowledgeTypes.isEmpty()) {
-			this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-					sourceKnowledgeTypes, KnowledgeType.DECISION);
-			this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-					sourceKnowledgeTypes, KnowledgeType.ISSUE);
-			this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-					sourceKnowledgeTypes, KnowledgeType.DECISION);
-			this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-					sourceKnowledgeTypes, KnowledgeType.ISSUE);
+			fillRationaleCoverageCalculator(sourceKnowledgeTypes);
 		}
+	}
+
+	private void fillRationaleCoverageCalculator(Set<String> sourceKnowledgeTypes) {
+		this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+			sourceKnowledgeTypes, KnowledgeType.DECISION);
+		this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
+			sourceKnowledgeTypes, KnowledgeType.ISSUE);
+		this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+			sourceKnowledgeTypes, KnowledgeType.DECISION);
+		this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
+			sourceKnowledgeTypes, KnowledgeType.ISSUE);
 	}
 
 	private void fillLinkedElementMap(KnowledgeElement sourceElement) {
@@ -82,6 +86,14 @@ public class RationaleCoverageCalculator {
 			knowledgeTypeMap.put(linkedElement.getType(), knowledgeTypeMap.get(linkedElement.getType()) + 1);
 		}
 		linkedElementMap.put(sourceElement, knowledgeTypeMap);
+	}
+
+	private String getKnowledgeElementName(KnowledgeElement knowledgeElement) {
+		if (knowledgeElement.getType() == KnowledgeType.CODE) {
+			return filterSettings.getProjectKey() + '-' + knowledgeElement.getDescription();
+		} else {
+			return knowledgeElement.getKey();
+		}
 	}
 
 	private Map<String, String> calculateKnowledgeElementsWithNeighborsOfOtherType(Set<String> sourceTypes,
@@ -110,11 +122,11 @@ public class RationaleCoverageCalculator {
 				fillLinkedElementMap(knowledgeElement);
 			}
 			if (!linkedElementMap.get(knowledgeElement).containsKey(knowledgeType)) {
-				withoutLinks += knowledgeElement.getKey() + " ";
+				withoutLinks += getKnowledgeElementName(knowledgeElement) + " ";
 			} else if (linkedElementMap.get(knowledgeElement).get(knowledgeType) < minimumDecisionCoverage) {
-				withLowLinks += knowledgeElement.getKey() + " ";
+				withLowLinks += getKnowledgeElementName(knowledgeElement) + " ";
 			} else if (linkedElementMap.get(knowledgeElement).get(knowledgeType) >= minimumDecisionCoverage) {
-				withHighLinks += knowledgeElement.getKey() + " ";
+				withHighLinks += getKnowledgeElementName(knowledgeElement) + " ";
 			}
 		}
 
@@ -148,9 +160,9 @@ public class RationaleCoverageCalculator {
 				fillLinkedElementMap(knowledgeElement);
 			}
 			if (!linkedElementMap.get(knowledgeElement).containsKey(knowledgeType)) {
-				numberOfElementsReachable.put(knowledgeElement.getKey(), 0);
+				numberOfElementsReachable.put(getKnowledgeElementName(knowledgeElement), 0);
 			} else {
-				numberOfElementsReachable.put(knowledgeElement.getKey(),
+				numberOfElementsReachable.put(getKnowledgeElementName(knowledgeElement),
 						linkedElementMap.get(knowledgeElement).get(knowledgeType));
 			}
 		}

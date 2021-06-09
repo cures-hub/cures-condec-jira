@@ -5,6 +5,8 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 
+#set ($viewIdentifier = "jira-issue-module")
+
 <div class="aui-tabs horizontal-tabs" id="jira-issue-tabs" data-aui-persist="username">
     <ul class="tabs-menu">
         <li class="menu-item" id="menu-item-jstree">
@@ -40,7 +42,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item" id="menu-item-cia">
             <a href="#cia-tab">$i18n.getText('condec.label.cia')</a>
         </li>
-        <li class="menu-item" id="menu-item-quality-check">
+        <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
         </li>
 	</ul>
@@ -73,6 +75,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #parse("templates/tabs/changeImpactIssueTab.vm")
     </div>
     <div class="tabs-pane" id="quality-check-tab">
+        #set ($viewIdentifier = "jira-issue-module")
         #parse("templates/tabs/qualityCheck.vm")
     </div>
 </div>

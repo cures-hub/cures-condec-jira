@@ -42,5 +42,6 @@ public class TestKnowledgeStatus {
 		assertEquals("gray", KnowledgeStatus.DISCARDED.getColor());
 		assertEquals("gray", KnowledgeStatus.REJECTED.getColor());
 		assertEquals("crimson", KnowledgeStatus.CHALLENGED.getColor());
+		assertEquals("", KnowledgeStatus.UNDEFINED.getColor());
 	}
 }

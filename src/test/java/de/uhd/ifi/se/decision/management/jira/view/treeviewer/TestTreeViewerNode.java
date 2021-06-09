@@ -25,20 +25,20 @@ public class TestTreeViewerNode extends TestSetUp {
 	public void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		node = new TreeViewerNode(element);
+		node = new TreeViewerNode(element, false);
 	}
 
 	@Test
 	public void testConstructorWithElementAndLink() {
 		Link link = Links.getTestLink();
-		TreeViewerNode node = new TreeViewerNode(element, link);
+		TreeViewerNode node = new TreeViewerNode(element, link, false);
 		assertEquals("tv1", node.getId());
 	}
 
 	@Test
 	public void testConstructorWithDescNull() {
 		element.setDescription(null);
-		TreeViewerNode node = new TreeViewerNode(element);
+		TreeViewerNode node = new TreeViewerNode(element, false);
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
@@ -46,7 +46,7 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testConstructorWithDescBlank() {
 		element.setDescription("");
-		TreeViewerNode node = new TreeViewerNode(element);
+		TreeViewerNode node = new TreeViewerNode(element, false);
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
@@ -54,9 +54,15 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testConstructorWithDescUndefined() {
 		element.setDescription("undefined");
-		TreeViewerNode node = new TreeViewerNode(element);
+		TreeViewerNode node = new TreeViewerNode(element, false);
 		assertNotNull(node);
 		element.setDescription("TestDescription");
+	}
+
+	@Test
+	public void testConstructorWithColorNode() {
+		node = new TreeViewerNode(element, true);
+		assertNotNull(node);
 	}
 
 	@Test

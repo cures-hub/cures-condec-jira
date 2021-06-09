@@ -457,23 +457,26 @@ linkBranchCandidates
             console.error("Could not find element with id: " + id);
             return;
           }
+
           if (errors.size > 0 || warnings.size > 0) {
             /*  reset the initial text */
             qElem.childNodes[0].textContent = "";
-            /*  draw attention to feature tab menu item */
-            setStatusWarningInMenuItem();
           } else if (errors.size === 0 && warnings.size === 0) {
             setStatusFineInMenuItem();
           }
 
-          if (errors.size > 0) {
-            qElem.classList.add("hasErrors");
-            appendProblemCategoryToQualitySummary(qElem, errors, "Errors in ");
-          }
           if (warnings.size > 0) {
             qElem.classList.add("hasWarnings");
+		    /*  draw attention to feature tab menu item */
+		    setStatusWarningInMenuItem();
             appendProblemCategoryToQualitySummary(qElem, warnings, "Warnings in ");
           }
+		  if (errors.size > 0) {
+			qElem.classList.add("hasErrors");
+			/*  draw attention to feature tab menu item */
+			setStatusErrorInMenuItem();
+			appendProblemCategoryToQualitySummary(qElem, errors, "Errors in ");
+		  }
         }
 
         function appendProblemCategoryToQualitySummary(qElem, categorySet, prefix) {
@@ -483,6 +486,10 @@ linkBranchCandidates
             prefix + problemSourceCategory + ": " + problemsAsList;
           qElem.appendChild(catElem);
         }
+
+		function setStatusErrorInMenuItem() {
+			setStatusInMenuItem("condec-error");
+		}
 
         function setStatusWarningInMenuItem() {
           setStatusInMenuItem("condec-warning");
@@ -506,7 +513,7 @@ linkBranchCandidates
 
 		function addToken(element, status) {
 			element.classList.remove("condec-default");
-			element.classList.remove("condec-empty");
+			element.classList.remove("condec-error");
 			element.classList.remove("condec-warning");
 			element.classList.remove("condec-fine");
 			element.classList.add(status);
@@ -608,7 +615,7 @@ linkBranchCandidates
     ConDecLinkBranchCandidates.prototype.getEmptyMapForStatuses = function(initValue) {
         var mapInit = new Map();
         mapInit.set(BRANCH_STATUS_BAD,initValue);
-        mapInit.set(BRANCH_STATUS_FINE,initValue);        
+        mapInit.set(BRANCH_STATUS_FINE,initValue);
         mapInit.set(BRANCH_STATUS_UNSET,initValue);
         return mapInit;
     };

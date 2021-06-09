@@ -1,7 +1,7 @@
 (function(global) {
 
 	const ConDecDoDCheckingAPI = function() {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/dodchecking";
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/dodChecking";
 	};
 
 	/*
@@ -17,24 +17,16 @@
 	};
 
 	/*
-	 * external references: nudging/condec.prompts.js
+	 * external references: nudging/condec.prompts.js,
+	 * condec.quality.check.js
 	 */
-	ConDecDoDCheckingAPI.prototype.doesElementNeedCompletenessApproval = function(filterSettings) {
-		return generalApi.postJSONReturnPromise(
-			`${this.restPrefix}/doesElementNeedCompletenessApproval.json`, filterSettings
-		);
-	};
-
-	/*
-	 * external references: condec.quality.check.js
-	 */
-	ConDecDoDCheckingAPI.prototype.hasIncompleteKnowledgeLinked = function(issueKey, callback) {
-		generalApi.getJSON(this.restPrefix + `/hasIncompleteKnowledgeLinked.json?issueKey=${issueKey}`,
-			function(error, result) {
-				if (error === null) {
-					callback(result);
-				}
-			});
+	ConDecDoDCheckingAPI.prototype.getFailedDefinitionOfDoneCriteria = function(filterSettings, callback) {
+		generalApi.postJSON(this.restPrefix + '/getFailedDefinitionOfDoneCriteria.json', filterSettings, function(
+			error, result) {
+			if (error === null) {
+				callback(result);
+			}
+		});
 	};
 
 	/*

@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.util.List;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +47,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@NonTransactional
 	public void testIncompleteRootElement() {
 		KnowledgeGraph.getInstance("TEST").removeEdge(alternative.getLink(issue));
-		assertTrue(alternative.isIncomplete());
-		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(alternative));
+		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(alternative));
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(decision));
 		assertEquals(0, workItem.isLinked());
-		assertFalse(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	/**
@@ -85,9 +85,9 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		}
 		assertEquals(1, workItem.getLinks().size());
 		assertEquals(1, anotherWorkItem.getLinks().size());
-		assertTrue(CompletenessHandler.checkForCompleteness(workItem));
-		assertTrue(CompletenessHandler.checkForCompleteness(anotherWorkItem));
-		assertFalse(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(workItem, new FilterSettings("TEST", "")));
+		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(anotherWorkItem, new FilterSettings("TEST", "")));
+		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	/**
@@ -104,9 +104,9 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
-		assertTrue(decision.isIncomplete());
+		assertTrue(DefinitionOfDoneChecker.isIncomplete(decision));
 		assertNotNull(workItem.getLink(decision));
-		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	/**
@@ -118,17 +118,17 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@NonTransactional
 	public void testIncompleteLinkDistanceTwo() {
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
-		assertFalse(decision.isIncomplete());
+		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
 		assertNotNull(decision.getLink(issue));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertFalse(issue.isIncomplete());
+		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
 		KnowledgeGraph.getInstance("TEST").removeEdge(issue.getLink(alternative));
 		assertNull(issue.getLink(alternative));
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(issue.isIncomplete());
-		assertTrue(CompletenessHandler.hasIncompleteKnowledgeLinked(workItem));
+		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	@After
