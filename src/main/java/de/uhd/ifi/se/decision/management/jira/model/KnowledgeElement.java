@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jgrapht.Graph;
@@ -30,7 +32,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessHandler;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
 /**
@@ -728,8 +730,8 @@ public class KnowledgeElement {
 	 *         {@link KnowledgeGraph}. Otherwise, it is incomplete, i.e., its
 	 *         documentation needs to be improved.
 	 */
-	public boolean isIncomplete() {
-		return !CompletenessHandler.checkForCompleteness(this);
+	public boolean failsDefinitionOfDone(FilterSettings filterSettings) {
+		return !DefinitionOfDoneChecker.checkDefinitionOfDone(this, filterSettings);
 	}
 
 	@Override

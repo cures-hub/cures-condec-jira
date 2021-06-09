@@ -56,27 +56,26 @@
 			return;
 		}
 
-		var FilterSettings = {
+		var filterSettings = {
 			"projectKey": projectKey,
 			"selectedElement": issueKey,
 		}
 
-		conDecDoDCheckingAPI.doesElementNeedCompletenessApproval(FilterSettings)
-			.then(isDoDViolated => {
-				if (!isDoDViolated) {
-					return;
-				}
-				document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-				var flag = AJS.flag({
-					body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
-					title: "Definition of Done Violated!",
-					type: "warning"
+		conDecDoDCheckingAPI.getFailedDefinitionOfDoneCriteria(filterSettings, function(result) {
+			if (!result || !result.length) {
+				return;
+			}
+			document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+			var flag = AJS.flag({
+				body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
+				title: "Definition of Done Violated!",
+				type: "warning"
 
-				});
-				document.getElementById("definition-of-done-checking-prompt-button").onclick = function () {
-					flag.close();
-				};
 			});
+			document.getElementById("definition-of-done-checking-prompt-button").onclick = function () {
+				flag.close();
+			};
+		})
 	}
 	
 	ConDecPrompt.prototype.promptNonValidatedElements = function () {

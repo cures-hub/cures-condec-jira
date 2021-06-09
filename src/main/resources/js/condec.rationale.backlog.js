@@ -11,7 +11,7 @@
 			
 		// Fill filter elements
 		conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue", "Argument"]);
-		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);		
+		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
 		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
 		conDecFiltering.fillDatePickers("rationale-backlog", 30);
 		conDecFiltering.initDropdown("documentation-location-dropdown-rationale-backlog", conDecAPI.documentationLocations);
@@ -63,6 +63,7 @@
 			conDecVis.buildVis(filterSettings, "graph-rationale-backlog");
 			conDecMatrix.buildMatrix(filterSettings, "rationale-backlog");
 			conDecDecisionTable.build(filterSettings, "rationale-backlog", node);
+			conDecQualityCheck.build(node, "rationale-backlog");
 		});
 	}
 	

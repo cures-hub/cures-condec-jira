@@ -67,7 +67,7 @@
 		}
 
 		showOrHideContextMenuItems(documentationLocation, container);
-		setContextMenuItemsEventHandlers(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType);
+		setContextMenuItemsEventHandlers(id, documentationLocation, container, idOfTarget, documentationLocationOfTarget, linkType);
 
 		$(contextMenuNode).css({
 		    left : event.clientX,
@@ -79,7 +79,7 @@
 		contextMenuNode.setAttribute('open', '');
 	};
 
-	function setContextMenuItemsEventHandlers(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType) {
+	function setContextMenuItemsEventHandlers(id, documentationLocation, container, idOfTarget, documentationLocationOfTarget, linkType) {
 		document.getElementById("condec-context-menu-group-rename").onclick = function() {
 			conDecDialog.showRenameGroupDialog(id);
 		};

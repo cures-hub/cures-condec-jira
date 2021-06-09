@@ -15,6 +15,7 @@
 			#if($showTransitiveFilter)
         	#parse("templates/filter/isTransitiveLinks.vm")
 			#end
+            #parse("templates/filter/colorNodes.vm")
         </form>
     </div>
 </div>

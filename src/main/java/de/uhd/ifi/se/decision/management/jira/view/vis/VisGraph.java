@@ -65,7 +65,7 @@ public class VisGraph {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		subgraph = filteringManager.getFilteredGraph();
 		selectedElement = filterSettings.getSelectedElement();
-		addNodesAndEdges(filterSettings.isHierarchical());
+		addNodesAndEdges(filterSettings.isHierarchical(), filterSettings.isNoColors());
 	}
 
 	/**
@@ -74,14 +74,14 @@ public class VisGraph {
 	 *            provided by the {@link FilteringManager} should be shown with a
 	 *            hierarchy of nodes.
 	 */
-	private void addNodesAndEdges(boolean isHierarchical) {
+	private void addNodesAndEdges(boolean isHierarchical, boolean noColors) {
 		if (selectedElement != null) {
 			subgraph.addVertex(selectedElement);
 		}
 		if (isHierarchical) {
-			addNodesAndEdgesWithHierarchy();
+			addNodesAndEdgesWithHierarchy(noColors);
 		} else {
-			addNodesAndEdgesWithoutHierarchy();
+			addNodesAndEdgesWithoutHierarchy(noColors);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class VisGraph {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 */
-	private void addNodesAndEdgesWithHierarchy() {
+	private void addNodesAndEdgesWithHierarchy(boolean noColors) {
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
 
 		Set<Link> allEdges = new HashSet<>();
@@ -100,15 +100,15 @@ public class VisGraph {
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			nodes.add(new VisNode(element, iterator.getDepth(element)));
+			nodes.add(new VisNode(element, iterator.getDepth(element), noColors));
 			allEdges.addAll(undirectedGraph.edgesOf(element));
 		}
 
 		allEdges.forEach(link -> edges.add(new VisEdge(link)));
 	}
 
-	private void addNodesAndEdgesWithoutHierarchy() {
-		subgraph.vertexSet().forEach(element -> nodes.add(new VisNode(element)));
+	private void addNodesAndEdgesWithoutHierarchy(boolean noColors) {
+		subgraph.vertexSet().forEach(element -> nodes.add(new VisNode(element, noColors)));
 		subgraph.edgeSet().forEach(link -> edges.add(new VisEdge(link)));
 	}
 

@@ -77,6 +77,7 @@ public class FilterSettings {
 	private long context;
 	private double decayValue;
 	private double threshold;
+	private boolean noColors;
 
 	private String displayType;
 
@@ -120,6 +121,7 @@ public class FilterSettings {
 		this.threshold = 0.25;
 		this.context = 0;
 		this.isCiaRequest = false;
+		this.noColors = true;
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -668,5 +670,14 @@ public class FilterSettings {
 		for (String stringRule : rule) {
 			passRule.add(PassRule.getPropagationRule(stringRule));
 		}
+	}
+
+	public boolean isNoColors() {
+		return noColors;
+	}
+
+	@JsonProperty("noColors")
+	public void setNoColors(boolean noColors) {
+		this.noColors = noColors;
 	}
 }
