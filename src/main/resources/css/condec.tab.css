@@ -1,7 +1,7 @@
 .menu-item.condec-default {
     background: white;
 }
-.menu-item.condec-empty {
+.menu-item.condec-error {
     background: crimson;
 }
 .menu-item.condec-warning {
@@ -13,7 +13,7 @@
 .text-field.condec-default {
     color: black;
 }
-.text-field.condec-empty {
+.text-field.condec-error {
     color: crimson;
 }
 .text-field.condec-warning {

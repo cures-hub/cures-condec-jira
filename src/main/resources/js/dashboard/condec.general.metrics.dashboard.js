@@ -127,6 +127,9 @@
 		knowledgeTypeDistribution = calculator.distributionOfKnowledgeTypes;
 		definitionOfDoneCheckResults = calculator.definitionOfDoneCheckResults;
 
+		/* define color palette */
+		var colorpalette = ['#91CC75', '#EE6666'];
+
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
 			"", "#Comments per Jira Issue", commentsPerIssue);
@@ -141,8 +144,8 @@
 			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
 		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
-		ConDecReqDash.initializeChart("piechartRich-DoDCheck",
-			"", "Definition of Done Check", definitionOfDoneCheckResults);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
+			"", "Definition of Done Check", definitionOfDoneCheckResults, colorpalette);
 	}
 
 	global.conDecGeneralMetricsDashboard = new ConDecGeneralMetricsDashboard();

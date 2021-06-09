@@ -162,8 +162,8 @@
     };
 
     ConDecReqDash.prototype.navigateToElement = function (elementName) {
-        var targetBaseUrl = AJS.contextPath();
-        // element is a branch
+		var targetBaseUrl = AJS.contextPath();
+		var issueKey = elementName.replace(issueKeyParser, issueKeyBuilder);
         if (!isIssueData) {
 			var issueKeyParts = elementName.split("origin/");
 			var branchName = issueKeyParts[0];
@@ -172,17 +172,20 @@
 			}
 			var branchNameParts = branchName.split(".");
 			issueKey = branchNameParts[0];
-			window.open(targetBaseUrl + '/browse/' + issueKey, '_blank');
-		}
-		// element is a code file
-		else if (elementName.includes('.')) {
+			var newWindow = window.open(targetBaseUrl + '/browse/' + issueKey + '#menu-item-feature-branches', '_blank');
+			var script = document.createElement('script');
+			function openTab() {
+				AJS.tabs.change(AJS.$("a[href=#feature-branches-tab]"));
+			}
+			script.innerHTML = '(' + openTab.toString() + '());';
+			newWindow.onload = function() {
+				this.document.body.appendChild(script);
+			};
+		} else if (elementName.includes('.')) {
 			var projectKey = elementName.substring(0, elementName.indexOf('-'));
 			var codeFileName = elementName.substring(elementName.indexOf('-') + 1);
 			window.open(targetBaseUrl + '/projects/' + projectKey + '?selectedItem=decision-knowledge-page&codeFileName=' + codeFileName, '_blank');
-        }
-		// element is an issue
-		else {
-			var issueKey = elementName.replace(issueKeyParser, issueKeyBuilder);
+        } else {
 			window.open(targetBaseUrl + '/browse/' + issueKey, '_blank');
 		}
     }

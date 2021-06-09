@@ -111,7 +111,7 @@
 		} else if ((coverageOfIssues > 0) || (coverageOfDecisions > 0)) {
 			addToken(tab, "condec-warning");
 		} else if ((coverageOfIssues === 0) && (coverageOfDecisions === 0)) {
-			addToken(tab, "condec-empty");
+			addToken(tab, "condec-error");
 		} else {
 			addToken(tab, "condec-default");
 		}
@@ -128,7 +128,7 @@
 		} else if ((coverage < minimum) && (coverage > 0)) {
 			addToken(textField, "condec-warning");
 		} else if (coverage === 0) {
-			addToken(textField, "condec-empty");
+			addToken(textField, "condec-error");
 		} else {
 			textField.textContent = "";
 			addToken(textField, "condec-default");
@@ -138,7 +138,7 @@
 	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked) {
 		if (hasIncompleteKnowledgeLinked === true) {
 			knowledgeCompleteText.textContent = KNOWLEDGE_INCOMPLETE;
-			addToken(knowledgeCompleteText, "condec-empty");
+			addToken(knowledgeCompleteText, "condec-error");
 		} else if (hasIncompleteKnowledgeLinked === false) {
 			knowledgeCompleteText.textContent = KNOWLEDGE_COMPLETE;
 			addToken(knowledgeCompleteText, "condec-fine");
@@ -160,7 +160,7 @@
 
 	function addToken(element, tag) {
 		element.classList.remove("condec-default");
-		element.classList.remove("condec-empty");
+		element.classList.remove("condec-error");
 		element.classList.remove("condec-warning");
 		element.classList.remove("condec-fine");
 		element.classList.add(tag);
