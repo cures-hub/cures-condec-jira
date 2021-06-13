@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.List;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
@@ -60,5 +61,10 @@ public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public List<String> getFailedCriteria(ChangedFile knowledgeElement) {
+		return null;
 	}
 }

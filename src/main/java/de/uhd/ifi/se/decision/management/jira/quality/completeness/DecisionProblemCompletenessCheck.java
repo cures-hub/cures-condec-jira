@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -12,6 +14,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * {@link DefinitionOfDone}.
  */
 public class DecisionProblemCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
+
+	private final String ISSUEDOESNTHAVEDECISION = "Issue doesn't have a valid decision!";
+	private final String ISSUEISUNRESOLVED = "Issue is unresolved!";
+	private final String ISSUEDOESNTHAVEALTERNATIVE = "Issue doesn't have an alternative!";
 
 	private KnowledgeElement decisionProblem;
 	private String projectKey;
@@ -39,6 +45,29 @@ public class DecisionProblemCompletenessCheck implements CompletenessCheck<Knowl
 		return true;
 	}
 
+	@Override
+	public List<String> getFailedCriteria(KnowledgeElement decisionProblem) {
+		List<String> failedCriteria = new ArrayList<>();
+
+		if (!isValidDecisionLinkedToDecisionProblem(decisionProblem)) {
+			failedCriteria.add(ISSUEDOESNTHAVEDECISION);
+		}
+
+		if (decisionProblem.getStatus() == KnowledgeStatus.UNRESOLVED) {
+			failedCriteria.add(ISSUEISUNRESOLVED);
+		}
+
+		boolean hasToBeLinkedToAlternative = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+			.isIssueIsLinkedToAlternative();
+		if (hasToBeLinkedToAlternative) {
+			if (!decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
+				failedCriteria.add(ISSUEDOESNTHAVEALTERNATIVE);
+			}
+		}
+
+		return failedCriteria;
+	}
+
 	/**
 	 * @param decisionProblem
 	 *            decision problem (issue) as a {@link KnowledgeElement} object.
@@ -48,7 +77,8 @@ public class DecisionProblemCompletenessCheck implements CompletenessCheck<Knowl
 		Set<KnowledgeElement> linkedDecisions = decisionProblem.getNeighborsOfType(KnowledgeType.DECISION);
 		linkedDecisions.addAll(decisionProblem.getNeighborsOfType(KnowledgeType.SOLUTION));
 		return !linkedDecisions.isEmpty()
-				&& linkedDecisions.stream().anyMatch(decision -> decision.getStatus() != KnowledgeStatus.CHALLENGED
-						&& decision.getStatus() != KnowledgeStatus.REJECTED);
+			&& linkedDecisions.stream().anyMatch(decision -> decision.getStatus() != KnowledgeStatus.CHALLENGED
+			&& decision.getStatus() != KnowledgeStatus.REJECTED);
 	}
+
 }

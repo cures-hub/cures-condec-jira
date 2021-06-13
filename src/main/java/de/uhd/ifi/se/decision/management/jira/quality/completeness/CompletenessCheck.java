@@ -6,6 +6,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 
+import java.util.List;
+
 /**
  * Checks whether a given {@link KnowledgeElement} is documented completely
  * according to the {@link DefinitionOfDone} (DoD).
@@ -53,4 +55,19 @@ public interface CompletenessCheck<T extends KnowledgeElement> {
 	 * @return true if all configured rules are fulfilled.
 	 */
 	boolean isCompleteAccordingToSettings();
+
+	/**
+	 * Executes the completeness check for the given knowledge element
+	 * and return a set of the failed criteria.
+	 *
+	 * @param <T>
+	 *            {@link KnowledgeElement} class or a subclass, e.g.
+	 *            {@link ChangedFile}, {@link PartOfJiraIssueText}, or
+	 *            {@link Recommendation}.
+	 * @param knowledgeElement
+	 *            instance of {@link KnowledgeElement}.
+	 * @return a set of the failed criteria according to the default
+	 *         and configured rules of the {@link DefinitionOfDone}.
+	 */
+	List<String> getFailedCriteria(T knowledgeElement);
 }

@@ -100,6 +100,10 @@
 					updateText(issueText, "issues", numberOfIssues, minimumCoverage);
 					updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
 					updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked);
+
+					conDecDoDCheckingAPI.getFailedCompletenessCheckCriteria(newFilterSettings, function(result) {
+						window.alert(result);
+					});
 				});
 			});
 		});
