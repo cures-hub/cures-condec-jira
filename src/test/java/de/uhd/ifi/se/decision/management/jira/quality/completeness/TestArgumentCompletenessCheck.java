@@ -88,4 +88,50 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	public void testIsCompleteAccordingToSettings() {
 		assertTrue(argumentCompletenessCheck.isCompleteAccordingToSettings());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetFailedCriteriaNeighbourDecision() {
+		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
+		assertEquals(5, proArgument.getId());
+		KnowledgeElement decision = KnowledgeElements.getDecision();
+		assertEquals(KnowledgeType.DECISION, decision.getType());
+		assertEquals(4, decision.getId());
+		assertNotNull(proArgument.getLink(decision));
+		assertFalse(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetFailedCriteriaNeighbourAlternative() {
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(321, KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
+		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(322, KnowledgeType.PRO);
+		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
+		assertNotNull(proArgument.getLink(alternative));
+		assertFalse(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetFailedCriteriaNeighbourNoDecisionOrAlternative() {
+		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType());
+		assertEquals(5, proArgument.getId());
+		KnowledgeElement decision = KnowledgeElements.getDecision();
+		assertEquals(KnowledgeType.DECISION, decision.getType());
+		assertEquals(4, decision.getId());
+
+		Link linkToDecision = proArgument.getLink(decision);
+		assertNotNull(linkToDecision);
+
+		KnowledgeGraph.getInstance("TEST").removeEdge(linkToDecision);
+		linkToDecision = proArgument.getLink(decision);
+		assertNull(linkToDecision);
+
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(proArgument.getProject());
+		assertFalse(graph.containsEdge(linkToDecision));
+		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
+		assertTrue(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
+	}
 }

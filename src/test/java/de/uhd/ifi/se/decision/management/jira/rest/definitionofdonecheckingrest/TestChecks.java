@@ -173,4 +173,22 @@ public class TestChecks extends TestSetUp {
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
 		assertEquals(400, response.getStatus());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetFailedCompletenessCheckCriteriaCode() {
+		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		knowledgeElement.setType(KnowledgeType.CODE);
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
+		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
+		assertEquals(200, response.getStatus());
+
+		settings.setSelectedElement((KnowledgeElement) null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
+		assertEquals(400, response.getStatus());
+
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
+		assertEquals(400, response.getStatus());
+	}
 }

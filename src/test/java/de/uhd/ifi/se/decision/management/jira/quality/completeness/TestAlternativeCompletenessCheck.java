@@ -70,6 +70,19 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testGetFailedCriteria() {
+		// set criteria "alternative has to be linked to argument" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setAlternativeLinkedToArgument(true);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
+		assertFalse(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
+
+		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
+		assertTrue(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
+	}
+
+	@Test
+	@NonTransactional
 	public void testIsLinkedToArgument() {
 		// set criteria "alternative has to be linked to argument" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();

@@ -67,6 +67,24 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testGetFailedCriteria() {
+		// set criteria "decision has to be linked to pro argument" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setDecisionLinkedToPro(true);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
+		assertTrue(decisionCompletenessCheck.getFailedCriteria(decision).isEmpty());
+
+		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
+		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
+
+		assertFalse(decisionCompletenessCheck.getFailedCriteria(decision).isEmpty());
+
+		// restore default
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());
+	}
+
+	@Test
+	@NonTransactional
 	public void testIsNotLinkedToPro() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
