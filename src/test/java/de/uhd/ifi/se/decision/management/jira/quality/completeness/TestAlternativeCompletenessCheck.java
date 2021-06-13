@@ -75,7 +75,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertFalse(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
+		assertTrue(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
 
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		assertFalse(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
