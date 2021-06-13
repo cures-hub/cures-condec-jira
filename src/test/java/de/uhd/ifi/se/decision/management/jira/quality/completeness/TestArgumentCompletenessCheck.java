@@ -98,7 +98,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
-		assertFalse(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
+		assertTrue(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
-		assertFalse(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
+		assertTrue(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
 	}
 
 	@Test
@@ -132,6 +132,6 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(proArgument.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
 		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
-		assertTrue(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
+		assertFalse(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
 	}
 }

@@ -78,7 +78,7 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 		assertFalse(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
 
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
-		assertTrue(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
+		assertFalse(alternativeCompletenessCheck.getFailedCriteria(alternative).isEmpty());
 	}
 
 	@Test

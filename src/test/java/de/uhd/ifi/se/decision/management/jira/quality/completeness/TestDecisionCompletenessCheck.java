@@ -77,7 +77,7 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
 
-		assertFalse(decisionCompletenessCheck.getFailedCriteria(decision).isEmpty());
+		assertTrue(decisionCompletenessCheck.getFailedCriteria(decision).isEmpty());
 
 		// restore default
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());

@@ -96,8 +96,8 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertFalse(issueCompletenessCheck.getFailedCriteria(issue).isEmpty());
-		assertTrue(issueCompletenessCheck.getFailedCriteria(KnowledgeElements.getUnsolvedDecisionProblem()).isEmpty());
+		assertTrue(issueCompletenessCheck.getFailedCriteria(issue).isEmpty());
+		assertFalse(issueCompletenessCheck.getFailedCriteria(KnowledgeElements.getUnsolvedDecisionProblem()).isEmpty());
 	}
 
 	@After
