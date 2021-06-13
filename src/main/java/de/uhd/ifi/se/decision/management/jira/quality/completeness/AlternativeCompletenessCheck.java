@@ -49,12 +49,10 @@ public class AlternativeCompletenessCheck implements CompletenessCheck<Knowledge
 
 		boolean hasToBeLinkedToArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 			.isAlternativeIsLinkedToArgument();
-		if (hasToBeLinkedToArgument) {
-			if (!(alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
-				|| alternative.hasNeighborOfType(KnowledgeType.PRO)
-				|| alternative.hasNeighborOfType(KnowledgeType.CON))) {
-				failedCriteria.add(ALRENATIVEDOESNTHAVEARGUMENT);
-			}
+		if (hasToBeLinkedToArgument && !(alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
+			|| alternative.hasNeighborOfType(KnowledgeType.PRO)
+			|| alternative.hasNeighborOfType(KnowledgeType.CON))) {
+			failedCriteria.add(ALRENATIVEDOESNTHAVEARGUMENT);
 		}
 
 		return failedCriteria;

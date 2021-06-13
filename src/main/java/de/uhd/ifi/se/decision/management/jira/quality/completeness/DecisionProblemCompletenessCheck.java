@@ -59,10 +59,8 @@ public class DecisionProblemCompletenessCheck implements CompletenessCheck<Knowl
 
 		boolean hasToBeLinkedToAlternative = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 			.isIssueIsLinkedToAlternative();
-		if (hasToBeLinkedToAlternative) {
-			if (!decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
-				failedCriteria.add(ISSUEDOESNTHAVEALTERNATIVE);
-			}
+		if (hasToBeLinkedToAlternative && !decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
+			failedCriteria.add(ISSUEDOESNTHAVEALTERNATIVE);
 		}
 
 		return failedCriteria;

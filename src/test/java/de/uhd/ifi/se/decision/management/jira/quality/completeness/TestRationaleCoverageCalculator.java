@@ -39,6 +39,15 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testRationaleCoverageCalculatorNoTypes() {
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		RationaleCoverageCalculator newCalculator = new RationaleCoverageCalculator(user, filterSettings, null);
+		assertNotNull(newCalculator);
+	}
+
+	@Test
+	@NonTransactional
 	public void testGetDecisionsPerSelectedJiraIssue() {
 		assertEquals(5, calculator.getDecisionsPerSelectedJiraIssue().size());
 	}

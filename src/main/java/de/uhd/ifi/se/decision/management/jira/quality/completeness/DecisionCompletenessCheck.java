@@ -47,10 +47,8 @@ public class DecisionCompletenessCheck implements CompletenessCheck<KnowledgeEle
 
 		boolean hasToBeLinkedToProArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 			.isDecisionIsLinkedToPro();
-		if (hasToBeLinkedToProArgument) {
-			if (!decision.hasNeighborOfType(KnowledgeType.PRO)) {
-				failedCriteria.add(DECISIONDOESNTHAVEPRO);
-			}
+		if (hasToBeLinkedToProArgument && !decision.hasNeighborOfType(KnowledgeType.PRO)) {
+			failedCriteria.add(DECISIONDOESNTHAVEPRO);
 		}
 
 		return failedCriteria;
