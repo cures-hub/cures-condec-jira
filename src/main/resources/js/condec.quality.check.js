@@ -11,8 +11,9 @@
 	var issueText;
 	var decisionText;
 
-	const KNOWLEDGE_COMPLETE = "Decision knowledge is complete."
-	const KNOWLEDGE_INCOMPLETE = "Decision knowledge is incomplete."
+	const KNOWLEDGE_COMPLETE = "Decision knowledge is complete.";
+	const KNOWLEDGE_INCOMPLETE = "Decision knowledge is incomplete.";
+	const KNOWLEDGE_CRITERIA = "Failed knowledge completeness criteria:";
 
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
@@ -155,6 +156,9 @@
 		}
 
 		if (failedCompletenessCheckCriteria) {
+			addToken(knowledgeCompleteCriteriaText, "condec-error");
+			knowledgeCompleteCriteriaText.innerHTML = KNOWLEDGE_CRITERIA + "<br/>" +
+				failedCompletenessCheckCriteria.join("<br/>");
 		}
 	}
 
