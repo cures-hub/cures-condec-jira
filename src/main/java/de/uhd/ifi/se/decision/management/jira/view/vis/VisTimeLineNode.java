@@ -63,8 +63,8 @@ public class VisTimeLineNode {
 
 	private String createContentString(KnowledgeElement element) {
 		String image = "<img src=" + '"' + KnowledgeType.getIconUrl(element) + '"' + "> ";
-		return image + "<p style=\"color:" + element.getStatus().getColor() + "; display:inline\">"
-				+ element.getSummary() + "</p>";
+		return image + "<span style='color:" + element.getStatus().getColor() + "; display:inline'>"
+				+ element.getSummary() + "</span>";
 	}
 
 	public int getId() {

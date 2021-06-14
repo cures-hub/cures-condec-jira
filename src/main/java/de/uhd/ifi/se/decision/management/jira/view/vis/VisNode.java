@@ -1,15 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
-import org.codehaus.jackson.annotate.JsonIgnore;
-
-import javax.xml.bind.annotation.XmlElement;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
 /**
  * Model class for a vis.js node.
@@ -95,8 +97,8 @@ public class VisNode {
 		if ((element.getProject() != null) && (element.getProject().getProjectKey() != null)) {
 			projectKey = element.getProject().getProjectKey();
 		}
-		if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(element,
-			new FilterSettings(projectKey, "")).isEmpty()) {
+		if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(element, new FilterSettings(projectKey, ""))
+				.isEmpty()) {
 			color = "crimson";
 		}
 		if (!color.isBlank()) {

@@ -963,7 +963,7 @@ export interface NodeOptions {
 
   size?: number;
 
-  title?: string;
+  title?: string | HTMLElement;
 
   value?: number;
 
@@ -1038,7 +1038,7 @@ export interface EdgeOptions {
     roundness: number,
   };
 
-  title?: string;
+  title?: string | HTMLElement;
 
   value?: number;
 
