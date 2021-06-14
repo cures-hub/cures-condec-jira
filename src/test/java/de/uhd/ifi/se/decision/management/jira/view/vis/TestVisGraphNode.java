@@ -51,8 +51,8 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testNodeDescription() {
 		VisNode node = new VisNode(element, true, 1);
-		String expectedTitle = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
-				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
+		String expectedTitle = element.getTypeAsString().toUpperCase() + System.lineSeparator() + element.getKey() + ": "
+				+ element.getSummary() + System.lineSeparator() + element.getDescription();
 		assertEquals(expectedTitle, node.getTitle());
 	}
 
