@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -64,8 +65,14 @@ public class VisNode {
 		this.level = level;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
-		this.title = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
-				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
+		List<String> failedCompletenessCheckCriteria = element.getFailedCompletenessCriteria();
+		if (!failedCompletenessCheckCriteria.isEmpty()) {
+			this.title = String.join(System.lineSeparator(), failedCompletenessCheckCriteria);
+		} else if (element.getDescription() != null && !element.getDescription().isBlank()) {
+			this.title = element.getTypeAsString().toUpperCase() + System.lineSeparator()
+				+ element.getKey() + ": " + element.getSummary() + System.lineSeparator()
+				+ element.getDescription();
+		}
 		this.font = determineFont(element, noColors);
 		this.color = determineColor(element);
 	}

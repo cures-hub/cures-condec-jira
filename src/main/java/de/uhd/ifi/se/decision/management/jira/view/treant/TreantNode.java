@@ -73,7 +73,10 @@ public class TreantNode {
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = knowledgeElement.getId();
 		this.link = new HashMap<String, String>();
-		if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()) {
+		List<String> failedCompletenessCheckCriteria = knowledgeElement.getFailedCompletenessCriteria();
+		if (!failedCompletenessCheckCriteria.isEmpty()) {
+			this.link.put("title", String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
+		} else if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()) {
 			this.link.put("title", knowledgeElement.getDescription());
 		}
 		if (isHyperlinked) {

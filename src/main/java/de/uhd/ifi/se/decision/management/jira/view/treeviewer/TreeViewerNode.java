@@ -49,7 +49,10 @@ public class TreeViewerNode {
 		this.text = knowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
 		this.element = knowledgeElement;
-		if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()
+		List<String> failedCompletenessCheckCriteria = knowledgeElement.getFailedCompletenessCriteria();
+		if (!failedCompletenessCheckCriteria.isEmpty()) {
+			this.a_attr = ImmutableMap.of("title", String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
+		} else if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()
 				&& !knowledgeElement.getDescription().equals("undefined")) {
 			this.a_attr = ImmutableMap.of("title", knowledgeElement.getDescription());
 		}
