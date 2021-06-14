@@ -157,8 +157,8 @@
 
 		if (failedCompletenessCheckCriteria) {
 			addToken(knowledgeCompleteCriteriaText, "condec-error");
-			knowledgeCompleteCriteriaText.innerHTML = KNOWLEDGE_CRITERIA + "<br/>" +
-				failedCompletenessCheckCriteria.join("<br/>");
+			knowledgeCompleteCriteriaText.innerHTML = KNOWLEDGE_CRITERIA + "<br>" +
+				failedCompletenessCheckCriteria.join("<br>");
 		}
 	}
 
