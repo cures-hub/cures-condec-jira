@@ -47,6 +47,10 @@ public class TestChecks extends TestSetUp {
 
 		response = dodCheckingRest.getFailedDefinitionOfDoneCriteria(request, null);
 		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedDefinitionOfDoneCriteria(request, settings);
+		assertEquals(400, response.getStatus());
 	}
 
 	@Test
@@ -63,6 +67,10 @@ public class TestChecks extends TestSetUp {
 		assertEquals(400, response.getStatus());
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
+		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(400, response.getStatus());
 	}
 
@@ -82,6 +90,10 @@ public class TestChecks extends TestSetUp {
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
 		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
+		assertEquals(400, response.getStatus());
 	}
 
 	@Test
@@ -99,6 +111,10 @@ public class TestChecks extends TestSetUp {
 		assertEquals(400, response.getStatus());
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
+		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(400, response.getStatus());
 	}
 
@@ -118,6 +134,10 @@ public class TestChecks extends TestSetUp {
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
 		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
+		assertEquals(400, response.getStatus());
 	}
 
 	@Test
@@ -135,6 +155,10 @@ public class TestChecks extends TestSetUp {
 		assertEquals(400, response.getStatus());
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
+		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(400, response.getStatus());
 	}
 
@@ -154,6 +178,10 @@ public class TestChecks extends TestSetUp {
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
 		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
+		assertEquals(400, response.getStatus());
 	}
 
 	@Test
@@ -172,6 +200,10 @@ public class TestChecks extends TestSetUp {
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
 		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
+		assertEquals(400, response.getStatus());
 	}
 
 	@Test
@@ -189,6 +221,10 @@ public class TestChecks extends TestSetUp {
 		assertEquals(400, response.getStatus());
 
 		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, null);
+		assertEquals(400, response.getStatus());
+
+		settings.setProjectKey(null);
+		response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(400, response.getStatus());
 	}
 }

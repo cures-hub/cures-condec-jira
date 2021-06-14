@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -65,6 +66,6 @@ public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 
 	@Override
 	public List<String> getFailedCriteria(ChangedFile knowledgeElement) {
-		return null;
+		return new ArrayList<>();
 	}
 }

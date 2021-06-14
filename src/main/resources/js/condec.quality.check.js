@@ -87,22 +87,20 @@
 						doesNotHaveMinimumCoverage = true;
 					}
 
-					getHTMLNodes("menu-item-quality-check-" + viewIdentifier
-						, "condec-tab-minimum-coverage-" + viewIdentifier
-						, "condec-tab-link-distance-" + viewIdentifier
-						, "quality-check-knowledge-complete-text-" + viewIdentifier
-						, "quality-check-issue-text-" + viewIdentifier
-						, "quality-check-decision-text-" + viewIdentifier);
-
-					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions);
-					updateLabel(minimumCoverageText, minimumCoverage);
-					updateLabel(linkDistanceText, linkDistance);
-					updateText(issueText, "issues", numberOfIssues, minimumCoverage);
-					updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
-					updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked);
-
 					conDecDoDCheckingAPI.getFailedCompletenessCheckCriteria(newFilterSettings, function(result) {
-						window.alert(result);
+						getHTMLNodes("menu-item-quality-check-" + viewIdentifier
+							, "condec-tab-minimum-coverage-" + viewIdentifier
+							, "condec-tab-link-distance-" + viewIdentifier
+							, "quality-check-knowledge-complete-text-" + viewIdentifier
+							, "quality-check-issue-text-" + viewIdentifier
+							, "quality-check-decision-text-" + viewIdentifier);
+
+						updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions);
+						updateLabel(minimumCoverageText, minimumCoverage);
+						updateLabel(linkDistanceText, linkDistance);
+						updateText(issueText, "issues", numberOfIssues, minimumCoverage);
+						updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
+						updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked);
 					});
 				});
 			});
