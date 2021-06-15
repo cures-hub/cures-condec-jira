@@ -39,6 +39,7 @@ public class TestChecks extends TestSetUp {
 	@NonTransactional
 	public void testGetFailedDefinitionOfDoneCriteria() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedDefinitionOfDoneCriteria(request, settings);
 		assertEquals(200, response.getStatus());
@@ -57,8 +58,9 @@ public class TestChecks extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void void testGetFailedCompletenessCheckCriteria() {
+	public void testGetFailedCompletenessCheckCriteria() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
@@ -80,6 +82,8 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedCompletenessCheckCriteriaIssue() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.ISSUE);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -89,6 +93,8 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedCompletenessCheckCriteriaDecision() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.DECISION);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -98,6 +104,8 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedCompletenessCheckCriteriaAlternative() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.ALTERNATIVE);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -107,6 +115,8 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedCompletenessCheckCriteriaArgument() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.ARGUMENT);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -116,6 +126,8 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedCompletenessCheckCriteriaPro() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.PRO);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -125,6 +137,8 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedCompletenessCheckCriteriaCon() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.CON);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -134,6 +148,8 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedCompletenessCheckCriteriaCode() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.CODE);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getFailedCompletenessCheckCriteria(request, settings);
 		assertEquals(200, response.getStatus());
 	}
