@@ -116,22 +116,9 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetFailedCriteriaNeighbourNoDecisionOrAlternative() {
-		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType());
-		assertEquals(5, proArgument.getId());
 		KnowledgeElement decision = KnowledgeElements.getDecision();
-		assertEquals(KnowledgeType.DECISION, decision.getType());
-		assertEquals(4, decision.getId());
-
 		Link linkToDecision = proArgument.getLink(decision);
-		assertNotNull(linkToDecision);
-
 		KnowledgeGraph.getInstance("TEST").removeEdge(linkToDecision);
-		linkToDecision = proArgument.getLink(decision);
-		assertNull(linkToDecision);
-
-		KnowledgeGraph graph = KnowledgeGraph.getInstance(proArgument.getProject());
-		assertFalse(graph.containsEdge(linkToDecision));
-		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
 		assertFalse(argumentCompletenessCheck.getFailedCriteria(proArgument).isEmpty());
 	}
 }
