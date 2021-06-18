@@ -34,6 +34,8 @@
             "condec.context.menu.summarized.code.item.label")</aui-item-link>
     </aui-section>
     <aui-section id="fourth-context-section">
+        <aui-item-link id="condec-context-menu-sentence-validate-item">$i18n.getText(
+            "condec.context.menu.sentence.validate.item.label")</aui-item-link>
         <aui-item-link id="condec-context-menu-sentence-irrelevant-item">$i18n.getText(
             "condec.context.menu.sentence.irrelevant.item.label")</aui-item-link>
         <aui-item-link id="condec-context-menu-sentence-convert-item">$i18n.getText(

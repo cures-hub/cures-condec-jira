@@ -12,7 +12,7 @@
  * conDecVis
  * conDecEvolutionPage
  */
-(function(global) {
+(function (global) {
 
 	var isContextMenuOpen = null;
 	var contextMenuNode = null;
@@ -54,10 +54,10 @@
 	 * condec.evolution.page
 	 */
 	ConDecContextMenu.prototype.createContextMenu = function (id, documentationLocation, event, container,
-			idOfTarget, documentationLocationOfTarget, linkType) {
+															  idOfTarget, documentationLocationOfTarget, linkType) {
 		console.log("contextmenu opened");
 		console.log("element id: " + id + " element documentation location: " + documentationLocation);
-		
+
 		isContextMenuOpen = true;
 
 		contextMenuNode = document.getElementById("condec-context-menu");
@@ -70,8 +70,8 @@
 		setContextMenuItemsEventHandlers(id, documentationLocation, container, idOfTarget, documentationLocationOfTarget, linkType);
 
 		$(contextMenuNode).css({
-		    left : event.clientX,
-		    top : event.clientY
+			left: event.clientX,
+			top: event.clientY
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
@@ -80,104 +80,109 @@
 	};
 
 	function setContextMenuItemsEventHandlers(id, documentationLocation, container, idOfTarget, documentationLocationOfTarget, linkType) {
-		document.getElementById("condec-context-menu-group-rename").onclick = function() {
+		document.getElementById("condec-context-menu-group-rename").onclick = function () {
 			conDecDialog.showRenameGroupDialog(id);
 		};
 
-		document.getElementById("condec-context-menu-group-delete").onclick = function() {
+		document.getElementById("condec-context-menu-group-delete").onclick = function () {
 			conDecDialog.showDeleteGroupDialog(id);
 		};
 
-		document.getElementById("condec-context-menu-create-item").onclick = function() {
+		document.getElementById("condec-context-menu-create-item").onclick = function () {
 			conDecDialog.showCreateDialog(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-edit-item").onclick = function() {
+		document.getElementById("condec-context-menu-edit-item").onclick = function () {
 			conDecDialog.showEditDialog(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-change-status-item").onclick = function() {
+		document.getElementById("condec-context-menu-change-status-item").onclick = function () {
 			conDecDialog.showChangeStatusDialog(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-issue-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Issue", documentationLocation, function() {
+		document.getElementById("condec-context-menu-issue-item").onclick = function () {
+			conDecAPI.changeKnowledgeType(id, "Issue", documentationLocation, function () {
 				conDecObservable.notify();
 			});
 		};
 
-		document.getElementById("condec-context-menu-assign-decision-group-item").onclick = function() {
+		document.getElementById("condec-context-menu-assign-decision-group-item").onclick = function () {
 			conDecDialog.showAssignDialog(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-decision-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Decision", documentationLocation, function() {
+		document.getElementById("condec-context-menu-decision-item").onclick = function () {
+			conDecAPI.changeKnowledgeType(id, "Decision", documentationLocation, function () {
 				conDecObservable.notify();
 			});
 		};
 
-		document.getElementById("condec-context-menu-alternative-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Alternative", documentationLocation, function() {
+		document.getElementById("condec-context-menu-alternative-item").onclick = function () {
+			conDecAPI.changeKnowledgeType(id, "Alternative", documentationLocation, function () {
 				conDecObservable.notify();
 			});
 		};
 
-		document.getElementById("condec-context-menu-pro-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Pro", documentationLocation, function() {
+		document.getElementById("condec-context-menu-pro-item").onclick = function () {
+			conDecAPI.changeKnowledgeType(id, "Pro", documentationLocation, function () {
 				conDecObservable.notify();
 			});
 		};
 
-		document.getElementById("condec-context-menu-con-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Con", documentationLocation, function() {
+		document.getElementById("condec-context-menu-con-item").onclick = function () {
+			conDecAPI.changeKnowledgeType(id, "Con", documentationLocation, function () {
 				conDecObservable.notify();
 			});
 		};
 
-		document.getElementById("condec-context-menu-link-item").onclick = function() {
+		document.getElementById("condec-context-menu-link-item").onclick = function () {
 			conDecDialog.showLinkDialog(id, documentationLocation, idOfTarget, documentationLocationOfTarget, linkType);
 		};
 
-		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
+		document.getElementById("condec-context-menu-delete-link-item").onclick = function () {
 			conDecDialog.showDeleteLinkDialog(id, documentationLocation, idOfTarget, documentationLocationOfTarget);
 		};
 
-		document.getElementById("condec-context-menu-summarized-code").onclick = function() {
+		document.getElementById("condec-context-menu-summarized-code").onclick = function () {
 			conDecDialog.showSummarizedDialog(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-delete-item").onclick = function() {
+		document.getElementById("condec-context-menu-delete-item").onclick = function () {
 			conDecDialog.showDeleteDialog(id, documentationLocation);
+		};
+		document.getElementById("condec-context-menu-sentence-validate-item").onclick = function () {
+			conDecAPI.setValidated(id, function () {
+				conDecObservable.notify();
+			});
 		};
 
 		// set root only works in Treant currently
-		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
-			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(knowledgeElement) {
+		document.getElementById("condec-context-menu-set-root-item").onclick = function () {
+			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (knowledgeElement) {
 				var filterSettings = conDecFiltering.getFilterSettings("treant");
 				filterSettings["selectedElement"] = knowledgeElement.key;
 				conDecTreant.buildTreant(filterSettings, true);
 			});
 		};
 
-		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
+		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function () {
 			conDecAPI.openJiraIssue(id, documentationLocation);
 		};
 
 		// only for decision knowledge in the description or comments of Jira issues
-		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
-			conDecAPI.setSentenceIrrelevant(id, function() {
+		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function () {
+			conDecAPI.setSentenceIrrelevant(id, function () {
 				conDecObservable.notify();
 			});
 		};
 
 		// only for decision knowledge in the description or comments of Jira issues
-		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
-			conDecAPI.createJiraIssueFromSentence(id, function() {
+		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function () {
+			conDecAPI.createJiraIssueFromSentence(id, function () {
 				conDecObservable.notify();
 			});
 		};
 
-		document.getElementById("condec-context-menu-export").onclick = function() {
+		document.getElementById("condec-context-menu-export").onclick = function () {
 			conDecDialog.showExportDialog(id, documentationLocation);
 		};
 	}
@@ -202,7 +207,8 @@
 		// customize context menu for documentation locations
 		if (documentationLocation === "s") {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
-			conDecAPI.isJiraIssueDocumentationLocationActivated(function(isEnabled) {
+			document.getElementById("condec-context-menu-sentence-validate-item").style.display = "initial";
+			conDecAPI.isJiraIssueDocumentationLocationActivated(function (isEnabled) {
 				if (isEnabled) {
 					document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
 				} else {
@@ -211,6 +217,7 @@
 			});
 		} else {
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
+			document.getElementById("condec-context-menu-sentence-validate-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
 		}
 		if (documentationLocation === "groups") {
@@ -220,7 +227,7 @@
 			document.getElementById("fourth-context-section").style.display = "none";
 			document.getElementById("fifth-context-section").style.display = "initial";
 		}
-		
+
 		if (documentationLocation === "c") {
 			document.getElementById("condec-context-menu-create-item").style.display = "none";
 			document.getElementById("condec-context-menu-edit-item").style.display = "none";
@@ -256,18 +263,18 @@
 	}
 
 	ConDecContextMenu.prototype.addContextMenuToCommentTabPanel = function () {
-        console.log("conDecContextMenu addContextMenuToCommentTabPanel");
-        // ids are set in AbstractKnowledgeClassificationMacro Java class
-        var comments = document.querySelectorAll('[id^="commentnode-"]');
-        if (comments) {
-            for (i = 0; i < comments.length; i++) {
-                comments[i].addEventListener('contextmenu', function(event) {
+		console.log("conDecContextMenu addContextMenuToCommentTabPanel");
+		// ids are set in AbstractKnowledgeClassificationMacro Java class
+		var comments = document.querySelectorAll('[id^="commentnode-"]');
+		if (comments) {
+			for (i = 0; i < comments.length; i++) {
+				comments[i].addEventListener('contextmenu', function (event) {
 					event.preventDefault();
-                    conDecContextMenu.createContextMenu(this.id.split("-")[1], "s", event, null, JIRA.Issue.getIssueId(), "i");
-                });
-            }
-        }
-    };
+					conDecContextMenu.createContextMenu(this.id.split("-")[1], "s", event, null, JIRA.Issue.getIssueId(), "i");
+				});
+			}
+		}
+	};
 
 	global.conDecContextMenu = new ConDecContextMenu();
 })(window);
