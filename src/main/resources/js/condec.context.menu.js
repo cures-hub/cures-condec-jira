@@ -71,7 +71,9 @@
 
 		$(contextMenuNode).css({
 			left: event.clientX,
-			top: event.clientY
+			top: event.clientY,
+			overflow: 'auto',
+			maxHeight: '500px',
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
