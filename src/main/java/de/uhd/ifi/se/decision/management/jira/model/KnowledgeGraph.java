@@ -298,6 +298,15 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
+	 * @return list of all {@link KnowledgeElement}s for a project with a certain
+	 *         knowledgeType passed as String.
+	 */
+	public List<KnowledgeElement> getElements(String type) {
+		return vertexSet().stream().filter(element -> element.getTypeAsString().equals(type))
+			.collect(Collectors.toList());
+	}
+
+	/**
 	 * @issue How can we get a subgraph of the entire knowledge graph that only
 	 *        contains certain elements (for filtering)?
 	 * @alternative Use the org.jgrapht.graph.AsSubgraph class to create a subgraph.
