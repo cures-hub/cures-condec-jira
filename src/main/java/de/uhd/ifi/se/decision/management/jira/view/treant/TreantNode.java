@@ -8,6 +8,9 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -59,9 +62,11 @@ public class TreantNode {
 
 	public TreantNode(KnowledgeElement knowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
+
 		if (knowledgeElement == null || knowledgeElement.getSummary() == null) {
 			return;
 		}
+
 		String title;
 		if (knowledgeElement.getSummary().length() > 25 && !knowledgeElement.getSummary().contains(" ")) {
 			title = knowledgeElement.getSummary().substring(0, 24) + "...";
@@ -74,12 +79,7 @@ public class TreantNode {
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = knowledgeElement.getId();
 		this.link = new HashMap<>();
-		List<String> failedCompletenessCheckCriteria = DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
-		if (!failedCompletenessCheckCriteria.isEmpty()) {
-			this.link.put("title", String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
-		} else if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()) {
-			this.link.put("title", knowledgeElement.getDescription());
-		}
+		this.link.put("title", buildToolTip(knowledgeElement));
 		if (isHyperlinked) {
 			this.link.put("href", knowledgeElement.getUrl());
 			this.link.put("target", "_blank");
@@ -107,6 +107,35 @@ public class TreantNode {
 		default:
 			break;
 		}
+	}
+
+	private String buildToolTip(KnowledgeElement knowledgeElement) {
+		FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
+		filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
+		filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
+
+		String text = "";
+		List<String> failedDefinitionOfDoneCheckCriteriaCriteria =
+			DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings);
+		List<String> failedCompletenessCheckCriteria =
+			DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
+		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("doesNotHaveMinimumCoverage")) {
+			text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
+		}
+		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
+			text = text.concat("Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
+		}
+		if (!failedCompletenessCheckCriteria.isEmpty()) {
+			text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
+			text = text.concat(String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
+		}
+		if (text.isBlank() && knowledgeElement.getDescription() != null
+			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
+			text = knowledgeElement.getDescription();
+		}
+		text = text.strip();
+		return text;
 	}
 
 	public Map<String, String> getNodeContent() {

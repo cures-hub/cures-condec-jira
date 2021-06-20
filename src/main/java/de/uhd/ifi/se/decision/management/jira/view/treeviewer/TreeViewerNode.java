@@ -93,7 +93,7 @@ public class TreeViewerNode {
 			text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
 		}
 		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
-			text = text.concat("Decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
+			text = text.concat("Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
 		}
 		if (!failedCompletenessCheckCriteria.isEmpty()) {
 			text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
@@ -103,6 +103,7 @@ public class TreeViewerNode {
 			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
 			text = knowledgeElement.getDescription();
 		}
+		text = text.strip();
 		return text;
 	}
 
