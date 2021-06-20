@@ -141,7 +141,7 @@ public class VisNode {
 			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
 			text = element.getTypeAsString().toUpperCase() + System.lineSeparator()
 				+ element.getKey() + ": " + element.getSummary() + System.lineSeparator()
-				+ element.getDescription();;
+				+ element.getDescription();
 		}
 		text = text.strip();
 		return text;
