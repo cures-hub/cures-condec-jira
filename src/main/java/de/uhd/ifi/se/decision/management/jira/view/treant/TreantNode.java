@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.google.common.collect.ImmutableMap;
@@ -61,7 +62,7 @@ public class TreantNode {
 		if (knowledgeElement == null || knowledgeElement.getSummary() == null) {
 			return;
 		}
-		String title = "";
+		String title;
 		if (knowledgeElement.getSummary().length() > 25 && !knowledgeElement.getSummary().contains(" ")) {
 			title = knowledgeElement.getSummary().substring(0, 24) + "...";
 		} else {
@@ -72,8 +73,8 @@ public class TreantNode {
 				"desc", knowledgeElement.getKey());
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = knowledgeElement.getId();
-		this.link = new HashMap<String, String>();
-		List<String> failedCompletenessCheckCriteria = knowledgeElement.getFailedCompletenessCriteria();
+		this.link = new HashMap<>();
+		List<String> failedCompletenessCheckCriteria = DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
 		if (!failedCompletenessCheckCriteria.isEmpty()) {
 			this.link.put("title", String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
 		} else if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()) {

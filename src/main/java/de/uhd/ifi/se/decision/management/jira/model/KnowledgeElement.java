@@ -733,17 +733,6 @@ public class KnowledgeElement {
 		return !DefinitionOfDoneChecker.checkDefinitionOfDone(this, filterSettings);
 	}
 
-	/**
-	 * @return list of all failed completeness criteria according to the
-	 *         {@link DefinitionOfDone}. For example, an argument needs to be linked
-	 *         to at least one solution option (decision or alternative) in the
-	 *         {@link KnowledgeGraph}. Otherwise, it is incomplete, i.e., its
-	 *         documentation needs to be improved.
-	 */
-	public List<String> getFailedCompletenessCriteria() {
-		return DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(this);
-	}
-
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) {

@@ -6,6 +6,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -40,30 +42,29 @@ public class TreeViewerNode {
 	private Map<String, String> li_attr;
 
 	public TreeViewerNode() {
-		children = new ArrayList<TreeViewerNode>();
+		children = new ArrayList<>();
 	}
 
 	public TreeViewerNode(KnowledgeElement knowledgeElement, boolean noColors) {
 		this();
-		this.id = "tv" + String.valueOf(knowledgeElement.getId());
+
+		FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
+		filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
+		filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
+
+		this.id = "tv" + knowledgeElement.getId();
 		this.text = knowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
 		this.element = knowledgeElement;
-		List<String> failedCompletenessCheckCriteria = knowledgeElement.getFailedCompletenessCriteria();
-		if (!failedCompletenessCheckCriteria.isEmpty()) {
-			this.a_attr = ImmutableMap.of("title", String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
-		} else if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()
-				&& !knowledgeElement.getDescription().equals("undefined")) {
-			this.a_attr = ImmutableMap.of("title", knowledgeElement.getDescription());
-		}
+		this.a_attr = ImmutableMap.of("title", buildToolTip(knowledgeElement, filterSettings));
 		this.li_attr = ImmutableMap.of("class", "issue");
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
 		if (!noColors) {
 			String textColor = "";
-			if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement,
-				new FilterSettings(knowledgeElement.getProject().getProjectKey(), "")).isEmpty()) {
+			if (!DefinitionOfDoneChecker.checkDefinitionOfDone(knowledgeElement, filterSettings)) {
 				textColor = "crimson";
 			}
 			if (!textColor.isBlank()) {
@@ -80,6 +81,29 @@ public class TreeViewerNode {
 	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link, boolean colorNodes) {
 		this(knowledgeElement, colorNodes);
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
+	}
+
+	private String buildToolTip(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
+		String text = "";
+		List<String> failedDefinitionOfDoneCheckCriteriaCriteria =
+			DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings);
+		List<String> failedCompletenessCheckCriteria =
+			DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
+		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("doesNotHaveMinimumCoverage")) {
+			text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
+		}
+		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
+			text = text.concat("Decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
+		}
+		if (!failedCompletenessCheckCriteria.isEmpty()) {
+			text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
+			text = text.concat(String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
+		}
+		if (text.isBlank() && knowledgeElement.getDescription() != null
+			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
+			text = knowledgeElement.getDescription();
+		}
+		return text;
 	}
 
 	public String getId() {

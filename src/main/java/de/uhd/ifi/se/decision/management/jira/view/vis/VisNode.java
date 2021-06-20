@@ -65,7 +65,7 @@ public class VisNode {
 		this.level = level;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
-		List<String> failedCompletenessCheckCriteria = element.getFailedCompletenessCriteria();
+		List<String> failedCompletenessCheckCriteria = DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(element);
 		if (!failedCompletenessCheckCriteria.isEmpty()) {
 			this.title = String.join(System.lineSeparator(), failedCompletenessCheckCriteria);
 		} else if (element.getDescription() != null && !element.getDescription().isBlank()) {
