@@ -9,6 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
@@ -47,23 +48,21 @@ public class TreeViewerNode {
 
 	public TreeViewerNode(KnowledgeElement knowledgeElement, boolean noColors) {
 		this();
-
-		FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
-		filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
-
 		this.id = "tv" + knowledgeElement.getId();
 		this.text = knowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
 		this.element = knowledgeElement;
-		this.a_attr = ImmutableMap.of("title", buildToolTip(knowledgeElement, filterSettings));
+		this.a_attr = ImmutableMap.of("title", ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
 		this.li_attr = ImmutableMap.of("class", "issue");
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
 		if (!noColors) {
 			String textColor = "";
+			FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
+			DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
+			filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
+			filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
 			if (!DefinitionOfDoneChecker.checkDefinitionOfDone(knowledgeElement, filterSettings)) {
 				textColor = "crimson";
 			}
@@ -81,30 +80,6 @@ public class TreeViewerNode {
 	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link, boolean colorNodes) {
 		this(knowledgeElement, colorNodes);
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
-	}
-
-	private String buildToolTip(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
-		String text = "";
-		List<String> failedDefinitionOfDoneCheckCriteriaCriteria =
-			DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings);
-		List<String> failedCompletenessCheckCriteria =
-			DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("doesNotHaveMinimumCoverage")) {
-			text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
-		}
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
-			text = text.concat("Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
-		}
-		if (!failedCompletenessCheckCriteria.isEmpty()) {
-			text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
-			text = text.concat(String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
-		}
-		if (text.isBlank() && knowledgeElement.getDescription() != null
-			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
-			text = knowledgeElement.getDescription();
-		}
-		text = text.strip();
-		return text;
 	}
 
 	public String getId() {

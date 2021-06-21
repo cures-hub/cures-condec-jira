@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.google.common.collect.ImmutableMap;
@@ -67,7 +68,9 @@ public class VisNode {
 		this.level = level;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
-		this.title = buildToolTip(element);
+		this.title = ToolTip.buildToolTip(element, element.getTypeAsString().toUpperCase() + System.lineSeparator()
+			+ element.getKey() + ": " + element.getSummary() + System.lineSeparator()
+			+ element.getDescription());
 		this.font = determineFont(element, noColors);
 		this.color = determineColor(element);
 	}
@@ -114,37 +117,6 @@ public class VisNode {
 		color.put("background", element.getType().getColor());
 		color.put("border", "black");
 		return color;
-	}
-
-	private String buildToolTip(KnowledgeElement knowledgeElement) {
-		FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
-		filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
-
-		String text = "";
-		List<String> failedDefinitionOfDoneCheckCriteriaCriteria =
-			DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings);
-		List<String> failedCompletenessCheckCriteria =
-			DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("doesNotHaveMinimumCoverage")) {
-			text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
-		}
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
-			text = text.concat("Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
-		}
-		if (!failedCompletenessCheckCriteria.isEmpty()) {
-			text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
-			text = text.concat(String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
-		}
-		if (text.isBlank() && knowledgeElement.getDescription() != null
-			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
-			text = element.getTypeAsString().toUpperCase() + System.lineSeparator()
-				+ element.getKey() + ": " + element.getSummary() + System.lineSeparator()
-				+ element.getDescription();
-		}
-		text = text.strip();
-		return text;
 	}
 
 	@XmlElement(name = "id")

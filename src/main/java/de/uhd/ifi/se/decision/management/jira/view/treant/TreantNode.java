@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.google.common.collect.ImmutableMap;
@@ -79,7 +80,7 @@ public class TreantNode {
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = knowledgeElement.getId();
 		this.link = new HashMap<>();
-		this.link.put("title", buildToolTip(knowledgeElement));
+		this.link.put("title", ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
 		if (isHyperlinked) {
 			this.link.put("href", knowledgeElement.getUrl());
 			this.link.put("target", "_blank");
@@ -107,35 +108,6 @@ public class TreantNode {
 		default:
 			break;
 		}
-	}
-
-	private String buildToolTip(KnowledgeElement knowledgeElement) {
-		FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
-		filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
-
-		String text = "";
-		List<String> failedDefinitionOfDoneCheckCriteriaCriteria =
-			DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings);
-		List<String> failedCompletenessCheckCriteria =
-			DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("doesNotHaveMinimumCoverage")) {
-			text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
-		}
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
-			text = text.concat("Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
-		}
-		if (!failedCompletenessCheckCriteria.isEmpty()) {
-			text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
-			text = text.concat(String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
-		}
-		if (text.isBlank() && knowledgeElement.getDescription() != null
-			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
-			text = knowledgeElement.getDescription();
-		}
-		text = text.strip();
-		return text;
 	}
 
 	public Map<String, String> getNodeContent() {
