@@ -51,8 +51,8 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testNodeDescription() {
 		VisNode node = new VisNode(element, true, 1);
-		String expectedTitle = element.getTypeAsString().toUpperCase() + System.lineSeparator() + element.getKey() + ": "
-				+ element.getSummary() + System.lineSeparator() + element.getDescription();
+		String expectedTitle = "Minimum decision coverage is not reached."
+			+ System.lineSeparator() + System.lineSeparator() + "Linked decision knowledge is incomplete.";
 		assertEquals(expectedTitle, node.getTitle());
 	}
 
