@@ -8,9 +8,9 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
 
 import java.util.List;
 
-public class ToolTip {
+public interface ToolTip {
 
-	public static String buildToolTip(KnowledgeElement knowledgeElement, String defaultText) {
+	static String buildToolTip(KnowledgeElement knowledgeElement, String defaultText) {
 		String text = "";
 
 		if ((knowledgeElement.getProject() != null) && (knowledgeElement.getProject().getProjectKey() != null)) {

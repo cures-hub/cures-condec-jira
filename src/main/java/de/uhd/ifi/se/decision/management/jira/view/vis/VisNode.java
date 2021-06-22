@@ -1,13 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
