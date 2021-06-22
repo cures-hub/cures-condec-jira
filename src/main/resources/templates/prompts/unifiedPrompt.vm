@@ -1,0 +1,46 @@
+<section id="unified-prompt"
+         class="aui-dialog2 aui-dialog2-medium aui-dialog2-warning aui-layer data-aui-modal"
+         role="dialog"
+         tabindex="-1"
+>
+    <header class="aui-dialog2-header">
+        <h1 class="aui-dialog2-header-main" id="unified-prompt-header"></h1>
+        <button class="aui-close-button" type="button" aria-label="close"></button>
+    </header>
+    <div class="aui-dialog2-content">
+        <p>We have found the following problems with the decision knowledge documentation of this issue.</p>
+        <div class="non-validated-elements-prompt">
+            #parse("templates/prompts/nonValidatedElementsPrompt.vm")
+        </div>
+    </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+            <button id="warning-dialog-confirm" class="aui-button aui-button-primary">Delete the thing</button>
+            <button id="warning-dialog-cancel" class="aui-button aui-button-link">Cancel</button>
+        </div>
+    </footer>
+    ##
+    ##
+    ##    <strong id="unified-prompt-jira-issue-key"></strong> contains <strong
+    ##    id="num-non-validated-elements"></strong> knowledge elements that have not been manually validated. <br/>
+    ##    Please validate the knowledge elements if you approve their classifications.<br/>
+    ##
+    ##    <table id="non-validated-container-short" class="aui aui-table-list">
+    ##        <thead>
+    ##        <tr>
+    ##            <th class="aui-table-column-issue-key">$i18n.getText("condec.classification.nonvalidatedelement")</th>
+    ##            <th class="aui-table-column-unsortable">$i18n.getText("condec.classification.classifiedknowledgetype")</th>
+    ##        </tr>
+    ##        </thead>
+    ##        <tbody id="non-validated-table-body">
+    ##        </tbody>
+    ##    </table>
+    ##    <button id="non-validated-elements-validate-button" class="aui-button aui-button-link">
+    ##        <span class="aui-icon aui-icon-small aui-iconfont-check"></span>
+    ##        Validate all of these elements!
+    ##    </button>
+    ##    <button id="non-validated-elements-ignore-button" class="aui-button aui-button-link">
+    ##        <span class="aui-icon aui-icon-small aui-iconfont-cross"></span>
+    ##        Ignore
+    ##    </button>
+</section>

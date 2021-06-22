@@ -5,9 +5,12 @@
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				// just-in-time prompts when status changes
-				conDecPrompt.promptLinkSuggestion();
-				conDecPrompt.promptDefinitionOfDoneChecking();
+				const issueKey = conDecAPI.getIssueKey();
+				// Create unified prompt
+				document.getElementById("unified-prompt-header").innerHTML = "Before you close " + issueKey + "...";
 				conDecPrompt.promptNonValidatedElements();
+
+				AJS.dialog2("#unified-prompt").show();
 			}
 		});
 	};
@@ -91,22 +94,7 @@
 				}
 				const nonValidatedElements = response["nonValidatedElements"]
 
-				document.getElementById("non-validated-elements-prompt-jira-issue-key").innerHTML = issueKey;
 				document.getElementById("num-non-validated-elements").innerHTML = response["nonValidatedElements"].length
-
-				const flag = AJS.flag({
-					body: document.getElementById("non-validated-elements-prompt").outerHTML,
-					title: "Non-validated elements found!",
-					type: "warning"
-				})
-				document.getElementById("non-validated-elements-validate-button").onclick = function () {
-					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
-					flag.close();
-
-				};
-				document.getElementById("non-validated-elements-ignore-button").onclick = function () {
-					flag.close();
-				};
 
 
 				let tableContents = "";
@@ -119,6 +107,10 @@
 
 				});
 				document.getElementById("non-validated-table-body").innerHTML = tableContents;
+				document.getElementById("non-validated-elements-validate-button").onclick = function () {
+					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
+				};
+
 			})
 	}
 

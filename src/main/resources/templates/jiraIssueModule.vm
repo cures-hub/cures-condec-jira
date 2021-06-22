@@ -81,15 +81,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 </div>
 
 <a id="open-fullscreen">
-	<span class="aui-icon aui-iconfont-vid-full-screen-on"></span> $i18n.getText("condec.fullscreen")
+    <span class="aui-icon aui-iconfont-vid-full-screen-on"></span> $i18n.getText("condec.fullscreen")
 </a>
 <a id="close-fullscreen" class="aui-close-button">Close</a>
 
 #parse("templates/contextMenu.vm")
 #parse("templates/dialogs/knowledgeManagementDialogs.vm")
 
+##<div style="display:none">
+###parse("templates/prompts/nonValidatedElementsPrompt.vm")
+##</div>
 <div style="display:none">
-#parse("templates/prompts/nonValidatedElementsPrompt.vm")
+    #parse("templates/prompts/unifiedPrompt.vm")
 </div>
 
 <script>
