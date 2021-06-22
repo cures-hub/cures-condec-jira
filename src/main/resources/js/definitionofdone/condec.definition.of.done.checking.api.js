@@ -30,6 +30,18 @@
 	};
 
 	/*
+	 * external references:
+	 */
+	ConDecDoDCheckingAPI.prototype.getFailedCompletenessCheckCriteria = function(filterSettings, callback) {
+		generalApi.postJSON(this.restPrefix + '/getFailedCompletenessCheckCriteria.json', filterSettings, function(
+			error, result) {
+			if (error === null) {
+				callback(result);
+			}
+		});
+	};
+
+	/*
 	 * external references: condec.quality.check.js
 	 */
 	ConDecDoDCheckingAPI.prototype.getCoverageOfJiraIssue = function(projectKey, issueKey, callback) {

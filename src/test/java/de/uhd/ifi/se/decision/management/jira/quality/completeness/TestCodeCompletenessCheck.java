@@ -75,6 +75,12 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 	}
 
+	@Test
+	@NonTransactional
+	public void testGetFailedCompletenessCriteria() {
+		assertTrue(codeCompletenessCheck.getFailedCriteria(testFileThatIsDone).isEmpty());
+	}
+
 	@After
 	public void tearDown() {
 		// reset plugin settings to default settings

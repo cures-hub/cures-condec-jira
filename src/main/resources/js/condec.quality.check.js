@@ -7,11 +7,13 @@
 	var minimumCoverageText;
 	var linkDistanceText;
 	var knowledgeCompleteText;
+	var knowledgeCompleteCriteriaText;
 	var issueText;
 	var decisionText;
 
-	const KNOWLEDGE_COMPLETE = "Decision knowledge is complete."
-	const KNOWLEDGE_INCOMPLETE = "Decision knowledge is incomplete."
+	const KNOWLEDGE_COMPLETE = "Linked decision knowledge is complete.";
+	const KNOWLEDGE_INCOMPLETE = "Linked decision knowledge is incomplete.";
+	const KNOWLEDGE_CRITERIA = "Failed knowledge completeness criteria:";
 
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
@@ -51,6 +53,7 @@
 				, "condec-tab-minimum-coverage-" + viewIdentifier
 				, "condec-tab-link-distance-" + viewIdentifier
 				, "quality-check-knowledge-complete-text-" + viewIdentifier
+				, "quality-check-knowledge-complete-criteria-text-" + viewIdentifier
 				, "quality-check-issue-text-" + viewIdentifier
 				, "quality-check-decision-text-" + viewIdentifier);
 
@@ -87,19 +90,24 @@
 						doesNotHaveMinimumCoverage = true;
 					}
 
-					getHTMLNodes("menu-item-quality-check-" + viewIdentifier
-						, "condec-tab-minimum-coverage-" + viewIdentifier
-						, "condec-tab-link-distance-" + viewIdentifier
-						, "quality-check-knowledge-complete-text-" + viewIdentifier
-						, "quality-check-issue-text-" + viewIdentifier
-						, "quality-check-decision-text-" + viewIdentifier);
+					conDecDoDCheckingAPI.getFailedCompletenessCheckCriteria(newFilterSettings, function(result) {
+						var failedCompletenessCheckCriteria = result;
 
-					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions);
-					updateLabel(minimumCoverageText, minimumCoverage);
-					updateLabel(linkDistanceText, linkDistance);
-					updateText(issueText, "issues", numberOfIssues, minimumCoverage);
-					updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
-					updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked);
+						getHTMLNodes("menu-item-quality-check-" + viewIdentifier
+							, "condec-tab-minimum-coverage-" + viewIdentifier
+							, "condec-tab-link-distance-" + viewIdentifier
+							, "quality-check-knowledge-complete-text-" + viewIdentifier
+							, "quality-check-knowledge-complete-criteria-text-" + viewIdentifier
+							, "quality-check-issue-text-" + viewIdentifier
+							, "quality-check-decision-text-" + viewIdentifier);
+
+						updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions);
+						updateLabel(minimumCoverageText, minimumCoverage);
+						updateLabel(linkDistanceText, linkDistance);
+						updateText(issueText, "issues", numberOfIssues, minimumCoverage);
+						updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
+						updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked,failedCompletenessCheckCriteria);
+					});
 				});
 			});
 		});
@@ -135,7 +143,7 @@
 		}
 	}
 
-	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked) {
+	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked, failedCompletenessCheckCriteria) {
 		if (hasIncompleteKnowledgeLinked === true) {
 			knowledgeCompleteText.textContent = KNOWLEDGE_INCOMPLETE;
 			addToken(knowledgeCompleteText, "condec-error");
@@ -146,14 +154,21 @@
 			knowledgeCompleteText.textContent = "";
 			addToken(knowledgeCompleteText, "condec-default");
 		}
+
+		if (failedCompletenessCheckCriteria && failedCompletenessCheckCriteria.length) {
+			addToken(knowledgeCompleteCriteriaText, "condec-error");
+			knowledgeCompleteCriteriaText.innerHTML = KNOWLEDGE_CRITERIA + "<br>" +
+				failedCompletenessCheckCriteria.join("<br>");
+		}
 	}
 
 	function getHTMLNodes(tabName, minimumCoverageName, linkDistanceName, knowledgeCompleteName,
-						  issueName, decisionName) {
+						  knowledgeCompleteCriteriaName, issueName, decisionName) {
 		qualityCheckTab = document.getElementById(tabName);
 		minimumCoverageText = document.getElementById(minimumCoverageName);
 		linkDistanceText = document.getElementById(linkDistanceName);
 		knowledgeCompleteText = document.getElementById(knowledgeCompleteName);
+		knowledgeCompleteCriteriaText = document.getElementById(knowledgeCompleteCriteriaName);
 		issueText = document.getElementById(issueName);
 		decisionText = document.getElementById(decisionName);
 	}

@@ -88,6 +88,18 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		assertFalse(issueCompletenessCheck.execute(KnowledgeElements.getUnsolvedDecisionProblem()));
 	}
 
+	@Test
+	@NonTransactional
+	public void testGetFailedCriteria() {
+		// set criteria "issue has to be linked to alternative" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setIssueLinkedToAlternative(true);
+		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
+		issue.setStatus(KnowledgeStatus.RESOLVED);
+		assertTrue(issueCompletenessCheck.getFailedCriteria(issue).isEmpty());
+		assertFalse(issueCompletenessCheck.getFailedCriteria(KnowledgeElements.getUnsolvedDecisionProblem()).isEmpty());
+	}
+
 	@After
 	public void tearDown() {
 		// restore default
