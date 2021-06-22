@@ -175,7 +175,7 @@
 				AJS.dialog2(deleteGroupDialog).hide();
 			};
 
-			cancelButton.onclick = function() {
+			cancelButton.onclick = function () {
 				AJS.dialog2(deleteGroupDialog).hide();
 			};
 
@@ -183,8 +183,13 @@
 			AJS.dialog2(deleteGroupDialog).show();
 		}
 	};
+	ConDecDialog.prototype.validateElement = function (id) {
+		console.log("conDecDialog validateElement");
 
-	ConDecDialog.prototype.showDeleteDialog = function(id, documentationLocation, callback = function() { }) {
+
+	}
+	ConDecDialog.prototype.showDeleteDialog = function (id, documentationLocation, callback = function () {
+	}) {
 		console.log("conDecDialog showDeleteDialog");
 
 		// HTML elements
@@ -587,6 +592,7 @@
 		// Show dialog
 		AJS.dialog2(exportDialog).show();
 	};
+
 
 	global.conDecDialog = new ConDecDialog();
 })(window);

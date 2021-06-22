@@ -473,7 +473,7 @@ public class KnowledgeRest {
 				.getKnowledgeElement(decisionKnowledgeElement);
 		if (sentence == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
+				.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
 
 		sentence.setRelevant(false);
@@ -484,10 +484,56 @@ public class KnowledgeRest {
 	}
 
 	/**
+	 * @param request                  HttpServletRequest with an authorized Jira
+	 * @param decisionKnowledgeElement JSON object containing at least the id, documentation location
+	 * @return {@link Status.OK} if setting the sentence validated was successful
+	 * @issue How should setting a single element "validated" be handled?
+	 * @alternative Change the API of updateDecisionKnowledgeElement to allow this attribute!
+	 * @con This could be a breaking change
+	 * @con This would make the code confusing
+	 * @decision Make a new REST endpoint "setSentenceValidated"!
+	 * @pro This would be backwards compatible
+	 * @pro The code stays cleaner this way
+	 * @con It might be confusing that this is documented as part of the SF: Change decision knowledge element, but not inside the function of the same name
+	 */
+	@Path("/setSentenceValidated")
+	@POST
+	public Response setSentenceValidated(@Context HttpServletRequest request,
+										 KnowledgeElement decisionKnowledgeElement) {
+		if (request == null || decisionKnowledgeElement == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Setting element validated failed due to a bad request."))
+				.build();
+		}
+		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+				.entity(ImmutableMap.of("error", "Only decision knowledge elements documented in the description "
+					+ "or comments of a Jira issue can be set to validated."))
+				.build();
+		}
+
+		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+			.getJiraIssueTextManager();
+
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
+			.getKnowledgeElement(decisionKnowledgeElement);
+		if (sentence == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
+		}
+
+		sentence.setValidated(true);
+		persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
+		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
+		return Response.status(Status.OK).build();
+	}
+
+	/**
 	 * Rereads all decision knowledge elements documented within the description and
 	 * comments of a Jira issue. For example, this might be useful if linkage
 	 * between knowledge elements was destroyed.
-	 * 
+	 *
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
@@ -502,19 +548,19 @@ public class KnowledgeRest {
 	public Response resetDecisionKnowledgeFromText(@Context HttpServletRequest request, Long jiraIssueId) {
 		if (request == null || jiraIssueId == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
-					.build();
+				"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
+				.build();
 		}
 		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
 		if (jiraIssue == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Resetting decision knowledge documented in the description and comments of a Jira issue failed "
-							+ "because the Jira issue could not be found."))
-					.build();
+				"Resetting decision knowledge documented in the description and comments of a Jira issue failed "
+					+ "because the Jira issue could not be found."))
+				.build();
 		}
 		String projectKey = jiraIssue.getProjectObject().getKey();
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 
 		persistenceManager.deleteElementsInJiraIssue(jiraIssue);
 		persistenceManager.updateElementsOfDescriptionInDatabase(jiraIssue);
