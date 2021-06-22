@@ -67,7 +67,12 @@ public class TreeViewerNode {
 				textColor = "crimson";
 			}
 			if (!textColor.isBlank()) {
-				a_attr = ImmutableMap.of("style", "color:" + textColor);
+				if (a_attr == null) {
+					a_attr = ImmutableMap.of("style", "color:" + textColor);
+				} else {
+					a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:" + textColor)
+						.build();
+				}
 			}
 		}
 	}

@@ -106,7 +106,7 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testGetAndSetAttributes() {
 		Map<String, String> attributes = node.getAttr();
-		assertEquals(attributes.size(), 1L);
+		assertEquals(attributes.size(), 2L);
 		assertEquals(attributes.get("title"), "Minimum decision coverage is not reached."
 			+ System.lineSeparator() + System.lineSeparator() + "Linked decision knowledge is incomplete.");
 		assertEquals(attributes.get("style"), "color:crimson");
