@@ -82,9 +82,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph(String projectKey) {
 		this();
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		persistenceManager.getKnowledgeElements().forEach(element -> {
+		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
-			persistenceManager.getLinks(element).forEach(link -> {
+			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
 				if (!linkIds.contains(link.getId())) {
 					addEdge(link);
 					linkIds.add(link.getId());
