@@ -46,7 +46,7 @@
 
 		var createElementButton = document.getElementById("create-element-button");
 		var elementInputField = document.getElementById("element-input-field");
-		conDecAPI.isIssueStrategy(function(isEnabled) {
+		conDecAPI.isJiraIssueDocumentationLocationActivated(function(isEnabled) {
 			if (isEnabled) {
 				createElementButton.addEventListener("click", function() {
 					var summary = elementInputField.value;
