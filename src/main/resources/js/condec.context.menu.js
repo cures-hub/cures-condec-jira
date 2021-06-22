@@ -68,12 +68,11 @@
 
 		showOrHideContextMenuItems(documentationLocation, container);
 		setContextMenuItemsEventHandlers(id, documentationLocation, container, idOfTarget, documentationLocationOfTarget, linkType);
-
 		$(contextMenuNode).css({
 			left: event.clientX,
 			top: event.clientY,
 			overflow: 'auto',
-			maxHeight: '500px',
+			maxHeight: '350px',
 		});
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
