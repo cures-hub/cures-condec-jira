@@ -11,26 +11,30 @@ import java.util.List;
 public class ToolTip {
 
 	public static String buildToolTip(KnowledgeElement knowledgeElement, String defaultText) {
-		FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
-		filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
-
 		String text = "";
-		List<String> failedDefinitionOfDoneCheckCriteriaCriteria =
-			DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings);
-		List<String> failedCompletenessCheckCriteria =
-			DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("doesNotHaveMinimumCoverage")) {
-			text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
+
+		if ((knowledgeElement.getProject() != null) && (knowledgeElement.getProject().getProjectKey() != null)) {
+			FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
+			DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
+			filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
+			filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
+
+			List<String> failedDefinitionOfDoneCheckCriteriaCriteria =
+				DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings);
+			List<String> failedCompletenessCheckCriteria =
+				DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement);
+			if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("doesNotHaveMinimumCoverage")) {
+				text = text.concat("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator());
+			}
+			if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
+				text = text.concat("Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
+			}
+			if (!failedCompletenessCheckCriteria.isEmpty()) {
+				text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
+				text = text.concat(String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
+			}
 		}
-		if (failedDefinitionOfDoneCheckCriteriaCriteria.contains("hasIncompleteKnowledgeLinked")) {
-			text = text.concat("Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator());
-		}
-		if (!failedCompletenessCheckCriteria.isEmpty()) {
-			text = text.concat("Failed knowledge completeness criteria:" + System.lineSeparator());
-			text = text.concat(String.join(System.lineSeparator(), failedCompletenessCheckCriteria));
-		}
+
 		if (text.isBlank() && knowledgeElement.getDescription() != null
 			&& !knowledgeElement.getDescription().isBlank() && !knowledgeElement.getDescription().equals("undefined")) {
 			text = defaultText;
