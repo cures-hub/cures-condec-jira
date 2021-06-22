@@ -49,11 +49,4 @@ public class TestGetCoverageOfJiraIssue extends TestSetUp {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 			dodCheckingRest.getCoverageOfJiraIssue(request, null, JiraIssues.getTestJiraIssues().get(0).getKey()).getStatus());
 	}
-
-	@Test
-	@NonTransactional
-	public void testRequestValidProjectKeyValidIssueKeyInvalid() {
-		assertEquals(Status.OK.getStatusCode(),
-			dodCheckingRest.getCoverageOfJiraIssue(request, "TEST", null));
-	}
 }
