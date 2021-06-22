@@ -1,6 +1,6 @@
 # cures-condec-jira
 
-[![Build Status](https://travis-ci.org/cures-hub/cures-condec-jira.svg?branch=master)](https://travis-ci.org/cures-hub/cures-condec-jira)
+[![Build Status](https://travis-ci.com/cures-hub/cures-condec-jira.svg?branch=master)](https://travis-ci.com/cures-hub/cures-condec-jira)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bcbb5354da724d718c5b63c0416ee572)](https://www.codacy.com/app/anja.kleebaum/cures-condec-jira?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cures-hub/cures-condec-jira&amp;utm_campaign=Badge_Grade)
 [![Codecoverage](https://codecov.io/gh/cures-hub/cures-condec-jira/branch/master/graph/badge.svg)](https://codecov.io/gh/cures-hub/cures-condec-jira/branch/master)
 [![GitHub contributors](https://img.shields.io/github/contributors/cures-hub/cures-condec-jira.svg)](https://github.com/cures-hub/cures-condec-jira/graphs/contributors)
@@ -98,10 +98,11 @@ To overcome this disadvantage, the active object strategy uses distinct model cl
 This strategy uses object-relational mapping to communicate with Jira's internal database.
 
 ### REST API
-This plug-in provides a [representational state transfer (REST) application programming interface (API)](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/rest) to retrieve, insert, update, and delete decision knowledge in Jira.
+This plug-in provides a [representational state transfer (REST) application programming interface (API)](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
+e.g., to retrieve, insert, update, and delete decision knowledge in Jira.
 These services can be accessed via the following link:
 
-**Jira base URL**/rest/condec/latest/**knowledge|config|view**/**REST service**
+**Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|dodchecking|git|decisionguidance|linkrecommendation|nudging|classification|webhook**/**REST service**
 
 The Jira ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/condec.api.js) from the user interface.
 
@@ -114,3 +115,9 @@ Jira ConDec provides a webhook sending decision knowledge to a receiver system v
 - Select the types of elements, which trigger the webhook, if they are created or edited.
 - Activate the webhook with the switch on the top of the page
 - You can click the test button to send a test post to the given URL.
+
+### Logging and Monitoring
+The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 
+e.g. to evaluate which views the users prefer.
+You need to configure the `log4j.properties` so that `LOGGER.info()` statements are logged.
+More infos on usage data analysis can be found [here](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/logging/).
