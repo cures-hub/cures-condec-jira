@@ -9,6 +9,8 @@
 				// Create unified prompt
 				document.getElementById("unified-prompt-header").innerHTML = "Before you close " + issueKey + "...";
 				conDecPrompt.promptNonValidatedElements();
+				conDecPrompt.promptDefinitionOfDoneChecking();
+				conDecPrompt.promptLinkSuggestion();
 
 				AJS.dialog2("#unified-prompt").show();
 			}
@@ -35,14 +37,11 @@
 							document.getElementById("link-recommendation-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
 							document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
 							document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
-							var flag = AJS.flag({
-								body: document.getElementById("link-recommendation-prompt").outerHTML,
-								title: "Related Knowledge Elements Detected!"
-							});
-							document.getElementById("link-recommendation-prompt-button").onclick = function() {
-								conDecLinkRecommendationAPI.approveInconsistencies(issueId);
-								flag.close();
-							};
+
+							// document.getElementById("link-recommendation-prompt-button").onclick = function() {
+							// 	conDecLinkRecommendationAPI.approveInconsistencies(issueId);
+							// 	flag.close();
+							// };
 						}
 					});
 			});
@@ -69,15 +68,8 @@
 				return;
 			}
 			document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-			var flag = AJS.flag({
-				body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
-				title: "Definition of Done Violated!",
-				type: "warning"
 
-			});
-			document.getElementById("definition-of-done-checking-prompt-button").onclick = function () {
-				flag.close();
-			};
+
 		})
 	}
 	

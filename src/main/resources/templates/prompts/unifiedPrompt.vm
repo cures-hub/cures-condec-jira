@@ -1,5 +1,5 @@
 <section id="unified-prompt"
-         class="aui-dialog2 aui-dialog2-medium aui-dialog2-warning aui-layer data-aui-modal"
+         class="aui-dialog2 aui-dialog2-large aui-dialog2-warning aui-layer data-aui-modal"
          role="dialog"
          tabindex="-1"
 >
@@ -11,6 +11,14 @@
         <p>We have found the following problems with the decision knowledge documentation of this issue.</p>
         <div class="non-validated-elements-prompt">
             #parse("templates/prompts/nonValidatedElementsPrompt.vm")
+        </div>
+        <br/>
+        <div class="link-recommendation-prompt">
+            #parse("templates/prompts/linkRecommendationPrompt.vm")
+        </div>
+        <br/>
+        <div class="definition-of-done-prompt">
+            #parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")
         </div>
     </div>
     <footer class="aui-dialog2-footer">

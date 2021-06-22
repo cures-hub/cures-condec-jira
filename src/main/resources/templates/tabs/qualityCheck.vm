@@ -15,10 +15,6 @@
     </div>
 </div>
 
-<div class="condec-prompt">
-#parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")
-</div>
-
 <script>
     /* Adds the on click listener on tab opening */
     $(document).ready(function () {
