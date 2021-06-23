@@ -303,7 +303,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 */
 	public List<KnowledgeElement> getElements(String type) {
 		return vertexSet().stream().filter(element -> element.getTypeAsString().equals(type))
-			.collect(Collectors.toList());
+				.collect(Collectors.toList());
 	}
 
 	/**
