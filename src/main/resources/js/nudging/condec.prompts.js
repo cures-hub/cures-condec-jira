@@ -58,15 +58,21 @@
 			"projectKey": projectKey,
 			"selectedElement": issueKey,
 		}
+		conDecAPI.getFilterSettings(projectKey, "", settings => {
 
-		conDecDoDCheckingAPI.getFailedDefinitionOfDoneCriteria(filterSettings, function(result) {
-			if (!result || !result.length) {
-				return;
-			}
-			document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+			document.getElementById("condec-prompt-minimum-coverage").innerHTML = settings.minimumDecisionCoverage;
+			document.getElementById("condec-prompt-link-distance").innerHTML = settings.linkDistance;
+		});
+
+		conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, (coverage) => {
+			document.getElementById("condec-prompt-issue-coverage").innerHTML = coverage["Issue"];
+			document.getElementById("condec-prompt-decision-coverage").innerHTML = coverage["Decision"];
+		});
 
 
-		})
+		document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+
+
 	}
 
 	ConDecPrompt.prototype.promptNonValidatedElements = function () {

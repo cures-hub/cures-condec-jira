@@ -1,11 +1,29 @@
 <div id="definition-of-done-checking-prompt">
     <h3>Definition of Done</h3>
     <strong id="definition-of-done-checking-prompt-jira-issue-key"></strong> violates the definition of done for the
-    knowledge documentation. <br/>
-    <a href="#menu-item-quality-check-jira-issue-module"
-       onclick="javascript:AJS.tabs.change(jQuery('a[href=&quot;#quality-check-tab&quot;]'));" style="width:100%"
-       class="aui-button-link">View Violated Definition of Done Criteria</a><br/>
-    Please improve the definition of done for the knowledge documentation!<br/>
+    knowledge documentation. The following problems exist:
+    <br/>
+
+    <div class="quality-check-container">
+        The definition of done reqiures a minimum coverage of <label id="condec-prompt-minimum-coverage"></label> within
+        a link distance of <label id="condec-prompt-link-distance"></label>.
+
+        <br/>
+        This element is currently covered by <label id="condec-prompt-issue-coverage"></label> issues and <label
+        id="condec-prompt-decision-coverage"></label> decisions.
+
+
+        ##        <div class="text-field" id="quality-check-issue-text-$viewIdentifier">
+        ##        </div>
+        ##        <div class="text-field" id="quality-check-decision-text-$viewIdentifier">
+        ##        </div>
+        ##        <div class="text-field" id="quality-check-knowledge-complete-text-$viewIdentifier">
+        ##        </div>
+    </div>
+
+    ##    <a href="#menu-item-quality-check-jira-issue-module"
+    ##       onclick="javascript:AJS.tabs.change(jQuery('a[href=&quot;#quality-check-tab&quot;]'));" style="width:100%"
+    ##       class="aui-button-link">View Violated Definition of Done Criteria</a><br/>
     ##	<button id="definition-of-done-checking-prompt-button" class="aui-button aui-button-link">
     ##		<span class="aui-icon aui-icon-small aui-iconfont-check">Confirm quality</span>
     ##		I confirm that the definition of done is fulfilled.
