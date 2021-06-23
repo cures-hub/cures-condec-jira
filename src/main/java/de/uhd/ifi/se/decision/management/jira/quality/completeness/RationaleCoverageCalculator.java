@@ -67,13 +67,13 @@ public class RationaleCoverageCalculator {
 
 	private void fillRationaleCoverageCalculator(Set<String> sourceKnowledgeTypes) {
 		this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-			sourceKnowledgeTypes, KnowledgeType.DECISION);
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
 		this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-			sourceKnowledgeTypes, KnowledgeType.ISSUE);
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
 		this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-			sourceKnowledgeTypes, KnowledgeType.DECISION);
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
 		this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-			sourceKnowledgeTypes, KnowledgeType.ISSUE);
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
 	}
 
 	private void fillLinkedElementMap(KnowledgeElement sourceElement) {
@@ -108,7 +108,7 @@ public class RationaleCoverageCalculator {
 		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
 		for (String sourceType : sourceTypes) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
-			if ((type == KnowledgeType.OTHER) || (type == KnowledgeType.CODE)) {
+			if (type == KnowledgeType.OTHER || type == KnowledgeType.CODE) {
 				knowledgeElements.addAll(graph.getElements(sourceType));
 			} else {
 				knowledgeElements.addAll(graph.getElements(type));
@@ -136,9 +136,9 @@ public class RationaleCoverageCalculator {
 
 		Map<String, String> result = new LinkedHashMap<>();
 		result.put("More than " + minimumDecisionCoverage + " " + knowledgeType + "s reachable",
-			withHighLinks.toString());
+				withHighLinks.toString());
 		result.put("Less than " + minimumDecisionCoverage + " " + knowledgeType + "s reachable",
-			withLowLinks.toString());
+				withLowLinks.toString());
 		result.put("No " + knowledgeType + "s reachable", withoutLinks.toString());
 		return result;
 	}
@@ -155,7 +155,7 @@ public class RationaleCoverageCalculator {
 		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
 		for (String sourceType : sourceTypes) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
-			if ((type == KnowledgeType.OTHER) || (type == KnowledgeType.CODE)) {
+			if (type == KnowledgeType.OTHER || type == KnowledgeType.CODE) {
 				knowledgeElements.addAll(graph.getElements(sourceType));
 			} else {
 				knowledgeElements.addAll(graph.getElements(type));

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.ofbiz.core.entity.GenericEntityException;
@@ -110,7 +111,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	public static List<IssueLink> getInwardIssueLinks(KnowledgeElement element) {
-		if (element == null) {
+		if (element == null || element.getDocumentationLocation() != DocumentationLocation.JIRAISSUE) {
 			return new ArrayList<IssueLink>();
 		}
 		return ComponentAccessor.getIssueLinkManager().getInwardLinks(element.getId());
@@ -140,7 +141,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 	}
 
 	public static List<IssueLink> getOutwardIssueLinks(KnowledgeElement element) {
-		if (element == null) {
+		if (element == null || element.getDocumentationLocation() != DocumentationLocation.JIRAISSUE) {
 			return new ArrayList<IssueLink>();
 		}
 		List<IssueLink> links = ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
@@ -263,14 +264,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 
 	@Override
 	public List<KnowledgeElement> getKnowledgeElements() {
-		List<KnowledgeElement> knowledgeElements = new ArrayList<KnowledgeElement>();
-		if (this.projectKey == null) {
-			return knowledgeElements;
+		if (projectKey == null) {
+			return new ArrayList<>();
 		}
-		for (Issue issue : getIssueIdCollection()) {
-			knowledgeElements.add(new KnowledgeElement(issue));
-		}
-		return knowledgeElements;
+		return getJiraIssues().stream().map(issue -> new KnowledgeElement(issue)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -376,22 +373,21 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		updateJiraIssue(jiraIssue, user);
 	}
 
-	private List<Issue> getIssueIdCollection() {
+	private List<Issue> getJiraIssues() {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(this.projectKey);
-		Collection<Long> issueIds;
+		Project project = ComponentAccessor.getProjectManager().getProjectObjByKeyIgnoreCase(projectKey);
+		Collection<Long> jiraIssueIds;
 		try {
-			issueIds = issueManager.getIssueIdsForProject(project.getId());
+			jiraIssueIds = issueManager.getIssueIdsForProject(project.getId());
 		} catch (GenericEntityException | NullPointerException e) {
-			issueIds = new ArrayList<Long>();
-			LOGGER.error("Get decisionknowledgeelemtns failed. Message: " + e.getMessage());
+			jiraIssueIds = new ArrayList<Long>();
+			LOGGER.error("Getting Jira issues failed. Message: " + e.getMessage());
 		}
-		List<Issue> issueList = new ArrayList<>();
-		for (long issueId : issueIds) {
-			Issue issue = issueManager.getIssueObject(issueId);
-			issueList.add(issue);
-		}
-		return issueList;
+		List<Issue> jiraIssues = jiraIssueIds.stream().map(id -> issueManager.getIssueObject(id))
+				.collect(Collectors.toList());
+		LOGGER.info("Number of Jira issues " + jiraIssues.size());
+		System.out.println("Number of Jira issues " + jiraIssues.size());
+		return jiraIssues;
 	}
 
 	private boolean updateStatus(KnowledgeStatus newStatus, MutableIssue issueToBeUpdated, ApplicationUser user,
@@ -428,6 +424,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
 		return getIssuesMatchingQuery(user, query);
+	}
+
+	public List<Issue> getAllJiraIssues(ApplicationUser user) {
+		return getAllJiraIssuesForProject(user, projectKey);
 	}
 
 	public static List<Issue> getAllJiraIssuesForProjectAndType(ApplicationUser user, String projectKey,
