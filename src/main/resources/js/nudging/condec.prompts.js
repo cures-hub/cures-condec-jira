@@ -44,20 +44,16 @@
 	}
 
 	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
-		var projectKey = conDecAPI.getProjectKey();
+		const projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
 		}
 
-		var issueKey = conDecAPI.getIssueKey();
+		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
 
-		var filterSettings = {
-			"projectKey": projectKey,
-			"selectedElement": issueKey,
-		}
 		conDecAPI.getFilterSettings(projectKey, "", settings => {
 
 			document.getElementById("condec-prompt-minimum-coverage").innerHTML = settings.minimumDecisionCoverage;

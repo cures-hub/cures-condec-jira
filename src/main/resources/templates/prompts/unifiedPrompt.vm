@@ -9,6 +9,7 @@
     </header>
     <div class="aui-dialog2-content">
         <p>We have found the following problems with the decision knowledge documentation of this issue.</p>
+        <br/>
         <div class="non-validated-elements-prompt">
             #parse("templates/prompts/nonValidatedElementsPrompt.vm")
         </div>
@@ -23,8 +24,9 @@
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="warning-dialog-confirm" class="aui-button aui-button-primary">Delete the thing</button>
-            <button id="warning-dialog-cancel" class="aui-button aui-button-link">Cancel</button>
+            <button id="warning-dialog-continue" class="aui-button aui-button-link">Continue anyway</button>
+            <button id="warning-dialog-fix-elements" class="aui-button aui-button-primary">Go back and fix</button>
+
         </div>
     </footer>
     ##
