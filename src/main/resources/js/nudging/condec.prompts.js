@@ -18,33 +18,29 @@
 	};
 
 	ConDecPrompt.prototype.promptLinkSuggestion = function() {
-		var issueId = JIRA.Issue.getIssueId();
-		var projectKey = conDecAPI.projectKey;
+		const issueId = JIRA.Issue.getIssueId();
+		const projectKey = conDecAPI.projectKey;
 		if (issueId === null || issueId === undefined) {
 			return;
 		}
-		conDecLinkRecommendationAPI.doesElementNeedApproval(projectKey, issueId, "i")
-			.then((isApprovalNeeded) => {
-				if (!isApprovalNeeded) {
-					return;
+		// TODO: check on the approval necessity and when the check gets turned off
+		// conDecLinkRecommendationAPI.doesElementNeedApproval(projectKey, issueId, "i")
+		// 	.then((isApprovalNeeded) => {
+		// 		if (!isApprovalNeeded) {
+		// 			return;
+		// 		}
+		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
+			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
+			.then((values) => {
+				let numDuplicates = (values[0].length);
+				let numRelated = (values[1].length);
+				console.log(numDuplicates)
+				if (numDuplicates + numRelated > 0) {
+					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
+					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
 				}
-				Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-				conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
-					(values) => {
-						let numDuplicates = (values[0].length);
-						let numRelated = (values[1].length);
-						if (numDuplicates + numRelated > 0) {
-							document.getElementById("link-recommendation-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-							document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
-							document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
-
-							// document.getElementById("link-recommendation-prompt-button").onclick = function() {
-							// 	conDecLinkRecommendationAPI.approveInconsistencies(issueId);
-							// 	flag.close();
-							// };
-						}
-					});
 			});
+
 	}
 
 	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
@@ -72,7 +68,7 @@
 
 		})
 	}
-	
+
 	ConDecPrompt.prototype.promptNonValidatedElements = function () {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {

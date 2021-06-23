@@ -1,6 +1,6 @@
 <div id="link-recommendation-prompt">
     <h3>Related elements</h3>
-    <strong id="link-recommendation-prompt-jira-issue-key"></strong> seems to be incompletely linked. <br/>
+    ## <strong id="link-recommendation-prompt-jira-issue-key"></strong> seems to be incompletely linked. <br/>
     <ul>
         <li><strong id="link-recommendation-prompt-num-link-recommendations"></strong> possibly related knowledge
             elements
