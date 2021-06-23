@@ -2,7 +2,7 @@
  *	This view provides a check  of the quality of the decision knowledge of the jira issue.
  */
 
-(function (global) {
+(function(global) {
 	var qualityCheckTab;
 	var minimumCoverageText;
 	var linkDistanceText;
@@ -18,7 +18,7 @@
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
 
-	ConDecQualityCheck.prototype.initView = function (viewIdentifier) {
+	ConDecQualityCheck.prototype.initView = function(viewIdentifier) {
 		console.log("ConDecQualityCheck initView");
 
 		var projectKey = conDecAPI.getProjectKey();
@@ -31,7 +31,7 @@
 		}
 	};
 
-	ConDecQualityCheck.prototype.build = function (node, viewIdentifier) {
+	ConDecQualityCheck.prototype.build = function(node, viewIdentifier) {
 		console.log("ConDecQualityCheck build");
 
 		var projectKey = conDecAPI.getProjectKey();
@@ -62,7 +62,6 @@
 			updateLabel(linkDistanceText, linkDistance);
 			updateText(issueText, "issues", null, minimumCoverage);
 			updateText(decisionText, "decisions", null, minimumCoverage);
-			updateIsKnowledgeComplete(null);
 		});
 	}
 
@@ -106,7 +105,7 @@
 						updateLabel(linkDistanceText, linkDistance);
 						updateText(issueText, "issues", numberOfIssues, minimumCoverage);
 						updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
-						updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked,failedCompletenessCheckCriteria);
+						updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked, failedCompletenessCheckCriteria);
 					});
 				});
 			});
@@ -126,10 +125,15 @@
 	}
 
 	function updateLabel(label, text) {
-		label.innerText = text;
+		if (label !== null) {
+			label.innerText = text;
+		}
 	}
 
 	function updateText(textField, type, coverage, minimum) {
+		if (textField === null) {
+			return;
+		}
 		textField.textContent = "# " + type + ": " + coverage;
 		if (coverage >= minimum) {
 			addToken(textField, "condec-fine");
@@ -163,7 +167,7 @@
 	}
 
 	function getHTMLNodes(tabName, minimumCoverageName, linkDistanceName, knowledgeCompleteName,
-						  knowledgeCompleteCriteriaName, issueName, decisionName) {
+		knowledgeCompleteCriteriaName, issueName, decisionName) {
 		qualityCheckTab = document.getElementById(tabName);
 		minimumCoverageText = document.getElementById(minimumCoverageName);
 		linkDistanceText = document.getElementById(linkDistanceName);
@@ -174,6 +178,9 @@
 	}
 
 	function addToken(element, tag) {
+		if (element === null) {
+			return;
+		}
 		element.classList.remove("condec-default");
 		element.classList.remove("condec-error");
 		element.classList.remove("condec-warning");

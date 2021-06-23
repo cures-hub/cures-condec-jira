@@ -385,8 +385,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		}
 		List<Issue> jiraIssues = jiraIssueIds.stream().map(id -> issueManager.getIssueObject(id))
 				.collect(Collectors.toList());
-		LOGGER.info("Number of Jira issues " + jiraIssues.size());
-		System.out.println("Number of Jira issues " + jiraIssues.size());
 		return jiraIssues;
 	}
 
@@ -424,10 +422,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
 		return getIssuesMatchingQuery(user, query);
-	}
-
-	public List<Issue> getAllJiraIssues(ApplicationUser user) {
-		return getAllJiraIssuesForProject(user, projectKey);
 	}
 
 	public static List<Issue> getAllJiraIssuesForProjectAndType(ApplicationUser user, String projectKey,
