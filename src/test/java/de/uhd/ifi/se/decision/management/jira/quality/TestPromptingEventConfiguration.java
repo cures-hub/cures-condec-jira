@@ -14,7 +14,7 @@ public class TestPromptingEventConfiguration {
 
 	@Before
 	public void setUp() {
-		config = new PromptingEventConfiguration();
+		config = new PromptingEventConfiguration("TEST");
 	}
 
 	@Test

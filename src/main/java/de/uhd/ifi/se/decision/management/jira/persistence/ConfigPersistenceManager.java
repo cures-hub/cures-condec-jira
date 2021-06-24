@@ -363,7 +363,7 @@ public class ConfigPersistenceManager {
 		PromptingEventConfiguration promptingEventConfiguration = (PromptingEventConfiguration) getSavedObject(
 				projectKey, "promptingEventConfiguration", type);
 		if (promptingEventConfiguration == null) {
-			return new PromptingEventConfiguration();
+			return new PromptingEventConfiguration(projectKey);
 		}
 		return promptingEventConfiguration;
 	}

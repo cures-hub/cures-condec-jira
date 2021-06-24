@@ -213,6 +213,11 @@ public class JiraSchemeManager {
 		return worflowActionNames;
 	}
 
+	public static Set<String> getWorkflowActionNames(String projectKey) {
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKeyIgnoreCase(projectKey);
+		return getWorkflowActionNames(project);
+	}
+
 	private static JiraWorkflow createWorkflow(IssueType jiraIssueType) {
 		String workflowDescriptor = WorkflowXMLDescriptorProvider.getXMLWorkflowDescriptor(jiraIssueType);
 		if (workflowDescriptor == null) {

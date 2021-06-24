@@ -31,7 +31,7 @@ the usage of the following features. The events are activated per default for op
 				#end
             ></li></td>
         	<td><input type="checkbox" id="isDecisionGuidanceActivated-$workflowActionName.replaceAll(' ', '')"
-        		#if($project.getPromptingEventConfiguration().isPromptEventActivated("linkRecommendation", $workflowActionName))
+        		#if($project.getPromptingEventConfiguration().isPromptEventActivated("decisionGuidance", $workflowActionName))
 					checked
 				#end
             ></li></td>
