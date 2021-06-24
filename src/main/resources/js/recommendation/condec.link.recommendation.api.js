@@ -7,13 +7,13 @@
 	ConDecLinkRecommendationAPI.prototype.setMinimumDuplicateLength = function(projectKey, fragmentLength) {
 		generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumDuplicateLength.json?
 			projectKey=${projectKey}&fragmentLength=${fragmentLength}`, null)
-			.then(conDecAPI.showFlag("success", "Minimum length was successfully updated!"));
+			.then(() => conDecAPI.showFlag("success", "Minimum length was successfully updated!"));
 	}
 
 	ConDecLinkRecommendationAPI.prototype.setMinimumLinkSuggestionProbability = function(projectKey, minLinkSuggestionProbability) {
 		generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumLinkSuggestionProbability.json?
 			projectKey=${projectKey}&minLinkSuggestionProbability=${minLinkSuggestionProbability}`, null)
-			.then(conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
+			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
 	}
 
 	ConDecLinkRecommendationAPI.prototype.getRelatedKnowledgeElements = function(projectKey, elementId, elementLocation) {

@@ -43,6 +43,9 @@ public class PromptingEventConfiguration {
 		if (promptingEventsForFeature.get(feature) != null) {
 			return true;
 		}
+		if (feature == null) {
+			return false;
+		}
 		if (feature.equals("linkRecommendation") || feature.equals("decisionGuidance")
 				|| feature.equals("definitionOfDoneChecking") || feature.equals("nonValidatedElementsChecking")) {
 			promptingEventsForFeature.put(feature, new HashSet<>());

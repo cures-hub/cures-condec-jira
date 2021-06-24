@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -206,20 +207,17 @@ public class MockWorkflowManager implements WorkflowManager {
 
 	@Override
 	public Collection<JiraWorkflow> getWorkflows() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override
 	public Collection<JiraWorkflow> getWorkflowsFromScheme(GenericValue arg0) throws WorkflowException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override
 	public Iterable<JiraWorkflow> getWorkflowsFromScheme(Scheme arg0) throws WorkflowException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override

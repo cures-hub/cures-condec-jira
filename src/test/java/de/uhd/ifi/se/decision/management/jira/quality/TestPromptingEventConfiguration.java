@@ -6,14 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 
-public class TestPromptingEventConfiguration {
+public class TestPromptingEventConfiguration extends TestSetUp {
 
 	private PromptingEventConfiguration config;
 
 	@Before
 	public void setUp() {
+		init();
 		config = new PromptingEventConfiguration("TEST");
 	}
 

@@ -14,7 +14,7 @@
 	ConDecNudgingAPI.prototype.activatePromptEvent = function(projectKey, feature, eventKey, isActivated) {
 		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEvent.json?
 			projectKey=${projectKey}&feature=${feature}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
-			.then(conDecAPI.showFlag("success",
+			.then(() => conDecAPI.showFlag("success",
 				"Activation of prompting event was successfully changed to " + isActivated));
 	}
 
