@@ -57,6 +57,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("trainedClassifiers", FileManager.getTrainedClassifierNames());
 
 		velocityParameters.put("releaseNotesMapping", new ReleaseNotesMapping(projectKey));
+		velocityParameters.put("workflowActionNames",
+				JiraSchemeManager.getWorkflowActionNames(decisionKnowledgeProject.getJiraProject()));
 		return velocityParameters;
 	}
 

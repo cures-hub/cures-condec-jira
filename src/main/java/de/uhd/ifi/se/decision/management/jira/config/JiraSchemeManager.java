@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,6 +195,22 @@ public class JiraSchemeManager {
 		workflowSchemeManager.updateWorkflowScheme(myWorkflowSchemeBuilder.build());
 		workflowSchemeManager.addSchemeToProject(project,
 				workflowSchemeManager.getSchemeObject(myWorkflowScheme.getId()));
+	}
+
+	public static Iterable<JiraWorkflow> getWorkflowsFor(Project project) {
+		WorkflowSchemeManager workflowSchemeManager = ComponentAccessor.getComponent(WorkflowSchemeManager.class);
+		Scheme scheme = workflowSchemeManager.getSchemeFor(project);
+		return ComponentAccessor.getWorkflowManager().getWorkflowsFromScheme(scheme);
+	}
+
+	public static Set<String> getWorkflowActionNames(Project project) {
+		Set<String> worflowActionNames = new HashSet<>();
+		Iterable<JiraWorkflow> jiraWorkflows = getWorkflowsFor(project);
+		for (JiraWorkflow jiraWorkflow : jiraWorkflows) {
+			worflowActionNames.addAll(
+					jiraWorkflow.getAllActions().stream().map(action -> action.getName()).collect(Collectors.toSet()));
+		}
+		return worflowActionNames;
 	}
 
 	private static JiraWorkflow createWorkflow(IssueType jiraIssueType) {

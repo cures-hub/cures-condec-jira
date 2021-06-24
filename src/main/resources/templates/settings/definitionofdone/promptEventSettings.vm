@@ -1,37 +1,22 @@
 <h3>Settings for the prompting events for definition of done checking</h4>
 
+#foreach($workflowActionName in $workflowActionNames)
 <div class="field-group">
-    <label>DoD check for done event activated?</label>
-    <aui-toggle id="isDoDCheckingAtDoneEventActivated-toggle" label="Resolved event activated?"
-    #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("done"))
+    <label>DoD check for $workflowActionName event activated?</label>
+    <aui-toggle id="isDoDCheckingActivated-$workflowActionName.replaceAll(' ', '')" label="$workflowActionName event activated?"
+    #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated($workflowActionName))
 		checked
 	#end
     ></aui-toggle>
     <div class="description">
-    	Enables or disables the check dialog for the done event of a Jira issue.
-    </div>
-</div>
-
-<div class="field-group">
-    <label>DoD check for closed event activated?</label>
-    <aui-toggle id="isDoDCheckingAtClosedEventActivated-toggle" label="Closed event activated?"
-    #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("closed"))
-		checked
-	#end
-    ></aui-toggle>
-    <div class="description">
-    	Enables or disables the check dialog for the closed event of a Jira issue.
+    	Enables or disables the just-in-time-prompt for the $workflowActionName event of a Jira issue.
     </div>
 </div>
 
 <script>
-	$("#isDoDCheckingAtDoneEventActivated-toggle").change(function() {
+	$("#isDoDCheckingActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
 		const isActivated = $(this).prop("checked");
-		conDecNudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "done", isActivated);
-	})
-	
-	$("#isDoDCheckingAtClosedEventActivated-toggle").change(function() {
-		const isActivated = $(this).prop("checked");
-		conDecNudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "closed", isActivated);
+		conDecNudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "$workflowActionName", isActivated);
 	})
 </script>
+#end

@@ -97,6 +97,6 @@ public class TestSettingsOfSingleProject {
 	@NonTransactional
 	public void testGetVelocityParametersFilled() {
 		request.setAttribute("projectKey", "TEST");
-		assertEquals(8, servlet.getVelocityParameters(request).size());
+		assertEquals(9, servlet.getVelocityParameters(request).size());
 	}
 }

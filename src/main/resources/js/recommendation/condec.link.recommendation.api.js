@@ -2,7 +2,6 @@
 
 	const ConDecLinkRecommendationAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/linkrecommendation";
-		this.projectKey = conDecAPI.getProjectKey();
 	};
 
 	ConDecLinkRecommendationAPI.prototype.setMinimumDuplicateLength = function(projectKey, fragmentLength) {

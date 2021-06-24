@@ -1,37 +1,22 @@
 <h3>Settings for the prompting events for link suggestion and duplicate recognition</h3>
 
+#foreach($workflowActionName in $workflowActionNames)
 <div class="field-group">
-    <label>Link suggestion at done event activated?</label>
-    <aui-toggle id="isLinkSuggestionAtDoneEventActivated-toggle" label="Resolved event activated?"
-    #if($project.getPromptingEventConfiguration().isPromptEventForLinkSuggestionActivated("done"))
+    <label>Link suggestion at $workflowActionName event activated?</label>
+    <aui-toggle id="isLinkSuggestionActivated-$workflowActionName.replaceAll(' ', '')" label="Resolved event activated?"
+    #if($project.getPromptingEventConfiguration().isPromptEventForLinkSuggestionActivated($workflowActionName))
 		checked
 	#end
     ></aui-toggle>
     <div class="description">
-    	Enables or disables the check dialog for the done event of an issue.
-    </div>
-</div>
-
-<div class="field-group">
-    <label>Link suggestion at closed event activated?</label>
-    <aui-toggle id="isLinkSuggestionAtClosedEventActivated-toggle" label="Closed event activated?"
-    #if($project.getPromptingEventConfiguration().isPromptEventForLinkSuggestionActivated("closed"))
-		checked
-	#end
-    ></aui-toggle>
-    <div class="description">
-    	Enables or disables the check dialog for the closed event of an issue.
+    	Enables or disables the just-in-time-prompt for the $workflowActionName event of a Jira issue.
     </div>
 </div>
 
 <script>
-	$("#isLinkSuggestionAtDoneEventActivated-toggle").change(function() {
+	$("#isLinkSuggestionActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
 		const isActivated = $(this).prop("checked");
-		conDecNudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "done", isActivated);
-	})
-	
-	$("#isLinkSuggestionAtClosedEventActivated-toggle").change(function() {
-		const isActivated = $(this).prop("checked");
-		conDecNudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "closed", isActivated);
+		conDecNudgingAPI.activatePromptEventForLinkSuggestion("$projectKey", "$workflowActionName", isActivated);
 	})
 </script>
+#end
