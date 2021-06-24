@@ -6,4 +6,3 @@
 #parse("templates/settings/classification/trainingFileCreation.vm")
 #parse("templates/settings/classification/textClassifierTraining.vm")
 #parse("templates/settings/classification/textClassificationEvaluation.vm")
-#parse("templates/settings/classification/promptEventSettings.vm")
