@@ -13,6 +13,8 @@
     </div>
     <div class="text-field" id="quality-check-knowledge-complete-text-$viewIdentifier">
     </div>
+    <div class="text-field" id="quality-check-knowledge-complete-criteria-text-$viewIdentifier">
+    </div>
 </div>
 
 <script>

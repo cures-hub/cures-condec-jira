@@ -2,21 +2,23 @@
  *	This view provides a check  of the quality of the decision knowledge of the jira issue.
  */
 
-(function (global) {
+(function(global) {
 	var qualityCheckTab;
 	var minimumCoverageText;
 	var linkDistanceText;
 	var knowledgeCompleteText;
+	var knowledgeCompleteCriteriaText;
 	var issueText;
 	var decisionText;
 
-	const KNOWLEDGE_COMPLETE = "Decision knowledge is complete."
-	const KNOWLEDGE_INCOMPLETE = "Decision knowledge is incomplete."
+	const KNOWLEDGE_COMPLETE = "Linked decision knowledge is complete.";
+	const KNOWLEDGE_INCOMPLETE = "Linked decision knowledge is incomplete.";
+	const KNOWLEDGE_CRITERIA = "Failed knowledge completeness criteria:";
 
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
 
-	ConDecQualityCheck.prototype.initView = function (viewIdentifier) {
+	ConDecQualityCheck.prototype.initView = function(viewIdentifier) {
 		console.log("ConDecQualityCheck initView");
 
 		var projectKey = conDecAPI.getProjectKey();
@@ -29,7 +31,7 @@
 		}
 	};
 
-	ConDecQualityCheck.prototype.build = function (node, viewIdentifier) {
+	ConDecQualityCheck.prototype.build = function(node, viewIdentifier) {
 		console.log("ConDecQualityCheck build");
 
 		var projectKey = conDecAPI.getProjectKey();
@@ -51,6 +53,7 @@
 				, "condec-tab-minimum-coverage-" + viewIdentifier
 				, "condec-tab-link-distance-" + viewIdentifier
 				, "quality-check-knowledge-complete-text-" + viewIdentifier
+				, "quality-check-knowledge-complete-criteria-text-" + viewIdentifier
 				, "quality-check-issue-text-" + viewIdentifier
 				, "quality-check-decision-text-" + viewIdentifier);
 
@@ -59,7 +62,6 @@
 			updateLabel(linkDistanceText, linkDistance);
 			updateText(issueText, "issues", null, minimumCoverage);
 			updateText(decisionText, "decisions", null, minimumCoverage);
-			updateIsKnowledgeComplete(null);
 		});
 	}
 
@@ -87,19 +89,24 @@
 						doesNotHaveMinimumCoverage = true;
 					}
 
-					getHTMLNodes("menu-item-quality-check-" + viewIdentifier
-						, "condec-tab-minimum-coverage-" + viewIdentifier
-						, "condec-tab-link-distance-" + viewIdentifier
-						, "quality-check-knowledge-complete-text-" + viewIdentifier
-						, "quality-check-issue-text-" + viewIdentifier
-						, "quality-check-decision-text-" + viewIdentifier);
+					conDecDoDCheckingAPI.getFailedCompletenessCheckCriteria(newFilterSettings, function(result) {
+						var failedCompletenessCheckCriteria = result;
 
-					updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions);
-					updateLabel(minimumCoverageText, minimumCoverage);
-					updateLabel(linkDistanceText, linkDistance);
-					updateText(issueText, "issues", numberOfIssues, minimumCoverage);
-					updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
-					updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked);
+						getHTMLNodes("menu-item-quality-check-" + viewIdentifier
+							, "condec-tab-minimum-coverage-" + viewIdentifier
+							, "condec-tab-link-distance-" + viewIdentifier
+							, "quality-check-knowledge-complete-text-" + viewIdentifier
+							, "quality-check-knowledge-complete-criteria-text-" + viewIdentifier
+							, "quality-check-issue-text-" + viewIdentifier
+							, "quality-check-decision-text-" + viewIdentifier);
+
+						updateTab(qualityCheckTab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, numberOfIssues, numberOfDecisions);
+						updateLabel(minimumCoverageText, minimumCoverage);
+						updateLabel(linkDistanceText, linkDistance);
+						updateText(issueText, "issues", numberOfIssues, minimumCoverage);
+						updateText(decisionText, "decisions", numberOfDecisions, minimumCoverage);
+						updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked, failedCompletenessCheckCriteria);
+					});
 				});
 			});
 		});
@@ -118,10 +125,15 @@
 	}
 
 	function updateLabel(label, text) {
-		label.innerText = text;
+		if (label !== null) {
+			label.innerText = text;
+		}
 	}
 
 	function updateText(textField, type, coverage, minimum) {
+		if (textField === null) {
+			return;
+		}
 		textField.textContent = "# " + type + ": " + coverage;
 		if (coverage >= minimum) {
 			addToken(textField, "condec-fine");
@@ -135,7 +147,7 @@
 		}
 	}
 
-	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked) {
+	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked, failedCompletenessCheckCriteria) {
 		if (hasIncompleteKnowledgeLinked === true) {
 			knowledgeCompleteText.textContent = KNOWLEDGE_INCOMPLETE;
 			addToken(knowledgeCompleteText, "condec-error");
@@ -146,19 +158,29 @@
 			knowledgeCompleteText.textContent = "";
 			addToken(knowledgeCompleteText, "condec-default");
 		}
+
+		if (failedCompletenessCheckCriteria && failedCompletenessCheckCriteria.length) {
+			addToken(knowledgeCompleteCriteriaText, "condec-error");
+			knowledgeCompleteCriteriaText.innerHTML = KNOWLEDGE_CRITERIA + "<br>" +
+				failedCompletenessCheckCriteria.join("<br>");
+		}
 	}
 
 	function getHTMLNodes(tabName, minimumCoverageName, linkDistanceName, knowledgeCompleteName,
-						  issueName, decisionName) {
+		knowledgeCompleteCriteriaName, issueName, decisionName) {
 		qualityCheckTab = document.getElementById(tabName);
 		minimumCoverageText = document.getElementById(minimumCoverageName);
 		linkDistanceText = document.getElementById(linkDistanceName);
 		knowledgeCompleteText = document.getElementById(knowledgeCompleteName);
+		knowledgeCompleteCriteriaText = document.getElementById(knowledgeCompleteCriteriaName);
 		issueText = document.getElementById(issueName);
 		decisionText = document.getElementById(decisionName);
 	}
 
 	function addToken(element, tag) {
+		if (element === null) {
+			return;
+		}
 		element.classList.remove("condec-default");
 		element.classList.remove("condec-error");
 		element.classList.remove("condec-warning");

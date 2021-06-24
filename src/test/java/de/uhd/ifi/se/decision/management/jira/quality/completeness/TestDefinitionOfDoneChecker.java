@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import org.junit.Before;
@@ -94,5 +95,12 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	public void testCoverageHandlerDoesNotHaveMinimumCoverageFalse() {
 		assertFalse(DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(KnowledgeElements.getTestKnowledgeElement(),
 			KnowledgeType.OTHER, filterSettings));
+	}
+
+	@Test
+	@NonTransactional
+	public void testisIncompleteElementRecommendation() {
+		ElementRecommendation recommendation = new ElementRecommendation();
+		assertFalse(DefinitionOfDoneChecker.isIncomplete(recommendation));
 	}
 }

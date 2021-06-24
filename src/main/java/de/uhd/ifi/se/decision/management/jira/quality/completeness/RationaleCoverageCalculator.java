@@ -67,13 +67,13 @@ public class RationaleCoverageCalculator {
 
 	private void fillRationaleCoverageCalculator(Set<String> sourceKnowledgeTypes) {
 		this.decisionsPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-			sourceKnowledgeTypes, KnowledgeType.DECISION);
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
 		this.issuesPerSelectedJiraIssue = calculateNumberOfDecisionKnowledgeElementsForKnowledgeElements(
-			sourceKnowledgeTypes, KnowledgeType.ISSUE);
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
 		this.decisionDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-			sourceKnowledgeTypes, KnowledgeType.DECISION);
+				sourceKnowledgeTypes, KnowledgeType.DECISION);
 		this.issueDocumentedForSelectedJiraIssue = calculateKnowledgeElementsWithNeighborsOfOtherType(
-			sourceKnowledgeTypes, KnowledgeType.ISSUE);
+				sourceKnowledgeTypes, KnowledgeType.ISSUE);
 	}
 
 	private void fillLinkedElementMap(KnowledgeElement sourceElement) {
@@ -108,34 +108,38 @@ public class RationaleCoverageCalculator {
 		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
 		for (String sourceType : sourceTypes) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
-			knowledgeElements.addAll(graph.getElements(type));
+			if (type == KnowledgeType.OTHER || type == KnowledgeType.CODE) {
+				knowledgeElements.addAll(graph.getElements(sourceType));
+			} else {
+				knowledgeElements.addAll(graph.getElements(type));
+			}
 		}
 
 		int minimumDecisionCoverage = filterSettings.getMinimumDecisionCoverage();
 
-		String withHighLinks = "";
-		String withLowLinks = "";
-		String withoutLinks = "";
+		StringBuilder withHighLinks = new StringBuilder();
+		StringBuilder withLowLinks = new StringBuilder();
+		StringBuilder withoutLinks = new StringBuilder();
 
 		for (KnowledgeElement knowledgeElement : knowledgeElements) {
 			if (!linkedElementMap.containsKey(knowledgeElement)) {
 				fillLinkedElementMap(knowledgeElement);
 			}
 			if (!linkedElementMap.get(knowledgeElement).containsKey(knowledgeType)) {
-				withoutLinks += getKnowledgeElementName(knowledgeElement) + " ";
+				withoutLinks.append(getKnowledgeElementName(knowledgeElement)).append(" ");
 			} else if (linkedElementMap.get(knowledgeElement).get(knowledgeType) < minimumDecisionCoverage) {
-				withLowLinks += getKnowledgeElementName(knowledgeElement) + " ";
+				withLowLinks.append(getKnowledgeElementName(knowledgeElement)).append(" ");
 			} else if (linkedElementMap.get(knowledgeElement).get(knowledgeType) >= minimumDecisionCoverage) {
-				withHighLinks += getKnowledgeElementName(knowledgeElement) + " ";
+				withHighLinks.append(getKnowledgeElementName(knowledgeElement)).append(" ");
 			}
 		}
 
 		Map<String, String> result = new LinkedHashMap<>();
-		result.put("More than " + minimumDecisionCoverage + " links from selected types to " + knowledgeType.toString(),
-				withHighLinks);
-		result.put("Less than " + minimumDecisionCoverage + " links from selected types to " + knowledgeType.toString(),
-				withLowLinks);
-		result.put("No links from selected types to " + knowledgeType.toString(), withoutLinks);
+		result.put("More than " + minimumDecisionCoverage + " " + knowledgeType + "s reachable",
+				withHighLinks.toString());
+		result.put("Less than " + minimumDecisionCoverage + " " + knowledgeType + "s reachable",
+				withLowLinks.toString());
+		result.put("No " + knowledgeType + "s reachable", withoutLinks.toString());
 		return result;
 	}
 
@@ -151,7 +155,11 @@ public class RationaleCoverageCalculator {
 		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
 		for (String sourceType : sourceTypes) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
-			knowledgeElements.addAll(graph.getElements(type));
+			if (type == KnowledgeType.OTHER || type == KnowledgeType.CODE) {
+				knowledgeElements.addAll(graph.getElements(sourceType));
+			} else {
+				knowledgeElements.addAll(graph.getElements(type));
+			}
 		}
 
 		Map<String, Integer> numberOfElementsReachable = new HashMap<>();

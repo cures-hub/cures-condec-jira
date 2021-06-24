@@ -6,7 +6,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
@@ -40,27 +43,27 @@ public class TreeViewerNode {
 	private Map<String, String> li_attr;
 
 	public TreeViewerNode() {
-		children = new ArrayList<TreeViewerNode>();
+		children = new ArrayList<>();
 	}
 
 	public TreeViewerNode(KnowledgeElement knowledgeElement, boolean noColors) {
 		this();
-		this.id = "tv" + String.valueOf(knowledgeElement.getId());
+		this.id = "tv" + knowledgeElement.getId();
 		this.text = knowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
 		this.element = knowledgeElement;
-		if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()
-				&& !knowledgeElement.getDescription().equals("undefined")) {
-			this.a_attr = ImmutableMap.of("title", knowledgeElement.getDescription());
-		}
+		this.a_attr = ImmutableMap.of("title", ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
 		this.li_attr = ImmutableMap.of("class", "issue");
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
 		if (!noColors) {
 			String textColor = "";
-			if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement,
-				new FilterSettings(knowledgeElement.getProject().getProjectKey(), "")).isEmpty()) {
+			FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
+			DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
+			filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
+			filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
+			if (!DefinitionOfDoneChecker.checkDefinitionOfDone(knowledgeElement, filterSettings)) {
 				textColor = "crimson";
 			}
 			if (!textColor.isBlank()) {

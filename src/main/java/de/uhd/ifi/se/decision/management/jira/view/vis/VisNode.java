@@ -1,15 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
-import org.codehaus.jackson.annotate.JsonIgnore;
-
-import javax.xml.bind.annotation.XmlElement;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
 /**
  * Model class for a vis.js node.
@@ -62,8 +65,9 @@ public class VisNode {
 		this.level = level;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
-		this.title = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
-				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
+		this.title = ToolTip.buildToolTip(element, element.getTypeAsString().toUpperCase() + System.lineSeparator()
+			+ element.getKey() + ": " + element.getSummary() + System.lineSeparator()
+			+ element.getDescription());
 		this.font = determineFont(element, noColors);
 		this.color = determineColor(element);
 	}
@@ -95,8 +99,8 @@ public class VisNode {
 		if ((element.getProject() != null) && (element.getProject().getProjectKey() != null)) {
 			projectKey = element.getProject().getProjectKey();
 		}
-		if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(element,
-			new FilterSettings(projectKey, "")).isEmpty()) {
+		if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(element, new FilterSettings(projectKey, ""))
+				.isEmpty()) {
 			color = "crimson";
 		}
 		if (!color.isBlank()) {

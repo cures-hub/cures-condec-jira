@@ -123,17 +123,17 @@
 
 		/* render box-plots */
 		ConDecReqDash.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per selected element", issuesPerSelectedJiraIssue,
+			"", "# Issues per element", issuesPerSelectedJiraIssue,
 			colorpalette);
 		ConDecReqDash.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per selected element", decisionsPerSelectedJiraIssue,
+			"", "# Decisions per element", decisionsPerSelectedJiraIssue,
 			colorpalette);
 		/* render pie-charts */
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is an issue documented?", issueDocumentedForSelectedJiraIssue,
+			"", "For how many elements is an issue documented?", issueDocumentedForSelectedJiraIssue,
 			colorpalette);
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many selected elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
+			"", "For how many elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
 			colorpalette);
 	}
 

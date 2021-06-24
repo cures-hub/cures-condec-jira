@@ -58,7 +58,7 @@ public class DefinitionOfDoneCheckingRest {
 			FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Completeness check could not be performed due to a bad request."))
+					.entity(ImmutableMap.of("error", "DoD check could not be performed due to a bad request."))
 					.build();
 		}
 		KnowledgeElement knowledgeElement = filterSettings.getSelectedElement();
@@ -69,6 +69,25 @@ public class DefinitionOfDoneCheckingRest {
 
 		return Response.ok().entity(DefinitionOfDoneChecker.
 			getFailedDefinitionOfDoneCheckCriteria(knowledgeElement, filterSettings)).build();
+	}
+
+	@Path("/getFailedCompletenessCheckCriteria")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getFailedCompletenessCheckCriteria(@Context HttpServletRequest request,
+													  FilterSettings filterSettings) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Completeness check could not be performed due to a bad request."))
+				.build();
+		}
+		KnowledgeElement knowledgeElement = filterSettings.getSelectedElement();
+		if (knowledgeElement == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+				"Completeness check could not be performed because the element could not be found.")).build();
+		}
+
+		return Response.ok().entity(DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement)).build();
 	}
 
 	@Path("/getCoverageOfJiraIssue")

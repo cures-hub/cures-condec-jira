@@ -21,6 +21,13 @@ public class TestVisGraphNode extends TestSetUp {
 	}
 
 	@Test
+	public void testConstructorOnlyElement() {
+		VisNode node = new VisNode(element);
+		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
+		assertEquals(expectedLabel, node.getLabel());
+	}
+
+	@Test
 	public void testConstructorNoColors() {
 		VisNode node = new VisNode(element, true);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
@@ -30,6 +37,13 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testConstructorColors() {
 		VisNode node = new VisNode(element, false);
+		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
+		assertEquals(expectedLabel, node.getLabel());
+	}
+
+	@Test
+	public void testConstructorLevel() {
+		VisNode node = new VisNode(element, 1);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
 		assertEquals(expectedLabel, node.getLabel());
 	}
@@ -51,8 +65,8 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testNodeDescription() {
 		VisNode node = new VisNode(element, true, 1);
-		String expectedTitle = "<b>" + element.getTypeAsString().toUpperCase() + " <br> " + element.getKey() + ":</b> "
-				+ element.getSummary() + "<br> <i>" + element.getDescription() + "</i>";
+		String expectedTitle = "Minimum decision coverage is not reached."
+			+ System.lineSeparator() + System.lineSeparator() + "Linked decision knowledge is incomplete.";
 		assertEquals(expectedTitle, node.getTitle());
 	}
 

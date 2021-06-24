@@ -2,9 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static java.util.Map.entry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -102,7 +100,7 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * Returns a list of failed definition of done criteria.
+	 * @return a list of failed definition of done criteria.
 	 */
 	public static List<String> getFailedDefinitionOfDoneCheckCriteria(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		List<String> failedCheckCriteria = new ArrayList<>();
@@ -113,5 +111,27 @@ public final class DefinitionOfDoneChecker {
 			failedCheckCriteria.add("doesNotHaveMinimumCoverage");
 		}
 		return failedCheckCriteria;
+	}
+
+	/**
+	 * @return a list of failed completeness criteria.
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<String> getFailedCompletenessCheckCriteria(KnowledgeElement knowledgeElement) {
+		if (isDecisionKnowledge(knowledgeElement)) {
+			CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
+			return completenessCheck.getFailedCriteria(knowledgeElement);
+		}
+		return new ArrayList<>();
+	}
+
+	private static boolean isDecisionKnowledge(KnowledgeElement knowledgeElement) {
+		KnowledgeType knowledgeType = knowledgeElement.getType();
+		return (knowledgeType.equals(KnowledgeType.ISSUE)
+			|| knowledgeType.equals(KnowledgeType.DECISION)
+			|| knowledgeType.equals(KnowledgeType.ALTERNATIVE)
+			|| knowledgeType.equals(KnowledgeType.ARGUMENT)
+			|| knowledgeType.equals(KnowledgeType.PRO)
+			|| knowledgeType.equals(KnowledgeType.CON));
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.google.common.collect.ImmutableMap;
@@ -58,10 +59,12 @@ public class TreantNode {
 
 	public TreantNode(KnowledgeElement knowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
+
 		if (knowledgeElement == null || knowledgeElement.getSummary() == null) {
 			return;
 		}
-		String title = "";
+
+		String title;
 		if (knowledgeElement.getSummary().length() > 25 && !knowledgeElement.getSummary().contains(" ")) {
 			title = knowledgeElement.getSummary().substring(0, 24) + "...";
 		} else {
@@ -72,10 +75,8 @@ public class TreantNode {
 				"desc", knowledgeElement.getKey());
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = knowledgeElement.getId();
-		this.link = new HashMap<String, String>();
-		if (knowledgeElement.getDescription() != null && !knowledgeElement.getDescription().isBlank()) {
-			this.link.put("title", knowledgeElement.getDescription());
-		}
+		this.link = new HashMap<>();
+		this.link.put("title", ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
 		if (isHyperlinked) {
 			this.link.put("href", knowledgeElement.getUrl());
 			this.link.put("target", "_blank");
