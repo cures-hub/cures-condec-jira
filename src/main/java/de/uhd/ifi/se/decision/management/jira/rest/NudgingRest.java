@@ -13,7 +13,6 @@ import com.atlassian.jira.issue.Issue;
 import com.opensymphony.workflow.loader.ActionDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 
 /**
@@ -26,11 +25,9 @@ public class NudgingRest {
 	@Path("/isPromptEventActivated")
 	@POST
 	public Response isPromptEventActivated(@Context HttpServletRequest request,
-			@QueryParam("jiraIssueKey") String jiraIssueKey, @QueryParam("actionId") int actionId) {
-		Issue issue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
+			@QueryParam("jiraIssueId") long jiraIssueId, @QueryParam("actionId") int actionId) {
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
 		ActionDescriptor actionDescriptor = ComponentAccessor.getWorkflowManager().getActionDescriptor(issue, actionId);
-		System.out.println(actionDescriptor.getName());
-		System.out.println(actionDescriptor.getUnconditionalResult().getStatus());
 		PromptingEventConfiguration promptingEventConfiguration = ConfigPersistenceManager
 				.getPromptingEventConfiguration(issue.getProjectObject().getKey());
 		boolean isActivated = promptingEventConfiguration

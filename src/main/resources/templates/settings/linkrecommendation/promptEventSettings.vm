@@ -3,7 +3,7 @@
 #foreach($workflowActionName in $workflowActionNames)
 <div class="field-group">
     <label>Link suggestion at $workflowActionName event activated?</label>
-    <aui-toggle id="isLinkSuggestionActivated-$workflowActionName.replaceAll(' ', '')" label="Resolved event activated?"
+    <aui-toggle id="isLinkSuggestionActivated-$workflowActionName.replaceAll(' ', '')" label="$workflowActionName event activated?"
     #if($project.getPromptingEventConfiguration().isPromptEventForLinkSuggestionActivated($workflowActionName))
 		checked
 	#end

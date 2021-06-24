@@ -4,11 +4,11 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
 	};
 
-	ConDecNudgingAPI.prototype.isPromptEventActivated = function(jiraIssueKey, actionId) {
+	ConDecNudgingAPI.prototype.isPromptEventActivated = function(jiraIssueId, actionId) {
 		generalApi.postJSONReturnPromise(this.restPrefix + `/isPromptEventActivated.json?
-			jiraIssueKey=${jiraIssueKey}&actionId=${actionId}`, null)
-			.then(conDecAPI.showFlag("success",
-				"Activation of prompting event for non validated elements was successfully changed to " + isActivated));
+			jiraIssueId=${jiraIssueId}&actionId=${actionId}`, null)
+			.then((isActivated) => {conDecAPI.showFlag("success",
+				"Event is activated " + isActivated)});
 	}
 
 	ConDecNudgingAPI.prototype.activatePromptEventForDefinitionOfDoneChecking = function(projectKey, eventKey, isActivated) {

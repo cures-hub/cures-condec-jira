@@ -5,11 +5,12 @@
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				// just-in-time prompts when status changes
-				console.log(settings);
 				conDecPrompt.promptLinkSuggestion();
 				conDecPrompt.promptDefinitionOfDoneChecking();
 				conDecPrompt.promptNonValidatedElements();
-				conDecNudgingAPI.isPromptEventActivated(conDecAPI.getIssueKey(), 21);
+				
+				params = new URLSearchParams(settings.url.replaceAll("?", "&"));
+				conDecNudgingAPI.isPromptEventActivated(params.get("id"), params.get("action"));
 			}
 		});
 	};
