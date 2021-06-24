@@ -17,13 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConsistencyCheckLogHelper;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
@@ -106,53 +104,6 @@ public class LinkRecommendationRest {
 		}
 
 		return Response.status(Status.OK).build();
-	}
-
-	// --------------------
-	// Link suggestion prompts
-	// --------------------
-
-	@Path("/doesElementNeedApproval")
-	@GET
-	public Response doesElementNeedApproval(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
-			@QueryParam("elementLocation") String documentationLocation) {
-		Optional<KnowledgeElement> knowledgeElement = isKnowledgeElementValid(projectKey, elementId,
-				documentationLocation);
-
-		if (knowledgeElement.isPresent()) {
-			boolean doesIssueNeedApproval = ConsistencyCheckLogHelper
-					.doesKnowledgeElementNeedApproval(knowledgeElement.get());
-			return Response.ok().entity(doesIssueNeedApproval).build();
-		}
-		return Response.status(400).entity(ImmutableMap.of("error", "No issue with the given key exists!")).build();
-	}
-
-	@Path("/approveCheck")
-	@POST
-	public Response approveCheck(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("elementId") Long elementId, @QueryParam("elementLocation") String documentationLocation,
-			@QueryParam("user") String user) {
-
-		Optional<KnowledgeElement> knowledgeElement;
-		ApplicationUser doesUserExist;
-		Response response;
-		try {
-			knowledgeElement = isKnowledgeElementValid(projectKey, elementId, documentationLocation);
-			doesUserExist = ComponentAccessor.getUserManager().getUserByName(user);
-			if (knowledgeElement.isPresent() && doesUserExist != null) {
-
-				ConsistencyCheckLogHelper.approveCheck(knowledgeElement.get(), user);
-				response = Response.ok().build();
-			} else {
-				response = Response.status(400).entity(ImmutableMap.of("error", "No issue with the given key exists!"))
-						.build();
-			}
-		} catch (Exception e) {
-			// LOGGER.error(e.getMessage());
-			response = Response.status(500).entity(e).build();
-		}
-		return response;
 	}
 
 	private Optional<KnowledgeElement> isKnowledgeElementValid(String projectKey, Long elementId,

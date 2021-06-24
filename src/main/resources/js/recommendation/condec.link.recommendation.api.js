@@ -40,33 +40,6 @@
 		);
 	};
 
-	ConDecLinkRecommendationAPI.prototype.doesElementNeedApproval = function(projectKey, elementId, elementLocation) {
-		return generalApi.getJSONReturnPromise(
-			`${this.restPrefix}/doesElementNeedApproval.json
-				?projectKey=${projectKey}
-				&elementId=${elementId}
-				&elementLocation=${elementLocation}`
-		);
-	};
-
-	ConDecLinkRecommendationAPI.prototype.approveCheck = function(projectKey, elementId, elementLocation, user) {
-		return generalApi.postJSONReturnPromise(
-			`${this.restPrefix}/approveCheck.json
-				?projectKey=${projectKey}
-				&elementId=${elementId}
-				&elementLocation=${elementLocation}
-				&user=${user}`
-		);
-	};
-
-	ConDecLinkRecommendationAPI.prototype.approveInconsistencies = function(elementId) {
-		conDecLinkRecommendationAPI.approveCheck(this.projectKey, elementId, "i", JIRA.Users.LoggedInUser.userName());
-	}
-	
-	ConDecLinkRecommendationAPI.prototype.confirmIncompleteMessage = function() {
-		this.consistencyCheckFlag.close();
-	}
-
 	global.conDecLinkRecommendationAPI = new ConDecLinkRecommendationAPI();
 }
 )(window);
