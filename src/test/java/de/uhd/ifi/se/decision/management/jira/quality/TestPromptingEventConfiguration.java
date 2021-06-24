@@ -19,20 +19,20 @@ public class TestPromptingEventConfiguration {
 
 	@Test
 	public void testPromptEventForLinkSuggestion() {
-		config.setPromptEventForLinkSuggestion("done", true);
-		assertTrue(config.isPromptEventForLinkSuggestionActivated("done"));
+		config.setPromptEvent("linkRecommendation", "done", true);
+		assertTrue(config.isPromptEventActivated("linkRecommendation", "done"));
 
-		config.setPromptEventForLinkSuggestion("done", false);
-		assertFalse(config.isPromptEventForLinkSuggestionActivated("done"));
+		config.setPromptEvent("linkRecommendation", "done", false);
+		assertFalse(config.isPromptEventActivated("linkRecommendation", "done"));
 	}
 
 	@Test
 	public void testPromptEventForDefinitionOfDoneChecking() {
-		config.setPromptEventForDefinitionOfDoneChecking("done", true);
-		assertTrue(config.isPromptEventForDefinitionOfDoneCheckingActivated("done"));
+		config.setPromptEvent("definitionOfDoneChecking", "done", true);
+		assertTrue(config.isPromptEventActivated("definitionOfDoneChecking", "done"));
 
-		config.setPromptEventForDefinitionOfDoneChecking("done", false);
-		assertFalse(config.isPromptEventForDefinitionOfDoneCheckingActivated("done"));
+		config.setPromptEvent("definitionOfDoneChecking", "done", false);
+		assertFalse(config.isPromptEventActivated("definitionOfDoneChecking", "done"));
 	}
 
 }

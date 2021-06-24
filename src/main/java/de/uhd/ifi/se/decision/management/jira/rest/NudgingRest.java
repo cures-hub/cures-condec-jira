@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response.Status;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.ImmutableMap;
 import com.opensymphony.workflow.loader.ActionDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -24,62 +25,33 @@ public class NudgingRest {
 
 	@Path("/isPromptEventActivated")
 	@POST
-	public Response isPromptEventActivated(@Context HttpServletRequest request,
+	public Response isPromptEventActivated(@Context HttpServletRequest request, @QueryParam("feature") String feature,
 			@QueryParam("jiraIssueId") long jiraIssueId, @QueryParam("actionId") int actionId) {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
 		ActionDescriptor actionDescriptor = ComponentAccessor.getWorkflowManager().getActionDescriptor(issue, actionId);
 		PromptingEventConfiguration promptingEventConfiguration = ConfigPersistenceManager
 				.getPromptingEventConfiguration(issue.getProjectObject().getKey());
-		boolean isActivated = promptingEventConfiguration
-				.isPromptEventForDefinitionOfDoneCheckingActivated(actionDescriptor.getName());
+		boolean isActivated = promptingEventConfiguration.isPromptEventActivated(feature, actionDescriptor.getName());
 		return Response.ok(isActivated).build();
 	}
 
-	@Path("/activatePromptEventForLinkSuggestion")
+	@Path("/activatePromptEvent")
 	@POST
-	public Response activatePromptEventForLinkSuggestion(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-			@QueryParam("isActivated") boolean isActivated) {
+	public Response activatePromptEvent(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("feature") String feature,
+			@QueryParam("eventKey") String eventKey, @QueryParam("isActivated") boolean isActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		PromptingEventConfiguration promptingEventConfiguration = ConfigPersistenceManager
 				.getPromptingEventConfiguration(projectKey);
-		promptingEventConfiguration.setPromptEventForLinkSuggestion(eventKey, isActivated);
+		if (!promptingEventConfiguration.isValidFeature(feature)) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "No just-in-time prompt exists for the given feature.")).build();
+		}
+		promptingEventConfiguration.setPromptEvent(feature, eventKey, isActivated);
 		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, promptingEventConfiguration);
-		return Response.ok().build();
-	}
-
-	@Path("/activatePromptEventForDefinitionOfDoneChecking")
-	@POST
-	public Response activatePromptEventForDefinitionOfDoneChecking(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		PromptingEventConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getPromptingEventConfiguration(projectKey);
-		linkSuggestionConfiguration.setPromptEventForDefinitionOfDoneChecking(eventKey, isActivated);
-		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, linkSuggestionConfiguration);
-		return Response.ok().build();
-	}
-
-	@Path("/activatePromptEventForNonValidatedElementsChecking")
-	@POST
-	public Response activatePromptEventForNonValidatedElementsChecking(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("eventKey") String eventKey,
-			@QueryParam("isActivated") boolean isActivated) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		PromptingEventConfiguration nonValidatedElementsConfiguration = ConfigPersistenceManager
-				.getPromptingEventConfiguration(projectKey);
-		nonValidatedElementsConfiguration.setPromptEventForNonValidatedElementsChecking(eventKey, isActivated);
-		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, nonValidatedElementsConfiguration);
 		return Response.ok().build();
 	}
 }

@@ -15,7 +15,7 @@ public interface QualityCheckEventTrigger {
 	default boolean isActivated() {
 		PromptingEventConfiguration config = ConfigPersistenceManager
 				.getPromptingEventConfiguration(getCurrentProjectKey());
-		return config.isPromptEventForLinkSuggestionActivated(getName());
+		return config.isPromptEventActivated("", getName());
 	}
 
 	String getName();

@@ -123,8 +123,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetPromptingEventConfiguration() {
-		assertFalse(
-				project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("finished"));
+		assertFalse(project.getPromptingEventConfiguration().isPromptEventActivated("definitionOfDoneChecking",
+				"finished"));
 	}
 
 	@Test

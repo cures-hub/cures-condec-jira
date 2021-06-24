@@ -10,7 +10,7 @@
 				conDecPrompt.promptNonValidatedElements();
 				
 				params = new URLSearchParams(settings.url.replaceAll("?", "&"));
-				conDecNudgingAPI.isPromptEventActivated(params.get("id"), params.get("action"));
+				conDecNudgingAPI.isPromptEventActivated("definitionOfDoneChecking", params.get("id"), params.get("action"));
 			}
 		});
 	};

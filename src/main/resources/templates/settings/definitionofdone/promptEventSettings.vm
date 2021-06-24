@@ -4,7 +4,7 @@
 <div class="field-group">
     <label>DoD check for $workflowActionName event activated?</label>
     <aui-toggle id="isDoDCheckingActivated-$workflowActionName.replaceAll(' ', '')" label="$workflowActionName event activated?"
-    #if($project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated($workflowActionName))
+    #if($project.getPromptingEventConfiguration().isPromptEventActivated("definitionOfDoneChecking", $workflowActionName))
 		checked
 	#end
     ></aui-toggle>
@@ -16,7 +16,7 @@
 <script>
 	$("#isDoDCheckingActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
 		const isActivated = $(this).prop("checked");
-		conDecNudgingAPI.activatePromptEventForDefinitionOfDoneChecking("$projectKey", "$workflowActionName", isActivated);
-	})
+		conDecNudgingAPI.activatePromptEvent("$projectKey", "definitionOfDoneChecking", "$workflowActionName", isActivated);
+	});
 </script>
 #end

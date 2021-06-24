@@ -4,7 +4,7 @@
 <div class="field-group">
     <label>Non-validated elements check for $workflowActionName event activated?</label>
     <aui-toggle id="isNonValidatedCheckingActivated-$workflowActionName.replaceAll(' ', '')" label="$workflowActionName event activated?"
-    #if($project.getPromptingEventConfiguration().isPromptEventForNonValidatedCheckingActivated($workflowActionName))
+    #if($project.getPromptingEventConfiguration().isPromptEventActivated("nonValidatedElementsChecking", $workflowActionName))
 		checked
 	#end
     ></aui-toggle>
@@ -16,7 +16,7 @@
 <script>
 	$("#isNonValidatedCheckingActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
 		const isActivated = $(this).prop("checked");
-		conDecNudgingAPI.activatePromptEventForNonValidatedElementsChecking("$projectKey", "$workflowActionName", isActivated);
-	})
+		conDecNudgingAPI.activatePromptEvent("$projectKey", "nonValidatedElementsChecking", "$workflowActionName", isActivated);
+	});
 </script>
 #end

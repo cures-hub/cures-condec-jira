@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.NudgingRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestActivatePromptEventForLinkSuggestion extends TestSetUp {
+public class TestActivatePromptEvent extends TestSetUp {
 	protected HttpServletRequest request;
 	protected NudgingRest nudgingRest;
 
@@ -27,20 +27,26 @@ public class TestActivatePromptEventForLinkSuggestion extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestValidProjectValidEventTypeValidIsActivatedTrue() {
+	public void testRequestValidProjectValidFeatureValidEventTypeValidIsActivatedTrue() {
 		assertEquals(Status.OK.getStatusCode(),
-				nudgingRest.activatePromptEventForLinkSuggestion(request, "TEST", "done", true).getStatus());
+				nudgingRest.activatePromptEvent(request, "TEST", "definitionOfDoneChecking", "done", true).getStatus());
 	}
 
 	@Test
-	public void testRequestNullProjectValidEventTypeValidIsActivatedTrue() {
+	public void testRequestNullProjectValidFeatureValidEventTypeValidIsActivatedTrue() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				nudgingRest.activatePromptEventForLinkSuggestion(null, "TEST", "done", true).getStatus());
+				nudgingRest.activatePromptEvent(null, "TEST", "definitionOfDoneChecking", "done", true).getStatus());
 	}
 
 	@Test
-	public void testRequestValidProjectNullEventTypeValidIsActivatedTrue() {
+	public void testRequestValidProjectNullFeatureValidEventTypeValidIsActivatedTrue() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				nudgingRest.activatePromptEventForLinkSuggestion(request, null, "done", true).getStatus());
+				nudgingRest.activatePromptEvent(request, null, "definitionOfDoneChecking", "done", true).getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectValidFeatureInvalidEventTypeValidIsActivatedTrue() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				nudgingRest.activatePromptEvent(request, "TEST", null, "done", true).getStatus());
 	}
 }

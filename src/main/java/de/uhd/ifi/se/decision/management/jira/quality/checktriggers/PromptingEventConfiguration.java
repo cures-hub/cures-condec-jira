@@ -1,9 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.quality.checktriggers;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for the just-in-time-prompts of "smart"
@@ -11,47 +12,31 @@ import java.util.Set;
  * project (see {@link DecisionKnowledgeProject}).
  */
 public class PromptingEventConfiguration {
-	private Set<String> eventsForLinkSuggestion;
-	private Set<String> eventsForDefinitionOfDoneChecking;
-	private Set<String> eventsForNonValidatedElementsChecking;
+	private Map<String, HashSet<String>> promptingEventsForFeature;
 
 	public PromptingEventConfiguration() {
-		eventsForLinkSuggestion = new HashSet<>();
-		eventsForDefinitionOfDoneChecking = new HashSet<>();
-		eventsForNonValidatedElementsChecking = new HashSet<>();
+		promptingEventsForFeature = new HashMap<>();
+		promptingEventsForFeature.put("linkRecommendation", new HashSet<>());
+		promptingEventsForFeature.put("definitionOfDoneChecking", new HashSet<>());
+		promptingEventsForFeature.put("nonValidatedElementsChecking", new HashSet<>());
 	}
 
-	public boolean isPromptEventForLinkSuggestionActivated(String eventName) {
-		return eventsForLinkSuggestion.contains(eventName);
+	public boolean isPromptEventActivated(String feature, String eventName) {
+		return promptingEventsForFeature.get(feature).contains(eventName);
 	}
 
-	public void setPromptEventForLinkSuggestion(String eventKey, boolean isActivated) {
-		setPromptEvent(eventKey, isActivated, eventsForLinkSuggestion);
+	public boolean isValidFeature(String feature) {
+		return promptingEventsForFeature.get(feature) != null;
 	}
 
-	private void setPromptEvent(String eventKey, boolean isActivated, Set<String> activatedEvents) {
+	public void setPromptEvent(String feature, String eventKey, boolean isActivated) {
+		if (!isValidFeature(feature)) {
+			return;
+		}
 		if (isActivated) {
-			activatedEvents.add(eventKey);
+			promptingEventsForFeature.get(feature).add(eventKey);
 		} else {
-			activatedEvents.remove(eventKey);
+			promptingEventsForFeature.get(feature).remove(eventKey);
 		}
 	}
-
-	public boolean isPromptEventForDefinitionOfDoneCheckingActivated(String eventName) {
-		return eventsForDefinitionOfDoneChecking.contains(eventName);
-	}
-
-	public void setPromptEventForDefinitionOfDoneChecking(String eventKey, boolean isActivated) {
-		setPromptEvent(eventKey, isActivated, eventsForDefinitionOfDoneChecking);
-	}
-
-	public boolean isPromptEventForNonValidatedElementsCheckingActivated(String eventName) {
-		return eventsForNonValidatedElementsChecking.contains(eventName);
-	}
-
-	public void setPromptEventForNonValidatedElementsChecking(String eventKey, boolean isActivated) {
-		setPromptEvent(eventKey, isActivated, eventsForNonValidatedElementsChecking);
-	}
-
-
 }
