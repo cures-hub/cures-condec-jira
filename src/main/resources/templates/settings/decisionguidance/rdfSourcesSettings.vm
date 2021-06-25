@@ -109,37 +109,6 @@
         })
 	});
 
-    const DBPEDIAPREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
-                        "PREFIX dct: <http://purl.org/dc/terms/>\n"+
-                        "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                        "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n\n";
-
-    const FACTORYPATTERN =
-           "select distinct ?subject ?url count(?links) where {\n" +
-            "%variable% dct:subject ?concept.\n" +
-            "?subject dct:subject ?concept.\n " +
-            "?url foaf:primaryTopic ?subject.\n " +
-           "FILTER(regex(?concept, 'pattern', 'i')).\n" +
-           "?subject  dbo:wikiPageExternalLink ?links.\n" +
-           "} GROUP BY ?subject ?url";
-
-    const FRAMEWORKS = "select distinct ?subject ?url count(?link)   where { \n" +
-                        "%variable% dbo:genre ?genre.\n" +
-                        "?subject dbo:genre ?genre.\n" +
-                        "?subject foaf:isPrimaryTopicOf ?url.\n" +
-                        "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url";
-
-	$("#insert-design-patterns").click(function(event) {
-        event.preventDefault();
-		$("#rdf-query-").val(DBPEDIAPREFIX + FACTORYPATTERN);
-	});
-
-    $("#insert-frameworks").click(function(event) {
-        event.preventDefault();
-        $("#rdf-query-").val(DBPEDIAPREFIX + FRAMEWORKS);
-	});
-
 	$("#query-help-trigger").click(event => {
 		$("#query-help").toggle();
 	});

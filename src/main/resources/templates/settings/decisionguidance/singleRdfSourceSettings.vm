@@ -64,11 +64,6 @@
         #end
     </div>
     <div class="description">Enter a SPARQL-Query.</div>
-    #if($rdfId == "")
-    <button class="aui-button" id="insert-design-patterns">Design Patterns</button>
-    <button class="aui-button" id="insert-frameworks">Frameworks</button>    
-    <div class="description">Choose an example query.</div>
-    #end
 </div>
 <div class="field-group">
     <label>Timeout</label>
