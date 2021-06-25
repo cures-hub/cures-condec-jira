@@ -56,11 +56,11 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 	public void testSetAndGetRDFKnowledgeSource() {
 		RDFSource rdfSource = new RDFSource("RDF Name", "service", "query", 30000, "");
 		config.addRDFKnowledgeSource(rdfSource);
-		assertEquals(1, config.getRDFKnowledgeSources().size());
+		assertEquals(2, config.getRDFKnowledgeSources().size());
 
 		RDFSource rdfSourceUpdated = new RDFSource("RDF Name2", "service2", "query2", 10000, "");
 		config.updateRDFKnowledgeSource("RDF Name", rdfSourceUpdated);
-		rdfSource = config.getRDFKnowledgeSources().get(0);
+		rdfSource = config.getRDFKnowledgeSources().get(1);
 		assertEquals("service2", rdfSource.getService());
 		assertEquals("query2", rdfSource.getQuery());
 		assertEquals(10000, rdfSource.getTimeout());
@@ -68,29 +68,29 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
 		// Test deactivation
 		config.setRDFKnowledgeSourceActivation("RDF Name2", false);
-		assertFalse(config.getRDFKnowledgeSources().get(0).isActivated());
+		assertFalse(config.getRDFKnowledgeSources().get(1).isActivated());
 
 		// Delete KnowledgeSource
 		config.deleteRDFKnowledgeSource("RDF Name2");
-		assertEquals(0, config.getRDFKnowledgeSources().size());
+		assertEquals(1, config.getRDFKnowledgeSources().size());
 	}
 
 	@Test
 	public void testSetProjectKnowledgeSources() {
 		config.setProjectKnowledgeSources(new ArrayList<>());
-		assertEquals(0, config.getAllActivatedKnowledgeSources().size());
+		assertEquals(1, config.getAllActivatedKnowledgeSources().size());
 	}
 
 	@Test
 	public void testAddRDFKnowledgeSourceNull() {
 		config.addRDFKnowledgeSource(null);
-		assertEquals(0, config.getRDFKnowledgeSources().size());
+		assertEquals(1, config.getRDFKnowledgeSources().size());
 	}
 
 	@Test
 	public void testGetAllKnowledgeSources() {
-		assertEquals(1, config.getAllKnowledgeSources().size());
-		assertEquals(0, config.getAllActivatedKnowledgeSources().size());
+		assertEquals(2, config.getAllKnowledgeSources().size());
+		assertEquals(1, config.getAllActivatedKnowledgeSources().size());
 	}
 
 	@Test
