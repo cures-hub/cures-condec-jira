@@ -5,12 +5,18 @@
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				// just-in-time prompts when status changes
-				conDecPrompt.promptLinkSuggestion();
-				conDecPrompt.promptDefinitionOfDoneChecking();
-				conDecPrompt.promptNonValidatedElements();
-				
-				params = new URLSearchParams(settings.url.replaceAll("?", "&"));
-				conDecNudgingAPI.isPromptEventActivated("definitionOfDoneChecking", params.get("id"), params.get("action"));
+				var params = new URLSearchParams(settings.url.replaceAll("?", "&"));
+				var id = params.get("id");
+				var actionId = params.get("action");				
+				if (conDecNudgingAPI.isPromptEventActivated("definitionOfDoneChecking", id, actionId)) {
+					conDecPrompt.promptDefinitionOfDoneChecking();
+				}
+				if (conDecNudgingAPI.isPromptEventActivated("linkRecommendation", id, actionId)) {
+					conDecPrompt.promptLinkSuggestion();
+				}
+				if (conDecNudgingAPI.isPromptEventActivated("nonValidatedElementsChecking", id, actionId)) {
+					conDecPrompt.promptNonValidatedElements();
+				}
 			}
 		});
 	};

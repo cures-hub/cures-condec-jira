@@ -24,7 +24,6 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueChangeListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.JiraIssueTextExtractionEventListener;
-import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.QualityCheckEventListenerSingleton;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.SummarizationEventListener;
 import de.uhd.ifi.se.decision.management.jira.eventlistener.implementation.WebhookEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -70,7 +69,6 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		issueEventListeners.add(new WebhookEventListener());
 		issueEventListeners.add(new JiraIssueTextExtractionEventListener());
 		issueEventListeners.add(new SummarizationEventListener());
-		issueEventListeners.add(QualityCheckEventListenerSingleton.getInstance());
 		issueEventListeners.add(new JiraIssueChangeListener());
 
 		// attach Jira issue link event listeners

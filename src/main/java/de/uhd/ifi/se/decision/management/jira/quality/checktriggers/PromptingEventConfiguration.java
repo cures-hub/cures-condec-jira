@@ -17,13 +17,12 @@ public class PromptingEventConfiguration {
 	private Map<String, Set<String>> promptingEventsForFeature;
 
 	/**
-	 * @param projectKey
-	 *            of a Jira project.
-	 * 
-	 * @issue Should the prompting events should be activated or deactivated per
-	 *        default?
+	 * @issue Should the prompting events be activated or deactivated per default?
 	 * @decision Activate prompting events per default for opt-out nudging!
 	 * @pro The developers are nudged/triggered to use the smart ConDec features.
+	 * 
+	 * @param projectKey
+	 *            of a Jira project.
 	 */
 	public PromptingEventConfiguration(String projectKey) {
 		promptingEventsForFeature = new HashMap<>();
