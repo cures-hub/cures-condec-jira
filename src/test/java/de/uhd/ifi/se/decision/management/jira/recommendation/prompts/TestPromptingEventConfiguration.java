@@ -49,7 +49,12 @@ public class TestPromptingEventConfiguration extends TestSetUp {
 	@Test
 	public void testSetPromptEventForInvalidFeature() {
 		config.setPromptEvent(null, "done", true);
-		assertFalse(config.isPromptEventActivated(FeatureWithPrompt.DOD_CHECKING, "done"));
+		assertFalse(config.isPromptEventActivated((FeatureWithPrompt) null, "done"));
 	}
 
+	@Test
+	public void testIsValidFeatureMapNull() {
+		config.setPromptingEventsForFeature(null);
+		assertTrue(config.isValidFeature(FeatureWithPrompt.LINK_RECOMMENDATION));
+	}
 }

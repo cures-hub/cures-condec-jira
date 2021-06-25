@@ -46,6 +46,9 @@ public class PromptingEventConfiguration {
 		if (feature == null) {
 			return false;
 		}
+		if (promptingEventsForFeature == null) {
+			promptingEventsForFeature = new HashMap<>();
+		}
 		if (!promptingEventsForFeature.containsKey(feature)) {
 			promptingEventsForFeature.put(feature, new HashSet<>());
 		}
@@ -65,5 +68,9 @@ public class PromptingEventConfiguration {
 
 	public Map<FeatureWithPrompt, Set<String>> getPromptingEventsForFeature() {
 		return promptingEventsForFeature;
+	}
+
+	public void setPromptingEventsForFeature(Map<FeatureWithPrompt, Set<String>> promptingEventsForFeature) {
+		this.promptingEventsForFeature = promptingEventsForFeature;
 	}
 }
