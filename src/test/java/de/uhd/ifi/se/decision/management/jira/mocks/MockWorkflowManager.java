@@ -180,6 +180,7 @@ public class MockWorkflowManager implements WorkflowManager {
 	public JiraWorkflow getWorkflow(Issue arg0) throws WorkflowException {
 		MockJiraWorkflow workflow = new MockJiraWorkflow();
 		workflow.addStep(1, "Unresolved");
+		workflow.addAction(getActionDescriptor(null, 0));
 		return workflow;
 	}
 
@@ -219,12 +220,14 @@ public class MockWorkflowManager implements WorkflowManager {
 
 	@Override
 	public Iterable<JiraWorkflow> getWorkflowsFromScheme(Scheme arg0) throws WorkflowException {
-		return new ArrayList<>();
+		JiraWorkflow workflow = getWorkflow((Issue) null);
+		List<JiraWorkflow> workflows = new ArrayList<>();
+		workflows.add(workflow);
+		return workflows;
 	}
 
 	@Override
 	public List<JiraWorkflow> getWorkflowsIncludingDrafts() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

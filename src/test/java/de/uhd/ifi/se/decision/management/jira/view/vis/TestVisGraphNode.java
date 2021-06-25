@@ -1,14 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestVisGraphNode extends TestSetUp {
 
@@ -65,8 +65,8 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testNodeDescription() {
 		VisNode node = new VisNode(element, true, 1);
-		String expectedTitle = "Minimum decision coverage is not reached."
-			+ System.lineSeparator() + System.lineSeparator() + "Linked decision knowledge is incomplete.";
+		String expectedTitle = "Minimum decision coverage is not reached." + System.lineSeparator()
+				+ System.lineSeparator() + "Linked decision knowledge is incomplete.";
 		assertEquals(expectedTitle, node.getTitle());
 	}
 

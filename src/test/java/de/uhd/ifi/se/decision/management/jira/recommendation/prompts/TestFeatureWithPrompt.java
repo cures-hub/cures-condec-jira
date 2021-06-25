@@ -7,8 +7,11 @@ import org.junit.Test;
 public class TestFeatureWithPrompt {
 
 	@Test
-	public void testValueOf() {
-		assertEquals(FeatureWithPrompt.LINK_RECOMMENDATION, FeatureWithPrompt.valueOf("LINK_RECOMMENDATION"));
+	public void testGetFeatureByName() {
+		assertEquals(FeatureWithPrompt.LINK_RECOMMENDATION, FeatureWithPrompt.getFeatureByName("LINK_RECOMMENDATION"));
+		assertEquals(FeatureWithPrompt.LINK_RECOMMENDATION, FeatureWithPrompt.getFeatureByName("link_recommendation"));
+		assertEquals(null, FeatureWithPrompt.getFeatureByName(null));
+		assertEquals(null, FeatureWithPrompt.getFeatureByName(""));
+		assertEquals(null, FeatureWithPrompt.getFeatureByName("CHANGE_IMPACT_ANALYSIS"));
 	}
-
 }
