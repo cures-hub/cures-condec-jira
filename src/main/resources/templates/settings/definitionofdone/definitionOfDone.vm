@@ -7,7 +7,6 @@ Besides, ConDec shows warnings to the developers if the definition of done of th
 
 <form class="aui">
     #parse("templates/settings/definitionofdone/definitionOfDoneCriteriaSettings.vm")
-    #parse("templates/settings/definitionofdone/promptEventSettings.vm")
 </form>
 
 <script>

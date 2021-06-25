@@ -17,6 +17,8 @@ public class TestEventProjectDeleted extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testDeleteProject() {
+		listener.onProjectDeletedEvent(null);
+
 		JiraIssues.addElementToDataBase();
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
 				.getJiraIssueTextManager();

@@ -3,5 +3,4 @@
 <form class="aui">
     #parse("templates/settings/linkrecommendation/minProbabilitySetting.vm")
     #parse("templates/settings/linkrecommendation/minTextLengthSetting.vm")
-    #parse("templates/settings/linkrecommendation/promptEventSettings.vm")
 </form>

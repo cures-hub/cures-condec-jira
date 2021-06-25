@@ -5,9 +5,24 @@
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				// just-in-time prompts when status changes
-				conDecPrompt.promptLinkSuggestion();
-				conDecPrompt.promptDefinitionOfDoneChecking();
-				conDecPrompt.promptNonValidatedElements();
+				var params = new URLSearchParams(settings.url.replaceAll("?", "&"));
+				var id = params.get("id");
+				var actionId = params.get("action");
+				conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptDefinitionOfDoneChecking();
+					}
+				});
+				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptLinkSuggestion();
+					}
+				});
+				conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptNonValidatedElements();
+					}
+				});
 			}
 		});
 	};
@@ -18,30 +33,23 @@
 		if (issueId === null || issueId === undefined) {
 			return;
 		}
-		conDecLinkRecommendationAPI.doesElementNeedApproval(projectKey, issueId, "i")
-			.then((isApprovalNeeded) => {
-				if (!isApprovalNeeded) {
-					return;
-				}
-				Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-				conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
-					(values) => {
-						let numDuplicates = (values[0].length);
-						let numRelated = (values[1].length);
-						if (numDuplicates + numRelated > 0) {
-							document.getElementById("link-recommendation-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-							document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
-							document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
-							var flag = AJS.flag({
-								body: document.getElementById("link-recommendation-prompt").outerHTML,
-								title: "Related Knowledge Elements Detected!"
-							});
-							document.getElementById("link-recommendation-prompt-button").onclick = function() {
-								conDecLinkRecommendationAPI.approveInconsistencies(issueId);
-								flag.close();
-							};
-						}
+		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
+		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
+			(values) => {
+				let numDuplicates = (values[0].length);
+				let numRelated = (values[1].length);
+				if (numDuplicates + numRelated > 0) {
+					document.getElementById("link-recommendation-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
+					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
+					var flag = AJS.flag({
+						body: document.getElementById("link-recommendation-prompt").outerHTML,
+						title: "Related Knowledge Elements Detected!"
 					});
+					document.getElementById("link-recommendation-prompt-button").onclick = function() {
+						flag.close();
+					};
+				}
 			});
 	}
 
@@ -72,13 +80,13 @@
 				type: "warning"
 
 			});
-			document.getElementById("definition-of-done-checking-prompt-button").onclick = function () {
+			document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
 				flag.close();
 			};
 		})
 	}
-	
-	ConDecPrompt.prototype.promptNonValidatedElements = function () {
+
+	ConDecPrompt.prototype.promptNonValidatedElements = function() {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -99,12 +107,12 @@
 					title: "Non-validated elements found!",
 					type: "warning"
 				})
-				document.getElementById("non-validated-elements-validate-button").onclick = function () {
+				document.getElementById("non-validated-elements-validate-button").onclick = function() {
 					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
 					flag.close();
 
 				};
-				document.getElementById("non-validated-elements-ignore-button").onclick = function () {
+				document.getElementById("non-validated-elements-ignore-button").onclick = function() {
 					flag.close();
 				};
 
@@ -121,7 +129,6 @@
 				document.getElementById("non-validated-table-body").innerHTML = tableContents;
 			})
 	}
-
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);
