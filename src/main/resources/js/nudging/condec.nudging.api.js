@@ -5,10 +5,8 @@
 	};
 
 	ConDecNudgingAPI.prototype.isPromptEventActivated = function(feature, jiraIssueId, actionId) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/isPromptEventActivated.json?
-			feature=${feature}&jiraIssueId=${jiraIssueId}&actionId=${actionId}`, null)
-			.then((isActivated) => {conDecAPI.showFlag("success",
-				"Event is activated " + isActivated)});
+		return generalApi.postJSONReturnPromise(this.restPrefix + `/isPromptEventActivated.json?
+			feature=${feature}&jiraIssueId=${jiraIssueId}&actionId=${actionId}`, null);			
 	}
 
 	ConDecNudgingAPI.prototype.activatePromptEvent = function(projectKey, feature, eventKey, isActivated) {

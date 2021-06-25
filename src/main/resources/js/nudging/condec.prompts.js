@@ -7,16 +7,22 @@
 				// just-in-time prompts when status changes
 				var params = new URLSearchParams(settings.url.replaceAll("?", "&"));
 				var id = params.get("id");
-				var actionId = params.get("action");				
-				if (conDecNudgingAPI.isPromptEventActivated("definitionOfDoneChecking", id, actionId)) {
-					conDecPrompt.promptDefinitionOfDoneChecking();
-				}
-				if (conDecNudgingAPI.isPromptEventActivated("linkRecommendation", id, actionId)) {
-					conDecPrompt.promptLinkSuggestion();
-				}
-				if (conDecNudgingAPI.isPromptEventActivated("nonValidatedElementsChecking", id, actionId)) {
-					conDecPrompt.promptNonValidatedElements();
-				}
+				var actionId = params.get("action");
+				conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptDefinitionOfDoneChecking();
+					}
+				});
+				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptLinkSuggestion();
+					}
+				});
+				conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptNonValidatedElements();
+					}
+				});
 			}
 		});
 	};
@@ -123,7 +129,6 @@
 				document.getElementById("non-validated-table-body").innerHTML = tableContents;
 			})
 	}
-
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);

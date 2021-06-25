@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.checktriggers;
+package de.uhd.ifi.se.decision.management.jira.recommendation.prompts;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
  * project (see {@link DecisionKnowledgeProject}).
  */
 public class PromptingEventConfiguration {
-	private Map<String, Set<String>> promptingEventsForFeature;
+
+	private Map<FeatureWithPrompt, Set<String>> promptingEventsForFeature;
 
 	/**
 	 * @issue Should the prompting events be activated or deactivated per default?
@@ -28,32 +29,30 @@ public class PromptingEventConfiguration {
 		promptingEventsForFeature = new HashMap<>();
 
 		Set<String> allEventNames = JiraSchemeManager.getWorkflowActionNames(projectKey);
-		promptingEventsForFeature.put("linkRecommendation", allEventNames);
-		promptingEventsForFeature.put("definitionOfDoneChecking", allEventNames);
-		promptingEventsForFeature.put("decisionGuidance", allEventNames);
-		promptingEventsForFeature.put("nonValidatedElementsChecking", allEventNames);
+		for (FeatureWithPrompt feature : FeatureWithPrompt.values()) {
+			promptingEventsForFeature.put(feature, allEventNames);
+		}
 	}
 
-	public boolean isPromptEventActivated(String feature, String eventName) {
+	public boolean isPromptEventActivated(FeatureWithPrompt feature, String eventName) {
 		return isValidFeature(feature) && promptingEventsForFeature.get(feature).contains(eventName);
 	}
 
-	public boolean isValidFeature(String feature) {
-		if (promptingEventsForFeature.get(feature) != null) {
-			return true;
-		}
+	public boolean isPromptEventActivated(String featureName, String eventName) {
+		return isPromptEventActivated(FeatureWithPrompt.getFeatureByName(featureName), eventName);
+	}
+
+	public boolean isValidFeature(FeatureWithPrompt feature) {
 		if (feature == null) {
 			return false;
 		}
-		if (feature.equals("linkRecommendation") || feature.equals("decisionGuidance")
-				|| feature.equals("definitionOfDoneChecking") || feature.equals("nonValidatedElementsChecking")) {
+		if (!promptingEventsForFeature.containsKey(feature)) {
 			promptingEventsForFeature.put(feature, new HashSet<>());
-			return true;
 		}
-		return false;
+		return true;
 	}
 
-	public void setPromptEvent(String feature, String eventKey, boolean isActivated) {
+	public void setPromptEvent(FeatureWithPrompt feature, String eventKey, boolean isActivated) {
 		if (!isValidFeature(feature)) {
 			return;
 		}
@@ -62,5 +61,9 @@ public class PromptingEventConfiguration {
 		} else {
 			promptingEventsForFeature.get(feature).remove(eventKey);
 		}
+	}
+
+	public Map<FeatureWithPrompt, Set<String>> getPromptingEventsForFeature() {
+		return promptingEventsForFeature;
 	}
 }

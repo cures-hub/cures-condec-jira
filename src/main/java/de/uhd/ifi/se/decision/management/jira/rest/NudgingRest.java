@@ -14,7 +14,8 @@ import com.google.common.collect.ImmutableMap;
 import com.opensymphony.workflow.loader.ActionDescriptor;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.FeatureWithPrompt;
+import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
 
 /**
  * REST resource for nudging functionality, in particular, for just-in-time
@@ -46,11 +47,12 @@ public class NudgingRest {
 		}
 		PromptingEventConfiguration promptingEventConfiguration = ConfigPersistenceManager
 				.getPromptingEventConfiguration(projectKey);
-		if (!promptingEventConfiguration.isValidFeature(feature)) {
+		FeatureWithPrompt featureWithPrompt = FeatureWithPrompt.getFeatureByName(feature);
+		if (!promptingEventConfiguration.isValidFeature(featureWithPrompt)) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "No just-in-time prompt exists for the given feature.")).build();
 		}
-		promptingEventConfiguration.setPromptEvent(feature, eventKey, isActivated);
+		promptingEventConfiguration.setPromptEvent(featureWithPrompt, eventKey, isActivated);
 		ConfigPersistenceManager.savePromptingEventConfiguration(projectKey, promptingEventConfiguration);
 		return Response.ok().build();
 	}

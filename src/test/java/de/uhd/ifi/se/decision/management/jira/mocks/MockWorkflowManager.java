@@ -23,6 +23,7 @@ import com.atlassian.jira.workflow.WorkflowScheme;
 import com.opensymphony.workflow.StoreException;
 import com.opensymphony.workflow.Workflow;
 import com.opensymphony.workflow.loader.ActionDescriptor;
+import com.opensymphony.workflow.loader.DescriptorFactory;
 import com.opensymphony.workflow.loader.FunctionDescriptor;
 import com.opensymphony.workflow.spi.WorkflowStore;
 
@@ -110,8 +111,9 @@ public class MockWorkflowManager implements WorkflowManager {
 
 	@Override
 	public ActionDescriptor getActionDescriptor(Issue arg0, int arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		ActionDescriptor actionDescriptor = DescriptorFactory.getFactory().createActionDescriptor();
+		actionDescriptor.setName("done");
+		return actionDescriptor;
 	}
 
 	@Override
