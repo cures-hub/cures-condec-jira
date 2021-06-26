@@ -1,20 +1,7 @@
-<form class="aui condec-filter">
-	#set ($viewIdentifier = "comparison")	
-	<!-- filter criteria for both sides -->
-	#parse("templates/filter/text.vm")
-	#parse("templates/filter/knowledgeType.vm")
-	#parse("templates/filter/linkType.vm")
-    #parse("templates/filter/status.vm")
-    #parse("templates/filter/decisionGroup.vm")
-    #parse("templates/filter/degree.vm")
-	#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-	#parse("templates/filter/isHierarchicalGraph.vm")
-	#if($showTransitiveFilter)
-    #parse("templates/filter/isTransitiveLinks.vm")
-	#end
-    #parse("templates/filter/colorNodes.vm")
-    #parse("templates/filter/filterButton.vm")
-</form>
+#set ($viewIdentifier = "comparison")
+<!-- filter criteria for both sides -->
+#parse("templates/filter/allCriteria.vm")
+<!-- filter criteria different for sides -->
 <div class="aui-group">
     <div  class="aui-item">
     	<!-- filter criteria for the left side -->

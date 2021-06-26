@@ -65,9 +65,10 @@
 		conDecFiltering.initDropdown("documentation-location-dropdown-overview", conDecAPI.documentationLocations);
 		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
 		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
-
-		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView, false);
-
+		
+		// Add on click listeners to filter button
+     	conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);
+     	
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
 		this.updateView();

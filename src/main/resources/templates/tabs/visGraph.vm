@@ -1,26 +1,5 @@
-<div class="aui-toolbar2" role="toolbar">
-	<div class="aui-toolbar-2-inner">		
-		<form class="aui condec-filter">
-			#set ($viewIdentifier = "graph")	
-			#parse("templates/filter/text.vm")	
-			#parse("templates/filter/knowledgeType.vm")
-			#parse("templates/filter/status.vm")
-			#parse("templates/filter/decisionGroup.vm")
-			#parse("templates/filter/documentationDate.vm")			
-			#parse("templates/filter/linkType.vm")
-			#parse("templates/filter/documentationLocation.vm")
-			#parse("templates/filter/linkDistance.vm")	
-			#parse("templates/filter/degree.vm")
-			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-			#parse("templates/filter/isHierarchicalGraph.vm")
-			#if($showTransitiveFilter)
-        	#parse("templates/filter/isTransitiveLinks.vm")
-			#end
-			#parse("templates/filter/colorNodes.vm")
-			#parse("templates/filter/filterButton.vm")
-		</form>		
-	</div>
-</div>
+#set ($viewIdentifier = "graph")	
+#parse("templates/filter/allCriteria.vm")     	
 <div id="vis-graph-container"></div>
 <script>
 /* Adds the on click listener on tab opening */

@@ -16,8 +16,8 @@
 		conDecFiltering.fillDatePickers("rationale-backlog", 30);
 		conDecFiltering.initDropdown("documentation-location-dropdown-rationale-backlog", conDecAPI.documentationLocations);
 		
-		// Add event listeners on filter HTML elements
-		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView, false);
+		// Add on click listeners to filter button
+     	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecKnowledgePage.updateView);
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("rationale-backlog");	
 
 		// Register/subscribe this view as an observer

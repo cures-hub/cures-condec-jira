@@ -1,0 +1,61 @@
+<div class="aui-toolbar2" role="toolbar">
+	<form class="aui">	
+		<div class="condec-filter">    
+			#parse("templates/filter/linkDistance.vm")
+			#if($viewIdentifier != "overview")
+				#parse("templates/filter/knowledgeType.vm") 
+			#else
+				<select id="select-root-element-type" name="knowledge-type-dropdown-overview"
+            		class="select short-field" onchange="conDecKnowledgePage.updateView()"></select>
+            	<input type="text" class="text medium-field"
+           			id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
+				<input type="button" id="create-element-button"
+           			class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
+        	#end
+        	#parse("templates/filter/status.vm")
+			#parse("templates/filter/isDecisionKnowledgeOnly.vm")           	       	
+			#if($showTransitiveFilter)
+				#parse("templates/filter/isTransitiveLinks.vm")
+			#end	
+			#if($viewIdentifier == "decision-table")
+				<select class="select long-field" id="decision-problem-dropdown"></select>         
+			#end 
+		</div>   
+		<div id="management-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
+			#parse("templates/filter/text.vm")
+			#parse("templates/filter/documentationLocation.vm")	
+			#parse("templates/filter/linkType.vm")
+			#parse("templates/filter/decisionGroup.vm")   	
+			#parse("templates/filter/degree.vm")
+			#if($viewIdentifier != "comparison")
+				#parse("templates/filter/documentationDate.vm")
+			#end
+			#parse("templates/filter/isIrrelevantText.vm")     
+			#parse("templates/filter/isTestCode.vm")   
+			#if($viewIdentifier == "graph")
+				#parse("templates/filter/isHierarchicalGraph.vm")
+			#end
+			#if($viewIdentifier == "chronology")
+				<label for="is-placed-at-creation-date-input">Place elements at creation date</label>
+				<input class="checkbox" type="checkbox" id="is-placed-at-creation-date-input"/> 
+				<label for="is-placed-at-update-date-input">and/or date of last update</label>
+				<input class="checkbox" type="checkbox" id="is-placed-at-update-date-input" checked/> 
+			#end	
+		</div>
+		<div id="quality-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
+		    #parse("templates/filter/colorNodes.vm")		
+		</div>
+		<div id="change-impact-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
+		    	
+		</div>
+		<div class="condec-filter" style="float:right;"> 
+			<a data-replace-text="Less filter criteria" class="aui-expander-trigger" 
+				aria-controls="management-filter-$viewIdentifier">More filter criteria</a> 
+			<a data-replace-text="Hide quality highlighting" class="aui-expander-trigger" 
+				aria-controls="quality-filter-$viewIdentifier">Quality highlighting</a>   
+			<a data-replace-text="Hide change impact highlighting" class="aui-expander-trigger" 
+				aria-controls="change-impact-filter-$viewIdentifier">Change impact highlighting</a>
+			#parse("templates/filter/filterButton.vm")
+		</div>
+	</form>
+</div>

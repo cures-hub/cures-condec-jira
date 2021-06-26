@@ -17,8 +17,8 @@
         // Fill HTML elements for filter criteria
         conDecFiltering.fillFilterElements("treant");
 
-        // Add event listeners to HTML elements for filtering
-        conDecFiltering.addOnChangeEventToFilterElements("treant", conDecTreant.updateView);
+     	// Add on click listeners to filter button
+     	conDecFiltering.addOnClickEventToFilterButton("treant", conDecTreant.updateView);
 
         // Register/subscribe this view as an observer
         conDecObservable.subscribe(this);

@@ -27,8 +27,8 @@
 		// Fill HTML elements for filter criteria
 		conDecFiltering.fillFilterElements("jstree");
 		
-		// Add event listeners to HTML elements for filtering
-		conDecFiltering.addOnChangeEventToFilterElements("jstree", conDecTreeViewer.updateView, false);
+		// Add on click listeners to filter button
+		conDecFiltering.addOnClickEventToFilterButton("jstree", conDecTreeViewer.updateView);
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);

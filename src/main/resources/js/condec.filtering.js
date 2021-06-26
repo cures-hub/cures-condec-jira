@@ -58,101 +58,11 @@
 		});
 	};
 
-	/**
-	 * For views without filter button but instant filtering.
-	 *
-	 * external references: condec.jira.issue.module, condec.knowledge.page,
-	 * condec.rationale.backlog
-	 */
-	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function (viewIdentifier, callback, isSearchInputEvent = true) {
-		$("#select2-decision-group-" + viewIdentifier).on("change.select2",
-			function () {
-				callback();
-			});
-
-		var knowledgeTypeDropdown = document.getElementById("knowledge-type-dropdown-" + viewIdentifier);
-		if (knowledgeTypeDropdown !== null) {
-			knowledgeTypeDropdown.addEventListener("click", () => callback());
-		}
-
-		var statusDropdown = document.getElementById("status-dropdown-" + viewIdentifier);
-		if (statusDropdown !== null) {
-			statusDropdown.addEventListener("click", () => callback());
-		}
-
-		var documentationLocationDropdown = document.getElementById("documentation-location-dropdown-" + viewIdentifier);
-		if (documentationLocationDropdown !== null) {
-			documentationLocationDropdown.addEventListener("click", () => callback());
-		}
-
-		var filterElements = [];
-
-		var searchInput = document.getElementById("search-input-" + viewIdentifier);
-		if (isSearchInputEvent && searchInput !== null) {
-			filterElements.push(searchInput);
-		}
-
-		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
-		if (linkDistanceInput !== null) {
-			filterElements.push(linkDistanceInput);
-		}
-
-		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
-		if (isOnlyDecisionKnowledgeShownInput !== null) {
-			filterElements.push(isOnlyDecisionKnowledgeShownInput);
-		}
-
-		var minLinkNumberInput = document.getElementById("min-degree-input-" + viewIdentifier);
-		if (minLinkNumberInput !== null) {
-			filterElements.push(minLinkNumberInput);
-		}
-
-		var maxLinkNumberInput = document.getElementById("max-degree-input-" + viewIdentifier);
-		if (maxLinkNumberInput !== null) {
-			filterElements.push(maxLinkNumberInput);
-		}
-
-		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
-		if (endDatePicker !== null) {
-			filterElements.push(endDatePicker);
-		}
-
-		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
-		if (startDatePicker !== null) {
-			filterElements.push(startDatePicker);
-		}
-
-		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-" + viewIdentifier);
-		if (isIrrelevantTextShownInput !== null) {
-			filterElements.push(isIrrelevantTextShownInput);
-        }
-
-        var isTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
-		if (isTransitiveLinksInput !== null) {
-			filterElements.push(isTransitiveLinksInput);
-		}
-		
-		var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
-		if (isTestCodeShownInput !== null) {
-			filterElements.push(isTestCodeShownInput);
-		}
-
-		var isNoColorsInput = document.getElementById("no-colors-input-" + viewIdentifier);
-		if (isNoColorsInput !== null) {
-			filterElements.push(isNoColorsInput);
-		}
-
-		filterElements.forEach(function (filterElement) {
-			filterElement.addEventListener("input", () => callback());
-		});
-		window.onbeforeunload = null;
-	};
-
 	/*
 	 * Reads the filter settings from the HTML elements of a view.
 	 *
-	 * external references: condec.jira.issue.module, condec.knowledge.page,
-	 * condec.evolution.page, condec.rationale.backlog
+	 * external references: condec.tree.viewer, condec.treant, condec.decision.table, 
+	 * condec.knowledge.page, condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.getFilterSettings = function (viewIdentifier) {
 		var filterSettings = {};
@@ -293,7 +203,7 @@
 	 * external references: condec.knowledge.page, condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.initDropdown = function (dropdownId, items, selectedItems, unselectedItems) {
-		var dropdown = document.getElementById(dropdownId);
+		var dropdown = document.getElementById(dropdownId);		
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
 		}
