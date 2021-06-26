@@ -36,7 +36,7 @@ public class DecisionGuidanceConfiguration {
 		this.setRecommendationAddedToKnowledgeGraph(false);
 		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
-		this.rdfKnowledgeSources = new ArrayList<>();
+		this.rdfKnowledgeSources = RDFSource.getDefaultDBPediaQueries();
 		this.projectKnowledgeSources = new ArrayList<>();
 	}
 
@@ -232,7 +232,7 @@ public class DecisionGuidanceConfiguration {
 
 	public List<KnowledgeSource> getAllKnowledgeSources() {
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-		knowledgeSources.addAll(rdfKnowledgeSources);
+		knowledgeSources.addAll(getRDFKnowledgeSources());
 		knowledgeSources.addAll(getProjectKnowledgeSources());
 		// New KnowledgeSources could be added here.
 		return knowledgeSources;
@@ -249,5 +249,4 @@ public class DecisionGuidanceConfiguration {
 				.filter(source -> source.getName().equals(knowledgeSourceName)).findAny();
 		return knowledgeSourceWithName.isPresent() ? knowledgeSourceWithName.get() : null;
 	}
-
 }
