@@ -64,6 +64,7 @@
 
 		conDecFiltering.initDropdown("documentation-location-dropdown-overview", conDecAPI.documentationLocations);
 		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
+		conDecFiltering.initDropdown("link-type-dropdown-overview", conDecAPI.getLinkTypes());
 		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
 		
 		// Add on click listeners to filter button

@@ -15,6 +15,7 @@
 		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
 		conDecFiltering.fillDatePickers("rationale-backlog", 30);
 		conDecFiltering.initDropdown("documentation-location-dropdown-rationale-backlog", conDecAPI.documentationLocations);
+		conDecFiltering.initDropdown("link-type-dropdown-rationale-backlog", conDecAPI.getLinkTypes());
 		
 		// Add on click listeners to filter button
      	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecKnowledgePage.updateView);

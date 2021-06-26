@@ -13,6 +13,11 @@
 				filterSettings["selectedElement"] = conDecAPI.getIssueKey();
 				conDecVis.buildVis(filterSettings, "vis-graph-container");
 			});
+			conDecFiltering.addOnClickEventToChangeImpactButton("graph", function (filterSettings) {
+				filterSettings["selectedElement"] = conDecAPI.getIssueKey();
+				filterSettings["isCiaRequest"] = true;
+				conDecVis.buildVis(filterSettings, "vis-graph-container");
+			});
 		} else {
 			conDecFiltering.fillFilterElements("graph", ["Decision"]);
 			conDecFiltering.addOnClickEventToFilterButton("graph", function (filterSettings) {

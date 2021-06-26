@@ -40,6 +40,14 @@
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
+		
+		// change impact highlighting
+		this.initDropdown("propagation-rule-dropdown-" + viewIdentifier, conDecAPI.getPropagationRules(), []);
+		conDecAPI.getCiaSettings(conDecAPI.getProjectKey(), (error, response) => {
+			$("#decay-input-" + viewIdentifier)[0].value = response["decayValue"];
+			$("#threshold-input-" + viewIdentifier)[0].value = response["threshold"];
+		});
+		
 		window.onbeforeunload = null;
 	};
 
@@ -51,12 +59,20 @@
 	 */
 	ConDecFiltering.prototype.addOnClickEventToFilterButton = function (viewIdentifier, callback) {
 		var filterButton = document.getElementById("filter-button-" + viewIdentifier);
-
-		filterButton.addEventListener("click", function (event) {
+		addOnClickEventToButton(filterButton, viewIdentifier, callback);
+	};
+	
+	ConDecFiltering.prototype.addOnClickEventToChangeImpactButton = function (viewIdentifier, callback) {
+		var ciaButton = document.getElementById("cia-button-" + viewIdentifier);
+		addOnClickEventToButton(ciaButton, viewIdentifier, callback);
+	};
+	
+	function addOnClickEventToButton(button, viewIdentifier, callback) {
+		button.addEventListener("click", function (event) {
 			var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 			callback(filterSettings);
 		});
-	};
+	}
 
 	/*
 	 * Reads the filter settings from the HTML elements of a view.
@@ -169,28 +185,25 @@
 			filterSettings["noColors"] = isNoColorsInput.checked;
 		}
         
-		// Read whether knowledge graph should be shown with CIA Context or not
-		var displayType = document.getElementById("select2-display-type-" + viewIdentifier);
-		if (displayType !== null) {
-			filterSettings["displayType"] = displayType.value;
-		}
-
+		// Read decay value for change impact analysis (CIA)
 		var decayValue = document.getElementById("decay-input-" + viewIdentifier);
 		if (decayValue !== null) {
 			filterSettings["decayValue"] = decayValue.value;
 		}
 
+		// Read threshold value for change impact analysis (CIA)
 		var threshold = document.getElementById("threshold-input-" + viewIdentifier);
 		if (threshold !== null) {
 			filterSettings["threshold"] = threshold.value;
 		}
 
+		// Read whether knowledge graph should be shown with CIAcontext or not
 		var context = document.getElementById("context-input-" + viewIdentifier);
 		if (context !== null) {
 			filterSettings["context"] = context.value;
 		}
 
-		// Read selected link types
+		// Read propagation rules for change impact analysis (CIA)
 		var propagationRule = conDecFiltering.getSelectedItems("propagation-rule-dropdown-" + viewIdentifier);
 		if (propagationRule) {
 			filterSettings["propagationRule"] = propagationRule;
