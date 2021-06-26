@@ -179,10 +179,10 @@
             filterSettings["isTestCodeShown"] = isTestCodeShownInput.checked;
         }
 
-		// Read whether nodes should be colored
-		var isNoColorsInput = document.getElementById("no-colors-input-" + viewIdentifier);
-		if (isNoColorsInput !== null) {
-			filterSettings["noColors"] = isNoColorsInput.checked;
+		// Read whether nodes that violate the definition of done (DoD) should be highlighted (colored)
+		var isDoDViolationShownInput = document.getElementById("is-dod-violation-shown-input-" + viewIdentifier);
+		if (isDoDViolationShownInput !== null) {
+			filterSettings["noColors"] = !isDoDViolationShownInput.checked;
 		}
         
 		// Read decay value for change impact analysis (CIA)
@@ -197,7 +197,7 @@
 			filterSettings["threshold"] = threshold.value;
 		}
 
-		// Read whether knowledge graph should be shown with CIAcontext or not
+		// Read whether knowledge graph should be shown with CIA context or not
 		var context = document.getElementById("context-input-" + viewIdentifier);
 		if (context !== null) {
 			filterSettings["context"] = context.value;

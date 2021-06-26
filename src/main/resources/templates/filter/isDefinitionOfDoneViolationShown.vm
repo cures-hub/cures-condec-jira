@@ -1,0 +1,4 @@
+<div class="condec-filter-criterion">
+    <label for="is-dod-violation-shown-input-$viewIdentifier">$i18n.getText('condec.label.is.dod.violation.shown')</label>
+    <input class="checkbox" type="checkbox" id="is-dod-violation-shown-input-$viewIdentifier" checked/>
+</div>

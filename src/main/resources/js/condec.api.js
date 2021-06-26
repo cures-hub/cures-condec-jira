@@ -726,8 +726,7 @@
 	}
 
 	/*
-	 * external references: condec.quality.check,
-	 * relatedIssuesTab.vm
+	 * external references: condec.quality.check
 	 */
 	ConDecAPI.prototype.getProjectKey = getProjectKey;
 

@@ -43,10 +43,9 @@
 
 
 	ConDecTreeViewer.prototype.updateViewWithChangeImpact = function() {
-		console.log("Update View")
 		filterSettings["isCiaRequest"] = true;
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-jstree", "jstree");
-	}
+	};
 	
 	ConDecTreeViewer.prototype.updateView = function () {
 		console.log("ConDecTreeViewer updateView");

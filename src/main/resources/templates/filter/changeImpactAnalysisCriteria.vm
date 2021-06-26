@@ -33,4 +33,5 @@
 </div>
 
 <!-- Filter Button -->
-<input type="button" id="cia-button-$viewIdentifier" class="aui-button aui-button-primary" value="Estimate change impact"/>
+<input type="button" id="cia-button-$viewIdentifier" class="aui-button aui-button-primary" 
+	value="$i18n.getText('condec.cia.button')"/>

@@ -36,28 +36,26 @@
 				#parse("templates/filter/isHierarchicalGraph.vm")
 			#end
 			#if($viewIdentifier == "chronology")
-				<label for="is-placed-at-creation-date-input">Place elements at creation date</label>
-				<input class="checkbox" type="checkbox" id="is-placed-at-creation-date-input"/> 
-				<label for="is-placed-at-update-date-input">and/or date of last update</label>
-				<input class="checkbox" type="checkbox" id="is-placed-at-update-date-input" checked/> 
+				#parse("templates/filter/chronologyElementPlacement.vm")
 			#end	
 		</div>
 		<div id="quality-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
-		    #parse("templates/filter/colorNodes.vm")		
+		    #parse("templates/filter/isDefinitionOfDoneViolationShown.vm")		
 		</div>
 		<div id="change-impact-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
 		    #parse("templates/filter/changeImpactAnalysisCriteria.vm")
 		</div>
 		<div class="condec-filter" style="float:right; margin-bottom:4px;"> 
-			<a data-replace-text="Less filter criteria" class="aui-expander-trigger" 
-				aria-controls="management-filter-$viewIdentifier">More filter criteria</a> 
-			--- <a data-replace-text="Hide quality highlighting" class="aui-expander-trigger" 
-				aria-controls="quality-filter-$viewIdentifier">Quality highlighting</a>  
+			<a data-replace-text="$i18n.getText('condec.label.less.filter.criteria')" class="aui-expander-trigger" 
+				aria-controls="management-filter-$viewIdentifier">$i18n.getText('condec.label.more.filter.criteria')</a> 
+			--- <a data-replace-text="$i18n.getText('condec.label.hide.quality.highlighting.options')" class="aui-expander-trigger" 
+				aria-controls="quality-filter-$viewIdentifier">$i18n.getText('condec.label.show.quality.highlighting.options')</a>  
 			#set($ciaViews = ["jstree", "graph", "matrix"])
 			#if ($ciaViews.contains($viewIdentifier))
-				--- <a data-replace-text="Hide change impact highlighting" class="aui-expander-trigger" 
-					aria-controls="change-impact-filter-$viewIdentifier">Change impact highlighting</a> 
-			#end
+				--- <a data-replace-text="$i18n.getText('condec.label.hide.cia.highlighting.options')" class="aui-expander-trigger" 
+					aria-controls="change-impact-filter-$viewIdentifier">$i18n.getText('condec.label.show.cia.highlighting.options')</a> 
+			#end 
+			&nbsp; 
 			#parse("templates/filter/filterButton.vm")
 		</div>
 	</form>
