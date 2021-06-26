@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,11 +20,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -297,42 +296,12 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testContext() {
+		ChangeImpactAnalysisConfig ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 		// default value
-		assertEquals(0, filterSettings.getContext());
-		filterSettings.setContext(1);
-		assertEquals(1, filterSettings.getContext());
-	}
-
-	@Test
-	public void testDisplayType() {
-		// default value
-		assertEquals("", filterSettings.getDisplayType());
-		filterSettings.setDisplayType("graph");
-		assertEquals("graph", filterSettings.getDisplayType());
-	}
-
-	@Test
-	public void testLinkImpact() {
-		// default value
-		assertEquals(9, filterSettings.getLinkImpact().size());
-		filterSettings.setLinkImpact(Map.of("test", 1.0f));
-		assertEquals(1, filterSettings.getLinkImpact().size());
-	}
-
-	@Test
-	public void testDecayValue() {
-		// default value
-		assertEquals(0.75, filterSettings.getDecayValue(), 0.01);
-		filterSettings.setDecayValue(0.8f);
-		assertEquals(0.8, filterSettings.getDecayValue(), 0.01);
-	}
-
-	@Test
-	public void testThresholdValue() {
-		// default value
-		assertEquals(0.25, filterSettings.getThreshold(), 0.01);
-		filterSettings.setThreshold(0.2);
-		assertEquals(0.2, filterSettings.getThreshold(), 0.01);
+		assertEquals(0, ciaConfig.getContext());
+		ciaConfig.setContext(1);
+		filterSettings.setChangeImpactAnalysisConfiguration(ciaConfig);
+		assertEquals(1, filterSettings.getChangeImpactAnalysisConfig().getContext());
 	}
 
 	@Test
@@ -341,16 +310,6 @@ public class TestFilterSettings extends TestSetUp {
 		assertFalse(filterSettings.isCiaRequest());
 		filterSettings.setCiaRequest(true);
 		assertTrue(filterSettings.isCiaRequest());
-	}
-
-	@Test
-	public void testPropagationRule() {
-		// default value
-		assertEquals(0, filterSettings.getPropagationRule().size());
-		filterSettings.setPropagationRule(List.of(PassRule.UNDEFINED.getTranslation()));
-		assertEquals(1, filterSettings.getPropagationRule().size());
-		filterSettings.setPropagationRule(null);
-		assertEquals(0, filterSettings.getPropagationRule().size());
 	}
 
 	@Test

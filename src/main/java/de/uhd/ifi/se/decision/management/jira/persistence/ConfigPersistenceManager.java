@@ -16,11 +16,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
@@ -40,7 +40,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
  * @see DecisionGuidanceConfiguration
  * @see LinkRecommendationConfiguration
  * @see PromptingEventConfiguration
- * @see CiaSettings
+ * @see ChangeImpactAnalysisConfig
  * @see WebhookConfiguration
  * @see ReleaseNotesConfiguration
  */
@@ -368,20 +368,30 @@ public class ConfigPersistenceManager {
 		return promptingEventConfiguration;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for change impact estimation.
+	 */
 	public static void saveChangeImpactAnalysisConfiguration(String projectKey,
-			CiaSettings changeImpactAnalysisConfiguration) {
-		Type type = new TypeToken<CiaSettings>() {
+			ChangeImpactAnalysisConfig changeImpactAnalysisConfiguration) {
+		Type type = new TypeToken<ChangeImpactAnalysisConfig>() {
 		}.getType();
 		saveObject(projectKey, "changeImpactAnalysisConfiguration", changeImpactAnalysisConfiguration, type);
 	}
 
-	public static CiaSettings getChangeImpactAnalysisConfiguration(String projectKey) {
-		Type type = new TypeToken<CiaSettings>() {
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for change impact estimation.
+	 */
+	public static ChangeImpactAnalysisConfig getChangeImpactAnalysisConfiguration(String projectKey) {
+		Type type = new TypeToken<ChangeImpactAnalysisConfig>() {
 		}.getType();
-		CiaSettings changeImpactAnalysisConfiguration = (CiaSettings) getSavedObject(projectKey,
-				"changeImpactAnalysisConfiguration", type);
+		ChangeImpactAnalysisConfig changeImpactAnalysisConfiguration = (ChangeImpactAnalysisConfig) getSavedObject(
+				projectKey, "changeImpactAnalysisConfiguration", type);
 		if (changeImpactAnalysisConfiguration == null) {
-			changeImpactAnalysisConfiguration = new CiaSettings();
+			changeImpactAnalysisConfiguration = new ChangeImpactAnalysisConfig();
 		}
 		return changeImpactAnalysisConfiguration;
 	}

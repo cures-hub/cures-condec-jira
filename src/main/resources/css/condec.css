@@ -93,7 +93,7 @@ a:focus a:hover {
 
 #close-fullscreen {
   z-index: 999;
-  display:none;
+  display: none;
   position: fixed;
   right: 48px;
   top: 48px;

@@ -26,12 +26,9 @@
 		console.log("conDecFiltering constructor");
 	};
 
-	/*
+	/**
 	 * Fills the HTML elements for basic filter criteria such as knowledge
 	 * types, status, ... of a view.
-	 *
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page, condec.matrix
 	 */
 	ConDecFiltering.prototype.fillFilterElements = function (viewIdentifier, selectedKnowledgeTypes) {
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
@@ -44,24 +41,25 @@
 		// change impact highlighting
 		this.initDropdown("propagation-rule-dropdown-" + viewIdentifier, conDecAPI.getPropagationRules(), []);
 		conDecAPI.getCiaSettings(conDecAPI.getProjectKey(), (error, response) => {
-			$("#decay-input-" + viewIdentifier)[0].value = response["decayValue"];
-			$("#threshold-input-" + viewIdentifier)[0].value = response["threshold"];
+			console.log(response["changeImpactAnalysisConfig"]);
+			$("#decay-input-" + viewIdentifier)[0].value = response["changeImpactAnalysisConfig"]["decayValue"];
+			$("#threshold-input-" + viewIdentifier)[0].value = response["changeImpactAnalysisConfig"]["threshold"];
 		});
 		
 		window.onbeforeunload = null;
 	};
 
 	/**
-	 * For views with filter button, i.e., NO instant filtering.
-	 *
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page, condec.matrix
+	 * Inits the filter button. NO instant filtering is done on change events.
 	 */
 	ConDecFiltering.prototype.addOnClickEventToFilterButton = function (viewIdentifier, callback) {
 		var filterButton = document.getElementById("filter-button-" + viewIdentifier);
 		addOnClickEventToButton(filterButton, viewIdentifier, callback);
 	};
 	
+	/**
+	 * Inits the change impact analysis button.
+	 */
 	ConDecFiltering.prototype.addOnClickEventToChangeImpactButton = function (viewIdentifier, callback) {
 		var ciaButton = document.getElementById("cia-button-" + viewIdentifier);
 		addOnClickEventToButton(ciaButton, viewIdentifier, callback);
@@ -185,28 +183,29 @@
 			filterSettings["noColors"] = !isDoDViolationShownInput.checked;
 		}
         
+		filterSettings["changeImpactAnalysisConfig"] = {};
 		// Read decay value for change impact analysis (CIA)
 		var decayValue = document.getElementById("decay-input-" + viewIdentifier);
 		if (decayValue !== null) {
-			filterSettings["decayValue"] = decayValue.value;
+			filterSettings["changeImpactAnalysisConfig"]["decayValue"] = decayValue.value;
 		}
 
 		// Read threshold value for change impact analysis (CIA)
 		var threshold = document.getElementById("threshold-input-" + viewIdentifier);
 		if (threshold !== null) {
-			filterSettings["threshold"] = threshold.value;
+			filterSettings["changeImpactAnalysisConfig"]["threshold"] = threshold.value;
 		}
 
 		// Read whether knowledge graph should be shown with CIA context or not
 		var context = document.getElementById("context-input-" + viewIdentifier);
 		if (context !== null) {
-			filterSettings["context"] = context.value;
+			filterSettings["changeImpactAnalysisConfig"]["context"] = context.value;
 		}
 
 		// Read propagation rules for change impact analysis (CIA)
-		var propagationRule = conDecFiltering.getSelectedItems("propagation-rule-dropdown-" + viewIdentifier);
-		if (propagationRule) {
-			filterSettings["propagationRule"] = propagationRule;
+		var propagationRules = conDecFiltering.getSelectedItems("propagation-rule-dropdown-" + viewIdentifier);
+		if (propagationRules) {
+			filterSettings["changeImpactAnalysisConfig"]["propagationRules"] = propagationRules;
 		}
 
 		return filterSettings;

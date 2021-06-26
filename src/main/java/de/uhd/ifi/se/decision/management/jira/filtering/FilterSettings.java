@@ -3,10 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -25,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -32,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
@@ -71,15 +68,9 @@ public class FilterSettings {
 	private boolean isHierarchical;
 	private boolean isIrrelevantTextShown;
 	private boolean createTransitiveLinks;
-	private boolean isCiaRequest;
-	private Map<String, Float> linkImpact;
-	private List<PassRule> passRule;
-	private long context;
-	private double decayValue;
-	private double threshold;
 	private boolean noColors;
-
-	private String displayType;
+	private boolean isCiaRequest;
+	private ChangeImpactAnalysisConfig changeImpactAnalysisConfig;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
@@ -110,16 +101,7 @@ public class FilterSettings {
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;
 		this.isIrrelevantTextShown = false;
-
-		this.linkImpact = new HashMap<>();
-		DecisionKnowledgeProject.getAllNamesOfLinkTypes().forEach(entry -> {
-			linkImpact.put(entry, 1.0f);
-		});
-		this.displayType = "";
-		this.passRule = new LinkedList<>();
-		this.decayValue = 0.75;
-		this.threshold = 0.25;
-		this.context = 0;
+		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfig();
 		this.isCiaRequest = false;
 		this.noColors = true;
 	}
@@ -601,51 +583,6 @@ public class FilterSettings {
 		return filterSettingsAsJson;
 	}
 
-	public long getContext() {
-		return context;
-	}
-
-	@JsonProperty
-	public void setContext(long context) {
-		this.context = context;
-	}
-
-	public String getDisplayType() {
-		return displayType;
-	}
-
-	@JsonProperty
-	public void setDisplayType(String displayType) {
-		this.displayType = displayType;
-	}
-
-	public Map<String, Float> getLinkImpact() {
-		return linkImpact;
-	}
-
-	@JsonProperty
-	public void setLinkImpact(Map<String, Float> linkImpact) {
-		this.linkImpact = linkImpact;
-	}
-
-	public double getDecayValue() {
-		return decayValue;
-	}
-
-	@JsonProperty
-	public void setDecayValue(double decayValue) {
-		this.decayValue = decayValue;
-	}
-
-	public double getThreshold() {
-		return threshold;
-	}
-
-	@JsonProperty
-	public void setThreshold(double threshold) {
-		this.threshold = threshold;
-	}
-
 	public boolean isCiaRequest() {
 		return isCiaRequest;
 	}
@@ -655,21 +592,12 @@ public class FilterSettings {
 		isCiaRequest = ciaRequest;
 	}
 
-	@XmlElement
-	public List<PassRule> getPropagationRule() {
-		return passRule;
+	public ChangeImpactAnalysisConfig getChangeImpactAnalysisConfig() {
+		return changeImpactAnalysisConfig;
 	}
 
-	@JsonProperty
-	public void setPropagationRule(List<String> rule) {
-		if (rule == null) {
-			passRule.clear();
-			return;
-		}
-		passRule.clear();
-		for (String stringRule : rule) {
-			passRule.add(PassRule.getPropagationRule(stringRule));
-		}
+	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfig ciaConfig) {
+		this.changeImpactAnalysisConfig = ciaConfig;
 	}
 
 	public boolean isNoColors() {
@@ -680,4 +608,5 @@ public class FilterSettings {
 	public void setNoColors(boolean noColors) {
 		this.noColors = noColors;
 	}
+
 }

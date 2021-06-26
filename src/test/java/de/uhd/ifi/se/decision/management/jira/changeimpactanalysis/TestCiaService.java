@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.service;
+package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.cia;
+package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
