@@ -1,21 +1,14 @@
-package de.uhd.ifi.se.decision.management.jira.model;
-
-import de.uhd.ifi.se.decision.management.jira.model.cia.IgnoreArgumentsDecisionsPassRule;
-import de.uhd.ifi.se.decision.management.jira.model.cia.IgnoreDecisionIncoming;
-import de.uhd.ifi.se.decision.management.jira.model.cia.PassPredicate;
-import de.uhd.ifi.se.decision.management.jira.model.cia.UndefinedPassRule;
+package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 public enum PassRule {
 
-	UNDEFINED("undefined.descr", "undefined", new UndefinedPassRule()),
-	IGNORE_ARGUMENTS("IgnoreArgumentsFromAlternatives", "IgnoreArgumentsFromAlternatives", new IgnoreArgumentsDecisionsPassRule()),
-	IGNORE_DecisionIncoming("IgnoreDecisionIncoming", "IgnoreDecisionIncoming", new IgnoreDecisionIncoming()),
-	;
+	UNDEFINED("undefined.descr", "undefined", new UndefinedPassRule()), //
+	IGNORE_ARGUMENTS("IgnoreArgumentsFromAlternatives", "IgnoreArgumentsFromAlternatives",
+			new IgnoreArgumentsDecisionsPassRule()), //
+	IGNORE_DecisionIncoming("IgnoreDecisionIncoming", "IgnoreDecisionIncoming", new IgnoreDecisionIncoming());
 
 	private String description;
-
 	private String translation;
-
 	private PassPredicate predicate;
 
 	PassRule(String description, String translation, PassPredicate predicate) {

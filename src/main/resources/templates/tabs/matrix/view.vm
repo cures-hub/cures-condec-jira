@@ -1,23 +1,5 @@
-<div class="aui-toolbar2" role="toolbar">
-	<div class="aui-toolbar-2-inner">		
-		<form class="aui condec-filter">
-			#set ($viewIdentifier = "matrix")
-			#parse("templates/filter/text.vm")
-		    #parse("templates/filter/knowledgeType.vm")
-		    #parse("templates/filter/status.vm")
-		    #parse("templates/filter/linkType.vm")
-		    #parse("templates/filter/decisionGroup.vm")        		
-		    #parse("templates/filter/degree.vm")
-		    #parse("templates/filter/isDecisionKnowledgeOnly.vm")
-		    #parse("templates/filter/documentationDate.vm")	
-		    #parse("templates/filter/linkDistance.vm")	
-			#if($showTransitiveFilter)
-        	#parse("templates/filter/isTransitiveLinks.vm")
-			#end
-		    #parse("templates/filter/filterButton.vm")
-		</form>
-	</div>
-</div>
+#set ($viewIdentifier = "matrix")
+#parse("templates/filter/allCriteria.vm")
 <div class="aui-group" id="legend"></div>
 <div class="aui-group">
     #parse("templates/tabs/matrix/matrix.vm")

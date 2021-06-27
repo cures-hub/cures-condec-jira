@@ -1,22 +1,5 @@
-<div class="aui-toolbar2" role="toolbar">
-	<div class="aui-toolbar-2-inner">	
-		<form class="aui condec-filter">
-			#set ($viewIdentifier = "chronology")	
-			#parse("templates/filter/text.vm")
-			#parse("templates/filter/knowledgeType.vm")
-			#parse("templates/filter/status.vm")
-			#parse("templates/filter/decisionGroup.vm")		
-			#parse("templates/filter/degree.vm")
-			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-			#parse("templates/filter/documentationDate.vm")	
-			<label for="is-placed-at-creation-date-input">Place elements at creation date</label>
-			<input class="checkbox" type="checkbox" id="is-placed-at-creation-date-input"/> 
-			<label for="is-placed-at-update-date-input">and/or date of last update</label>
-			<input class="checkbox" type="checkbox" id="is-placed-at-update-date-input" checked/> 
-			#parse("templates/filter/filterButton.vm")
-		</form>
-	</div>
-</div>
+#set ($viewIdentifier = "chronology")
+#parse("templates/filter/allCriteria.vm")
 <div class="aui-group">
     <div id="evolution-timeline"></div>
 </div>

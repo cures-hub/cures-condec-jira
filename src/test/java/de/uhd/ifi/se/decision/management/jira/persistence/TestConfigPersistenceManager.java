@@ -14,11 +14,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
@@ -95,7 +95,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Test
 	public void testSetAndGetCiaSettings() {
-		CiaSettings settings = new CiaSettings();
+		ChangeImpactAnalysisConfiguration settings = new ChangeImpactAnalysisConfiguration();
 		assertEquals(0.75, settings.getDecayValue(), 0.01);
 		assertEquals(0.25, settings.getThreshold(), 0.01);
 		assertEquals(9, settings.getLinkImpact().size());
@@ -103,7 +103,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		settings.setThreshold(0.2f);
 		settings.setLinkImpact(Map.of("comment", 0.5f));
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", settings);
-		CiaSettings loaded = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration("TEST");
+		ChangeImpactAnalysisConfiguration loaded = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration("TEST");
 		assertEquals(0.75, loaded.getDecayValue(), 0.01);
 		assertEquals(0.2, loaded.getThreshold(), 0.01);
 		assertEquals(1, loaded.getLinkImpact().size());

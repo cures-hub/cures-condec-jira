@@ -16,8 +16,8 @@
 			document.getElementById("link-distance-input-decision-table").remove();
 		}
 		
-		// Add event listeners to HTML elements for filtering
-		conDecFiltering.addOnChangeEventToFilterElements("decision-table", conDecDecisionTable.updateView);
+		// Add on click listeners to filter button
+     	conDecFiltering.addOnClickEventToFilterButton("decision-table", conDecDecisionTable.updateView);     	
 		this.addOnClickEventToDecisionTableButtons();		
 		conDecDecisionGuidance.addOnClickListenerForRecommendations();
 		

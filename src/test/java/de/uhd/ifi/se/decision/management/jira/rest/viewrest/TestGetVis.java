@@ -67,7 +67,7 @@ public class TestGetVis extends TestSetUp {
 	public void testFilterSettingsValidCiaRequest() {
 		assertNotNull(AuthenticationManager.getUser(request));
 		filterSettings.setSelectedElement("TEST-1");
-		filterSettings.setCiaRequest(true);
+		filterSettings.highlightChangeImpacts(true);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getVis(request, filterSettings).getStatus());
 	}
 }

@@ -1,0 +1,4 @@
+<label for="is-placed-at-creation-date-input">Place elements at creation date</label>
+<input class="checkbox" type="checkbox" id="is-placed-at-creation-date-input"/> 
+<label for="is-placed-at-update-date-input">and/or date of last update</label>
+<input class="checkbox" type="checkbox" id="is-placed-at-update-date-input" checked/> 

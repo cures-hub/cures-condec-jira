@@ -28,6 +28,11 @@
 				filterSettings["selectedElement"] = issueKey;
 				conDecMatrix.buildMatrix(filterSettings);
 			});
+			conDecFiltering.addOnClickEventToChangeImpactButton("matrix", function (filterSettings) {
+				filterSettings["selectedElement"] = conDecAPI.getIssueKey();
+				filterSettings["areChangeImpactsHighlighted"] = true;
+				conDecMatrix.buildMatrix(filterSettings);
+			});
 		} else {
 			conDecFiltering.fillFilterElements("matrix", ["Decision"]);
 			conDecFiltering.fillDatePickers("matrix", 30);

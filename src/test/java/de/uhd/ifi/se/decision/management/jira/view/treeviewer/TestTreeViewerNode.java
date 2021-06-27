@@ -1,20 +1,21 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import de.uhd.ifi.se.decision.management.jira.testdata.Links;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
 public class TestTreeViewerNode extends TestSetUp {
 
@@ -25,7 +26,7 @@ public class TestTreeViewerNode extends TestSetUp {
 	public void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		node = new TreeViewerNode(element, false);
+		node = new TreeViewerNode(element, true);
 	}
 
 	@Test
@@ -106,9 +107,9 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testGetAndSetAttributes() {
 		Map<String, String> attributes = node.getAttr();
-		assertEquals(attributes.size(), 2L);
-		assertEquals(attributes.get("title"), "Minimum decision coverage is not reached."
-			+ System.lineSeparator() + System.lineSeparator() + "Linked decision knowledge is incomplete.");
+		assertEquals(2L, attributes.size());
+		assertEquals(attributes.get("title"), "Minimum decision coverage is not reached." + System.lineSeparator()
+				+ System.lineSeparator() + "Linked decision knowledge is incomplete.");
 		assertEquals(attributes.get("style"), "color:crimson");
 		Map<String, String> newAttributes = new HashMap<>();
 		newAttributes.put("title", "test");

@@ -42,31 +42,26 @@ public class TreeViewer {
 
 	@XmlElement
 	private boolean multiple;
-
-	@XmlElement
-	private boolean noColors;
-
 	@XmlElement(name = "check_callback")
 	private boolean checkCallback;
-
 	@XmlElement
 	private Map<String, Boolean> themes;
-
 	@XmlElement(name = "data")
 	private Set<TreeViewerNode> nodes;
-
 	@JsonIgnore
 	private Graph<KnowledgeElement, Link> graph;
 	@JsonIgnore
 	private List<String> ids;
 	@JsonIgnore
 	private long index;
+	@JsonIgnore
+	private boolean areQualityProblemsHightlighted;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TreeViewer.class);
 
 	public TreeViewer() {
 		this.multiple = false;
-		this.noColors = false;
+		this.areQualityProblemsHightlighted = true;
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 		this.ids = new ArrayList<String>();
@@ -91,7 +86,7 @@ public class TreeViewer {
 		}
 		LOGGER.info(filterSettings.toString());
 
-		this.noColors = filterSettings.isNoColors();
+		this.areQualityProblemsHightlighted = filterSettings.areQualityProblemHighlighted();
 
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		graph = filteringManager.getFilteredGraph();
@@ -108,7 +103,7 @@ public class TreeViewer {
 		// many trees are shown in overview and rationale backlog
 		Set<KnowledgeElement> rootElements = graph.vertexSet();
 		if (filteringManager.getFilterSettings().getLinkDistance() == 0) {
-			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element, noColors)));
+			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element, areQualityProblemsHightlighted)));
 			return;
 		}
 
@@ -145,7 +140,7 @@ public class TreeViewer {
 
 		Map<KnowledgeElement, TreeViewerNode> elementToTreeViewerNodeMap = new HashMap<>();
 
-		TreeViewerNode rootNode = new TreeViewerNode(rootElement, noColors);
+		TreeViewerNode rootNode = new TreeViewerNode(rootElement, areQualityProblemsHightlighted);
 		rootNode = this.makeIdUnique(rootNode);
 
 		elementToTreeViewerNodeMap.put(rootElement, rootNode);
@@ -161,7 +156,8 @@ public class TreeViewer {
 				continue;
 			}
 			Link edge = undirectedGraph.getEdge(childElement, parentElement);
-			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge, noColors));
+			TreeViewerNode childNode = makeIdUnique(
+					new TreeViewerNode(childElement, edge, areQualityProblemsHightlighted));
 			childNode = this.makeIdUnique(childNode);
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 
@@ -188,7 +184,8 @@ public class TreeViewer {
 				continue;
 			}
 
-			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge, noColors));
+			TreeViewerNode childNode = makeIdUnique(
+					new TreeViewerNode(childElement, edge, areQualityProblemsHightlighted));
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 			parentNode.getChildren().add(childNode);
 		}
