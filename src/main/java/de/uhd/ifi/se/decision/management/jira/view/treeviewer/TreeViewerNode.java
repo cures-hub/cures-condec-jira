@@ -47,24 +47,30 @@ public class TreeViewerNode {
 
 	public TreeViewerNode(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		this();
-		this.id = "tv" + knowledgeElement.getId();
-		this.text = knowledgeElement.getSummary();
-		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
-		this.element = knowledgeElement;
-		this.a_attr = ImmutableMap.of("title",
-				ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
-		this.li_attr = ImmutableMap.of("class", "issue");
-		if (knowledgeElement instanceof PartOfJiraIssueText) {
-			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
+		id = "tv" + knowledgeElement.getId();
+		text = knowledgeElement.getSummary();
+		icon = KnowledgeType.getIconUrl(knowledgeElement);
+		element = knowledgeElement;
+		if (element.getDescription() != null) {
+			a_attr = ImmutableMap.of("title", knowledgeElement.getDescription());
 		}
-		if (filterSettings.areQualityProblemHighlighted() && !knowledgeElement.fulfillsDefinitionOfDone()) {
-			a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:crimson").build();
+		a_attr = ImmutableMap.of("title",
+				knowledgeElement.getDescription() != null ? knowledgeElement.getDescription() : "");
+		li_attr = ImmutableMap.of("class", "issue");
+		if (knowledgeElement instanceof PartOfJiraIssueText) {
+			li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
+		}
+		if (filterSettings.areQualityProblemHighlighted()) {
+			List<String> qualityProblems = knowledgeElement.getQualityProblems();
+			if (!qualityProblems.isEmpty()) {
+				a_attr = ImmutableMap.of("title", ToolTip.buildToolTip(qualityProblems), "style", "color:crimson");
+			}
 		}
 	}
 
 	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link, FilterSettings filterSettings) {
 		this(knowledgeElement, filterSettings);
-		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
+		icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
 	}
 
 	public String getId() {

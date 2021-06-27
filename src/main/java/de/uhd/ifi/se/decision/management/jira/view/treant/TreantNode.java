@@ -75,18 +75,24 @@ public class TreantNode {
 				knowledgeElement.getDocumentationLocationAsString(), "status", knowledgeElement.getStatusAsString(),
 				"desc", knowledgeElement.getKey());
 		htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
-		if (filterSettings.areQualityProblemHighlighted() && !knowledgeElement.fulfillsDefinitionOfDone()) {
-			htmlClass += " dodViolation";
+		link = new HashMap<>();
+		if (knowledgeElement.getDescription() != null) {
+			link.put("title", knowledgeElement.getDescription());
+		}
+		if (filterSettings.areQualityProblemHighlighted()) {
+			List<String> qualityProblems = knowledgeElement.getQualityProblems();
+			if (!qualityProblems.isEmpty()) {
+				link.put("title", ToolTip.buildToolTip(qualityProblems));
+				htmlClass += " dodViolation";
+			}
 		}
 		htmlId = knowledgeElement.getId();
-		link = new HashMap<>();
-		link.put("title", ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
 		if (isHyperlinked) {
-			this.link.put("href", knowledgeElement.getUrl());
-			this.link.put("target", "_blank");
+			link.put("href", knowledgeElement.getUrl());
+			link.put("target", "_blank");
 		}
 		if (isCollapsed) {
-			this.collapsed = ImmutableMap.of("collapsed", true);
+			collapsed = ImmutableMap.of("collapsed", true);
 		}
 		image = KnowledgeType.getIconUrl(knowledgeElement);
 	}

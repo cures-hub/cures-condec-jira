@@ -75,18 +75,6 @@ public class FilterSettings {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
 	public FilterSettings() {
-		this("", "");
-	}
-
-	@JsonCreator
-	public FilterSettings(@JsonProperty("projectKey") String projectKey,
-			@JsonProperty("searchTerm") String searchTerm) {
-		this.project = new DecisionKnowledgeProject(projectKey);
-		setSearchTerm(searchTerm);
-
-		// the following values are the default values of the filter criteria
-		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
-		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		this.startDate = -1;
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
@@ -95,10 +83,6 @@ public class FilterSettings {
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isOnlyIncompleteKnowledgeShown = false;
-		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getMaximumLinkDistanceToDecisions();
-		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getMinimumDecisionsWithinLinkDistance();
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
@@ -108,6 +92,20 @@ public class FilterSettings {
 		this.areQualityProblemsHighlighted = true;
 		this.areChangeImpactsHighlighted = false;
 		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfiguration();
+	}
+
+	@JsonCreator
+	public FilterSettings(@JsonProperty("projectKey") String projectKey,
+			@JsonProperty("searchTerm") String searchTerm) {
+		this();
+		this.project = new DecisionKnowledgeProject(projectKey);
+		setSearchTerm(searchTerm);
+		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
+		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
+		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.getMaximumLinkDistanceToDecisions();
+		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
+				.getMinimumDecisionsWithinLinkDistance();
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -735,6 +736,18 @@ public class KnowledgeElement {
 		}
 		return DefinitionOfDoneChecker.checkDefinitionOfDone(this,
 				new FilterSettings(getProject().getProjectKey(), ""));
+	}
+
+	public List<String> getQualityProblems() {
+		if (getProject() == null) {
+			return new ArrayList<>();
+		}
+		FilterSettings filterSettings = new FilterSettings(this.getProject().getProjectKey(), "");
+
+		List<String> qualityProblems = DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(this,
+				filterSettings);
+		qualityProblems.addAll(DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(this));
+		return qualityProblems;
 	}
 
 	/**

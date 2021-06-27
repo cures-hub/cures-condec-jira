@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,8 +110,8 @@ public class TestTreeViewerNode extends TestSetUp {
 	public void testGetAndSetAttributes() {
 		Map<String, String> attributes = node.getAttr();
 		assertEquals(2L, attributes.size());
-		assertEquals("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator()
-				+ "Linked decision knowledge is incomplete.", attributes.get("title"));
+		assertTrue(attributes.get("title").contains("Minimum decision coverage is not reached."));
+		assertTrue(attributes.get("title").contains("Linked decision knowledge is incomplete."));
 		assertEquals("color:crimson", attributes.get("style"));
 		Map<String, String> newAttributes = new HashMap<>();
 		newAttributes.put("title", "test");

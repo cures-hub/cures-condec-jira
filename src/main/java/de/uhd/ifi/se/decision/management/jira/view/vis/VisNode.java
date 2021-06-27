@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -39,16 +40,8 @@ public class VisNode {
 	@XmlElement
 	private Map<String, String> color;
 
-	public VisNode(KnowledgeElement element) {
-		this(element, false, 0);
-	}
-
 	public VisNode(KnowledgeElement element, FilterSettings filterSettings) {
 		this(element, false, 0, filterSettings);
-	}
-
-	public VisNode(KnowledgeElement element, int level) {
-		this(element, false, level);
 	}
 
 	public VisNode(KnowledgeElement element, int level, FilterSettings filterSettings) {
@@ -56,18 +49,25 @@ public class VisNode {
 	}
 
 	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
-		this(element, isCollapsed, level, new FilterSettings("", ""));
+		this(element, isCollapsed, level, new FilterSettings());
 	}
 
 	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, FilterSettings filterSettings) {
 		this.element = element;
 		this.level = level;
-		this.label = determineLabel(element, isCollapsed);
-		this.group = determineGroup(element, isCollapsed);
-		this.title = ToolTip.buildToolTip(element, element.getTypeAsString().toUpperCase() + System.lineSeparator()
-				+ element.getKey() + ": " + element.getSummary() + System.lineSeparator() + element.getDescription());
-		this.font = determineFont(element, filterSettings);
-		this.color = determineColor(element);
+		label = determineLabel(element, isCollapsed);
+		group = determineGroup(element, isCollapsed);
+		title = element.getTypeAsString().toUpperCase() + System.lineSeparator() + element.getKey() + ": "
+				+ element.getSummary() + System.lineSeparator() + element.getDescription();
+		font = ImmutableMap.of("color", "black");
+		if (filterSettings.areQualityProblemHighlighted()) {
+			List<String> qualityProblems = element.getQualityProblems();
+			if (!qualityProblems.isEmpty()) {
+				title = ToolTip.buildToolTip(qualityProblems);
+				font = ImmutableMap.of("color", "crimson");
+			}
+		}
+		color = determineColor(element);
 	}
 
 	private String determineLabel(KnowledgeElement element, boolean isCollapsed) {
@@ -86,17 +86,6 @@ public class VisNode {
 			return "collapsed";
 		}
 		return element.getTypeAsString().toLowerCase();
-	}
-
-	private Map<String, String> determineFont(KnowledgeElement element, FilterSettings filterSettings) {
-		if (!filterSettings.areQualityProblemHighlighted()) {
-			return ImmutableMap.of("color", "black");
-		}
-		String color = "black";
-		if (!element.fulfillsDefinitionOfDone()) {
-			color = "crimson";
-		}
-		return ImmutableMap.of("color", color);
 	}
 
 	public static Map<String, String> determineColor(KnowledgeElement element) {

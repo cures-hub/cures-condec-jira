@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,14 +21,7 @@ public class TestVisGraphNode extends TestSetUp {
 	public static void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		filterSettings = new FilterSettings("TEST", "");
-	}
-
-	@Test
-	public void testConstructorOnlyElement() {
-		VisNode node = new VisNode(element);
-		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
-		assertEquals(expectedLabel, node.getLabel());
+		filterSettings = new FilterSettings();
 	}
 
 	@Test
@@ -41,13 +35,6 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testConstructorColors() {
 		filterSettings.highlightChangeImpacts(false);
 		VisNode node = new VisNode(element, filterSettings);
-		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
-		assertEquals(expectedLabel, node.getLabel());
-	}
-
-	@Test
-	public void testConstructorLevel() {
-		VisNode node = new VisNode(element, 1);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
 		assertEquals(expectedLabel, node.getLabel());
 	}
@@ -69,9 +56,8 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testNodeDescription() {
 		VisNode node = new VisNode(element, true, 1);
-		String expectedTitle = "Minimum decision coverage is not reached." + System.lineSeparator()
-				+ System.lineSeparator() + "Linked decision knowledge is incomplete.";
-		assertEquals(expectedTitle, node.getTitle());
+		element.setProject("TEST");
+		assertTrue(node.getTitle().contains("Linked decision knowledge is incomplete."));
 	}
 
 	@Test
@@ -122,7 +108,7 @@ public class TestVisGraphNode extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setProject((DecisionKnowledgeProject) null);
 		VisNode node = new VisNode(element, false, 1, filterSettings);
-		assertEquals("crimson", node.getFont().values().iterator().next());
+		assertEquals("black", node.getFont().values().iterator().next());
 	}
 
 	@Test
