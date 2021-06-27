@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -44,7 +45,7 @@ public class TreeViewerNode {
 		children = new ArrayList<>();
 	}
 
-	public TreeViewerNode(KnowledgeElement knowledgeElement, boolean areQualityProblemsHightlighted) {
+	public TreeViewerNode(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		this();
 		this.id = "tv" + knowledgeElement.getId();
 		this.text = knowledgeElement.getSummary();
@@ -56,13 +57,13 @@ public class TreeViewerNode {
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
-		if (areQualityProblemsHightlighted && !knowledgeElement.fulfillsDefinitionOfDone()) {
+		if (filterSettings.areQualityProblemHighlighted() && !knowledgeElement.fulfillsDefinitionOfDone()) {
 			a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:crimson").build();
 		}
 	}
 
-	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link, boolean colorNodes) {
-		this(knowledgeElement, colorNodes);
+	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link, FilterSettings filterSettings) {
+		this(knowledgeElement, filterSettings);
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
 	}
 

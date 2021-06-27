@@ -9,6 +9,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
@@ -39,33 +40,33 @@ public class VisNode {
 	private Map<String, String> color;
 
 	public VisNode(KnowledgeElement element) {
-		this(element, false, 0, true);
+		this(element, false, 0);
 	}
 
-	public VisNode(KnowledgeElement element, boolean areQualityProblemsHightlighted) {
-		this(element, false, 0, areQualityProblemsHightlighted);
+	public VisNode(KnowledgeElement element, FilterSettings filterSettings) {
+		this(element, false, 0, filterSettings);
 	}
 
 	public VisNode(KnowledgeElement element, int level) {
-		this(element, false, level, true);
+		this(element, false, level);
 	}
 
-	public VisNode(KnowledgeElement element, int level, boolean areQualityProblemsHightlighted) {
-		this(element, false, level, areQualityProblemsHightlighted);
+	public VisNode(KnowledgeElement element, int level, FilterSettings filterSettings) {
+		this(element, false, level, filterSettings);
 	}
 
 	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
-		this(element, isCollapsed, level, true);
+		this(element, isCollapsed, level, new FilterSettings("", ""));
 	}
 
-	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, boolean areQualityProblemsHightlighted) {
+	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, FilterSettings filterSettings) {
 		this.element = element;
 		this.level = level;
 		this.label = determineLabel(element, isCollapsed);
 		this.group = determineGroup(element, isCollapsed);
 		this.title = ToolTip.buildToolTip(element, element.getTypeAsString().toUpperCase() + System.lineSeparator()
 				+ element.getKey() + ": " + element.getSummary() + System.lineSeparator() + element.getDescription());
-		this.font = determineFont(element, areQualityProblemsHightlighted);
+		this.font = determineFont(element, filterSettings);
 		this.color = determineColor(element);
 	}
 
@@ -87,8 +88,8 @@ public class VisNode {
 		return element.getTypeAsString().toLowerCase();
 	}
 
-	private Map<String, String> determineFont(KnowledgeElement element, boolean areQualityProblemsHightlighted) {
-		if (!areQualityProblemsHightlighted) {
+	private Map<String, String> determineFont(KnowledgeElement element, FilterSettings filterSettings) {
+		if (!filterSettings.areQualityProblemHighlighted()) {
 			return ImmutableMap.of("color", "black");
 		}
 		String color = "black";

@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -26,20 +27,20 @@ public class TestTreeViewerNode extends TestSetUp {
 	public void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		node = new TreeViewerNode(element, true);
+		node = new TreeViewerNode(element, new FilterSettings());
 	}
 
 	@Test
 	public void testConstructorWithElementAndLink() {
 		Link link = Links.getTestLink();
-		TreeViewerNode node = new TreeViewerNode(element, link, false);
+		TreeViewerNode node = new TreeViewerNode(element, link, new FilterSettings());
 		assertEquals("tv1", node.getId());
 	}
 
 	@Test
 	public void testConstructorWithDescNull() {
 		element.setDescription(null);
-		TreeViewerNode node = new TreeViewerNode(element, false);
+		TreeViewerNode node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
@@ -47,7 +48,7 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testConstructorWithDescBlank() {
 		element.setDescription("");
-		TreeViewerNode node = new TreeViewerNode(element, false);
+		TreeViewerNode node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
@@ -55,14 +56,14 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testConstructorWithDescUndefined() {
 		element.setDescription("undefined");
-		TreeViewerNode node = new TreeViewerNode(element, false);
+		TreeViewerNode node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
 
 	@Test
 	public void testConstructorWithColorNode() {
-		node = new TreeViewerNode(element, true);
+		node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 	}
 

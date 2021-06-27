@@ -134,13 +134,14 @@ public class ChangeImpactAnalysisService {
 	}
 
 	private static boolean collapse(KnowledgeElement element, FilterSettings settings) {
-		KnowledgeType type = (element.getType().equals(KnowledgeType.CON)
-				|| element.getType().equals(KnowledgeType.PRO)) ? KnowledgeType.ARGUMENT : element.getType();
+		KnowledgeType type = (element.getType() == KnowledgeType.CON || element.getType() == KnowledgeType.PRO)
+				? KnowledgeType.ARGUMENT
+				: element.getType();
 		if (element.equals(settings.getSelectedElement())) {
 			return false;
-		} else
-			return !(settings.getKnowledgeTypes().contains(type.toString()))
-					|| !(settings.getStatus().contains(element.getStatus()));
+		}
+		return !(settings.getKnowledgeTypes().contains(type.toString()))
+				|| !(settings.getStatus().contains(element.getStatus()));
 	}
 
 	private static void colorizeNode(TreeViewerNode node, HashMap<KnowledgeElement, Double> results) {

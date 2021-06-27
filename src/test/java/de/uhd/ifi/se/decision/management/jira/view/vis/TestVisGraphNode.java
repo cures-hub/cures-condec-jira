@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -13,11 +14,13 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 public class TestVisGraphNode extends TestSetUp {
 
 	private static KnowledgeElement element;
+	private static FilterSettings filterSettings;
 
 	@BeforeClass
 	public static void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
+		filterSettings = new FilterSettings("TEST", "");
 	}
 
 	@Test
@@ -29,14 +32,15 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testConstructorNoColors() {
-		VisNode node = new VisNode(element, true);
+		VisNode node = new VisNode(element, filterSettings);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
 		assertEquals(expectedLabel, node.getLabel());
 	}
 
 	@Test
 	public void testConstructorColors() {
-		VisNode node = new VisNode(element, false);
+		filterSettings.highlightChangeImpacts(false);
+		VisNode node = new VisNode(element, filterSettings);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
 		assertEquals(expectedLabel, node.getLabel());
 	}
@@ -50,7 +54,7 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testConstructorLevelNoColors() {
-		VisNode node = new VisNode(element, true);
+		VisNode node = new VisNode(element, filterSettings);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
 		assertEquals(expectedLabel, node.getLabel());
 	}
@@ -109,7 +113,7 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testGetFont() {
-		VisNode node = new VisNode(element, false, 1, true);
+		VisNode node = new VisNode(element, false, 1, filterSettings);
 		assertEquals("crimson", node.getFont().values().iterator().next());
 	}
 
@@ -117,7 +121,7 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testGetFontProjectNull() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setProject((DecisionKnowledgeProject) null);
-		VisNode node = new VisNode(element, false, 1, true);
+		VisNode node = new VisNode(element, false, 1, filterSettings);
 		assertEquals("crimson", node.getFont().values().iterator().next());
 	}
 

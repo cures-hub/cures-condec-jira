@@ -45,6 +45,8 @@ public class Treant {
 	private TreantNode nodeStructure;
 
 	@JsonIgnore
+	private FilterSettings filterSettings;
+	@JsonIgnore
 	private Graph<KnowledgeElement, Link> graph;
 	@JsonIgnore
 	private boolean isHyperlinked;
@@ -61,6 +63,7 @@ public class Treant {
 		}
 		LOGGER.info(filterSettings.toString());
 
+		this.filterSettings = filterSettings;
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.graph = filteringManager.getFilteredGraph();
 		this.setChart(new Chart());
@@ -90,7 +93,7 @@ public class Treant {
 
 		Map<KnowledgeElement, TreantNode> elementToTreantNodeMap = new HashMap<>();
 
-		TreantNode rootNode = new TreantNode(rootElement, false, isHyperlinked);
+		TreantNode rootNode = new TreantNode(rootElement, false, filterSettings, isHyperlinked);
 		elementToTreantNodeMap.put(rootElement, rootNode);
 
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
@@ -108,7 +111,7 @@ public class Treant {
 			}
 			Link edge = undirectedGraph.getEdge(childElement, parentElement);
 
-			TreantNode childNode = new TreantNode(childElement, edge, false, isHyperlinked);
+			TreantNode childNode = new TreantNode(childElement, edge, false, filterSettings, isHyperlinked);
 			elementToTreantNodeMap.put(childElement, childNode);
 
 			TreantNode parentNode = elementToTreantNodeMap.get(parentElement);
@@ -134,7 +137,7 @@ public class Treant {
 				continue;
 			}
 
-			TreantNode childNode = new TreantNode(childElement, edge, false, isHyperlinked);
+			TreantNode childNode = new TreantNode(childElement, edge, false, filterSettings, isHyperlinked);
 			elementToTreantNodeMap.put(childElement, childNode);
 			parentNode.getChildren().add(childNode);
 		}

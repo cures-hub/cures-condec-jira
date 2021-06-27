@@ -55,13 +55,13 @@ public class TreeViewer {
 	@JsonIgnore
 	private long index;
 	@JsonIgnore
-	private boolean areQualityProblemsHightlighted;
+	private FilterSettings filterSettings;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TreeViewer.class);
 
 	public TreeViewer() {
 		this.multiple = false;
-		this.areQualityProblemsHightlighted = true;
+		this.filterSettings = new FilterSettings();
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 		this.ids = new ArrayList<String>();
@@ -86,7 +86,7 @@ public class TreeViewer {
 		}
 		LOGGER.info(filterSettings.toString());
 
-		this.areQualityProblemsHightlighted = filterSettings.areQualityProblemHighlighted();
+		this.filterSettings = filterSettings;
 
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		graph = filteringManager.getFilteredGraph();
@@ -103,7 +103,7 @@ public class TreeViewer {
 		// many trees are shown in overview and rationale backlog
 		Set<KnowledgeElement> rootElements = graph.vertexSet();
 		if (filteringManager.getFilterSettings().getLinkDistance() == 0) {
-			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element, areQualityProblemsHightlighted)));
+			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element, filterSettings)));
 			return;
 		}
 
@@ -140,7 +140,7 @@ public class TreeViewer {
 
 		Map<KnowledgeElement, TreeViewerNode> elementToTreeViewerNodeMap = new HashMap<>();
 
-		TreeViewerNode rootNode = new TreeViewerNode(rootElement, areQualityProblemsHightlighted);
+		TreeViewerNode rootNode = new TreeViewerNode(rootElement, filterSettings);
 		rootNode = this.makeIdUnique(rootNode);
 
 		elementToTreeViewerNodeMap.put(rootElement, rootNode);
@@ -156,8 +156,7 @@ public class TreeViewer {
 				continue;
 			}
 			Link edge = undirectedGraph.getEdge(childElement, parentElement);
-			TreeViewerNode childNode = makeIdUnique(
-					new TreeViewerNode(childElement, edge, areQualityProblemsHightlighted));
+			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge, filterSettings));
 			childNode = this.makeIdUnique(childNode);
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 
@@ -184,8 +183,7 @@ public class TreeViewer {
 				continue;
 			}
 
-			TreeViewerNode childNode = makeIdUnique(
-					new TreeViewerNode(childElement, edge, areQualityProblemsHightlighted));
+			TreeViewerNode childNode = makeIdUnique(new TreeViewerNode(childElement, edge, filterSettings));
 			elementToTreeViewerNodeMap.put(childElement, childNode);
 			parentNode.getChildren().add(childNode);
 		}

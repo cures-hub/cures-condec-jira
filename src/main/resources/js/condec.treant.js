@@ -55,30 +55,8 @@
                 addContextMenuToTreant();
                 addTooltip();
             }
-            if (filterSettings["areQualityProblemsHighlighted"]) {
-				changeColorForNodes();
-			}
         });
     };
-
-    function changeColorForNodes() {
-        var treantNodes = document.getElementsByClassName("node");
-        for (var i = 0; i < treantNodes.length; i++) {
-            treantNodes[i].style.color = treantNodes[i].getElementsByClassName("node-color")[0].innerHTML;
-        }
-    }
-
-    function changeColorForNode(node) {
-		var filterSettings = conDecFiltering.getFilterSettings("treant");
-		filterSettings["projectKey"] = conDecAPI.getProjectKey();
-		filterSettings["selectedElement"] = node.getElementsByClassName("node-desc")[0].textContent;
-		console.log(node);
-		console.log(node.getElementsByClassName("node-color")[0].innerHTML);
-		for (var j = 1; j < node.childNodes.length - 1; j++) {
-			//console.log(node);
-			//node.childNodes[j].style.color = "crimson";
-		}
-	}
 
     function addDragAndDropSupportForTreant() {
         console.log("conDecTreant addDragAndDropSupportForTreant");

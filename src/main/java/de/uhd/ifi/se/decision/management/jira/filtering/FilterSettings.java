@@ -74,6 +74,10 @@ public class FilterSettings {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
+	public FilterSettings() {
+		this("", "");
+	}
+
 	@JsonCreator
 	public FilterSettings(@JsonProperty("projectKey") String projectKey,
 			@JsonProperty("searchTerm") String searchTerm) {
