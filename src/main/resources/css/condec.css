@@ -105,13 +105,3 @@ a:focus a:hover {
   padding: 16px;
   display: block;
 }
-
-#change-impact-decision-knowledge-tree {
-  min-width: 400px;
-  min-height: 400px;
-  margin: 10px;
-}
-
-#select2-display-type-cia {
-  vertical-align: bottom;
-}

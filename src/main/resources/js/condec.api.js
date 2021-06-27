@@ -655,7 +655,7 @@
 	 * external references: condec.filtering
 	 */
 	ConDecAPI.prototype.getChangeImpactAnalysisConfiguration = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/config/getChangeImpactAnalysisConfiguration.json?projectKey=" 
+		generalApi.getJSON(this.restPrefix + "/config/getChangeImpactAnalysisConfiguration.json?projectKey="
 			+ projectKey, callback);
 	};
 

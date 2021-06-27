@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +36,8 @@ public class ChangeImpactAnalysisConfiguration {
 			linkImpact.put(entry, 1.0f);
 		});
 		context = 0;
-		passRules = List.of(PassRule.values());
+		passRules = new LinkedList<>();
+		passRules.addAll(List.of(PassRule.values()));
 	}
 
 	@XmlElement

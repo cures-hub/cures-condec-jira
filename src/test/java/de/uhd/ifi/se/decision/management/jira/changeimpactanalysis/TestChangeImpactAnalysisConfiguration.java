@@ -53,12 +53,18 @@ public class TestChangeImpactAnalysisConfiguration extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationRule() {
+	public void testPropagationRules() {
 		// default value
-		assertEquals(0, config.getPropagationRules().size());
+		assertEquals(3, config.getPropagationRules().size());
 		config.setPropagationRules(List.of(PassRule.UNDEFINED.getTranslation()));
 		assertEquals(1, config.getPropagationRules().size());
 		config.setPropagationRules(null);
 		assertEquals(0, config.getPropagationRules().size());
+	}
+
+	@Test
+	public void testPropagationRulesAsStrings() {
+		assertEquals(2, config.getPropagationRulesAsStrings().size());
+		assertEquals("IgnoreArgumentsFromAlternatives", config.getPropagationRulesAsStrings().get(0));
 	}
 }

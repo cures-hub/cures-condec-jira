@@ -88,6 +88,11 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
+	public void testGetChangeImpactAnalysisConfiguration() {
+		assertEquals(0.75f, project.getChangeImpactAnalysisConfiguration().getDecayValue(), 0);
+	}
+
+	@Test
 	public void testGetProjectsWithConDecActivatedAndAccessableForUser() {
 		assertEquals(1, DecisionKnowledgeProject
 				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());

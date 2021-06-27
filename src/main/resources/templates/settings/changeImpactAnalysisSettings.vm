@@ -1,80 +1,73 @@
 <h2>General Change Impact Analysis (CIA) Settings</h2>
+#set($ciaConfig = $project.getChangeImpactAnalysisConfiguration())
+
 <p>When set to 1, cia only depends on link type specific impact values.</p>
-<div class="settings-divider">
-    <div class="field-group">
-        <label for="cia-decay-value">Decay Value</label>
-        <input class="text short-field"
-               type="number"
-               data-aui-validation-field
-               value="0.75"
-               step="0.01"
-               min="0"
-               max="1"
-               id="cia-decay-value"
-               name="cia-decay-value"/>
-        <div class="description">Set the decay per iteration step.
-        </div>
-        <label for="cia-threshold">Threshold</label>
-        <input class="text short-field"
-               type="number"
-               data-aui-validation-field
-               value="0.75"
-               step="0.01"
-               min="0"
-               max="1"
-               id="cia-threshold"
-               name="cia-threshold"/>
-        <div class="description">Set value where the propagation is stopped
-        </div>
-    </div>
+<div class="field-group">
+    <label for="cia-decay-value">Decay Value</label>
+    <input class="text short-field"
+           type="number"
+           data-aui-validation-field
+           value="$ciaConfig.getDecayValue()"
+           step="0.01"
+           min="0"
+           max="1"
+           id="cia-decay-value"
+           name="cia-decay-value"/>
+    <div class="description">Set the decay per iteration step.</div>
+</div>
+<div class="field-group">
+    <label for="cia-threshold">Threshold</label>
+    <input class="text short-field"
+           type="number"
+           data-aui-validation-field
+           value="$ciaConfig.getThreshold()"
+           step="0.01"
+           min="0"
+           max="1"
+           id="cia-threshold"
+           name="cia-threshold"/>
+    <div class="description">Set value where the propagation is stopped.</div>
 </div>
 <p id='additional-link-types-text'>When set to 1 cia only depends on decay Value.<br/><br/></p>
 <h2 id="cia-link-type-settings">Link specific CIA Settings</h2>
-<script>
-    var linktypes = conDecAPI.getAllLinkTypes().sort();
+
+<input type="button" id='save-cia-settings-btn' class="aui-button aui-button-primary" value="Save"/>
+
+<script>    
+	var linktypes = conDecAPI.getAllLinkTypes().sort();
     let html = "";
-    html += "<div class='settings-divider cia-link-settings' >";
+    html += "";
     for (i in linktypes) {
         var toggleName = linktypes[i];
         html += "<div class='field-group'>";
         // Reference Decay Value
         html += "<label for=" + toggleName + ">" + linktypes[i] + "</label>";
-        html += "<input class='text short-field' type='number' step='0.01'  min='0' max='1' value='1' id='" + toggleName + "' name='" + toggleName + "' />"
+        html += "<input class='text short-field' type='number' step='0.01'  min='0' max='1'" 
+        		+ "value='1' id='" + toggleName + "'" 
+        		+ "name='" + toggleName + "' />"
         html += "<div class='description'>Describe the impact for the " + linktypes[i] + " element for this project.</div>";
         html += "</div>";
     }
     document.getElementById("cia-link-type-settings").insertAdjacentHTML('afterend', html);
-</script>
-
-<input type="button" id='save-cia-settings-btn' onclick='saveCiaQuery(event)' 
-	class="aui-button aui-button-primary" value="Save"/>
-</div>
-
-<script>
-    function saveCiaQuery() {
-        var linktypes = conDecAPI.getAllLinkTypes().sort();
-        var linkImpact = {};
-        for (i in linktypes) {
-            linkImpact[linktypes[i]] = document.getElementById(linktypes[i]).value;
-        }
-        let ciaSettings = {
-            "decayValue": $("#cia-decay-value")[0].value,
-            "threshold": $("#cia-threshold")[0].value,
-            "linkImpact": linkImpact
-        }
-        conDecAPI.setCiaSettings("$projectKey", ciaSettings);
-    }
-
-    function loadCiaData(error, response) {
-        $("#cia-decay-value")[0].value = response["decayValue"];
-        $("#cia-threshold")[0].value = response["threshold"];
-        const obj = response["linkImpact"];
-        for (let key in obj) {
-            document.getElementById(key).value = obj[key]
-        }
-    }
-
-    $(document).ready(function () {
-        conDecAPI.getCiaSettings("$projectKey", loadCiaData);
+    
+	$("#save-cia-settings-btn").click((event) => {
+		var linktypes = conDecAPI.getAllLinkTypes().sort();
+		var linkImpact = {};
+		for (i in linktypes) {
+			linkImpact[linktypes[i]] = document.getElementById(linktypes[i]).value;
+		}
+		let ciaConfig = {
+			"decayValue": $("#cia-decay-value")[0].value,
+			"threshold": $("#cia-threshold")[0].value,
+			"linkImpact": linkImpact
+		}
+	conDecAPI.setChangeImpactAnalysisConfiguration("$projectKey", ciaConfig);
     });
 </script>
+
+#set($linkImpacts = $ciaConfig.getLinkImpact())
+#foreach($key in ${linkImpacts.keySet()})
+	<script>
+		document.getElementById("$key").value = $linkImpacts.get($key);
+	</script>
+#end
