@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
@@ -40,7 +40,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
  * @see DecisionGuidanceConfiguration
  * @see LinkRecommendationConfiguration
  * @see PromptingEventConfiguration
- * @see ChangeImpactAnalysisConfig
+ * @see ChangeImpactAnalysisConfiguration
  * @see WebhookConfiguration
  * @see ReleaseNotesConfiguration
  */
@@ -374,8 +374,8 @@ public class ConfigPersistenceManager {
 	 * @return settings for change impact estimation.
 	 */
 	public static void saveChangeImpactAnalysisConfiguration(String projectKey,
-			ChangeImpactAnalysisConfig changeImpactAnalysisConfiguration) {
-		Type type = new TypeToken<ChangeImpactAnalysisConfig>() {
+			ChangeImpactAnalysisConfiguration changeImpactAnalysisConfiguration) {
+		Type type = new TypeToken<ChangeImpactAnalysisConfiguration>() {
 		}.getType();
 		saveObject(projectKey, "changeImpactAnalysisConfiguration", changeImpactAnalysisConfiguration, type);
 	}
@@ -385,13 +385,13 @@ public class ConfigPersistenceManager {
 	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
 	 * @return settings for change impact estimation.
 	 */
-	public static ChangeImpactAnalysisConfig getChangeImpactAnalysisConfiguration(String projectKey) {
-		Type type = new TypeToken<ChangeImpactAnalysisConfig>() {
+	public static ChangeImpactAnalysisConfiguration getChangeImpactAnalysisConfiguration(String projectKey) {
+		Type type = new TypeToken<ChangeImpactAnalysisConfiguration>() {
 		}.getType();
-		ChangeImpactAnalysisConfig changeImpactAnalysisConfiguration = (ChangeImpactAnalysisConfig) getSavedObject(
+		ChangeImpactAnalysisConfiguration changeImpactAnalysisConfiguration = (ChangeImpactAnalysisConfiguration) getSavedObject(
 				projectKey, "changeImpactAnalysisConfiguration", type);
 		if (changeImpactAnalysisConfiguration == null) {
-			changeImpactAnalysisConfiguration = new ChangeImpactAnalysisConfig();
+			changeImpactAnalysisConfiguration = new ChangeImpactAnalysisConfiguration();
 		}
 		return changeImpactAnalysisConfiguration;
 	}

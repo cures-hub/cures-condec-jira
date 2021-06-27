@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
-public class IgnoreArgumentDecisionsPassRuleTest {
+public class TestIgnoreArgumentDecisionsPassRule {
 
 	@Test
 	public void passTestDescription() {

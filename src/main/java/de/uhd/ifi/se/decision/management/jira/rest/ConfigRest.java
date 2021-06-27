@@ -31,7 +31,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.PassRule;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
@@ -425,7 +425,7 @@ public class ConfigRest {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response setCiaSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ChangeImpactAnalysisConfig ciaSettings) {
+			ChangeImpactAnalysisConfiguration ciaSettings) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;

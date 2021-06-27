@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
  * Contains the configuration details for change impact analysis (CIA) for one
  * Jira project (see {@link DecisionKnowledgeProject}).
  */
-public class ChangeImpactAnalysisConfig {
+public class ChangeImpactAnalysisConfiguration {
 
 	private float decayValue;
 	private float threshold;
@@ -19,7 +19,7 @@ public class ChangeImpactAnalysisConfig {
 	private long context;
 	private List<PassRule> passRule;
 
-	public ChangeImpactAnalysisConfig() {
+	public ChangeImpactAnalysisConfiguration() {
 		decayValue = 0.75f;
 		threshold = 0.25f;
 		linkImpact = new HashMap<>();

@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -295,8 +295,16 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testContext() {
-		ChangeImpactAnalysisConfig ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
+	public void testChangeImpactHighlighting() {
+		// default value
+		assertFalse(filterSettings.areChangeImpactsHighlighted());
+		filterSettings.highlightChangeImpacts(true);
+		assertTrue(filterSettings.areChangeImpactsHighlighted());
+	}
+
+	@Test
+	public void testChangeImpactAnalysisConfig() {
+		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 		// default value
 		assertEquals(0, ciaConfig.getContext());
 		ciaConfig.setContext(1);
@@ -305,11 +313,11 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testCiaRequest() {
+	public void testQualityProblemHighlighting() {
 		// default value
-		assertFalse(filterSettings.isCiaRequest());
-		filterSettings.setCiaRequest(true);
-		assertTrue(filterSettings.isCiaRequest());
+		assertTrue(filterSettings.areQualityProblemHighlighted());
+		filterSettings.highlightQualityProblems(false);
+		assertFalse(filterSettings.areQualityProblemHighlighted());
 	}
 
 	@Test

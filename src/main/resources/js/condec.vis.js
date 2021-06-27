@@ -15,7 +15,7 @@
 			});
 			conDecFiltering.addOnClickEventToChangeImpactButton("graph", function (filterSettings) {
 				filterSettings["selectedElement"] = conDecAPI.getIssueKey();
-				filterSettings["isCiaRequest"] = true;
+				filterSettings["areChangeImpactsHighlighted"] = true;
 				conDecVis.buildVis(filterSettings, "vis-graph-container");
 			});
 		} else {

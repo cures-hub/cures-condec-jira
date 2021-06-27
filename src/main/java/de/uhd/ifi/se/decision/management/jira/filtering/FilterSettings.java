@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -68,9 +68,9 @@ public class FilterSettings {
 	private boolean isHierarchical;
 	private boolean isIrrelevantTextShown;
 	private boolean createTransitiveLinks;
-	private boolean noColors;
-	private boolean isCiaRequest;
-	private ChangeImpactAnalysisConfig changeImpactAnalysisConfig;
+	private boolean areQualityProblemsHighlighted;
+	private boolean areChangeImpactsHighlighted;
+	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
@@ -101,9 +101,9 @@ public class FilterSettings {
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;
 		this.isIrrelevantTextShown = false;
-		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfig();
-		this.isCiaRequest = false;
-		this.noColors = true;
+		this.areQualityProblemsHighlighted = true;
+		this.areChangeImpactsHighlighted = false;
+		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfiguration();
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -583,30 +583,29 @@ public class FilterSettings {
 		return filterSettingsAsJson;
 	}
 
-	public boolean isCiaRequest() {
-		return isCiaRequest;
+	public boolean areQualityProblemHighlighted() {
+		return areQualityProblemsHighlighted;
 	}
 
-	@JsonProperty("isCiaRequest")
-	public void setCiaRequest(boolean ciaRequest) {
-		isCiaRequest = ciaRequest;
+	@JsonProperty("areQualityProblemsHighlighted")
+	public void highlightQualityProblems(boolean areQualityProblemsHighlighted) {
+		this.areQualityProblemsHighlighted = areQualityProblemsHighlighted;
 	}
 
-	public ChangeImpactAnalysisConfig getChangeImpactAnalysisConfig() {
+	public boolean areChangeImpactsHighlighted() {
+		return areChangeImpactsHighlighted;
+	}
+
+	@JsonProperty("areChangeImpactsHighlighted")
+	public void highlightChangeImpacts(boolean areChangeImpactsHighlighted) {
+		this.areChangeImpactsHighlighted = areChangeImpactsHighlighted;
+	}
+
+	public ChangeImpactAnalysisConfiguration getChangeImpactAnalysisConfig() {
 		return changeImpactAnalysisConfig;
 	}
 
-	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfig ciaConfig) {
-		this.changeImpactAnalysisConfig = ciaConfig;
+	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
+		this.changeImpactAnalysisConfig = changeImpactAnalysisConfig;
 	}
-
-	public boolean isNoColors() {
-		return noColors;
-	}
-
-	@JsonProperty("noColors")
-	public void setNoColors(boolean noColors) {
-		this.noColors = noColors;
-	}
-
 }

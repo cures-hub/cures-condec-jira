@@ -30,7 +30,7 @@
 			});
 			conDecFiltering.addOnClickEventToChangeImpactButton("matrix", function (filterSettings) {
 				filterSettings["selectedElement"] = conDecAPI.getIssueKey();
-				filterSettings["isCiaRequest"] = true;
+				filterSettings["areChangeImpactsHighlighted"] = true;
 				conDecMatrix.buildMatrix(filterSettings);
 			});
 		} else {

@@ -1,6 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlElement;
+
 import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -10,11 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Model class for Tree Viewer nodes
@@ -46,21 +48,23 @@ public class TreeViewerNode {
 		children = new ArrayList<>();
 	}
 
-	public TreeViewerNode(KnowledgeElement knowledgeElement, boolean noColors) {
+	public TreeViewerNode(KnowledgeElement knowledgeElement, boolean areQualityProblemsHightlighted) {
 		this();
 		this.id = "tv" + knowledgeElement.getId();
 		this.text = knowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
 		this.element = knowledgeElement;
-		this.a_attr = ImmutableMap.of("title", ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
+		this.a_attr = ImmutableMap.of("title",
+				ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
 		this.li_attr = ImmutableMap.of("class", "issue");
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
-		if (!noColors) {
+		if (areQualityProblemsHightlighted) {
 			String textColor = "";
 			FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
-			DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
+			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
+					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
 			filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
 			filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
 			if (!DefinitionOfDoneChecker.checkDefinitionOfDone(knowledgeElement, filterSettings)) {
@@ -70,8 +74,8 @@ public class TreeViewerNode {
 				if (a_attr == null) {
 					a_attr = ImmutableMap.of("style", "color:" + textColor);
 				} else {
-					a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:" + textColor)
-						.build();
+					a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr)
+							.put("style", "color:" + textColor).build();
 				}
 			}
 		}

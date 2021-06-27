@@ -55,7 +55,7 @@
                 addContextMenuToTreant();
                 addTooltip();
             }
-            if (!filterSettings["noColors"]) {
+            if (filterSettings["areQualityProblemsHighlighted"]) {
 				changeColorForNodes();
 			}
         });

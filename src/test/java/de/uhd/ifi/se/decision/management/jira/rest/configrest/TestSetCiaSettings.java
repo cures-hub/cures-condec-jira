@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfig;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import org.junit.Before;
@@ -17,12 +17,12 @@ public class TestSetCiaSettings extends TestSetUp {
 
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
-	protected ChangeImpactAnalysisConfig settings;
+	protected ChangeImpactAnalysisConfiguration settings;
 
 	@Before
 	public void setUp() {
 		init();
-		settings = new ChangeImpactAnalysisConfig();
+		settings = new ChangeImpactAnalysisConfiguration();
 		configRest = new ConfigRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());

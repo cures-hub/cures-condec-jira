@@ -30,7 +30,7 @@
 		// Add on click listeners to filter button
 		conDecFiltering.addOnClickEventToFilterButton("jstree", conDecTreeViewer.updateView);
 		conDecFiltering.addOnClickEventToChangeImpactButton("jstree", function (filterSettings) {
-			filterSettings["isCiaRequest"] = true;
+			filterSettings["areChangeImpactsHighlighted"] = true;
 			conDecTreeViewer.updateViewForFilterSettings(filterSettings);
 		});
 
@@ -39,12 +39,6 @@
 
 		// Fill view
 		this.updateView();		
-	};
-
-
-	ConDecTreeViewer.prototype.updateViewWithChangeImpact = function() {
-		filterSettings["isCiaRequest"] = true;
-		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-jstree", "jstree");
 	};
 	
 	ConDecTreeViewer.prototype.updateView = function () {

@@ -55,7 +55,7 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		if (filterSettings.isCiaRequest()) {
+		if (filterSettings.areChangeImpactsHighlighted()) {
 			return Response.ok(CiaService.calculateTreeImpact(filterSettings)).build();
 		} else {
 			return Response.ok(new TreeViewer(filterSettings)).build();
@@ -155,7 +155,7 @@ public class ViewRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph visGraph;
-		if (filterSettings.isCiaRequest()) {
+		if (filterSettings.areChangeImpactsHighlighted()) {
 			visGraph = CiaService.calculateGraphImpact(filterSettings);
 		} else {
 			visGraph = new VisGraph(user, filterSettings);
@@ -199,7 +199,7 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		Matrix matrix;
-		if (filterSettings.isCiaRequest()) {
+		if (filterSettings.areChangeImpactsHighlighted()) {
 			matrix = CiaService.calculateMatrixImpact(filterSettings);
 		} else {
 			matrix = new Matrix(filterSettings);

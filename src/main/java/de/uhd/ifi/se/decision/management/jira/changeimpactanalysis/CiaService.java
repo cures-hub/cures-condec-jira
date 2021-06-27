@@ -79,7 +79,7 @@ public class CiaService {
 	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement root, Double parentImpact,
 			FilterSettings filterSettings, HashMap<KnowledgeElement, Double> results, final Long context) {
 		Set<String> result = new HashSet<>();
-		ChangeImpactAnalysisConfig ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
+		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 		root.getLinks().forEach(entry -> {
 			// TODO Link specific weights
 			boolean isOutwardLink = entry.getSource().equals(root);
