@@ -56,12 +56,8 @@ public class TreeViewerNode {
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
-		if (areQualityProblemsHightlighted) {
-			String textColor = "black";
-			if (!knowledgeElement.fulfillsDefinitionOfDone()) {
-				textColor = "crimson";
-			}
-			a_attr = ImmutableMap.of("style", "color:" + textColor);
+		if (areQualityProblemsHightlighted && !knowledgeElement.fulfillsDefinitionOfDone()) {
+			a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr).put("style", "color:crimson").build();
 		}
 	}
 

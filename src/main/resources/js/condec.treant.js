@@ -64,7 +64,7 @@
     function changeColorForNodes() {
         var treantNodes = document.getElementsByClassName("node");
         for (var i = 0; i < treantNodes.length; i++) {
-            changeColorForNode(treantNodes[i]);
+            treantNodes[i].style.color = treantNodes[i].getElementsByClassName("node-color")[0].innerHTML;
         }
     }
 
@@ -72,13 +72,12 @@
 		var filterSettings = conDecFiltering.getFilterSettings("treant");
 		filterSettings["projectKey"] = conDecAPI.getProjectKey();
 		filterSettings["selectedElement"] = node.getElementsByClassName("node-desc")[0].textContent;
-		conDecDoDCheckingAPI.getFailedDefinitionOfDoneCriteria(filterSettings, function(result) {
-			if (result && result.length) {
-				for (var j = 1; j < node.childNodes.length - 1; j++) {
-					node.childNodes[j].style.color = "crimson";
-				}
-			}
-		});
+		console.log(node);
+		console.log(node.getElementsByClassName("node-color")[0].innerHTML);
+		for (var j = 1; j < node.childNodes.length - 1; j++) {
+			//console.log(node);
+			//node.childNodes[j].style.color = "crimson";
+		}
 	}
 
     function addDragAndDropSupportForTreant() {

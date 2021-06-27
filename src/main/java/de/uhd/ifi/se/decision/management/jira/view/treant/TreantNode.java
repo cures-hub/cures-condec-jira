@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.google.common.collect.ImmutableMap;
@@ -16,6 +15,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
  * Model class for Treant node
@@ -70,7 +70,11 @@ public class TreantNode {
 		} else {
 			title = knowledgeElement.getSummary();
 		}
-		this.nodeContent = ImmutableMap.of("title", title, "documentationLocation",
+		String color = "black";
+		if (!knowledgeElement.fulfillsDefinitionOfDone()) {
+			color = "crimson";
+		}
+		this.nodeContent = ImmutableMap.of("title", title, "color", color, "documentationLocation",
 				knowledgeElement.getDocumentationLocationAsString(), "status", knowledgeElement.getStatusAsString(),
 				"desc", knowledgeElement.getKey());
 		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);

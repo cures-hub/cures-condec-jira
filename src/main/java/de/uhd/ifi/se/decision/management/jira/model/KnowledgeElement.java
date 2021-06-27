@@ -730,6 +730,9 @@ public class KnowledgeElement {
 	 *         to be improved.
 	 */
 	public boolean fulfillsDefinitionOfDone() {
+		if (getProject() == null) {
+			return false;
+		}
 		return DefinitionOfDoneChecker.checkDefinitionOfDone(this,
 				new FilterSettings(getProject().getProjectKey(), ""));
 	}

@@ -108,9 +108,9 @@ public class TestTreeViewerNode extends TestSetUp {
 	public void testGetAndSetAttributes() {
 		Map<String, String> attributes = node.getAttr();
 		assertEquals(2L, attributes.size());
-		assertEquals(attributes.get("title"), "Minimum decision coverage is not reached." + System.lineSeparator()
-				+ System.lineSeparator() + "Linked decision knowledge is incomplete.");
-		assertEquals(attributes.get("style"), "color:crimson");
+		assertEquals("Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator()
+				+ "Linked decision knowledge is incomplete.", attributes.get("title"));
+		assertEquals("color:crimson", attributes.get("style"));
 		Map<String, String> newAttributes = new HashMap<>();
 		newAttributes.put("title", "test");
 		node.setAttr(newAttributes);
