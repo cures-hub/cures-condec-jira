@@ -14,12 +14,6 @@
 		class="text short-field" placeholder="Enter threshold">
 </div>
 
-<button aria-controls="propagation-rule-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger"
-        aria-haspopup="true">
-    $i18n.getText("condec.label.propagation.rule")
-</button>
-<aui-dropdown-menu id="propagation-rule-dropdown-$viewIdentifier" name="passRule"></aui-dropdown-menu>
-
 <div class="condec-filter-criterion">
     <label for="context-input-$viewIdentifier" id="context-input-label-$viewIdentifier">
         $i18n.getText("condec.context.label")
@@ -27,6 +21,12 @@
     <input type="number" id="context-input-$viewIdentifier" value="0" min="0" step='1' class="text short-field"
            placeholder="Context distance" name="context">
 </div>
+
+<button aria-controls="propagation-rule-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger"
+        aria-haspopup="true">
+    $i18n.getText("condec.label.propagation.rule")
+</button>
+<aui-dropdown-menu id="propagation-rule-dropdown-$viewIdentifier" name="passRule"></aui-dropdown-menu>
 
 <input type="button" id="cia-button-$viewIdentifier" class="aui-button aui-button-primary" 
 	value="$i18n.getText('condec.cia.button')"/>

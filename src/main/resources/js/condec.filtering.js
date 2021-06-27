@@ -38,12 +38,12 @@
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 
-		// change impact highlighting		
+		// change impact highlighting	
 		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
 			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
 			$("#threshold-input-" + viewIdentifier)[0].value = config["threshold"];
-			conDecFiltering.initDropdown("propagation-rule-dropdown-" + viewIdentifier, 
-					config["propagationRules"], []);
+			conDecFiltering.initDropdown("propagation-rule-dropdown-" + viewIdentifier,
+				config["propagationRules"], []);
 		});
 
 		window.onbeforeunload = null;

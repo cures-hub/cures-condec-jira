@@ -58,6 +58,7 @@ public class ChangeImpactAnalysisConfiguration {
 		this.threshold = threshold;
 	}
 
+	@XmlElement
 	public Map<String, Float> getLinkImpact() {
 		return linkImpact;
 	}
