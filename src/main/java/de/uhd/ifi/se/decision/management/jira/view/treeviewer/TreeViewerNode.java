@@ -13,9 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
@@ -48,42 +45,32 @@ public class TreeViewerNode {
 		children = new ArrayList<>();
 	}
 
-	public TreeViewerNode(KnowledgeElement knowledgeElement, boolean areQualityProblemsHightlighted) {
+	public TreeViewerNode(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		this();
-		this.id = "tv" + knowledgeElement.getId();
-		this.text = knowledgeElement.getSummary();
-		this.icon = KnowledgeType.getIconUrl(knowledgeElement);
-		this.element = knowledgeElement;
-		this.a_attr = ImmutableMap.of("title",
-				ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
-		this.li_attr = ImmutableMap.of("class", "issue");
-		if (knowledgeElement instanceof PartOfJiraIssueText) {
-			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
+		id = "tv" + knowledgeElement.getId();
+		text = knowledgeElement.getSummary();
+		icon = KnowledgeType.getIconUrl(knowledgeElement);
+		element = knowledgeElement;
+		if (element.getDescription() != null) {
+			a_attr = ImmutableMap.of("title", knowledgeElement.getDescription());
 		}
-		if (areQualityProblemsHightlighted) {
-			String textColor = "";
-			FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
-			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
-					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-			filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
-			filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
-			if (!DefinitionOfDoneChecker.checkDefinitionOfDone(knowledgeElement, filterSettings)) {
-				textColor = "crimson";
-			}
-			if (!textColor.isBlank()) {
-				if (a_attr == null) {
-					a_attr = ImmutableMap.of("style", "color:" + textColor);
-				} else {
-					a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr)
-							.put("style", "color:" + textColor).build();
-				}
+		a_attr = ImmutableMap.of("title",
+				knowledgeElement.getDescription() != null ? knowledgeElement.getDescription() : "");
+		li_attr = ImmutableMap.of("class", "issue");
+		if (knowledgeElement instanceof PartOfJiraIssueText) {
+			li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
+		}
+		if (filterSettings.areQualityProblemHighlighted()) {
+			List<String> qualityProblems = knowledgeElement.getQualityProblems();
+			if (!qualityProblems.isEmpty()) {
+				a_attr = ImmutableMap.of("title", ToolTip.buildToolTip(qualityProblems), "style", "color:crimson");
 			}
 		}
 	}
 
-	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link, boolean colorNodes) {
-		this(knowledgeElement, colorNodes);
-		this.icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
+	public TreeViewerNode(KnowledgeElement knowledgeElement, Link link, FilterSettings filterSettings) {
+		this(knowledgeElement, filterSettings);
+		icon = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
 	}
 
 	public String getId() {

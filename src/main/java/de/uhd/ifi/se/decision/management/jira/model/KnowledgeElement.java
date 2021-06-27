@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -720,6 +721,33 @@ public class KnowledgeElement {
 	@XmlElement(name = "status")
 	public String getStatusAsString() {
 		return getStatus().toString();
+	}
+
+	/**
+	 * @return true if the element fulfills the {@link DefinitionOfDone} (DoD). For
+	 *         example, an argument needs to be linked to at least one solution
+	 *         option (decision or alternative) in the {@link KnowledgeGraph}.
+	 *         Otherwise, it does not fullful the DoD, i.e., its documentation needs
+	 *         to be improved.
+	 */
+	public boolean fulfillsDefinitionOfDone() {
+		if (getProject() == null) {
+			return false;
+		}
+		return DefinitionOfDoneChecker.checkDefinitionOfDone(this,
+				new FilterSettings(getProject().getProjectKey(), ""));
+	}
+
+	public List<String> getQualityProblems() {
+		if (getProject() == null) {
+			return new ArrayList<>();
+		}
+		FilterSettings filterSettings = new FilterSettings(this.getProject().getProjectKey(), "");
+
+		List<String> qualityProblems = DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(this,
+				filterSettings);
+		qualityProblems.addAll(DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(this));
+		return qualityProblems;
 	}
 
 	/**

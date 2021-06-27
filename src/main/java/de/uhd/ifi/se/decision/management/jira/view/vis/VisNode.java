@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -11,7 +12,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
@@ -40,35 +40,34 @@ public class VisNode {
 	@XmlElement
 	private Map<String, String> color;
 
-	public VisNode(KnowledgeElement element) {
-		this(element, false, 0, true);
+	public VisNode(KnowledgeElement element, FilterSettings filterSettings) {
+		this(element, false, 0, filterSettings);
 	}
 
-	public VisNode(KnowledgeElement element, boolean areQualityProblemsHightlighted) {
-		this(element, false, 0, areQualityProblemsHightlighted);
-	}
-
-	public VisNode(KnowledgeElement element, int level) {
-		this(element, false, level, true);
-	}
-
-	public VisNode(KnowledgeElement element, int level, boolean areQualityProblemsHightlighted) {
-		this(element, false, level, areQualityProblemsHightlighted);
+	public VisNode(KnowledgeElement element, int level, FilterSettings filterSettings) {
+		this(element, false, level, filterSettings);
 	}
 
 	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
-		this(element, isCollapsed, level, true);
+		this(element, isCollapsed, level, new FilterSettings());
 	}
 
-	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, boolean areQualityProblemsHightlighted) {
+	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, FilterSettings filterSettings) {
 		this.element = element;
 		this.level = level;
-		this.label = determineLabel(element, isCollapsed);
-		this.group = determineGroup(element, isCollapsed);
-		this.title = ToolTip.buildToolTip(element, element.getTypeAsString().toUpperCase() + System.lineSeparator()
-				+ element.getKey() + ": " + element.getSummary() + System.lineSeparator() + element.getDescription());
-		this.font = determineFont(element, areQualityProblemsHightlighted);
-		this.color = determineColor(element);
+		label = determineLabel(element, isCollapsed);
+		group = determineGroup(element, isCollapsed);
+		title = element.getTypeAsString().toUpperCase() + System.lineSeparator() + element.getKey() + ": "
+				+ element.getSummary() + System.lineSeparator() + element.getDescription();
+		font = ImmutableMap.of("color", "black");
+		if (filterSettings.areQualityProblemHighlighted()) {
+			List<String> qualityProblems = element.getQualityProblems();
+			if (!qualityProblems.isEmpty()) {
+				title = ToolTip.buildToolTip(qualityProblems);
+				font = ImmutableMap.of("color", "crimson");
+			}
+		}
+		color = determineColor(element);
 	}
 
 	private String determineLabel(KnowledgeElement element, boolean isCollapsed) {
@@ -87,25 +86,6 @@ public class VisNode {
 			return "collapsed";
 		}
 		return element.getTypeAsString().toLowerCase();
-	}
-
-	private Map<String, String> determineFont(KnowledgeElement element, boolean areQualityProblemsHightlighted) {
-		if (!areQualityProblemsHightlighted) {
-			return ImmutableMap.of("color", "black");
-		}
-		String color = "";
-		String projectKey = "";
-		if (element.getProject() != null && element.getProject().getProjectKey() != null) {
-			projectKey = element.getProject().getProjectKey();
-		}
-		if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(element, new FilterSettings(projectKey, ""))
-				.isEmpty()) {
-			color = "crimson";
-		}
-		if (!color.isBlank()) {
-			return ImmutableMap.of("color", color);
-		}
-		return ImmutableMap.of("color", "black");
 	}
 
 	public static Map<String, String> determineColor(KnowledgeElement element) {

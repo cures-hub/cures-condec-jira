@@ -18,7 +18,7 @@
 		conDecFiltering.initDropdown("link-type-dropdown-rationale-backlog", conDecAPI.getLinkTypes());
 		
 		// Add on click listeners to filter button
-     	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecKnowledgePage.updateView);
+     	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecRationaleBacklog.updateView);
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("rationale-backlog");	
 
 		// Register/subscribe this view as an observer
