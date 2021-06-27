@@ -9,9 +9,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
@@ -93,19 +91,11 @@ public class VisNode {
 		if (!areQualityProblemsHightlighted) {
 			return ImmutableMap.of("color", "black");
 		}
-		String color = "";
-		String projectKey = "";
-		if (element.getProject() != null && element.getProject().getProjectKey() != null) {
-			projectKey = element.getProject().getProjectKey();
-		}
-		if (!DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(element, new FilterSettings(projectKey, ""))
-				.isEmpty()) {
+		String color = "black";
+		if (!element.fulfillsDefinitionOfDone()) {
 			color = "crimson";
 		}
-		if (!color.isBlank()) {
-			return ImmutableMap.of("color", color);
-		}
-		return ImmutableMap.of("color", "black");
+		return ImmutableMap.of("color", color);
 	}
 
 	public static Map<String, String> determineColor(KnowledgeElement element) {

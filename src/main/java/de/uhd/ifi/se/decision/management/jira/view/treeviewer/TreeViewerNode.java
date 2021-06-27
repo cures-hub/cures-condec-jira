@@ -8,14 +8,10 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
@@ -61,23 +57,11 @@ public class TreeViewerNode {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
 		if (areQualityProblemsHightlighted) {
-			String textColor = "";
-			FilterSettings filterSettings = new FilterSettings(knowledgeElement.getProject().getProjectKey(), "");
-			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
-					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-			filterSettings.setLinkDistance(definitionOfDone.getMaximumLinkDistanceToDecisions());
-			filterSettings.setMinimumDecisionCoverage(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
-			if (!DefinitionOfDoneChecker.checkDefinitionOfDone(knowledgeElement, filterSettings)) {
+			String textColor = "black";
+			if (!knowledgeElement.fulfillsDefinitionOfDone()) {
 				textColor = "crimson";
 			}
-			if (!textColor.isBlank()) {
-				if (a_attr == null) {
-					a_attr = ImmutableMap.of("style", "color:" + textColor);
-				} else {
-					a_attr = new ImmutableMap.Builder<String, String>().putAll(a_attr)
-							.put("style", "color:" + textColor).build();
-				}
-			}
+			a_attr = ImmutableMap.of("style", "color:" + textColor);
 		}
 	}
 

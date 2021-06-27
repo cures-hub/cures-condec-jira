@@ -723,6 +723,18 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @return true if the element fulfills the {@link DefinitionOfDone} (DoD). For
+	 *         example, an argument needs to be linked to at least one solution
+	 *         option (decision or alternative) in the {@link KnowledgeGraph}.
+	 *         Otherwise, it does not fullful the DoD, i.e., its documentation needs
+	 *         to be improved.
+	 */
+	public boolean fulfillsDefinitionOfDone() {
+		return DefinitionOfDoneChecker.checkDefinitionOfDone(this,
+				new FilterSettings(getProject().getProjectKey(), ""));
+	}
+
+	/**
 	 * @return true if the element is correctly linked according to the
 	 *         {@link DefinitionOfDone}. For example, an argument needs to be linked
 	 *         to at least one solution option (decision or alternative) in the
