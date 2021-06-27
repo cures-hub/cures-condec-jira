@@ -3,14 +3,65 @@ This page gathers settings and explanations for nudging mechanisms used in ConDe
 to document decision knowledge and to use the documentation.
 
 <h2>Just-in-time prompts</h2>
-<form class="aui">
-    #parse("templates/settings/linkrecommendation/promptEventSettings.vm")
-    #parse("templates/settings/definitionofdone/promptEventSettings.vm")
-</form>
+Here, you can activate or deactivate the events for that just-in-time prompts are shown to support 
+the usage of the following features. The events are activated per default for opt-out nudging.
 
-<h3>TODO: Settings for the prompting events for decision guidance</h3>
-
-<h3>TODO: Settings for the prompting events for text classification?</h3>
+<table class="aui aui-table-list aui-table-sortable">
+	<thead>
+		<tr>
+			<th>Event Name</th>
+    		<th>DoD Check</th>
+    		<th>Link Recommendation</th>
+    		<th>Decision Guidance</th>
+    		<th>Non-validated Elements</th>
+    	</tr>
+    </thead>
+    <tbody>
+    #foreach($workflowActionName in $workflowActionNames)
+        <tr>
+        	<td>$workflowActionName</td>
+        	<td><input type="checkbox" id="isDoDCheckActivated-$workflowActionName.replaceAll(' ', '')"
+        		#if($project.getPromptingEventConfiguration().isPromptEventActivated("DOD_CHECKING", $workflowActionName))
+					checked
+				#end
+            ></li></td>
+        	<td><input type="checkbox" id="isLinkRecommendationActivated-$workflowActionName.replaceAll(' ', '')"
+        		#if($project.getPromptingEventConfiguration().isPromptEventActivated("LINK_RECOMMENDATION", $workflowActionName))
+					checked
+				#end
+            ></li></td>
+        	<td><input type="checkbox" id="isDecisionGuidanceActivated-$workflowActionName.replaceAll(' ', '')"
+        		#if($project.getPromptingEventConfiguration().isPromptEventActivated("DECISION_GUIDANCE", $workflowActionName))
+					checked
+				#end
+            ></li></td>
+        	<td><input type="checkbox" id="isNonValidatedElementsCheckActivated-$workflowActionName.replaceAll(' ', '')" 
+        		#if($project.getPromptingEventConfiguration().isPromptEventActivated("TEXT_CLASSIFICATION", $workflowActionName))
+					checked
+				#end
+            ></li></td>
+        </tr>
+        <script>
+			$("#isDoDCheckActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
+				const isActivated = $(this).prop("checked");
+				conDecNudgingAPI.activatePromptEvent("$projectKey", "DOD_CHECKING", "$workflowActionName", isActivated);
+			});
+			$("#isLinkRecommendationActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
+				const isActivated = $(this).prop("checked");
+				conDecNudgingAPI.activatePromptEvent("$projectKey", "LINK_RECOMMENDATION", "$workflowActionName", isActivated);
+			});
+			$("#isDecisionGuidanceActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
+				const isActivated = $(this).prop("checked");
+				conDecNudgingAPI.activatePromptEvent("$projectKey", "DECISION_GUIDANCE", "$workflowActionName", isActivated);
+			});
+			$("#isNonValidatedElementsCheckActivated-$workflowActionName.replaceAll(' ', '')").change(function() {
+				const isActivated = $(this).prop("checked");
+				conDecNudgingAPI.activatePromptEvent("$projectKey", "TEXT_CLASSIFICATION", "$workflowActionName", isActivated);
+			});
+		</script>
+    #end    
+    </tbody>
+</table>
 
 <h2>Ambient feedback</h2>
 The quality of the documentation is indicated by the color of menu items.

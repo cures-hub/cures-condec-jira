@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,14 +21,18 @@ public class RDFSource extends KnowledgeSource {
 	protected int timeout;
 	protected String constraints;
 
-	public static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>"
-			+ "PREFIX dct: <http://purl.org/dc/terms/>" + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" + "PREFIX foaf: <http://xmlns.com/foaf/0.1/>";
-	public static final String DEFAULT_QUERY = PREFIX + " select distinct ?subject ?url count(?link) where { "
-			+ "%variable% dbo:genre ?genre. ?subject dbo:genre ?genre. ?subject foaf:isPrimaryTopicOf ?url. "
-			+ "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url ";
+	public static final String PREFIX = "PREFIX dbo: <http://dbpedia.org/ontology/>\n" //
+			+ "PREFIX dct: <http://purl.org/dc/terms/>\n" //
+			+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" //
+			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" //
+			+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n\n";
+	public static final String DEFAULT_QUERY = PREFIX + "select distinct ?subject ?url count(?link) where { \n" //
+			+ "%variable% dbo:genre ?genre.\n" //
+			+ "?subject dbo:genre ?genre.\n"//
+			+ "?subject foaf:isPrimaryTopicOf ?url.\n" //
+			+ "?subject dbo:wikiPageExternalLink ?link.} GROUP BY ?subject ?url";
+	public static final String DEFAULT_NAME = "Frameworks";
 	public static final String DEFAULT_SERVICE = "http://dbpedia.org/sparql";
-	public static final String DEFAULT_NAME = "DBPedia";
 
 	/**
 	 * Creates a default knowledge source for DBPedia.
@@ -159,5 +165,15 @@ public class RDFSource extends KnowledgeSource {
 	@Override
 	public String getIcon() {
 		return "aui-iconfont-download";
+	}
+
+	public static List<RDFSource> getDefaultDBPediaQueries() {
+		List<RDFSource> defaultSources = new ArrayList<>();
+		defaultSources.add(dbPediaFrameworks());
+		return defaultSources;
+	}
+
+	public static RDFSource dbPediaFrameworks() {
+		return new RDFSource();
 	}
 }

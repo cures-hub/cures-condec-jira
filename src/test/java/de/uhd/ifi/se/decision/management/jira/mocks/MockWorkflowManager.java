@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import com.atlassian.jira.workflow.WorkflowScheme;
 import com.opensymphony.workflow.StoreException;
 import com.opensymphony.workflow.Workflow;
 import com.opensymphony.workflow.loader.ActionDescriptor;
+import com.opensymphony.workflow.loader.DescriptorFactory;
 import com.opensymphony.workflow.loader.FunctionDescriptor;
 import com.opensymphony.workflow.spi.WorkflowStore;
 
@@ -109,8 +111,9 @@ public class MockWorkflowManager implements WorkflowManager {
 
 	@Override
 	public ActionDescriptor getActionDescriptor(Issue arg0, int arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		ActionDescriptor actionDescriptor = DescriptorFactory.getFactory().createActionDescriptor();
+		actionDescriptor.setName("done");
+		return actionDescriptor;
 	}
 
 	@Override
@@ -177,6 +180,7 @@ public class MockWorkflowManager implements WorkflowManager {
 	public JiraWorkflow getWorkflow(Issue arg0) throws WorkflowException {
 		MockJiraWorkflow workflow = new MockJiraWorkflow();
 		workflow.addStep(1, "Unresolved");
+		workflow.addAction(getActionDescriptor(null, 0));
 		return workflow;
 	}
 
@@ -206,25 +210,24 @@ public class MockWorkflowManager implements WorkflowManager {
 
 	@Override
 	public Collection<JiraWorkflow> getWorkflows() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override
 	public Collection<JiraWorkflow> getWorkflowsFromScheme(GenericValue arg0) throws WorkflowException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override
 	public Iterable<JiraWorkflow> getWorkflowsFromScheme(Scheme arg0) throws WorkflowException {
-		// TODO Auto-generated method stub
-		return null;
+		JiraWorkflow workflow = getWorkflow((Issue) null);
+		List<JiraWorkflow> workflows = new ArrayList<>();
+		workflows.add(workflow);
+		return workflows;
 	}
 
 	@Override
 	public List<JiraWorkflow> getWorkflowsIncludingDrafts() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

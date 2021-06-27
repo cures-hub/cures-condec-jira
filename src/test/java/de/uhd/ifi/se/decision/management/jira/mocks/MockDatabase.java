@@ -1,7 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.ConsistencyCheckLogsInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedRecommendationInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -9,10 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssue
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.SQLException;
 
 /**
  * Initializes the active objects database for unit testing. All database tables
@@ -31,8 +31,6 @@ public class MockDatabase implements DatabaseUpdater {
 			entityManager.migrate(CodeClassInDatabase.class);
 			entityManager.migrate(ReleaseNotesInDatabase.class);
 			entityManager.migrate(DiscardedRecommendationInDatabase.class);
-			entityManager.migrate(ConsistencyCheckLogsInDatabase.class);
-
 		} catch (SQLException | NullPointerException e) {
 			LOGGER.error(e.getMessage());
 		}

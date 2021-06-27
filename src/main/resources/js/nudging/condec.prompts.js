@@ -4,14 +4,28 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
-				// just-in-time prompts when status changes
 				const issueKey = conDecAPI.getIssueKey();
 				// Create unified prompt
 				document.getElementById("unified-prompt-header").innerHTML = "Before you close " + issueKey + "...";
-				conDecPrompt.promptNonValidatedElements();
-				conDecPrompt.promptDefinitionOfDoneChecking();
-				conDecPrompt.promptLinkSuggestion();
-
+				// just-in-time prompts when status changes
+				var params = new URLSearchParams(settings.url.replaceAll("?", "&"));
+				var id = params.get("id");
+				var actionId = params.get("action");
+				conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptDefinitionOfDoneChecking();
+					}
+				});
+				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptLinkSuggestion();
+					}
+				});
+				conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptNonValidatedElements();
+					}
+				});
 				AJS.dialog2("#unified-prompt").show();
 			}
 		});
@@ -23,12 +37,7 @@
 		if (issueId === null || issueId === undefined) {
 			return;
 		}
-		// TODO: check on the approval necessity and when the check gets turned off
-		// conDecLinkRecommendationAPI.doesElementNeedApproval(projectKey, issueId, "i")
-		// 	.then((isApprovalNeeded) => {
-		// 		if (!isApprovalNeeded) {
-		// 			return;
-		// 		}
+
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
 			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
 			.then((values) => {
@@ -40,7 +49,6 @@
 					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
 				}
 			});
-
 	}
 
 	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
@@ -67,8 +75,6 @@
 
 
 		document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-
-
 	}
 
 	ConDecPrompt.prototype.promptNonValidatedElements = function () {
@@ -103,7 +109,6 @@
 
 			})
 	}
-
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);

@@ -20,11 +20,11 @@ import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationC
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.quality.checktriggers.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.CiaSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
@@ -363,7 +363,7 @@ public class ConfigPersistenceManager {
 		PromptingEventConfiguration promptingEventConfiguration = (PromptingEventConfiguration) getSavedObject(
 				projectKey, "promptingEventConfiguration", type);
 		if (promptingEventConfiguration == null) {
-			return new PromptingEventConfiguration();
+			return new PromptingEventConfiguration(projectKey);
 		}
 		return promptingEventConfiguration;
 	}

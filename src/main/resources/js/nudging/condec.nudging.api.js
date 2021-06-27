@@ -4,24 +4,17 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
 	};
 
-	ConDecNudgingAPI.prototype.activatePromptEventForDefinitionOfDoneChecking = function(projectKey, eventKey, isActivated) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEventForDefinitionOfDoneChecking.json?
-			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
-			.then(conDecAPI.showFlag("success",
-				"Activation of prompting event for DoD checking was successfully changed to " + isActivated));
+	ConDecNudgingAPI.prototype.isPromptEventActivated = function(feature, jiraIssueId, actionId) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + `/isPromptEventActivated.json?
+			feature=${feature}&jiraIssueId=${jiraIssueId}&actionId=${actionId}`, null);			
 	}
 
-	ConDecNudgingAPI.prototype.activatePromptEventForLinkSuggestion = function (projectKey, eventKey, isActivated) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEventForLinkSuggestion.json?
-			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
-			.then(conDecAPI.showFlag("success",
-				"Activation of prompting event for link suggestion was successfully changed to " + isActivated));
+	ConDecNudgingAPI.prototype.activatePromptEvent = function(projectKey, feature, eventKey, isActivated) {
+		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEvent.json?
+			projectKey=${projectKey}&feature=${feature}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
+			.then(() => conDecAPI.showFlag("success",
+				"Activation of prompting event was successfully changed to " + isActivated));
 	}
-	ConDecNudgingAPI.prototype.activatePromptEventForNonValidatedElementsChecking = function (projectKey, eventKey, isActivated) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/activatePromptEventForNonValidatedElementsChecking.json?
-			projectKey=${projectKey}&eventKey=${eventKey}&isActivated=${isActivated}`, null)
-			.then(conDecAPI.showFlag("success",
-				"Activation of prompting event for non validated elements was successfully changed to " + isActivated));
-	}
+
 	global.conDecNudgingAPI = new ConDecNudgingAPI();
 })(window);

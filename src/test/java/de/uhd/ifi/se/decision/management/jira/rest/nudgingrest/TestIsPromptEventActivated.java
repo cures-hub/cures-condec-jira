@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.NudgingRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestActivatePromptEventForLinkSuggestion extends TestSetUp {
+public class TestIsPromptEventActivated extends TestSetUp {
 	protected HttpServletRequest request;
 	protected NudgingRest nudgingRest;
 
@@ -27,20 +27,8 @@ public class TestActivatePromptEventForLinkSuggestion extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestValidProjectValidEventTypeValidIsActivatedTrue() {
+	public void testRequestValidFeatureValidJiraIssueValidActionIdValid() {
 		assertEquals(Status.OK.getStatusCode(),
-				nudgingRest.activatePromptEventForLinkSuggestion(request, "TEST", "done", true).getStatus());
-	}
-
-	@Test
-	public void testRequestNullProjectValidEventTypeValidIsActivatedTrue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				nudgingRest.activatePromptEventForLinkSuggestion(null, "TEST", "done", true).getStatus());
-	}
-
-	@Test
-	public void testRequestValidProjectNullEventTypeValidIsActivatedTrue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				nudgingRest.activatePromptEventForLinkSuggestion(request, null, "done", true).getStatus());
+				nudgingRest.isPromptEventActivated(request, "DOD_CHECKING", 1, 1).getStatus());
 	}
 }

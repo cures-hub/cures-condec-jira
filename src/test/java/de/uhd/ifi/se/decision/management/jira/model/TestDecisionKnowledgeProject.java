@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.FeatureWithPrompt;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -123,8 +124,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetPromptingEventConfiguration() {
-		assertFalse(
-				project.getPromptingEventConfiguration().isPromptEventForDefinitionOfDoneCheckingActivated("finished"));
+		assertFalse(project.getPromptingEventConfiguration().isPromptEventActivated(FeatureWithPrompt.DOD_CHECKING,
+				"finished"));
 	}
 
 	@Test
