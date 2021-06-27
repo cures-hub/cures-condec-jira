@@ -178,21 +178,21 @@
 		var parentElement = conDecTreant.findParentElement(id);
 		generalApi.postJSON(this.restPrefix + "/knowledge/updateDecisionKnowledgeElement.json?idOfParentElement="
 			+ parentElement["id"] + "&documentationLocationOfParentElement="
-			+ parentElement["documentationLocation"], element, function (error, response) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been updated.");
-				callback();
-			}
-		});
+			+ parentElement["documentationLocation"], element, function(error, response) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback();
+				}
+			});
 	};
 
-	ConDecAPI.prototype.setValidated = function (id, callback) {
+	ConDecAPI.prototype.setValidated = function(id, callback) {
 		const jsonData = {
 			"id": id,
 			"documentationLocation": "s",
 			"projectKey": projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceValidated.json", jsonData, function (
+		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceValidated.json", jsonData, function(
 			error) {
 			if (error === null) {
 				showFlag("success", "Decision knowledge element has been updated.");
@@ -205,8 +205,8 @@
 	 *
 	 * external references: condec.context.menu
 	 */
-	ConDecAPI.prototype.changeKnowledgeType = function (id, type, documentationLocation, callback) {
-		this.getDecisionKnowledgeElement(id, documentationLocation, function (element) {
+	ConDecAPI.prototype.changeKnowledgeType = function(id, type, documentationLocation, callback) {
+		this.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
 			conDecAPI.updateDecisionKnowledgeElement(id, element.summary, element.description, type,
 				documentationLocation, null, callback);
 		});
@@ -639,32 +639,29 @@
 		callback();
 	};
 
-	ConDecAPI.prototype.getPropagationRules = function() {
-		if (this.propagationRules === undefined || this.propagationRules.length === 0) {
-			this.propagationRules = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getPropagationRules.json?projectKey=" + conDecAPI.projectKey);
-		}
-		return this.propagationRules;
-	};
-
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.setCiaSettings = function(projectKey, ciaSettings) {
-		generalApi.postJSON(this.restPrefix + "/config/setCiaSettings.json?projectKey="
-			+ projectKey, ciaSettings, function(error, response) {
+	ConDecAPI.prototype.setChangeImpactAnalysisConfiguration = function(projectKey, ciaConfig) {
+		generalApi.postJSON(this.restPrefix + "/config/setChangeImpactAnalysisConfiguration.json?projectKey="
+			+ projectKey, ciaConfig, function(error, response) {
 				if (error === null) {
-					showFlag("success", "The Cia Settings are updated.");
+					showFlag("success", "The change impact analysis configuration is updated.");
 				}
 			});
 	};
 
-	ConDecAPI.prototype.getCiaSettings = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/config/getCiaSettings.json?projectKey=" + projectKey, callback);
+	/*
+	 * external references: condec.filtering
+	 */
+	ConDecAPI.prototype.getChangeImpactAnalysisConfiguration = function(projectKey, callback) {
+		generalApi.getJSON(this.restPrefix + "/config/getChangeImpactAnalysisConfiguration.json?projectKey=" 
+			+ projectKey, callback);
 	};
 
 	/*
-	   * external references: condec.context.menu
-	   */
+	 * external references: condec.context.menu
+	 */
 	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
 		let newTab = window.open();
 		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {

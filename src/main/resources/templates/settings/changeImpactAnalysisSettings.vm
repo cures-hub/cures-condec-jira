@@ -1,5 +1,5 @@
-<h2>General CIA Settings</h2>
-<p>When set to 1 cia only depends on link type specific impact values.</p>
+<h2>General Change Impact Analysis (CIA) Settings</h2>
+<p>When set to 1, cia only depends on link type specific impact values.</p>
 <div class="settings-divider">
     <div class="field-group">
         <label for="cia-decay-value">Decay Value</label>
@@ -31,7 +31,6 @@
 <p id='additional-link-types-text'>When set to 1 cia only depends on decay Value.<br/><br/></p>
 <h2 id="cia-link-type-settings">Link specific CIA Settings</h2>
 <script>
-
     var linktypes = conDecAPI.getAllLinkTypes().sort();
     let html = "";
     html += "<div class='settings-divider cia-link-settings' >";
@@ -44,11 +43,12 @@
         html += "<div class='description'>Describe the impact for the " + linktypes[i] + " element for this project.</div>";
         html += "</div>";
     }
-
-    html += "<button id='save-cia-settings-btn' onclick='saveCiaQuery(event)'>Save</button>"
-    html += "</div>"
     document.getElementById("cia-link-type-settings").insertAdjacentHTML('afterend', html);
 </script>
+
+<input type="button" id='save-cia-settings-btn' onclick='saveCiaQuery(event)' 
+	class="aui-button aui-button-primary" value="Save"/>
+</div>
 
 <script>
     function saveCiaQuery() {

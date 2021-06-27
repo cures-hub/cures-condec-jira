@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response.Status;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.CiaService;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisService;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -56,7 +56,7 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		if (filterSettings.areChangeImpactsHighlighted()) {
-			return Response.ok(CiaService.calculateTreeImpact(filterSettings)).build();
+			return Response.ok(ChangeImpactAnalysisService.calculateTreeImpact(filterSettings)).build();
 		} else {
 			return Response.ok(new TreeViewer(filterSettings)).build();
 		}
@@ -156,7 +156,7 @@ public class ViewRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph visGraph;
 		if (filterSettings.areChangeImpactsHighlighted()) {
-			visGraph = CiaService.calculateGraphImpact(filterSettings);
+			visGraph = ChangeImpactAnalysisService.calculateGraphImpact(filterSettings);
 		} else {
 			visGraph = new VisGraph(user, filterSettings);
 		}
@@ -200,7 +200,7 @@ public class ViewRest {
 		}
 		Matrix matrix;
 		if (filterSettings.areChangeImpactsHighlighted()) {
-			matrix = CiaService.calculateMatrixImpact(filterSettings);
+			matrix = ChangeImpactAnalysisService.calculateMatrixImpact(filterSettings);
 		} else {
 			matrix = new Matrix(filterSettings);
 		}

@@ -1,9 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
@@ -17,8 +24,9 @@ public class ChangeImpactAnalysisConfiguration {
 	private float threshold;
 	private Map<String, Float> linkImpact;
 	private long context;
-	private List<PassRule> passRule;
+	private List<PassRule> passRules;
 
+	@JsonCreator
 	public ChangeImpactAnalysisConfiguration() {
 		decayValue = 0.75f;
 		threshold = 0.25f;
@@ -27,9 +35,10 @@ public class ChangeImpactAnalysisConfiguration {
 			linkImpact.put(entry, 1.0f);
 		});
 		context = 0;
-		this.passRule = new LinkedList<>();
+		passRules = List.of(PassRule.values());
 	}
 
+	@XmlElement
 	public float getDecayValue() {
 		return decayValue;
 	}
@@ -38,6 +47,7 @@ public class ChangeImpactAnalysisConfiguration {
 		this.decayValue = decayValue;
 	}
 
+	@XmlElement
 	public float getThreshold() {
 		return threshold;
 	}
@@ -62,18 +72,26 @@ public class ChangeImpactAnalysisConfiguration {
 		this.context = context;
 	}
 
+	@JsonIgnore
 	public List<PassRule> getPropagationRules() {
-		return passRule;
+		return passRules;
 	}
 
+	@XmlElement(name = "propagationRules")
+	public List<String> getPropagationRulesAsStrings() {
+		return passRules.stream().map(PassRule::getTranslation).filter(entry -> !entry.equals("undefined"))
+				.collect(Collectors.toList());
+	}
+
+	@JsonProperty
 	public void setPropagationRules(List<String> rules) {
 		if (rules == null) {
-			passRule.clear();
+			passRules.clear();
 			return;
 		}
-		passRule.clear();
+		passRules.clear();
 		for (String stringRule : rules) {
-			passRule.add(PassRule.getPropagationRule(stringRule));
+			passRules.add(PassRule.getPropagationRule(stringRule));
 		}
 	}
 }

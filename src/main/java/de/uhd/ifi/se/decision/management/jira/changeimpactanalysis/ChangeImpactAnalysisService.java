@@ -24,9 +24,9 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisEdge;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
 
-public class CiaService {
+public class ChangeImpactAnalysisService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CiaService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangeImpactAnalysisService.class);
 
 	public static TreeViewer calculateTreeImpact(FilterSettings filterSettings) {
 		HashMap<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);

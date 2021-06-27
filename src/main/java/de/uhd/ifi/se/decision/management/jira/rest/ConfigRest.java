@@ -1,22 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -32,7 +27,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.PassRule;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
@@ -292,12 +286,30 @@ public class ConfigRest {
 		return Response.ok(linkTypes).build();
 	}
 
-	@Path("/getPropagationRules")
+	@Path("/setChangeImpactAnalysisConfiguration")
+	@POST
+	public Response setChangeImpactAnalysisConfiguration(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, ChangeImpactAnalysisConfiguration ciaConfig) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (ciaConfig == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The CIA config must not be null!")).build();
+		}
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaConfig);
+		return Response.ok().build();
+	}
+
 	@GET
-	public Response getPropagationRules() {
-		Set<String> propagationRulesAsString = Arrays.stream(PassRule.values()).map(PassRule::getTranslation)
-				.filter(entry -> !entry.equals("undefined")).collect(Collectors.toSet());
-		return Response.ok(propagationRulesAsString).build();
+	@Path("/getChangeImpactAnalysisConfiguration")
+	public Response getChangeImpactAnalysisConfiguration(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		return Response.ok(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
 	}
 
 	// TODO Refactor: too many ifs
@@ -413,42 +425,5 @@ public class ConfigRest {
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		persistenceManager.createLinksForNonLinkedElements();
 		return Response.ok().build();
-	}
-
-	/* **************************************/
-	/*										*/
-	/* Configuration for Change Impact Analysis */
-	/*										*/
-	/* **************************************/
-
-	@Path("/setCiaSettings")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setCiaSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ChangeImpactAnalysisConfiguration ciaSettings) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-
-		if (ciaSettings == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The name of the knowledge source must not be empty")).build();
-		}
-
-		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaSettings);
-		return Response.ok(Status.ACCEPTED).build();
-	}
-
-	@GET
-	@Path("/getCiaSettings")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCiaSettings(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		return Response.ok(Status.ACCEPTED)
-				.entity(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
 	}
 }
