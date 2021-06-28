@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
@@ -61,7 +62,7 @@ public class VisNode {
 				+ element.getSummary() + System.lineSeparator() + element.getDescription();
 		font = ImmutableMap.of("color", "black");
 		if (filterSettings.areQualityProblemHighlighted()) {
-			List<String> qualityProblems = element.getQualityProblems();
+			List<String> qualityProblems = DefinitionOfDoneChecker.getQualityProblems(element, filterSettings);
 			if (!qualityProblems.isEmpty()) {
 				title = ToolTip.buildToolTip(qualityProblems);
 				font = ImmutableMap.of("color", "crimson");

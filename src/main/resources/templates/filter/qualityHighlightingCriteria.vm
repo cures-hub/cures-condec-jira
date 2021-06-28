@@ -1,0 +1,8 @@
+#parse("templates/filter/isDefinitionOfDoneViolationShown.vm")
+<label>Every knowledge element is linked to at least 
+	<input class="text short-field" type="number" id="minimum-number-of-decisions-input-$viewIdentifier" 
+		max="999" value="-1"> 
+	decisions within a maximum link distance of 
+	<input class="text short-field" type="number" id="link-distance-to-decision-number-input-$viewIdentifier" 
+		max="6" value="-1">
+</label>

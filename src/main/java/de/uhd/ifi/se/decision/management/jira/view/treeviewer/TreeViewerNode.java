@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
@@ -61,7 +62,7 @@ public class TreeViewerNode {
 			li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
 		}
 		if (filterSettings.areQualityProblemHighlighted()) {
-			List<String> qualityProblems = knowledgeElement.getQualityProblems();
+			List<String> qualityProblems = DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings);
 			if (!qualityProblems.isEmpty()) {
 				a_attr = ImmutableMap.of("title", ToolTip.buildToolTip(qualityProblems), "style", "color:crimson");
 			}

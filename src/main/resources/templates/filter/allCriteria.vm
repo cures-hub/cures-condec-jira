@@ -40,7 +40,7 @@
 			#end	
 		</div>
 		<div id="quality-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
-		    #parse("templates/filter/isDefinitionOfDoneViolationShown.vm")		
+		    #parse("templates/filter/qualityHighlightingCriteria.vm")	
 		</div>
 		<div id="change-impact-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
 		    #parse("templates/filter/changeImpactAnalysisCriteria.vm")

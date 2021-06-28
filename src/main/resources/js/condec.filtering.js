@@ -38,6 +38,16 @@
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 
+		// quality highlighting	
+		conDecDoDCheckingAPI.getDefinitionOfDone(conDecAPI.getProjectKey(), (definitionOfDone) => {
+			var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
+			var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
+			if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+				minDecisionCoverageInput.value = definitionOfDone["minimumDecisionsWithinLinkDistance"];
+				maxLinkDistanceInput.value = definitionOfDone["maximumLinkDistanceToDecisions"];
+			}
+		});
+
 		// change impact highlighting	
 		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
 			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
@@ -180,6 +190,16 @@
 		var isDoDViolationShownInput = document.getElementById("is-dod-violation-shown-input-" + viewIdentifier);
 		if (isDoDViolationShownInput !== null) {
 			filterSettings["areQualityProblemsHighlighted"] = isDoDViolationShownInput.checked;
+		}
+
+		// Read definition of done (DoD) (in particular decision coverage config)
+		var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
+		var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
+		if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+			filterSettings["definitionOfDone"] = {
+				"minimumDecisionsWithinLinkDistance": minDecisionCoverageInput.value,
+				"maximumLinkDistanceToDecisions": maxLinkDistanceInput.value
+			}
 		}
 
 		filterSettings["changeImpactAnalysisConfig"] = {};
