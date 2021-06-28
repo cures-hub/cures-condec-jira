@@ -44,7 +44,6 @@
 
 			graphNetwork.on("click", function(params) {
 				var clickedNode = params.nodes[0];
-				console.log('clicked node:', clickedNode);
 				if (clickedNode === null || clickedNode === undefined) {
 					document.getElementById("selected-element-graph").innerText = "-";
 				} else {

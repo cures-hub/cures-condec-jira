@@ -31,7 +31,6 @@
         console.log("ConDecTreant updateView");
         var filterSettings = conDecFiltering.getFilterSettings("treant");
         filterSettings["projectKey"] = conDecAPI.getProjectKey();
-        filterSettings["selectedElement"] = conDecAPI.getIssueKey();
 		filterSettings["isTestCodeShown"] = document.getElementById("is-test-code-input-treant").checked;
         conDecTreant.buildTreant(filterSettings, true);
     };
