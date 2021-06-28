@@ -1,7 +1,8 @@
+#set($viewsWithChangeImpactHighlighting = ["jstree", "graph", "matrix"])
+#set($viewsWithoutLinkVisualization = ["chronology"])
 <div class="aui-toolbar2" role="toolbar">
 	<form class="aui">	
 		<div class="condec-filter">  
-			#parse("templates/filter/linkDistance.vm")
 			#if($viewIdentifier != "overview")
 				#parse("templates/filter/knowledgeType.vm") 
 			#else
@@ -12,14 +13,16 @@
 				<input type="button" id="create-element-button"
            			class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
         	#end
-        	#parse("templates/filter/status.vm")
-			#parse("templates/filter/isDecisionKnowledgeOnly.vm")           	       	
-			#if($showTransitiveFilter)
-				#parse("templates/filter/isTransitiveLinks.vm")
-			#end	
+        	#parse("templates/filter/status.vm")        	   	       	
+			#if (!$viewsWithoutLinkVisualization.contains($viewIdentifier))
+				#parse("templates/filter/linkDistance.vm")   
+				#parse("templates/filter/selectedElement.vm")
+				#parse("templates/filter/isTransitiveLinks.vm")		
+			#end 
+			#parse("templates/filter/isDecisionKnowledgeOnly.vm")    
 			#if($viewIdentifier == "decision-table")
 				<select class="select long-field" id="decision-problem-dropdown"></select>         
-			#end 
+			#end			
 		</div>   
 		<div id="management-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
 			#parse("templates/filter/text.vm")
@@ -50,8 +53,7 @@
 				aria-controls="management-filter-$viewIdentifier">$i18n.getText('condec.label.more.filter.criteria')</a> 
 			--- <a data-replace-text="$i18n.getText('condec.label.hide.quality.highlighting.options')" class="aui-expander-trigger" 
 				aria-controls="quality-filter-$viewIdentifier">$i18n.getText('condec.label.show.quality.highlighting.options')</a>  
-			#set($ciaViews = ["jstree", "graph", "matrix"])
-			#if ($ciaViews.contains($viewIdentifier))
+			#if ($viewsWithChangeImpactHighlighting.contains($viewIdentifier))
 				--- <a data-replace-text="$i18n.getText('condec.label.hide.cia.highlighting.options')" class="aui-expander-trigger" 
 					aria-controls="change-impact-filter-$viewIdentifier">$i18n.getText('condec.label.show.cia.highlighting.options')</a> 
 			#end 

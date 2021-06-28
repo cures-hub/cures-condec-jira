@@ -1,0 +1,3 @@
+<label>$i18n.getText("condec.label.selected.element"):</label> 
+<span class="aui-label aui-label-closeable" id="selected-element-$viewIdentifier" 
+	onclick="this.innerText=(conDecAPI.getIssueKey() === undefined ? '-' : conDecAPI.getIssueKey())">-</span>

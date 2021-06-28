@@ -29,10 +29,9 @@
 		
 		// Add on click listeners to filter button
 		conDecFiltering.addOnClickEventToFilterButton("jstree", conDecTreeViewer.updateView);
-		conDecFiltering.addOnClickEventToChangeImpactButton("jstree", function (filterSettings) {
-			filterSettings["areChangeImpactsHighlighted"] = true;
-			conDecTreeViewer.updateViewForFilterSettings(filterSettings);
-		});
+        conDecFiltering.addOnClickEventToChangeImpactButton("jstree", function (filterSettings) {
+            conDecTreeViewer.updateViewForFilterSettings(filterSettings);
+        });
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -44,12 +43,12 @@
 	ConDecTreeViewer.prototype.updateView = function () {
 		console.log("ConDecTreeViewer updateView");
 		var filterSettings = conDecFiltering.getFilterSettings("jstree");
-		conDecTreeViewer.updateViewForFilterSettings(filterSettings);
-	};
-	
-	ConDecTreeViewer.prototype.updateViewForFilterSettings = function (filterSettings) {
-		var issueKey = conDecAPI.getIssueKey();		
-		filterSettings["selectedElement"] = issueKey;
+        conDecTreeViewer.updateViewForFilterSettings(filterSettings);
+    };
+    
+    ConDecTreeViewer.prototype.updateViewForFilterSettings = function (filterSettings) {
+        var issueKey = conDecAPI.getIssueKey();        
+        filterSettings["selectedElement"] = issueKey;
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-jstree", "jstree");
 		jQuery("#jstree").on("loaded.jstree", function() {
 			jQuery("#jstree").jstree("open_all");

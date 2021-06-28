@@ -23,25 +23,12 @@
 		// Fill HTML elements for filter criteria and add on click listener
 		if (isJiraIssueView) {
 			conDecFiltering.fillFilterElements("matrix");
-			conDecFiltering.addOnClickEventToFilterButton("matrix", function(filterSettings) {
-				issueKey = conDecAPI.getIssueKey();
-				filterSettings["selectedElement"] = issueKey;
-				conDecMatrix.buildMatrix(filterSettings);
-			});
-			conDecFiltering.addOnClickEventToChangeImpactButton("matrix", function (filterSettings) {
-				filterSettings["selectedElement"] = conDecAPI.getIssueKey();
-				filterSettings["areChangeImpactsHighlighted"] = true;
-				conDecMatrix.buildMatrix(filterSettings);
-			});
 		} else {
 			conDecFiltering.fillFilterElements("matrix", ["Decision"]);
-			conDecFiltering.fillDatePickers("matrix", 30);
-			conDecFiltering.addOnClickEventToFilterButton("matrix", function (filterSettings) {
-				conDecMatrix.buildMatrix(filterSettings);
-			});
-			document.getElementById("link-distance-input-label-matrix").remove();
-			document.getElementById("link-distance-input-matrix").remove();
+			conDecFiltering.fillDatePickers("matrix", 60);
 		}
+		conDecFiltering.addOnClickEventToFilterButton("matrix", conDecMatrix.buildMatrix);
+		conDecFiltering.addOnClickEventToChangeImpactButton("matrix", conDecMatrix.buildMatrix);
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -88,10 +75,14 @@
 
 	function newTableHeaderCell(knowledgeElement, styleClass) {
 		const headerCell = document.createElement("th");
-		headerCell.addEventListener("contextmenu", function (event) {
+		headerCell.addEventListener("contextmenu", function(event) {
 			event.preventDefault();
 			conDecContextMenu.createContextMenu(knowledgeElement.id, knowledgeElement.documentationLocation, event,
 				null);
+		});
+		headerCell.addEventListener("click", function(event) {
+			event.preventDefault();
+			document.getElementById("selected-element-matrix").innerText = knowledgeElement.key;
 		});
 		headerCell.classList.add(styleClass);
 		if (knowledgeElement["color"] !== "#ffffff") {
@@ -108,7 +99,7 @@
 	function newTableRow(row, sourceElement, positionX) {
 		const tableRow = document.createElement("tr");
 		tableRow.appendChild(newTableHeaderCell(sourceElement, "rowHeader"));
-		for ( let d in row) {
+		for (let d in row) {
 			tableRow.appendChild(newTableCell(row[d], positionX, d));
 		}
 		return tableRow;
@@ -127,7 +118,7 @@
 		if (link !== null) {
 			tableRowCell.style.backgroundColor = link.color;
 			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is linked with type " + link.type
-				+" to " + targetElement.type + ": " + targetElement.summary;
+				+ " to " + targetElement.type + ": " + targetElement.summary;
 			linkType = link.type;
 		} else {
 			tableRowCell.title = sourceElement.type + ": " + sourceElement.summary + " is not linked to "
@@ -148,10 +139,10 @@
 		return tableRowCell;
 	}
 
-	ConDecMatrix.prototype.buildLegend = function (linkTypesWithColor) {
+	ConDecMatrix.prototype.buildLegend = function(linkTypesWithColor) {
 		const legend = document.getElementById("legend");
 		legend.innerHTML = "<b>Relationship Types:</b>";
-		for ( let linkType in linkTypesWithColor) {
+		for (let linkType in linkTypesWithColor) {
 			const coloredBlock = document.createElement("div");
 			coloredBlock.classList.add("legend-labels");
 			coloredBlock.style.background = linkTypesWithColor[linkType];

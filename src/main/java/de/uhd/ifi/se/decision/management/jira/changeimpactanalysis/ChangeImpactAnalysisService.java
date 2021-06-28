@@ -119,7 +119,7 @@ public class ChangeImpactAnalysisService {
 		VisGraph graphVis = new VisGraph();
 		graphVis.setNodes(results.keySet().stream().map((entry) -> {
 			boolean collapse = collapse(entry, filterSettings);
-			VisNode node = new VisNode(entry, collapse, 0);
+			VisNode node = new VisNode(entry, collapse, 0, filterSettings);
 			if (results.get(entry) != null && results.get(entry) != 0.0) {
 				colorizeNode(node, results.get(entry));
 			}
