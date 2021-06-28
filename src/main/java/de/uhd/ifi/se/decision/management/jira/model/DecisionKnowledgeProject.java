@@ -170,6 +170,9 @@ public class DecisionKnowledgeProject {
 	 * @return Jira issue types available in the project.
 	 */
 	public Set<IssueType> getJiraIssueTypes() {
+		if (jiraProject == null) {
+			return new HashSet<>();
+		}
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
 		Collection<IssueType> types = issueTypeSchemeManager.getIssueTypesForProject(jiraProject);
 		return new HashSet<>(types);

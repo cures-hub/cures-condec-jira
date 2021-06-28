@@ -43,7 +43,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
         </li>
 	</ul>
-	#set($showTransitiveFilter = true)
 	<div class="tabs-pane" id="jstree-tab">
 		#parse("templates/tabs/jstree.vm")
 	</div>

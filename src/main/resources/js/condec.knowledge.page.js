@@ -99,6 +99,7 @@
 			var node = tree.node.data;
 			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
+			document.getElementById("selected-element-overview").innerText = node.key;
 			filterSettings["selectedElement"] = node.key;
 
 			conDecTreant.buildTreant(filterSettings, true, "treant-overview");

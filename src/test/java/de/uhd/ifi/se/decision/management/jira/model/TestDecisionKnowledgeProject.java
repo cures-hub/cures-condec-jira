@@ -73,6 +73,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	@Test
 	public void testGetJiraIssueTypes() {
 		assertEquals(6, project.getJiraIssueTypeNames().size());
+		assertEquals(0, new DecisionKnowledgeProject("").getJiraIssueTypeNames().size());
 	}
 
 	@Test

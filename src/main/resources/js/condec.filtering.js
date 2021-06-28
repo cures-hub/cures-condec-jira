@@ -38,6 +38,12 @@
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 
+		// selected element
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		if (jiraIssueKey !== null && jiraIssueKey !== undefined) {
+			document.getElementById("selected-element-" + viewIdentifier).innerText = jiraIssueKey;
+		}
+
 		// quality highlighting	
 		conDecDoDCheckingAPI.getDefinitionOfDone(conDecAPI.getProjectKey(), (definitionOfDone) => {
 			var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
@@ -72,7 +78,14 @@
 	 */
 	ConDecFiltering.prototype.addOnClickEventToChangeImpactButton = function(viewIdentifier, callback) {
 		var ciaButton = document.getElementById("cia-button-" + viewIdentifier);
-		addOnClickEventToButton(ciaButton, viewIdentifier, callback);
+		addOnClickEventToButton(ciaButton, viewIdentifier, (filterSettings) => {
+			if (filterSettings["selectedElement"] === undefined) {
+				conDecAPI.showFlag("error", "You need to select an element to perform change impact analysis!");
+			} else {
+				filterSettings["areChangeImpactsHighlighted"] = true;
+				callback(filterSettings);
+			}
+		});
 	};
 
 	function addOnClickEventToButton(button, viewIdentifier, callback) {
@@ -184,6 +197,12 @@
 		var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
 		if (isTestCodeShownInput !== null) {
 			filterSettings["isTestCodeShown"] = isTestCodeShownInput.checked;
+		}
+
+		// Read selected element
+		var selectedElementOutput = document.getElementById("selected-element-" + viewIdentifier);
+		if (selectedElementOutput !== null && selectedElementOutput.innerText !== "-") {
+			filterSettings["selectedElement"] = selectedElementOutput.innerText;
 		}
 
 		// Read whether nodes that violate the definition of done (DoD) should be highlighted (colored)
