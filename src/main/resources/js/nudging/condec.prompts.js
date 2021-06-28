@@ -8,24 +8,29 @@
 				// Create unified prompt
 				document.getElementById("unified-prompt-header").innerHTML = "Before you close " + issueKey + "...";
 				// just-in-time prompts when status changes
-				var params = new URLSearchParams(settings.url.replaceAll("?", "&"));
-				var id = params.get("id");
-				var actionId = params.get("action");
+				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
+				const id = params.get("id");
+				const actionId = params.get("action");
 				conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId).then((isActivated) => {
 					if (isActivated) {
 						conDecPrompt.promptDefinitionOfDoneChecking();
+						document.getElementById("definition-of-done-prompt").style.display = "block";
 					}
-				});
-				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
-					if (isActivated) {
-						conDecPrompt.promptLinkSuggestion();
-					}
-				});
-				conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
-					if (isActivated) {
-						conDecPrompt.promptNonValidatedElements();
-					}
-				});
+				}),
+					conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
+						if (isActivated) {
+							conDecPrompt.promptLinkSuggestion();
+							document.getElementById("link-recommendation-prompt").style.display = "block";
+
+
+						}
+					}),
+					conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
+						if (isActivated) {
+							conDecPrompt.promptNonValidatedElements();
+							document.getElementById("non-validated-elements-prompt").style.display = "block";
+						}
+					});
 				AJS.dialog2("#unified-prompt").show();
 			}
 		});
@@ -106,7 +111,6 @@
 				document.getElementById("non-validated-elements-validate-button").onclick = function () {
 					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
 				};
-
 			})
 	}
 

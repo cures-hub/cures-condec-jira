@@ -10,15 +10,15 @@
     <div class="aui-dialog2-content">
         <p>We have found the following problems with the decision knowledge documentation of this issue.</p>
         <br/>
-        <div class="non-validated-elements-prompt">
+        <div id="non-validated-elements-prompt" style="display:none">
             #parse("templates/prompts/nonValidatedElementsPrompt.vm")
         </div>
         <br/>
-        <div class="link-recommendation-prompt">
+        <div id="link-recommendation-prompt" style="display:none">
             #parse("templates/prompts/linkRecommendationPrompt.vm")
         </div>
         <br/>
-        <div class="definition-of-done-prompt">
+        <div id="definition-of-done-prompt" style="display:none">
             #parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")
         </div>
     </div>
