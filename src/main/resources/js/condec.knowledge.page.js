@@ -27,6 +27,8 @@
 	};
 
 	ConDecKnowledgePage.prototype.fetchAndRender = function() {
+		conDecFiltering.fillFilterElements("overview");
+		
 		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
@@ -60,16 +62,10 @@
 				createElementButton.style.display = "none";
 				elementInputField.style.display = "none";
 			}
-		});
-
-		conDecFiltering.initDropdown("documentation-location-dropdown-overview", conDecAPI.documentationLocations);
-		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		conDecFiltering.initDropdown("link-type-dropdown-overview", conDecAPI.getLinkTypes());
-		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
+		});		
 		
 		// Add on click listeners to filter button
-     	conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);
-     	
+     	conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);     	
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
 		this.updateView();
