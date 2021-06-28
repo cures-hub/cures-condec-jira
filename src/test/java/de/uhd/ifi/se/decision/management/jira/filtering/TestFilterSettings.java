@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -209,7 +210,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetLinkDistance() {
-		assertEquals(4, filterSettings.getLinkDistance());
+		assertEquals(3, filterSettings.getLinkDistance());
 	}
 
 	@Test
@@ -219,14 +220,26 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testGetMinimumDecisionCoverage() {
-		assertEquals(2, filterSettings.getMinimumDecisionCoverage());
+	public void testGetDefinitionOfDone() {
+		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
 	}
 
 	@Test
-	public void testSetMinimumDecisionCoverage() {
-		filterSettings.setMinimumDecisionCoverage(2);
-		assertEquals(2, filterSettings.getMinimumDecisionCoverage());
+	public void testSetDefinitionOfDoneInvalid() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(-1);
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+
+		// still default
+		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
+	}
+
+	@Test
+	public void testSetDefinitionOfDoneValid() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(3);
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+		assertEquals(3, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
 	}
 
 	@Test

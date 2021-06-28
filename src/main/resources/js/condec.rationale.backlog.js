@@ -10,12 +10,9 @@
 		console.log("conDecRationaleBacklog initView");
 			
 		// Fill filter elements
-		conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue", "Argument"]);
+		conDecFiltering.fillFilterElements("rationale-backlog", ["Alternative", "Decision", "Issue", "Argument"]);
 		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
-		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
 		conDecFiltering.fillDatePickers("rationale-backlog", 30);
-		conDecFiltering.initDropdown("documentation-location-dropdown-rationale-backlog", conDecAPI.documentationLocations);
-		conDecFiltering.initDropdown("link-type-dropdown-rationale-backlog", conDecAPI.getLinkTypes());
 		
 		// Add on click listeners to filter button
      	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecRationaleBacklog.updateView);

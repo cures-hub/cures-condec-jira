@@ -59,7 +59,6 @@ public class FilterSettings {
 	private boolean isTestCodeShown;
 	private boolean isOnlyIncompleteKnowledgeShown;
 	private int linkDistance;
-	private int minimumDecisionCoverage;
 	private int minDegree;
 	private int maxDegree;
 	private KnowledgeElement selectedElement;
@@ -69,6 +68,7 @@ public class FilterSettings {
 	private boolean isIrrelevantTextShown;
 	private boolean createTransitiveLinks;
 	private boolean areQualityProblemsHighlighted;
+	private DefinitionOfDone definitionOfDone;
 	private boolean areChangeImpactsHighlighted;
 	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
 
@@ -77,6 +77,7 @@ public class FilterSettings {
 	public FilterSettings() {
 		this.startDate = -1;
 		this.endDate = -1;
+		this.linkDistance = 3;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		this.decisionGroups = Collections.emptyList();
@@ -90,6 +91,7 @@ public class FilterSettings {
 		this.createTransitiveLinks = false;
 		this.isIrrelevantTextShown = false;
 		this.areQualityProblemsHighlighted = true;
+		this.definitionOfDone = new DefinitionOfDone();
 		this.areChangeImpactsHighlighted = false;
 		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfiguration();
 	}
@@ -102,10 +104,7 @@ public class FilterSettings {
 		setSearchTerm(searchTerm);
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
 		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
-		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getMaximumLinkDistanceToDecisions();
-		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getMinimumDecisionsWithinLinkDistance();
+		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -337,26 +336,6 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return minimum number of decisions within the link distance of a knowledge
-	 *         element (=node) to be included in the filtered graph.
-	 */
-	@XmlElement
-	public int getMinimumDecisionCoverage() {
-		return minimumDecisionCoverage;
-	}
-
-	/**
-	 * @param minimumDecisionCoverage
-	 *            nodes with at least this many decisions within the link distance
-	 *            are included in the filtered graph. All nodes with less decisions
-	 *            within the link distance are not included.
-	 */
-	@JsonProperty
-	public void setMinimumDecisionCoverage(int minimumDecisionCoverage) {
-		this.minimumDecisionCoverage = minimumDecisionCoverage;
-	}
-
-	/**
 	 * @return minimal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
@@ -570,6 +549,97 @@ public class FilterSettings {
 		this.createTransitiveLinks = createTransitiveLinks;
 	}
 
+	/**
+	 * @return true if violations against the {@link DefinitionOfDone} should be
+	 *         highlighted within the knowledge subgraph matching the filter
+	 *         settings. The text of the nodes in the knowledge graph views is
+	 *         colored for highlighting. The details for change impact estimation
+	 *         are stored in the {@link DefinitionOfDone} class.
+	 */
+	public boolean areQualityProblemHighlighted() {
+		return areQualityProblemsHighlighted;
+	}
+
+	/**
+	 * @param areQualityProblemsHighlighted
+	 *            true if violations against the {@link DefinitionOfDone} should be
+	 *            highlighted within the knowledge subgraph matching the filter
+	 *            settings. The text of the nodes in the knowledge graph views is
+	 *            colored for highlighting. The details for change impact estimation
+	 *            are stored in the {@link DefinitionOfDone} class.
+	 */
+	@JsonProperty("areQualityProblemsHighlighted")
+	public void highlightQualityProblems(boolean areQualityProblemsHighlighted) {
+		this.areQualityProblemsHighlighted = areQualityProblemsHighlighted;
+	}
+
+	/**
+	 * @return rules (criteria) that the knowledge documentation needs to fulfill in
+	 *         order to have high quality. Is only used if
+	 *         {@link #areQualityProblemsHighlighted()} is true.
+	 */
+	@XmlElement
+	public DefinitionOfDone getDefinitionOfDone() {
+		return definitionOfDone;
+	}
+
+	/**
+	 * @param definitionOfDone
+	 *            rules (criteria) that the knowledge documentation needs to fulfill
+	 *            in order to have high quality. Is only used if
+	 *            {@link #areQualityProblemsHighlighted()} is true.
+	 */
+	@JsonProperty
+	public void setDefinitionOfDone(DefinitionOfDone definitionOfDone) {
+		if (definitionOfDone.getMinimumDecisionsWithinLinkDistance() > 0) {
+			this.definitionOfDone = definitionOfDone;
+		}
+	}
+
+	/**
+	 * @return true if the impacts of a change in the selected element should be
+	 *         highlighted within the knowledge subgraph matching the filter
+	 *         settings. The background of the nodes in the knowledge graph views is
+	 *         colored for highlighting. The details for change impact estimation
+	 *         are stored in the {@link ChangeImpactAnalysisConfiguration} class.
+	 */
+	public boolean areChangeImpactsHighlighted() {
+		return areChangeImpactsHighlighted;
+	}
+
+	/**
+	 * @param areChangeImpactsHighlighted
+	 *            true if the impacts of a change in the selected element should be
+	 *            highlighted within the knowledge subgraph matching the filter
+	 *            settings. The background of the nodes in the knowledge graph views
+	 *            is colored for highlighting. The details for change impact
+	 *            estimation are stored in the
+	 *            {@link ChangeImpactAnalysisConfiguration} class.
+	 */
+	@JsonProperty("areChangeImpactsHighlighted")
+	public void highlightChangeImpacts(boolean areChangeImpactsHighlighted) {
+		this.areChangeImpactsHighlighted = areChangeImpactsHighlighted;
+	}
+
+	/**
+	 * @return settings for change impact estimation in a change of the selected
+	 *         element. Is only used if {@link #areChangeImpactsHighlighted()} is
+	 *         true.
+	 */
+	public ChangeImpactAnalysisConfiguration getChangeImpactAnalysisConfig() {
+		return changeImpactAnalysisConfig;
+	}
+
+	/**
+	 * @param changeImpactAnalysisConfig
+	 *            settings for change impact estimation in a change of the selected
+	 *            element. Is only used if {@link #areChangeImpactsHighlighted()} is
+	 *            true.
+	 */
+	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
+		this.changeImpactAnalysisConfig = changeImpactAnalysisConfig;
+	}
+
 	@Override
 	public String toString() {
 		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
@@ -583,31 +653,5 @@ public class FilterSettings {
 			LOGGER.error(e.getMessage());
 		}
 		return filterSettingsAsJson;
-	}
-
-	public boolean areQualityProblemHighlighted() {
-		return areQualityProblemsHighlighted;
-	}
-
-	@JsonProperty("areQualityProblemsHighlighted")
-	public void highlightQualityProblems(boolean areQualityProblemsHighlighted) {
-		this.areQualityProblemsHighlighted = areQualityProblemsHighlighted;
-	}
-
-	public boolean areChangeImpactsHighlighted() {
-		return areChangeImpactsHighlighted;
-	}
-
-	@JsonProperty("areChangeImpactsHighlighted")
-	public void highlightChangeImpacts(boolean areChangeImpactsHighlighted) {
-		this.areChangeImpactsHighlighted = areChangeImpactsHighlighted;
-	}
-
-	public ChangeImpactAnalysisConfiguration getChangeImpactAnalysisConfig() {
-		return changeImpactAnalysisConfig;
-	}
-
-	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
-		this.changeImpactAnalysisConfig = changeImpactAnalysisConfig;
 	}
 }

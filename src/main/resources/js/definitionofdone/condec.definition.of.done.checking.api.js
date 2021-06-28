@@ -15,6 +15,15 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: settings/definitionofdone/...
+	 */
+	ConDecDoDCheckingAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
+		conDecAPI.getFilterSettings(conDecAPI.getProjectKey(), "", (filterSettings) => {
+			callback(filterSettings["definitionOfDone"]);
+		});
+	};
 
 	/*
 	 * external references: nudging/condec.prompts.js,
