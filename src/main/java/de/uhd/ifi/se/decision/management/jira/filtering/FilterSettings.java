@@ -591,9 +591,14 @@ public class FilterSettings {
 	 */
 	@JsonProperty
 	public void setDefinitionOfDone(DefinitionOfDone definitionOfDone) {
-		if (definitionOfDone.getMinimumDecisionsWithinLinkDistance() > 0) {
-			this.definitionOfDone = definitionOfDone;
+		if (definitionOfDone.getMinimumDecisionsWithinLinkDistance() < 0) {
+			return;
 		}
+		// only these two criteria can be set during filtering currently, all other
+		// criteria are fixed
+		this.definitionOfDone
+				.setMinimumDecisionsWithinLinkDistance(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
+		this.definitionOfDone.setMaximumLinkDistanceToDecisions(definitionOfDone.getMaximumLinkDistanceToDecisions());
 	}
 
 	/**
