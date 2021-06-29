@@ -42,9 +42,6 @@
 	 */
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "matrix") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
-			matrix.headerElements.forEach(element => {
-				element["color"] = matrix.colorMap[element.id]
-			});
 			this.headerElements = matrix.headerElements;
 
 			let headerRow = document.getElementById("matrix-header-row-" + viewIdentifier);
@@ -73,8 +70,11 @@
 		document.getElementById("filter-button-matrix").click();
 	};
 
-	function newTableHeaderCell(knowledgeElement, styleClass) {
+	function newTableHeaderCell(knowledgeElementWithColors, styleClass) {
 		const headerCell = document.createElement("th");
+		var knowledgeElement = knowledgeElementWithColors.element;
+		var textColor = knowledgeElementWithColors.qualityColor;
+		var bgColor = knowledgeElementWithColors.changeImpactColor;
 		headerCell.addEventListener("contextmenu", function(event) {
 			event.preventDefault();
 			conDecContextMenu.createContextMenu(knowledgeElement.id, knowledgeElement.documentationLocation, event,
@@ -84,21 +84,27 @@
 			event.preventDefault();
 			document.getElementById("selected-element-matrix").innerText = knowledgeElement.key;
 		});
-		headerCell.classList.add(styleClass);
-		if (knowledgeElement["color"] !== "#ffffff") {
-			headerCell.setAttribute("style", "color: #ffffff; background-color: " + knowledgeElement["color"] + ";");
-		}
 		const div = document.createElement("div");
 		div.innerText = knowledgeElement.type + ": " + knowledgeElement.summary;
 		headerCell.title = knowledgeElement.type + ": " + knowledgeElement.summary;
+		
+		headerCell.classList.add(styleClass);
+		if (textColor !== "#000000") {
+			headerCell.style.color = textColor;
+			headerCell.title = knowledgeElementWithColors.qualityProblemExplanation;
+		}
+		if (bgColor !== "#FFFFFF") {
+			headerCell.style.backgroundColor = bgColor;
+		}
+		
 		AJS.$(headerCell).tooltip();
 		headerCell.appendChild(div);
 		return headerCell;
 	}
 
-	function newTableRow(row, sourceElement, positionX) {
+	function newTableRow(row, sourceElementWithColors, positionX) {
 		const tableRow = document.createElement("tr");
-		tableRow.appendChild(newTableHeaderCell(sourceElement, "rowHeader"));
+		tableRow.appendChild(newTableHeaderCell(sourceElementWithColors, "rowHeader"));
 		for (let d in row) {
 			tableRow.appendChild(newTableCell(row[d], positionX, d));
 		}
@@ -111,8 +117,8 @@
 			tableRowCell.style.backgroundColor = "lightGray";
 			return tableRowCell;
 		}
-		const sourceElement = this.headerElements[positionX];
-		const targetElement = this.headerElements[positionY];
+		const sourceElement = this.headerElements[positionX].element;
+		const targetElement = this.headerElements[positionY].element;
 
 		var linkType = null;
 		if (link !== null) {

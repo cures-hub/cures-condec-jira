@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
 /**
  * Creates an adjacency matrix of the {@link KnowledgeGraph}. The matrix can
@@ -32,38 +33,45 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  */
 public class Matrix {
 
-	private Set<KnowledgeElement> headerElements;
-	private Map<Long, String> colorMap;
+	private Set<ElementWithHighlighting> headerElements;
 
 	private int size;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
 
-	public Matrix(Set<KnowledgeElement> elements) {
-		headerElements = elements;
-		size = headerElements.size();
-		colorMap = new HashMap<>();
-		headerElements.forEach(entry -> {
-			colorMap.put(entry.getId(), "#ffffff");
+	public Matrix(Set<KnowledgeElement> elements, FilterSettings filterSettings,
+			Map<KnowledgeElement, String> colorMap) {
+		this(elements, filterSettings);
+		headerElements.forEach(headerElementWithHighlighting -> {
+			headerElementWithHighlighting
+					.setChangeImpactColor(colorMap.get(headerElementWithHighlighting.getElement()));
 		});
-	}
-
-	public Matrix(Set<KnowledgeElement> elements, Map<Long, String> colorMap) {
-		headerElements = elements;
-		size = headerElements.size();
-		this.colorMap = colorMap;
 	}
 
 	public Matrix(FilterSettings filterSettings) {
-		this(new FilteringManager(filterSettings).getFilteredGraph().vertexSet());
+		this(new FilteringManager(filterSettings).getFilteredGraph().vertexSet(), filterSettings);
+	}
+
+	public Matrix(Set<KnowledgeElement> elements, FilterSettings filterSettings) {
 		LOGGER.info(filterSettings.toString());
-		headerElements.forEach(entry -> {
-			colorMap.put(entry.getId(), "#ffffff");
+		headerElements = new HashSet<>();
+		elements.forEach(element -> {
+			ElementWithHighlighting elementWithColors = new ElementWithHighlighting(element);
+			if (filterSettings.areQualityProblemHighlighted()) {
+				String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element,
+						new FilterSettings());
+				if (!problemExplanation.isEmpty()) {
+					elementWithColors.setQualityColor("crimson");
+					elementWithColors.setQualityProblemExplanation(problemExplanation);
+				}
+			}
+			headerElements.add(elementWithColors);
 		});
+		size = headerElements.size();
 	}
 
 	@XmlElement
-	public Set<KnowledgeElement> getHeaderElements() {
+	public Set<ElementWithHighlighting> getHeaderElements() {
 		return headerElements;
 	}
 
@@ -73,9 +81,9 @@ public class Matrix {
 	@XmlElement(name = "links")
 	public Link[][] getMatrixOfLinks() {
 		Link[][] links = new Link[size][size];
-		Iterator<KnowledgeElement> iterator = headerElements.iterator();
+		Iterator<ElementWithHighlighting> iterator = headerElements.iterator();
 		for (int positionY = 0; positionY < size; positionY++) {
-			KnowledgeElement sourceElement = iterator.next();
+			KnowledgeElement sourceElement = iterator.next().getElement();
 			links[positionY] = getRowOfLinks(sourceElement);
 		}
 		return links;
@@ -83,9 +91,9 @@ public class Matrix {
 
 	public Link[] getRowOfLinks(KnowledgeElement sourceElement) {
 		Link[] row = new Link[headerElements.size()];
-		Iterator<KnowledgeElement> iterator = headerElements.iterator();
+		Iterator<ElementWithHighlighting> iterator = headerElements.iterator();
 		for (int positionX = 0; positionX < size; positionX++) {
-			KnowledgeElement targetElement = iterator.next();
+			KnowledgeElement targetElement = iterator.next().getElement();
 			if (targetElement.getId() == sourceElement.getId()) {
 				row[positionX] = null;
 			} else {
@@ -110,14 +118,5 @@ public class Matrix {
 			linkTypesWithColor.put(linkTypeName, color);
 		}
 		return linkTypesWithColor;
-	}
-
-	@XmlElement
-	public Map<Long, String> getColorMap() {
-		return colorMap;
-	}
-
-	public void setColorMap(Map<Long, String> colorMap) {
-		this.colorMap = colorMap;
 	}
 }

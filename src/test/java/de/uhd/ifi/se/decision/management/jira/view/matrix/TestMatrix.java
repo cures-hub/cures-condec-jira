@@ -1,19 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestMatrix extends TestSetUp {
 	private Matrix matrix;
@@ -41,28 +38,4 @@ public class TestMatrix extends TestSetUp {
 		assertEquals(2, linkTypesWithColors.size());
 		assertEquals("#80c9ff", linkTypesWithColors.get("relate"));
 	}
-
-	@Test
-	public void testMatrixWithColorMap() {
-		Map<Long, String> colormap = new HashMap<>();
-		colormap.put(1L, "#ffffff");
-
-		Set<KnowledgeElement> elements = new HashSet<>();
-		elements.add( new KnowledgeElement());
-
-		Matrix matrix = new Matrix(elements, colormap);
-
-		assertEquals(matrix.getColorMap().size(), 1);
-		assertEquals(matrix.getColorMap().get(1L), "#ffffff");
-
-		colormap = new HashMap<>();
-		colormap.put(1L, "#000000");
-
-		matrix.setColorMap(colormap);
-
-		assertEquals(matrix.getColorMap().size(), 1);
-		assertEquals(matrix.getColorMap().get(1L), "#000000");
-
-	}
-
 }

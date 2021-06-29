@@ -15,7 +15,7 @@ https://visjs.github.io/vis-timeline/docs/timeline/
 https://github.com/visjs/vis-timeline
 
 Run "npm install vis-timeline"
-Only the "standalone" and "styles" folders are kept, all other folders are deleted.
+Only the "standalone/umd" and "styles" folders are kept, all other folders are deleted.
 Current version: 7.4.9
 
 # jstree

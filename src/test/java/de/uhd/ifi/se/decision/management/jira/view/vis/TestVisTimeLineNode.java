@@ -10,7 +10,9 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestVisTimeLineNode extends TestSetUp {
@@ -27,7 +29,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testConstructorNull() {
-		VisTimeLineNode node = new VisTimeLineNode(null, false, false, new FilterSettings());
+		VisTimeLineNode node = new VisTimeLineNode(null, false, false, null);
 		assertEquals(0, node.getId());
 	}
 
@@ -65,20 +67,35 @@ public class TestVisTimeLineNode extends TestSetUp {
 	}
 
 	@Test
-	public void testGetClassNameWithQualityHighlighting() {
+	public void testGetClassNameWithQualityHighlightingDoDViolated() {
 		assertEquals(element.getTypeAsString().toLowerCase() + " dodViolation", timeNode.getClassName());
+	}
+
+	@Test
+	public void testGetClassNameWithQualityHighlightingDoDFulfilled() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(0);
+		FilterSettings filterSettings = new FilterSettings();
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+		filterSettings.setLinkDistance(1);
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+		timeNode = new VisTimeLineNode(element, true, true, filterSettings);
+		assertEquals(element.getSummary(), timeNode.getTitle());
+		assertEquals("other", timeNode.getClassName());
 	}
 
 	@Test
 	public void testGetClassNameWithoutQualityHighlighting() {
 		FilterSettings filterSettings = new FilterSettings();
 		filterSettings.highlightQualityProblems(false);
-		timeNode = new VisTimeLineNode(element, true, true, filterSettings);
+		timeNode = new VisTimeLineNode(element, true, false, filterSettings);
 		assertEquals(element.getTypeAsString().toLowerCase(), timeNode.getClassName());
 	}
 
 	@Test
-	public void testGetTitleWithQualityHighlighting() {
+	public void testGetTitleWithQualityHighlightingDoDViolated() {
 		assertTrue(timeNode.getTitle().contains("decision coverage"));
 	}
 
