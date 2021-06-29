@@ -3,24 +3,24 @@
  *
  * Is required by: conDecDecisionGuidance
  *
- * Is referenced in HTML by 
+ * Is referenced in HTML by
  * settings/decisionguidance/*
  * tabs/decisiontable/*
  * jiraIssueModule.vm
  */
-(function(global) {
+(function (global) {
 
-	var ConDecDecisionGuidanceAPI = function() {
+	var ConDecDecisionGuidanceAPI = function () {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/decisionguidance";
 	};
 
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(projectKey, keyword, issueId, documentationLocation, callback) {
+	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (projectKey, keyword, issueId, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/recommendations.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
-			function(error, recommendations) {
-				recommendations.sort(function(recommendation1, recommendation2) {
+			function (error, recommendations) {
+				recommendations.sort(function (recommendation1, recommendation2) {
 					return recommendation2.score.value - recommendation1.score.value;
 				});
 				callback(recommendations, error);
@@ -30,9 +30,9 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function(projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
+	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/recommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
-			function(error, results) {
+			function (error, results) {
 				callback(results, error);
 			});
 	};
