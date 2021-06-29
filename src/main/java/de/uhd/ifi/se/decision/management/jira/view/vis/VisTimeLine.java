@@ -26,6 +26,7 @@ public class VisTimeLine {
 
 	private boolean isPlacedAtCreationDate;
 	private boolean isPlacedAtUpdatingDate;
+	private FilterSettings filterSettings;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VisTimeLine.class);
 
@@ -33,6 +34,7 @@ public class VisTimeLine {
 		this.nodes = new HashSet<VisTimeLineNode>();
 		this.groups = new HashSet<VisTimeLineGroup>();
 		this.applicationUserIds = new HashSet<Long>();
+		this.filterSettings = new FilterSettings();
 	}
 
 	public VisTimeLine(Set<KnowledgeElement> elements) {
@@ -47,6 +49,7 @@ public class VisTimeLine {
 			return;
 		}
 		LOGGER.info(filterSettings.toString());
+		this.filterSettings = filterSettings;
 		this.isPlacedAtCreationDate = isPlacedAtCreationDate;
 		this.isPlacedAtUpdatingDate = isPlacedAtUpdatingDate;
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
@@ -73,7 +76,8 @@ public class VisTimeLine {
 			applicationUserIds.add(userId);
 			groups.add(new VisTimeLineGroup(user));
 		}
-		VisTimeLineNode node = new VisTimeLineNode(element, userId, isPlacedAtCreationDate, isPlacedAtUpdatingDate);
+		VisTimeLineNode node = new VisTimeLineNode(element, userId, isPlacedAtCreationDate, isPlacedAtUpdatingDate,
+				filterSettings);
 		nodes.add(node);
 		return true;
 	}

@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
 public class VisTimeLineNode {
 
@@ -36,35 +38,43 @@ public class VisTimeLineNode {
 
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-	public VisTimeLineNode(KnowledgeElement element, boolean isPlacedAtCreationDate, boolean isPlacedAtUpdatingDate) {
+	public VisTimeLineNode(KnowledgeElement element, boolean isPlacedAtCreationDate, boolean isPlacedAtUpdatingDate,
+			FilterSettings filterSettings) {
 		if (element == null) {
 			return;
 		}
-		this.id = ((int) element.getId());
-		this.content = createContentString(element);
+		id = ((int) element.getId());
+		content = createContentString(element);
 		if (isPlacedAtCreationDate) {
-			this.start = DATEFORMAT.format(element.getCreationDate());
+			start = DATEFORMAT.format(element.getCreationDate());
 		} else {
-			this.start = DATEFORMAT.format(element.getUpdatingDate());
+			start = DATEFORMAT.format(element.getUpdatingDate());
 		}
 		if (isPlacedAtCreationDate && isPlacedAtUpdatingDate) {
-			this.end = DATEFORMAT.format(element.getUpdatingDate());
+			end = DATEFORMAT.format(element.getUpdatingDate());
 		}
-		this.className = element.getTypeAsString().toLowerCase();
-		this.title = element.getDescription();
-		this.documentationLocation = element.getDocumentationLocation().getIdentifier();
+		className = element.getTypeAsString().toLowerCase();
+		title = element.getDescription();
+		documentationLocation = element.getDocumentationLocation().getIdentifier();
+
+		if (filterSettings.areQualityProblemHighlighted()) {
+			String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element, filterSettings);
+			if (!problemExplanation.isEmpty()) {
+				title = problemExplanation;
+				className += " dodViolation";
+			}
+		}
 	}
 
 	public VisTimeLineNode(KnowledgeElement element, long group, boolean isPlacedAtCreationDate,
-			boolean isPlacedAtUpdatingDate) {
-		this(element, isPlacedAtCreationDate, isPlacedAtUpdatingDate);
+			boolean isPlacedAtUpdatingDate, FilterSettings filterSettings) {
+		this(element, isPlacedAtCreationDate, isPlacedAtUpdatingDate, filterSettings);
 		this.group = group;
 	}
 
 	private String createContentString(KnowledgeElement element) {
-		String image = "<img src=" + '"' + KnowledgeType.getIconUrl(element) + '"' + "> ";
-		return image + "<span style='color:" + element.getStatus().getColor() + "; display:inline'>"
-				+ element.getSummary() + "</span>";
+		String image = "<img src=\"" + KnowledgeType.getIconUrl(element) + "\"> ";
+		return image + element.getSummary();
 	}
 
 	public int getId() {
