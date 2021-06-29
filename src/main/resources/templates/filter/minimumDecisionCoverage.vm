@@ -1,7 +1,8 @@
 <div class="condec-filter-criterion">
-    <label for="minimum-decision-coverage-input-$viewIdentifier" id="minimum-decision-coverage-label-$viewIdentifier">
-        $i18n.getText("condec.minimum.decision.coverage.label")
-    </label>
-    <input type="number" id="minimum-decision-coverage-input-$viewIdentifier" value="1" min="0" class="text short-field"
-           placeholder="Enter minimum coverage" name="minimumDecisionCoverage">
+	<label>$i18n.getText("condec.label.decision.coverage.min.number")</label>
+	<input class="text short-field" type="number" id="minimum-number-of-decisions-input-$viewIdentifier" 
+		max="999" value="-1"> 
+	<label>$i18n.getText("condec.label.decision.coverage.max.link.distance")</label>
+	<input class="text short-field" type="number" id="link-distance-to-decision-number-input-$viewIdentifier" 
+		max="6" value="-1">
 </div>

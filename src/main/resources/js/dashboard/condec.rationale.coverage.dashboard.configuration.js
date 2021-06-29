@@ -152,8 +152,8 @@ define('dashboard/rationaleCoverage', [], function () {
 			, "documentationlocation-multi-select-rationale-coverage"
 			, "knowledgestatus-multi-select-rationale-coverage"
 			, "linktype-multi-select-rationale-coverage"
-			, "link-distance-input-rationale-coverage"
-			, "minimum-decision-coverage-input-rationale-coverage"
+			, "link-distance-to-decision-number-input-rationale-coverage"
+			, "minimum-number-of-decisions-input-rationale-coverage"
 			, "min-degree-input-rationale-coverage"
 			, "max-degree-input-rationale-coverage"
 			, "start-date-picker-rationale-coverage"
@@ -386,7 +386,10 @@ define('dashboard/rationaleCoverage', [], function () {
 			filterSettings.linkDistance = linkDistance;
 		}
 		if (minimumDecisionCoverage) {
-			filterSettings.minimumDecisionCoverage = minimumDecisionCoverage;
+			filterSettings.definitionOfDone = {
+					"minimumDecisionsWithinLinkDistance": minimumDecisionCoverage,
+					"maximumLinkDistanceToDecisions": linkDistance
+			};
 		}
 		if (minDegree) {
 			filterSettings.minDegree = minDegree;
@@ -487,16 +490,16 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	function setDefaultLinkDistanceAndAndMinimumDecisionCoverage(projectKey) {
 		if (projectKey) {
-			conDecAPI.getFilterSettings(projectKey, "", function (filterSettings) {
-				dashboardFilterLinkDistanceNode.value = filterSettings.linkDistance;
-				dashboardFilterMinimumDecisionCoverageNode.value = filterSettings.minimumDecisionCoverage;
+			conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
+				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
+				dashboardFilterMinimumDecisionCoverageNode.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
 			});
 		}
 	}
 
 	function removeOptions(selectElement) {
 		var i, L = selectElement.options.length - 1;
-		for(i = L; i >= 0; i--) {
+		for (i = L; i >= 0; i--) {
 			selectElement.remove(i);
 		}
 	}
@@ -505,7 +508,7 @@ define('dashboard/rationaleCoverage', [], function () {
 		var result = [];
 		var options = select.options;
 
-		for (var i=0; i<options.length; i++) {
+		for (var i = 0; i < options.length; i++) {
 			if (options[i].selected) {
 				result.push(options[i].value);
 			}
@@ -518,9 +521,9 @@ define('dashboard/rationaleCoverage', [], function () {
 		var options = select.options;
 		var values = list.split(",");
 
-		for (var i=0; i<options.length; i++) {
+		for (var i = 0; i < options.length; i++) {
 			options[i].selected = false;
-			for (var j=0; j<values.length; j++) {
+			for (var j = 0; j < values.length; j++) {
 				if (options[i].value === values[j]) {
 					options[i].selected = true;
 				}

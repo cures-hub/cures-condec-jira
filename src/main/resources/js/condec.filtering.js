@@ -49,8 +49,8 @@
 			var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
 			var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
 			if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
-				minDecisionCoverageInput.value = definitionOfDone["minimumDecisionsWithinLinkDistance"];
-				maxLinkDistanceInput.value = definitionOfDone["maximumLinkDistanceToDecisions"];
+				minDecisionCoverageInput.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
+				maxLinkDistanceInput.value = definitionOfDone.maximumLinkDistanceToDecisions;
 			}
 		});
 
@@ -95,7 +95,7 @@
 		});
 	}
 
-	/*
+	/**
 	 * Reads the filter settings from the HTML elements of a view.
 	 *
 	 * external references: condec.tree.viewer, condec.treant, condec.decision.table, 
@@ -249,8 +249,8 @@
 		return filterSettings;
 	};
 
-	/*
-	 * external references: condec.knowledge.page, condec.rationale.backlog
+	/**
+	 * external references: condec.rationale.backlog
 	 */
 	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems, unselectedItems) {
 		var dropdown = document.getElementById(dropdownId);
@@ -276,7 +276,7 @@
 		return dropdown;
 	};
 
-	/*
+	/**
 	 * external references: none, only used locally in condec.filtering
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
@@ -302,9 +302,8 @@
 		return selectedItems;
 	};
 
-	/*
-	 * external references: condec.knowledge.page, condec.evolution.page,
-	 * condec.relationship.page, condec.rationale.backlog
+	/**
+	 * external references: none, only used locally in condec.filtering
 	 */
 	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
 		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
@@ -320,8 +319,11 @@
 		return selectedGroups;
 	};
 
-	/*
-	 * external references: condec.jira.issue.module, condec.knowledge.page
+	/**
+	 * Sets default values to the date pickers for creation/update dates of an element 
+	 * so that only the recently created/updated elements are shown.
+	 * 
+	 * external references: condec.rationale.backlog, condec.matrix, ...
 	 */
 	ConDecFiltering.prototype.fillDatePickers = function(viewIdentifier, deltaDays) {
 		var startDate = new Date();
@@ -330,6 +332,9 @@
 		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
 	};
 
+	/**
+	 * Fills the filter for decision groups/levels.
+	 */
 	ConDecFiltering.prototype.fillDecisionGroupSelect = function(elementId) {
 		var selectGroupField = document.getElementById(elementId);
 		if (selectGroupField === null || selectGroupField === undefined) {
