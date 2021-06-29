@@ -62,17 +62,9 @@ a:focus a:hover {
 .condec-filter {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
   align-items: flex-end;
-  border: 1px solid #e3e3e3;
-  padding:16px;
-  margin-bottom: 16px;
-}
-
-.condec-filter-criterion {
-	display: inline-block;
-	margin-top: 5px;
-	margin-right: 5px;
+  gap: 4px;
+  overflow: auto;
 }
 
 .jira-module-fullscreen {
@@ -96,30 +88,20 @@ a:focus a:hover {
 }
 
 .condec-prompt {
-    display: none
+  display: none
 }
 
 #close-fullscreen {
   z-index: 999;
-  display:none;
+  display: none;
   position: fixed;
   right: 48px;
-    top: 48px;
-    cursor: pointer;
+  top: 48px;
+  cursor: pointer;
 }
 
 #open-fullscreen {
-    cursor: pointer;
-    padding: 16px;
-    display: block;
-}
-
-#change-impact-decision-knowledge-tree {
-    min-width: 400px;
-    min-height: 400px;
-    margin: 10px;
-}
-
-#select2-display-type-cia {
-    vertical-align: bottom;
+  cursor: pointer;
+  padding: 16px;
+  display: block;
 }

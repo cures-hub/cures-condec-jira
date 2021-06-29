@@ -16,6 +16,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
@@ -29,6 +30,7 @@ public class TestTreantNode extends TestSetUp {
 	private List<TreantNode> children;
 	private boolean isCollapsed;
 	private boolean isHyperlinked;
+	private FilterSettings filterSettings;
 
 	private TreantNode node;
 	private KnowledgeElement element;
@@ -42,6 +44,7 @@ public class TestTreantNode extends TestSetUp {
 		htmlId = 100;
 		innerHTML = "Test";
 		children = new ArrayList<>();
+		filterSettings = new FilterSettings("TEST", "");
 
 		node = new TreantNode();
 		node.setChildren(children);
@@ -66,13 +69,13 @@ public class TestTreantNode extends TestSetUp {
 
 	@Test
 	public void testConstructor() {
-		this.node = new TreantNode(element, isCollapsed, isHyperlinked);
+		this.node = new TreantNode(element, isCollapsed, filterSettings, isHyperlinked);
 		assertNotNull(node);
 	}
 
 	@Test
 	public void testConstructorElementNull() {
-		this.node = new TreantNode(null, isCollapsed, isHyperlinked);
+		this.node = new TreantNode(null, isCollapsed, filterSettings, isHyperlinked);
 		assertNotNull(node);
 	}
 
@@ -80,7 +83,7 @@ public class TestTreantNode extends TestSetUp {
 	public void testElementLinkSupportConstructor() {
 		Link link = new Link(element, element);
 		link.setType("support");
-		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
+		TreantNode newNode = new TreantNode(element, link, isCollapsed, filterSettings, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
@@ -88,7 +91,7 @@ public class TestTreantNode extends TestSetUp {
 	public void testElementLinkAttackConstructor() {
 		Link link = new Link(element, element);
 		link.setType("attack");
-		TreantNode newNode = new TreantNode(element, link, isCollapsed, isHyperlinked);
+		TreantNode newNode = new TreantNode(element, link, isCollapsed, filterSettings, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
@@ -182,13 +185,20 @@ public class TestTreantNode extends TestSetUp {
 		element.setKey("TEST-42");
 		element.setProject("TEST");
 		element.setSummary("Thisisaverylongsummary,muchtoolongforalittleTreantnode.");
-		this.node = new TreantNode(element, isCollapsed, isHyperlinked);
+		this.node = new TreantNode(element, isCollapsed, filterSettings, isHyperlinked);
 		assertTrue(element.getSummary().length() > node.getNodeContent().get("title").length());
 	}
 
 	@Test
 	public void testCollapsedTrue() {
-		this.node = new TreantNode(element, true, isHyperlinked);
+		this.node = new TreantNode(element, true, filterSettings, isHyperlinked);
 		assertTrue(node.getCollapsed().get("collapsed"));
+	}
+
+	@Test
+	public void testAreQualityProblemHighlightedTrue() {
+		filterSettings.highlightQualityProblems(true);
+		this.node = new TreantNode(element, true, filterSettings, isHyperlinked);
+		assertEquals("rationale dodViolation", node.getHtmlClass());
 	}
 }

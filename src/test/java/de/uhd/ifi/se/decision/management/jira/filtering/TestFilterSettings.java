@@ -1,16 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,11 +20,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.PassRule;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -210,7 +210,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetLinkDistance() {
-		assertEquals(4, filterSettings.getLinkDistance());
+		assertEquals(3, filterSettings.getLinkDistance());
 	}
 
 	@Test
@@ -220,14 +220,26 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testGetMinimumDecisionCoverage() {
-		assertEquals(2, filterSettings.getMinimumDecisionCoverage());
+	public void testGetDefinitionOfDone() {
+		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
 	}
 
 	@Test
-	public void testSetMinimumDecisionCoverage() {
-		filterSettings.setMinimumDecisionCoverage(2);
-		assertEquals(2, filterSettings.getMinimumDecisionCoverage());
+	public void testSetDefinitionOfDoneInvalid() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(-1);
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+
+		// still default
+		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
+	}
+
+	@Test
+	public void testSetDefinitionOfDoneValid() {
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(3);
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+		assertEquals(3, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
 	}
 
 	@Test
@@ -296,61 +308,29 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testContext() {
+	public void testChangeImpactHighlighting() {
 		// default value
-		assertEquals(0, filterSettings.getContext());
-		filterSettings.setContext(1);
-		assertEquals(1, filterSettings.getContext());
+		assertFalse(filterSettings.areChangeImpactsHighlighted());
+		filterSettings.highlightChangeImpacts(true);
+		assertTrue(filterSettings.areChangeImpactsHighlighted());
 	}
 
 	@Test
-	public void testDisplayType() {
+	public void testChangeImpactAnalysisConfig() {
+		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 		// default value
-		assertEquals("", filterSettings.getDisplayType());
-		filterSettings.setDisplayType("graph");
-		assertEquals("graph", filterSettings.getDisplayType());
+		assertEquals(0, ciaConfig.getContext());
+		ciaConfig.setContext(1);
+		filterSettings.setChangeImpactAnalysisConfiguration(ciaConfig);
+		assertEquals(1, filterSettings.getChangeImpactAnalysisConfig().getContext());
 	}
 
 	@Test
-	public void testLinkImpact() {
+	public void testQualityProblemHighlighting() {
 		// default value
-		assertEquals(9, filterSettings.getLinkImpact().size());
-		filterSettings.setLinkImpact(Map.of("test", 1.0f));
-		assertEquals(1, filterSettings.getLinkImpact().size());
-	}
-
-	@Test
-	public void testDecayValue() {
-		// default value
-		assertEquals(0.75, filterSettings.getDecayValue(), 0.01);
-		filterSettings.setDecayValue(0.8f);
-		assertEquals(0.8, filterSettings.getDecayValue(), 0.01);
-	}
-
-	@Test
-	public void testThresholdValue() {
-		// default value
-		assertEquals(0.25, filterSettings.getThreshold(), 0.01);
-		filterSettings.setThreshold(0.2);
-		assertEquals(0.2, filterSettings.getThreshold(), 0.01);
-	}
-
-	@Test
-	public void testCiaRequest() {
-		// default value
-		assertFalse(filterSettings.isCiaRequest());
-		filterSettings.setCiaRequest(true);
-		assertTrue(filterSettings.isCiaRequest());
-	}
-
-	@Test
-	public void testPropagationRule() {
-		// default value
-		assertEquals(0, filterSettings.getPropagationRule().size());
-		filterSettings.setPropagationRule(List.of(PassRule.UNDEFINED.getTranslation()));
-		assertEquals(1, filterSettings.getPropagationRule().size());
-		filterSettings.setPropagationRule(null);
-		assertEquals(0, filterSettings.getPropagationRule().size());
+		assertTrue(filterSettings.areQualityProblemHighlighted());
+		filterSettings.highlightQualityProblems(false);
+		assertFalse(filterSettings.areQualityProblemHighlighted());
 	}
 
 	@Test

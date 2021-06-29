@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.service;
+package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -24,9 +24,9 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisEdge;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
 
-public class CiaService {
+public class ChangeImpactAnalysisService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CiaService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangeImpactAnalysisService.class);
 
 	public static TreeViewer calculateTreeImpact(FilterSettings filterSettings) {
 		HashMap<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
@@ -79,30 +79,31 @@ public class CiaService {
 	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement root, Double parentImpact,
 			FilterSettings filterSettings, HashMap<KnowledgeElement, Double> results, final Long context) {
 		Set<String> result = new HashSet<>();
+		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 		root.getLinks().forEach(entry -> {
 			// TODO Link specific weights
 			boolean isOutwardLink = entry.getSource().equals(root);
 			String linkType = (isOutwardLink) ? entry.getType().getOutwardName() : entry.getType().getInwardName();
-			if (!filterSettings.getLinkImpact().containsKey(linkType)) {
+			if (!ciaConfig.getLinkImpact().containsKey(linkType)) {
 				result.add("link -> " + linkType + ", source -> " + entry.getSource().getId() + ", target -> "
 						+ entry.getTarget().getId());
 			}
-			double typeWeight = filterSettings.getLinkImpact().getOrDefault(linkType, 1.0f);
-			double decayValue = filterSettings.getDecayValue();
+			double typeWeight = ciaConfig.getLinkImpact().getOrDefault(linkType, 1.0f);
+			double decayValue = ciaConfig.getDecayValue();
 			double impact = parentImpact * typeWeight * decayValue;
 
 			KnowledgeElement next = (isOutwardLink) ? entry.getTarget() : entry.getSource();
 
 			final boolean[] propagate = { true };
-			filterSettings.getPropagationRule().forEach(rule -> propagate[0] = propagate[0]
+			ciaConfig.getPropagationRules().forEach(rule -> propagate[0] = propagate[0]
 					&& rule.getPredicate().pass(root, parentImpact, next, impact, entry));
 
-			if (impact >= filterSettings.getThreshold() && propagate[0]) {
+			if (impact >= ciaConfig.getThreshold() && propagate[0]) {
 				if (!results.containsKey(next) || (results.containsKey(next) && results.get(next) < impact)) {
 					results.put(next, impact);
 					calculateImpactedKnowledgeElementsHelper(next, impact, filterSettings, results, context);
 				}
-			} else if ((filterSettings.getContext() > 0) && (context > 0) && !results.containsKey(next)) {
+			} else if (ciaConfig.getContext() > 0 && context > 0 && !results.containsKey(next)) {
 				results.put(next, 0.0);
 				calculateImpactedKnowledgeElementsHelper(next, 0.0, filterSettings, results, context - 1);
 			}
@@ -118,7 +119,7 @@ public class CiaService {
 		VisGraph graphVis = new VisGraph();
 		graphVis.setNodes(results.keySet().stream().map((entry) -> {
 			boolean collapse = collapse(entry, filterSettings);
-			VisNode node = new VisNode(entry, collapse, 0);
+			VisNode node = new VisNode(entry, collapse, 0, filterSettings);
 			if (results.get(entry) != null && results.get(entry) != 0.0) {
 				colorizeNode(node, results.get(entry));
 			}
@@ -133,13 +134,14 @@ public class CiaService {
 	}
 
 	private static boolean collapse(KnowledgeElement element, FilterSettings settings) {
-		KnowledgeType type = (element.getType().equals(KnowledgeType.CON)
-				|| element.getType().equals(KnowledgeType.PRO)) ? KnowledgeType.ARGUMENT : element.getType();
+		KnowledgeType type = (element.getType() == KnowledgeType.CON || element.getType() == KnowledgeType.PRO)
+				? KnowledgeType.ARGUMENT
+				: element.getType();
 		if (element.equals(settings.getSelectedElement())) {
 			return false;
-		} else
-			return !(settings.getKnowledgeTypes().contains(type.toString()))
-					|| !(settings.getStatus().contains(element.getStatus()));
+		}
+		return !(settings.getKnowledgeTypes().contains(type.toString()))
+				|| !(settings.getStatus().contains(element.getStatus()));
 	}
 
 	private static void colorizeNode(TreeViewerNode node, HashMap<KnowledgeElement, Double> results) {

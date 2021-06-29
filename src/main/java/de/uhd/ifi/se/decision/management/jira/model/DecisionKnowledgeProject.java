@@ -16,6 +16,7 @@ import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
@@ -169,6 +170,9 @@ public class DecisionKnowledgeProject {
 	 * @return Jira issue types available in the project.
 	 */
 	public Set<IssueType> getJiraIssueTypes() {
+		if (jiraProject == null) {
+			return new HashSet<>();
+		}
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
 		Collection<IssueType> types = issueTypeSchemeManager.getIssueTypesForProject(jiraProject);
 		return new HashSet<>(types);
@@ -203,7 +207,7 @@ public class DecisionKnowledgeProject {
 		Set<String> allLinkTypes = new HashSet<>();
 		allLinkTypes.addAll(types.stream().map(IssueLinkType::getInward).collect(Collectors.toSet()));
 		allLinkTypes.addAll(types.stream().map(IssueLinkType::getOutward).collect(Collectors.toSet()));
-		// In the future, there will also be a "transitive" link type for transitive
+		// There is also a "transitive" link type for transitive
 		// link creation.
 		allLinkTypes.add("Other");
 		return allLinkTypes;
@@ -215,6 +219,13 @@ public class DecisionKnowledgeProject {
 	public static Collection<IssueLinkType> getJiraIssueLinkTypes() {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		return linkTypeManager.getIssueLinkTypes(false);
+	}
+
+	/**
+	 * @return configuration information for change impact analysis.
+	 */
+	public ChangeImpactAnalysisConfiguration getChangeImpactAnalysisConfiguration() {
+		return ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(getProjectKey());
 	}
 
 	/**

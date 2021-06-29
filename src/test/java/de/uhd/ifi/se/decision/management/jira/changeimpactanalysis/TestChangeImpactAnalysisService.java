@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.service;
+package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCiaService extends TestSetUp {
+public class TestChangeImpactAnalysisService extends TestSetUp {
 
 	protected static KnowledgeElement element;
 	protected KnowledgeGraph graph;
@@ -38,7 +38,7 @@ public class TestCiaService extends TestSetUp {
 		Arrays.stream(KnowledgeType.values()).map(KnowledgeType::toString).forEach((string) -> {
 		});
 
-		VisGraph graph = CiaService.calculateGraphImpact(settings);
+		VisGraph graph = ChangeImpactAnalysisService.calculateGraphImpact(settings);
 		assertEquals(10, graph.getNodes().size());
 		assertEquals(16, graph.getEdges().size());
 	}
@@ -48,7 +48,7 @@ public class TestCiaService extends TestSetUp {
 	public void testCalculateMatrixImpact() {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
-		Matrix matrix = CiaService.calculateMatrixImpact(settings);
+		Matrix matrix = ChangeImpactAnalysisService.calculateMatrixImpact(settings);
 		assertEquals(10, matrix.getHeaderElements().size());
 	}
 
@@ -57,7 +57,7 @@ public class TestCiaService extends TestSetUp {
 	public void testCalculateTreeImpact() {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
-		TreeViewer tree = CiaService.calculateTreeImpact(settings);
+		TreeViewer tree = ChangeImpactAnalysisService.calculateTreeImpact(settings);
 		assertEquals(1, tree.getNodes().size());
 		int childSize = tree.getNodes().stream().findFirst().orElseThrow().getChildren().size();
 		assertEquals(5, childSize);

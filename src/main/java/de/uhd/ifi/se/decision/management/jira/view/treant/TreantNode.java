@@ -8,14 +8,16 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
  * Model class for Treant node
@@ -57,48 +59,58 @@ public class TreantNode {
 		this.children = new ArrayList<>();
 	}
 
-	public TreantNode(KnowledgeElement knowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
+	public TreantNode(KnowledgeElement knowledgeElement, boolean isCollapsed, FilterSettings filterSettings,
+			boolean isHyperlinked) {
 		this();
 
 		if (knowledgeElement == null || knowledgeElement.getSummary() == null) {
 			return;
 		}
 
-		String title;
-		if (knowledgeElement.getSummary().length() > 25 && !knowledgeElement.getSummary().contains(" ")) {
-			title = knowledgeElement.getSummary().substring(0, 24) + "...";
-		} else {
-			title = knowledgeElement.getSummary();
+		String title = knowledgeElement.getSummary();
+		if (title.length() > 25 && !title.contains(" ")) {
+			title = title.substring(0, 24) + "...";
 		}
-		this.nodeContent = ImmutableMap.of("title", title, "documentationLocation",
+
+		nodeContent = ImmutableMap.of("title", title, "documentationLocation",
 				knowledgeElement.getDocumentationLocationAsString(), "status", knowledgeElement.getStatusAsString(),
 				"desc", knowledgeElement.getKey());
-		this.htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
-		this.htmlId = knowledgeElement.getId();
-		this.link = new HashMap<>();
-		this.link.put("title", ToolTip.buildToolTip(knowledgeElement, knowledgeElement.getDescription()));
+		htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
+		link = new HashMap<>();
+		if (knowledgeElement.getDescription() != null) {
+			link.put("title", knowledgeElement.getDescription());
+		}
+		if (filterSettings.areQualityProblemHighlighted()) {
+			List<String> qualityProblems = DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings);
+			if (!qualityProblems.isEmpty()) {
+				link.put("title", ToolTip.buildToolTip(qualityProblems));
+				htmlClass += " dodViolation";
+			}
+		}
+		htmlId = knowledgeElement.getId();
 		if (isHyperlinked) {
-			this.link.put("href", knowledgeElement.getUrl());
-			this.link.put("target", "_blank");
+			link.put("href", knowledgeElement.getUrl());
+			link.put("target", "_blank");
 		}
 		if (isCollapsed) {
-			this.collapsed = ImmutableMap.of("collapsed", true);
+			collapsed = ImmutableMap.of("collapsed", true);
 		}
-		this.image = KnowledgeType.getIconUrl(knowledgeElement);
+		image = KnowledgeType.getIconUrl(knowledgeElement);
 	}
 
-	public TreantNode(KnowledgeElement knowledgeElement, Link link, boolean isCollapsed, boolean isHyperlinked) {
-		this(knowledgeElement, isCollapsed, isHyperlinked);
-		this.image = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
+	public TreantNode(KnowledgeElement knowledgeElement, Link link, boolean isCollapsed, FilterSettings filterSettings,
+			boolean isHyperlinked) {
+		this(knowledgeElement, isCollapsed, filterSettings, isHyperlinked);
+		image = KnowledgeType.getIconUrl(knowledgeElement, link.getTypeAsString());
 		switch (link.getTypeAsString()) {
 		case "support":
 			if (knowledgeElement.getId() == link.getSource().getId()) {
-				this.htmlClass = "pro";
+				htmlClass = htmlClass.replaceFirst("\\S+", "pro");
 			}
 			break;
 		case "attack":
 			if (knowledgeElement.getId() == link.getSource().getId()) {
-				this.htmlClass = "con";
+				htmlClass = htmlClass.replaceFirst("\\S+", "con");
 			}
 			break;
 		default:

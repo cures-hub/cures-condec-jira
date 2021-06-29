@@ -1,4 +1,0 @@
-<div class="condec-filter-criterion">
-    <label for="no-colors-input-$viewIdentifier">$i18n.getText('condec.label.no.colors')</label>
-    <input class="checkbox" type="checkbox" id="no-colors-input-$viewIdentifier"/>
-</div>

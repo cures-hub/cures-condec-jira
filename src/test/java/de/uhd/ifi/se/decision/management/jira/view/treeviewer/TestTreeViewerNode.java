@@ -1,20 +1,23 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-import de.uhd.ifi.se.decision.management.jira.testdata.Links;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
+import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import de.uhd.ifi.se.decision.management.jira.testdata.Links;
 
 public class TestTreeViewerNode extends TestSetUp {
 
@@ -25,20 +28,20 @@ public class TestTreeViewerNode extends TestSetUp {
 	public void setUp() {
 		init();
 		element = KnowledgeElements.getTestKnowledgeElement();
-		node = new TreeViewerNode(element, false);
+		node = new TreeViewerNode(element, new FilterSettings());
 	}
 
 	@Test
 	public void testConstructorWithElementAndLink() {
 		Link link = Links.getTestLink();
-		TreeViewerNode node = new TreeViewerNode(element, link, false);
+		TreeViewerNode node = new TreeViewerNode(element, link, new FilterSettings());
 		assertEquals("tv1", node.getId());
 	}
 
 	@Test
 	public void testConstructorWithDescNull() {
 		element.setDescription(null);
-		TreeViewerNode node = new TreeViewerNode(element, false);
+		TreeViewerNode node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
@@ -46,7 +49,7 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testConstructorWithDescBlank() {
 		element.setDescription("");
-		TreeViewerNode node = new TreeViewerNode(element, false);
+		TreeViewerNode node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
@@ -54,14 +57,14 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testConstructorWithDescUndefined() {
 		element.setDescription("undefined");
-		TreeViewerNode node = new TreeViewerNode(element, false);
+		TreeViewerNode node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 		element.setDescription("TestDescription");
 	}
 
 	@Test
 	public void testConstructorWithColorNode() {
-		node = new TreeViewerNode(element, true);
+		node = new TreeViewerNode(element, new FilterSettings());
 		assertNotNull(node);
 	}
 
@@ -106,10 +109,10 @@ public class TestTreeViewerNode extends TestSetUp {
 	@Test
 	public void testGetAndSetAttributes() {
 		Map<String, String> attributes = node.getAttr();
-		assertEquals(attributes.size(), 2L);
-		assertEquals(attributes.get("title"), "Minimum decision coverage is not reached."
-			+ System.lineSeparator() + System.lineSeparator() + "Linked decision knowledge is incomplete.");
-		assertEquals(attributes.get("style"), "color:crimson");
+		assertEquals(2L, attributes.size());
+		assertTrue(attributes.get("title").contains("Minimum decision coverage is not reached."));
+		assertTrue(attributes.get("title").contains("Linked decision knowledge is incomplete."));
+		assertEquals("color:crimson", attributes.get("style"));
 		Map<String, String> newAttributes = new HashMap<>();
 		newAttributes.put("title", "test");
 		node.setAttr(newAttributes);

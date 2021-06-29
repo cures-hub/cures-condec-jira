@@ -10,14 +10,12 @@
 		console.log("conDecRationaleBacklog initView");
 			
 		// Fill filter elements
-		conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-backlog", conDecAPI.getKnowledgeTypes(), ["Alternative", "Decision", "Issue", "Argument"]);
+		conDecFiltering.fillFilterElements("rationale-backlog", ["Alternative", "Decision", "Issue", "Argument"]);
 		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
-		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-rationale-backlog");
 		conDecFiltering.fillDatePickers("rationale-backlog", 30);
-		conDecFiltering.initDropdown("documentation-location-dropdown-rationale-backlog", conDecAPI.documentationLocations);
 		
-		// Add event listeners on filter HTML elements
-		conDecFiltering.addOnChangeEventToFilterElements("rationale-backlog", conDecRationaleBacklog.updateView, false);
+		// Add on click listeners to filter button
+     	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecRationaleBacklog.updateView);
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("rationale-backlog");	
 
 		// Register/subscribe this view as an observer
@@ -54,6 +52,7 @@
 			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
 			filterSettings["status"] = null;
+			document.getElementById("selected-element-rationale-backlog").innerText = node.key;
 			filterSettings["selectedElement"] = node.key;
 			conDecTreant.buildTreant(filterSettings, true, "treant-rationale-backlog");
 			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-rationale-backlog", "#search-input-rationale-backlog", "jstree-rationale-backlog");

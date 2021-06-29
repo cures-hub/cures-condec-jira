@@ -55,7 +55,7 @@ public class TestGetMatrix extends TestSetUp {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setLinkDistance(2);
 		filterSettings.setSelectedElement("TEST-12");
-		filterSettings.setCiaRequest(true);
+		filterSettings.highlightChangeImpacts(true);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getMatrix(request, filterSettings).getStatus());
 	}
 }

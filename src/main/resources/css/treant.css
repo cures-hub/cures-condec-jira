@@ -34,6 +34,10 @@
 	background-color: rgb(255, 255, 255);
 }
 
+.dodViolation {
+	color: crimson;
+}
+
 .Treant {
 	position: relative;
 	overflow: hidden;
@@ -74,7 +78,6 @@
 }
 
 .node {
-	color: #333333;
 	display: inline-block;
 	font-size: 12px;
 	margin-top: 6px;

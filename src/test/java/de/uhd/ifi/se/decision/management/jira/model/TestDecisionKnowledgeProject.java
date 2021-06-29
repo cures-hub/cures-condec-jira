@@ -73,6 +73,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	@Test
 	public void testGetJiraIssueTypes() {
 		assertEquals(6, project.getJiraIssueTypeNames().size());
+		assertEquals(0, new DecisionKnowledgeProject("").getJiraIssueTypeNames().size());
 	}
 
 	@Test
@@ -85,6 +86,11 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
 		// currently, all Mock issue link types are called "relate"
 		assertEquals(2, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
+	}
+
+	@Test
+	public void testGetChangeImpactAnalysisConfiguration() {
+		assertEquals(0.75f, project.getChangeImpactAnalysisConfiguration().getDecayValue(), 0);
 	}
 
 	@Test

@@ -12,13 +12,13 @@ import javax.ws.rs.core.Response.Status;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisService;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.service.CiaService;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
@@ -55,8 +55,8 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		if (filterSettings.isCiaRequest()) {
-			return Response.ok(CiaService.calculateTreeImpact(filterSettings)).build();
+		if (filterSettings.areChangeImpactsHighlighted()) {
+			return Response.ok(ChangeImpactAnalysisService.calculateTreeImpact(filterSettings)).build();
 		} else {
 			return Response.ok(new TreeViewer(filterSettings)).build();
 		}
@@ -155,8 +155,8 @@ public class ViewRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph visGraph;
-		if (filterSettings.isCiaRequest()) {
-			visGraph = CiaService.calculateGraphImpact(filterSettings);
+		if (filterSettings.areChangeImpactsHighlighted()) {
+			visGraph = ChangeImpactAnalysisService.calculateGraphImpact(filterSettings);
 		} else {
 			visGraph = new VisGraph(user, filterSettings);
 		}
@@ -199,8 +199,8 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		Matrix matrix;
-		if (filterSettings.isCiaRequest()) {
-			matrix = CiaService.calculateMatrixImpact(filterSettings);
+		if (filterSettings.areChangeImpactsHighlighted()) {
+			matrix = ChangeImpactAnalysisService.calculateMatrixImpact(filterSettings);
 		} else {
 			matrix = new Matrix(filterSettings);
 		}

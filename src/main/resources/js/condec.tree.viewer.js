@@ -27,8 +27,9 @@
 		// Fill HTML elements for filter criteria
 		conDecFiltering.fillFilterElements("jstree");
 		
-		// Add event listeners to HTML elements for filtering
-		conDecFiltering.addOnChangeEventToFilterElements("jstree", conDecTreeViewer.updateView, false);
+		// Add on click listeners to filter button
+		conDecFiltering.addOnClickEventToFilterButton("jstree", conDecTreeViewer.updateViewForFilterSettings);
+        conDecFiltering.addOnClickEventToChangeImpactButton("jstree", conDecTreeViewer.updateViewForFilterSettings);
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -39,12 +40,18 @@
 	
 	ConDecTreeViewer.prototype.updateView = function () {
 		console.log("ConDecTreeViewer updateView");
-		var issueKey = conDecAPI.getIssueKey();		
 		var filterSettings = conDecFiltering.getFilterSettings("jstree");
-		filterSettings["selectedElement"] = issueKey;
+        conDecTreeViewer.updateViewForFilterSettings(filterSettings);
+    };
+    
+    ConDecTreeViewer.prototype.updateViewForFilterSettings = function (filterSettings) {
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-jstree", "jstree");
 		jQuery("#jstree").on("loaded.jstree", function() {
 			jQuery("#jstree").jstree("open_all");
+		});
+		jQuery("#jstree").on("select_node.jstree", function(error, tree) {
+			var node = tree.node.data;
+			document.getElementById("selected-element-jstree").innerText = node.key;
 		});
 	};
 

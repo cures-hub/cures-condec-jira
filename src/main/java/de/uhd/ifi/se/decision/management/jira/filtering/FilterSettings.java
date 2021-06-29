@@ -3,10 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -25,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -32,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.PassRule;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
@@ -62,7 +59,6 @@ public class FilterSettings {
 	private boolean isTestCodeShown;
 	private boolean isOnlyIncompleteKnowledgeShown;
 	private int linkDistance;
-	private int minimumDecisionCoverage;
 	private int minDegree;
 	private int maxDegree;
 	private KnowledgeElement selectedElement;
@@ -71,57 +67,44 @@ public class FilterSettings {
 	private boolean isHierarchical;
 	private boolean isIrrelevantTextShown;
 	private boolean createTransitiveLinks;
-	private boolean isCiaRequest;
-	private Map<String, Float> linkImpact;
-	private List<PassRule> passRule;
-	private long context;
-	private double decayValue;
-	private double threshold;
-	private boolean noColors;
-
-	private String displayType;
+	private boolean areQualityProblemsHighlighted;
+	private DefinitionOfDone definitionOfDone;
+	private boolean areChangeImpactsHighlighted;
+	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
-	@JsonCreator
-	public FilterSettings(@JsonProperty("projectKey") String projectKey,
-			@JsonProperty("searchTerm") String searchTerm) {
-		this.project = new DecisionKnowledgeProject(projectKey);
-		setSearchTerm(searchTerm);
-
-		// the following values are the default values of the filter criteria
-		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
-		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
+	public FilterSettings() {
 		this.startDate = -1;
 		this.endDate = -1;
+		this.linkDistance = 3;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isOnlyIncompleteKnowledgeShown = false;
-		this.linkDistance = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getMaximumLinkDistanceToDecisions();
-		this.minimumDecisionCoverage = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.getMinimumDecisionsWithinLinkDistance();
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;
 		this.isIrrelevantTextShown = false;
+		this.areQualityProblemsHighlighted = true;
+		this.definitionOfDone = new DefinitionOfDone();
+		this.areChangeImpactsHighlighted = false;
+		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfiguration();
+	}
 
-		this.linkImpact = new HashMap<>();
-		DecisionKnowledgeProject.getAllNamesOfLinkTypes().forEach(entry -> {
-			linkImpact.put(entry, 1.0f);
-		});
-		this.displayType = "";
-		this.passRule = new LinkedList<>();
-		this.decayValue = 0.75;
-		this.threshold = 0.25;
-		this.context = 0;
-		this.isCiaRequest = false;
-		this.noColors = true;
+	@JsonCreator
+	public FilterSettings(@JsonProperty("projectKey") String projectKey,
+			@JsonProperty("searchTerm") String searchTerm) {
+		this();
+		this.project = new DecisionKnowledgeProject(projectKey);
+		setSearchTerm(searchTerm);
+		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
+		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
+		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -353,26 +336,6 @@ public class FilterSettings {
 	}
 
 	/**
-	 * @return minimum number of decisions within the link distance of a knowledge
-	 *         element (=node) to be included in the filtered graph.
-	 */
-	@XmlElement
-	public int getMinimumDecisionCoverage() {
-		return minimumDecisionCoverage;
-	}
-
-	/**
-	 * @param minimumDecisionCoverage
-	 *            nodes with at least this many decisions within the link distance
-	 *            are included in the filtered graph. All nodes with less decisions
-	 *            within the link distance are not included.
-	 */
-	@JsonProperty
-	public void setMinimumDecisionCoverage(int minimumDecisionCoverage) {
-		this.minimumDecisionCoverage = minimumDecisionCoverage;
-	}
-
-	/**
 	 * @return minimal number of links that a knowledge element (=node) needs to
 	 *         have to be included in the filtered graph.
 	 */
@@ -586,6 +549,97 @@ public class FilterSettings {
 		this.createTransitiveLinks = createTransitiveLinks;
 	}
 
+	/**
+	 * @return true if violations against the {@link DefinitionOfDone} should be
+	 *         highlighted within the knowledge subgraph matching the filter
+	 *         settings. The text of the nodes in the knowledge graph views is
+	 *         colored for highlighting. The details for change impact estimation
+	 *         are stored in the {@link DefinitionOfDone} class.
+	 */
+	public boolean areQualityProblemHighlighted() {
+		return areQualityProblemsHighlighted;
+	}
+
+	/**
+	 * @param areQualityProblemsHighlighted
+	 *            true if violations against the {@link DefinitionOfDone} should be
+	 *            highlighted within the knowledge subgraph matching the filter
+	 *            settings. The text of the nodes in the knowledge graph views is
+	 *            colored for highlighting. The details for change impact estimation
+	 *            are stored in the {@link DefinitionOfDone} class.
+	 */
+	@JsonProperty("areQualityProblemsHighlighted")
+	public void highlightQualityProblems(boolean areQualityProblemsHighlighted) {
+		this.areQualityProblemsHighlighted = areQualityProblemsHighlighted;
+	}
+
+	/**
+	 * @return rules (criteria) that the knowledge documentation needs to fulfill in
+	 *         order to have high quality. Is only used if
+	 *         {@link #areQualityProblemsHighlighted()} is true.
+	 */
+	@XmlElement
+	public DefinitionOfDone getDefinitionOfDone() {
+		return definitionOfDone;
+	}
+
+	/**
+	 * @param definitionOfDone
+	 *            rules (criteria) that the knowledge documentation needs to fulfill
+	 *            in order to have high quality. Is only used if
+	 *            {@link #areQualityProblemsHighlighted()} is true.
+	 */
+	@JsonProperty
+	public void setDefinitionOfDone(DefinitionOfDone definitionOfDone) {
+		if (definitionOfDone.getMinimumDecisionsWithinLinkDistance() > 0) {
+			this.definitionOfDone = definitionOfDone;
+		}
+	}
+
+	/**
+	 * @return true if the impacts of a change in the selected element should be
+	 *         highlighted within the knowledge subgraph matching the filter
+	 *         settings. The background of the nodes in the knowledge graph views is
+	 *         colored for highlighting. The details for change impact estimation
+	 *         are stored in the {@link ChangeImpactAnalysisConfiguration} class.
+	 */
+	public boolean areChangeImpactsHighlighted() {
+		return areChangeImpactsHighlighted;
+	}
+
+	/**
+	 * @param areChangeImpactsHighlighted
+	 *            true if the impacts of a change in the selected element should be
+	 *            highlighted within the knowledge subgraph matching the filter
+	 *            settings. The background of the nodes in the knowledge graph views
+	 *            is colored for highlighting. The details for change impact
+	 *            estimation are stored in the
+	 *            {@link ChangeImpactAnalysisConfiguration} class.
+	 */
+	@JsonProperty("areChangeImpactsHighlighted")
+	public void highlightChangeImpacts(boolean areChangeImpactsHighlighted) {
+		this.areChangeImpactsHighlighted = areChangeImpactsHighlighted;
+	}
+
+	/**
+	 * @return settings for change impact estimation in a change of the selected
+	 *         element. Is only used if {@link #areChangeImpactsHighlighted()} is
+	 *         true.
+	 */
+	public ChangeImpactAnalysisConfiguration getChangeImpactAnalysisConfig() {
+		return changeImpactAnalysisConfig;
+	}
+
+	/**
+	 * @param changeImpactAnalysisConfig
+	 *            settings for change impact estimation in a change of the selected
+	 *            element. Is only used if {@link #areChangeImpactsHighlighted()} is
+	 *            true.
+	 */
+	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
+		this.changeImpactAnalysisConfig = changeImpactAnalysisConfig;
+	}
+
 	@Override
 	public String toString() {
 		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
@@ -599,85 +653,5 @@ public class FilterSettings {
 			LOGGER.error(e.getMessage());
 		}
 		return filterSettingsAsJson;
-	}
-
-	public long getContext() {
-		return context;
-	}
-
-	@JsonProperty
-	public void setContext(long context) {
-		this.context = context;
-	}
-
-	public String getDisplayType() {
-		return displayType;
-	}
-
-	@JsonProperty
-	public void setDisplayType(String displayType) {
-		this.displayType = displayType;
-	}
-
-	public Map<String, Float> getLinkImpact() {
-		return linkImpact;
-	}
-
-	@JsonProperty
-	public void setLinkImpact(Map<String, Float> linkImpact) {
-		this.linkImpact = linkImpact;
-	}
-
-	public double getDecayValue() {
-		return decayValue;
-	}
-
-	@JsonProperty
-	public void setDecayValue(double decayValue) {
-		this.decayValue = decayValue;
-	}
-
-	public double getThreshold() {
-		return threshold;
-	}
-
-	@JsonProperty
-	public void setThreshold(double threshold) {
-		this.threshold = threshold;
-	}
-
-	public boolean isCiaRequest() {
-		return isCiaRequest;
-	}
-
-	@JsonProperty("isCiaRequest")
-	public void setCiaRequest(boolean ciaRequest) {
-		isCiaRequest = ciaRequest;
-	}
-
-	@XmlElement
-	public List<PassRule> getPropagationRule() {
-		return passRule;
-	}
-
-	@JsonProperty
-	public void setPropagationRule(List<String> rule) {
-		if (rule == null) {
-			passRule.clear();
-			return;
-		}
-		passRule.clear();
-		for (String stringRule : rule) {
-			passRule.add(PassRule.getPropagationRule(stringRule));
-		}
-	}
-
-	public boolean isNoColors() {
-		return noColors;
-	}
-
-	@JsonProperty("noColors")
-	public void setNoColors(boolean noColors) {
-		this.noColors = noColors;
 	}
 }

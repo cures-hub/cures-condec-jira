@@ -17,8 +17,8 @@
         // Fill HTML elements for filter criteria
         conDecFiltering.fillFilterElements("treant");
 
-        // Add event listeners to HTML elements for filtering
-        conDecFiltering.addOnChangeEventToFilterElements("treant", conDecTreant.updateView);
+     	// Add on click listeners to filter button
+     	conDecFiltering.addOnClickEventToFilterButton("treant", conDecTreant.updateView);
 
         // Register/subscribe this view as an observer
         conDecObservable.subscribe(this);
@@ -31,7 +31,6 @@
         console.log("ConDecTreant updateView");
         var filterSettings = conDecFiltering.getFilterSettings("treant");
         filterSettings["projectKey"] = conDecAPI.getProjectKey();
-        filterSettings["selectedElement"] = conDecAPI.getIssueKey();
 		filterSettings["isTestCodeShown"] = document.getElementById("is-test-code-input-treant").checked;
         conDecTreant.buildTreant(filterSettings, true);
     };
@@ -55,31 +54,8 @@
                 addContextMenuToTreant();
                 addTooltip();
             }
-            if (!filterSettings["noColors"]) {
-				changeColorForNodes();
-			}
         });
     };
-
-    function changeColorForNodes() {
-        var treantNodes = document.getElementsByClassName("node");
-        for (var i = 0; i < treantNodes.length; i++) {
-            changeColorForNode(treantNodes[i]);
-        }
-    }
-
-    function changeColorForNode(node) {
-		var filterSettings = conDecFiltering.getFilterSettings("treant");
-		filterSettings["projectKey"] = conDecAPI.getProjectKey();
-		filterSettings["selectedElement"] = node.getElementsByClassName("node-desc")[0].textContent;
-		conDecDoDCheckingAPI.getFailedDefinitionOfDoneCriteria(filterSettings, function(result) {
-			if (result && result.length) {
-				for (var j = 1; j < node.childNodes.length - 1; j++) {
-					node.childNodes[j].style.color = "crimson";
-				}
-			}
-		});
-	}
 
     function addDragAndDropSupportForTreant() {
         console.log("conDecTreant addDragAndDropSupportForTreant");

@@ -1,23 +1,5 @@
-<div class="aui-toolbar2" role="toolbar">
-    <div class="aui-toolbar-2-inner">
-        <form class="aui">
-            <div class="condec-filter">
-                #set ($viewIdentifier = "decision-table")
-                #parse("templates/filter/text.vm")	
-                #parse("templates/filter/status.vm")
-                #parse("templates/filter/decisionGroup.vm")
-        	    #parse("templates/filter/documentationDate.vm")
-                #parse("templates/filter/documentationLocation.vm")
-                #parse("templates/filter/linkDistance.vm")                
-                #parse("templates/filter/degree.vm")
-            </div>
-            <div class="decision-table-dropdown">
-                <label for="decision-problem-dropdown">Select Issues: </label>
-                <select class="select long-field" id="decision-problem-dropdown"></select>         
-            </div>   
-        </form>
-	</div>
-</div>
+#set ($viewIdentifier = "decision-table")	
+#parse("templates/filter/allCriteria.vm")
 #parse("templates/tabs/decisiontable/decisionTable.vm")
 #parse("templates/tabs/recommendation/decisionGuidanceTable.vm")
 <script>

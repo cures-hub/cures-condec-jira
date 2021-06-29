@@ -115,7 +115,7 @@ public class RationaleCoverageCalculator {
 			}
 		}
 
-		int minimumDecisionCoverage = filterSettings.getMinimumDecisionCoverage();
+		int minimumDecisionCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
 
 		StringBuilder withHighLinks = new StringBuilder();
 		StringBuilder withLowLinks = new StringBuilder();

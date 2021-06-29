@@ -47,6 +47,8 @@ public class VisGraph {
 	private KnowledgeElement selectedElement;
 
 	@JsonIgnore
+	private FilterSettings filterSettings;
+	@JsonIgnore
 	private Graph<KnowledgeElement, Link> subgraph;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VisGraph.class);
@@ -62,10 +64,11 @@ public class VisGraph {
 			return;
 		}
 		LOGGER.info(filterSettings.toString());
+		this.filterSettings = filterSettings;
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		subgraph = filteringManager.getFilteredGraph();
 		selectedElement = filterSettings.getSelectedElement();
-		addNodesAndEdges(filterSettings.isHierarchical(), filterSettings.isNoColors());
+		addNodesAndEdges();
 	}
 
 	/**
@@ -74,14 +77,14 @@ public class VisGraph {
 	 *            provided by the {@link FilteringManager} should be shown with a
 	 *            hierarchy of nodes.
 	 */
-	private void addNodesAndEdges(boolean isHierarchical, boolean noColors) {
+	private void addNodesAndEdges() {
 		if (selectedElement != null) {
 			subgraph.addVertex(selectedElement);
 		}
-		if (isHierarchical) {
-			addNodesAndEdgesWithHierarchy(noColors);
+		if (filterSettings.isHierarchical()) {
+			addNodesAndEdgesWithHierarchy();
 		} else {
-			addNodesAndEdgesWithoutHierarchy(noColors);
+			addNodesAndEdgesWithoutHierarchy();
 		}
 	}
 
@@ -91,7 +94,7 @@ public class VisGraph {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 */
-	private void addNodesAndEdgesWithHierarchy(boolean noColors) {
+	private void addNodesAndEdgesWithHierarchy() {
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<>(subgraph);
 
 		Set<Link> allEdges = new HashSet<>();
@@ -100,15 +103,15 @@ public class VisGraph {
 
 		while (iterator.hasNext()) {
 			KnowledgeElement element = iterator.next();
-			nodes.add(new VisNode(element, iterator.getDepth(element), noColors));
+			nodes.add(new VisNode(element, iterator.getDepth(element), filterSettings));
 			allEdges.addAll(undirectedGraph.edgesOf(element));
 		}
 
 		allEdges.forEach(link -> edges.add(new VisEdge(link)));
 	}
 
-	private void addNodesAndEdgesWithoutHierarchy(boolean noColors) {
-		subgraph.vertexSet().forEach(element -> nodes.add(new VisNode(element, noColors)));
+	private void addNodesAndEdgesWithoutHierarchy() {
+		subgraph.vertexSet().forEach(element -> nodes.add(new VisNode(element, filterSettings)));
 		subgraph.edgeSet().forEach(link -> edges.add(new VisEdge(link)));
 	}
 

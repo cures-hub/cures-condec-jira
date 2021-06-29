@@ -27,6 +27,8 @@
 	};
 
 	ConDecKnowledgePage.prototype.fetchAndRender = function() {
+		conDecFiltering.fillFilterElements("overview");
+		
 		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
@@ -60,14 +62,10 @@
 				createElementButton.style.display = "none";
 				elementInputField.style.display = "none";
 			}
-		});
-
-		conDecFiltering.initDropdown("documentation-location-dropdown-overview", conDecAPI.documentationLocations);
-		conDecFiltering.initDropdown("status-dropdown-overview", conDecAPI.knowledgeStatus);
-		conDecFiltering.fillDecisionGroupSelect("select2-decision-group-overview");
-
-		conDecFiltering.addOnChangeEventToFilterElements("overview", conDecKnowledgePage.updateView, false);
-
+		});		
+		
+		// Add on click listeners to filter button
+     	conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);     	
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
 		this.updateView();
@@ -101,6 +99,7 @@
 			var node = tree.node.data;
 			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
+			document.getElementById("selected-element-overview").innerText = node.key;
 			filterSettings["selectedElement"] = node.key;
 
 			conDecTreant.buildTreant(filterSettings, true, "treant-overview");

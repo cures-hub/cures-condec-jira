@@ -20,141 +20,88 @@
  *           conDecRationaleBacklog! Perform filtering using a "filter" button
  *           in other views, e.g. chronology view!
  */
-(function (global) {
+(function(global) {
 
-	var ConDecFiltering = function () {
+	var ConDecFiltering = function() {
 		console.log("conDecFiltering constructor");
 	};
 
-	/*
+	/**
 	 * Fills the HTML elements for basic filter criteria such as knowledge
 	 * types, status, ... of a view.
-	 *
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page, condec.matrix
 	 */
-	ConDecFiltering.prototype.fillFilterElements = function (viewIdentifier, selectedKnowledgeTypes) {
+	ConDecFiltering.prototype.fillFilterElements = function(viewIdentifier, selectedKnowledgeTypes) {
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 			selectedKnowledgeTypes, ["Other", "Code"]);
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
+
+		// selected element
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		if (jiraIssueKey !== null && jiraIssueKey !== undefined) {
+			document.getElementById("selected-element-" + viewIdentifier).innerText = jiraIssueKey;
+		}
+
+		// quality highlighting	
+		conDecDoDCheckingAPI.getDefinitionOfDone(conDecAPI.getProjectKey(), (definitionOfDone) => {
+			var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
+			var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
+			if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+				minDecisionCoverageInput.value = definitionOfDone["minimumDecisionsWithinLinkDistance"];
+				maxLinkDistanceInput.value = definitionOfDone["maximumLinkDistanceToDecisions"];
+			}
+		});
+
+		// change impact highlighting	
+		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
+			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
+			$("#threshold-input-" + viewIdentifier)[0].value = config["threshold"];
+			conDecFiltering.initDropdown("propagation-rule-dropdown-" + viewIdentifier,
+				config["propagationRules"], []);
+		});
+
 		window.onbeforeunload = null;
 	};
 
 	/**
-	 * For views with filter button, i.e., NO instant filtering.
-	 *
-	 * external references: condec.jira.issue.module, condec.evolution.page,
-	 * condec.relationship.page, condec.matrix
+	 * Inits the filter button. NO instant filtering is done on change events.
 	 */
-	ConDecFiltering.prototype.addOnClickEventToFilterButton = function (viewIdentifier, callback) {
+	ConDecFiltering.prototype.addOnClickEventToFilterButton = function(viewIdentifier, callback) {
 		var filterButton = document.getElementById("filter-button-" + viewIdentifier);
+		addOnClickEventToButton(filterButton, viewIdentifier, callback);
+	};
 
-		filterButton.addEventListener("click", function (event) {
+	/**
+	 * Inits the change impact analysis button.
+	 */
+	ConDecFiltering.prototype.addOnClickEventToChangeImpactButton = function(viewIdentifier, callback) {
+		var ciaButton = document.getElementById("cia-button-" + viewIdentifier);
+		addOnClickEventToButton(ciaButton, viewIdentifier, (filterSettings) => {
+			if (filterSettings["selectedElement"] === undefined) {
+				conDecAPI.showFlag("error", "You need to select an element to perform change impact analysis!");
+			} else {
+				filterSettings["areChangeImpactsHighlighted"] = true;
+				callback(filterSettings);
+			}
+		});
+	};
+
+	function addOnClickEventToButton(button, viewIdentifier, callback) {
+		button.addEventListener("click", function(event) {
 			var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 			callback(filterSettings);
 		});
-	};
-
-	/**
-	 * For views without filter button but instant filtering.
-	 *
-	 * external references: condec.jira.issue.module, condec.knowledge.page,
-	 * condec.rationale.backlog
-	 */
-	ConDecFiltering.prototype.addOnChangeEventToFilterElements = function (viewIdentifier, callback, isSearchInputEvent = true) {
-		$("#select2-decision-group-" + viewIdentifier).on("change.select2",
-			function () {
-				callback();
-			});
-
-		var knowledgeTypeDropdown = document.getElementById("knowledge-type-dropdown-" + viewIdentifier);
-		if (knowledgeTypeDropdown !== null) {
-			knowledgeTypeDropdown.addEventListener("click", () => callback());
-		}
-
-		var statusDropdown = document.getElementById("status-dropdown-" + viewIdentifier);
-		if (statusDropdown !== null) {
-			statusDropdown.addEventListener("click", () => callback());
-		}
-
-		var documentationLocationDropdown = document.getElementById("documentation-location-dropdown-" + viewIdentifier);
-		if (documentationLocationDropdown !== null) {
-			documentationLocationDropdown.addEventListener("click", () => callback());
-		}
-
-		var filterElements = [];
-
-		var searchInput = document.getElementById("search-input-" + viewIdentifier);
-		if (isSearchInputEvent && searchInput !== null) {
-			filterElements.push(searchInput);
-		}
-
-		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
-		if (linkDistanceInput !== null) {
-			filterElements.push(linkDistanceInput);
-		}
-
-		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
-		if (isOnlyDecisionKnowledgeShownInput !== null) {
-			filterElements.push(isOnlyDecisionKnowledgeShownInput);
-		}
-
-		var minLinkNumberInput = document.getElementById("min-degree-input-" + viewIdentifier);
-		if (minLinkNumberInput !== null) {
-			filterElements.push(minLinkNumberInput);
-		}
-
-		var maxLinkNumberInput = document.getElementById("max-degree-input-" + viewIdentifier);
-		if (maxLinkNumberInput !== null) {
-			filterElements.push(maxLinkNumberInput);
-		}
-
-		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
-		if (endDatePicker !== null) {
-			filterElements.push(endDatePicker);
-		}
-
-		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
-		if (startDatePicker !== null) {
-			filterElements.push(startDatePicker);
-		}
-
-		var isIrrelevantTextShownInput = document.getElementById("show-irrelevant-text-input-" + viewIdentifier);
-		if (isIrrelevantTextShownInput !== null) {
-			filterElements.push(isIrrelevantTextShownInput);
-        }
-
-        var isTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
-		if (isTransitiveLinksInput !== null) {
-			filterElements.push(isTransitiveLinksInput);
-		}
-		
-		var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
-		if (isTestCodeShownInput !== null) {
-			filterElements.push(isTestCodeShownInput);
-		}
-
-		var isNoColorsInput = document.getElementById("no-colors-input-" + viewIdentifier);
-		if (isNoColorsInput !== null) {
-			filterElements.push(isNoColorsInput);
-		}
-
-		filterElements.forEach(function (filterElement) {
-			filterElement.addEventListener("input", () => callback());
-		});
-		window.onbeforeunload = null;
-	};
+	}
 
 	/*
 	 * Reads the filter settings from the HTML elements of a view.
 	 *
-	 * external references: condec.jira.issue.module, condec.knowledge.page,
-	 * condec.evolution.page, condec.rationale.backlog
+	 * external references: condec.tree.viewer, condec.treant, condec.decision.table, 
+	 * condec.knowledge.page, condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.getFilterSettings = function (viewIdentifier) {
+	ConDecFiltering.prototype.getFilterSettings = function(viewIdentifier) {
 		var filterSettings = {};
 
 		// Read search term
@@ -190,8 +137,7 @@
 			filterSettings["endDate"] = endDate;
 		}
 
-		// Read selected min and max degree (number of linked elements for a
-		// element/node)
+		// Read selected min and max degree (number of linked elements for an element/node)
 		var minDegreeInput = document.getElementById("min-degree-input-" + viewIdentifier);
 		var maxDegreeInput = document.getElementById("max-degree-input-" + viewIdentifier);
 		if (minDegreeInput !== null && maxDegreeInput !== null) {
@@ -241,49 +187,63 @@
 			filterSettings["isHierarchical"] = isHierarchicalGraphInput.checked;
 		}
 
-        // Read whether filtered nodes should be replaced by links
-        var createTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
-        if (createTransitiveLinksInput !== null) {
-            filterSettings["createTransitiveLinks"] = createTransitiveLinksInput.checked;
-        }
-        
-     	// Read whether test code should be shown
-        var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
-        if (isTestCodeShownInput !== null) {
-            filterSettings["isTestCodeShown"] = isTestCodeShownInput.checked;
-        }
-
-		// Read whether nodes should be colored
-		var isNoColorsInput = document.getElementById("no-colors-input-" + viewIdentifier);
-		if (isNoColorsInput !== null) {
-			filterSettings["noColors"] = isNoColorsInput.checked;
-		}
-        
-		// Read whether knowledge graph should be shown with CIA Context or not
-		var displayType = document.getElementById("select2-display-type-" + viewIdentifier);
-		if (displayType !== null) {
-			filterSettings["displayType"] = displayType.value;
+		// Read whether filtered nodes should be replaced by links
+		var createTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
+		if (createTransitiveLinksInput !== null) {
+			filterSettings["createTransitiveLinks"] = createTransitiveLinksInput.checked;
 		}
 
+		// Read whether test code should be shown
+		var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
+		if (isTestCodeShownInput !== null) {
+			filterSettings["isTestCodeShown"] = isTestCodeShownInput.checked;
+		}
+
+		// Read selected element
+		var selectedElementOutput = document.getElementById("selected-element-" + viewIdentifier);
+		if (selectedElementOutput !== null && selectedElementOutput.innerText !== "-") {
+			filterSettings["selectedElement"] = selectedElementOutput.innerText;
+		}
+
+		// Read whether nodes that violate the definition of done (DoD) should be highlighted (colored)
+		var isDoDViolationShownInput = document.getElementById("is-dod-violation-shown-input-" + viewIdentifier);
+		if (isDoDViolationShownInput !== null) {
+			filterSettings["areQualityProblemsHighlighted"] = isDoDViolationShownInput.checked;
+		}
+
+		// Read definition of done (DoD) (in particular decision coverage config)
+		var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
+		var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
+		if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+			filterSettings["definitionOfDone"] = {
+				"minimumDecisionsWithinLinkDistance": minDecisionCoverageInput.value,
+				"maximumLinkDistanceToDecisions": maxLinkDistanceInput.value
+			}
+		}
+
+		filterSettings["changeImpactAnalysisConfig"] = {};
+		// Read decay value for change impact analysis (CIA)
 		var decayValue = document.getElementById("decay-input-" + viewIdentifier);
 		if (decayValue !== null) {
-			filterSettings["decayValue"] = decayValue.value;
+			filterSettings["changeImpactAnalysisConfig"]["decayValue"] = decayValue.value;
 		}
 
+		// Read threshold value for change impact analysis (CIA)
 		var threshold = document.getElementById("threshold-input-" + viewIdentifier);
 		if (threshold !== null) {
-			filterSettings["threshold"] = threshold.value;
+			filterSettings["changeImpactAnalysisConfig"]["threshold"] = threshold.value;
 		}
 
+		// Read whether knowledge graph should be shown with CIA context or not
 		var context = document.getElementById("context-input-" + viewIdentifier);
 		if (context !== null) {
-			filterSettings["context"] = context.value;
+			filterSettings["changeImpactAnalysisConfig"]["context"] = context.value;
 		}
 
-		// Read selected link types
-		var propagationRule = conDecFiltering.getSelectedItems("propagation-rule-dropdown-" + viewIdentifier);
-		if (propagationRule) {
-			filterSettings["propagationRule"] = propagationRule;
+		// Read propagation rules for change impact analysis (CIA)
+		var propagationRules = conDecFiltering.getSelectedItems("propagation-rule-dropdown-" + viewIdentifier);
+		if (propagationRules) {
+			filterSettings["changeImpactAnalysisConfig"]["propagationRules"] = propagationRules;
 		}
 
 		return filterSettings;
@@ -292,7 +252,7 @@
 	/*
 	 * external references: condec.knowledge.page, condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.initDropdown = function (dropdownId, items, selectedItems, unselectedItems) {
+	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems, unselectedItems) {
 		var dropdown = document.getElementById(dropdownId);
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
@@ -319,7 +279,7 @@
 	/*
 	 * external references: none, only used locally in condec.filtering
 	 */
-	ConDecFiltering.prototype.getSelectedItems = function (dropdownId) {
+	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
 		var dropdown = document.getElementById(dropdownId);
 		if (dropdown === null || dropdown === undefined || dropdown.length === 0) {
 			return null;
@@ -346,7 +306,7 @@
 	 * external references: condec.knowledge.page, condec.evolution.page,
 	 * condec.relationship.page, condec.rationale.backlog
 	 */
-	ConDecFiltering.prototype.getSelectedGroups = function (selectId) {
+	ConDecFiltering.prototype.getSelectedGroups = function(selectId) {
 		var selectedGroupsObj = AJS.$("#" + selectId).select2("data");
 		if (selectedGroupsObj === null || selectedGroupsObj === undefined) {
 			return null;
@@ -363,14 +323,14 @@
 	/*
 	 * external references: condec.jira.issue.module, condec.knowledge.page
 	 */
-	ConDecFiltering.prototype.fillDatePickers = function (viewIdentifier, deltaDays) {
+	ConDecFiltering.prototype.fillDatePickers = function(viewIdentifier, deltaDays) {
 		var startDate = new Date();
 		startDate.setDate(startDate.getDate() - deltaDays);
 		document.getElementById("start-date-picker-" + viewIdentifier).value = startDate.toISOString().substr(0, 10);
 		document.getElementById("end-date-picker-" + viewIdentifier).value = new Date().toISOString().substr(0, 10);
 	};
 
-	ConDecFiltering.prototype.fillDecisionGroupSelect = function (elementId) {
+	ConDecFiltering.prototype.fillDecisionGroupSelect = function(elementId) {
 		var selectGroupField = document.getElementById(elementId);
 		if (selectGroupField === null || selectGroupField === undefined) {
 			return null;

@@ -1,11 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.model.cia;
-
-import de.uhd.ifi.se.decision.management.jira.model.PassRule;
-import org.junit.Test;
+package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import static org.junit.Assert.assertEquals;
 
-public class UndefinedPassRuleTest {
+import org.junit.Test;
+
+public class TestUndefinedPassRule {
 
 	@Test
 	public void passTest() {

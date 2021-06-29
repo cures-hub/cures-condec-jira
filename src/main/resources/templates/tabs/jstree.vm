@@ -1,24 +1,5 @@
-<div class="aui-toolbar2" role="toolbar">
-    <div class="aui-toolbar-2-inner">
-        <form class="aui condec-filter">
-        	#set ($viewIdentifier = "jstree")	
-        	#parse("templates/filter/text.vm")	
-        	#parse("templates/filter/knowledgeType.vm")
-        	#parse("templates/filter/status.vm")
-        	#parse("templates/filter/decisionGroup.vm")
-        	#parse("templates/filter/documentationDate.vm")
-        	#parse("templates/filter/degree.vm")
-        	#parse("templates/filter/linkDistance.vm")
-        	#parse("templates/filter/isDecisionKnowledgeOnly.vm")     
-        	#parse("templates/filter/isIrrelevantText.vm")     
-        	#parse("templates/filter/isTestCode.vm")    
-			#if($showTransitiveFilter)
-        	#parse("templates/filter/isTransitiveLinks.vm")
-			#end
-            #parse("templates/filter/colorNodes.vm")
-        </form>
-    </div>
-</div>
+#set ($viewIdentifier = "jstree")	
+#parse("templates/filter/allCriteria.vm")
 <div id="jstree"></div>
 <script>
 /* Adds the on click listener on tab opening */
