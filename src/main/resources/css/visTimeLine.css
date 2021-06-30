@@ -1,3 +1,7 @@
+.vis-item {
+    display: inline;
+}
+
 .vis-item.decision {
     background-color: rgba(252,227,190,1);
 }
@@ -33,7 +37,6 @@
 .vis-item.implication {
     background-color: rgba(255, 255, 255,1);
 }
-
 
 .vis-item.context {
     background-color: rgba(255, 255, 221,1);
@@ -72,4 +75,8 @@
     border-color: black;
     color: black;
     box-shadow: 0 0 10px gray;
+}
+
+.vis-item.dodViolation {
+	color: crimson;
 }

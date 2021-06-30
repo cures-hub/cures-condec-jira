@@ -123,9 +123,9 @@ public class TreeViewer {
 	 * @decision Convert the directed graph into an undirected graph for graph
 	 *           iteration!
 	 * 
-	 * @issue How to handle loops in the graph?
+	 * @issue How to handle cycles in the graph?
 	 * @decision Traverse all edges in the graph and duplicate knowledge elements to
-	 *           resolve the loop! Store edge traversed by the breadth first
+	 *           resolve the cycle! Store edge traversed by the breadth first
 	 *           iterator and traverse the remaining edges afterwards!
 	 * @alternative Only use breadth first iteration to traverse the graph!
 	 * @con The breadth first iterator does not traverse all edges but every node

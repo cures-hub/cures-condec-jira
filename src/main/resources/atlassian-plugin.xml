@@ -73,7 +73,7 @@
 		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
 		<resource type="download" name="vis-network.css" location="/js/lib/vis-network/dist/dist/vis-network.css" />
 		<resource type="download" name="vis-timeline-graph2d.min.css"
-			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.css" />
+			location="/js/lib/vis-timeline/styles/vis-timeline-graph2d.min.css" />
 		<!-- look and feel like Jira -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -117,7 +117,9 @@
 		<!--Vis -->
 		<resource type="download" name="vis-network.js" location="/js/lib/vis-network/dist/vis-network.js" />
 		<resource type="download" name="vis-timeline-graph2d.min.js"
-			location="/js/lib/vis-timeline/dist/vis-timeline-graph2d.min.js" />
+			location="/js/lib/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js" />
+			<resource type="download" name="vis-timeline-graph2d.min.js.map"
+			location="/js/lib/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js.map" />
 		<!-- ConDec JavaScript files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />

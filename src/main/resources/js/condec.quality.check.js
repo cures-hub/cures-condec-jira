@@ -45,9 +45,9 @@
 	};
 
 	function resetView(projectKey, viewIdentifier) {
-		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
-			var minimumCoverage = filterSettings.minimumDecisionCoverage;
-			var linkDistance = filterSettings.linkDistance;
+		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
+			var minimumCoverage = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			var linkDistance = definitionOfDone.maximumLinkDistanceToDecisions;
 
 			getHTMLNodes("menu-item-quality-check-" + viewIdentifier
 				, "condec-tab-minimum-coverage-" + viewIdentifier
@@ -66,9 +66,9 @@
 	}
 
 	function updateView(projectKey, issueKey, viewIdentifier) {
-		conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
-			var minimumCoverage = filterSettings.minimumDecisionCoverage;
-			var linkDistance = filterSettings.linkDistance;
+		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
+			var minimumCoverage = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			var linkDistance = definitionOfDone.maximumLinkDistanceToDecisions;
 
 			conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, function(result) {
 				var numberOfIssues = result.Issue;

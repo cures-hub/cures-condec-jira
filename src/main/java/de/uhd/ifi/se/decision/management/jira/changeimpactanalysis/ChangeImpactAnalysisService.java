@@ -49,21 +49,21 @@ public class ChangeImpactAnalysisService {
 	}
 
 	public static Matrix calculateMatrixImpact(FilterSettings filterSettings) {
-		HashMap<KnowledgeElement, Double> impactGraph = calculateImpactedKnowledgeElements(filterSettings);
+		Map<KnowledgeElement, Double> impactGraph = calculateImpactedKnowledgeElements(filterSettings);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElement> elementSet = impactGraph.keySet().stream()
 				.filter(knowledgeElement -> filteringManager.isElementMatchingKnowledgeTypeFilter(knowledgeElement))
 				.filter(knowledgeElement -> filteringManager.isElementMatchingStatusFilter(knowledgeElement))
 				.collect(Collectors.toSet());
-		Map<Long, String> colorMap = new HashMap<>();
+		Map<KnowledgeElement, String> colorMap = new HashMap<>();
 		elementSet.forEach(entry -> {
 			if (impactGraph.get(entry) != 0.0) {
-				colorMap.put(entry.getId(), colorForImpact(impactGraph.get(entry)));
+				colorMap.put(entry, colorForImpact(impactGraph.get(entry)));
 			} else {
-				colorMap.put(entry.getId(), "#ffffff");
+				colorMap.put(entry, "#FFFFFF");
 			}
 		});
-		return new Matrix(elementSet, colorMap);
+		return new Matrix(elementSet, filterSettings, colorMap);
 	}
 
 	private static HashMap<KnowledgeElement, Double> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
