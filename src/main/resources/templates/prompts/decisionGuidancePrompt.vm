@@ -1,23 +1,21 @@
 <div id="decision-guidance-prompt" style="display:none">
     <h3>Decision Guidance</h3>
-    <div>
-        This Jira issue is linked to <strong id="num-decision-problems"></strong> decision problems.
-        <br/>
-        <div id="decision-problems-overview">
-            The decision problems are:
-            <table id="decision-problems-table">
-                <thead>
-                <tr>
-                    <th>Decision Problem</th>
-                    <th>Number of recommendations</th>
-                </tr>
-                </thead>
-                <tbody id="decision-problems-table-body">
-                </tbody>
-            </table>
-        </div>
-
+    This Jira issue is linked to <strong id="num-decision-problems"></strong> decision problems, which may have decision
+    guidance suggestions.
+    <br/>
+    <div id="decision-problems-overview">
+        <table id="decision-problems-table" class="aui aui-table-list">
+            <thead>
+            <tr>
+                <th class="aui-table-column">Decision Problem</th>
+                <th class="aui-table-column">Number of recommendations</th>
+            </tr>
+            </thead>
+            <tbody id="decision-problems-table-body">
+            </tbody>
+        </table>
     </div>
+
     ##<table id="recommendation-container-short" class="aui aui-table-list">
     ##	<thead>
     ##		<tr>

@@ -14,24 +14,36 @@
 				conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId).then((isActivated) => {
 					if (isActivated) {
 						conDecPrompt.promptDefinitionOfDoneChecking();
-						document.getElementById("definition-of-done-prompt").style.display = "block";
+						$(document).ready(function () {
+							document.getElementById("definition-of-done-prompt").style.display = "block";
+						})
 					}
-				}),
-					conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
-						if (isActivated) {
-							conDecPrompt.promptLinkSuggestion();
+				});
+				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptLinkSuggestion();
+						$(document).ready(function () {
 							document.getElementById("link-recommendation-prompt").style.display = "block";
+						})
 
-
-						}
-					}),
-					conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
-						if (isActivated) {
-							conDecPrompt.promptNonValidatedElements();
+					}
+				});
+				conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptNonValidatedElements();
+						$(document).ready(function () {
 							document.getElementById("non-validated-elements-prompt").style.display = "block";
-						}
-					});
-				AJS.dialog2("#unified-prompt").show();
+
+						})
+					}
+				});
+				conDecPrompt.promptDecisionGuidance()
+				$(document).ready(function () {
+					document.getElementById("decision-guidance-prompt").style.display = "block";
+
+					AJS.dialog2("#unified-prompt").show()
+
+				});
 			}
 		});
 	};
@@ -112,7 +124,36 @@
 					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
 				};
 			})
-	}
+	};
+	ConDecPrompt.prototype.promptDecisionGuidance = function () {
+		const issueKey = conDecAPI.getIssueKey();
+		if (issueKey === null || issueKey === undefined) {
+			return;
+		}
+		const projectKey = conDecAPI.getProjectKey();
+		conDecDecisionGuidanceAPI.getRecommendations(projectKey, issueKey, (recommendationsMap, error) => {
+			if (error === null || error === undefined) {
+				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length.toString()
+				var rows = "";
+				Object.keys(recommendationsMap).forEach((id) => {
+					conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
+						console.log("here")
+						console.log(decisionProblem.summary)
+						let tableRow = "<tr>";
+						tableRow += "<td>" + decisionProblem.summary + "</td>";
+						tableRow += "<td>" + recommendationsMap[id].length + "</td>";
+						tableRow += "</tr>";
+						rows += tableRow;
+					});
+				});
+				console.log(rows)
+
+				document.getElementById("decision-problems-table-body").innerHTML = rows;
+
+
+			}
+		});
+	};
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);
