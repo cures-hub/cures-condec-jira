@@ -37,6 +37,10 @@ public class ElementWithHighlighting {
 		return qualityColor;
 	}
 
+	public void setQualityColor(String qualityColor) {
+		this.qualityColor = qualityColor;
+	}
+
 	@XmlElement
 	public String getQualityProblemExplanation() {
 		return qualityProblemExplanation;
@@ -53,9 +57,5 @@ public class ElementWithHighlighting {
 
 	public void setChangeImpactColor(String changeImpactColor) {
 		this.changeImpactColor = changeImpactColor;
-	}
-
-	public void setQualityColor(String qualityColor) {
-		this.qualityColor = qualityColor;
 	}
 }

@@ -33,16 +33,14 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
  */
 public class Matrix {
 
-	private Set<ElementWithHighlighting> headerElements;
-
+	private Set<ElementWithHighlighting> headerElementsWithHighlighting;
 	private int size;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
 
 	public Matrix(Set<KnowledgeElement> elements, FilterSettings filterSettings,
 			Map<KnowledgeElement, String> colorMap) {
 		this(elements, filterSettings);
-		headerElements.forEach(headerElementWithHighlighting -> {
+		headerElementsWithHighlighting.forEach(headerElementWithHighlighting -> {
 			headerElementWithHighlighting
 					.setChangeImpactColor(colorMap.get(headerElementWithHighlighting.getElement()));
 		});
@@ -54,25 +52,25 @@ public class Matrix {
 
 	public Matrix(Set<KnowledgeElement> elements, FilterSettings filterSettings) {
 		LOGGER.info(filterSettings.toString());
-		headerElements = new HashSet<>();
+		headerElementsWithHighlighting = new HashSet<>();
 		elements.forEach(element -> {
 			ElementWithHighlighting elementWithColors = new ElementWithHighlighting(element);
 			if (filterSettings.areQualityProblemHighlighted()) {
 				String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element,
-						new FilterSettings());
+						filterSettings);
 				if (!problemExplanation.isEmpty()) {
 					elementWithColors.setQualityColor("crimson");
 					elementWithColors.setQualityProblemExplanation(problemExplanation);
 				}
 			}
-			headerElements.add(elementWithColors);
+			headerElementsWithHighlighting.add(elementWithColors);
 		});
-		size = headerElements.size();
+		size = headerElementsWithHighlighting.size();
 	}
 
 	@XmlElement
-	public Set<ElementWithHighlighting> getHeaderElements() {
-		return headerElements;
+	public Set<ElementWithHighlighting> getHeaderElementsWithHighlighting() {
+		return headerElementsWithHighlighting;
 	}
 
 	/**
@@ -81,7 +79,7 @@ public class Matrix {
 	@XmlElement(name = "links")
 	public Link[][] getMatrixOfLinks() {
 		Link[][] links = new Link[size][size];
-		Iterator<ElementWithHighlighting> iterator = headerElements.iterator();
+		Iterator<ElementWithHighlighting> iterator = headerElementsWithHighlighting.iterator();
 		for (int positionY = 0; positionY < size; positionY++) {
 			KnowledgeElement sourceElement = iterator.next().getElement();
 			links[positionY] = getRowOfLinks(sourceElement);
@@ -90,8 +88,8 @@ public class Matrix {
 	}
 
 	public Link[] getRowOfLinks(KnowledgeElement sourceElement) {
-		Link[] row = new Link[headerElements.size()];
-		Iterator<ElementWithHighlighting> iterator = headerElements.iterator();
+		Link[] row = new Link[size];
+		Iterator<ElementWithHighlighting> iterator = headerElementsWithHighlighting.iterator();
 		for (int positionX = 0; positionX < size; positionX++) {
 			KnowledgeElement targetElement = iterator.next().getElement();
 			if (targetElement.getId() == sourceElement.getId()) {

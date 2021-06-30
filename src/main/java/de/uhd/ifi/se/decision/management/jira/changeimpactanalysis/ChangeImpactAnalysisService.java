@@ -49,7 +49,7 @@ public class ChangeImpactAnalysisService {
 	}
 
 	public static Matrix calculateMatrixImpact(FilterSettings filterSettings) {
-		HashMap<KnowledgeElement, Double> impactGraph = calculateImpactedKnowledgeElements(filterSettings);
+		Map<KnowledgeElement, Double> impactGraph = calculateImpactedKnowledgeElements(filterSettings);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElement> elementSet = impactGraph.keySet().stream()
 				.filter(knowledgeElement -> filteringManager.isElementMatchingKnowledgeTypeFilter(knowledgeElement))

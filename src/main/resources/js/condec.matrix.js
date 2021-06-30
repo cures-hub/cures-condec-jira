@@ -11,7 +11,7 @@
 (function(global) {
 
 	/* private vars */
-	var headerElements = [];
+	var headerElementsWithHighlighting = [];
 	var linkTypesWithColor = null;
 
 	var ConDecMatrix = function ConDecMatrix() {
@@ -42,7 +42,7 @@
 	 */
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "matrix") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
-			this.headerElements = matrix.headerElements;
+			this.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
 
 			let headerRow = document.getElementById("matrix-header-row-" + viewIdentifier);
 			headerRow.innerHTML = "";
@@ -50,8 +50,8 @@
 			firstRowHeaderCell.classList.add("columnHeader");
 			headerRow.appendChild(firstRowHeaderCell);
 
-			for (let d in matrix.headerElements) {
-				const headerCell = newTableHeaderCell(matrix.headerElements[d], "columnHeader");
+			for (let d in matrix.headerElementsWithHighlighting) {
+				const headerCell = newTableHeaderCell(matrix.headerElementsWithHighlighting[d], "columnHeader");
 				headerRow.insertAdjacentElement("beforeend", headerCell);
 			}
 
@@ -59,7 +59,7 @@
 			tbody.innerHTML = "";
 			for (let d in matrix.links) {
 				let row = matrix.links[d];
-				tbody.appendChild(newTableRow(row, matrix.headerElements[d], d));
+				tbody.appendChild(newTableRow(row, matrix.headerElementsWithHighlighting[d], d));
 			}
 
 			conDecMatrix.buildLegend(matrix.linkTypesWithColor);
@@ -117,8 +117,8 @@
 			tableRowCell.style.backgroundColor = "lightGray";
 			return tableRowCell;
 		}
-		const sourceElement = this.headerElements[positionX].element;
-		const targetElement = this.headerElements[positionY].element;
+		const sourceElement = this.headerElementsWithHighlighting[positionX].element;
+		const targetElement = this.headerElementsWithHighlighting[positionY].element;
 
 		var linkType = null;
 		if (link !== null) {

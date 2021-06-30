@@ -49,7 +49,7 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		Matrix matrix = ChangeImpactAnalysisService.calculateMatrixImpact(settings);
-		assertEquals(10, matrix.getHeaderElements().size());
+		assertEquals(10, matrix.getHeaderElementsWithHighlighting().size());
 	}
 
 	@Test

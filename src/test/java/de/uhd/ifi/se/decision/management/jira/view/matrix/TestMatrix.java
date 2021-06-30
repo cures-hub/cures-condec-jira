@@ -23,8 +23,17 @@ public class TestMatrix extends TestSetUp {
 	}
 
 	@Test
-	public void testGetHeaderElements() {
-		assertEquals(JiraIssues.getTestJiraIssueCount(), this.matrix.getHeaderElements().size());
+	public void testGetHeaderElementsWithQualityHighlighting() {
+		assertEquals(JiraIssues.getTestJiraIssueCount(), matrix.getHeaderElementsWithHighlighting().size());
+		assertEquals("crimson", matrix.getHeaderElementsWithHighlighting().iterator().next().getQualityColor());
+	}
+
+	@Test
+	public void testWithoutQualityHighlighting() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.highlightQualityProblems(false);
+		matrix = new Matrix(filterSettings);
+		assertEquals("#000000", matrix.getHeaderElementsWithHighlighting().iterator().next().getQualityColor());
 	}
 
 	@Test
