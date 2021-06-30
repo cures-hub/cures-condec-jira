@@ -1,15 +1,33 @@
-<div id="quick-recommendations">
-<h4 id="decision-problem-summary"></h4>
-<table id="recommendation-container-short" class="aui aui-table-list">
-	<thead>
-		<tr>
-			<th>Recommendation</th>
-			<th class="aui-table-column-issue-key">$i18n.getText("condec.recommendation.score")</th>
-			<th class="aui-table-column-unsortable">$i18n.getText("condec.recommendation.manage")</th>
-		</tr>
-	</thead>
-	<tbody id="quick-recommendations-table-body">		
-	</tbody>
-</table>
-<a href="#recommendation-container" style="width:100%" id="more-recommendations" class="aui-button-link">More</a>
+<div id="decision-guidance-prompt" style="display:none">
+    <h3>Decision Guidance</h3>
+    <div>
+        This Jira issue is linked to <strong id="num-decision-problems"></strong> decision problems.
+        <br/>
+        <div id="decision-problems-overview">
+            The decision problems are:
+            <table id="decision-problems-table">
+                <thead>
+                <tr>
+                    <th>Decision Problem</th>
+                    <th>Number of recommendations</th>
+                </tr>
+                </thead>
+                <tbody id="decision-problems-table-body">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    ##<table id="recommendation-container-short" class="aui aui-table-list">
+    ##	<thead>
+    ##		<tr>
+    ##			<th>Recommendation</th>
+    ##			<th class="aui-table-column-issue-key">$i18n.getText("condec.recommendation.score")</th>
+    ##			<th class="aui-table-column-unsortable">$i18n.getText("condec.recommendation.manage")</th>
+    ##		</tr>
+    ##	</thead>
+    ##	<tbody id="quick-recommendations-table-body">
+    ##	</tbody>
+    ##</table>
+    ##<a href="#recommendation-container" style="width:100%" id="more-recommendations" class="aui-button-link">More</a>
 </div>

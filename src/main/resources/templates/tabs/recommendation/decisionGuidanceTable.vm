@@ -27,7 +27,7 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
 </table>
 
 <div style="display:none">
-#parse("templates/prompts/decisionGuidancePrompt.vm")
+    ## #parse("templates/prompts/decisionGuidancePrompt.vm")
 #parse("templates/tabs/recommendation/scoreExplanation.vm")
 </div>
 

@@ -243,7 +243,7 @@ public class DecisionGuidanceRest {
 	 * A map of knowledgeElements (currently only Issues), each with a list of recommendations.
 	 */
 	@Path("/recommendations")
-	@POST
+	@GET
 	public Response getRecommendations(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
 
 		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
@@ -259,14 +259,15 @@ public class DecisionGuidanceRest {
 		settings.setProjectKey(projectKey);
 		settings.setSelectedElement(issueKey);
 		settings.setCreateTransitiveLinks(true);
+		settings.setOnlyDecisionKnowledgeShown(true);
 		settings.setSearchTerm("");
 		Set<KnowledgeElement> filteredGraph = new FilteringManager(settings).getElementsMatchingFilterSettings();
 
-		Map<String, List<Recommendation>> results = new HashMap<String, List<Recommendation>>();
+		Map<Integer, List<Recommendation>> results = new HashMap<Integer, List<Recommendation>>();
 		for (KnowledgeElement element : filteredGraph) {
-			if (!(element.getSummary() == null || element.getSummary().isBlank())) {
+			if (!(element.getSummary() == null || element.getSummary().isBlank() || element.getKey().equals(issueKey))) {
 				List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, element, element.getSummary());
-				results.put(element.getKey(), recommendations);
+				results.put((int) element.getId(), recommendations);
 				if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 					.isRecommendationAddedToKnowledgeGraph()) {
 					Recommender.addToKnowledgeGraph(element, AuthenticationManager.getUser(request), recommendations);

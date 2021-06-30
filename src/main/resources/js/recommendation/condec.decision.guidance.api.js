@@ -17,14 +17,16 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (projectKey, keyword, issueId, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/recommendations.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&documentationLocation=" + documentationLocation,
+	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (projectKey, issueKey, callback) {
+		generalApi.getJSON(this.restPrefix + "/recommendations.json?projectKey=" + projectKey + "&issueKey" + issueKey,
 			function (error, recommendations) {
-				recommendations.sort(function (recommendation1, recommendation2) {
-					return recommendation2.score.value - recommendation1.score.value;
+				Object.keys(recommendations).forEach(id => {
+					recommendations[id].sort(function (recommendation1, recommendation2) {
+						return recommendation2.score.value - recommendation1.score.value;
+					});
 				});
 				callback(recommendations, error);
-			});
+			})
 	};
 
 	/*
@@ -40,8 +42,8 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function(projectKey, maxNumberOfRecommendations) {
-		generalApi.postJSON(this.restPrefix + "/setMaxNumberOfRecommendations.json?projectKey=" + projectKey + "&maxNumberOfRecommendations=" + maxNumberOfRecommendations, null, function(
+	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function (projectKey, maxNumberOfRecommendations) {
+		generalApi.postJSON(this.restPrefix + "/setMaxNumberOfRecommendations.json?projectKey=" + projectKey + "&maxNumberOfRecommendations=" + maxNumberOfRecommendations, null, function (
 			error, response) {
 			if (error === null) {
 				conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberOfRecommendations);

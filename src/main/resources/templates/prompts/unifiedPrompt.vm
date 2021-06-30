@@ -21,6 +21,9 @@
         <div id="definition-of-done-prompt" style="display:none">
             #parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")
         </div>
+        <div id="decision-guidance" style="">
+            #parse("templates/prompts/decisionGuidancePrompt.vm")
+        </div>
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
