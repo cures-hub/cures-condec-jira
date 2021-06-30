@@ -21,6 +21,7 @@
 				});
 				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
 					if (isActivated) {
+
 						conDecPrompt.promptLinkSuggestion();
 						$(document).ready(function () {
 							document.getElementById("link-recommendation-prompt").style.display = "block";
@@ -37,13 +38,17 @@
 						})
 					}
 				});
-				conDecPrompt.promptDecisionGuidance()
-				$(document).ready(function () {
-					document.getElementById("decision-guidance-prompt").style.display = "block";
+				conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId).then((isActivated) => {
 
-					AJS.dialog2("#unified-prompt").show()
+					if (isActivated) {
+						conDecPrompt.promptDecisionGuidance()
+					}
+					$(document).ready(function () {
+						document.getElementById("decision-guidance-prompt").style.display = "block";
+					})
+				})
+				AJS.dialog2("#unified-prompt").show()
 
-				});
 			}
 		});
 	};
