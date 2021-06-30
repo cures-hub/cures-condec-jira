@@ -40,7 +40,7 @@
 
 		// selected element
 		var jiraIssueKey = conDecAPI.getIssueKey();
-		if (jiraIssueKey !== null && jiraIssueKey !== undefined) {
+		if (jiraIssueKey !== null && jiraIssueKey !== undefined && viewIdentifier !== "chronology") {
 			document.getElementById("selected-element-" + viewIdentifier).innerText = jiraIssueKey;
 		}
 

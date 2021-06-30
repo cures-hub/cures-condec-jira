@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -13,7 +12,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
-import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
  * Model class for a vis.js node.
@@ -62,9 +60,9 @@ public class VisNode {
 				+ element.getSummary() + System.lineSeparator() + element.getDescription();
 		font = ImmutableMap.of("color", "black");
 		if (filterSettings.areQualityProblemHighlighted()) {
-			List<String> qualityProblems = DefinitionOfDoneChecker.getQualityProblems(element, filterSettings);
-			if (!qualityProblems.isEmpty()) {
-				title = ToolTip.buildToolTip(qualityProblems);
+			String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element, filterSettings);
+			if (!problemExplanation.isEmpty()) {
+				title = problemExplanation;
 				font = ImmutableMap.of("color", "crimson");
 			}
 		}

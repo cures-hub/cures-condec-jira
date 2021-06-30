@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
-import de.uhd.ifi.se.decision.management.jira.view.ToolTip;
 
 /**
  * Model class for Treant node
@@ -81,9 +80,10 @@ public class TreantNode {
 			link.put("title", knowledgeElement.getDescription());
 		}
 		if (filterSettings.areQualityProblemHighlighted()) {
-			List<String> qualityProblems = DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings);
-			if (!qualityProblems.isEmpty()) {
-				link.put("title", ToolTip.buildToolTip(qualityProblems));
+			String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(knowledgeElement,
+					filterSettings);
+			if (!problemExplanation.isEmpty()) {
+				link.put("title", problemExplanation);
 				htmlClass += " dodViolation";
 			}
 		}

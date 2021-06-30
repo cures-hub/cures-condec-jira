@@ -143,4 +143,20 @@ public final class DefinitionOfDoneChecker {
 		qualityProblems.addAll(DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement));
 		return qualityProblems;
 	}
+
+	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
+			FilterSettings filterSettings) {
+		List<String> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
+		String text = "";
+		for (String problem : qualityProblems) {
+			if (problem.equalsIgnoreCase("doesNotHaveMinimumCoverage")) {
+				text += "Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator();
+			} else if (problem.equalsIgnoreCase("hasIncompleteKnowledgeLinked")) {
+				text += "Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator();
+			} else {
+				text += problem + System.lineSeparator();
+			}
+		}
+		return text.strip();
+	}
 }
