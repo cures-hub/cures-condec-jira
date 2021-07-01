@@ -35,7 +35,8 @@ public class TestGetRecommendations extends TestSetUp {
 
 	@Test
 	public void testGetRecommendations() {
-		decisionGuidanceRest.getRecommendations(request, projectKey, jiraIssueKey);
+		assertEquals(Status.OK.getStatusCode(),
+			decisionGuidanceRest.getRecommendations(request, projectKey, jiraIssueKey).getStatus());
 	}
 
 
