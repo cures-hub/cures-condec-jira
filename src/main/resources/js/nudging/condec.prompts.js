@@ -11,7 +11,7 @@
 				const unifiedPromptElement = document.getElementById("unified-prompt");
 				document.getElementById("warning-dialog-fix-elements").onclick = function () {
 					AJS.dialog2(unifiedPromptElement).hide();
-				}// TODO change this so it actually changes the event
+				}// TODO change this so it actually stops the event from continuing
 
 				document.getElementById("warning-dialog-continue").onclick = function () {
 					AJS.dialog2(unifiedPromptElement).hide();
@@ -161,12 +161,11 @@
 						tableRow += "<td>" + decisionProblem.summary + "</td>";
 						tableRow += "<td>" + recommendationsMap[id].length + "</td>";
 						tableRow += "</tr>";
-						rows += tableRow;
+						document.getElementById("decision-problems-table-body").innerHTML += tableRow;
 					});
 				});
-				document.getElementById("decision-problems-table-body").innerHTML = rows;
 			} else {
-				console.log("Error in decision Guidance was: ", error);
+				console.log("Error in making decision guidance prompt table was: ", error);
 			}
 		});
 	};

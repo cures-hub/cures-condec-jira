@@ -1,7 +1,7 @@
 <div id="decision-guidance-prompt" style="display:none">
     <h3>Decision Guidance</h3>
-    This Jira issue is linked to <strong id="num-decision-problems"></strong> decision problems, which may have decision
-    guidance suggestions.
+    This Jira issue is linked to <strong id="num-decision-problems"></strong> decision problems, which have the
+    following amounts of recommendations.
     <br/>
     <div id="decision-problems-overview">
         <table id="decision-problems-table" class="aui aui-table-list">
