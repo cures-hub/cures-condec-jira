@@ -52,7 +52,6 @@
 					}
 				});
 				conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId).then((isActivated) => {
-
 					if (isActivated) {
 						conDecPrompt.promptDecisionGuidance()
 						$(document).ready(function () {
@@ -152,11 +151,8 @@
 		conDecDecisionGuidanceAPI.getRecommendations(projectKey, issueKey, (recommendationsMap, error) => {
 			if (error === null || error === undefined) {
 				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length.toString()
-				var rows = "";
 				Object.keys(recommendationsMap).forEach((id) => {
 					conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
-						console.log("here")
-						console.log(decisionProblem.summary)
 						let tableRow = "<tr>";
 						tableRow += "<td>" + decisionProblem.summary + "</td>";
 						tableRow += "<td>" + recommendationsMap[id].length + "</td>";
