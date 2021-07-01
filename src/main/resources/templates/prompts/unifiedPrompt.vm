@@ -1,7 +1,11 @@
 <section id="unified-prompt"
-         class="aui-dialog2 aui-dialog2-large aui-dialog2-warning aui-layer data-aui-modal"
+         class="aui-dialog2 aui-dialog2-large aui-dialog2-warning aui-layer"
          role="dialog"
          tabindex="-1"
+         data-aui-modal="true"
+         data-aui-remove-on-hide="true"
+         aria-hidden="true"
+
 >
     <header class="aui-dialog2-header">
         <h1 class="aui-dialog2-header-main" id="unified-prompt-header"></h1>
@@ -28,7 +32,7 @@
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="warning-dialog-continue" class="aui-button aui-button-link">Continue anyway</button>
+            <button id="warning-dialog-continue" class="aui-button">Continue anyway</button>
             <button id="warning-dialog-fix-elements" class="aui-button aui-button-primary">Go back and fix</button>
 
         </div>

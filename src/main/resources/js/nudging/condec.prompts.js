@@ -7,6 +7,19 @@
 				const issueKey = conDecAPI.getIssueKey();
 				// Create unified prompt
 				document.getElementById("unified-prompt-header").innerHTML = "Before you close " + issueKey + "...";
+
+				const unifiedPromptElement = document.getElementById("unified-prompt");
+				document.getElementById("warning-dialog-fix-elements").onclick = function () {
+					AJS.dialog2(unifiedPromptElement).hide();
+				}// TODO change this so it actually changes the event
+
+				document.getElementById("warning-dialog-continue").onclick = function () {
+					AJS.dialog2(unifiedPromptElement).hide();
+				}
+
+				AJS.dialog2(unifiedPromptElement).show()
+
+
 				// just-in-time prompts when status changes
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
 				const id = params.get("id");
@@ -42,12 +55,12 @@
 
 					if (isActivated) {
 						conDecPrompt.promptDecisionGuidance()
+						$(document).ready(function () {
+							document.getElementById("decision-guidance-prompt").style.display = "block";
+						});
 					}
-					$(document).ready(function () {
-						document.getElementById("decision-guidance-prompt").style.display = "block";
-					})
-				})
-				AJS.dialog2("#unified-prompt").show()
+				});
+
 
 			}
 		});
@@ -151,11 +164,9 @@
 						rows += tableRow;
 					});
 				});
-				console.log(rows)
-
 				document.getElementById("decision-problems-table-body").innerHTML = rows;
-
-
+			} else {
+				console.log("Error in decision Guidance was: ", error);
 			}
 		});
 	};
