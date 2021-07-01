@@ -1,33 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
-import static org.junit.Assert.assertEquals;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response.Status;
-
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.project.Project;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestGetRecommendations extends TestSetUp {
 
+	private static final String projectKey = "TEST";
 	private DecisionGuidanceRest decisionGuidanceRest;
 	private HttpServletRequest request;
-	private static final String projectKey = "TEST";
 	private String jiraIssueKey;
 
 	@Before
