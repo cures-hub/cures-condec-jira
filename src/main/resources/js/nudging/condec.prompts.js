@@ -4,89 +4,114 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
+				const issueKey = conDecAPI.getIssueKey();
+				// Create unified prompt
+				document.getElementById("unified-prompt-header").innerHTML = "Before you close " + issueKey + "...";
+
+				const unifiedPromptElement = document.getElementById("unified-prompt");
+				document.getElementById("warning-dialog-fix-elements").onclick = function () {
+					AJS.dialog2(unifiedPromptElement).hide();
+				}// TODO change this so it actually stops the event from continuing
+
+				document.getElementById("warning-dialog-continue").onclick = function () {
+					AJS.dialog2(unifiedPromptElement).hide();
+				}
+
+				AJS.dialog2(unifiedPromptElement).show()
+
+
 				// just-in-time prompts when status changes
-				var params = new URLSearchParams(settings.url.replaceAll("?", "&"));
-				var id = params.get("id");
-				var actionId = params.get("action");
+				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
+				const id = params.get("id");
+				const actionId = params.get("action");
 				conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId).then((isActivated) => {
 					if (isActivated) {
 						conDecPrompt.promptDefinitionOfDoneChecking();
+						$(document).ready(function () {
+							document.getElementById("definition-of-done-prompt").style.display = "block";
+						})
 					}
 				});
 				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
 					if (isActivated) {
+
 						conDecPrompt.promptLinkSuggestion();
+						$(document).ready(function () {
+							document.getElementById("link-recommendation-prompt").style.display = "block";
+						})
+
 					}
 				});
 				conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
 					if (isActivated) {
 						conDecPrompt.promptNonValidatedElements();
+						$(document).ready(function () {
+							document.getElementById("non-validated-elements-prompt").style.display = "block";
+
+						})
 					}
 				});
+				conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId).then((isActivated) => {
+					if (isActivated) {
+						conDecPrompt.promptDecisionGuidance()
+						$(document).ready(function () {
+							document.getElementById("decision-guidance-prompt").style.display = "block";
+						});
+					}
+				});
+
+
 			}
 		});
 	};
 
 	ConDecPrompt.prototype.promptLinkSuggestion = function() {
-		var issueId = JIRA.Issue.getIssueId();
-		var projectKey = conDecAPI.projectKey;
+		const issueId = JIRA.Issue.getIssueId();
+		const projectKey = conDecAPI.projectKey;
 		if (issueId === null || issueId === undefined) {
 			return;
 		}
+
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]).then(
-			(values) => {
+			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
+			.then((values) => {
 				let numDuplicates = (values[0].length);
 				let numRelated = (values[1].length);
+				console.log(numDuplicates)
 				if (numDuplicates + numRelated > 0) {
-					document.getElementById("link-recommendation-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
 					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
 					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
-					var flag = AJS.flag({
-						body: document.getElementById("link-recommendation-prompt").outerHTML,
-						title: "Related Knowledge Elements Detected!"
-					});
-					document.getElementById("link-recommendation-prompt-button").onclick = function() {
-						flag.close();
-					};
 				}
 			});
 	}
 
 	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
-		var projectKey = conDecAPI.getProjectKey();
+		const projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
 		}
 
-		var issueKey = conDecAPI.getIssueKey();
+		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
 
-		var filterSettings = {
-			"projectKey": projectKey,
-			"selectedElement": issueKey,
-		}
+		conDecAPI.getFilterSettings(projectKey, "", settings => {
 
-		conDecDoDCheckingAPI.getFailedDefinitionOfDoneCriteria(filterSettings, function(result) {
-			if (!result || !result.length) {
-				return;
-			}
-			document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
-			var flag = AJS.flag({
-				body: document.getElementById("definition-of-done-checking-prompt").outerHTML,
-				title: "Definition of Done Violated!",
-				type: "warning"
+			document.getElementById("condec-prompt-minimum-coverage").innerHTML = settings.minimumDecisionCoverage;
+			document.getElementById("condec-prompt-link-distance").innerHTML = settings.linkDistance;
+		});
 
-			});
-			document.getElementById("definition-of-done-checking-prompt-button").onclick = function() {
-				flag.close();
-			};
-		})
+		conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, (coverage) => {
+			document.getElementById("condec-prompt-issue-coverage").innerHTML = coverage["Issue"];
+			document.getElementById("condec-prompt-decision-coverage").innerHTML = coverage["Decision"];
+		});
+
+
+		document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
 	}
 
-	ConDecPrompt.prototype.promptNonValidatedElements = function() {
+	ConDecPrompt.prototype.promptNonValidatedElements = function () {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -99,22 +124,7 @@
 				}
 				const nonValidatedElements = response["nonValidatedElements"]
 
-				document.getElementById("non-validated-elements-prompt-jira-issue-key").innerHTML = issueKey;
 				document.getElementById("num-non-validated-elements").innerHTML = response["nonValidatedElements"].length
-
-				const flag = AJS.flag({
-					body: document.getElementById("non-validated-elements-prompt").outerHTML,
-					title: "Non-validated elements found!",
-					type: "warning"
-				})
-				document.getElementById("non-validated-elements-validate-button").onclick = function() {
-					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
-					flag.close();
-
-				};
-				document.getElementById("non-validated-elements-ignore-button").onclick = function() {
-					flag.close();
-				};
 
 
 				let tableContents = "";
@@ -127,8 +137,34 @@
 
 				});
 				document.getElementById("non-validated-table-body").innerHTML = tableContents;
+				document.getElementById("non-validated-elements-validate-button").onclick = function () {
+					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
+				};
 			})
-	}
+	};
+	ConDecPrompt.prototype.promptDecisionGuidance = function () {
+		const issueKey = conDecAPI.getIssueKey();
+		if (issueKey === null || issueKey === undefined) {
+			return;
+		}
+		const projectKey = conDecAPI.getProjectKey();
+		conDecDecisionGuidanceAPI.getRecommendations(projectKey, issueKey, (recommendationsMap, error) => {
+			if (error === null || error === undefined) {
+				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length.toString()
+				Object.keys(recommendationsMap).forEach((id) => {
+					conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
+						let tableRow = "<tr>";
+						tableRow += "<td>" + decisionProblem.summary + "</td>";
+						tableRow += "<td>" + recommendationsMap[id].length + "</td>";
+						tableRow += "</tr>";
+						document.getElementById("decision-problems-table-body").innerHTML += tableRow;
+					});
+				});
+			} else {
+				console.log("Error in making decision guidance prompt table was: ", error);
+			}
+		});
+	};
 
 	global.conDecPrompt = new ConDecPrompt();
 })(window);

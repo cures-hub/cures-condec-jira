@@ -1,15 +1,15 @@
-<h2>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</h2> 
-<b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b> 
-DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;  
+<h2>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</h2>
+<b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b>
+DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;
 Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span>
 
 <form class="aui">
-        <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required />
-        <button class="aui-button" id="recommendation-button" disabled="true">
-            <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span> 
-            $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
-        </button>
-        <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
+    <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required/>
+    <button class="aui-button" id="recommendation-button" disabled="true">
+        <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
+        $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
+    </button>
+    <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
 </form>
 
 <table id="recommendation-container" class="aui aui-table-list">
@@ -27,7 +27,6 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
 </table>
 
 <div style="display:none">
-#parse("templates/prompts/decisionGuidancePrompt.vm")
 #parse("templates/tabs/recommendation/scoreExplanation.vm")
 </div>
 

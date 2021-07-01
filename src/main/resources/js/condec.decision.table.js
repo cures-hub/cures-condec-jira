@@ -20,7 +20,7 @@
      	conDecFiltering.addOnClickEventToFilterButton("decision-table", conDecDecisionTable.updateView);     	
 		this.addOnClickEventToDecisionTableButtons();		
 		conDecDecisionGuidance.addOnClickListenerForRecommendations();
-		
+
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
 		
@@ -94,19 +94,19 @@
 		function selectDecisionProblem () {
 			currentIssue = issues.find(issue => (dropDown.value).match(issue.id));
 			const filterSettings = {
-				"selectedElement" : currentIssue.key
+				"selectedElement": currentIssue.key
 			}
 			conDecDecisionTable.build(filterSettings, viewIdentifier, currentIssue);
 			$("#recommendation-keyword").val(currentIssue.summary);
-			$("#recommendation-button").prop("disabled",false);
+			$("#recommendation-button").prop("disabled", false);
 			conDecDecisionGuidance.issueSelected(currentIssue);
-		}		
+		}
 
 		dropDown.addEventListener("change", selectDecisionProblem);
-		
+
 		if (currentIssue !== undefined && issues.find(issue => currentIssue.id === issue.id)) {
 			dropDown.value = currentIssue.id;
-		} 
+		}
 		selectDecisionProblem();
 	}
 	
@@ -212,11 +212,11 @@
 	function buildCreateArgumentsButton(alternatives, viewIdentifier) {
 		let dropDownMenu = document.getElementById("alternative-dropdown-items-" + viewIdentifier);
 		dropDownMenu.innerHTML = "";
-		for (alternative of alternatives) {
+		for (const alternative of alternatives) {
 			dropDownMenu.innerHTML += `<aui-item-link id="${alternative.id}"><img src="${alternative.image}"</img> `
-			+ `${alternative.summary}</aui-item-link>`;
+				+ `${alternative.summary}</aui-item-link>`;
 		}
-		
+
 		dropDownMenu.addEventListener("click", function (event) {
 			const alternative = getElementObj(event.target.parentNode.id);
 			if (alternative) {
@@ -292,7 +292,7 @@
 	 *            <KnowledgeElement> or empty object} alternatives
 	 */
 	function addArgumentsToDecisionTable(alternative) {
-		for (argument of alternative.arguments) {
+		for (const argument of alternative.arguments) {
 			let rowElement;
 			if (argument.hasOwnProperty("criterion")) {
 				rowElement = document.getElementById(`cell${alternative.id}:${argument.criterion.id}`);
@@ -301,7 +301,7 @@
 				rowElement = document.getElementById(`cellUnknown${alternative.id}`);
 				document.getElementById("criteriaClmTitleUnknown").setAttribute("style", "display:block");
 			}
-			
+
 			let image = "";
 			if (argument.image) {
 				image = `<img src="${argument.image}"</img>`;

@@ -1,5 +1,6 @@
 <div id="non-validated-elements-prompt">
-    <strong id="non-validated-elements-prompt-jira-issue-key"></strong> contains <strong
+    <h3>Non-validated elements</h3>
+    This issue contains <strong
     id="num-non-validated-elements"></strong> knowledge elements that have not been manually validated. <br/>
     Please validate the knowledge elements if you approve their classifications.<br/>
 
@@ -16,9 +17,5 @@
     <button id="non-validated-elements-validate-button" class="aui-button aui-button-link">
         <span class="aui-icon aui-icon-small aui-iconfont-check"></span>
         Validate all of these elements!
-    </button>
-    <button id="non-validated-elements-ignore-button" class="aui-button aui-button-link">
-        <span class="aui-icon aui-icon-small aui-iconfont-cross"></span>
-        Ignore
     </button>
 </div>

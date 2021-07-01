@@ -1,13 +1,17 @@
 <div id="link-recommendation-prompt">
-	<strong id="link-recommendation-prompt-jira-issue-key"></strong> seems to be incompletely linked. <br/>
-	<ul>
-		<li><strong id="link-recommendation-prompt-num-link-recommendations"></strong> possibly related knowledge elements</li>
-		<li><strong id="link-recommendation-prompt-num-duplicate-recommendations"></strong> possible duplicates</li>
-	</ul>
-	Please check that the links of this knowledge element are complete and that there are no duplicates.<br/>
-	<button id="link-recommendation-prompt-button" class="aui-button aui-button-link">
-		<span class="aui-icon aui-icon-small aui-iconfont-check">Confirm quality</span> 
-		I confirm the high documentation quality!
-	</button>
-	<a href="#related-knowledge-elements-tab" style="width:100%" class="aui-button-link">View Link and Duplicate Recommendation</a>
+    <h3>Related elements</h3>
+    ## <strong id="link-recommendation-prompt-jira-issue-key"></strong> seems to be incompletely linked. <br/>
+    <ul>
+        <li><strong id="link-recommendation-prompt-num-link-recommendations"></strong> possibly related knowledge
+            elements
+        </li>
+        <li><strong id="link-recommendation-prompt-num-duplicate-recommendations"></strong> possible duplicates</li>
+    </ul>
+    Please check that the links of this knowledge element are complete and that there are no duplicates.<br/>
+    ##	<button id="link-recommendation-prompt-button" class="aui-button aui-button-link">
+    ##		<span class="aui-icon aui-icon-small aui-iconfont-check">Confirm quality</span>
+    ##		I confirm the high documentation quality!
+    ##	</button>
+    <a href="#related-knowledge-elements-tab" style="width:100%" class="aui-button-link">View Link and Duplicate
+        Recommendation</a>
 </div>

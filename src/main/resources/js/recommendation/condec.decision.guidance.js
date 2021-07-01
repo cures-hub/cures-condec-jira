@@ -18,8 +18,8 @@
 
 	ConDecDecisionGuidance.prototype.issueSelected = function(currentIssue) {
 		const keyword = $("#recommendation-keyword");
-		conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id, currentIssue.documentationLocation,
-			function(recommendations, error) {
+		conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey(),
+			function (recommendations, error) {
 				if (error === null && recommendations.length > 0) {
 					buildQuickRecommendationTable(recommendations, currentIssue);
 				}
@@ -33,19 +33,19 @@
 		$("#recommendation-button").click(function(event) {
 			event.preventDefault();
 			const currentIssue = conDecDecisionTable.getCurrentIssue();
+
 			$(this).prop("disabled", true);
 			$("#recommendation-container tbody tr").remove();
 			const keyword = $("#recommendation-keyword");
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
-			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), keyword.val(), currentIssue.id,
-				currentIssue.documentationLocation, function(recommendations, error) {
-					if (error === null) {
-						buildRecommendationTable(recommendations, currentIssue);
-					}
-					$("#recommendation-button").prop("disabled", false);
-					spinner.hide();
-				});
+			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey(), function (recommendations, error) {
+				if (error === null) {
+					buildRecommendationTable(recommendations[currentIssue.id], currentIssue);
+				}
+				$("#recommendation-button").prop("disabled", false);
+				spinner.hide();
+			});
 		});
 	};
 
@@ -81,7 +81,7 @@
 		document.getElementById("decision-problem-summary").innerText = currentIssue.summary;
 		let counter = 0;
 		var columns = "";
-		var topResults = recommendations.slice(0, 4);
+		var topResults = recommendations[currentIssue.id].slice(0, 4);
 		topResults.forEach(recommendation => {
 			counter++;
 			let tableRow = "<tr>";
