@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.awt.Color;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class ChangeImpactAnalysisService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangeImpactAnalysisService.class);
 
 	public static TreeViewer calculateTreeImpact(FilterSettings filterSettings) {
-		HashMap<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
+		Map<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
 		TreeViewer tree = new TreeViewer(filterSettings);
 		tree.getNodes().forEach(node -> {
 			colorizeNode(node, results);
@@ -38,14 +37,9 @@ public class ChangeImpactAnalysisService {
 	}
 
 	public static VisGraph calculateGraphImpact(FilterSettings filterSettings) {
-		HashMap<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
-		// KnowledgeGraph graph =
-		// simplifiedGraph(asGraph(results,filterSettings),filterSettings, new
-		// AtomicLong(-1));
+		Map<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(filterSettings.getProjectKey());
 		return asVisGraph(results, filterSettings, graph);
-		// return asVisGraph(results, filterSettings, simplifiedGraph(graph,
-		// filterSettings, new AtomicLong(-1)));
 	}
 
 	public static Matrix calculateMatrixImpact(FilterSettings filterSettings) {
@@ -66,7 +60,7 @@ public class ChangeImpactAnalysisService {
 		return new Matrix(elementSet, filterSettings, colorMap);
 	}
 
-	private static HashMap<KnowledgeElement, Double> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
+	private static Map<KnowledgeElement, Double> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
 		HashMap<KnowledgeElement, Double> results = new HashMap<>();
 		KnowledgeElement root = filterSettings.getSelectedElement();
 		results.put(root, 1.0);
@@ -77,26 +71,25 @@ public class ChangeImpactAnalysisService {
 	}
 
 	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement root, Double parentImpact,
-			FilterSettings filterSettings, HashMap<KnowledgeElement, Double> results, final Long context) {
-		Set<String> result = new HashSet<>();
+			FilterSettings filterSettings, Map<KnowledgeElement, Double> results, final Long context) {
 		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
-		root.getLinks().forEach(entry -> {
+		root.getLinks().forEach(link -> {
 			// TODO Link specific weights
-			boolean isOutwardLink = entry.getSource().equals(root);
-			String linkType = (isOutwardLink) ? entry.getType().getOutwardName() : entry.getType().getInwardName();
+			boolean isOutwardLink = link.getSource().equals(root);
+			String linkType = (isOutwardLink) ? link.getType().getOutwardName() : link.getType().getInwardName();
 			if (!ciaConfig.getLinkImpact().containsKey(linkType)) {
-				result.add("link -> " + linkType + ", source -> " + entry.getSource().getId() + ", target -> "
-						+ entry.getTarget().getId());
+				LOGGER.warn("CIA couldn't be processed: {}", "link -> " + linkType + ", source -> "
+						+ link.getSource().getId() + ", target -> " + link.getTarget().getId());
 			}
 			double typeWeight = ciaConfig.getLinkImpact().getOrDefault(linkType, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
 			double impact = parentImpact * typeWeight * decayValue;
 
-			KnowledgeElement next = (isOutwardLink) ? entry.getTarget() : entry.getSource();
+			KnowledgeElement next = (isOutwardLink) ? link.getTarget() : link.getSource();
 
 			final boolean[] propagate = { true };
 			ciaConfig.getPropagationRules().forEach(rule -> propagate[0] = propagate[0]
-					&& rule.getPredicate().pass(root, parentImpact, next, impact, entry));
+					&& rule.getPredicate().pass(root, parentImpact, next, impact, link));
 
 			if (impact >= ciaConfig.getThreshold() && propagate[0]) {
 				if (!results.containsKey(next) || (results.containsKey(next) && results.get(next) < impact)) {
@@ -108,12 +101,9 @@ public class ChangeImpactAnalysisService {
 				calculateImpactedKnowledgeElementsHelper(next, 0.0, filterSettings, results, context - 1);
 			}
 		});
-		if (!result.isEmpty()) {
-			LOGGER.info("CIA couldn't processed: {}", result.toString());
-		}
 	}
 
-	private static VisGraph asVisGraph(HashMap<KnowledgeElement, Double> results, FilterSettings filterSettings,
+	private static VisGraph asVisGraph(Map<KnowledgeElement, Double> results, FilterSettings filterSettings,
 			KnowledgeGraph graph) {
 		Set<KnowledgeElement> nodes = results.keySet();
 		VisGraph graphVis = new VisGraph();
@@ -144,7 +134,7 @@ public class ChangeImpactAnalysisService {
 				|| !(settings.getStatus().contains(element.getStatus()));
 	}
 
-	private static void colorizeNode(TreeViewerNode node, HashMap<KnowledgeElement, Double> results) {
+	private static void colorizeNode(TreeViewerNode node, Map<KnowledgeElement, Double> results) {
 		String style = "";
 		if (results.containsKey(node.getElement())) {
 			style = "background-color:" + colorForImpact(results.get(node.getElement()));

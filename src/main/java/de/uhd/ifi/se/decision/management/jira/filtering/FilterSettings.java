@@ -105,6 +105,7 @@ public class FilterSettings {
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
 		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		this.changeImpactAnalysisConfig = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -641,8 +642,13 @@ public class FilterSettings {
 	 *            element. Is only used if {@link #areChangeImpactsHighlighted()} is
 	 *            true.
 	 */
-	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
-		this.changeImpactAnalysisConfig = changeImpactAnalysisConfig;
+	public void setChangeImpactAnalysisConfig(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
+		// only these criteria can be set during filtering currently, all other
+		// criteria are fixed
+		this.changeImpactAnalysisConfig.setContext(changeImpactAnalysisConfig.getContext());
+		this.changeImpactAnalysisConfig.setDecayValue(changeImpactAnalysisConfig.getDecayValue());
+		this.changeImpactAnalysisConfig.setThreshold(changeImpactAnalysisConfig.getThreshold());
+		this.changeImpactAnalysisConfig.setPropagationRules(changeImpactAnalysisConfig.getPropagationRulesAsStrings());
 	}
 
 	@Override

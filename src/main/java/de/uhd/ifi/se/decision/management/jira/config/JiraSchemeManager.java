@@ -45,8 +45,8 @@ import de.uhd.ifi.se.decision.management.jira.config.workflows.WorkflowXMLDescri
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
- * Handles the creation and removal of Jira issues types, Jira link types, and
- * workflows.
+ * Handles the creation and removal of Jira issues types, Jira issue link types,
+ * and workflows.
  * 
  * Adds and removes Jira issue types to the issue type scheme of a project.
  * 
@@ -92,19 +92,24 @@ public class JiraSchemeManager {
 		return newIssueType;
 	}
 
-	public static boolean createLinkType(String linkTypeName) {
+	/**
+	 * @param linkType
+	 *            {@link LinkType} of the ConDec knowledge meta-model.
+	 * @return true if a new Jira issue link type is created.
+	 */
+	public static boolean createLinkType(LinkType linkType) {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> types = linkTypeManager.getIssueLinkTypes();
 		if (types == null) {
 			return false;
 		}
-		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkTypeName)).findFirst();
+		Optional<IssueLinkType> type = types.stream().filter(entry -> entry.getName().equals(linkType.getName()))
+				.findFirst();
 		if (!type.isEmpty()) {
 			return false;
 		}
-		LinkType linktype = LinkType.getLinkType(linkTypeName);
-		linkTypeManager.createIssueLinkType(linktype.getName(), linktype.getOutwardName(), linktype.getInwardName(),
-				linktype.getStyle());
+		linkTypeManager.createIssueLinkType(linkType.getName(), linkType.getOutwardName(), linkType.getInwardName(),
+				linkType.getStyle());
 		return true;
 	}
 
@@ -124,7 +129,7 @@ public class JiraSchemeManager {
 			return false;
 		}
 		// TODO: Umsetzen wenn https://jira.atlassian.com/browse/JRASERVER-16325
-		return createLinkType(linkTypeName);
+		return createLinkType(LinkType.getLinkType(linkTypeName));
 	}
 
 	public boolean removeLinkTypeFromScheme(String linkTypeName) {

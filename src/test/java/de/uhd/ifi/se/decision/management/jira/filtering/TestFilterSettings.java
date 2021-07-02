@@ -321,7 +321,7 @@ public class TestFilterSettings extends TestSetUp {
 		// default value
 		assertEquals(0, ciaConfig.getContext());
 		ciaConfig.setContext(1);
-		filterSettings.setChangeImpactAnalysisConfiguration(ciaConfig);
+		filterSettings.setChangeImpactAnalysisConfig(ciaConfig);
 		assertEquals(1, filterSettings.getChangeImpactAnalysisConfig().getContext());
 	}
 

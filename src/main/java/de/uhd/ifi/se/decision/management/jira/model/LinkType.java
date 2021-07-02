@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
+
 /**
  * Models the types of links between knowledge elements.
  * 
@@ -17,31 +19,29 @@ import java.util.Set;
  * explicitly included in this enum (only as OTHER).
  */
 public enum LinkType {
-	SUPPORT("Supports", "supports", "is supported by", "contain-style", "#00994C"), // pro-arguments to solution options
-	ATTACK("Attacks", "attacks", "is attacked by", "contain-style", "#c0392b"), // con-arguments to solution options
-	FORBID("Forbids", "forbids", "is forbidden by", "contain-style", "#c0392b"), // among decisions
-	CONSTRAINT("Constraints", "constraints", "is constrained by", "contain-style", "#0066b3"), // among decisions
-	ENABLE("Enables", "enables", "is enabled by", "contain-style", "#80ff80"), // among decisions
-	COMPRISE("Comprises", "comprises", "is comprised by", "contain-style", "#BA55D3"), // among decisions
-	SUBSUME("Subsumes", "subsumes", "is subsumed by", "contain-style", "#00cc00"), // among decisions
-	RELATE("Relates", "relates to", "is related to", "contain-style", "#80c9ff"), // among decisions
-	OVERRIDE("Overrides", "overrides", "is overridden by", "contain-style", "#FFFF00"), // among decisions
-	REPLACE("Replaces", "replaces", "is replaced by", "contain-style", "#ff8000"), // among decisions
-	DUPLICATE("Duplicate", "duplicates", "is duplicated by", "contain-style", "#c0392b"), // among duplicated elements
-	TRANSITIVE("Transitive", "transitively links to", "is transitively linked to", "contain-style", "#7f7f7f"), // among transitively linkes elements
-	OTHER("", "", "", "contain-style", ""); // other Jira issue links, e.g. "jira_subtask_link"
+	SUPPORT("Supports", "supports", "is supported by", "#00994C"), // pro-arguments to solution options
+	ATTACK("Attacks", "attacks", "is attacked by", "#c0392b"), // con-arguments to solution options
+	FORBID("Forbids", "forbids", "is forbidden by", "#c0392b"), // among decisions
+	CONSTRAINT("Constraints", "constraints", "is constrained by", "#0066b3"), // among decisions
+	ENABLE("Enables", "enables", "is enabled by", "#80ff80"), // among decisions
+	COMPRISE("Comprises", "comprises", "is comprised by", "#BA55D3"), // among decisions
+	SUBSUME("Subsumes", "subsumes", "is subsumed by", "#00cc00"), // among decisions
+	RELATE("Relates", "relates to", "relates to", "#80c9ff"), // among decisions
+	OVERRIDE("Overrides", "overrides", "is overridden by", "#FFFF00"), // among decisions
+	REPLACE("Replaces", "replaces", "is replaced by", "#ff8000"), // among decisions
+	DUPLICATE("Duplicate", "duplicates", "is duplicated by", "#c0392b"), // among duplicated elements
+	TRANSITIVE("Transitive", "transitively links to", "transitively links to", "#7f7f7f"), //
+	OTHER("", "", "", ""); // other Jira issue links, e.g. "jira_subtask_link"
 
 	private String name;
 	private String outwardName;
 	private String inwardName;
-	private String style;
 	private String color;
 
-	private LinkType(String name, String outwardName, String inwardName, String style, String color) {
+	private LinkType(String name, String outwardName, String inwardName, String color) {
 		this.name = name;
 		this.outwardName = outwardName;
 		this.inwardName = inwardName;
-		this.style = style;
 		this.color = color;
 	}
 
@@ -57,8 +57,12 @@ public enum LinkType {
 		return inwardName;
 	}
 
+	/**
+	 * @return style needed to create a Jira issue link type.
+	 * @see JiraSchemeManager#createLinkType(String)
+	 */
 	public String getStyle() {
-		return style;
+		return "contain-style";
 	}
 
 	public String getColor() {
@@ -75,7 +79,7 @@ public enum LinkType {
 	 */
 	@Override
 	public String toString() {
-		return this.name().toLowerCase(Locale.ENGLISH);
+		return name().toLowerCase(Locale.ENGLISH);
 	}
 
 	/**

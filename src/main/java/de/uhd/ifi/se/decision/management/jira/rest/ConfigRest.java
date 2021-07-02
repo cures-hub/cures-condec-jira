@@ -246,7 +246,7 @@ public class ConfigRest {
 		}
 		JiraSchemeManager jiraSchemeManager = new JiraSchemeManager(projectKey);
 		if (isLinkTypeEnabled) {
-			JiraSchemeManager.createLinkType(linkType);
+			JiraSchemeManager.createLinkType(LinkType.getLinkType(linkType));
 			jiraSchemeManager.addLinkTypeToScheme(linkType);
 		} else {
 			jiraSchemeManager.removeLinkTypeFromScheme(linkType);

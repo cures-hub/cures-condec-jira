@@ -5,6 +5,7 @@ import java.util.Set;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
@@ -31,6 +32,7 @@ public class BasicConfiguration {
 		setActivatedKnowledgeTypes(KnowledgeType.getDefaultTypes());
 		setCriteriaJiraQuery("");
 		setActivated(true);
+		LinkType.getDefaultTypes().forEach(linkType -> JiraSchemeManager.createLinkType(linkType));
 	}
 
 	/**
