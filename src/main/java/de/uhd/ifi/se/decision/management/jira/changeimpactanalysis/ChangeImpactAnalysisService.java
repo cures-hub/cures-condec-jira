@@ -90,8 +90,9 @@ public class ChangeImpactAnalysisService {
 			KnowledgeElement nextElement = (isOutwardLink) ? link.getTarget() : link.getSource();
 
 			boolean propagate = true;
-			for (PassRule rule : ciaConfig.getPropagationRules()) {
-				propagate = propagate && rule.getPredicate().pass(root, parentImpact, nextElement, impact, link);
+			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
+				propagate = propagate
+						&& rule.getPredicate().isChangePropagated(root, parentImpact, nextElement, impact, link);
 			}
 
 			if (impact >= ciaConfig.getThreshold() && propagate) {
@@ -127,14 +128,12 @@ public class ChangeImpactAnalysisService {
 	}
 
 	private static boolean collapse(KnowledgeElement element, FilterSettings settings) {
-		KnowledgeType type = (element.getType() == KnowledgeType.CON || element.getType() == KnowledgeType.PRO)
-				? KnowledgeType.ARGUMENT
-				: element.getType();
+		KnowledgeType type = element.getType().replaceProAndConWithArgument();
 		if (element.equals(settings.getSelectedElement())) {
 			return false;
 		}
-		return !(settings.getKnowledgeTypes().contains(type.toString()))
-				|| !(settings.getStatus().contains(element.getStatus()));
+		return !settings.getKnowledgeTypes().contains(type.toString())
+				|| !settings.getStatus().contains(element.getStatus());
 	}
 
 	private static void colorizeNode(TreeViewerNode node, Map<KnowledgeElement, Double> results) {

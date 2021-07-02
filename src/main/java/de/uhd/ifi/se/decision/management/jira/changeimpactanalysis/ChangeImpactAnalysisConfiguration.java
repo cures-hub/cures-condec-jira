@@ -24,7 +24,7 @@ public class ChangeImpactAnalysisConfiguration {
 	private float threshold;
 	private Map<String, Float> linkImpact;
 	private long context;
-	private List<PassRule> propagationRules;
+	private List<ChangePropagationRule> propagationRules;
 
 	@JsonCreator
 	public ChangeImpactAnalysisConfiguration() {
@@ -36,7 +36,7 @@ public class ChangeImpactAnalysisConfiguration {
 		});
 		context = 0;
 		propagationRules = new LinkedList<>();
-		propagationRules.addAll(List.of(PassRule.values()));
+		propagationRules.addAll(List.of(ChangePropagationRule.values()));
 	}
 
 	@XmlElement
@@ -74,13 +74,13 @@ public class ChangeImpactAnalysisConfiguration {
 		this.context = context;
 	}
 
-	public List<PassRule> getPropagationRules() {
+	public List<ChangePropagationRule> getPropagationRules() {
 		return propagationRules;
 	}
 
 	@XmlElement(name = "propagationRules")
 	public List<String> getPropagationRulesAsStrings() {
-		return propagationRules.stream().map(PassRule::getTranslation).collect(Collectors.toList());
+		return propagationRules.stream().map(ChangePropagationRule::getDescription).collect(Collectors.toList());
 	}
 
 	@JsonProperty
@@ -90,7 +90,7 @@ public class ChangeImpactAnalysisConfiguration {
 			return;
 		}
 		for (String stringRule : propagationRules) {
-			this.propagationRules.add(PassRule.getPropagationRule(stringRule));
+			this.propagationRules.add(ChangePropagationRule.getPropagationRule(stringRule));
 		}
 	}
 }
