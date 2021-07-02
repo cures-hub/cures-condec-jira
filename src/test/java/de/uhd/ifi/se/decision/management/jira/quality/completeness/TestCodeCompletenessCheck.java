@@ -25,12 +25,12 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	private ChangedFile testFileThatIsDone;
 	private ChangedFile linkedFileThatIsDone;
 
-	private CodeCompletenessCheck codeCompletenessCheck;
+	private CodeCheck codeCompletenessCheck;
 
 	@Before
 	public void setUp() {
 		init();
-		codeCompletenessCheck = new CodeCompletenessCheck();
+		codeCompletenessCheck = new CodeCheck();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		fileThatIsNotDone = CodeFiles.getCodeFileNotDone();
 		smallFileThatIsDone = CodeFiles.getSmallCodeFileDone();

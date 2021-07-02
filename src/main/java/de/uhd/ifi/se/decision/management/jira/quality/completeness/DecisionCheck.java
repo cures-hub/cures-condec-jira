@@ -7,10 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import java.util.ArrayList;
 import java.util.List;
 
-public class DecisionCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
-
-	private final String DECISIONDOESNTHAVEISSUE = "Decision doesn't have an issue!";
-	private final String DECISIONDOESNTHAVEPRO = "Decision doesn't have a pro-argument!";
+public class DecisionCheck implements KnowledgeElementCheck<KnowledgeElement> {
 
 	private KnowledgeElement decision;
 	private String projectKey;
@@ -38,17 +35,17 @@ public class DecisionCompletenessCheck implements CompletenessCheck<KnowledgeEle
 	}
 
 	@Override
-	public List<String> getFailedCriteria(KnowledgeElement decision) {
-		List<String> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getFailedCriteria(KnowledgeElement decision) {
+		List<QualityProblem> failedCriteria = new ArrayList<>();
 
 		if (!decision.hasNeighborOfType(KnowledgeType.ISSUE)) {
-			failedCriteria.add(DECISIONDOESNTHAVEISSUE);
+			failedCriteria.add(QualityProblem.DECISIONDOESNTHAVEISSUE);
 		}
 
 		boolean hasToBeLinkedToProArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 			.isDecisionIsLinkedToPro();
 		if (hasToBeLinkedToProArgument && !decision.hasNeighborOfType(KnowledgeType.PRO)) {
-			failedCriteria.add(DECISIONDOESNTHAVEPRO);
+			failedCriteria.add(QualityProblem.DECISIONDOESNTHAVEPRO);
 		}
 
 		return failedCriteria;

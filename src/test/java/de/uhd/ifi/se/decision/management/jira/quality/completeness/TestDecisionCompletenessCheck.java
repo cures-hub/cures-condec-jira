@@ -28,14 +28,14 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestDecisionCompletenessCheck extends TestSetUp {
 	private KnowledgeElement decision;
 	private ApplicationUser user;
-	private DecisionCompletenessCheck decisionCompletenessCheck;
+	private DecisionCheck decisionCompletenessCheck;
 
 	@Before
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		decision = KnowledgeElements.getDecision();
-		decisionCompletenessCheck = new DecisionCompletenessCheck();
+		decisionCompletenessCheck = new DecisionCheck();
 	}
 
 	@Test
