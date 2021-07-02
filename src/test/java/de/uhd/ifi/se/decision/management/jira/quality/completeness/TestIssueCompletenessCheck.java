@@ -23,12 +23,12 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestIssueCompletenessCheck extends TestSetUp {
 
 	private KnowledgeElement issue;
-	private DecisionProblemCompletenessCheck issueCompletenessCheck;
+	private IssueCheck issueCompletenessCheck;
 
 	@Before
 	public void setUp() {
 		init();
-		issueCompletenessCheck = new DecisionProblemCompletenessCheck();
+		issueCompletenessCheck = new IssueCheck();
 		issue = KnowledgeElements.getSolvedDecisionProblem();
 	}
 
@@ -53,7 +53,7 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		assertEquals(3, alternative.getId());
 		assertNotNull(issue.getLink(alternative));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(new DecisionProblemCompletenessCheck().execute(issue));
+		assertTrue(new IssueCheck().execute(issue));
 	}
 
 	@Test

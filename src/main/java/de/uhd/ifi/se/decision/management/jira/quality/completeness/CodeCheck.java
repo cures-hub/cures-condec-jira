@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDa
  * @see RationaleCoverageCalculator
  * @see RationaleCoverageDashboardItem
  */
-public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
+public class CodeCheck implements KnowledgeElementCheck<ChangedFile> {
 
 	private ChangedFile codeFile;
 	private String projectKey;
@@ -65,7 +65,7 @@ public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 	}
 
 	@Override
-	public List<String> getFailedCriteria(ChangedFile knowledgeElement) {
+	public List<QualityProblem> getFailedCriteria(ChangedFile knowledgeElement) {
 		return new ArrayList<>();
 	}
 }

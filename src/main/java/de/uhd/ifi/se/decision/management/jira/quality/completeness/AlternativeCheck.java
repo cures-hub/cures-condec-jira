@@ -7,10 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlternativeCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
-
-	private final String ALTERNATIVEDOESNTHAVEISSUE = "Alternative doesn't have an issue!";
-	private final String ALRENATIVEDOESNTHAVEARGUMENT = "Alternative doesn't have an argument!";
+public class AlternativeCheck implements KnowledgeElementCheck<KnowledgeElement> {
 
 	private KnowledgeElement alternative;
 	private String projectKey;
@@ -40,11 +37,11 @@ public class AlternativeCompletenessCheck implements CompletenessCheck<Knowledge
 	}
 
 	@Override
-	public List<String> getFailedCriteria(KnowledgeElement alternative) {
-		List<String> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getFailedCriteria(KnowledgeElement alternative) {
+		List<QualityProblem> failedCriteria = new ArrayList<>();
 
 		if (!alternative.hasNeighborOfType(KnowledgeType.ISSUE)) {
-			failedCriteria.add(ALTERNATIVEDOESNTHAVEISSUE);
+			failedCriteria.add(QualityProblem.ALTERNATIVEDOESNTHAVEISSUE);
 		}
 
 		boolean hasToBeLinkedToArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
@@ -52,7 +49,7 @@ public class AlternativeCompletenessCheck implements CompletenessCheck<Knowledge
 		if (hasToBeLinkedToArgument && !(alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
 			|| alternative.hasNeighborOfType(KnowledgeType.PRO)
 			|| alternative.hasNeighborOfType(KnowledgeType.CON))) {
-			failedCriteria.add(ALRENATIVEDOESNTHAVEARGUMENT);
+			failedCriteria.add(QualityProblem.ALTERNATIVEDOESNTHAVEARGUMENT);
 		}
 
 		return failedCriteria;

@@ -17,14 +17,14 @@ public final class DefinitionOfDoneChecker {
 	private DefinitionOfDoneChecker() {
 	}
 
-	private static final Map<KnowledgeType, CompletenessCheck<? extends KnowledgeElement>> completenessCheckMap = Map
-			.ofEntries(entry(KnowledgeType.DECISION, new DecisionCompletenessCheck()),
-					entry(KnowledgeType.ISSUE, new DecisionProblemCompletenessCheck()),
-					entry(KnowledgeType.ALTERNATIVE, new AlternativeCompletenessCheck()),
-					entry(KnowledgeType.ARGUMENT, new ArgumentCompletenessCheck()),
-					entry(KnowledgeType.PRO, new ArgumentCompletenessCheck()),
-					entry(KnowledgeType.CON, new ArgumentCompletenessCheck()),
-					entry(KnowledgeType.CODE, new CodeCompletenessCheck()));
+	private static final Map<KnowledgeType, KnowledgeElementCheck<? extends KnowledgeElement>> knowledgeElementCheckMap = Map
+			.ofEntries(entry(KnowledgeType.DECISION, new DecisionCheck()),
+					entry(KnowledgeType.ISSUE, new IssueCheck()),
+					entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()),
+					entry(KnowledgeType.ARGUMENT, new ArgumentCheck()),
+					entry(KnowledgeType.PRO, new ArgumentCheck()),
+					entry(KnowledgeType.CON, new ArgumentCheck()),
+					entry(KnowledgeType.CODE, new CodeCheck()));
 
 	/**
 	 * @issue Should knowledge elements without definition of done be assumed to be
@@ -47,8 +47,8 @@ public final class DefinitionOfDoneChecker {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return false;
 		}
-		CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
-		return !(completenessCheck == null || completenessCheck.execute(knowledgeElement));
+		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
+		return !(knowledgeElementCheck == null || knowledgeElementCheck.execute(knowledgeElement));
 	}
 
 	/**
@@ -103,31 +103,25 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * @return a list of failed definition of done criteria.
+	 * @return a list of {@link QualityProblem} of the
+	 * {@link KnowledgeElement}.
 	 */
-	public static List<String> getFailedDefinitionOfDoneCheckCriteria(KnowledgeElement knowledgeElement,
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<QualityProblem> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
-		List<String> failedCheckCriteria = new ArrayList<>();
+		List<QualityProblem> failedCheckCriteria = new ArrayList<>();
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			failedCheckCriteria.add("hasIncompleteKnowledgeLinked");
+			failedCheckCriteria.add(QualityProblem.DECISIONCOVERAGETOOLOW);
 		}
 		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
 				filterSettings)) {
-			failedCheckCriteria.add("doesNotHaveMinimumCoverage");
+			failedCheckCriteria.add(QualityProblem.INCOMPLETEKNOWLEDGELINKED);
+		}
+		if (isDecisionKnowledge(knowledgeElement)) {
+			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
+			failedCheckCriteria.addAll(knowledgeElementCheck.getFailedCriteria(knowledgeElement));
 		}
 		return failedCheckCriteria;
-	}
-
-	/**
-	 * @return a list of failed completeness criteria.
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static List<String> getFailedCompletenessCheckCriteria(KnowledgeElement knowledgeElement) {
-		if (isDecisionKnowledge(knowledgeElement)) {
-			CompletenessCheck completenessCheck = completenessCheckMap.get(knowledgeElement.getType());
-			return completenessCheck.getFailedCriteria(knowledgeElement);
-		}
-		return new ArrayList<>();
 	}
 
 	private static boolean isDecisionKnowledge(KnowledgeElement knowledgeElement) {
@@ -137,24 +131,17 @@ public final class DefinitionOfDoneChecker {
 				|| knowledgeType.equals(KnowledgeType.PRO) || knowledgeType.equals(KnowledgeType.CON));
 	}
 
-	public static List<String> getQualityProblems(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
-		List<String> qualityProblems = DefinitionOfDoneChecker.getFailedDefinitionOfDoneCheckCriteria(knowledgeElement,
-				filterSettings);
-		qualityProblems.addAll(DefinitionOfDoneChecker.getFailedCompletenessCheckCriteria(knowledgeElement));
-		return qualityProblems;
-	}
-
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
-		List<String> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
+		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		String text = "";
-		for (String problem : qualityProblems) {
-			if (problem.equalsIgnoreCase("doesNotHaveMinimumCoverage")) {
-				text += "Minimum decision coverage is not reached." + System.lineSeparator() + System.lineSeparator();
-			} else if (problem.equalsIgnoreCase("hasIncompleteKnowledgeLinked")) {
-				text += "Linked decision knowledge is incomplete." + System.lineSeparator() + System.lineSeparator();
+		for (QualityProblem problem : qualityProblems) {
+			if (problem.equals(QualityProblem.DECISIONCOVERAGETOOLOW)) {
+				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
+			} else if (problem.equals(QualityProblem.INCOMPLETEKNOWLEDGELINKED)) {
+				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
 			} else {
-				text += problem + System.lineSeparator();
+				text += problem.getDescription() + System.lineSeparator();
 			}
 		}
 		return text.strip();

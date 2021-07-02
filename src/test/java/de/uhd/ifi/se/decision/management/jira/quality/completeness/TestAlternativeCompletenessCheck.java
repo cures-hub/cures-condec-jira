@@ -29,14 +29,14 @@ public class TestAlternativeCompletenessCheck extends TestSetUp {
 
 	private KnowledgeElement alternative;
 	private ApplicationUser user;
-	private AlternativeCompletenessCheck alternativeCompletenessCheck;
+	private AlternativeCheck alternativeCompletenessCheck;
 
 	@Before
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		alternative = KnowledgeElements.getAlternative();
-		alternativeCompletenessCheck = new AlternativeCompletenessCheck();
+		alternativeCompletenessCheck = new AlternativeCheck();
 	}
 
 	@Test

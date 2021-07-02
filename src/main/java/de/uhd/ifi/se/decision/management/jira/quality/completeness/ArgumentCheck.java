@@ -6,9 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArgumentCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
-
-	private final String ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE = "Argument doesn't have a decision or an alternative!";
+public class ArgumentCheck implements KnowledgeElementCheck<KnowledgeElement> {
 
 	private KnowledgeElement argument;
 
@@ -30,12 +28,12 @@ public class ArgumentCompletenessCheck implements CompletenessCheck<KnowledgeEle
 	}
 
 	@Override
-	public List<String> getFailedCriteria(KnowledgeElement argument) {
-		List<String> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getFailedCriteria(KnowledgeElement argument) {
+		List<QualityProblem> failedCriteria = new ArrayList<>();
 
 		if (!(argument.hasNeighborOfType(KnowledgeType.DECISION)
 			|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE))) {
-			failedCriteria.add(ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE);
+			failedCriteria.add(QualityProblem.ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE);
 		}
 
 		return failedCriteria;

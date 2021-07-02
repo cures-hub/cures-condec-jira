@@ -21,7 +21,7 @@ import java.util.List;
  *            {@link ChangedFile}, {@link PartOfJiraIssueText}, or
  *            {@link Recommendation}.
  */
-public interface CompletenessCheck<T extends KnowledgeElement> {
+public interface KnowledgeElementCheck<T extends KnowledgeElement> {
 
 	/**
 	 * Executes the completeness check for the given knowledge element.
@@ -69,5 +69,5 @@ public interface CompletenessCheck<T extends KnowledgeElement> {
 	 * @return a set of the failed criteria according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
-	List<String> getFailedCriteria(T knowledgeElement);
+	List<QualityProblem> getFailedCriteria(T knowledgeElement);
 }

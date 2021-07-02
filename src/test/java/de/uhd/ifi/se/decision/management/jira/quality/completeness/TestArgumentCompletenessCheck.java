@@ -27,13 +27,13 @@ public class TestArgumentCompletenessCheck extends TestSetUp {
 
 	private KnowledgeElement proArgument;
 	private ApplicationUser user;
-	private ArgumentCompletenessCheck argumentCompletenessCheck;
+	private ArgumentCheck argumentCompletenessCheck;
 
 	@Before
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		argumentCompletenessCheck = new ArgumentCompletenessCheck();
+		argumentCompletenessCheck = new ArgumentCheck();
 		proArgument = KnowledgeElements.getProArgument();
 	}
 

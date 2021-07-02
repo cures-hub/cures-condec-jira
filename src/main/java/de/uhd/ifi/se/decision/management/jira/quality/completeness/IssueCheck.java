@@ -13,26 +13,22 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Checks whether a decision problem (=issue, question, goal, ...) fulfills the
  * {@link DefinitionOfDone}.
  */
-public class DecisionProblemCompletenessCheck implements CompletenessCheck<KnowledgeElement> {
+public class IssueCheck implements KnowledgeElementCheck<KnowledgeElement> {
 
-	private final String ISSUEDOESNTHAVEDECISION = "Issue doesn't have a valid decision!";
-	private final String ISSUEISUNRESOLVED = "Issue is unresolved!";
-	private final String ISSUEDOESNTHAVEALTERNATIVE = "Issue doesn't have an alternative!";
-
-	private KnowledgeElement decisionProblem;
+	private KnowledgeElement issue;
 	private String projectKey;
 
 	@Override
 	public boolean execute(KnowledgeElement decisionProblem) {
-		this.decisionProblem = decisionProblem;
+		this.issue = decisionProblem;
 		projectKey = decisionProblem.getProject().getProjectKey();
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
 	}
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return isValidDecisionLinkedToDecisionProblem(decisionProblem)
-				&& decisionProblem.getStatus() != KnowledgeStatus.UNRESOLVED;
+		return isValidDecisionLinkedToDecisionProblem(issue)
+				&& issue.getStatus() != KnowledgeStatus.UNRESOLVED;
 	}
 
 	@Override
@@ -40,27 +36,27 @@ public class DecisionProblemCompletenessCheck implements CompletenessCheck<Knowl
 		boolean hasToBeLinkedToAlternative = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 				.isIssueIsLinkedToAlternative();
 		if (hasToBeLinkedToAlternative) {
-			return decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+			return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 		}
 		return true;
 	}
 
 	@Override
-	public List<String> getFailedCriteria(KnowledgeElement decisionProblem) {
-		List<String> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getFailedCriteria(KnowledgeElement decisionProblem) {
+		List<QualityProblem> failedCriteria = new ArrayList<>();
 
 		if (!isValidDecisionLinkedToDecisionProblem(decisionProblem)) {
-			failedCriteria.add(ISSUEDOESNTHAVEDECISION);
+			failedCriteria.add(QualityProblem.ISSUEDOESNTHAVEDECISION);
 		}
 
 		if (decisionProblem.getStatus() == KnowledgeStatus.UNRESOLVED) {
-			failedCriteria.add(ISSUEISUNRESOLVED);
+			failedCriteria.add(QualityProblem.ISSUEISUNRESOLVED);
 		}
 
 		boolean hasToBeLinkedToAlternative = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
 			.isIssueIsLinkedToAlternative();
 		if (hasToBeLinkedToAlternative && !decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
-			failedCriteria.add(ISSUEDOESNTHAVEALTERNATIVE);
+			failedCriteria.add(QualityProblem.ISSUEDOESNTHAVEALTERNATIVE);
 		}
 
 		return failedCriteria;

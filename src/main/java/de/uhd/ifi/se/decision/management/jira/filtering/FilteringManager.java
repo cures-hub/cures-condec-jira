@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.CompletenessCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCheck;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 
 /**
@@ -328,7 +328,7 @@ public class FilteringManager {
 	 * @return always true if
 	 *         {@link FilterSettings#isOnlyIncompleteKnowledgeShown()} is false.
 	 *         True if the element is incompletely documented according to the
-	 *         {@link DefinitionOfDone} (checked by {@link CompletenessCheck}) and
+	 *         {@link DefinitionOfDone} (checked by {@link KnowledgeElementCheck}) and
 	 *         only incomplete knowledge elements should be shown
 	 *         ({@link FilterSettings#isOnlyIncompleteKnowledgeShown()} is true).
 	 *         False otherwise.
