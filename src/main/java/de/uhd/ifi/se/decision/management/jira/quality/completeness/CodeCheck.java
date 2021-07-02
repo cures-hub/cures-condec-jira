@@ -65,7 +65,7 @@ public class CodeCheck implements KnowledgeElementCheck<ChangedFile> {
 	}
 
 	@Override
-	public List<QualityProblem> getFailedCriteria(ChangedFile knowledgeElement) {
+	public List<QualityProblem> getFailedCriteria(ChangedFile codeFile) {
 		return new ArrayList<>();
 	}
 }

@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -125,7 +127,7 @@ public class TestChecks extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetFailedDefinitionOfDoneCheckCriteriaCode() {
-		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		ChangedFile knowledgeElement = CodeFiles.getTestCodeFileDone();
 		knowledgeElement.setType(KnowledgeType.CODE);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement(knowledgeElement);
