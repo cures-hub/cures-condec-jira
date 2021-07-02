@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewerNode;
@@ -61,7 +62,7 @@ public class ChangeImpactAnalysisService {
 	}
 
 	private static Map<KnowledgeElement, Double> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
-		HashMap<KnowledgeElement, Double> results = new HashMap<>();
+		Map<KnowledgeElement, Double> results = new HashMap<>();
 		KnowledgeElement root = filterSettings.getSelectedElement();
 		results.put(root, 1.0);
 		calculateImpactedKnowledgeElementsHelper(root, 1.0, filterSettings, results,
@@ -70,37 +71,39 @@ public class ChangeImpactAnalysisService {
 		return results;
 	}
 
-	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement root, Double parentImpact,
-			FilterSettings filterSettings, Map<KnowledgeElement, Double> results, final Long context) {
+	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement root, double parentImpact,
+			FilterSettings filterSettings, Map<KnowledgeElement, Double> results, long context) {
 		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
-		root.getLinks().forEach(link -> {
-			// TODO Link specific weights
-			boolean isOutwardLink = link.getSource().equals(root);
-			String linkType = (isOutwardLink) ? link.getType().getOutwardName() : link.getType().getInwardName();
-			if (!ciaConfig.getLinkImpact().containsKey(linkType)) {
-				LOGGER.warn("CIA couldn't be processed: {}", "link -> " + linkType + ", source -> "
+		for (Link link : root.getLinks()) {
+			boolean isOutwardLink = link.isOutwardLinkFrom(root);
+			String linkTypeName = (isOutwardLink) ? link.getType().getOutwardName() : link.getType().getInwardName();
+			if (!ciaConfig.getLinkImpact().containsKey(linkTypeName)) {
+				LOGGER.warn("CIA couldn't be processed: {}", "link -> " + linkTypeName + ", source -> "
+						+ link.getSource().getId() + ", target -> " + link.getTarget().getId());
+				System.out.println("CIA couldn't be processed: {} link -> " + linkTypeName.toString() + ", source -> "
 						+ link.getSource().getId() + ", target -> " + link.getTarget().getId());
 			}
-			double typeWeight = ciaConfig.getLinkImpact().getOrDefault(linkType, 1.0f);
+			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
-			double impact = parentImpact * typeWeight * decayValue;
+			double impact = parentImpact * linkTypeWeight * decayValue;
 
-			KnowledgeElement next = (isOutwardLink) ? link.getTarget() : link.getSource();
+			KnowledgeElement nextElement = (isOutwardLink) ? link.getTarget() : link.getSource();
 
-			final boolean[] propagate = { true };
-			ciaConfig.getPropagationRules().forEach(rule -> propagate[0] = propagate[0]
-					&& rule.getPredicate().pass(root, parentImpact, next, impact, link));
-
-			if (impact >= ciaConfig.getThreshold() && propagate[0]) {
-				if (!results.containsKey(next) || (results.containsKey(next) && results.get(next) < impact)) {
-					results.put(next, impact);
-					calculateImpactedKnowledgeElementsHelper(next, impact, filterSettings, results, context);
-				}
-			} else if (ciaConfig.getContext() > 0 && context > 0 && !results.containsKey(next)) {
-				results.put(next, 0.0);
-				calculateImpactedKnowledgeElementsHelper(next, 0.0, filterSettings, results, context - 1);
+			boolean propagate = true;
+			for (PassRule rule : ciaConfig.getPropagationRules()) {
+				propagate = propagate && rule.getPredicate().pass(root, parentImpact, nextElement, impact, link);
 			}
-		});
+
+			if (impact >= ciaConfig.getThreshold() && propagate) {
+				if (!results.containsKey(nextElement) || results.get(nextElement) < impact) {
+					results.put(nextElement, impact);
+					calculateImpactedKnowledgeElementsHelper(nextElement, impact, filterSettings, results, context);
+				}
+			} else if (ciaConfig.getContext() > 0 && context > 0 && !results.containsKey(nextElement)) {
+				results.put(nextElement, 0.0);
+				calculateImpactedKnowledgeElementsHelper(nextElement, 0.0, filterSettings, results, context - 1);
+			}
+		}
 	}
 
 	private static VisGraph asVisGraph(Map<KnowledgeElement, Double> results, FilterSettings filterSettings,

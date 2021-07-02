@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 public enum PassRule {
 
-	UNDEFINED("undefined.descr", "undefined", new UndefinedPassRule()), //
 	IGNORE_ARGUMENTS("IgnoreArgumentsFromAlternatives", "IgnoreArgumentsFromAlternatives",
 			new IgnoreArgumentsDecisionsPassRule()), //
 	IGNORE_DecisionIncoming("IgnoreDecisionIncoming", "IgnoreDecisionIncoming", new IgnoreDecisionIncoming());
@@ -31,13 +30,13 @@ public enum PassRule {
 
 	public static PassRule getPropagationRule(String status) {
 		if (status == null || status.isEmpty()) {
-			return UNDEFINED;
+			return null;
 		}
 		for (PassRule passRule : PassRule.values()) {
 			if (passRule.getTranslation().matches(status)) {
 				return passRule;
 			}
 		}
-		return UNDEFINED;
+		return null;
 	}
 }

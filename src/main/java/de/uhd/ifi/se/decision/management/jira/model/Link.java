@@ -443,8 +443,13 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	@JsonIgnore
 	public boolean isIssueLink() {
-		return this.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
-				&& this.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+		return getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
+				&& getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+	}
+
+	@JsonIgnore
+	public boolean isOutwardLinkFrom(KnowledgeElement element) {
+		return getSource().equals(element);
 	}
 
 	/**

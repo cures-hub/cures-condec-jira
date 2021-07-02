@@ -23,7 +23,7 @@ public class TestLinkType {
 
 	@Test
 	public void testGetInwardName() {
-		assertEquals("is related to", LinkType.RELATE.getInwardName());
+		assertEquals("relates to", LinkType.RELATE.getInwardName());
 	}
 
 	@Test
