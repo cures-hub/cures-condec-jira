@@ -18,6 +18,6 @@ public class StopAtSameElementType implements ChangePropagationPredicate {
 	@Override
 	public boolean isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
 		KnowledgeElement traversedElement = link.getOppositeElement(currentElement);
-		return traversedElement.getType() != filterSettings.getSelectedElement().getType();
+		return !traversedElement.getTypeAsString().equals(filterSettings.getSelectedElement().getTypeAsString());
 	}
 }
