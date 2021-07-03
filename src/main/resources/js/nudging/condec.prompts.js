@@ -29,17 +29,17 @@
 					conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId),
 					conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
 				])
-					.then((isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated) => {
+					.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
 
 
-							if (isDoDCheckActivated
-								|| isLinkRecommendationActivated
-								|| isTextClassificationActivated
-								|| isDecisionGuidanceActivated) {
-								AJS.dialog2(unifiedPromptElement).show()
-							}
+						if (isDoDCheckActivated
+							|| isLinkRecommendationActivated
+							|| isTextClassificationActivated
+							|| isDecisionGuidanceActivated) {
+							AJS.dialog2(unifiedPromptElement).show()
+						}
 
-							if (isDoDCheckActivated) {
+						if (isDoDCheckActivated) {
 								conDecPrompt.promptDefinitionOfDoneChecking();
 								$(document).ready(function () {
 									document.getElementById("definition-of-done-prompt").style.display = "block";
