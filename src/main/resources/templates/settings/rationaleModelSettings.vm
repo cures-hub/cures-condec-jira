@@ -69,10 +69,10 @@
         html += " <span class='aui-lozenge'>" + defaultLinkTypes[i] + "</span>";
     }
     html += ". If you enable additional link types, they are added as Jira issue links to the ";
-    html += "current link type scheme.<br/><br/></p>";
+    html += "current link type scheme. You can remove and rename link types in the Jira admin page.<br/><br/></p>";
     document.getElementById("additional-link-types-header").insertAdjacentHTML('afterend', html);
 
-    var additionalLinkTypes = ["Supports", "Attacks", "Duplicates", "Forbids", "Constraints", "Enables",
+    var additionalLinkTypes = ["Supports", "Attacks", "Duplicate", "Forbids", "Constraints", "Enables",
         "Comprises", "Subsumes", "Relates", "Overrides", "Replaces"];
     var typeLinkToggles = [];
     for (i in additionalLinkTypes) {
@@ -91,6 +91,9 @@
     for (j in additionalLinkTypes) {
         conDecAPI.isLinkTypeEnabled(typeLinkToggles[j].value, "$projectKey", typeLinkToggles[j], function (isTypeEnabled, toggle) {
             toggle.checked = isTypeEnabled;
+            if (isTypeEnabled) {
+           		toggle.disabled = true;
+            }
         });
 
         typeLinkToggles[j].addEventListener("change", function (error) {

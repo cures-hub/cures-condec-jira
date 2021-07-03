@@ -192,7 +192,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
+			<version>1.7.31</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Active Objects to store model objects via object relational mapping -->
@@ -255,7 +255,7 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>5.11.1.202105131744-r</version>
+			<version>5.12.0.202106070339-r</version>
 		</dependency>
 		<!-- Summarization of code changes and extraction of decision knowledge 
 			from code comments -->
@@ -281,7 +281,7 @@
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
-			<version>4.0.0</version>
+			<version>4.1.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>

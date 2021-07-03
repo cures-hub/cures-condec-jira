@@ -23,7 +23,7 @@ public class TestLinkType {
 
 	@Test
 	public void testGetInwardName() {
-		assertEquals("is related to", LinkType.RELATE.getInwardName());
+		assertEquals("relates to", LinkType.RELATE.getInwardName());
 	}
 
 	@Test
@@ -48,9 +48,8 @@ public class TestLinkType {
 	public void testGetLinkTypeColor() {
 		assertEquals("#80c9ff", LinkType.getLinkTypeColor("relate"));
 		assertEquals("#00994C", LinkType.getLinkTypeColor("Supports"));
-		assertEquals("", "");
-		assertEquals("#bd3525", LinkType.getLinkTypeColor("jira_subtask_link"));
-		assertEquals("#15ceb6", LinkType.getLinkTypeColor("clones"));
+		assertEquals("#817505", LinkType.getLinkTypeColor("jira_subtask_link"));
+		assertEquals("#7abad6", LinkType.getLinkTypeColor("clones"));
 	}
 
 	@Test

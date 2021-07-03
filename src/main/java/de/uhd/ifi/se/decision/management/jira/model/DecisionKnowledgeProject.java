@@ -196,25 +196,28 @@ public class DecisionKnowledgeProject {
 		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
 		Set<String> namesOfJiraIssueLinkTypes = types.stream().map(IssueLinkType::getName).collect(Collectors.toSet());
 		Set<String> allLinkTypes = namesOfJiraIssueLinkTypes;
-		// In the future, there will also be a "transitive" link type for transitive
-		// link creation.
 		allLinkTypes.add("Other");
-		return allLinkTypes;
-	}
-
-	public static Set<String> getAllNamesOfLinkTypes() {
-		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
-		Set<String> allLinkTypes = new HashSet<>();
-		allLinkTypes.addAll(types.stream().map(IssueLinkType::getInward).collect(Collectors.toSet()));
-		allLinkTypes.addAll(types.stream().map(IssueLinkType::getOutward).collect(Collectors.toSet()));
-		// There is also a "transitive" link type for transitive
-		// link creation.
-		allLinkTypes.add("Other");
+		allLinkTypes.add("Transitive");
 		return allLinkTypes;
 	}
 
 	/**
-	 * @return Jira issue links available in the project.
+	 * @return names of the inward and outward links of all {@link LinkType}s, e.g.
+	 *         "supports" (outward) and "is supported by" (inward).
+	 */
+	public static Set<String> getInwardAndOutwardNamesOfLinkTypes() {
+		Collection<IssueLinkType> types = getJiraIssueLinkTypes();
+		Set<String> allLinkTypes = new HashSet<>();
+		allLinkTypes.addAll(types.stream().map(IssueLinkType::getInward).collect(Collectors.toSet()));
+		allLinkTypes.addAll(types.stream().map(IssueLinkType::getOutward).collect(Collectors.toSet()));
+		// The "transitive" link type for transitive link creation is not included
+		// because change impact analysis is performed prior to transitive linking.
+		allLinkTypes.add("other");
+		return allLinkTypes;
+	}
+
+	/**
+	 * @return Jira issue link types available in the project.
 	 */
 	public static Collection<IssueLinkType> getJiraIssueLinkTypes() {
 		IssueLinkTypeManager linkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);

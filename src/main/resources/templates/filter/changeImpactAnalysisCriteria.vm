@@ -1,4 +1,5 @@
-<div class="condec-filter-criterion">
+<div class="condec-filter-criterion"
+	title="Set the decay per iteration step. When the decay value is set to 1, no decay happens.">
 	<label for="decay-input-$viewIdentifier" id="decay-input-label-$viewIdentifier">
 		$i18n.getText("condec.decay.label")
 	</label>
@@ -6,7 +7,8 @@
 		placeholder="Enter Decay">
 </div>
 
-<div class="condec-filter-criterion">
+<div class="condec-filter-criterion"
+	title="The element is included in the impact graph if elementImpact >= threshold.">
 	<label for="threshold-input-$viewIdentifier" id="threshold-input-label-$viewIdentifier">
 		$i18n.getText("condec.threshold.label")
 	</label>
@@ -14,7 +16,8 @@
 		class="text short-field" placeholder="Enter threshold">
 </div>
 
-<div class="condec-filter-criterion">
+<div class="condec-filter-criterion"
+	title="Enables to show elements that are not impacted by the change (i.e. below the threshold) but that surround the impacted elements.">
     <label for="context-input-$viewIdentifier" id="context-input-label-$viewIdentifier">
         $i18n.getText("condec.context.label")
     </label>
@@ -28,5 +31,17 @@
 </button>
 <aui-dropdown-menu id="propagation-rule-dropdown-$viewIdentifier" name="passRule"></aui-dropdown-menu>
 
+<a id="link-impact-input-$viewIdentifier" 
+	title="Link type weights can be changed by the rationale manager.">
+	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.label.link.types')
+</a>
+
 <input type="button" id="cia-button-$viewIdentifier" class="aui-button aui-button-primary" 
 	value="$i18n.getText('condec.cia.button')"/>
+
+<script>
+	var linkImpactLink = document.getElementById("link-impact-input-$viewIdentifier");
+	linkImpactLink.href = "../../../plugins/servlet/condec/settings?projectKey=" 
+		+ conDecAPI.getProjectKey() + "&category=cia";
+	AJS.$(linkImpactLink).tooltip();
+</script>

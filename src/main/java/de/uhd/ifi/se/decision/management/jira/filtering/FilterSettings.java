@@ -105,6 +105,7 @@ public class FilterSettings {
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
 		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		this.changeImpactAnalysisConfig = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -534,6 +535,7 @@ public class FilterSettings {
 	 *         by the {@link FilteringManager} should contain transitive links as a
 	 *         replacement for knowledge elements removed by filters.
 	 */
+	@XmlElement
 	public boolean createTransitiveLinks() {
 		return createTransitiveLinks;
 	}
@@ -556,6 +558,7 @@ public class FilterSettings {
 	 *         colored for highlighting. The details for change impact estimation
 	 *         are stored in the {@link DefinitionOfDone} class.
 	 */
+	@XmlElement
 	public boolean areQualityProblemHighlighted() {
 		return areQualityProblemsHighlighted;
 	}
@@ -641,8 +644,13 @@ public class FilterSettings {
 	 *            element. Is only used if {@link #areChangeImpactsHighlighted()} is
 	 *            true.
 	 */
-	public void setChangeImpactAnalysisConfiguration(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
-		this.changeImpactAnalysisConfig = changeImpactAnalysisConfig;
+	public void setChangeImpactAnalysisConfig(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
+		// only these criteria can be set during filtering currently, all other
+		// criteria are fixed
+		this.changeImpactAnalysisConfig.setContext(changeImpactAnalysisConfig.getContext());
+		this.changeImpactAnalysisConfig.setDecayValue(changeImpactAnalysisConfig.getDecayValue());
+		this.changeImpactAnalysisConfig.setThreshold(changeImpactAnalysisConfig.getThreshold());
+		this.changeImpactAnalysisConfig.setPropagationRules(changeImpactAnalysisConfig.getPropagationRulesAsStrings());
 	}
 
 	@Override

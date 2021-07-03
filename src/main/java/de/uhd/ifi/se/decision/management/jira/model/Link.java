@@ -59,7 +59,8 @@ public class Link extends DefaultWeightedEdge {
 	public Link(IssueLink jiraIssueLink) {
 		super();
 		this.id = jiraIssueLink.getId();
-		this.type = LinkType.getLinkType(jiraIssueLink.getIssueLinkType().getName());
+		String typeName = jiraIssueLink.getIssueLinkType() != null ? jiraIssueLink.getIssueLinkType().getName() : "";
+		this.type = LinkType.getLinkType(typeName);
 		Issue sourceJiraIssue = jiraIssueLink.getSourceObject();
 		if (sourceJiraIssue != null) {
 			this.source = new KnowledgeElement(sourceJiraIssue);
@@ -315,10 +316,10 @@ public class Link extends DefaultWeightedEdge {
 	 * @return opposite {@link KnowledgeElement} of this link.
 	 */
 	public KnowledgeElement getOppositeElement(long elementId) {
-		if (!this.isValid()) {
+		if (!isValid()) {
 			return null;
 		}
-		if (this.source.getId() == elementId) {
+		if (source.getId() == elementId) {
 			return target;
 		}
 		return source;
@@ -332,7 +333,7 @@ public class Link extends DefaultWeightedEdge {
 	 * @return opposite element of this link.
 	 */
 	public KnowledgeElement getOppositeElement(KnowledgeElement element) {
-		return getOppositeElement(element.getId());
+		return element.equals(source) ? target : source;
 	}
 
 	/**
@@ -436,15 +437,35 @@ public class Link extends DefaultWeightedEdge {
 	}
 
 	/**
-	 * @see KnowledgeElement
-	 * 
-	 * @return true if both source and destination element of the link are
-	 *         documented as Jira issues.
+	 * @return true if both source and destination {@link KnowledgeElement}s of the
+	 *         link are documented as Jira issues.
 	 */
 	@JsonIgnore
 	public boolean isIssueLink() {
-		return this.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
-				&& this.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+		return getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
+				&& getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+	}
+
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} that might be the link source.
+	 * @return true if the element is the link source, i.e., the link is an outward
+	 *         link from this element.
+	 */
+	@JsonIgnore
+	public boolean isOutwardLinkFrom(KnowledgeElement element) {
+		return getSource().equals(element);
+	}
+
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} that might be the link target.
+	 * @return true if the element is the link target, i.e., the link is an inward
+	 *         link to this element.
+	 */
+	@JsonIgnore
+	public boolean isInwardLinkTo(KnowledgeElement element) {
+		return getTarget().equals(element);
 	}
 
 	/**

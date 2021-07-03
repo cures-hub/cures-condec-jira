@@ -24,13 +24,15 @@ public class TestGetOppositeElement extends TestSetUp {
 	@Test
 	public void testValidLink() {
 		assertEquals(link.getSource(), link.getOppositeElement(link.getTarget()));
+		assertEquals(link.getSource(), link.getOppositeElement(link.getTarget().getId()));
 		assertEquals(link.getTarget(), link.getOppositeElement(link.getSource()));
+		assertEquals(link.getTarget(), link.getOppositeElement(link.getSource().getId()));
 	}
 
 	@Test
 	public void testInvalidLink() {
 		link.setIdOfDestinationElement(0);
 		assertFalse(link.isValid());
-		assertNull(link.getOppositeElement(link.getTarget()));
+		assertNull(link.getOppositeElement(link.getTarget().getId()));
 	}
 }

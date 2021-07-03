@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,19 +24,19 @@ public class ChangeImpactAnalysisConfiguration {
 	private float threshold;
 	private Map<String, Float> linkImpact;
 	private long context;
-	private List<PassRule> passRules;
+	private List<ChangePropagationRule> propagationRules;
 
 	@JsonCreator
 	public ChangeImpactAnalysisConfiguration() {
 		decayValue = 0.75f;
 		threshold = 0.25f;
 		linkImpact = new HashMap<>();
-		DecisionKnowledgeProject.getAllNamesOfLinkTypes().forEach(entry -> {
+		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
 			linkImpact.put(entry, 1.0f);
 		});
 		context = 0;
-		passRules = new LinkedList<>();
-		passRules.addAll(List.of(PassRule.values()));
+		propagationRules = new LinkedList<>();
+		propagationRules.addAll(List.of(ChangePropagationRule.values()));
 	}
 
 	@XmlElement
@@ -75,26 +74,23 @@ public class ChangeImpactAnalysisConfiguration {
 		this.context = context;
 	}
 
-	@JsonIgnore
-	public List<PassRule> getPropagationRules() {
-		return passRules;
+	public List<ChangePropagationRule> getPropagationRules() {
+		return propagationRules;
 	}
 
 	@XmlElement(name = "propagationRules")
 	public List<String> getPropagationRulesAsStrings() {
-		return passRules.stream().map(PassRule::getTranslation).filter(entry -> !entry.equals("undefined"))
-				.collect(Collectors.toList());
+		return propagationRules.stream().map(ChangePropagationRule::getDescription).collect(Collectors.toList());
 	}
 
 	@JsonProperty
-	public void setPropagationRules(List<String> rules) {
-		if (rules == null) {
-			passRules.clear();
+	public void setPropagationRules(List<String> propagationRules) {
+		this.propagationRules = new LinkedList<>();
+		if (propagationRules == null) {
 			return;
 		}
-		passRules.clear();
-		for (String stringRule : rules) {
-			passRules.add(PassRule.getPropagationRule(stringRule));
+		for (String stringRule : propagationRules) {
+			this.propagationRules.add(ChangePropagationRule.getPropagationRule(stringRule));
 		}
 	}
 }

@@ -2,8 +2,9 @@
 #set($definitionOfDone = $project.getDefinitionOfDone())
 
 On this page, the rationale manager can configure the rules (criteria) that the knowledge documentation needs to fulfill to be done. 
-Knowledge elements that do not fulfill the definition of done are shown in the rationale backlog.
-Besides, ConDec shows warnings to the developers if the definition of done of the knowledge subgraph they are working on is not fulfilled.
+Knowledge elements that violate the definition of done (DoD) are shown in the rationale backlog.
+Besides, ConDec shows warnings to the developers if the DoD of the knowledge subgraph they are working on is violated.
+The elements in the graph that violate the DoD are highlighted in red and just-in-time prompts are shown at certain events.
 
 <form class="aui">
     #parse("templates/settings/definitionofdone/definitionOfDoneCriteriaSettings.vm")

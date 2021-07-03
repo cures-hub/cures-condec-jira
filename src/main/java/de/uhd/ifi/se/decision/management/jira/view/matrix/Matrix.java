@@ -35,11 +35,11 @@ public class Matrix {
 
 	private Set<ElementWithHighlighting> headerElementsWithHighlighting;
 	private int size;
+	private KnowledgeGraph filteredGraph;
 	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
 
-	public Matrix(Set<KnowledgeElement> elements, FilterSettings filterSettings,
-			Map<KnowledgeElement, String> colorMap) {
-		this(elements, filterSettings);
+	public Matrix(FilterSettings filterSettings, Map<KnowledgeElement, String> colorMap) {
+		this(filterSettings);
 		headerElementsWithHighlighting.forEach(headerElementWithHighlighting -> {
 			headerElementWithHighlighting
 					.setChangeImpactColor(colorMap.get(headerElementWithHighlighting.getElement()));
@@ -47,13 +47,10 @@ public class Matrix {
 	}
 
 	public Matrix(FilterSettings filterSettings) {
-		this(new FilteringManager(filterSettings).getFilteredGraph().vertexSet(), filterSettings);
-	}
-
-	public Matrix(Set<KnowledgeElement> elements, FilterSettings filterSettings) {
 		LOGGER.info(filterSettings.toString());
+		filteredGraph = new FilteringManager(filterSettings).getFilteredGraph();
 		headerElementsWithHighlighting = new HashSet<>();
-		elements.forEach(element -> {
+		filteredGraph.vertexSet().forEach(element -> {
 			ElementWithHighlighting elementWithColors = new ElementWithHighlighting(element);
 			if (filterSettings.areQualityProblemHighlighted()) {
 				String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element,
@@ -95,7 +92,7 @@ public class Matrix {
 			if (targetElement.getId() == sourceElement.getId()) {
 				row[positionX] = null;
 			} else {
-				Link linkToTargetElement = sourceElement.getOutgoingLink(targetElement);
+				Link linkToTargetElement = filteredGraph.getEdge(sourceElement, targetElement);
 				row[positionX] = linkToTargetElement;
 			}
 		}
