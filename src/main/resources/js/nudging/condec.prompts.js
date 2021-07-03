@@ -6,7 +6,7 @@
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				const issueKey = conDecAPI.getIssueKey();
 				// Create unified prompt
-				document.getElementById("unified-prompt-header").innerHTML = "Before you close " + issueKey + "...";
+				document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey + "...";
 
 				const unifiedPromptElement = document.getElementById("unified-prompt");
 				document.getElementById("warning-dialog-fix-elements").onclick = function () {
@@ -22,7 +22,6 @@
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
 				const id = params.get("id");
 				const actionId = params.get("action");
-				let atLeastOnePrompt = false; // if no prompts are activated, don't show the dialog at all
 				Promise.all([
 					conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId),
 					conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId),
@@ -38,7 +37,6 @@
 							|| isDecisionGuidanceActivated) {
 							AJS.dialog2(unifiedPromptElement).show()
 						}
-
 						if (isDoDCheckActivated) {
 								conDecPrompt.promptDefinitionOfDoneChecking();
 								$(document).ready(function () {
@@ -59,7 +57,6 @@
 								})
 							}
 							if (isDecisionGuidanceActivated) {
-								atLeastOnePrompt = true;
 								conDecPrompt.promptDecisionGuidance()
 								$(document).ready(function () {
 									document.getElementById("decision-guidance-prompt").style.display = "block";
