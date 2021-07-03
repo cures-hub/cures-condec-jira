@@ -10,11 +10,9 @@
  */
 (function(global) {
 
-	/* private vars */
-	var headerElementsWithHighlighting = [];
-	var linkTypesWithColor = null;
-
 	var ConDecMatrix = function ConDecMatrix() {
+		this.headerElementsWithHighlighting = [];
+		this.emptyColumns = [];
 	};
 
 	ConDecMatrix.prototype.initView = function(isJiraIssueView = false) {
@@ -25,7 +23,7 @@
 			conDecFiltering.fillFilterElements("matrix");
 		} else {
 			conDecFiltering.fillFilterElements("matrix", ["Decision"]);
-			conDecFiltering.fillDatePickers("matrix", 60);
+			conDecFiltering.fillDatePickers("matrix", 120);
 		}
 		conDecFiltering.addOnClickEventToFilterButton("matrix", conDecMatrix.buildMatrix);
 		conDecFiltering.addOnClickEventToChangeImpactButton("matrix", conDecMatrix.buildMatrix);
@@ -42,7 +40,7 @@
 	 */
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "matrix") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
-			this.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
+			conDecMatrix.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
 
 			let headerRow = document.getElementById("matrix-header-row-" + viewIdentifier);
 			headerRow.innerHTML = "";
@@ -50,21 +48,47 @@
 			firstRowHeaderCell.classList.add("columnHeader");
 			headerRow.appendChild(firstRowHeaderCell);
 
+			transposedLinkMatrix = transpose(matrix.links);
+			conDecMatrix.emptyColumns = [];
+
 			for (let d in matrix.headerElementsWithHighlighting) {
-				const headerCell = newTableHeaderCell(matrix.headerElementsWithHighlighting[d], "columnHeader");
-				headerRow.insertAdjacentElement("beforeend", headerCell);
+				let col = transposedLinkMatrix[d];
+				if (isLinkIncluded(col)) {
+					const headerCell = newTableHeaderCell(matrix.headerElementsWithHighlighting[d], "columnHeader");
+					headerRow.insertAdjacentElement("beforeend", headerCell);
+				} else {
+					conDecMatrix.emptyColumns.push(d);
+				}
 			}
 
 			let tbody = document.getElementById("matrix-body-" + viewIdentifier);
 			tbody.innerHTML = "";
 			for (let d in matrix.links) {
 				let row = matrix.links[d];
-				tbody.appendChild(newTableRow(row, matrix.headerElementsWithHighlighting[d], d));
+				if (isLinkIncluded(row)) {
+					tbody.appendChild(newTableRow(row, matrix.headerElementsWithHighlighting[d], d));
+				}
 			}
 
 			conDecMatrix.buildLegend(matrix.linkTypesWithColor);
 		});
 	};
+
+	function isLinkIncluded(links) {
+		for (var i = 0, len = links.length; i < len; i += 1) {
+			if (links[i] !== null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function transpose(matrix) {
+		if (matrix.length > 0) {
+			return matrix[0].map((col, i) => matrix.map(row => row[i]));
+		}
+		return matrix;
+	}
 
 	ConDecMatrix.prototype.updateView = function() {
 		document.getElementById("filter-button-matrix").click();
@@ -87,16 +111,17 @@
 		const div = document.createElement("div");
 		div.innerText = knowledgeElement.type + ": " + knowledgeElement.summary;
 		headerCell.title = knowledgeElement.type + ": " + knowledgeElement.summary;
-		
+
 		headerCell.classList.add(styleClass);
 		if (textColor !== "#000000") {
 			headerCell.style.color = textColor;
 			headerCell.title = knowledgeElementWithColors.qualityProblemExplanation;
 		}
-		if (bgColor !== "#FFFFFF") {
+		if (bgColor !== undefined && bgColor !== "#FFFFFF") {
+			div.classList.add("ciaHighlighted");
 			headerCell.style.backgroundColor = bgColor;
 		}
-		
+
 		AJS.$(headerCell).tooltip();
 		headerCell.appendChild(div);
 		return headerCell;
@@ -106,7 +131,9 @@
 		const tableRow = document.createElement("tr");
 		tableRow.appendChild(newTableHeaderCell(sourceElementWithColors, "rowHeader"));
 		for (let d in row) {
-			tableRow.appendChild(newTableCell(row[d], positionX, d));
+			if (!conDecMatrix.emptyColumns.includes(d)) {
+				tableRow.appendChild(newTableCell(row[d], positionX, d));
+			}
 		}
 		return tableRow;
 	}
@@ -117,8 +144,8 @@
 			tableRowCell.style.backgroundColor = "lightGray";
 			return tableRowCell;
 		}
-		const sourceElement = this.headerElementsWithHighlighting[positionX].element;
-		const targetElement = this.headerElementsWithHighlighting[positionY].element;
+		const sourceElement = conDecMatrix.headerElementsWithHighlighting[positionX].element;
+		const targetElement = conDecMatrix.headerElementsWithHighlighting[positionY].element;
 
 		var linkType = null;
 		if (link !== null) {
@@ -132,8 +159,12 @@
 		}
 		AJS.$(tableRowCell).tooltip();
 		tableRowCell.addEventListener("click", function(event) {
-			conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation,
-				targetElement.id, targetElement.documentationLocation, linkType);
+			if (linkType === "transitive") {
+				conDecAPI.showFlag("warning", "Transitive links should not be persisted.");
+			} else {
+				conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation,
+					targetElement.id, targetElement.documentationLocation, linkType);
+			}
 		});
 
 		tableRowCell.addEventListener("contextmenu", function(event) {

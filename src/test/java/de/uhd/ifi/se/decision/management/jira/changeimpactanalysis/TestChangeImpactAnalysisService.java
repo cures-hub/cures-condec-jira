@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,7 +9,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
@@ -35,12 +32,9 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 	public void testCalculateGraphImpact() {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
-		Arrays.stream(KnowledgeType.values()).map(KnowledgeType::toString).forEach((string) -> {
-		});
-
 		VisGraph graph = ChangeImpactAnalysisService.calculateGraphImpact(settings);
-		assertEquals(10, graph.getNodes().size());
-		assertEquals(16, graph.getEdges().size());
+		assertEquals(6, graph.getNodes().size());
+		assertEquals(8, graph.getEdges().size());
 	}
 
 	@Test

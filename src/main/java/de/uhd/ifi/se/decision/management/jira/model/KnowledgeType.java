@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
@@ -197,8 +199,7 @@ public enum KnowledgeType {
 	 */
 	@Override
 	public String toString() {
-		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH)
-				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
+		return StringUtils.capitalize(name().toLowerCase(Locale.ENGLISH));
 	}
 
 	/**

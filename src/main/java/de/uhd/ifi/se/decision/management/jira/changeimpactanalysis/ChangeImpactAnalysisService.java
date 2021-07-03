@@ -39,7 +39,7 @@ public class ChangeImpactAnalysisService {
 
 	public static VisGraph calculateGraphImpact(FilterSettings filterSettings) {
 		Map<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
-		KnowledgeGraph graph = KnowledgeGraph.getInstance(filterSettings.getProjectKey());
+		KnowledgeGraph graph = new FilteringManager(filterSettings).getFilteredGraph();
 		return asVisGraph(results, filterSettings, graph);
 	}
 
@@ -58,7 +58,7 @@ public class ChangeImpactAnalysisService {
 				colorMap.put(entry, "#FFFFFF");
 			}
 		});
-		return new Matrix(elementSet, filterSettings, colorMap);
+		return new Matrix(filterSettings, colorMap);
 	}
 
 	private static Map<KnowledgeElement, Double> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
@@ -67,20 +67,18 @@ public class ChangeImpactAnalysisService {
 		results.put(root, 1.0);
 		calculateImpactedKnowledgeElementsHelper(root, 1.0, filterSettings, results,
 				(long) filterSettings.getLinkDistance());
-		LOGGER.info("CONDEC: {} Elements found", results.size());
+		LOGGER.info("ConDec change impact analysis estimated {} impacted elements.", results.size());
 		return results;
 	}
 
-	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement root, double parentImpact,
+	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement currentElement, double parentImpact,
 			FilterSettings filterSettings, Map<KnowledgeElement, Double> results, long context) {
 		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
-		for (Link link : root.getLinks()) {
-			boolean isOutwardLink = link.isOutwardLinkFrom(root);
+		for (Link link : currentElement.getLinks()) {
+			boolean isOutwardLink = link.isOutwardLinkFrom(currentElement);
 			String linkTypeName = (isOutwardLink) ? link.getType().getOutwardName() : link.getType().getInwardName();
 			if (!ciaConfig.getLinkImpact().containsKey(linkTypeName)) {
 				LOGGER.warn("CIA couldn't be processed: {}", "link -> " + linkTypeName + ", source -> "
-						+ link.getSource().getId() + ", target -> " + link.getTarget().getId());
-				System.out.println("CIA couldn't be processed: {} link -> " + linkTypeName.toString() + ", source -> "
 						+ link.getSource().getId() + ", target -> " + link.getTarget().getId());
 			}
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
@@ -91,8 +89,7 @@ public class ChangeImpactAnalysisService {
 
 			boolean propagate = true;
 			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
-				propagate = propagate
-						&& rule.getPredicate().isChangePropagated(root, parentImpact, nextElement, impact, link);
+				propagate = propagate && rule.getPredicate().isChangePropagated(filterSettings, currentElement, link);
 			}
 
 			if (impact >= ciaConfig.getThreshold() && propagate) {
@@ -187,10 +184,10 @@ public class ChangeImpactAnalysisService {
 		int g2 = ((i2 & 0xff00) >> 8);
 		int b2 = (i2 & 0xff);
 
-		int a = (int) ((a1 * iRatio) + (a2 * ratio));
-		int r = (int) ((r1 * iRatio) + (r2 * ratio));
-		int g = (int) ((g1 * iRatio) + (g2 * ratio));
-		int b = (int) ((b1 * iRatio) + (b2 * ratio));
+		int a = (int) (a1 * iRatio + a2 * ratio);
+		int r = (int) (r1 * iRatio + r2 * ratio);
+		int g = (int) (g1 * iRatio + g2 * ratio);
+		int b = (int) (b1 * iRatio + b2 * ratio);
 
 		return new Color(a << 24 | r << 16 | g << 8 | b);
 	}

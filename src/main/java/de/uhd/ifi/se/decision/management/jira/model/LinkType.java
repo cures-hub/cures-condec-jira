@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 
 /**
@@ -30,8 +32,8 @@ public enum LinkType {
 	OVERRIDE("Overrides", "overrides", "is overridden by", "#FFFF00"), // among decisions
 	REPLACE("Replaces", "replaces", "is replaced by", "#ff8000"), // among decisions
 	DUPLICATE("Duplicate", "duplicates", "is duplicated by", "#c0392b"), // among duplicated elements
-	TRANSITIVE("Transitive", "transitively links to", "transitively links to", "#7f7f7f"), //
-	OTHER("", "", "", ""); // other Jira issue links, e.g. "jira_subtask_link"
+	TRANSITIVE("Transitive", "transitively links to", "transitively links to", "#15ceb6"), // special filtering
+	OTHER("", "other", "other", ""); // other Jira issue links, e.g. "jira_subtask_link"
 
 	private String name;
 	private String outwardName;
@@ -102,7 +104,7 @@ public enum LinkType {
 	public static String getLinkTypeColor(String linkTypeName) {
 		LinkType linkType = getLinkType(linkTypeName);
 		if (linkType == OTHER) {
-			return String.format("#%x", linkTypeName.hashCode() & 0x0FFFFFF);
+			return String.format("#%x", StringUtils.capitalize(linkTypeName).hashCode() & 0x0FFFFFF);
 		}
 		return linkType.getColor();
 	}

@@ -270,7 +270,7 @@ public class ConfigRest {
 	 *              issue link type has an id, a name and a label for the outward
 	 *              and inward link relationship."
 	 * @con All link types need to be Jira issue links, which might be problematic
-	 *      if we model transitive links or links to code classes. *
+	 *      if we model transitive links or links to code classes.
 	 */
 	@Path("/getLinkTypes")
 	@GET
@@ -282,7 +282,7 @@ public class ConfigRest {
 	@Path("/getAllLinkTypes")
 	@GET
 	public Response getAllLinkTypes(@QueryParam("projectKey") String projectKey) {
-		Set<String> linkTypes = DecisionKnowledgeProject.getAllNamesOfLinkTypes();
+		Set<String> linkTypes = DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes();
 		return Response.ok(linkTypes).build();
 	}
 

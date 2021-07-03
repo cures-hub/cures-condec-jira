@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationPredicate;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreArgumentsRule;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreDecisionIncoming;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtSameElementType;
 
 /**
  * Gathers propagation rules for rule-based change impact analysis.
@@ -12,8 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreD
  */
 public enum ChangePropagationRule {
 
-	IGNORE_ARGUMENTS("Ignore arguments for solution options", new IgnoreArgumentsRule()), //
-	IGNORE_DecisionIncoming("IgnoreDecisionIncoming", new IgnoreDecisionIncoming());
+	STOP_AT_SAME_ELEMENT_TYPE("Stop at elements with the same type as the selected element", new StopAtSameElementType()), //
+	IGNORE_INCOMING_LINKS("Outward links only", new IgnoreIncomingLinks());
 
 	private String description;
 	private ChangePropagationPredicate predicate;

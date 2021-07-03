@@ -85,7 +85,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	public void testGetLinkTypes() {
 		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
 		// currently, all Mock issue link types are called "relate"
-		assertEquals(2, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
+		assertEquals(3, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
 	}
 
 	@Test
@@ -101,16 +101,16 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetAllNamesOfLinkTypes() {
-		assertEquals(9, DecisionKnowledgeProject.getAllNamesOfLinkTypes().size());
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("Other"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("contains"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("attacks"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("supports"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("comments"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is contained by"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is attacked by"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is supported by"));
-		assertTrue(DecisionKnowledgeProject.getAllNamesOfLinkTypes().contains("is commented by"));
+		assertEquals(9, DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().size());
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("other"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("contains"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("attacks"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("supports"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("comments"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("is contained by"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("is attacked by"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("is supported by"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("is commented by"));
 	}
 
 	@Test

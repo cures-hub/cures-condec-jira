@@ -535,6 +535,7 @@ public class FilterSettings {
 	 *         by the {@link FilteringManager} should contain transitive links as a
 	 *         replacement for knowledge elements removed by filters.
 	 */
+	@XmlElement
 	public boolean createTransitiveLinks() {
 		return createTransitiveLinks;
 	}
@@ -557,6 +558,7 @@ public class FilterSettings {
 	 *         colored for highlighting. The details for change impact estimation
 	 *         are stored in the {@link DefinitionOfDone} class.
 	 */
+	@XmlElement
 	public boolean areQualityProblemHighlighted() {
 		return areQualityProblemsHighlighted;
 	}

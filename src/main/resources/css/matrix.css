@@ -35,7 +35,7 @@
     position: -webkit-sticky; /* for Safari */
     position: sticky;
     left: 0;
-    width: 15em;
+    width: 20em;
 }
 
 .columnHeader div {
@@ -47,17 +47,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 1.5em;
-    height: 15em;
+    height: 20em;
 }
 
 .rowHeader div {
     position: sticky;
     left: 0;
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 1.5em;
-    width: 15em;
+    min-height: 1.5em;
+    max-height: 3.2em;
+    width: 20em;
 }
 
 .matrix td {
@@ -70,8 +71,13 @@
 
 .columnHeader th {
 	border: 1px solid #e8e8e8;
+    width: 3.2em;
 }
 
 .rowHeader th {
 	border: 1px solid #e8e8e8;
+}
+
+.ciaHighlighted {
+	color: #FFFFFF;
 }

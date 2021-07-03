@@ -175,7 +175,7 @@
 				AJS.dialog2(deleteGroupDialog).hide();
 			};
 
-			cancelButton.onclick = function () {
+			cancelButton.onclick = function() {
 				AJS.dialog2(deleteGroupDialog).hide();
 			};
 
@@ -183,12 +183,12 @@
 			AJS.dialog2(deleteGroupDialog).show();
 		}
 	};
-	ConDecDialog.prototype.validateElement = function (id) {
+	ConDecDialog.prototype.validateElement = function(id) {
 		console.log("conDecDialog validateElement");
 
 
 	}
-	ConDecDialog.prototype.showDeleteDialog = function (id, documentationLocation, callback = function () {
+	ConDecDialog.prototype.showDeleteDialog = function(id, documentationLocation, callback = function() {
 	}) {
 		console.log("conDecDialog showDeleteDialog");
 
@@ -340,8 +340,10 @@
 		var linkTypes = conDecAPI.getLinkTypes();
 		var insertString = "";
 		for (index = 0; index < linkTypes.length; index++) {
-			insertString += "<option " + " value='" + linkTypes[index] + "'>"
-				+ linkTypes[index] + "</option>";
+			if (linkTypes[index] !== "Other" && linkTypes[index] !== "Transitive") {
+				insertString += "<option " + " value='" + linkTypes[index] + "'>"
+					+ linkTypes[index] + "</option>";
+			}
 		}
 		selectField.insertAdjacentHTML("afterBegin", insertString);
 		if (linkType !== null && linkType !== undefined) {

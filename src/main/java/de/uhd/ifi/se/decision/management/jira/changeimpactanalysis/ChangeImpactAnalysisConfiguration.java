@@ -31,7 +31,7 @@ public class ChangeImpactAnalysisConfiguration {
 		decayValue = 0.75f;
 		threshold = 0.25f;
 		linkImpact = new HashMap<>();
-		DecisionKnowledgeProject.getAllNamesOfLinkTypes().forEach(entry -> {
+		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
 			linkImpact.put(entry, 1.0f);
 		});
 		context = 0;
