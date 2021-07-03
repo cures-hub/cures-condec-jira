@@ -1,8 +1,8 @@
-(function(global) {
+(function (global) {
 
-	const ConDecPrompt = function() {
+	const ConDecPrompt = function () {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
-		jQuery(document).ajaxComplete(function(event, request, settings) {
+		jQuery(document).ajaxComplete(function (event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				const issueKey = conDecAPI.getIssueKey();
 				// Create unified prompt
@@ -17,55 +17,64 @@
 					AJS.dialog2(unifiedPromptElement).hide();
 				}
 
-				AJS.dialog2(unifiedPromptElement).show()
-
 
 				// just-in-time prompts when status changes
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
 				const id = params.get("id");
 				const actionId = params.get("action");
-				conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId).then((isActivated) => {
-					if (isActivated) {
-						conDecPrompt.promptDefinitionOfDoneChecking();
-						$(document).ready(function () {
-							document.getElementById("definition-of-done-prompt").style.display = "block";
-						})
-					}
-				});
-				conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId).then((isActivated) => {
-					if (isActivated) {
+				let atLeastOnePrompt = false; // if no prompts are activated, don't show the dialog at all
+				Promise.all([
+					conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId),
+					conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId),
+					conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId),
+					conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
+				])
+					.then((isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated) => {
 
-						conDecPrompt.promptLinkSuggestion();
-						$(document).ready(function () {
-							document.getElementById("link-recommendation-prompt").style.display = "block";
-						})
 
-					}
-				});
-				conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId).then((isActivated) => {
-					if (isActivated) {
-						conDecPrompt.promptNonValidatedElements();
-						$(document).ready(function () {
-							document.getElementById("non-validated-elements-prompt").style.display = "block";
+							if (isDoDCheckActivated
+								|| isLinkRecommendationActivated
+								|| isTextClassificationActivated
+								|| isDecisionGuidanceActivated) {
+								AJS.dialog2(unifiedPromptElement).show()
+							}
 
-						})
-					}
-				});
-				conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId).then((isActivated) => {
-					if (isActivated) {
-						conDecPrompt.promptDecisionGuidance()
-						$(document).ready(function () {
-							document.getElementById("decision-guidance-prompt").style.display = "block";
-						});
-					}
-				});
+							if (isDoDCheckActivated) {
+								conDecPrompt.promptDefinitionOfDoneChecking();
+								$(document).ready(function () {
+									document.getElementById("definition-of-done-prompt").style.display = "block";
+								})
+							}
+
+							if (isLinkRecommendationActivated) {
+								conDecPrompt.promptLinkSuggestion();
+								$(document).ready(function () {
+									document.getElementById("link-recommendation-prompt").style.display = "block";
+								})
+							}
+							if (isTextClassificationActivated) {
+								conDecPrompt.promptNonValidatedElements();
+								$(document).ready(function () {
+									document.getElementById("non-validated-elements-prompt").style.display = "block";
+								})
+							}
+							if (isDecisionGuidanceActivated) {
+								atLeastOnePrompt = true;
+								conDecPrompt.promptDecisionGuidance()
+								$(document).ready(function () {
+									document.getElementById("decision-guidance-prompt").style.display = "block";
+								});
+							}
+						}
+					)
 
 
 			}
 		});
-	};
+	}
 
-	ConDecPrompt.prototype.promptLinkSuggestion = function() {
+
+	ConDecPrompt.prototype.promptLinkSuggestion = function () {
 		const issueId = JIRA.Issue.getIssueId();
 		const projectKey = conDecAPI.projectKey;
 		if (issueId === null || issueId === undefined) {
@@ -77,7 +86,6 @@
 			.then((values) => {
 				let numDuplicates = (values[0].length);
 				let numRelated = (values[1].length);
-				console.log(numDuplicates)
 				if (numDuplicates + numRelated > 0) {
 					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
 					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
@@ -85,7 +93,7 @@
 			});
 	}
 
-	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
+	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function () {
 		const projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
@@ -167,4 +175,5 @@
 	};
 
 	global.conDecPrompt = new ConDecPrompt();
-})(window);
+})
+(window);

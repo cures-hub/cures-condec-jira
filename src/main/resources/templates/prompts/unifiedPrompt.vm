@@ -5,7 +5,7 @@
          data-aui-modal="true"
          data-aui-remove-on-hide="true"
          aria-hidden="true"
-
+         hidden
 >
     <header class="aui-dialog2-header">
         <h1 class="aui-dialog2-header-main" id="unified-prompt-header"></h1>
