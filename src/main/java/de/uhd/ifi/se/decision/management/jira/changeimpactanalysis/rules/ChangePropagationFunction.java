@@ -11,11 +11,14 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * {@link KnowledgeElement} in the {@link KnowledgeGraph} or not using a certain
  * rule (for rule-based change impact estimation/analysis).
  * 
+ * Returns a double value between 0 and 1 (i.e., is a ToDoubleFunction).
+ * 
  * @see ChangePropagationRule
  * @see StopAtSameElementType
  * @see IgnoreIncomingLinks
+ * @see BoostWhenTextualSimilar
  */
-public interface ChangePropagationPredicate {
+public interface ChangePropagationFunction {
 
 	/**
 	 * @param filterSettings
@@ -28,8 +31,8 @@ public interface ChangePropagationPredicate {
 	 *            {@link Link} (i.e. edge/relationship in the
 	 *            {@link KnowledgeGraph}) that is traversed from the current element
 	 *            to the next element.
-	 * @return true if the change should be propagated. If false, the change impact
-	 *         of the next element will be set to 0.
+	 * @return a value > 0 if the change should be propagated. If 0, the change
+	 *         impact of the next element will be set to 0.
 	 */
-	boolean isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link);
+	double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link);
 }

@@ -13,11 +13,12 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * For example, if a change is made in an epic, the change is not propagated
  * beyond other epics in the {@link KnowledgeGraph}.
  */
-public class StopAtSameElementType implements ChangePropagationPredicate {
+public class StopAtSameElementType implements ChangePropagationFunction {
 
 	@Override
-	public boolean isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
+	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
 		KnowledgeElement traversedElement = link.getOppositeElement(currentElement);
-		return !traversedElement.getTypeAsString().equals(filterSettings.getSelectedElement().getTypeAsString());
+		return traversedElement.getTypeAsString().equals(filterSettings.getSelectedElement().getTypeAsString()) ? 0.0
+				: 1.0;
 	}
 }

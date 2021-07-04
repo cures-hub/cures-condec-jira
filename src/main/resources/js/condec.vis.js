@@ -9,6 +9,8 @@
 		// Fill HTML elements for filter criteria and add on click listener
 		if (isJiraIssueView) {
 			conDecFiltering.fillFilterElements("graph");
+			document.getElementById("is-transitive-links-input-graph").checked = true;
+			document.getElementById("is-decision-knowledge-only-input-graph").checked = true;
 		} else {
 			conDecFiltering.fillFilterElements("graph", ["Decision"]);
 		}

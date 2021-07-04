@@ -21,6 +21,8 @@
 		// Fill HTML elements for filter criteria and add on click listener
 		if (isJiraIssueView) {
 			conDecFiltering.fillFilterElements("matrix");
+			document.getElementById("is-transitive-links-input-matrix").checked = true;
+			document.getElementById("is-decision-knowledge-only-input-matrix").checked = true;
 		} else {
 			conDecFiltering.fillFilterElements("matrix", ["Decision"]);
 			conDecFiltering.fillDatePickers("matrix", 120);

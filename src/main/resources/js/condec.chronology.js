@@ -11,7 +11,7 @@
         
         // Fill HTML elements for filter criteria
         conDecFiltering.fillFilterElements("chronology", ["Decision", "Solution"]);      
-        conDecFiltering.fillDatePickers("chronology", 30);
+        conDecFiltering.fillDatePickers("chronology", 120);
         
         // Register/subscribe this view as an observer
         conDecObservable.subscribe(this);
