@@ -1,8 +1,7 @@
-<div>
-    <aui-spinner id="loading-spinner"></aui-spinner>
+<b>Automatically classified elements that have not yet been validated</b>
+<div id="classification-loading-spinner">
+    <aui-spinner></aui-spinner>
 </div>
-
-<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
 <table class="aui aui-table-list" id="non-validated-table">
     <thead>.
     <tr>
@@ -18,12 +17,13 @@
 <script>
     /* Adds the on click listener on tab opening */
     $(document).ready(function () {
-        let isOnceClicked = false;
-        AJS.$("#jira-issue-tabs").on("tabSelect", function (event) {
-            if (!isOnceClicked && event.target.href.includes("#text-classification-tab")) {
-                conDecTextClassification.init();
-                isOnceClicked = true;
-            }
-        });
+        let isLoaded = false;
+        // AJS.$("#jira-issue-tabs").on("tabSelect", function (event) {
+        //     if (!isLoaded && event.target.href.includes("#text-classification-tab")) {
+        //         conDecTextClassification.init();
+        //         isLoaded = true;
+        //     }
+        // });
+        conDecTextClassification.init();
     });
 </script>

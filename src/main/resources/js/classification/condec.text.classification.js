@@ -10,10 +10,11 @@
 
 	ConDecTextClassification.prototype.init = function () {
 		this.issueId = JIRA.Issue.getIssueId();
+		this.issueKey = conDecAPI.getIssueKey();
 
 		this.nonValidatedTableElement = document.getElementById("non-validated-table");
 		this.nonValidatedTableContentElement = document.getElementById("non-validated-table-content");
-		this.loadingSpinnerElement = document.getElementById("loading-spinner");
+		this.loadingSpinnerElement = document.getElementById("classification-loading-spinner");
 
 		this.loadData();
 	}
@@ -21,17 +22,18 @@
 	//-----------------------------------------
 	//			Generate table of non-validated elements
 	//-----------------------------------------
-	ConDecTextClassification.prototype.displayNonValidatedElements = function (nonValidatedElements) {
-		if (nonValidatedElements.length === 0) {
+	ConDecTextClassification.prototype.displayNonValidatedElements = function (nonValidatedElementsList) {
+		console.log(nonValidatedElementsList)
+		if (nonValidatedElementsList.length === 0) {
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "<i>All elements have been validated!</i>";
 		} else {
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "";
-			this.currentNonValidatedElements = nonValidatedElements;
+			this.currentNonValidatedElements = nonValidatedElementsList;
 			// append the elements
-			for (let index of nonValidatedElements) {
-				let row = generateTableRow(nonValidatedElements[index]);
+			for (let i = 0; i < nonValidatedElementsList.length; i++) {
+				let row = generateTableRow(nonValidatedElementsList[i]);
 				this.nonValidatedTableContentElement.appendChild(row);
 			}
 			AJS.tabs.setup();
@@ -43,6 +45,7 @@
 		row.appendChild(generateTableCell(nonValidatedElement.type, "th-type"));
 		row.appendChild(generateTableCell(nonValidatedElement.summary, "th-name"));
 		row.appendChild(generateTableCell(generateOptionButtons(nonValidatedElement.id), "th-options"));
+		console.log("row", row)
 		return row;
 	};
 
@@ -61,12 +64,6 @@
 			`<button class='aui-button aui-button-removed' onclick="conDecDialog.showEditDialog(${elementID}, 's')"> <span class="aui-icon aui-icon-small aui-iconfont-edit-filled"></span> Edit </button>`;
 	};
 
-	ConDecTextClassification.prototype.showDialog = function (index) {
-		let target = this.currentNonValidatedElements[index].target;
-		let self = this;
-		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
-	}
-
 
 	//-----------------------------------------
 	// Load data and call display logic.
@@ -74,10 +71,11 @@
 
 	ConDecTextClassification.prototype.loadData = function () {
 		startLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement);
-		conDecTextClassificationAPI.getNonValidatedElements(this.projectKey, this.issueId)
-			.then((nonValidatedElements) => this.displayNonValidatedElements(nonValidatedElements))
+		conDecTextClassificationAPI.getNonValidatedElements(this.projectKey, this.issueKey)
+			.then((result) => this.displayNonValidatedElements(result["nonValidatedElements"]))
 			.catch((error) => displayErrorMessage(error))
-			.finally(() => stopLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement));
+			.finally(() => stopLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement)
+			);
 	}
 
 	//-----------------------------------------
@@ -94,8 +92,11 @@
 	}
 
 	function stopLoadingVisualization(table, spinner) {
+		console.log("stop loading spinner???")
 		spinner.style.display = "none";
 		table.style.visibility = "visible";
+		console.log("donee  stop loading spinner???")
+
 	}
 
 	global.conDecTextClassification = new ConDecTextClassification();
