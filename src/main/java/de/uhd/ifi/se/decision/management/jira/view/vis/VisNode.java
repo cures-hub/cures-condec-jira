@@ -116,10 +116,6 @@ public class VisNode {
 		label = "";
 	}
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
 	public int getLevel() {
 		return level;
 	}

@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestVisGraph extends TestSetUp {
 	private VisGraph visGraph;
@@ -51,13 +52,21 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testGetSelectedVisNodeId() {
+	public void testGetSelectedVisNodeIdNoElementSelected() {
 		assertEquals("", visGraph.getSelectedVisNodeId());
 	}
 
 	@Test
+	public void testGetSelectedVisNodeIdWithElementSelected() {
+		filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
+		visGraph = new VisGraph(filterSettings);
+		assertEquals("1_i", visGraph.getSelectedVisNodeId());
+	}
+
+	@Test
 	public void testGetGraph() {
-		assertEquals(JiraIssues.getTestJiraIssueCount(), visGraph.getGraph().vertexSet().size());
+		assertTrue(visGraph.getGraph().vertexSet().size() > 0);
 	}
 
 	@Test
