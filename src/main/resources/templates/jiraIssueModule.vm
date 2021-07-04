@@ -42,9 +42,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
         </li>
-	</ul>
-	<div class="tabs-pane" id="jstree-tab">
-		#parse("templates/tabs/jstree.vm")
+        <li class="menu-item" id="menu-item-text-classification">
+            <a href="#text-classification-tab">Text classification</a>
+        </li>
+    </ul>
+    <div class="tabs-pane" id="jstree-tab">
+        #parse("templates/tabs/jstree.vm")
 	</div>
 	<div class="tabs-pane" id="treant-tab">
 		#parse("templates/tabs/treant.vm")
@@ -71,6 +74,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #set ($viewIdentifier = "jira-issue-module")
         #parse("templates/tabs/qualityCheck.vm")
     </div>
+    <div class="tabs-pane" id="text-classification-tab">
+        #parse("templates/tabs/textClassification.vm")
+    </div>
 </div>
 
 <a id="open-fullscreen">
@@ -81,9 +87,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #parse("templates/contextMenu.vm")
 #parse("templates/dialogs/knowledgeManagementDialogs.vm")
 
-##<div style="display:none">
-###parse("templates/prompts/nonValidatedElementsPrompt.vm")
-##</div>
 <div style="display:none">
     #parse("templates/prompts/unifiedPrompt.vm")
 </div>
