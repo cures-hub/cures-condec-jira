@@ -53,11 +53,10 @@
 .rowHeader div {
     position: sticky;
     left: 0;
-    white-space: normal;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 1.5em;
-    max-height: 3.2em;
+    height: 1.5em;
     width: 20em;
 }
 

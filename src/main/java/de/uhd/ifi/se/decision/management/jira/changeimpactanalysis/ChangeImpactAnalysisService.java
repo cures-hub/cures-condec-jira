@@ -15,15 +15,30 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewerNode;
-import de.uhd.ifi.se.decision.management.jira.view.vis.VisEdge;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
 
+/**
+ * Responsible for change impact highlighting in the graph, tree, and matrix
+ * views. During change impact analysis, each {@link KnowledgeElement}
+ * (node/vertex) in the {@link KnowledgeGraph} is given an impact value. High
+ * impact values indicate that the element is highly affected by the change and
+ * needs to be changed as well. The impact value of an element (elementImpact)
+ * is calculated using the following equation:
+ * 
+ * <b>elementImpact = parentImpact * decayValue * linkTypeWeight *
+ * ruleBasedValue</b>
+ * 
+ * where parentImpact is the element impact of the ancestor node in the
+ * knowledge graph, decayValue is the decay per iteration step, linkTypeWeight
+ * is a link type specific decay value between 0 and 1 of the traversed edge
+ * between the parent/ancestor element and the current element, and
+ * ruleBasedValue is calculated based on {@link ChangePropagationRule}s.
+ */
 public class ChangeImpactAnalysisService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangeImpactAnalysisService.class);
@@ -83,16 +98,17 @@ public class ChangeImpactAnalysisService {
 			}
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
-			double impact = parentImpact * linkTypeWeight * decayValue;
+
+			double ruleBasedValue = 1.0;
+			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
+				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
+			}
+
+			double impact = parentImpact * linkTypeWeight * decayValue * ruleBasedValue;
 
 			KnowledgeElement nextElement = (isOutwardLink) ? link.getTarget() : link.getSource();
 
-			boolean propagate = true;
-			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
-				propagate = propagate && rule.getPredicate().isChangePropagated(filterSettings, currentElement, link);
-			}
-
-			if (impact >= ciaConfig.getThreshold() && propagate) {
+			if (impact >= ciaConfig.getThreshold()) {
 				if (!results.containsKey(nextElement) || results.get(nextElement) < impact) {
 					results.put(nextElement, impact);
 					calculateImpactedKnowledgeElementsHelper(nextElement, impact, filterSettings, results, context);
@@ -106,31 +122,9 @@ public class ChangeImpactAnalysisService {
 
 	private static VisGraph asVisGraph(Map<KnowledgeElement, Double> results, FilterSettings filterSettings,
 			KnowledgeGraph graph) {
-		Set<KnowledgeElement> nodes = results.keySet();
-		VisGraph graphVis = new VisGraph();
-		graphVis.setNodes(results.keySet().stream().map((entry) -> {
-			boolean collapse = collapse(entry, filterSettings);
-			VisNode node = new VisNode(entry, collapse, 0, filterSettings);
-			if (results.get(entry) != null && results.get(entry) != 0.0) {
-				colorizeNode(node, results.get(entry));
-			}
-			return node;
-		}).collect(Collectors.toSet()));
-		graph.edgeSet().stream().filter(link -> nodes.contains(link.getSource()) && nodes.contains(link.getTarget()))
-				.forEach(link -> {
-					VisEdge edge = new VisEdge(link);
-					graphVis.getEdges().add(edge);
-				});
+		VisGraph graphVis = new VisGraph(filterSettings);
+		graphVis.getNodes().forEach(node -> colorizeNode(node, results.getOrDefault(node.getElement(), 0.0)));
 		return graphVis;
-	}
-
-	private static boolean collapse(KnowledgeElement element, FilterSettings settings) {
-		KnowledgeType type = element.getType().replaceProAndConWithArgument();
-		if (element.equals(settings.getSelectedElement())) {
-			return false;
-		}
-		return !settings.getKnowledgeTypes().contains(type.toString())
-				|| !settings.getStatus().contains(element.getStatus());
 	}
 
 	private static void colorizeNode(TreeViewerNode node, Map<KnowledgeElement, Double> results) {
@@ -149,17 +143,20 @@ public class ChangeImpactAnalysisService {
 		});
 	}
 
-	private static void colorizeNode(VisNode node, Double impact) {
+	private static void colorizeNode(VisNode node, double impact) {
 		Map<String, String> colorMap = new HashMap<>();
 		colorMap.put("background", colorForImpact(impact));
 		colorMap.put("border", "black");
 		node.getColorMap().putAll(colorMap);
+		if (impact <= 0) {
+			node.setCollapsed();
+		}
 	}
 
-	private static String colorForImpact(Double impact) {
+	private static String colorForImpact(double impact) {
 		Color red = Color.RED;
 		Color green = Color.GREEN;
-		Color blendColor = blend(green, red, impact.floatValue());
+		Color blendColor = blend(green, red, (float) impact);
 		return String.format("#%02x%02x%02x", blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue());
 	}
 

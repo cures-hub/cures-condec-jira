@@ -6,11 +6,18 @@ During change impact analysis, each knowledge element (node/vertex) in the knowl
 High impact values indicate that the element is highly affected by the change and needs to be changed as well.
 The impact value of an element (<var>elementImpact</var>) is calculated using the following equation:</p>
 
-<p><b><code>elementImpact = parentImpact * decayValue * linkTypeWeight</code></b>, </p>
+<p><b><code>elementImpact = parentImpact * decayValue * linkTypeWeight * ruleBasedValue</code></b>, </p>
 
 <p>where <var>parentImpact</var> is the element impact of the ancestor node in the knowledge graph,
-<var>decayValue</var> is the decay per iteration step, and
-<var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element.</p>
+<var>decayValue</var> is the decay per iteration step, 
+<var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the 
+parent/ancestor element and the current element, and
+<var>ruleBasedValue</var> is calculated based on rules. For example, rules are.</p>
+<ul>
+	<li>Stop at elements with the same type as the selected element (e.g. at requirements with same type)</li>
+	<li>Outward links only</li>
+	<li>Boost when element is textual similar to the selected element</li>
+</ul>
 
 <p>The element is included in the impact graph if <b><code>elementImpact >= threshold</code></b>.</p>
 

@@ -48,27 +48,27 @@ public class TestVisGraphNode extends TestSetUp {
 
 	@Test
 	public void testNodeSummary() {
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, 1);
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary();
 		assertEquals(expectedLabel, node.getLabel());
 	}
 
 	@Test
 	public void testNodeDescription() {
-		VisNode node = new VisNode(element, true, 1);
+		VisNode node = new VisNode(element, 1);
 		element.setProject("TEST");
 		assertTrue(node.getTitle().contains("Linked decision knowledge is incomplete."));
 	}
 
 	@Test
 	public void testNodeGroup() {
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, 1);
 		assertEquals(element.getTypeAsString().toLowerCase(), node.getGroup());
 	}
 
 	@Test
 	public void testNodeId() {
-		VisNode node = new VisNode(element, true, 1);
+		VisNode node = new VisNode(element, 1);
 		String expectedId = element.getId() + "_" + element.getDocumentationLocationAsString();
 		assertEquals(expectedId, node.getVisNodeId());
 		assertEquals(element.getId(), node.getElementId());
@@ -81,25 +81,26 @@ public class TestVisGraphNode extends TestSetUp {
 				+ "malesuada ...");
 		String expectedLabel = element.getTypeAsString().toUpperCase() + "\n" + element.getSummary().substring(0, 99)
 				+ "...";
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, 1);
 		assertEquals(expectedLabel, node.getLabel());
 	}
 
 	@Test
 	public void testCollapsed() {
-		VisNode node = new VisNode(element, true, 1);
+		VisNode node = new VisNode(element, 1);
+		node.setCollapsed();
 		assertEquals("collapsed", node.getGroup());
 	}
 
 	@Test
 	public void testGetLevel() {
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, 1);
 		assertEquals(1, node.getLevel());
 	}
 
 	@Test
 	public void testGetFont() {
-		VisNode node = new VisNode(element, false, 1, filterSettings);
+		VisNode node = new VisNode(element, 1, filterSettings);
 		assertEquals("crimson", node.getFont().values().iterator().next());
 	}
 
@@ -107,13 +108,13 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testGetFontProjectNull() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setProject((DecisionKnowledgeProject) null);
-		VisNode node = new VisNode(element, false, 1, filterSettings);
+		VisNode node = new VisNode(element, 1, filterSettings);
 		assertEquals("crimson", node.getFont().values().iterator().next());
 	}
 
 	@Test
 	public void testGetColor() {
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, 1);
 		assertEquals("#ffffff", node.getColor());
 		assertEquals("#ffffff", node.getColorMap().get("background"));
 	}
@@ -121,7 +122,7 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testGetAndSetKnowledgeElement() {
 		KnowledgeElement element = new KnowledgeElement();
-		VisNode node = new VisNode(element, false, 1);
+		VisNode node = new VisNode(element, 1);
 		assertEquals(node.getElement(), element);
 		KnowledgeElement newElement = new KnowledgeElement();
 		node.setElement(newElement);

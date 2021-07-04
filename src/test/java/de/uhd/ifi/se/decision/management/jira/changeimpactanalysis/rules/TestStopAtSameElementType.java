@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,14 +39,14 @@ public class TestStopAtSameElementType extends TestSetUp {
 
 	@Test
 	public void testPropagationFalseSameElementType() {
-		assertFalse(ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getPredicate().isChangePropagated(filterSettings,
-				currentElement, link));
+		assertEquals(0.0, ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
+				.isChangePropagated(filterSettings, currentElement, link), 0.0);
 	}
 
 	@Test
 	public void testPropagationTrueDifferentElementType() {
 		filterSettings.setSelectedElement(currentElement);
-		assertTrue(ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getPredicate().isChangePropagated(filterSettings,
-				currentElement, link));
+		assertEquals(1.0, ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
+				.isChangePropagated(filterSettings, currentElement, link), 0.0);
 	}
 }

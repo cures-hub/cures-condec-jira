@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,14 +32,14 @@ public class TestIgnoreIncomingLinks extends TestSetUp {
 	@Test
 	public void testPropagationTrueBecauseOutwardLink() {
 		Link link = new Link(currentElement, nextElement, LinkType.RELATE);
-		assertTrue(ChangePropagationRule.IGNORE_INCOMING_LINKS.getPredicate().isChangePropagated(null, currentElement,
-				link));
+		assertEquals(1.0, ChangePropagationRule.IGNORE_INCOMING_LINKS.getFunction().isChangePropagated(null,
+				currentElement, link), 0.0);
 	}
 
 	@Test
 	public void testPropagationFalseBecauseIncomingLink() {
 		Link link = new Link(nextElement, currentElement, LinkType.RELATE);
-		assertFalse(ChangePropagationRule.IGNORE_INCOMING_LINKS.getPredicate().isChangePropagated(null, currentElement,
-				link));
+		assertEquals(0.0, ChangePropagationRule.IGNORE_INCOMING_LINKS.getFunction().isChangePropagated(null,
+				currentElement, link), 0.0);
 	}
 }

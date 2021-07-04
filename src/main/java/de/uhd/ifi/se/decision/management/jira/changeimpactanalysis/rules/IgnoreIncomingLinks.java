@@ -12,10 +12,10 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * For example, if decision A -> decision B, the change is propageted from
  * decision A to decision B but not from decision B to decision A.
  */
-public class IgnoreIncomingLinks implements ChangePropagationPredicate {
+public class IgnoreIncomingLinks implements ChangePropagationFunction {
 
 	@Override
-	public boolean isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
-		return !link.isInwardLinkTo(currentElement);
+	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
+		return link.isInwardLinkTo(currentElement) ? 0.0 : 1.0;
 	}
 }

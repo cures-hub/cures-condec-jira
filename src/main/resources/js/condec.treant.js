@@ -19,6 +19,8 @@
 
      	// Add on click listeners to filter button
      	conDecFiltering.addOnClickEventToFilterButton("treant", conDecTreant.updateView);
+     	document.getElementById("is-transitive-links-input-treant").checked = true;
+		document.getElementById("is-decision-knowledge-only-input-treant").checked = true;
 
         // Register/subscribe this view as an observer
         conDecObservable.subscribe(this);

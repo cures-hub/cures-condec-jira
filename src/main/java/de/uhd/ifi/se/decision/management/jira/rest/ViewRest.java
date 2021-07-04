@@ -153,12 +153,11 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
 		VisGraph visGraph;
 		if (filterSettings.areChangeImpactsHighlighted()) {
 			visGraph = ChangeImpactAnalysisService.calculateGraphImpact(filterSettings);
 		} else {
-			visGraph = new VisGraph(user, filterSettings);
+			visGraph = new VisGraph(filterSettings);
 		}
 		return Response.ok(visGraph).build();
 	}
