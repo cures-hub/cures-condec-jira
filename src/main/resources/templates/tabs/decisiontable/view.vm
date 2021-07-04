@@ -14,17 +14,17 @@ $(document).ready(function () {
 	});
     AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
-    		conDecDecisionTable.initView();
-    		isOnceClicked = true;
-    	}
-	});
+            conDecDecisionTable.initView();
+            isOnceClicked = true;
+        }
+    });
 });
 </script>
 
 <style>
 
     .decision-table-dropdown {
-        padding-top 16px;
+        padding-top: 16px;
         padding-bottom: 16px;
         margin-bottom: 16px;
         border-bottom: 1px solid #e3e3e3;
