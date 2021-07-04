@@ -11,11 +11,12 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * {@link KnowledgeElement} in the {@link KnowledgeGraph} or not using a certain
  * rule (for rule-based change impact estimation/analysis).
  * 
- * Returns a double value (i.e., is a ToDoubleFunction).
+ * Returns a double value between 0 and 1 (i.e., is a ToDoubleFunction).
  * 
  * @see ChangePropagationRule
  * @see StopAtSameElementType
  * @see IgnoreIncomingLinks
+ * @see BoostWhenTextualSimilar
  */
 public interface ChangePropagationFunction {
 

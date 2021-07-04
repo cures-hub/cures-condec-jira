@@ -35,7 +35,8 @@ public enum ChangePropagationRule {
 	}
 
 	/**
-	 * @return method with a boolean return value that encodes the propagation rule.
+	 * @return method with a double return value between 0 and 1 that encodes the
+	 *         propagation rule.
 	 * @see ChangePropagationFunction#isChangePropagated
 	 */
 	public ChangePropagationFunction getFunction() {

@@ -40,22 +40,18 @@ public class VisNode {
 	private Map<String, String> color;
 
 	public VisNode(KnowledgeElement element, FilterSettings filterSettings) {
-		this(element, false, 0, filterSettings);
+		this(element, 0, filterSettings);
+	}
+
+	public VisNode(KnowledgeElement element, int level) {
+		this(element, level, new FilterSettings());
 	}
 
 	public VisNode(KnowledgeElement element, int level, FilterSettings filterSettings) {
-		this(element, false, level, filterSettings);
-	}
-
-	public VisNode(KnowledgeElement element, boolean isCollapsed, int level) {
-		this(element, isCollapsed, level, new FilterSettings());
-	}
-
-	public VisNode(KnowledgeElement element, boolean isCollapsed, int level, FilterSettings filterSettings) {
 		this.element = element;
 		this.level = level;
-		label = determineLabel(element, isCollapsed);
-		group = determineGroup(element, isCollapsed);
+		label = determineLabel(element);
+		group = determineGroup(element);
 		title = element.getTypeAsString().toUpperCase() + System.lineSeparator() + element.getKey() + ": "
 				+ element.getSummary() + System.lineSeparator() + element.getDescription();
 		font = ImmutableMap.of("color", "black");
@@ -69,10 +65,7 @@ public class VisNode {
 		color = determineColor(element);
 	}
 
-	private String determineLabel(KnowledgeElement element, boolean isCollapsed) {
-		if (isCollapsed) {
-			return "";
-		}
+	private String determineLabel(KnowledgeElement element) {
 		String summary = element.getSummary();
 		if (summary.length() > 99) {
 			summary = summary.substring(0, 99) + "...";
@@ -80,10 +73,7 @@ public class VisNode {
 		return element.getTypeAsString().toUpperCase() + "\n" + summary;
 	}
 
-	private String determineGroup(KnowledgeElement element, boolean isCollapsed) {
-		if (isCollapsed) {
-			return "collapsed";
-		}
+	private String determineGroup(KnowledgeElement element) {
 		return element.getTypeAsString().toLowerCase();
 	}
 
@@ -119,6 +109,15 @@ public class VisNode {
 
 	public String getGroup() {
 		return group;
+	}
+
+	public void setCollapsed() {
+		group = "collapsed";
+		label = "";
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	public int getLevel() {

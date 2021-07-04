@@ -15,8 +15,6 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -58,9 +56,9 @@ public class VisGraph {
 		this.edges = new HashSet<>();
 	}
 
-	public VisGraph(ApplicationUser user, FilterSettings filterSettings) {
+	public VisGraph(FilterSettings filterSettings) {
 		this();
-		if (user == null || filterSettings == null || filterSettings.getProjectKey() == null) {
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
 			return;
 		}
 		LOGGER.info(filterSettings.toString());
