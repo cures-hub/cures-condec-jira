@@ -83,16 +83,17 @@ public class ChangeImpactAnalysisService {
 			}
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
-			double impact = parentImpact * linkTypeWeight * decayValue;
+
+			double ruleBasedValue = 1.0;
+			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
+				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
+			}
+
+			double impact = parentImpact * linkTypeWeight * decayValue * ruleBasedValue;
 
 			KnowledgeElement nextElement = (isOutwardLink) ? link.getTarget() : link.getSource();
 
-			boolean propagate = true;
-			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
-				propagate = propagate && rule.getPredicate().isChangePropagated(filterSettings, currentElement, link);
-			}
-
-			if (impact >= ciaConfig.getThreshold() && propagate) {
+			if (impact >= ciaConfig.getThreshold()) {
 				if (!results.containsKey(nextElement) || results.get(nextElement) < impact) {
 					results.put(nextElement, impact);
 					calculateImpactedKnowledgeElementsHelper(nextElement, impact, filterSettings, results, context);

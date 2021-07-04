@@ -1,26 +1,30 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationPredicate;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTextualSimilar;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtSameElementType;
 
 /**
  * Gathers propagation rules for rule-based change impact analysis.
  * 
- * The implementing classes of {@link ChangePropagationPredicate} encode the
+ * The implementing classes of {@link ChangePropagationFunction} encode the
  * rules.
  */
 public enum ChangePropagationRule {
 
-	STOP_AT_SAME_ELEMENT_TYPE("Stop at elements with the same type as the selected element", new StopAtSameElementType()), //
-	IGNORE_INCOMING_LINKS("Outward links only", new IgnoreIncomingLinks());
+	STOP_AT_SAME_ELEMENT_TYPE("Stop at elements with the same type as the selected element",
+			new StopAtSameElementType()), //
+	IGNORE_INCOMING_LINKS("Outward links only", new IgnoreIncomingLinks()), //
+	BOOST_WHEN_TEXTUAL_SIMILAR("Boost when element is textual similar to the selected element",
+			new BoostWhenTextualSimilar());
 
 	private String description;
-	private ChangePropagationPredicate predicate;
+	private ChangePropagationFunction function;
 
-	private ChangePropagationRule(String description, ChangePropagationPredicate predicate) {
+	private ChangePropagationRule(String description, ChangePropagationFunction predicate) {
 		this.description = description;
-		this.predicate = predicate;
+		this.function = predicate;
 	}
 
 	/**
@@ -32,10 +36,10 @@ public enum ChangePropagationRule {
 
 	/**
 	 * @return method with a boolean return value that encodes the propagation rule.
-	 * @see ChangePropagationPredicate#isChangePropagated
+	 * @see ChangePropagationFunction#isChangePropagated
 	 */
-	public ChangePropagationPredicate getPredicate() {
-		return predicate;
+	public ChangePropagationFunction getFunction() {
+		return function;
 	}
 
 	/**
