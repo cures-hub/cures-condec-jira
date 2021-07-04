@@ -17,7 +17,6 @@ import org.junit.Test;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -58,15 +57,12 @@ public class TestSetSentenceValidated extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilled() {
-		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
-		sentence.setType(KnowledgeType.ALTERNATIVE);
+		PartOfJiraIssueText sentence = JiraIssues.addNonValidatedElementToDataBase(120, KnowledgeType.ALTERNATIVE);
 		assertEquals(Response.Status.OK.getStatusCode(),
 			knowledgeRest.setSentenceValidated(request, sentence).getStatus());
+		PartOfJiraIssueText updatedElement = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("Test").getJiraIssueTextManager().getKnowledgeElement(sentence.getId());
 
-		sentence = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST")
-			.getJiraIssueTextManager()
-			.getKnowledgeElement(sentence);
-		assertFalse(sentence.isRelevant());
+		assertTrue(updatedElement.isValidated());
 		assertTrue(sentence.getLinks().size() > 0);
 	}
 
