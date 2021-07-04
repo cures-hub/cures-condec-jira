@@ -419,16 +419,17 @@
     </profiles>
 
 	<properties>
-		<jira.version>8.17.1</jira.version>
-		<amps.version>8.3.0-128eead6d</amps.version>
-		<ao.version>3.3.2</ao.version>
-		<jacoco-version>0.8.7</jacoco-version>
-		<atlassian.spring.scanner.version>2.2.2</atlassian.spring.scanner.version>
-		<!-- This key is also used in atlassian-plugin.xml -->
-		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-	</properties>
+        <jira.version>8.17.1</jira.version>
+        <amps.version>8.3.0-128eead6d</amps.version>
+        <ao.version>3.3.2</ao.version>
+        <jacoco-version>0.8.7</jacoco-version>
+        <atlassian.spring.scanner.version>2.2.2</atlassian.spring.scanner.version>
+        <!-- This key is also used in atlassian-plugin.xml -->
+        <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <allow.google.tracking>false</allow.google.tracking>
+    </properties>
 	<url>https://github.com/cures-hub/cures-condec-jira</url>
 </project>
