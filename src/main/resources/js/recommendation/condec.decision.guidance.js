@@ -36,6 +36,7 @@
 			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
 				.then((recommendations) => {
 					if (Object.keys(recommendations).length > 0) {
+						// dropDownElement.value is the id of the decision knowledge element that is selected :)
 						buildRecommendationTable(recommendations[dropDownElement.value], dropDownElement.value);
 					} else {
 						document.getElementById("recommendation-container-table-body").innerHTML = "<i>No recommendations found!</i>";
