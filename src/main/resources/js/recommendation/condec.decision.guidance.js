@@ -1,15 +1,15 @@
 /**
  * This module implements the solution option recommendation for decision problems (=decision guidance).
- * The recommended solution options are taken from external knowledge sources, such as 
+ * The recommended solution options are taken from external knowledge sources, such as
  * other Jira projects or DBPedia.
  */
-(function(global) {
+(function (global) {
 
-	let ConDecDecisionGuidance = function() {
+	let ConDecDecisionGuidance = function () {
 
 	};
 
-	ConDecDecisionGuidance.prototype.initView = function() {
+	ConDecDecisionGuidance.prototype.initView = function () {
 		// get all the elements for the dropdown and fill the dropdown
 		const filterSettings = {
 			knowledgeTypes: ["Issue"],
@@ -17,49 +17,43 @@
 		};
 		conDecAPI.getKnowledgeElements(filterSettings, (results) => {
 			const filteredResults = results.filter((element) => element.id !== JIRA.Issue.getIssueId())
-			console.log(filteredResults)
-			fillDecisionProblemDropDown(filteredResults)
+			fillDecisionProblemDropDown(filteredResults);
 		});
 		// add button listener
 		this.addOnClickListenerForRecommendations();
-		// this.issueSelected()
 	};
 
-	ConDecDecisionGuidance.prototype.updateView = function() {
+	ConDecDecisionGuidance.prototype.updateView = function () {
 	};
 
-	ConDecDecisionGuidance.prototype.issueSelected = function(currentIssue) {
-		conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
-			.then((recommendations, error) => {
-				if (recommendations.length > 0 && error === undefined) {
-					buildQuickRecommendationTable(recommendations, currentIssue);
-				}
-			});
-	};
-
-	ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function() {
-		$("#recommendation-button").click(function(event) {
+	ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function () {
+		$("#recommendation-button").click(function (event) {
 			event.preventDefault();
 			let dropDownElement = document.getElementById("decision-guidance-dropdown-items");
-			let currentIssue = dropDownElement.options[dropDownElement.options.selectedIndex];
 			$("#recommendation-container tbody tr").remove();
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
 			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
-				.then((recommendations, error) => {
-					if ( error === null || error === undefined) {
-						if (Object.keys(recommendations).length > 0){
-							buildRecommendationTable(recommendations[currentIssue.id], currentIssue);
-						} else {
-							document.getElementById("recommendation-container-table-body").innerHTML = "<i>No recommendations found!</i>";
-						}
+				.then((recommendations) => {
+					if (Object.keys(recommendations).length > 0) {
+						buildRecommendationTable(recommendations[dropDownElement.value], dropDownElement.value);
+					} else {
+						document.getElementById("recommendation-container-table-body").innerHTML = "<i>No recommendations found!</i>";
 					}
 					spinner.hide();
+
+				})
+				.catch(err => {
+					console.log(err)
+					spinner.hide();
+					document.getElementById("recommendation-container-table-body").innerHTML = "<strong>An error occurred!</strong>";
+
+
 				});
 		});
 	};
 
-	function buildRecommendationTable(recommendations, currentIssue) {
+	function buildRecommendationTable(recommendations, currentIssueId) {
 		const table = $("#recommendation-container tbody");
 		let counter = 0;
 		recommendations.forEach(recommendation => {
@@ -80,8 +74,8 @@
 			tableRow += "</tr>";
 			table.append(tableRow);
 
-			$("#row_" + counter).click(function() {
-				onAcceptClicked(recommendation, currentIssue);
+			$("#row_" + counter).click(function () {
+				onAcceptClicked(recommendation, currentIssueId);
 			});
 		});
 		conDecAPI.showFlag("success", "#Recommendations: " + counter);
@@ -112,25 +106,28 @@
 		var i = 0;
 		topResults.forEach(recommendation => {
 			i++;
-			$("#row_quick_" + i).click(function() {
+			$("#row_quick_" + i).click(function () {
 				onAcceptClicked(recommendation, currentIssue);
 			});
 		});
 
-		$("#more-recommendations").click(function(event) {
+		$("#more-recommendations").click(function (event) {
 			$("#recommendation-container tbody tr").remove();
 			buildRecommendationTable(recommendations, currentIssue);
 		});
 	}
 
-	function onAcceptClicked(recommendation, currentIssue) {
-		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function (id, documentationLocation) {
-			recommendation.arguments.forEach(argument => {
-				conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function () {
-					conDecAPI.showFlag("success", "Recommendation was added successfully!");
+	function onAcceptClicked(recommendation, currentIssueId) {
+		conDecAPI.getDecisionKnowledgeElement(currentIssueId, "s", (currentIssue) => {
+			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function (id, documentationLocation) {
+				recommendation.arguments.forEach(argument => {
+					conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function () {
+						conDecAPI.showFlag("success", "Recommendation was added successfully!");
+					});
 				});
 			});
 		});
+
 	}
 
 	/**
@@ -152,6 +149,7 @@
 
 
 	}
+
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);
 
