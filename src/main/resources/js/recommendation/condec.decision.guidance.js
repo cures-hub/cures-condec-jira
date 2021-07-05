@@ -10,41 +10,50 @@
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
-		conDecObservable.subscribe(this);
+		// get all the elements for the dropdown and fill the dropdown
+		const filterSettings = {
+			knowledgeTypes: ["Issue"],
+			selectedElement: conDecAPI.getIssueKey(),
+		};
+		conDecAPI.getKnowledgeElements(filterSettings, (results) => {
+			const filteredResults = results.filter((element) => element.id !== JIRA.Issue.getIssueId())
+			console.log(filteredResults)
+			fillDecisionProblemDropDown(filteredResults)
+		});
+		// add button listener
+		this.addOnClickListenerForRecommendations();
+		// this.issueSelected()
 	};
 
 	ConDecDecisionGuidance.prototype.updateView = function() {
 	};
 
 	ConDecDecisionGuidance.prototype.issueSelected = function(currentIssue) {
-		const keyword = $("#recommendation-keyword");
 		conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
 			.then((recommendations, error) => {
-				if (recommendations.length > 0 && error === null) {
+				if (recommendations.length > 0 && error === undefined) {
 					buildQuickRecommendationTable(recommendations, currentIssue);
 				}
 			});
 	};
 
-	/*
-	 * external usage: condec.decision.table
-	 */
 	ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function() {
 		$("#recommendation-button").click(function(event) {
 			event.preventDefault();
-			const currentIssue = conDecDecisionTable.getCurrentIssue();
-
-			$(this).prop("disabled", true);
+			let dropDownElement = document.getElementById("decision-guidance-dropdown-items");
+			let currentIssue = dropDownElement.options[dropDownElement.options.selectedIndex];
 			$("#recommendation-container tbody tr").remove();
-			const keyword = $("#recommendation-keyword");
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
 			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
 				.then((recommendations, error) => {
-					if (Object.keys(recommendations).length > 0 && error === null) {
-						buildRecommendationTable(recommendations[currentIssue.id], currentIssue);
+					if ( error === null || error === undefined) {
+						if (Object.keys(recommendations).length > 0){
+							buildRecommendationTable(recommendations[currentIssue.id], currentIssue);
+						} else {
+							document.getElementById("recommendation-container-table-body").innerHTML = "<i>No recommendations found!</i>";
+						}
 					}
-					$("#recommendation-button").prop("disabled", false);
 					spinner.hide();
 				});
 		});
@@ -141,17 +150,7 @@
 			dropDown.innerHTML += "<option value='" + issue.id + "'>" + issue.summary + "</option>";
 		}
 
-		dropDown.addEventListener("change", selectDecisionProblem);
 
-		function selectDecisionProblem() {
-			let currentIssue = issues.find(issue => (dropDown.value).match(issue.id));
-			const filterSettings = {
-				"selectedElement": currentIssue.key
-			}
-			$("#recommendation-keyword").val(currentIssue.summary);
-			$("#recommendation-button").prop("disabled", false);
-			conDecDecisionGuidance.issueSelected(currentIssue);
-		}
 	}
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);
