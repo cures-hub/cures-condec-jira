@@ -4,6 +4,8 @@ DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</spa
 Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span>
 
 <form class="aui">
+    <aui-dropdown-menu id="decision-guidance-dropdown-items">
+    </aui-dropdown-menu>
     <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required/>
     <button class="aui-button" id="recommendation-button" disabled="true">
         <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>

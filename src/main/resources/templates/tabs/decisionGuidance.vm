@@ -1,0 +1,23 @@
+<div id="decision-guidance-table">
+       #parse("templates/tabs/decisionGuidanceTable.vm")
+</div>
+
+
+<script>
+    /* Adds the on click listener on tab opening */
+    $(document).ready(function () {
+        var isOnceClicked = false;
+        AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+            if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
+                conDecDecisionTable.initView(true);
+                isOnceClicked = true;
+            }
+        });
+        AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+            if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
+                conDecDecisionTable.initView();
+                isOnceClicked = true;
+            }
+        });
+    });
+</script>
