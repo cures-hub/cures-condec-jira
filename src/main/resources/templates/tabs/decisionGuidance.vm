@@ -8,14 +8,14 @@
     $(document).ready(function () {
         var isOnceClicked = false;
         AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
-            if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
-                conDecDecisionTable.initView(true);
+            if (!isOnceClicked && event.target.href.includes("#decision-guidance-tab")) {
+                conDecDecisionGuidance.initView(true);
                 isOnceClicked = true;
             }
         });
         AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
-            if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
-                conDecDecisionTable.initView();
+            if (!isOnceClicked && event.target.href.includes("#decision-guidance-tab")) {
+                conDecDecisionGuidance.initView();
                 isOnceClicked = true;
             }
         });
