@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +50,7 @@ public class TestChecks extends TestSetUp {
 		settings.setSelectedElement((KnowledgeElement) null);
 		response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(400, response.getStatus());
+		settings.setSelectedElement(knowledgeElement);
 
 		response = dodCheckingRest.getQualityProblems(request, null);
 		assertEquals(400, response.getStatus());
@@ -133,5 +135,43 @@ public class TestChecks extends TestSetUp {
 		settings.setSelectedElement(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetCoverageOfJiraIssue() {
+		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement(knowledgeElement);
+		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
+		assertEquals(200, response.getStatus());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetCoverageOfJiraIssueFilterSettingsInvalid() {
+		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, null);
+		assertEquals(400, response.getStatus());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetCoverageOfJiraIssueProjectKeyInvalid() {
+		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		settings = new FilterSettings(null, "");
+		settings.setSelectedElement(knowledgeElement);
+		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
+		assertEquals(400, response.getStatus());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetCoverageOfJiraIssueSelectedElementInvalid() {
+		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement((KnowledgeElement) null);
+		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
+		assertEquals(400, response.getStatus());
 	}
 }

@@ -110,11 +110,11 @@ public final class DefinitionOfDoneChecker {
 	public static List<QualityProblem> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityProblem> failedCheckCriteria = new ArrayList<>();
-		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
+		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
+			filterSettings)) {
 			failedCheckCriteria.add(QualityProblem.DECISIONCOVERAGETOOLOW);
 		}
-		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
-				filterSettings)) {
+		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
 			failedCheckCriteria.add(QualityProblem.INCOMPLETEKNOWLEDGELINKED);
 		}
 		if (isDecisionKnowledge(knowledgeElement)) {
@@ -124,13 +124,10 @@ public final class DefinitionOfDoneChecker {
 		return failedCheckCriteria;
 	}
 
-	private static boolean isDecisionKnowledge(KnowledgeElement knowledgeElement) {
-		KnowledgeType knowledgeType = knowledgeElement.getType();
-		return (knowledgeType.equals(KnowledgeType.ISSUE) || knowledgeType.equals(KnowledgeType.DECISION)
-				|| knowledgeType.equals(KnowledgeType.ALTERNATIVE) || knowledgeType.equals(KnowledgeType.ARGUMENT)
-				|| knowledgeType.equals(KnowledgeType.PRO) || knowledgeType.equals(KnowledgeType.CON));
-	}
-
+	/**
+	 * @return a string detailing all {@link QualityProblem} of the
+	 * {@link KnowledgeElement}.
+	 */
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
@@ -145,5 +142,12 @@ public final class DefinitionOfDoneChecker {
 			}
 		}
 		return text.strip();
+	}
+
+	private static boolean isDecisionKnowledge(KnowledgeElement knowledgeElement) {
+		KnowledgeType knowledgeType = knowledgeElement.getType();
+		return (knowledgeType.equals(KnowledgeType.ISSUE) || knowledgeType.equals(KnowledgeType.DECISION)
+			|| knowledgeType.equals(KnowledgeType.ALTERNATIVE) || knowledgeType.equals(KnowledgeType.ARGUMENT)
+			|| knowledgeType.equals(KnowledgeType.PRO) || knowledgeType.equals(KnowledgeType.CON));
 	}
 }

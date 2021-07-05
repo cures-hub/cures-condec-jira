@@ -101,17 +101,15 @@
 			return;
 		}
 
-		conDecAPI.getFilterSettings(projectKey, "", settings => {
+		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, "", (definitionOfDone) => {
 
-			document.getElementById("condec-prompt-minimum-coverage").innerHTML = settings.minimumDecisionCoverage;
-			document.getElementById("condec-prompt-link-distance").innerHTML = settings.linkDistance;
+			document.getElementById("condec-prompt-minimum-coverage").innerHTML = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			document.getElementById("condec-prompt-link-distance").innerHTML = definitionOfDone.maximumLinkDistanceToDecisions;
 		});
 
 		conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, (coverage) => {
-			document.getElementById("condec-prompt-issue-coverage").innerHTML = coverage["Issue"];
-			document.getElementById("condec-prompt-decision-coverage").innerHTML = coverage["Decision"];
+			document.getElementById("condec-prompt-decision-coverage").innerHTML = coverage;
 		});
-
 
 		document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
 	}
