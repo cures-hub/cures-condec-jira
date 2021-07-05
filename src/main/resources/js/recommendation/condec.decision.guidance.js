@@ -81,42 +81,6 @@
 		conDecAPI.showFlag("success", "#Recommendations: " + counter);
 	}
 
-	function buildQuickRecommendationTable(recommendations, currentIssue) {
-		document.getElementById("decision-problem-summary").innerText = currentIssue.summary;
-		let counter = 0;
-		var columns = "";
-		var topResults = recommendations[currentIssue.id].slice(0, 4);
-		topResults.forEach(recommendation => {
-			counter++;
-			let tableRow = "<tr>";
-			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'><span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></div></td>";
-			tableRow += "<td>" + conDecRecommendation.buildScore(recommendation.score, "score_quick" + counter) + "</td>";
-			tableRow += "<td><button title='Adds the recommendation to the knowledge graph' id='row_quick_" + counter + "' class='aui-button-link'>Accept</button></td>";
-			tableRow += "</tr>";
-			columns += tableRow;
-		});
-
-		document.getElementById("quick-recommendations-table-body").innerHTML = columns;
-
-		AJS.flag({
-			body: document.getElementById("quick-recommendations").outerHTML,
-			title: "Recommendations for Decision Problem"
-		});
-
-		var i = 0;
-		topResults.forEach(recommendation => {
-			i++;
-			$("#row_quick_" + i).click(function () {
-				onAcceptClicked(recommendation, currentIssue);
-			});
-		});
-
-		$("#more-recommendations").click(function (event) {
-			$("#recommendation-container tbody tr").remove();
-			buildRecommendationTable(recommendations, currentIssue);
-		});
-	}
-
 	function onAcceptClicked(recommendation, currentIssueId) {
 		conDecAPI.getDecisionKnowledgeElement(currentIssueId, "s", (currentIssue) => {
 			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function (id, documentationLocation) {
