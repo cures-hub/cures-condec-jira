@@ -19,7 +19,6 @@
 		// Add on click listeners to filter button
      	conDecFiltering.addOnClickEventToFilterButton("decision-table", conDecDecisionTable.updateView);     	
 		this.addOnClickEventToDecisionTableButtons();		
-		conDecDecisionGuidance.addOnClickListenerForRecommendations();
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -71,26 +70,26 @@
 	function isSelectedElement(element, selectedElementKey) {
 		return selectedElementKey.match(element.key);
 	}
-	
+
 	/**
 	 * @param issues
 	 *            all decision problems found.
 	 */
 	function fillDecisionProblemDropDown(issues, viewIdentifier) {
-		let dropDown = document.getElementById("decision-problem-dropdown");		
+		let dropDown = document.getElementById("decision-problem-dropdown");
 		dropDown.innerHTML = "";
-		
+
 		if (!issues.length) {
 			enableButtons(false, viewIdentifier);
 			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create a new issue!</option>";
 			return;
-		} 
-		
+		}
+
 		enableButtons(true, viewIdentifier);
 		for (let issue of issues) {
 			dropDown.innerHTML += "<option value='" + issue.id + "'>" + issue.summary + "</option>";
-		}		
-		
+		}
+
 		function selectDecisionProblem () {
 			currentIssue = issues.find(issue => (dropDown.value).match(issue.id));
 			const filterSettings = {

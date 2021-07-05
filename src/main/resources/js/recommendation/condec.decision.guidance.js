@@ -6,6 +6,7 @@
 (function(global) {
 
 	let ConDecDecisionGuidance = function() {
+
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
@@ -13,14 +14,13 @@
 	};
 
 	ConDecDecisionGuidance.prototype.updateView = function() {
-		// nothing is done here because this view is updated already with the decision table view
 	};
 
 	ConDecDecisionGuidance.prototype.issueSelected = function(currentIssue) {
 		const keyword = $("#recommendation-keyword");
-		conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey(),
-			function (recommendations, error) {
-				if (error === null && recommendations.length > 0) {
+		conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
+			.then((recommendations, error) => {
+				if (recommendations.length > 0 && error === null) {
 					buildQuickRecommendationTable(recommendations, currentIssue);
 				}
 			});
@@ -39,13 +39,14 @@
 			const keyword = $("#recommendation-keyword");
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
-			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey(), function (recommendations, error) {
-				if (error === null) {
-					buildRecommendationTable(recommendations[currentIssue.id], currentIssue);
-				}
-				$("#recommendation-button").prop("disabled", false);
-				spinner.hide();
-			});
+			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
+				.then((recommendations, error) => {
+					if (Object.keys(recommendations).length > 0 && error === null) {
+						buildRecommendationTable(recommendations[currentIssue.id], currentIssue);
+					}
+					$("#recommendation-button").prop("disabled", false);
+					spinner.hide();
+				});
 		});
 	};
 
@@ -114,14 +115,44 @@
 	}
 
 	function onAcceptClicked(recommendation, currentIssue) {
-		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function(id, documentationLocation) {
+		conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function (id, documentationLocation) {
 			recommendation.arguments.forEach(argument => {
-				conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
+				conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function () {
 					conDecAPI.showFlag("success", "Recommendation was added successfully!");
 				});
 			});
 		});
 	}
 
+	/**
+	 * @param issues
+	 *            all decision problems found.
+	 */
+	function fillDecisionProblemDropDown(issues) {
+		let dropDown = document.getElementById("decision-guidance-dropdown-items");
+		dropDown.innerHTML = "";
+
+		if (!issues.length) {
+			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create a new issue!</option>";
+			return;
+		}
+
+		for (let issue of issues) {
+			dropDown.innerHTML += "<option value='" + issue.id + "'>" + issue.summary + "</option>";
+		}
+
+		dropDown.addEventListener("change", selectDecisionProblem);
+
+		function selectDecisionProblem() {
+			let currentIssue = issues.find(issue => (dropDown.value).match(issue.id));
+			const filterSettings = {
+				"selectedElement": currentIssue.key
+			}
+			$("#recommendation-keyword").val(currentIssue.summary);
+			$("#recommendation-button").prop("disabled", false);
+			conDecDecisionGuidance.issueSelected(currentIssue);
+		}
+	}
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);
+
