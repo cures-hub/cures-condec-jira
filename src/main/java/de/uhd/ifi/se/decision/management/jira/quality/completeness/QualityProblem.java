@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.Locale;
-
 /**
  * Models the possible quality problems of knowledge elements. Quality problems
  * are checked for issues, decisions, alternatives, arguments and code files.
@@ -20,7 +18,7 @@ public enum QualityProblem {
 	ALTERNATIVEDOESNTHAVEARGUMENT("Alternative doesn't have an argument!"),
 	ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE("Argument doesn't have a decision or an alternative!");
 
-	private String description;
+	private final String description;
 
 	private QualityProblem(String description) {
 		this.description = description;
