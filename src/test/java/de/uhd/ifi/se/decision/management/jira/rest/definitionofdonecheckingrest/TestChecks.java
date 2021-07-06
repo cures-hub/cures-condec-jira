@@ -8,7 +8,6 @@ import javax.ws.rs.core.Response;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -150,7 +149,6 @@ public class TestChecks extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetCoverageOfJiraIssueFilterSettingsInvalid() {
-		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, null);
 		assertEquals(400, response.getStatus());
 	}

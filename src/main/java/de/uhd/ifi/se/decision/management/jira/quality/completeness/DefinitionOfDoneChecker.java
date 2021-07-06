@@ -14,9 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.El
 
 public final class DefinitionOfDoneChecker {
 
-	private DefinitionOfDoneChecker() {
-	}
-
 	private static final Map<KnowledgeType, KnowledgeElementCheck<? extends KnowledgeElement>> knowledgeElementCheckMap = Map
 			.ofEntries(entry(KnowledgeType.DECISION, new DecisionCheck()),
 					entry(KnowledgeType.ISSUE, new IssueCheck()),
@@ -25,6 +22,9 @@ public final class DefinitionOfDoneChecker {
 					entry(KnowledgeType.PRO, new ArgumentCheck()),
 					entry(KnowledgeType.CON, new ArgumentCheck()),
 					entry(KnowledgeType.CODE, new CodeCheck()));
+
+	private DefinitionOfDoneChecker() {
+	}
 
 	/**
 	 * @issue Should knowledge elements without definition of done be assumed to be
