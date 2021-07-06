@@ -25,87 +25,59 @@
 			"selectedElement": issueKey,
 		};
 
-		var qualityCheckTab = document.getElementById("menu-item-quality-check-" + viewIdentifier);
-
-		fillCoverageRequired(projectKey, viewIdentifier);
-
-		if (issueKey) {
-			fillCoverageReached(filterSettings, viewIdentifier);
-			fillQualityProblems(filterSettings, viewIdentifier);
-		}
+		fillQualityCheckTab(filterSettings, viewIdentifier)
 	};
 
-	function fillCoverageRequired(projectKey, viewIdentifier) {
-		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
-			var minimumCoverageLabel = document.getElementById("quality-check-minimum-coverage-" + viewIdentifier);
-			var linkDistanceLabel = document.getElementById("quality-check-link-distance-" + viewIdentifier);
+	function fillQualityCheckTab(filterSettings, viewIdentifier) {
+		conDecDoDCheckingAPI.getDefinitionOfDone(filterSettings.projectKey, (definitionOfDone) => {
+			var coverageRequired = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			fillCoverageRequired(definitionOfDone, viewIdentifier)
 
-			minimumCoverageLabel.innerText = pluralize(definitionOfDone.minimumDecisionsWithinLinkDistance, "decision");
-			linkDistanceLabel.innerText = definitionOfDone.maximumLinkDistanceToDecisions;
+			conDecDoDCheckingAPI.getCoverageOfJiraIssue(filterSettings, (coverage) => {
+				var coverageReached = coverage;
+				fillCoverageReached(coverage, viewIdentifier)
+
+				conDecDoDCheckingAPI.getQualityProblems(filterSettings, (text) => {
+					var qualityProblems = text;
+					fillQualityProblems(qualityProblems, viewIdentifier)
+					updateTabStatus(coverageRequired, coverageReached, qualityProblems, viewIdentifier)
+				});
+			});
 		});
 	}
 
-	function fillCoverageReached(filterSettings, viewIdentifier) {
-		conDecDoDCheckingAPI.getCoverageOfJiraIssue(filterSettings, (coverage) => {
-			var coverageLabel = document.getElementById("quality-check-coverage-" + viewIdentifier);
+	function fillCoverageRequired(definitionOfDone, viewIdentifier) {
+		var minimumCoverageLabel = document.getElementById("quality-check-minimum-coverage-" + viewIdentifier);
+		var linkDistanceLabel = document.getElementById("quality-check-link-distance-" + viewIdentifier);
 
-			coverageLabel.innerText = pluralize(coverage, "decision");
-		});
+		minimumCoverageLabel.innerText = pluralize(definitionOfDone.minimumDecisionsWithinLinkDistance, "decision");
+		linkDistanceLabel.innerText = definitionOfDone.maximumLinkDistanceToDecisions;
 	}
 
-	function fillQualityProblems(filterSettings, viewIdentifier) {
-		conDecDoDCheckingAPI.getQualityProblems(filterSettings, (text) => {
-			var qualityProblemsText = document.getElementById("quality-check-problems-text-" + viewIdentifier);
+	function fillCoverageReached(coverage, viewIdentifier) {
+		var coverageLabel = document.getElementById("quality-check-coverage-" + viewIdentifier);
 
-			qualityProblemsText.innerText = text;
-		});
+		coverageLabel.innerText = pluralize(coverage, "decision");
 	}
 
-	function updateTab(tab, hasIncompleteKnowledgeLinked, doesNotHaveMinimumCoverage, coverage) {
-		if (!hasIncompleteKnowledgeLinked && !doesNotHaveMinimumCoverage) {
-			addToken(tab, "condec-fine");
-		} else if (coverage > 0) {
-			addToken(tab, "condec-warning");
-		} else if (coverage === 0) {
-			addToken(tab, "condec-error");
-		} else {
-			addToken(tab, "condec-default");
-		}
+	function fillQualityProblems(qualityProblems, viewIdentifier) {
+		var qualityProblemsText = document.getElementById("quality-check-problems-text-" + viewIdentifier);
+
+		qualityProblemsText.innerText = qualityProblems;
+		addToken(qualityProblemsText, "condec-error");
 	}
 
-	function updateText(textField, type, coverage, minimum) {
-		if (textField === null) {
-			return;
-		}
-		textField.textContent = "# " + type + ": " + coverage;
-		if (coverage >= minimum) {
-			addToken(textField, "condec-fine");
-		} else if ((coverage < minimum) && (coverage > 0)) {
-			addToken(textField, "condec-warning");
-		} else if (coverage === 0) {
-			addToken(textField, "condec-error");
-		} else {
-			textField.textContent = "";
-			addToken(textField, "condec-default");
-		}
-	}
+	function updateTabStatus(coverageRequired, coverageReached, qualityProblems, viewIdentifier) {
+		var qualityCheckTab = document.getElementById("menu-item-quality-check-" + viewIdentifier);
 
-	function updateIsKnowledgeComplete(hasIncompleteKnowledgeLinked, failedCompletenessCheckCriteria) {
-		if (hasIncompleteKnowledgeLinked === true) {
-			knowledgeCompleteText.textContent = KNOWLEDGE_INCOMPLETE;
-			addToken(knowledgeCompleteText, "condec-error");
-		} else if (hasIncompleteKnowledgeLinked === false) {
-			knowledgeCompleteText.textContent = KNOWLEDGE_COMPLETE;
-			addToken(knowledgeCompleteText, "condec-fine");
-		} else {
-			knowledgeCompleteText.textContent = "";
-			addToken(knowledgeCompleteText, "condec-default");
-		}
-
-		if (failedCompletenessCheckCriteria && failedCompletenessCheckCriteria.length) {
-			addToken(knowledgeCompleteCriteriaText, "condec-error");
-			knowledgeCompleteCriteriaText.innerHTML = KNOWLEDGE_CRITERIA + "<br>" +
-				failedCompletenessCheckCriteria.join("<br>");
+		if (!qualityProblems || !qualityProblems[0].length) {
+			addToken(qualityCheckTab, "condec-fine");
+		} else if (coverageReached > 0) {
+			addToken(qualityCheckTab, "condec-warning");
+		} else if (coverageReached <= 0) {
+			addToken(qualityCheckTab, "condec-error");
+		}  else {
+			addToken(qualityCheckTab, "condec-default");
 		}
 	}
 
