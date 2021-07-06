@@ -22,6 +22,7 @@ public class TextClassificationConfiguration {
 		selectedGroundTruthFileName = "defaultTrainingData.csv";
 		lastEvaluationResults = "";
 		trainedClassifierName = "";
+		isActivated = true;
 	}
 
 	public boolean isActivated() {
