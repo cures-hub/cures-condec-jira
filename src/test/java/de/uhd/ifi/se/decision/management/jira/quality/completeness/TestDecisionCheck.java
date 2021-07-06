@@ -72,7 +72,7 @@ public class TestDecisionCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
+		assertFalse(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
 
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
