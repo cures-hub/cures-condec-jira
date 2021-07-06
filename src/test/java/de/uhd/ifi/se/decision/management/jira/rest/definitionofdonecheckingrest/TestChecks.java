@@ -166,7 +166,6 @@ public class TestChecks extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetCoverageOfJiraIssueSelectedElementInvalid() {
-		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement((KnowledgeElement) null);
 		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
