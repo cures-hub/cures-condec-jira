@@ -50,6 +50,7 @@ public class TextClassifier {
 		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 		Preprocessor.copyDefaultPreprocessingDataToFile();
 		groundTruthData = new GroundTruthData();
+		this.train();
 	}
 
 	private TextClassifier(String projectKey) {
@@ -60,6 +61,7 @@ public class TextClassifier {
 		String prefix = config.getPrefixOfSelectedGroundTruthFileName();
 		binaryClassifier = new BinaryClassifier(prefix);
 		fineGrainedClassifier = new FineGrainedClassifier(5, prefix);
+		this.train();
 	}
 
 	/**
