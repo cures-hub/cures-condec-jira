@@ -27,13 +27,13 @@ import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDa
 public class CodeCheck implements KnowledgeElementCheck<ChangedFile> {
 
 	private ChangedFile codeFile;
-	private String projectKey;
 
 	@Override
 	public boolean execute(ChangedFile codeFile) {
 		this.codeFile = codeFile;
-		projectKey = codeFile.getProject().getProjectKey();
-		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings();
+		String projectKey = codeFile.getProject().getProjectKey();
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
@@ -42,9 +42,7 @@ public class CodeCheck implements KnowledgeElementCheck<ChangedFile> {
 	}
 
 	@Override
-	public boolean isCompleteAccordingToSettings() {
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-
+	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
 		int lineNumbersInCodeFile = definitionOfDone.getLineNumbersInCodeFile();
 		if (codeFile.getLineCount() < lineNumbersInCodeFile) {
 			return true;
@@ -65,7 +63,7 @@ public class CodeCheck implements KnowledgeElementCheck<ChangedFile> {
 	}
 
 	@Override
-	public List<QualityProblem> getFailedCriteria(ChangedFile codeFile) {
+	public List<QualityProblem> getQualityProblems(ChangedFile codeFile, DefinitionOfDone definitionOfDone) {
 		return new ArrayList<>();
 	}
 }

@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCodeCompletenessCheck extends TestSetUp {
+public class TestCodeCheck extends TestSetUp {
 
 	private ChangedFile fileThatIsNotDone;
 	private ChangedFile smallFileThatIsDone;
@@ -78,7 +78,8 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetFailedCompletenessCriteria() {
-		assertTrue(codeCompletenessCheck.getFailedCriteria(testFileThatIsDone).isEmpty());
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		assertTrue(codeCompletenessCheck.getQualityProblems(testFileThatIsDone, definitionOfDone).isEmpty());
 	}
 
 	@After

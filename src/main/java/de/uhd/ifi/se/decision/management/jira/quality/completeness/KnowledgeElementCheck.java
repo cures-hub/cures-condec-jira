@@ -51,14 +51,16 @@ public interface KnowledgeElementCheck<T extends KnowledgeElement> {
 	 * completely documented according to the {@link DefinitionOfDone}. For example,
 	 * a configurable rule is that each decision needs to be linked to at least one
 	 * pro-argument to be complete.
+	 * @param definitionOfDone
+	 * 	          instance of {@link DefinitionOfDone}.
 	 * 
 	 * @return true if all configured rules are fulfilled.
 	 */
-	boolean isCompleteAccordingToSettings();
+	boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone);
 
 	/**
 	 * Executes the completeness check for the given knowledge element
-	 * and return a set of the failed criteria.
+	 * and return a set of quality problems.
 	 *
 	 * @param <T>
 	 *            {@link KnowledgeElement} class or a subclass, e.g.
@@ -66,8 +68,10 @@ public interface KnowledgeElementCheck<T extends KnowledgeElement> {
 	 *            {@link Recommendation}.
 	 * @param knowledgeElement
 	 *            instance of {@link KnowledgeElement}.
-	 * @return a set of the failed criteria according to the default
+	 * @param definitionOfDone
+	 * 	          instance of {@link DefinitionOfDone}.
+	 * @return a set of {@link QualityProblem} according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
-	List<QualityProblem> getFailedCriteria(T knowledgeElement);
+	List<QualityProblem> getQualityProblems(T knowledgeElement, DefinitionOfDone definitionOfDone);
 }

@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestIssueCompletenessCheck extends TestSetUp {
+public class TestIssueCheck extends TestSetUp {
 
 	private KnowledgeElement issue;
 	private IssueCheck issueCompletenessCheck;
@@ -96,8 +96,8 @@ public class TestIssueCompletenessCheck extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.getFailedCriteria(issue).isEmpty());
-		assertFalse(issueCompletenessCheck.getFailedCriteria(KnowledgeElements.getUnsolvedDecisionProblem()).isEmpty());
+		assertTrue(issueCompletenessCheck.getQualityProblems(issue, definitionOfDone).isEmpty());
+		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
 	}
 
 	@After

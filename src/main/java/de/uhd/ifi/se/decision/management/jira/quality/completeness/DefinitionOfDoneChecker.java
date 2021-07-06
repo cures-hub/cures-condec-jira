@@ -10,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
 public final class DefinitionOfDoneChecker {
@@ -118,8 +119,10 @@ public final class DefinitionOfDoneChecker {
 			failedCheckCriteria.add(QualityProblem.INCOMPLETEKNOWLEDGELINKED);
 		}
 		if (isDecisionKnowledge(knowledgeElement)) {
+			DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(
+				knowledgeElement.getProject().getProjectKey());
 			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-			failedCheckCriteria.addAll(knowledgeElementCheck.getFailedCriteria(knowledgeElement));
+			failedCheckCriteria.addAll(knowledgeElementCheck.getQualityProblems(knowledgeElement, definitionOfDone));
 		}
 		return failedCheckCriteria;
 	}

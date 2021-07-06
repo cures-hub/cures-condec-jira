@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,20 +24,20 @@ public class ArgumentCheck implements KnowledgeElementCheck<KnowledgeElement> {
 	}
 
 	@Override
-	public boolean isCompleteAccordingToSettings() {
+	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
 		return true;
 	}
 
 	@Override
-	public List<QualityProblem> getFailedCriteria(KnowledgeElement argument) {
-		List<QualityProblem> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getQualityProblems(KnowledgeElement argument, DefinitionOfDone definitionOfDone) {
+		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!(argument.hasNeighborOfType(KnowledgeType.DECISION)
 			|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE))) {
-			failedCriteria.add(QualityProblem.ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE);
+			qualityProblems.add(QualityProblem.ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE);
 		}
 
-		return failedCriteria;
+		return qualityProblems;
 	}
 
 }

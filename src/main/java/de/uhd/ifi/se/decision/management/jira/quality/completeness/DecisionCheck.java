@@ -16,7 +16,8 @@ public class DecisionCheck implements KnowledgeElementCheck<KnowledgeElement> {
 	public boolean execute(KnowledgeElement decision) {
 		this.decision = decision;
 		projectKey = decision.getProject().getProjectKey();
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
@@ -25,9 +26,8 @@ public class DecisionCheck implements KnowledgeElementCheck<KnowledgeElement> {
 	}
 
 	@Override
-	public boolean isCompleteAccordingToSettings() {
-		boolean hasToBeLinkedToProArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.isDecisionIsLinkedToPro();
+	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
+		boolean hasToBeLinkedToProArgument = definitionOfDone.isDecisionIsLinkedToPro();
 		if (hasToBeLinkedToProArgument) {
 			return decision.hasNeighborOfType(KnowledgeType.PRO);
 		}
@@ -35,20 +35,19 @@ public class DecisionCheck implements KnowledgeElementCheck<KnowledgeElement> {
 	}
 
 	@Override
-	public List<QualityProblem> getFailedCriteria(KnowledgeElement decision) {
-		List<QualityProblem> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getQualityProblems(KnowledgeElement decision, DefinitionOfDone definitionOfDone) {
+		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!decision.hasNeighborOfType(KnowledgeType.ISSUE)) {
-			failedCriteria.add(QualityProblem.DECISIONDOESNTHAVEISSUE);
+			qualityProblems.add(QualityProblem.DECISIONDOESNTHAVEISSUE);
 		}
 
-		boolean hasToBeLinkedToProArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-			.isDecisionIsLinkedToPro();
+		boolean hasToBeLinkedToProArgument = definitionOfDone.isDecisionIsLinkedToPro();
 		if (hasToBeLinkedToProArgument && !decision.hasNeighborOfType(KnowledgeType.PRO)) {
-			failedCriteria.add(QualityProblem.DECISIONDOESNTHAVEPRO);
+			qualityProblems.add(QualityProblem.DECISIONDOESNTHAVEPRO);
 		}
 
-		return failedCriteria;
+		return qualityProblems;
 	}
 
 }

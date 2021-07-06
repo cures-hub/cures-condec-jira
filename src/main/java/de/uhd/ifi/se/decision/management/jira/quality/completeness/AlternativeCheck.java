@@ -16,7 +16,8 @@ public class AlternativeCheck implements KnowledgeElementCheck<KnowledgeElement>
 	public boolean execute(KnowledgeElement alternative) {
 		this.alternative = alternative;
 		projectKey = alternative.getProject().getProjectKey();
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
@@ -25,9 +26,8 @@ public class AlternativeCheck implements KnowledgeElementCheck<KnowledgeElement>
 	}
 
 	@Override
-	public boolean isCompleteAccordingToSettings() {
-		boolean hasToBeLinkedToArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.isAlternativeIsLinkedToArgument();
+	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
+		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
 		if (hasToBeLinkedToArgument) {
 			return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
 					|| alternative.hasNeighborOfType(KnowledgeType.PRO)
@@ -37,22 +37,21 @@ public class AlternativeCheck implements KnowledgeElementCheck<KnowledgeElement>
 	}
 
 	@Override
-	public List<QualityProblem> getFailedCriteria(KnowledgeElement alternative) {
-		List<QualityProblem> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getQualityProblems(KnowledgeElement alternative, DefinitionOfDone definitionOfDone) {
+		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!alternative.hasNeighborOfType(KnowledgeType.ISSUE)) {
-			failedCriteria.add(QualityProblem.ALTERNATIVEDOESNTHAVEISSUE);
+			qualityProblems.add(QualityProblem.ALTERNATIVEDOESNTHAVEISSUE);
 		}
 
-		boolean hasToBeLinkedToArgument = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-			.isAlternativeIsLinkedToArgument();
+		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
 		if (hasToBeLinkedToArgument && !(alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
 			|| alternative.hasNeighborOfType(KnowledgeType.PRO)
 			|| alternative.hasNeighborOfType(KnowledgeType.CON))) {
-			failedCriteria.add(QualityProblem.ALTERNATIVEDOESNTHAVEARGUMENT);
+			qualityProblems.add(QualityProblem.ALTERNATIVEDOESNTHAVEARGUMENT);
 		}
 
-		return failedCriteria;
+		return qualityProblems;
 	}
 
 }

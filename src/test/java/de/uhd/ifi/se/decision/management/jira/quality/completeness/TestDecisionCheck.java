@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDecisionCompletenessCheck extends TestSetUp {
+public class TestDecisionCheck extends TestSetUp {
 	private KnowledgeElement decision;
 	private ApplicationUser user;
 	private DecisionCheck decisionCompletenessCheck;
@@ -72,12 +72,12 @@ public class TestDecisionCompletenessCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(decisionCompletenessCheck.getFailedCriteria(decision).isEmpty());
+		assertTrue(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
 
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
 
-		assertTrue(decisionCompletenessCheck.getFailedCriteria(decision).isEmpty());
+		assertTrue(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
 
 		// restore default
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());

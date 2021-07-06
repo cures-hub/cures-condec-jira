@@ -22,7 +22,8 @@ public class IssueCheck implements KnowledgeElementCheck<KnowledgeElement> {
 	public boolean execute(KnowledgeElement decisionProblem) {
 		this.issue = decisionProblem;
 		projectKey = decisionProblem.getProject().getProjectKey();
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings();
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
@@ -32,9 +33,8 @@ public class IssueCheck implements KnowledgeElementCheck<KnowledgeElement> {
 	}
 
 	@Override
-	public boolean isCompleteAccordingToSettings() {
-		boolean hasToBeLinkedToAlternative = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-				.isIssueIsLinkedToAlternative();
+	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
+		boolean hasToBeLinkedToAlternative = definitionOfDone.isIssueIsLinkedToAlternative();
 		if (hasToBeLinkedToAlternative) {
 			return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 		}
@@ -42,24 +42,23 @@ public class IssueCheck implements KnowledgeElementCheck<KnowledgeElement> {
 	}
 
 	@Override
-	public List<QualityProblem> getFailedCriteria(KnowledgeElement decisionProblem) {
-		List<QualityProblem> failedCriteria = new ArrayList<>();
+	public List<QualityProblem> getQualityProblems(KnowledgeElement decisionProblem, DefinitionOfDone definitionOfDone) {
+		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!isValidDecisionLinkedToDecisionProblem(decisionProblem)) {
-			failedCriteria.add(QualityProblem.ISSUEDOESNTHAVEDECISION);
+			qualityProblems.add(QualityProblem.ISSUEDOESNTHAVEDECISION);
 		}
 
 		if (decisionProblem.getStatus() == KnowledgeStatus.UNRESOLVED) {
-			failedCriteria.add(QualityProblem.ISSUEISUNRESOLVED);
+			qualityProblems.add(QualityProblem.ISSUEISUNRESOLVED);
 		}
 
-		boolean hasToBeLinkedToAlternative = ConfigPersistenceManager.getDefinitionOfDone(projectKey)
-			.isIssueIsLinkedToAlternative();
+		boolean hasToBeLinkedToAlternative = definitionOfDone.isIssueIsLinkedToAlternative();
 		if (hasToBeLinkedToAlternative && !decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
-			failedCriteria.add(QualityProblem.ISSUEDOESNTHAVEALTERNATIVE);
+			qualityProblems.add(QualityProblem.ISSUEDOESNTHAVEALTERNATIVE);
 		}
 
-		return failedCriteria;
+		return qualityProblems;
 	}
 
 	/**
