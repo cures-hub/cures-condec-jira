@@ -1,4 +1,4 @@
-name: Build and test
+name: CI
 
 on:
   push:
@@ -32,3 +32,10 @@ jobs:
       uses: codecov/codecov-action@v1.5.2
       with:
         files: target/site/jacoco/jacoco.xml
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: target/cures-condec-jira.jar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
