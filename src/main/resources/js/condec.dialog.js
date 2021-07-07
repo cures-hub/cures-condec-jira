@@ -183,11 +183,7 @@
 			AJS.dialog2(deleteGroupDialog).show();
 		}
 	};
-	ConDecDialog.prototype.validateElement = function(id) {
-		console.log("conDecDialog validateElement");
 
-
-	}
 	ConDecDialog.prototype.showDeleteDialog = function(id, documentationLocation, callback = function() {
 	}) {
 		console.log("conDecDialog showDeleteDialog");
