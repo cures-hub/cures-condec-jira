@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: Build and test with Atlassian SDK
 
 on:
   push:
@@ -21,8 +21,17 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-    
     - name: Install Atlassian SDK
       uses: rodrigo-nogues/github-action-install-atlassian-sdk@v1
+    - name: Cache packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
     - name: Build with Atlassian SDK
       run: atlas-package -P jacoco -q -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
+    - name: Codecov
+      uses: codecov/codecov-action@v1.5.2
+      with:
+        files: target/site/jacoco/jacoco.xml
