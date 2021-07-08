@@ -4,8 +4,9 @@ DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</spa
 Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span>
 
 <form class="aui">
-    <input id="recommendation-keyword" class="text long-field" value="" placeholder="keywords" required/>
-    <button class="aui-button" id="recommendation-button" disabled="true">
+    <select id="decision-guidance-dropdown-items" class="select long-field">
+    </select>
+    <button class="aui-button" id="recommendation-button">
         <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
         $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
     </button>
@@ -22,7 +23,7 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
         <th>$i18n.getText("condec.decision.guidance.arguments")</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody id="recommendation-container-table-body">
     </tbody>
 </table>
 
