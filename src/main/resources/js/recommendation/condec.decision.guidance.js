@@ -35,7 +35,7 @@
 			spinner.show();
 			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
 				.then((recommendations) => {
-					if (Object.keys(recommendations).length > 0) {
+					if (Object.keys(recommendations).length > 0 && recommendations[dropDownElement.value].length > 0 ) {
 						// dropDownElement.value is the id of the decision knowledge element that is selected :)
 						buildRecommendationTable(recommendations[dropDownElement.value], dropDownElement.value);
 					} else {
@@ -114,7 +114,6 @@
 
 
 	}
-
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);
 

@@ -1,7 +1,6 @@
 #set ($viewIdentifier = "decision-table")	
 #parse("templates/filter/allCriteria.vm")
 #parse("templates/tabs/decisiontable/decisionTable.vm")
-## #parse("templates/tabs/decisionGuidanceTable.vm")
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
@@ -20,15 +19,3 @@ $(document).ready(function () {
     });
 });
 </script>
-
-<style>
-
-    .decision-table-dropdown {
-        padding-top: 16px;
-        padding-bottom: 16px;
-        margin-bottom: 16px;
-        border-bottom: 1px solid #e3e3e3;
-    }
-
-
-</style>
