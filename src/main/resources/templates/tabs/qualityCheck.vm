@@ -14,14 +14,8 @@
 </div>
 
 <script>
-    /* Adds the on click listener on tab opening */
+    /* Fills tab when the document is ready */
     $(document).ready(function () {
-        var isOnceClicked = false;
-        AJS.$("#jira-issue-tabs").on("tabSelect", function (event) {
-            if (!isOnceClicked && event.target.href.includes("#quality-check")) {
-                conDecQualityCheck.initView("jira-issue-module", null);
-                isOnceClicked = true;
-            }
-        });
+        conDecQualityCheck.initView("jira-issue-module", null);
     });
 </script>
