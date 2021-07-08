@@ -102,10 +102,8 @@
 	}
 
 	function stopLoadingVisualization(table, spinner) {
-		console.log("stop loading spinner???")
 		spinner.style.display = "none";
 		table.style.visibility = "visible";
-		console.log("donee  stop loading spinner???")
 
 	}
 
