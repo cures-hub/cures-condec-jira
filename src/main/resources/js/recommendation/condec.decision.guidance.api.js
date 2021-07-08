@@ -17,16 +17,8 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (projectKey, issueKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/recommendations.json?projectKey=" + projectKey + "&issueKey" + issueKey,
-			function (error, recommendations) {
-				Object.keys(recommendations).forEach(id => {
-					recommendations[id].sort(function (recommendation1, recommendation2) {
-						return recommendation2.score.value - recommendation1.score.value;
-					});
-				});
-				callback(recommendations, error);
-			})
+	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (projectKey, issueKey) {
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/recommendations.json?projectKey=" + projectKey + "&issueKey=" + issueKey);
 	};
 
 	/*
