@@ -132,12 +132,14 @@ public final class DefinitionOfDoneChecker {
 			FilterSettings filterSettings) {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (DefinitionOfDoneChecker.hasNoCoverage(knowledgeElement, KnowledgeType.DECISION,
+		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
 			filterSettings)) {
-			qualityProblems.add(QualityProblem.NODECISIONCOVERAGE);
-		} else if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
-			filterSettings)) {
-			qualityProblems.add(QualityProblem.DECISIONCOVERAGETOOLOW);
+			if (DefinitionOfDoneChecker.hasNoCoverage(knowledgeElement, KnowledgeType.DECISION,
+				filterSettings)) {
+				qualityProblems.add(QualityProblem.NODECISIONCOVERAGE);
+			} else {
+				qualityProblems.add(QualityProblem.DECISIONCOVERAGETOOLOW);
+			}
 		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
