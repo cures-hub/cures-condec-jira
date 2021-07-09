@@ -25,24 +25,21 @@
 			"selectedElement": issueKey,
 		};
 
-		fillQualityCheckTab(filterSettings, viewIdentifier)
+		fillQualityCheckTab(filterSettings, viewIdentifier);
 	};
 
 	function fillQualityCheckTab(filterSettings, viewIdentifier) {
 		conDecDoDCheckingAPI.getDefinitionOfDone(filterSettings.projectKey, (definitionOfDone) => {
-			var coverageRequired = definitionOfDone.minimumDecisionsWithinLinkDistance;
-			fillCoverageRequired(definitionOfDone, viewIdentifier)
+			fillCoverageRequired(definitionOfDone, viewIdentifier);
+		});
 
-			conDecDoDCheckingAPI.getCoverageOfJiraIssue(filterSettings, (coverage) => {
-				var coverageReached = coverage;
-				fillCoverageReached(coverage, viewIdentifier)
+		conDecDoDCheckingAPI.getCoverageOfJiraIssue(filterSettings, (coverage) => {
+			fillCoverageReached(coverage, viewIdentifier);
+		});
 
-				conDecDoDCheckingAPI.getQualityProblems(filterSettings, (text) => {
-					var qualityProblems = text;
-					fillQualityProblems(qualityProblems, viewIdentifier)
-					updateTabStatus(coverageRequired, coverageReached, qualityProblems, viewIdentifier)
-				});
-			});
+		conDecDoDCheckingAPI.getQualityProblems(filterSettings, (qualityProblems) => {
+			fillQualityProblems(qualityProblems, viewIdentifier);
+			updateTabStatus(qualityProblems, viewIdentifier);
 		});
 	}
 
@@ -61,23 +58,34 @@
 	}
 
 	function fillQualityProblems(qualityProblems, viewIdentifier) {
-		var qualityProblemsText = document.getElementById("quality-check-problems-text-" + viewIdentifier);
+		var qualityProblemsTextField = document.getElementById("quality-check-problems-text-" + viewIdentifier);
 
-		qualityProblemsText.innerText = qualityProblems;
-		addToken(qualityProblemsText, "condec-error");
+		var text = "";
+
+		qualityProblems.forEach(function(problem) {
+			if (problem.name === "NODECISIONCOVERAGE" || problem.name === "DECISIONCOVERAGETOOLOW" ||
+				problem.name === "INCOMPLETEKNOWLEDGELINKED") {
+				text += problem.description;
+				text += "\n\n";
+			} else {
+				text += problem.description;
+				text += "\n";
+			}
+		})
+
+		qualityProblemsTextField.innerText = text;
+		addToken(qualityProblemsTextField, "condec-error");
 	}
 
-	function updateTabStatus(coverageRequired, coverageReached, qualityProblems, viewIdentifier) {
+	function updateTabStatus(qualityProblems, viewIdentifier) {
 		var qualityCheckTab = document.getElementById("menu-item-quality-check-" + viewIdentifier);
 
-		if (!qualityProblems || !qualityProblems[0].length) {
+		if (!qualityProblems || !qualityProblems.length) {
 			addToken(qualityCheckTab, "condec-fine");
-		} else if (coverageReached > 0) {
-			addToken(qualityCheckTab, "condec-warning");
-		} else if (coverageReached <= 0) {
+		} else if (qualityProblems.some(problem => problem.name === "NODECISIONCOVERAGE")) {
 			addToken(qualityCheckTab, "condec-error");
-		}  else {
-			addToken(qualityCheckTab, "condec-default");
+		} else {
+			addToken(qualityCheckTab, "condec-warning");
 		}
 	}
 

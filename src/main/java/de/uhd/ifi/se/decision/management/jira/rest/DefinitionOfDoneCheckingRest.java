@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response.Status;
 
 import com.google.common.collect.ImmutableMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -19,8 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
  * REST resource for definition of done (DoD) configuration and checking.
@@ -46,26 +49,49 @@ public class DefinitionOfDoneCheckingRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * Get a list of the {@link QualityProblem} of the {@link KnowledgeElement} selected in the {@link FilterSettings}.
+	 *
+	 * @param request
+	 * @param filterSettings
+	 * @return List<QualityProblem>
+	 * A list containing the {@link QualityProblem}.
+	 */
 	@Path("/getQualityProblems")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getQualityProblems(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey().isEmpty()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "DoD check could not be performed due to a bad request."))
-					.build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+				"Quality check could not be performed due to a bad request.")).build();
 		}
 
 		KnowledgeElement knowledgeElement = filterSettings.getSelectedElement();
 		if (knowledgeElement == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"DoD check could not be performed because the element could not be found.")).build();
+				"Quality check could not be performed because the element could not be found.")).build();
 		}
 
-		return Response.ok().entity(Collections.singletonList(
-			DefinitionOfDoneChecker.getQualityProblemExplanation(knowledgeElement, filterSettings))).build();
+		ObjectMapper mapper = new ObjectMapper();
+
+		try {
+			return Response.ok().entity(mapper.writeValueAsString(
+				DefinitionOfDoneChecker.getQualityProblemsAsJson(knowledgeElement, filterSettings)))
+				.build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+				"Quality check could not be performed because the result could not be converted to json.")).build();
+		}
 	}
 
+	/**
+	 * Get the coverage with decisions of the {@link KnowledgeElement} selected in the {@link FilterSettings}.
+	 *
+	 * @param request
+	 * @param filterSettings
+	 * @return coverage
+	 * How many decisions are linked to the selected {@link KnowledgeElement}.
+	 */
 	@Path("/getCoverageOfJiraIssue")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })

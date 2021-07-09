@@ -96,16 +96,9 @@ public class RationaleCoverageCalculator {
 		}
 	}
 
-	private Map<String, String> calculateKnowledgeElementsWithNeighborsOfOtherType(Set<String> sourceTypes,
-			KnowledgeType knowledgeType) {
-		LOGGER.info("RationaleCoverageCalculator getKnowledgeElementsWithNeighborsOfOtherType");
-
-		if (knowledgeType == null) {
-			return null;
-		}
-
-		KnowledgeGraph graph = filteringManager.getFilteredGraph();
+	private Set<KnowledgeElement> getKnowledgeElementsOfSourceTypes(Set<String> sourceTypes) {
 		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
+		KnowledgeGraph graph = filteringManager.getFilteredGraph();
 		for (String sourceType : sourceTypes) {
 			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
 			if (type == KnowledgeType.OTHER || type == KnowledgeType.CODE) {
@@ -114,6 +107,19 @@ public class RationaleCoverageCalculator {
 				knowledgeElements.addAll(graph.getElements(type));
 			}
 		}
+
+		return knowledgeElements;
+	}
+
+	private Map<String, String> calculateKnowledgeElementsWithNeighborsOfOtherType(Set<String> sourceTypes,
+			KnowledgeType knowledgeType) {
+		LOGGER.info("RationaleCoverageCalculator getKnowledgeElementsWithNeighborsOfOtherType");
+
+		if (knowledgeType == null) {
+			return null;
+		}
+
+		Set<KnowledgeElement> knowledgeElements = getKnowledgeElementsOfSourceTypes(sourceTypes);
 
 		int minimumDecisionCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
 
@@ -151,16 +157,7 @@ public class RationaleCoverageCalculator {
 			return null;
 		}
 
-		KnowledgeGraph graph = filteringManager.getFilteredGraph();
-		Set<KnowledgeElement> knowledgeElements = new HashSet<>();
-		for (String sourceType : sourceTypes) {
-			KnowledgeType type = KnowledgeType.getKnowledgeType(sourceType);
-			if (type == KnowledgeType.OTHER || type == KnowledgeType.CODE) {
-				knowledgeElements.addAll(graph.getElements(sourceType));
-			} else {
-				knowledgeElements.addAll(graph.getElements(type));
-			}
-		}
+		Set<KnowledgeElement> knowledgeElements = getKnowledgeElementsOfSourceTypes(sourceTypes);
 
 		Map<String, Integer> numberOfElementsReachable = new HashMap<>();
 		for (KnowledgeElement knowledgeElement : knowledgeElements) {

@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -91,7 +94,8 @@ public final class DefinitionOfDoneChecker {
 	 * Iterates recursively over the knowledge graph of the
 	 * {@link KnowledgeElement}.
 	 *
-	 * @return true if there are at least as many issues and decisions as the
+	 * @return true if there are at least as many elements of the
+	 *         specified {@link KnowledgeType} as the
 	 *         minimum coverage demands, else it returns false.
 	 */
 	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
@@ -104,27 +108,49 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
+	 * Iterates recursively over the knowledge graph of the
+	 * {@link KnowledgeElement}.
+	 *
+	 * @return true if there is at least one element of the
+	 *         specified {@link KnowledgeType}, else it
+	 *         returns false.
+	 */
+	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
+													 FilterSettings filterSettings) {
+		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings.getProjectKey());
+		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
+			knowledgeType);
+		return result == 0;
+	}
+
+	/**
 	 * @return a list of {@link QualityProblem} of the
 	 * {@link KnowledgeElement}.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static List<QualityProblem> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
-		List<QualityProblem> failedCheckCriteria = new ArrayList<>();
-		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
+		List<QualityProblem> qualityProblems = new ArrayList<>();
+
+		if (DefinitionOfDoneChecker.hasNoCoverage(knowledgeElement, KnowledgeType.DECISION,
 			filterSettings)) {
-			failedCheckCriteria.add(QualityProblem.DECISIONCOVERAGETOOLOW);
+			qualityProblems.add(QualityProblem.NODECISIONCOVERAGE);
+		} else if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
+			filterSettings)) {
+			qualityProblems.add(QualityProblem.DECISIONCOVERAGETOOLOW);
 		}
+
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			failedCheckCriteria.add(QualityProblem.INCOMPLETEKNOWLEDGELINKED);
+			qualityProblems.add(QualityProblem.INCOMPLETEKNOWLEDGELINKED);
 		}
+
 		if (isDecisionKnowledge(knowledgeElement)) {
 			DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(
 				knowledgeElement.getProject().getProjectKey());
 			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-			failedCheckCriteria.addAll(knowledgeElementCheck.getQualityProblems(knowledgeElement, definitionOfDone));
+			qualityProblems.addAll(knowledgeElementCheck.getQualityProblems(knowledgeElement, definitionOfDone));
 		}
-		return failedCheckCriteria;
+		return qualityProblems;
 	}
 
 	/**
@@ -136,7 +162,9 @@ public final class DefinitionOfDoneChecker {
 		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		String text = "";
 		for (QualityProblem problem : qualityProblems) {
-			if (problem.equals(QualityProblem.DECISIONCOVERAGETOOLOW)) {
+			if (problem.equals(QualityProblem.NODECISIONCOVERAGE)) {
+				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
+			} else if (problem.equals(QualityProblem.DECISIONCOVERAGETOOLOW)) {
 				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
 			} else if (problem.equals(QualityProblem.INCOMPLETEKNOWLEDGELINKED)) {
 				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
@@ -145,6 +173,22 @@ public final class DefinitionOfDoneChecker {
 			}
 		}
 		return text.strip();
+	}
+
+	/**
+	 * @return an ArrayNode of ObjectNodes detailing all {@link QualityProblem} of the
+	 * {@link KnowledgeElement}.
+	 */
+	public static ArrayNode getQualityProblemsAsJson(KnowledgeElement knowledgeElement,
+													  FilterSettings filterSettings) {
+		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayNode qualityProblemsJson = mapper.createArrayNode();
+		for (QualityProblem problem : qualityProblems) {
+			qualityProblemsJson.add(problem.getJson());
+		}
+
+		return qualityProblemsJson;
 	}
 
 	private static boolean isDecisionKnowledge(KnowledgeElement knowledgeElement) {
