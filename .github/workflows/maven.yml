@@ -1,22 +1,14 @@
-name: CI
-
-on:
-  push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
-
+name: Continuous integration
+on: [push]
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 11
+    - name: Set up JDK 15
       uses: actions/setup-java@v2
       with:
-        java-version: '11'
+        java-version: '15'
         distribution: 'adopt'
     - name: Install Atlassian SDK
       uses: rodrigo-nogues/github-action-install-atlassian-sdk@v1
@@ -28,14 +20,20 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
     - name: Build with Atlassian SDK
       run: atlas-package -P jacoco -q -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
-    - name: Codecov
+    - name: Report test coverage via Codecov
       uses: codecov/codecov-action@v1.5.2
       with:
         files: target/site/jacoco/jacoco.xml
-    - name: Release
-      uses: softprops/action-gh-release@v1
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+    - name: Create release on version tags
+      uses: marvinpinto/action-automatic-releases@latest
       if: startsWith(github.ref, 'refs/tags/')
       with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
         files: target/cures-condec-jira.jar
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: ${{ steps.get_version.outputs.VERSION }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
