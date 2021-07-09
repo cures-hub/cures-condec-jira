@@ -1,5 +1,5 @@
-name: Continuous integration and automatic releasing
-on: [push, pull_request]
+name: Continuous integration
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
