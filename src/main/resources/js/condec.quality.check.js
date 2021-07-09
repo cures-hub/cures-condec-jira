@@ -29,6 +29,8 @@
 	};
 
 	function fillQualityCheckTab(filterSettings, viewIdentifier) {
+		fillIssueKey(filterSettings.selectedElement, viewIdentifier);
+
 		conDecDoDCheckingAPI.getDefinitionOfDone(filterSettings.projectKey, (definitionOfDone) => {
 			fillCoverageRequired(definitionOfDone, viewIdentifier);
 		});
@@ -41,6 +43,17 @@
 			fillQualityProblems(qualityProblems, viewIdentifier);
 			updateTabStatus(qualityProblems, viewIdentifier);
 		});
+	}
+
+	function fillIssueKey(issueKey, viewIdentifier) {
+		var knowledgeTypeLabel = document.getElementById("quality-check-issue-key-" + viewIdentifier)
+
+		if (issueKey === null || issueKey === undefined) {
+			knowledgeTypeLabel.innerText = "This element";
+			return;
+		}
+
+		knowledgeTypeLabel.innerText = issueKey;
 	}
 
 	function fillCoverageRequired(definitionOfDone, viewIdentifier) {
