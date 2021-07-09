@@ -1,6 +1,6 @@
 # cures-condec-jira
 
-![Build Status](https://github.com/cures-hub/cures-condec-jira/actions/workflows/maven.yml/badge.svg)
+[![Continuous integration](https://github.com/cures-hub/cures-condec-jira/actions/workflows/maven.yml/badge.svg)](https://github.com/cures-hub/cures-condec-jira/actions/workflows/maven.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bcbb5354da724d718c5b63c0416ee572)](https://www.codacy.com/app/anja.kleebaum/cures-condec-jira?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cures-hub/cures-condec-jira&amp;utm_campaign=Badge_Grade)
 [![Codecoverage](https://codecov.io/gh/cures-hub/cures-condec-jira/branch/master/graph/badge.svg)](https://codecov.io/gh/cures-hub/cures-condec-jira/branch/master)
 [![GitHub contributors](https://img.shields.io/github/contributors/cures-hub/cures-condec-jira.svg)](https://github.com/cures-hub/cures-condec-jira/graphs/contributors)
