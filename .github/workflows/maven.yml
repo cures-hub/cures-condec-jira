@@ -25,10 +25,10 @@ jobs:
       with:
         files: target/site/jacoco/jacoco.xml
     - name: Create release on version tags
-      uses: actions/create-release@v1
+      uses: marvinpinto/action-automatic-releases@latest
       with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
         files: target/cures-condec-jira.jar
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
