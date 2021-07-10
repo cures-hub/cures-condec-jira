@@ -33,10 +33,11 @@
 	};
 
 	ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function () {
+		var tableBody = document.getElementById("recommendation-container-table-body");
 		$("#recommendation-button").click(function (event) {
 			event.preventDefault();
 			let dropDownElement = document.getElementById("decision-guidance-dropdown-items");
-			$("#recommendation-container tbody tr").remove();
+			tableBody.innerHTML = "";
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
 			var filterSettings = {
@@ -45,13 +46,14 @@
 			}
 			conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
 				.then((recommendationMap) => {				
-					if (Object.keys(recommendationMap).length > 0) {
+					if (Object.keys(recommendationMap).length > 0 && Object.values(recommendationMap)[0].length > 0) {
 						var decisionProblemId = Object.keys(recommendationMap)[0];								
 						var recommendations = Object.values(recommendationMap)[0].sort((a, b) => b.score.value - a.score.value);
 						// dropDownElement.value is the id of the decision knowledge element that is selected :)
 						buildRecommendationTable(recommendations, decisionProblemId);
+						conDecNudgingAPI.decideAmbientFeedbackForTab(recommendations.length, "menu-item-decision-guidance");
 					} else {
-						document.getElementById("recommendation-container-table-body").innerHTML = "<i>No recommendations found!</i>";
+						tableBody.innerHTML = "<i>No recommendations found!</i>";
 					}
 					spinner.hide();
 
@@ -59,13 +61,13 @@
 				.catch(err => {
 					console.log(err)
 					spinner.hide();
-					document.getElementById("recommendation-container-table-body").innerHTML = "<strong>An error occurred!</strong>";
+					tableBody.innerHTML = "<strong>An error occurred!</strong>";
 				});
 		});
 	};
 
 	function buildRecommendationTable(recommendations, currentIssueId) {
-		const table = $("#recommendation-container tbody");
+		var tableBody = document.getElementById("recommendation-container-table-body");		
 		let counter = 0;
 		recommendations.forEach(recommendation => {
 			counter++;
@@ -83,7 +85,7 @@
 			});
 			tableRow += "</ul></td>";
 			tableRow += "</tr>";
-			table.append(tableRow);
+			tableBody.insertAdjacentHTML('beforeend', tableRow);
 
 			$("#row_" + counter).click(function () {
 				onAcceptClicked(recommendation, currentIssueId);

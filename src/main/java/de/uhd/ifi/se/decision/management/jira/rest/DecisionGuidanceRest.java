@@ -268,7 +268,7 @@ public class DecisionGuidanceRest {
 
 		if (selectedElement.getType().getSuperType() != KnowledgeType.PROBLEM) {
 			// the selected element is not a decision problem, but e.g. a requirement
-			// we need to get the decision problems related to the selected Jira issue
+			// we need to get all decision problems related to the selected element
 			filterSettings.setCreateTransitiveLinks(true);
 			filterSettings.setOnlyDecisionKnowledgeShown(true);
 			filterSettings.setKnowledgeTypes(Set.of("Issue", "Problem", "Goal"));

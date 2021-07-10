@@ -1,4 +1,4 @@
-<b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b>
+<b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b></br>
 <b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b>
 DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;
 Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span>

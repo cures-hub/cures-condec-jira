@@ -13,9 +13,10 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestGetRecommendations extends TestSetUp {
 
@@ -31,73 +32,75 @@ public class TestGetRecommendations extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setSelectedElement(JiraIssues.getTestJiraIssues().get(4).getKey());
+		filterSettings.setSelectedElement(KnowledgeElements.getSolvedDecisionProblem());
 	}
 
 	@Test
-	public void testGetRecommendations() {
+	public void testGetRecommendationsForSingleDecisionProblem() {
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsEmptyProject() {
+	public void testGetRecommendationsForAllDecisionProblemsForWorkItem() {
+		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testEmptyProject() {
 		filterSettings.setProjectKey("");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsProjectKeyNull() {
+	public void testProjectKeyNull() {
 		filterSettings.setProjectKey(null);
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsRequestNull() {
+	public void testFilterSettingsNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, null).getStatus());
+	}
+
+	@Test
+	public void testSelectedElementNull() {
+		filterSettings.setSelectedElement((KnowledgeElement) null);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testRequestNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(null, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsNoKnowledgeSourceConfigured() {
+	public void testNoKnowledgeSourceConfigured() {
 		filterSettings.setProjectKey("Project does not exist");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
-	//
-	// @Test
-	// public void testGetRecommendationsGetRecommender() {
-	// DecisionGuidanceConfiguration decisionGuidanceConfiguration =
-	// ConfigPersistenceManager
-	// .getDecisionGuidanceConfiguration(projectKey);
-	// ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey,
-	// decisionGuidanceConfiguration);
-	//
-	// assertEquals(Status.OK.getStatusCode(),
-	// decisionGuidanceRest.getRecommendations(request, "TEST",
-	// jiraIssueKey).getStatus());
-	// }
-	//
-	// //
-	// // @Test
-	// public void testGetRecommendationsAddDirectly() {
-	// decisionGuidanceRest.setAddRecommendationDirectly(request, projectKey, true);
-	// assertEquals(Status.OK.getStatusCode(),
-	// decisionGuidanceRest.getRecommendations(request, "TEST",
-	// jiraIssueKey).getStatus());
-	// decisionGuidanceRest.setAddRecommendationDirectly(request, projectKey,
-	// false);
-	// }
-	//
-	// @Test
-	// public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
-	// decisionGuidanceRest.setProjectSource(request, projectKey, projectKey,
-	// false);
-	// assertEquals(Status.OK.getStatusCode(),
-	// decisionGuidanceRest.getRecommendations(request, projectKey,
-	// jiraIssueKey).getStatus());
-	// decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, true);
-	// }
+
+	@Test
+	public void testAddRecommendationsDirectly() {
+		decisionGuidanceRest.setAddRecommendationDirectly(request, "TEST", true);
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+		decisionGuidanceRest.setAddRecommendationDirectly(request, "TEST", false);
+	}
+
+	@Test
+	public void testNoKnowledgeSourceNotConfigured() {
+		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", false);
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", true);
+	}
 }
