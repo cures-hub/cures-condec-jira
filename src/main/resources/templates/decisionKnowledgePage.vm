@@ -25,6 +25,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item" id="menu-item-matrix">
         	<a href="#matrix-tab">$i18n.getText('condec.label.matrix')</a>
         </li>
+        <li class="menu-item" id="menu-item-decision-guidance">
+            <a href="#decision-guidance-tab">$i18n.getText('condec.decision.guidance')</a>
+        </li>
         <li class="menu-item" id="menu-item-groups">
         	<a href="#decision-groups-tab">Decision Groups</a>
         </li>
@@ -49,6 +52,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div class="tabs-pane" id="matrix-tab">
         #parse("templates/tabs/matrix/view.vm")
+    </div>
+    <div class="tabs-pane" id="decision-guidance-tab">
+        #parse("templates/tabs/recommendation/decisionGuidance.vm")
     </div>
     <div class="tabs-pane" id="decision-groups-tab">
         #parse("templates/tabs/decisionGroups.vm")

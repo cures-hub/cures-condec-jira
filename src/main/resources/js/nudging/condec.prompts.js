@@ -153,10 +153,14 @@
 			return;
 		}
 		const projectKey = conDecAPI.getProjectKey();
-		conDecDecisionGuidanceAPI.getRecommendations(projectKey, issueKey)
+		const filterSettings = {
+			"projectKey" : projectKey,
+			"selectedElement" : issueKey
+		}
+		conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
 			.then((recommendationsMap, error) => {
 			if (error === null || error === undefined) {
-				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length.toString()
+				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length;
 				Object.keys(recommendationsMap).forEach((id) => {
 					conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
 						let tableRow = "<tr>";

@@ -1,4 +1,4 @@
-<h2>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</h2>
+<b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b>
 <b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b>
 DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;
 Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span>
@@ -32,5 +32,20 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
 </div>
 
 <script>
-    conDecDecisionGuidance.initView();
+    /* Adds the on click listener on tab opening */
+    $(document).ready(function () {
+        var isOnceClicked = false;
+        AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
+            if (!isOnceClicked && event.target.href.includes("#decision-guidance-tab")) {
+                conDecDecisionGuidance.initView();
+                isOnceClicked = true;
+            }
+        });
+        AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+            if (!isOnceClicked && event.target.href.includes("#decision-guidance-tab")) {
+                conDecDecisionGuidance.initView();
+                isOnceClicked = true;
+            }
+        });
+    });
 </script>

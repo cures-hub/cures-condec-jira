@@ -11,9 +11,12 @@
 
 	ConDecDecisionGuidance.prototype.initView = function () {
 		// get all the elements for the dropdown and fill the dropdown
+		
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		console.log(jiraIssueKey);
 		const filterSettings = {
-			knowledgeTypes: ["Issue"],
-			selectedElement: conDecAPI.getIssueKey(),
+			knowledgeTypes: ["Issue", "Problem", "Goal"],
+			selectedElement: jiraIssueKey !== undefined ? jiraIssueKey : "",
 		};
 		conDecAPI.getKnowledgeElements(filterSettings, (results) => {
 			const filteredResults = results.filter((element) => element.id !== JIRA.Issue.getIssueId())
@@ -21,6 +24,9 @@
 		});
 		// add button listener
 		this.addOnClickListenerForRecommendations();
+		
+		// Register/subscribe this view as an observer
+		conDecObservable.subscribe(this);
 	};
 
 	ConDecDecisionGuidance.prototype.updateView = function () {
@@ -33,11 +39,17 @@
 			$("#recommendation-container tbody tr").remove();
 			const spinner = $("#loading-spinner-recommendation");
 			spinner.show();
-			conDecDecisionGuidanceAPI.getRecommendations(conDecAPI.getProjectKey(), conDecAPI.getIssueKey())
-				.then((recommendations) => {
-					if (Object.keys(recommendations).length > 0) {
+			var filterSettings = {
+				"projectKey" : conDecAPI.getProjectKey(),
+				"selectedElement" : dropDownElement.value
+			}
+			conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
+				.then((recommendationMap) => {				
+					if (Object.keys(recommendationMap).length > 0) {
+						var decisionProblemId = Object.keys(recommendationMap)[0];								
+						var recommendations = Object.values(recommendationMap)[0].sort((a, b) => b.score.value - a.score.value);
 						// dropDownElement.value is the id of the decision knowledge element that is selected :)
-						buildRecommendationTable(recommendations[dropDownElement.value], dropDownElement.value);
+						buildRecommendationTable(recommendations, decisionProblemId);
 					} else {
 						document.getElementById("recommendation-container-table-body").innerHTML = "<i>No recommendations found!</i>";
 					}
@@ -48,8 +60,6 @@
 					console.log(err)
 					spinner.hide();
 					document.getElementById("recommendation-container-table-body").innerHTML = "<strong>An error occurred!</strong>";
-
-
 				});
 		});
 	};
@@ -92,7 +102,6 @@
 				});
 			});
 		});
-
 	}
 
 	/**
@@ -109,12 +118,9 @@
 		}
 
 		for (let issue of issues) {
-			dropDown.innerHTML += "<option value='" + issue.id + "'>" + issue.summary + "</option>";
+			dropDown.innerHTML += "<option value='" + issue.key + "'>" + issue.summary + "</option>";
 		}
-
-
 	}
 
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);
-
