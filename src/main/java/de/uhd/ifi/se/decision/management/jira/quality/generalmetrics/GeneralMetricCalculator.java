@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
@@ -32,6 +34,8 @@ public class GeneralMetricCalculator {
 	@JsonIgnore
 	private KnowledgeGraph graph;
 	@JsonIgnore
+	private Set<KnowledgeElement> knowledgeElements;
+	@JsonIgnore
 	private CommentMetricCalculator commentMetricCalculator;
 
 	private Map<String, Integer> numberOfCommentsPerIssue;
@@ -47,8 +51,9 @@ public class GeneralMetricCalculator {
 
 	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		this.graph = filteringManager.getFilteredGraph();
 		this.filterSettings = filterSettings;
+		this.graph = filteringManager.getFilteredGraph();
+		this.knowledgeElements = graph.vertexSet();
 		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 
@@ -67,7 +72,7 @@ public class GeneralMetricCalculator {
 
 	private Map<String, Integer> calculateDistributionOfKnowledgeTypes() {
 		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
-		Map<String, Integer> distributionMap = new HashMap<String, Integer>();
+		Map<String, Integer> distributionMap = new HashMap<>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			List<KnowledgeElement> elements = graph.getElements(type);
 			distributionMap.put(type.toString(), elements.size());
@@ -77,7 +82,7 @@ public class GeneralMetricCalculator {
 
 	private Map<String, Integer> calculateReqAndClassSummary() {
 		LOGGER.info("RequirementsDashboard getReqAndClassSummary 3");
-		Map<String, Integer> summaryMap = new HashMap<String, Integer>();
+		Map<String, Integer> summaryMap = new HashMap<>();
 		int numberOfRequirements = 0;
 		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
 		for (Issue issue : jiraIssues) {
@@ -98,8 +103,7 @@ public class GeneralMetricCalculator {
 		String elementsInJiraIssueText = "";
 		String elementsInCommitMessages = "";
 		String elementsInCodeComments = "";
-		Set<KnowledgeElement> elements = graph.vertexSet();
-		for (KnowledgeElement element : elements) {
+		for (KnowledgeElement element : knowledgeElements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
@@ -141,18 +145,20 @@ public class GeneralMetricCalculator {
 		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
 		Map<String, String> resultMap = new HashMap<>();
 
-		String elementsWithDoDCheckSuccess = "";
-		String elementsWithDoDCheckFail = "";
-		Set<KnowledgeElement> elements = graph.vertexSet();
-		for (KnowledgeElement element : elements) {
-			if (element.failsDefinitionOfDone(filterSettings)) {
-				elementsWithDoDCheckFail += element.getKey() + " ";
+		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(
+			filterSettings.getProjectKey());
+
+		StringBuilder elementsWithDoDCheckSuccess = new StringBuilder();
+		StringBuilder elementsWithDoDCheckFail = new StringBuilder();
+		for (KnowledgeElement element : knowledgeElements) {
+			if (DefinitionOfDoneChecker.checkDefinitionOfDone(element, filterSettings, rationaleCoverageCalculator)) {
+				elementsWithDoDCheckFail.append(element.getKey()).append(" ");
 			} else {
-				elementsWithDoDCheckSuccess += element.getKey() + " ";
+				elementsWithDoDCheckSuccess.append(element.getKey()).append(" ");
 			}
 		}
-		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess.trim());
-		resultMap.put("Definition of Done Failed", elementsWithDoDCheckFail.trim());
+		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess.toString().trim());
+		resultMap.put("Definition of Done Failed", elementsWithDoDCheckFail.toString().trim());
 
 		return resultMap;
 	}

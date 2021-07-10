@@ -24,11 +24,10 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		String sourceKnowledgeTypes = "Task";
-		calculator = new RationaleCoverageCalculator(user, filterSettings, sourceKnowledgeTypes);
+		calculator = new RationaleCoverageCalculator(filterSettings, sourceKnowledgeTypes);
 	}
 
 	@Test
@@ -40,9 +39,8 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRationaleCoverageCalculatorNoTypes() {
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		RationaleCoverageCalculator newCalculator = new RationaleCoverageCalculator(user, filterSettings, "");
+		RationaleCoverageCalculator newCalculator = new RationaleCoverageCalculator(filterSettings, "");
 		assertNotNull(newCalculator);
 	}
 

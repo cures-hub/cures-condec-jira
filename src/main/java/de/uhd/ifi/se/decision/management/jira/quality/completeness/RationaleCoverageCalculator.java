@@ -47,8 +47,7 @@ public class RationaleCoverageCalculator {
 		this.filterSettings = new FilterSettings(projectKey, "");
 	}
 
-	public RationaleCoverageCalculator(ApplicationUser user, FilterSettings filterSettings,
-			String sourceKnowledgeTypesString) {
+	public RationaleCoverageCalculator(FilterSettings filterSettings, String sourceKnowledgeTypesString) {
 		this.filterSettings = filterSettings;
 		this.filteringManager = new FilteringManager(filterSettings);
 

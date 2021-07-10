@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
@@ -31,6 +32,8 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
+	 * Checks if the definition of done has been violated for a {@link KnowledgeElement}.
+	 *
 	 * @issue Should knowledge elements without definition of done be assumed to be
 	 *        complete or incomplete?
 	 * @decision If no definition of done can be found, the knowledge element is
@@ -46,6 +49,29 @@ public final class DefinitionOfDoneChecker {
 				&& !doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings);
 	}
 
+	/**
+	 * Checks if the definition of done has been violated for a {@link KnowledgeElement}.
+	 * USed in {@link GeneralMetricCalculator}.
+	 *
+	 * @param knowledgeElement
+	 *            instance of {@link KnowledgeElement}.
+	 * @param calculator uses already existing RationaleCoverageCalculator to
+	 * 	                 increase performance when iterating over a set of elements.
+	 * @return true if the element is completely documented according to the default
+	 *         and configured rules of the {@link DefinitionOfDone}.
+	 */
+	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, FilterSettings filterSettings,
+												RationaleCoverageCalculator calculator) {
+		return !hasIncompleteKnowledgeLinked(knowledgeElement)
+			&& !doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings, calculator);
+	}
+
+	/**
+	 * Checks if the documentation of this {@link KnowledgeElement} is incomplete.
+	 *
+	 * @return true if this knowledge element is incompletely documented,
+	 *         else it returns false.
+	 */
 	public static boolean isIncomplete(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return false;
@@ -102,6 +128,26 @@ public final class DefinitionOfDoneChecker {
 		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings.getProjectKey());
 		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
 				knowledgeType);
+		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
+		return result < minimumCoverage;
+	}
+
+	/**
+	 * Iterates recursively over the knowledge graph of the
+	 * {@link KnowledgeElement}.
+	 * Used in {@link GeneralMetricCalculator}.
+	 *
+	 * @param calculator uses already existing RationaleCoverageCalculator to
+	 *                   increase performance when iterating over a set of elements.
+	 *
+	 * @return true if there are at least as many elements of the specified
+	 *         {@link KnowledgeType} as the minimum coverage demands, else it
+	 *         returns false.
+	 */
+	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
+			 FilterSettings filterSettings, RationaleCoverageCalculator calculator) {
+		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
+			knowledgeType);
 		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
 		return result < minimumCoverage;
 	}

@@ -20,10 +20,9 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		calculator = new RationaleCompletenessCalculator(user, filterSettings);
+		calculator = new RationaleCompletenessCalculator(filterSettings);
 	}
 
 	@Test

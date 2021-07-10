@@ -35,7 +35,7 @@ public class RationaleCompletenessCalculator {
 	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
-	public RationaleCompletenessCalculator(ApplicationUser user, FilterSettings filterSettings) {
+	public RationaleCompletenessCalculator(FilterSettings filterSettings) {
 		this.filteringManager = new FilteringManager(filterSettings);
 
 		this.issuesSolvedByDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE,

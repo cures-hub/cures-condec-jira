@@ -68,10 +68,8 @@ public class DashboardRest {
 					.build();
 		}
 
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
 		RationaleCompletenessCalculator rationaleCompletenessCalculator =
-			new RationaleCompletenessCalculator(user, filterSettings);
+			new RationaleCompletenessCalculator(filterSettings);
 
 		return Response.status(Status.OK).entity(rationaleCompletenessCalculator).build();
 	}
@@ -95,9 +93,7 @@ public class DashboardRest {
 					.build();
 		}
 
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(user, filterSettings, sourceKnowledgeTypes);
+		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings, sourceKnowledgeTypes);
 
 		return Response.status(Status.OK).entity(rationaleCoverageCalculator).build();
 	}
