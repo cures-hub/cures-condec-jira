@@ -1,19 +1,19 @@
-(function (global) {
+(function(global) {
 
-	const ConDecPrompt = function () {
+	const ConDecPrompt = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
-		jQuery(document).ajaxComplete(function (event, request, settings) {
+		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				const issueKey = conDecAPI.getIssueKey();
 				// Create unified prompt
 				document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey + "...";
 
 				const unifiedPromptElement = document.getElementById("unified-prompt");
-				document.getElementById("warning-dialog-fix-elements").onclick = function () {
+				document.getElementById("warning-dialog-fix-elements").onclick = function() {
 					AJS.dialog2(unifiedPromptElement).hide();
 				}// TODO change this so it actually stops the event from continuing
 
-				document.getElementById("warning-dialog-continue").onclick = function () {
+				document.getElementById("warning-dialog-continue").onclick = function() {
 					AJS.dialog2(unifiedPromptElement).hide();
 				}
 
@@ -29,8 +29,6 @@
 					conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
 				])
 					.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
-
-
 						if (isDoDCheckActivated
 							|| isLinkRecommendationActivated
 							|| isTextClassificationActivated
@@ -38,40 +36,28 @@
 							AJS.dialog2(unifiedPromptElement).show()
 						}
 						if (isDoDCheckActivated) {
-								conDecPrompt.promptDefinitionOfDoneChecking();
-								$(document).ready(function () {
-									document.getElementById("definition-of-done-prompt").style.display = "block";
-								})
-							}
-
-							if (isLinkRecommendationActivated) {
-								conDecPrompt.promptLinkSuggestion();
-								$(document).ready(function () {
-									document.getElementById("link-recommendation-prompt").style.display = "block";
-								})
-							}
-							if (isTextClassificationActivated) {
-								conDecPrompt.promptNonValidatedElements();
-								$(document).ready(function () {
-									document.getElementById("non-validated-elements-prompt").style.display = "block";
-								})
-							}
-							if (isDecisionGuidanceActivated) {
-								conDecPrompt.promptDecisionGuidance()
-								$(document).ready(function () {
-									document.getElementById("decision-guidance-prompt").style.display = "block";
-								});
-							}
+							conDecPrompt.promptDefinitionOfDoneChecking();
+							document.getElementById("definition-of-done-prompt").style.display = "block";
 						}
-					)
 
-
+						if (isLinkRecommendationActivated) {
+							conDecPrompt.promptLinkSuggestion();
+							document.getElementById("link-recommendation-prompt").style.display = "block";
+						}
+						if (isTextClassificationActivated) {
+							conDecPrompt.promptNonValidatedElements();
+							document.getElementById("non-validated-elements-prompt").style.display = "block";
+						}
+						if (isDecisionGuidanceActivated) {
+							conDecPrompt.promptDecisionGuidance();
+							document.getElementById("decision-guidance-prompt").style.display = "block";
+						}
+					});
 			}
 		});
-	}
+	};
 
-
-	ConDecPrompt.prototype.promptLinkSuggestion = function () {
+	ConDecPrompt.prototype.promptLinkSuggestion = function() {
 		const issueId = JIRA.Issue.getIssueId();
 		const projectKey = conDecAPI.projectKey;
 		if (issueId === null || issueId === undefined) {
@@ -79,7 +65,7 @@
 		}
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
+		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
 			.then((values) => {
 				let numDuplicates = (values[0].length);
 				let numRelated = (values[1].length);
@@ -90,7 +76,7 @@
 			});
 	}
 
-	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function () {
+	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
 		const projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
@@ -119,7 +105,7 @@
 		document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = issueKey;
 	}
 
-	ConDecPrompt.prototype.promptNonValidatedElements = function () {
+	ConDecPrompt.prototype.promptNonValidatedElements = function() {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -145,36 +131,44 @@
 
 				});
 				document.getElementById("non-validated-table-body").innerHTML = tableContents;
-				document.getElementById("non-validated-elements-validate-button").onclick = function () {
+				document.getElementById("non-validated-elements-validate-button").onclick = function() {
 					conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
 				};
 			})
 	};
-	ConDecPrompt.prototype.promptDecisionGuidance = function () {
+
+	ConDecPrompt.prototype.promptDecisionGuidance = function() {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
 		const projectKey = conDecAPI.getProjectKey();
-		conDecDecisionGuidanceAPI.getRecommendations(projectKey, issueKey)
+		const filterSettings = {
+			"projectKey": projectKey,
+			"selectedElement": issueKey
+		}
+		conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
 			.then((recommendationsMap, error) => {
-			if (error === null || error === undefined) {
-				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length.toString()
-				Object.keys(recommendationsMap).forEach((id) => {
-					conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
-						let tableRow = "<tr>";
-						tableRow += "<td>" + decisionProblem.summary + "</td>";
-						tableRow += "<td>" + recommendationsMap[id].length + "</td>";
-						tableRow += "</tr>";
-						document.getElementById("decision-problems-table-body").innerHTML += tableRow;
+				if (error === null || error === undefined) {
+					document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length;
+					var totalNumberOfRecommendations = 0;
+					Object.keys(recommendationsMap).forEach((id) => {
+						conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
+							let numberOfRecommendations = recommendationsMap[id].length;
+							let tableRow = "<tr>";
+							tableRow += "<td>" + decisionProblem.summary + "</td>";
+							tableRow += "<td>" + numberOfRecommendations + "</td>";
+							tableRow += "</tr>";
+							document.getElementById("decision-problems-table-body").innerHTML += tableRow;
+							totalNumberOfRecommendations += numberOfRecommendations;
+							conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
+						});
 					});
-				});
-			} else {
-				console.log("Error in making decision guidance prompt table was: ", error);
-			}
-		});
+				} else {
+					console.log("Error in making decision guidance prompt table was: ", error);
+				}
+			});
 	};
 
 	global.conDecPrompt = new ConDecPrompt();
-})
-(window);
+})(window);

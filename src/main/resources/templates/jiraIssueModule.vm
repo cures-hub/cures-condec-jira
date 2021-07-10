@@ -28,22 +28,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 			<a href="#decision-table-tab">Decision Table</a>
 		</li>
 		<li class="menu-item" id="menu-item-feature-branches" data-condec="feature-branches-item">
-			<a href="#feature-branches-tab">Feature branch(es)</a>
+			<a href="#feature-branches-tab">Feature Branch(es)</a>
 		</li>
 		<li class="menu-item" id="menu-item-matrix">
     		<a href="#matrix-tab">$i18n.getText('condec.label.matrix')</a>
-    	</li>
-		<li class="menu-item" id="menu-item-related-knowledge">
-			<a href="#related-knowledge-elements-tab">Related Elements</a>
-		</li>
+    	</li>		
 		<li class="menu-item" id="menu-item-chronology">
 			<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
 		</li>
         <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
         </li>
+        <li class="menu-item" id="menu-item-related-knowledge">
+			<a href="#related-knowledge-elements-tab">$i18n.getText('condec.link.recommendation')</a>
+		</li>
         <li class="menu-item" id="menu-item-decision-guidance">
-            <a href="#decision-guidance-tab">Decision Guidance</a>
+            <a href="#decision-guidance-tab">$i18n.getText('condec.decision.guidance')</a>
         </li>
 	</ul>
 	<div class="tabs-pane" id="jstree-tab">
@@ -54,10 +54,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 	</div>
 	<div class="tabs-pane active-pane" id="graph-tab">
 		#parse("templates/tabs/visGraph.vm")
-	</div>
-	<div class="tabs-pane" id="related-knowledge-elements-tab">
-		#parse("templates/tabs/recommendation/relatedKnowledgeElements.vm")
-	</div>
+	</div>	
 	<div class="tabs-pane" id="decision-table-tab">
 		#parse("templates/tabs/decisiontable/view.vm")
 	</div>
@@ -71,11 +68,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #parse("templates/tabs/chronology.vm")
     </div>
     <div class="tabs-pane" id="quality-check-tab">
-        #set ($viewIdentifier = "jira-issue-module")
         #parse("templates/tabs/qualityCheck.vm")
     </div>
+    <div class="tabs-pane" id="related-knowledge-elements-tab">
+		#parse("templates/tabs/recommendation/relatedKnowledgeElements.vm")
+	</div>
     <div class="tabs-pane" id="decision-guidance-tab">
-        #parse("templates/tabs/decisionGuidance.vm")
+        #parse("templates/tabs/recommendation/decisionGuidance.vm")
     </div>
 </div>
 
