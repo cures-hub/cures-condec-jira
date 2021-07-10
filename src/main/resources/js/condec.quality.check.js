@@ -87,30 +87,19 @@
 		})
 
 		qualityProblemsTextField.innerText = text;
-		addToken(qualityProblemsTextField, "condec-error");
+		conDecNudgingAPI.setAmbientFeedback(qualityProblemsTextField, "condec-error");
 	}
 
 	function updateTabStatus(qualityProblems, viewIdentifier) {
 		var qualityCheckTab = document.getElementById("menu-item-quality-check-" + viewIdentifier);
 
 		if (!qualityProblems || !qualityProblems.length) {
-			addToken(qualityCheckTab, "condec-fine");
+			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-fine");
 		} else if (qualityProblems.some(problem => problem.name === "NODECISIONCOVERAGE")) {
-			addToken(qualityCheckTab, "condec-error");
+			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-error");
 		} else {
-			addToken(qualityCheckTab, "condec-warning");
+			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-warning");
 		}
-	}
-
-	function addToken(element, tag) {
-		if (element === null) {
-			return;
-		}
-		element.classList.remove("condec-default");
-		element.classList.remove("condec-error");
-		element.classList.remove("condec-warning");
-		element.classList.remove("condec-fine");
-		element.classList.add(tag);
 	}
 
 	global.conDecQualityCheck = new ConDecQualityCheck();
