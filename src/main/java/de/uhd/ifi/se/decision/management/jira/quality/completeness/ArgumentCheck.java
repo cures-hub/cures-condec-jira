@@ -1,13 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArgumentCheck implements KnowledgeElementCheck<KnowledgeElement> {
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
+public class ArgumentCheck implements KnowledgeElementCheck {
 
 	private KnowledgeElement argument;
 
@@ -33,7 +32,7 @@ public class ArgumentCheck implements KnowledgeElementCheck<KnowledgeElement> {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!(argument.hasNeighborOfType(KnowledgeType.DECISION)
-			|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE))) {
+				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE))) {
 			qualityProblems.add(QualityProblem.ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE);
 		}
 

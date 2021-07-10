@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class DecisionCheck implements KnowledgeElementCheck<KnowledgeElement> {
+public class DecisionCheck implements KnowledgeElementCheck {
 
 	private KnowledgeElement decision;
 	private String projectKey;

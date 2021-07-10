@@ -18,14 +18,14 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.El
 
 public final class DefinitionOfDoneChecker {
 
-	private static final Map<KnowledgeType, KnowledgeElementCheck<? extends KnowledgeElement>> knowledgeElementCheckMap = Map
-			.ofEntries(entry(KnowledgeType.DECISION, new DecisionCheck()),
-					entry(KnowledgeType.ISSUE, new IssueCheck()),
-					entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()),
-					entry(KnowledgeType.ARGUMENT, new ArgumentCheck()),
-					entry(KnowledgeType.PRO, new ArgumentCheck()),
-					entry(KnowledgeType.CON, new ArgumentCheck()),
-					entry(KnowledgeType.CODE, new CodeCheck()));
+	private static final Map<KnowledgeType, KnowledgeElementCheck> knowledgeElementCheckMap = Map.ofEntries(
+			entry(KnowledgeType.DECISION, new DecisionCheck()), //
+			entry(KnowledgeType.ISSUE, new IssueCheck()), //
+			entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()), //
+			entry(KnowledgeType.ARGUMENT, new ArgumentCheck()), //
+			entry(KnowledgeType.PRO, new ArgumentCheck()), //
+			entry(KnowledgeType.CON, new ArgumentCheck()), //
+			entry(KnowledgeType.CODE, new CodeCheck()));
 
 	private DefinitionOfDoneChecker() {
 	}
@@ -46,7 +46,6 @@ public final class DefinitionOfDoneChecker {
 				&& !doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean isIncomplete(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return false;
@@ -94,9 +93,9 @@ public final class DefinitionOfDoneChecker {
 	 * Iterates recursively over the knowledge graph of the
 	 * {@link KnowledgeElement}.
 	 *
-	 * @return true if there are at least as many elements of the
-	 *         specified {@link KnowledgeType} as the
-	 *         minimum coverage demands, else it returns false.
+	 * @return true if there are at least as many elements of the specified
+	 *         {@link KnowledgeType} as the minimum coverage demands, else it
+	 *         returns false.
 	 */
 	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
 			FilterSettings filterSettings) {
@@ -111,31 +110,27 @@ public final class DefinitionOfDoneChecker {
 	 * Iterates recursively over the knowledge graph of the
 	 * {@link KnowledgeElement}.
 	 *
-	 * @return true if there is at least one element of the
-	 *         specified {@link KnowledgeType}, else it
-	 *         returns false.
+	 * @return true if there is at least one element of the specified
+	 *         {@link KnowledgeType}, else it returns false.
 	 */
 	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
-													 FilterSettings filterSettings) {
+			FilterSettings filterSettings) {
 		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings.getProjectKey());
 		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
-			knowledgeType);
+				knowledgeType);
 		return result == 0;
 	}
 
 	/**
-	 * @return a list of {@link QualityProblem} of the
-	 * {@link KnowledgeElement}.
+	 * @return a list of {@link QualityProblem} of the {@link KnowledgeElement}.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static List<QualityProblem> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
-			filterSettings)) {
-			if (DefinitionOfDoneChecker.hasNoCoverage(knowledgeElement, KnowledgeType.DECISION,
 				filterSettings)) {
+			if (DefinitionOfDoneChecker.hasNoCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings)) {
 				qualityProblems.add(QualityProblem.NODECISIONCOVERAGE);
 			} else {
 				qualityProblems.add(QualityProblem.DECISIONCOVERAGETOOLOW);
@@ -146,9 +141,9 @@ public final class DefinitionOfDoneChecker {
 			qualityProblems.add(QualityProblem.INCOMPLETEKNOWLEDGELINKED);
 		}
 
-		if (isDecisionKnowledge(knowledgeElement)) {
-			DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(
-				knowledgeElement.getProject().getProjectKey());
+		if (knowledgeElement.getType().isDecisionKnowledge()) {
+			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
+					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
 			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
 			qualityProblems.addAll(knowledgeElementCheck.getQualityProblems(knowledgeElement, definitionOfDone));
 		}
@@ -157,7 +152,7 @@ public final class DefinitionOfDoneChecker {
 
 	/**
 	 * @return a string detailing all {@link QualityProblem} of the
-	 * {@link KnowledgeElement}.
+	 *         {@link KnowledgeElement}.
 	 */
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
@@ -178,11 +173,10 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * @return an ArrayNode of ObjectNodes detailing all {@link QualityProblem} of the
-	 * {@link KnowledgeElement}.
+	 * @return an ArrayNode of ObjectNodes detailing all {@link QualityProblem} of
+	 *         the {@link KnowledgeElement}.
 	 */
-	public static ArrayNode getQualityProblemsAsJson(KnowledgeElement knowledgeElement,
-													  FilterSettings filterSettings) {
+	public static ArrayNode getQualityProblemsAsJson(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		ObjectMapper mapper = new ObjectMapper();
 		ArrayNode qualityProblemsJson = mapper.createArrayNode();
@@ -191,12 +185,5 @@ public final class DefinitionOfDoneChecker {
 		}
 
 		return qualityProblemsJson;
-	}
-
-	private static boolean isDecisionKnowledge(KnowledgeElement knowledgeElement) {
-		KnowledgeType knowledgeType = knowledgeElement.getType();
-		return (knowledgeType.equals(KnowledgeType.ISSUE) || knowledgeType.equals(KnowledgeType.DECISION)
-			|| knowledgeType.equals(KnowledgeType.ALTERNATIVE) || knowledgeType.equals(KnowledgeType.ARGUMENT)
-			|| knowledgeType.equals(KnowledgeType.PRO) || knowledgeType.equals(KnowledgeType.CON));
 	}
 }

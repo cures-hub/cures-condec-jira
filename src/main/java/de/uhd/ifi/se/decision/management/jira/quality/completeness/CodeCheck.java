@@ -24,13 +24,16 @@ import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDa
  * @see RationaleCoverageCalculator
  * @see RationaleCoverageDashboardItem
  */
-public class CodeCheck implements KnowledgeElementCheck<ChangedFile> {
+public class CodeCheck implements KnowledgeElementCheck {
 
 	private ChangedFile codeFile;
 
 	@Override
-	public boolean execute(ChangedFile codeFile) {
-		this.codeFile = codeFile;
+	public boolean execute(KnowledgeElement codeFile) {
+		if (!(codeFile instanceof ChangedFile)) {
+			return true;
+		}
+		this.codeFile = (ChangedFile) codeFile;
 		String projectKey = codeFile.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings(definitionOfDone);
@@ -63,7 +66,7 @@ public class CodeCheck implements KnowledgeElementCheck<ChangedFile> {
 	}
 
 	@Override
-	public List<QualityProblem> getQualityProblems(ChangedFile codeFile, DefinitionOfDone definitionOfDone) {
+	public List<QualityProblem> getQualityProblems(KnowledgeElement codeFile, DefinitionOfDone definitionOfDone) {
 		return new ArrayList<>();
 	}
 }
