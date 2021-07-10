@@ -156,7 +156,8 @@
 			return;
 		}
 		const projectKey = conDecAPI.getProjectKey();
-		conDecDecisionGuidanceAPI.getRecommendations(projectKey, issueKey, (recommendationsMap, error) => {
+		conDecDecisionGuidanceAPI.getRecommendations(projectKey, issueKey)
+			.then((recommendationsMap, error) => {
 			if (error === null || error === undefined) {
 				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length.toString()
 				Object.keys(recommendationsMap).forEach((id) => {
