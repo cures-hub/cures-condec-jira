@@ -17,8 +17,8 @@
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (projectKey, issueKey) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/recommendations.json?projectKey=" + projectKey + "&issueKey=" + issueKey);
+	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (filterSettings) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations.json", filterSettings);
 	};
 
 	/*
