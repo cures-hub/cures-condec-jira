@@ -79,6 +79,11 @@
 		row.appendChild(scoreCell);
 
 		row.appendChild(generateTableCell(generateOptionButtons(index), "th-options"));
+		
+		if (suggestion.isDiscarded) {
+			row.style.background = "#e8e8e8";
+		}
+		
 		return row;
 	};
 

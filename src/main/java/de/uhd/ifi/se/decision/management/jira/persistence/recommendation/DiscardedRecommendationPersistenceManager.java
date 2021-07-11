@@ -25,9 +25,9 @@ public class DiscardedRecommendationPersistenceManager {
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	/**
-	 * 
 	 * @param baseElement
-	 * @return
+	 *            {@link KnowledgeElement} with discarded link recommendations.
+	 * @return list of discarded link recommendations for the base element.
 	 */
 	public static List<KnowledgeElement> getDiscardedLinkRecommendations(KnowledgeElement baseElement) {
 		if (baseElement == null || baseElement.getProject() == null) {

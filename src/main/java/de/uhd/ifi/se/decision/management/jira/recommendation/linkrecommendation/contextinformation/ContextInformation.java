@@ -38,10 +38,24 @@ public class ContextInformation implements ContextInformationProvider {
 	public List<Recommendation> getLinkRecommendations() {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(element.getProject());
 		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
-		List<KnowledgeElement> elementsToKeep = filterDiscardedElements(unlinkedElements);
-		List<Recommendation> recommendations = assessRelations(element, elementsToKeep);
+		// List<KnowledgeElement> elementsToKeep =
+		// filterDiscardedElements(unlinkedElements);
+		List<Recommendation> recommendations = assessRelations(element, unlinkedElements);
 		Recommendation.normalizeRecommendationScore(recommendations);
+		markDiscardedRecommendation(recommendations);
 		return filterUselessRecommendations(recommendations);
+	}
+
+	private List<Recommendation> markDiscardedRecommendation(List<Recommendation> recommendations) {
+		List<KnowledgeElement> discardedElements = DiscardedRecommendationPersistenceManager
+				.getDiscardedLinkRecommendations(element);
+		recommendations.stream()
+				.filter(recommendation -> discardedElements.contains(((LinkRecommendation) recommendation).getTarget()))
+				.map(recommendation -> {
+					recommendation.setDiscarded(true);
+					return recommendation;
+				}).collect(Collectors.toList());
+		return recommendations;
 	}
 
 	private List<KnowledgeElement> filterDiscardedElements(List<KnowledgeElement> unlinkedElements) {

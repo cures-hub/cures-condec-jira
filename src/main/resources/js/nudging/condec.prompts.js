@@ -29,29 +29,34 @@
 					conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
 				])
 					.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
-						if (isDoDCheckActivated
-							|| isLinkRecommendationActivated
-							|| isTextClassificationActivated
-							|| isDecisionGuidanceActivated) {
-							AJS.dialog2(unifiedPromptElement).show()
-						}
-						if (isDoDCheckActivated) {
-							conDecPrompt.promptDefinitionOfDoneChecking();
-							document.getElementById("definition-of-done-prompt").style.display = "block";
-						}
-
-						if (isLinkRecommendationActivated) {
-							conDecPrompt.promptLinkSuggestion();
-							document.getElementById("link-recommendation-prompt").style.display = "block";
-						}
-						if (isTextClassificationActivated) {
-							conDecPrompt.promptNonValidatedElements();
-							document.getElementById("non-validated-elements-prompt").style.display = "block";
-						}
-						if (isDecisionGuidanceActivated) {
-							conDecPrompt.promptDecisionGuidance();
-							document.getElementById("decision-guidance-prompt").style.display = "block";
-						}
+						/**
+						 * @issue The page is reloaded and the ambient feedback is removed again on the 
+						 * link recommendation menu item. How can we prevent this?
+						 */
+						jQuery(document).ready(function() {
+							if (isDoDCheckActivated
+								|| isLinkRecommendationActivated
+								|| isTextClassificationActivated
+								|| isDecisionGuidanceActivated) {
+								AJS.dialog2(unifiedPromptElement).show()
+							}
+							if (isDoDCheckActivated) {
+								conDecPrompt.promptDefinitionOfDoneChecking();
+								document.getElementById("definition-of-done-prompt").style.display = "block";
+							}
+							if (isLinkRecommendationActivated) {
+								conDecPrompt.promptLinkSuggestion();
+								document.getElementById("link-recommendation-prompt").style.display = "block";
+							}
+							if (isTextClassificationActivated) {
+								conDecPrompt.promptNonValidatedElements();
+								document.getElementById("non-validated-elements-prompt").style.display = "block";
+							}
+							if (isDecisionGuidanceActivated) {
+								conDecPrompt.promptDecisionGuidance();
+								document.getElementById("decision-guidance-prompt").style.display = "block";
+							}
+						});
 					});
 			}
 		});
