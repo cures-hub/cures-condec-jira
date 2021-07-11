@@ -67,6 +67,7 @@
 				this.resultsTableContentElement.appendChild(row);
 			}
 			AJS.tabs.setup();
+			conDecNudgingAPI.decideAmbientFeedbackForTab(relatedElements.length, "menu-item-link-recommendation");
 		}
 	};
 

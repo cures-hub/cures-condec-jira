@@ -39,8 +39,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
         </li>
-        <li class="menu-item" id="menu-item-related-knowledge">
-			<a href="#related-knowledge-elements-tab">$i18n.getText('condec.link.recommendation')</a>
+        <li class="menu-item" id="menu-item-link-recommendation">
+			<a href="#link-recommendation-tab">$i18n.getText('condec.link.recommendation')</a>
 		</li>
         <li class="menu-item" id="menu-item-decision-guidance">
             <a href="#decision-guidance-tab">$i18n.getText('condec.decision.guidance')</a>
@@ -70,8 +70,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div class="tabs-pane" id="quality-check-tab">
         #parse("templates/tabs/qualityCheck.vm")
     </div>
-    <div class="tabs-pane" id="related-knowledge-elements-tab">
-		#parse("templates/tabs/recommendation/relatedKnowledgeElements.vm")
+    <div class="tabs-pane" id="link-recommendation-tab">
+		#parse("templates/tabs/recommendation/linkRecommendation.vm")
 	</div>
     <div class="tabs-pane" id="decision-guidance-tab">
         #parse("templates/tabs/recommendation/decisionGuidance.vm")
