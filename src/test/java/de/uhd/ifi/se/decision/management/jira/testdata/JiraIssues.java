@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.testdata;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
@@ -24,6 +20,10 @@ import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Creates Jira issues used in unit tests.
@@ -77,10 +77,10 @@ public class JiraIssues {
 		jiraIssue = createJiraIssue(3, jiraIssueTypes.get(2), project, "We could do it like this!", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(33, jiraIssueTypes.get(2), project, "Put him in the long boat till he's sober!",
-				user);
+			user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(36, jiraIssueTypes.get(2), project,
-				"Put him in the scuppers with a hose-pipe on him!", user);
+			"Put him in the scuppers with a hose-pipe on him!", user);
 		jiraIssues.add(jiraIssue);
 
 		// Decision
@@ -91,22 +91,22 @@ public class JiraIssues {
 		jiraIssue = createJiraIssue(5, jiraIssueTypes.get(4), project, "This is a great solution.", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(34, jiraIssueTypes.get(4), project,
-				"After this procedure, the sailor will be sober.", user);
+			"After this procedure, the sailor will be sober.", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(37, jiraIssueTypes.get(4), project,
-				"After this procedure, the sailor will probably not get drunk again.", user);
+			"After this procedure, the sailor will probably not get drunk again.", user);
 		jiraIssues.add(jiraIssue);
 
 		// Con-Argument
 		jiraIssue = createJiraIssue(6, jiraIssueTypes.get(4), project, "This sucks!", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(35, jiraIssueTypes.get(4), project,
-				"This procedure endangers the availability of the long boat in a case of shipwrecking or maritime emergency.",
-				user);
+			"This procedure endangers the availability of the long boat in a case of shipwrecking or maritime emergency.",
+			user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(38, jiraIssueTypes.get(4), project,
-				"This procedure is in violation of the United Nations Convention against Torture and Other Cruel, Inhuman or Degrading Treatment or Punishment.",
-				user);
+			"This procedure is in violation of the United Nations Convention against Torture and Other Cruel, Inhuman or Degrading Treatment or Punishment.",
+			user);
 		jiraIssues.add(jiraIssue);
 
 		// Non-functional requirement (used as criteria in decision table)
@@ -117,7 +117,7 @@ public class JiraIssues {
 	}
 
 	public static MutableIssue createJiraIssue(int id, IssueType issueType, Project project, String summary,
-			ApplicationUser user) {
+											   ApplicationUser user) {
 		MutableIssue issue = new MockIssue(id, project.getKey() + "-" + id);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);
@@ -129,7 +129,7 @@ public class JiraIssues {
 		issue.setResolutionDate(new Timestamp(System.currentTimeMillis() + 10000));
 		Status status = new MockStatus("1", "Unresolved");
 		issue.setStatus(status);
-		((MockIssue) issue).setReporter(user);
+		issue.setReporter(user);
 		return issue;
 	}
 
@@ -138,9 +138,9 @@ public class JiraIssues {
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssue(issue.getId());
 		KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager().insertKnowledgeElement(sentence,
-				JiraUsers.SYS_ADMIN.getApplicationUser());
+			JiraUsers.SYS_ADMIN.getApplicationUser());
 		GenericLinkManager.insertLink(new Link(new KnowledgeElement(issue), sentence),
-				JiraUsers.SYS_ADMIN.getApplicationUser());
+			JiraUsers.SYS_ADMIN.getApplicationUser());
 		return sentence.getJiraIssue();
 	}
 
@@ -158,6 +158,23 @@ public class JiraIssues {
 		return addElementToDataBase(12231, KnowledgeType.ARGUMENT);
 	}
 
+	public static PartOfJiraIssueText addNonValidatedElementToDataBase(long id, KnowledgeType type) {
+		PartOfJiraIssueText element = new PartOfJiraIssueText();
+		element.setProject("TEST");
+		element.setJiraIssue(1);
+		element.setSummary("We could do X!");
+		element.setId(id);
+		element.setKey("TEST-" + id);
+		element.setType(type);
+		element.setRelevant(type != KnowledgeType.OTHER);
+		element.setValidated(false);
+		element.setDescription("Old");
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
+			.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
+		return element;
+	}
+
 	public static PartOfJiraIssueText addElementToDataBase(long id, KnowledgeType type) {
 		PartOfJiraIssueText element = new PartOfJiraIssueText();
 		element.setProject("TEST");
@@ -170,9 +187,10 @@ public class JiraIssues {
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
-				.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
+			.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		return element;
 	}
+
 
 	public static List<PartOfJiraIssueText> getSentencesForCommentText(String text) {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
@@ -180,7 +198,7 @@ public class JiraIssues {
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
-				.getJiraIssueTextManager();
+			.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		return sentences;
 	}
@@ -188,5 +206,10 @@ public class JiraIssues {
 	public static PartOfJiraIssueText getIrrelevantSentence() {
 		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("This is a test sentence.");
 		return sentences.get(0);
+	}
+
+	public static boolean getNonValidatedSentence() {
+		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("This is a test sentence.");
+		return sentences.get(0).isValidated();
 	}
 }

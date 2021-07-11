@@ -33,6 +33,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	private String url;
 	private List<Argument> arguments;
 	private RecommendationScore score;
+	private boolean isDiscarded;
 
 	public ElementRecommendation() {
 		this.arguments = new ArrayList<>();
@@ -161,5 +162,15 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	@Override
 	public RecommendationType getRecommendationType() {
 		return RecommendationType.EXTERNAL;
+	}
+
+	@Override
+	public void setDiscarded(boolean isDiscarded) {
+		this.isDiscarded = isDiscarded;
+	}
+
+	@Override
+	public boolean isDiscarded() {
+		return isDiscarded;
 	}
 }

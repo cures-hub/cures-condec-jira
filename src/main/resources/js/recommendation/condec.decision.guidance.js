@@ -11,7 +11,7 @@
 
 	ConDecDecisionGuidance.prototype.initView = function () {
 		// get all the elements for the dropdown and fill the dropdown
-		
+
 		var jiraIssueKey = conDecAPI.getIssueKey();
 		console.log(jiraIssueKey);
 		const filterSettings = {
@@ -24,7 +24,7 @@
 		});
 		// add button listener
 		this.addOnClickListenerForRecommendations();
-		
+
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
 	};
@@ -45,11 +45,11 @@
 				"selectedElement" : dropDownElement.value
 			}
 			conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
-				.then((recommendationMap) => {				
+				.then((recommendationMap) => {
 					if (Object.keys(recommendationMap).length > 0 && Object.values(recommendationMap)[0].length > 0) {
-						var decisionProblemId = Object.keys(recommendationMap)[0];								
+						var decisionProblemId = Object.keys(recommendationMap)[0];
 						var recommendations = Object.values(recommendationMap)[0].sort((a, b) => b.score.value - a.score.value);
-						// dropDownElement.value is the id of the decision knowledge element that is selected :)
+
 						buildRecommendationTable(recommendations, decisionProblemId);
 						conDecNudgingAPI.decideAmbientFeedbackForTab(recommendations.length, "menu-item-decision-guidance");
 					} else {
@@ -67,7 +67,7 @@
 	};
 
 	function buildRecommendationTable(recommendations, currentIssueId) {
-		var tableBody = document.getElementById("recommendation-container-table-body");		
+		var tableBody = document.getElementById("recommendation-container-table-body");
 		let counter = 0;
 		recommendations.forEach(recommendation => {
 			counter++;
@@ -123,6 +123,5 @@
 			dropDown.innerHTML += "<option value='" + issue.key + "'>" + issue.summary + "</option>";
 		}
 	}
-
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);

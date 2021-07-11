@@ -31,7 +31,7 @@
 
 <style>
     .decision-table-toolbar {
-        padding-top 16px;
+        padding-top: 16px;
         padding-bottom: 16px;
     }
 </style>

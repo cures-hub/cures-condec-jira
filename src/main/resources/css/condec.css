@@ -19,10 +19,10 @@ a:focus a:hover {
 }
 
 .right {
-    width: 67%;
-    float: left;
-    overflow: auto;
-    resize: both;
+  width: 67%;
+  float: left;
+  overflow: auto;
+  resize: both;
 }
 
 .graph {
@@ -104,4 +104,8 @@ a:focus a:hover {
   cursor: pointer;
   padding: 16px;
   display: block;
+}
+
+.discarded td {
+  background: #e8e8e8;
 }

@@ -29,6 +29,12 @@
 					conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
 				])
 					.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
+						/**
+						 * @issue The page is reloaded and the ambient feedback is removed again on the 
+						 * link recommendation menu item. How can we prevent this?
+						 * @alternative Use jQuery(document).ready to wait for the page to be loaded.
+						 * @con Does not work, the link recommendation menu item coloring is removed.
+						 */
 						if (isDoDCheckActivated
 							|| isLinkRecommendationActivated
 							|| isTextClassificationActivated
@@ -39,7 +45,6 @@
 							conDecPrompt.promptDefinitionOfDoneChecking();
 							document.getElementById("definition-of-done-prompt").style.display = "block";
 						}
-
 						if (isLinkRecommendationActivated) {
 							conDecPrompt.promptLinkSuggestion();
 							document.getElementById("link-recommendation-prompt").style.display = "block";
@@ -66,12 +71,13 @@
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
 		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
-			.then((values) => {
-				let numDuplicates = (values[0].length);
-				let numRelated = (values[1].length);
-				if (numDuplicates + numRelated > 0) {
-					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerHTML = numRelated;
-					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerHTML = numDuplicates;
+			.then((recommendations) => {
+				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
+				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
+				if (numDuplicates + numLinkRecommendations > 0) {
+					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerText = numLinkRecommendations;
+					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerText = numDuplicates;
+					conDecNudgingAPI.decideAmbientFeedbackForTab(numDuplicates + numLinkRecommendations, "menu-item-link-recommendation");
 				}
 			});
 	}

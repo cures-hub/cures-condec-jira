@@ -150,17 +150,19 @@
 		<resource type="download" name="condec.prompts.js" location="/js/nudging/condec.prompts.js" />
 		<resource type="download" name="condec.recommendation.js"
 			location="/js/recommendation/condec.recommendation.js" />
-		<resource type="download" name="condec.link.recommendation.api.js"
-			location="/js/recommendation/condec.link.recommendation.api.js" />
-		<resource type="download" name="condec.link.recommendation.js"
-			location="/js/recommendation/condec.link.recommendation.js" />
-		<resource type="download" name="condec.decision.guidance.api.js"
-			location="/js/recommendation/condec.decision.guidance.api.js" />
-		<resource type="download" name="condec.decision.guidance.js"
-			location="/js/recommendation/condec.decision.guidance.js" />
-		<resource type="download" name="condec.text.classification.api.js"
-			location="/js/classification/condec.text.classification.api.js" />
-	</web-resource>
+        <resource type="download" name="condec.link.recommendation.api.js"
+                  location="/js/recommendation/condec.link.recommendation.api.js"/>
+        <resource type="download" name="condec.link.recommendation.js"
+                  location="/js/recommendation/condec.link.recommendation.js"/>
+        <resource type="download" name="condec.decision.guidance.api.js"
+                  location="/js/recommendation/condec.decision.guidance.api.js"/>
+        <resource type="download" name="condec.decision.guidance.js"
+                  location="/js/recommendation/condec.decision.guidance.js"/>
+        <resource type="download" name="condec.text.classification.api.js"
+                  location="/js/classification/condec.text.classification.api.js"/>
+        <resource type="download" name="condec.text.classification.js"
+                  location="/js/classification/condec.text.classification.js"/>
+    </web-resource>
 
 	<web-resource key="release-notes-resources" name="ConDec Release Notes Page Resources">
 		<description>

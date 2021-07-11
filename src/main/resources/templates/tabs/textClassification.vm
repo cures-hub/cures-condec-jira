@@ -1,0 +1,25 @@
+<strong>Automatically classified elements that have not yet been validated</strong>
+<div id="classification-loading-spinner">
+    <aui-spinner></aui-spinner>
+</div>
+<br/>
+<button class="aui-button aui-button-primary" id="validate-all-elements-button">Validate all elements!</button>
+<br/>
+<div>
+    <table id="non-validated-table" class="aui">
+        <thead>
+        <tr>
+            <th id="th-type">Type</th>
+            <th id="th-name">$i18n.getText("condec.label.summary")</th>
+            <th id="th-options">Validate or edit</th>
+        <tr>
+        </thead>
+        <tbody id="non-validated-table-content"></tbody>
+    </table>
+</div>
+<script>
+    /* Adds the on click listener on tab opening */
+    $(document).ready(function () {
+        conDecTextClassification.init();
+    });
+</script>

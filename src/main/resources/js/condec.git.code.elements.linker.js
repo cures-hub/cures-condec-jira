@@ -505,7 +505,7 @@ linkBranchCandidates
             for (var idx = 0; idx < menuItems.length; idx++) {
               if (menuItems[idx].dataset.condec) {
                 /*  if any branch has issues, status is set to bad. */
-				  conDecNudgingAPI.setAmbientFeedback(menuItems[idx], status);
+                conDecNudgingAPI.setAmbientFeedback(menuItems[idx], status);
               }
             }
           }

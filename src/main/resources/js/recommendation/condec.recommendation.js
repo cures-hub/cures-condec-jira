@@ -19,7 +19,17 @@
 
 		var scoreExplanation = scoreControl.outerHTML + document.getElementById("score-explanation").outerHTML;
 		return scoreExplanation.replace(/score-explanation/g, "score-explanation-" + ID);
-	}
+	};
+	
+	ConDecRecommendation.prototype.getNumberOfNonDiscardedRecommendations = function(recommendations) {
+		let numberOfNonDiscardedRecommendations = 0;
+		for (let i in recommendations) {
+			if (!recommendations[i].isDiscarded) {
+				numberOfNonDiscardedRecommendations++;
+			}
+		}
+		return numberOfNonDiscardedRecommendations;
+	};
 
 	global.conDecRecommendation = new ConDecRecommendation();
 })(window);
