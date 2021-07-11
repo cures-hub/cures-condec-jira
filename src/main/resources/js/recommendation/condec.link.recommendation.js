@@ -20,7 +20,7 @@
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
-		
+
 		this.loadData();
 		this.loadDuplicateData();
 	}
@@ -42,7 +42,7 @@
 			})
 			.catch((error) => displayErrorMessage(error));
 	}
-	
+
 	ConDecLinkRecommendation.prototype.undoDiscardRecommendation = function(index) {
 		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, this.currentLinkRecommendations[index])
 			.then((data) => {
@@ -76,7 +76,8 @@
 				this.resultsTableContentElement.appendChild(row);
 			}
 			AJS.tabs.setup();
-			conDecNudgingAPI.decideAmbientFeedbackForTab(relatedElements.length, "menu-item-link-recommendation");
+			let numberOfNonDiscardedRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(relatedElements);
+			conDecNudgingAPI.decideAmbientFeedbackForTab(numberOfNonDiscardedRecommendations, "menu-item-link-recommendation");
 		}
 	};
 
@@ -92,8 +93,8 @@
 			row.appendChild(generateTableCell(generateUndoDiscardButton(index), "th-options"));
 		} else {
 			row.appendChild(generateTableCell(generateOptionButtons(index), "th-options"));
-		}	
-		
+		}
+
 		return row;
 	};
 
@@ -112,7 +113,7 @@
 		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
 			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardRecommendation(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard</button>`;
 	};
-	
+
 	let generateUndoDiscardButton = function(suggestionIndex) {
 		return `<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.undoDiscardRecommendation(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-undo"></span> Undo Discard</button>`;
 	};
@@ -121,13 +122,13 @@
 		let target = this.currentLinkRecommendations[index].target;
 		let self = this;
 		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
-	}
+	};
 
 	ConDecLinkRecommendation.prototype.processRelatedIssuesResponse = function(relatedIssues) {
 		return relatedIssues.map(suggestion => {
 			return suggestion;
 		}).sort((a, b) => b.score.value - a.score.value);
-	}
+	};
 
 	//-----------------------------------------
 	//            Generate table (Duplicates)

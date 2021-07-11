@@ -71,13 +71,13 @@
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
 		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
-			.then((values) => {
-				let numDuplicates = values[0].length;
-				let numRelated = values[1].length;
-				if (numDuplicates + numRelated > 0) {
-					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerText = numRelated;
+			.then((recommendations) => {
+				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
+				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
+				if (numDuplicates + numLinkRecommendations > 0) {
+					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerText = numLinkRecommendations;
 					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerText = numDuplicates;
-					conDecNudgingAPI.decideAmbientFeedbackForTab(numDuplicates + numRelated, "menu-item-link-recommendation");
+					conDecNudgingAPI.decideAmbientFeedbackForTab(numDuplicates + numLinkRecommendations, "menu-item-link-recommendation");
 				}
 			});
 	}
