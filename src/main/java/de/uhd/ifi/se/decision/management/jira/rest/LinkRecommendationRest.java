@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
@@ -78,7 +77,7 @@ public class LinkRecommendationRest {
 			List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElements(knowledgeElement.get());
 
 			// detect duplicates
-			List<DuplicateRecommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
+			List<Recommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
 
 			return Response.ok(foundDuplicateSuggestions).build();
 		} else {
