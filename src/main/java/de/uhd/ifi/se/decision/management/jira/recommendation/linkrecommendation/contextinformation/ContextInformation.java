@@ -39,9 +39,9 @@ public class ContextInformation implements ContextInformationProvider {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(element.getProject());
 		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
 		List<Recommendation> recommendations = assessRelations(element, unlinkedElements);
-		filterUselessRecommendations(recommendations);
-		markDiscardedRecommendations(recommendations);
-		return Recommendation.normalizeRecommendationScore(recommendations);
+		recommendations = Recommendation.normalizeRecommendationScore(recommendations);
+		recommendations = filterUselessRecommendations(recommendations);
+		return markDiscardedRecommendations(recommendations);
 	}
 
 	private List<Recommendation> markDiscardedRecommendations(List<Recommendation> recommendations) {
