@@ -476,7 +476,7 @@ public class KnowledgeElement {
 		if (documentationLocation == DocumentationLocation.JIRAISSUE) {
 			return ComponentAccessor.getIssueManager().getIssueObject(id);
 		}
-		if (documentationLocation == DocumentationLocation.JIRAISSUETEXT) {
+		if (documentationLocation == DocumentationLocation.JIRAISSUETEXT && this instanceof PartOfJiraIssueText) {
 			return ((PartOfJiraIssueText) this).getJiraIssue();
 		}
 		// TODO Add ChangedFile

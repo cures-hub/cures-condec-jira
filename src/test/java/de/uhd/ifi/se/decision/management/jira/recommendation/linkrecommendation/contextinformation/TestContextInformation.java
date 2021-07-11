@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -12,7 +13,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -29,7 +32,7 @@ public class TestContextInformation extends TestSetUp {
 	public void testGetLinkRecommendations() {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertEquals(12, linkRecommendations.size());
+		assertTrue(linkRecommendations.size() > 10);
 	}
 
 	@Test
@@ -51,6 +54,18 @@ public class TestContextInformation extends TestSetUp {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertEquals(12, linkRecommendations.size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testMarkRecommendationAsDiscarded() {
+		LinkRecommendation recommendation = new LinkRecommendation(KnowledgeElements.getDecision(),
+				KnowledgeElements.getOtherWorkItem());
+		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
+		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count();
+		assertTrue(linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count() > 0);
 	}
 
 	@After

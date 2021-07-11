@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
@@ -49,8 +48,8 @@ public class LinkRecommendationRest {
 		Optional<KnowledgeElement> knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
 		if (knowledgeElement.isPresent()) {
 			ContextInformation ci = new ContextInformation(knowledgeElement.get());
-			Collection<Recommendation> linkSuggestions = ci.getLinkRecommendations();
-			return Response.ok(linkSuggestions).build();
+			Collection<Recommendation> linkRecommendations = ci.getLinkRecommendations();
+			return Response.ok(linkRecommendations).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No such element exists!")).build();
 	}
@@ -78,7 +77,7 @@ public class LinkRecommendationRest {
 			List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElements(knowledgeElement.get());
 
 			// detect duplicates
-			List<DuplicateRecommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
+			List<Recommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
 
 			return Response.ok(foundDuplicateSuggestions).build();
 		} else {
@@ -103,6 +102,20 @@ public class LinkRecommendationRest {
 					.entity(ImmutableMap.of("error", "The recommendation could not be discarded.")).build();
 		}
 
+		return Response.status(Status.OK).build();
+	}
+
+	@Path("/undoDiscardRecommendation")
+	@POST
+	public Response undoDiscardRecommendation(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, LinkRecommendation recommendation) {
+		if (recommendation == null || recommendation.getBothElements().contains(null)) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "The recommendation for that discarding should be undone is not valid."))
+					.build();
+		}
+		recommendation.setProject(projectKey);
+		DiscardedRecommendationPersistenceManager.removeDiscardedRecommendation(recommendation);
 		return Response.status(Status.OK).build();
 	}
 

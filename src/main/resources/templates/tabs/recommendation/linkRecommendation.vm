@@ -14,6 +14,12 @@
     </thead>
     <tbody id="table-content"></tbody>
 </table>
+<div style="float:right;"> 
+	<button class="aui-button aui-button-link" id="discard-all-link-recommendations">
+		<span class="aui-icon aui-icon-small aui-iconfont-trash"></span> 
+		$i18n.getText('condec.recommendation.discard.all')
+	</button> 
+</div>
 
 <b>Potential duplicates</b>
 <table class="aui aui-table-list" id="duplicate-results-table">
@@ -26,13 +32,19 @@
     </thead>
     <tbody id="table-content-duplicate"></tbody>
 </table>
+<div style="float:right;"> 
+	<button class="aui-button aui-button-link" id="discard-all-duplicate-recommendations">
+		<span class="aui-icon aui-icon-small aui-iconfont-trash"></span> 
+		$i18n.getText('condec.recommendation.discard.all')
+	</button> 
+</div>
 
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#related-knowledge-elements-tab")) {
+    	if (!isOnceClicked && event.target.href.includes("#link-recommendation-tab")) {
     		conDecLinkRecommendation.init();
 			isOnceClicked = true;
 		}

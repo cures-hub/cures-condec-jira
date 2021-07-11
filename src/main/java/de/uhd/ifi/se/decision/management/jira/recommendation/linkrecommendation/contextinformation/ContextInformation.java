@@ -38,15 +38,27 @@ public class ContextInformation implements ContextInformationProvider {
 	public List<Recommendation> getLinkRecommendations() {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(element.getProject());
 		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
-		List<KnowledgeElement> elementsToKeep = filterDiscardedElements(unlinkedElements);
-		List<Recommendation> recommendations = assessRelations(element, elementsToKeep);
-		Recommendation.normalizeRecommendationScore(recommendations);
-		return filterUselessRecommendations(recommendations);
+		List<Recommendation> recommendations = assessRelations(element, unlinkedElements);
+		recommendations = Recommendation.normalizeRecommendationScore(recommendations);
+		recommendations = filterUselessRecommendations(recommendations);
+		return markDiscardedRecommendations(recommendations);
 	}
 
-	private List<KnowledgeElement> filterDiscardedElements(List<KnowledgeElement> unlinkedElements) {
-		unlinkedElements.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedLinkRecommendations(element));
-		return unlinkedElements;
+	private List<Recommendation> markDiscardedRecommendations(List<Recommendation> recommendations) {
+		List<KnowledgeElement> discardedElements = DiscardedRecommendationPersistenceManager
+				.getDiscardedLinkRecommendations(element);
+		return markDiscardedRecommendations(recommendations, discardedElements);
+	}
+
+	public static List<Recommendation> markDiscardedRecommendations(List<Recommendation> recommendations,
+			List<KnowledgeElement> discardedElements) {
+		recommendations.stream()
+				.filter(recommendation -> discardedElements.contains(((LinkRecommendation) recommendation).getTarget()))
+				.map(recommendation -> {
+					recommendation.setDiscarded(true);
+					return recommendation;
+				}).collect(Collectors.toList());
+		return recommendations;
 	}
 
 	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {

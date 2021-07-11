@@ -28,6 +28,7 @@ public class LinkRecommendation extends Link implements Recommendation {
 
 	private static final long serialVersionUID = 1L;
 	private RecommendationScore score;
+	private boolean isDiscarded;
 
 	@JsonCreator
 	public LinkRecommendation(@JsonProperty("source") KnowledgeElement baseElement,
@@ -49,5 +50,15 @@ public class LinkRecommendation extends Link implements Recommendation {
 	@Override
 	public void setScore(RecommendationScore score) {
 		this.score = score;
+	}
+
+	@Override
+	public void setDiscarded(boolean isDiscarded) {
+		this.isDiscarded = isDiscarded;
+	}
+
+	@Override
+	public boolean isDiscarded() {
+		return isDiscarded;
 	}
 }

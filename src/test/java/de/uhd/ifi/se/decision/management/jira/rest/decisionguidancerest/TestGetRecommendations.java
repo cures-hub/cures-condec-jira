@@ -1,27 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestGetRecommendations extends TestSetUp {
 
-	private static final String projectKey = "TEST";
 	private DecisionGuidanceRest decisionGuidanceRest;
 	private HttpServletRequest request;
-	private String jiraIssueKey;
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
@@ -30,64 +31,76 @@ public class TestGetRecommendations extends TestSetUp {
 		request = new MockHttpServletRequest();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		jiraIssueKey = JiraIssues.getTestJiraIssues().get(4).getKey();
+		filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElement(KnowledgeElements.getSolvedDecisionProblem());
 	}
 
 	@Test
-	public void testGetRecommendations() {
+	public void testGetRecommendationsForSingleDecisionProblem() {
 		assertEquals(Status.OK.getStatusCode(),
-			decisionGuidanceRest.getRecommendations(request, projectKey, jiraIssueKey).getStatus());
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
 
+	@Test
+	public void testGetRecommendationsForAllDecisionProblemsForWorkItem() {
+		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+	}
 
 	@Test
-	public void testGetRecommendationsEmptyProject() {
+	public void testEmptyProject() {
+		filterSettings.setProjectKey("");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-			decisionGuidanceRest.getRecommendations(request, "", jiraIssueKey).getStatus());
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsProjectKeyNull() {
+	public void testProjectKeyNull() {
+		filterSettings.setProjectKey(null);
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-			decisionGuidanceRest.getRecommendations(request, null, jiraIssueKey).getStatus());
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsRequestNull() {
+	public void testFilterSettingsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-			decisionGuidanceRest.getRecommendations(null, projectKey, jiraIssueKey).getStatus());
+				decisionGuidanceRest.getRecommendations(request, null).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsNoKnowledgeSourceConfigured() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), decisionGuidanceRest
-			.getRecommendations(request, "Project does not exist", jiraIssueKey).getStatus());
+	public void testSelectedElementNull() {
+		filterSettings.setSelectedElement((KnowledgeElement) null);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationsGetRecommender() {
-		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
-			.getDecisionGuidanceConfiguration(projectKey);
-		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-
-		assertEquals(Status.OK.getStatusCode(),
-			decisionGuidanceRest.getRecommendations(request, "TEST", jiraIssueKey).getStatus());
-	}
-
-	//
-//	@Test
-	public void testGetRecommendationsAddDirectly() {
-		decisionGuidanceRest.setAddRecommendationDirectly(request, projectKey, true);
-		assertEquals(Status.OK.getStatusCode(),
-			decisionGuidanceRest.getRecommendations(request, "TEST", jiraIssueKey).getStatus());
-		decisionGuidanceRest.setAddRecommendationDirectly(request, projectKey, false);
+	public void testRequestNull() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(null, filterSettings).getStatus());
 	}
 
 	@Test
-	public void testGetRecommendationNoKnowledgeSourceNotConfigured() {
-		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, false);
+	public void testNoKnowledgeSourceConfigured() {
+		filterSettings.setProjectKey("Project does not exist");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+	}
+
+	@Test
+	public void testAddRecommendationsDirectly() {
+		decisionGuidanceRest.setAddRecommendationDirectly(request, "TEST", true);
 		assertEquals(Status.OK.getStatusCode(),
-			decisionGuidanceRest.getRecommendations(request, projectKey, jiraIssueKey).getStatus());
-		decisionGuidanceRest.setProjectSource(request, projectKey, projectKey, true);
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+		decisionGuidanceRest.setAddRecommendationDirectly(request, "TEST", false);
+	}
+
+	@Test
+	public void testNoKnowledgeSourceNotConfigured() {
+		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", false);
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
+		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", true);
 	}
 }

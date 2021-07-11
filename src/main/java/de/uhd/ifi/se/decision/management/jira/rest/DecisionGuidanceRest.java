@@ -1,22 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.user.ApplicationUser;
-import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -26,7 +13,26 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.*;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
 /**
  * REST resource for configuration and usage of decision guidance
@@ -239,42 +245,50 @@ public class DecisionGuidanceRest {
 	 * @param request
 	 * @param projectKey
 	 * @param issueKey
-	 * @return Map<KnoweledgeElement, List < Recommendation>>
-	 * A map of knowledgeElements (currently only Issues), each with a list of recommendations.
+	 * @return Map<KnoweledgeElement, List < Recommendation>> A map of
+	 *         knowledgeElements (currently only Issues), each with a list of
+	 *         recommendations.
 	 */
 	@Path("/recommendations")
-	@GET
-	public Response getRecommendations(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
-
-		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfDataIsValidResponse;
+	@POST
+	public Response getRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Invalid filter settings given. Decision guidance recommendation cannot be made.")).build();
+		}
+		String projectKey = filterSettings.getProjectKey();
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
 		}
 
-		// Build a FilterSettings to get the ConDec Issues related to the selected Jira issue
-		FilterSettings settings = new FilterSettings();
-		Set<String> knowledgeTypes = new HashSet<>();
-		knowledgeTypes.add("Issue");
-		settings.setKnowledgeTypes(knowledgeTypes);
-		settings.setProjectKey(projectKey);
-		settings.setSelectedElement(issueKey);
-		settings.setCreateTransitiveLinks(true);
-		settings.setOnlyDecisionKnowledgeShown(true);
-		settings.setSearchTerm("");
-		Set<KnowledgeElement> filteredGraph = new FilteringManager(settings).getElementsMatchingFilterSettings();
+		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
 
-		Map<Integer, List<Recommendation>> results = new HashMap<Integer, List<Recommendation>>();
-		for (KnowledgeElement element : filteredGraph) {
-			if (!(element.getSummary() == null || element.getSummary().isBlank() || element.getKey().equals(issueKey))) {
-				List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, element, element.getSummary());
-				results.put((int) element.getId(), recommendations);
-				if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-					.isRecommendationAddedToKnowledgeGraph()) {
-					Recommender.addToKnowledgeGraph(element, AuthenticationManager.getUser(request), recommendations);
-				}
+		Map<Long, List<Recommendation>> results = new HashMap<>();
 
+		if (selectedElement.getType().getSuperType() != KnowledgeType.PROBLEM) {
+			// the selected element is not a decision problem, but e.g. a requirement
+			// we need to get all decision problems related to the selected element
+			filterSettings.setCreateTransitiveLinks(true);
+			filterSettings.setOnlyDecisionKnowledgeShown(true);
+			filterSettings.setKnowledgeTypes(Set.of("Issue", "Problem", "Goal"));
+			Set<KnowledgeElement> filteredGraph = new FilteringManager(filterSettings)
+					.getElementsMatchingFilterSettings();
+			filteredGraph.remove(selectedElement);
+			for (KnowledgeElement element : filteredGraph) {
+				List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, element,
+						element.getSummary());
+				results.put(element.getId(), recommendations);
 			}
-
+		} else {
+			List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, selectedElement,
+					selectedElement.getSummary());
+			results.put(selectedElement.getId(), recommendations);
+			if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
+					.isRecommendationAddedToKnowledgeGraph()) {
+				Recommender.addToKnowledgeGraph(selectedElement, AuthenticationManager.getUser(request),
+						recommendations);
+			}
 		}
 		return Response.ok(results).build();
 	}

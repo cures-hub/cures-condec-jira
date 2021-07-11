@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,5 +60,11 @@ public class TestRecommendation extends TestSetUp {
 		assertEquals(0.5, Recommendation.getMaxScoreValue(recommendations), 0);
 		Recommendation.normalizeRecommendationScore(recommendations);
 		assertEquals(100, Recommendation.getMaxScoreValue(recommendations), 0);
+	}
+
+	@Test
+	public void testSetDiscarded() {
+		recommendation.setDiscarded(true);
+		assertTrue(recommendation.isDiscarded());
 	}
 }
