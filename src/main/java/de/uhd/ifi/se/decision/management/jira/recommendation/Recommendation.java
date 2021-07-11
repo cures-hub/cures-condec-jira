@@ -86,6 +86,11 @@ public interface Recommendation extends Comparable<Recommendation> {
 		return maxScoreValue;
 	}
 
+	@XmlElement(name = "isDiscarded")
+	boolean isDiscarded();
+
+	void setDiscarded(boolean isDiscarded);
+
 	/**
 	 * Compares two {@link Recommendation}s based on their
 	 * {@link RecommendationScore}.

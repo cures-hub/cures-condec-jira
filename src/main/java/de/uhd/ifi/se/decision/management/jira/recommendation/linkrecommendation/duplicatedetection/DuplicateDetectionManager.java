@@ -13,7 +13,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.DuplicateRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
 public class DuplicateDetectionManager {
 
@@ -26,11 +28,10 @@ public class DuplicateDetectionManager {
 		this.duplicateDetector = duplicateDetectionStrategy;
 	}
 
-	public List<DuplicateRecommendation> findAllDuplicates(List<KnowledgeElement> elementsToCheck) {
-		List<DuplicateRecommendation> duplicateRecommendations = new ArrayList<>();
+	public List<Recommendation> findAllDuplicates(List<KnowledgeElement> elementsToCheck) {
+		List<Recommendation> duplicateRecommendations = new ArrayList<>();
 
 		elementsToCheck.remove(knowledgeElement);
-		elementsToCheck.removeAll(DiscardedRecommendationPersistenceManager.getDiscardedDuplicateRecommendations(knowledgeElement));
 		elementsToCheck.removeAll(alreadyLinkedAsDuplicates());// remove linked elements;
 
 		duplicateRecommendations = elementsToCheck.parallelStream().map((element) -> {
@@ -39,8 +40,10 @@ public class DuplicateDetectionManager {
 					.detectDuplicates(knowledgeElement, element);
 			mostLikelyDuplicate = findLongestDuplicate(foundDuplicateFragmentsForIssue);
 			return mostLikelyDuplicate;
-		}).collect(Collectors.toList());
+		}).filter(recommendation -> recommendation != null).collect(Collectors.toList());
 
+		ContextInformation.markDiscardedRecommendations(duplicateRecommendations,
+				DiscardedRecommendationPersistenceManager.getDiscardedDuplicateRecommendations(knowledgeElement));
 		return duplicateRecommendations.parallelStream().filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
