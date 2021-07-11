@@ -45,8 +45,9 @@
 				conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey())
 				conDecObservable.notify()
 			}
-			AJS.tabs.setup();
 		}
+		AJS.tabs.setup();
+		conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElementsList.length, "menu-item-text-classification");
 	};
 
 	let generateTableRow = function (nonValidatedElement) {
