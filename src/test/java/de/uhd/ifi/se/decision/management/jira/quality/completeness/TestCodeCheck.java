@@ -69,7 +69,7 @@ public class TestCodeCheck extends TestSetUp {
 		KnowledgeElement decision = JiraIssues.addElementToDataBase(322, KnowledgeType.DECISION);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(linkedFileThatIsDone, decision,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
-		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
+		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		definitionOfDone.setMaximumLinkDistanceToDecisions(0);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
