@@ -106,6 +106,20 @@ public class LinkRecommendationRest {
 		return Response.status(Status.OK).build();
 	}
 
+	@Path("/undoDiscardRecommendation")
+	@POST
+	public Response undoDiscardRecommendation(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, LinkRecommendation recommendation) {
+		if (recommendation == null || recommendation.getBothElements().contains(null)) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "The recommendation for that discarding should be undone is not valid."))
+					.build();
+		}
+		recommendation.setProject(projectKey);
+		DiscardedRecommendationPersistenceManager.removeDiscardedRecommendation(recommendation);
+		return Response.status(Status.OK).build();
+	}
+
 	private Optional<KnowledgeElement> isKnowledgeElementValid(String projectKey, Long elementId,
 			String elementLocation) {
 		KnowledgeElement knowledgeElement = null;

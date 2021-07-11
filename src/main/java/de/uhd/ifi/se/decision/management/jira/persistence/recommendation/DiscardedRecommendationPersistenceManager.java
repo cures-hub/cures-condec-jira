@@ -70,14 +70,25 @@ public class DiscardedRecommendationPersistenceManager {
 		return discardedSuggestions;
 	}
 
-	private static DiscardedRecommendationInDatabase[] getDiscardedRecommendation(LinkRecommendation recommendation) {
-		DiscardedRecommendationInDatabase[] discardedLinkSuggestions = ACTIVE_OBJECTS.find(
+	public static DiscardedRecommendationInDatabase[] getDiscardedRecommendation(LinkRecommendation recommendation) {
+		DiscardedRecommendationInDatabase[] discardedRecommendationsInDatabase = ACTIVE_OBJECTS.find(
 				DiscardedRecommendationInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND DISCARDED_ELEMENT_ID = ? AND TYPE = ?",
 						recommendation.getSource().getProject().getProjectKey(), recommendation.getSource().getId(),
 						recommendation.getTarget().getId(), recommendation.getRecommendationType()));
 
-		return discardedLinkSuggestions;
+		return discardedRecommendationsInDatabase;
+	}
+
+	public static boolean removeDiscardedRecommendation(LinkRecommendation recommendation) {
+		boolean isRemoved = false;
+		DiscardedRecommendationInDatabase[] discardedRecommendationsInDatabase = getDiscardedRecommendation(
+				recommendation);
+		for (DiscardedRecommendationInDatabase discardedRecommendationInDatabase : discardedRecommendationsInDatabase) {
+			DiscardedRecommendationInDatabase.deleteDiscardedRecommendation(discardedRecommendationInDatabase);
+			isRemoved = true;
+		}
+		return isRemoved;
 	}
 
 	public static long saveDiscardedRecommendation(LinkRecommendation recommendation) {

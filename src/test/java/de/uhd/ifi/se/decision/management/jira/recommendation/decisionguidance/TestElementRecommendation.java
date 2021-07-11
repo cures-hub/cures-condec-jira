@@ -107,4 +107,11 @@ public class TestElementRecommendation extends TestSetUp {
 		Recommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
 		assertEquals(RecommendationType.EXTERNAL, recommendation.getRecommendationType());
 	}
+
+	@Test
+	public void testSetDiscarded() {
+		Recommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
+		recommendation.setDiscarded(true);
+		assertTrue(recommendation.isDiscarded());
+	}
 }

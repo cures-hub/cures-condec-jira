@@ -34,10 +34,19 @@
 			.catch((error) => displayErrorMessage(error));
 	}
 
-	ConDecLinkRecommendation.prototype.discardSuggestion = function(index) {
+	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {
 		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, this.currentLinkRecommendations[index])
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarded link recommendation sucessfully!");
+				this.loadData();
+			})
+			.catch((error) => displayErrorMessage(error));
+	}
+	
+	ConDecLinkRecommendation.prototype.undoDiscardRecommendation = function(index) {
+		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, this.currentLinkRecommendations[index])
+			.then((data) => {
+				conDecAPI.showFlag("success", "Discarded link recommendation sucessfully undone!");
 				this.loadData();
 			})
 			.catch((error) => displayErrorMessage(error));
@@ -78,11 +87,12 @@
 		let scoreCell = (generateTableCell(conDecRecommendation.buildScore(suggestion.score, "link_score_" + index), "th-score", ""));
 		row.appendChild(scoreCell);
 
-		row.appendChild(generateTableCell(generateOptionButtons(index), "th-options"));
-		
 		if (suggestion.isDiscarded) {
 			row.style.background = "#e8e8e8";
-		}
+			row.appendChild(generateTableCell(generateUndoDiscardButton(index), "th-options"));
+		} else {
+			row.appendChild(generateTableCell(generateOptionButtons(index), "th-options"));
+		}	
 		
 		return row;
 	};
@@ -100,7 +110,11 @@
 
 	let generateOptionButtons = function(suggestionIndex) {
 		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
-			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardSuggestion(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard</button>`;
+			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardRecommendation(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard</button>`;
+	};
+	
+	let generateUndoDiscardButton = function(suggestionIndex) {
+		return `<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.undoDiscardRecommendation(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-undo"></span> Undo Discard</button>`;
 	};
 
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {

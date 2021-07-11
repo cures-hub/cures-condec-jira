@@ -24,12 +24,6 @@
 				&elementLocation=${elementLocation}`);
 	};
 
-	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
-		recommendation["@type"] = recommendation.recommendationType;
-		return generalApi.postJSONReturnPromise(this.restPrefix + `/discardRecommendation.json
-				?projectKey=${projectKey}`, recommendation);
-	};
-
 	ConDecLinkRecommendationAPI.prototype.getDuplicateKnowledgeElement = function(projectKey, elementId, location) {
 		return generalApi.getJSONReturnPromise(
 			`${this.restPrefix}/getDuplicateKnowledgeElement.json
@@ -37,6 +31,18 @@
 				&elementId=${elementId}
 				&location=${location}`
 		);
+	};	
+
+	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
+		recommendation["@type"] = recommendation.recommendationType;
+		return generalApi.postJSONReturnPromise(this.restPrefix + `/discardRecommendation.json
+				?projectKey=${projectKey}`, recommendation);
+	};
+
+	ConDecLinkRecommendationAPI.prototype.undoDiscardRecommendation = function(projectKey, recommendation) {
+		recommendation["@type"] = recommendation.recommendationType;
+		return generalApi.postJSONReturnPromise(this.restPrefix + `/undoDiscardRecommendation.json
+				?projectKey=${projectKey}`, recommendation);
 	};
 
 	global.conDecLinkRecommendationAPI = new ConDecLinkRecommendationAPI();
