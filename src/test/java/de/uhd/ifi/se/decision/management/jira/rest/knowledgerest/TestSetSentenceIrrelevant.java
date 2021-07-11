@@ -69,6 +69,7 @@ public class TestSetSentenceIrrelevant extends TestSetUp {
 				.getJiraIssueTextManager()
 				.getKnowledgeElement(sentence);
 		assertFalse(sentence.isRelevant());
+		assertTrue(sentence.isValidated());
 		assertTrue(sentence.getLinks().size() > 0);
 	}
 

@@ -32,12 +32,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		</li>
 		<li class="menu-item" id="menu-item-matrix">
     		<a href="#matrix-tab">$i18n.getText('condec.label.matrix')</a>
-    	</li>		
+    	</li>
 		<li class="menu-item" id="menu-item-chronology">
 			<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
 		</li>
         <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
+        </li>
+        <li class="menu-item" id="menu-item-text-classification">
+            <a href="#text-classification-tab">Text classification</a>
         </li>
         <li class="menu-item" id="menu-item-link-recommendation">
 			<a href="#link-recommendation-tab">$i18n.getText('condec.link.recommendation')</a>
@@ -54,7 +57,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 	</div>
 	<div class="tabs-pane active-pane" id="graph-tab">
 		#parse("templates/tabs/visGraph.vm")
-	</div>	
+	</div>
 	<div class="tabs-pane" id="decision-table-tab">
 		#parse("templates/tabs/decisiontable/view.vm")
 	</div>
@@ -69,6 +72,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div class="tabs-pane" id="quality-check-tab">
         #parse("templates/tabs/qualityCheck.vm")
+    </div>
+    <div class="tabs-pane" id="text-classification-tab">
+        #parse("templates/tabs/textClassification.vm")
     </div>
     <div class="tabs-pane" id="link-recommendation-tab">
 		#parse("templates/tabs/recommendation/linkRecommendation.vm")
