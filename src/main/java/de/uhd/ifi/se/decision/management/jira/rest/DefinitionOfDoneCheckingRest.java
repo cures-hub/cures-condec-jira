@@ -110,7 +110,7 @@ public class DefinitionOfDoneCheckingRest {
 					"Coverage check could not be performed because the element could not be found.")).build();
 		}
 
-		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings.getProjectKey());
+		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings);
 
 		return Response.ok()
 				.entity(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,

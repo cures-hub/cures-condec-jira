@@ -99,33 +99,33 @@ public class GeneralMetricCalculator {
 		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
 		Map<String, String> originMap = new HashMap<>();
 
-		String elementsInJiraIssues = "";
-		String elementsInJiraIssueText = "";
-		String elementsInCommitMessages = "";
-		String elementsInCodeComments = "";
+		StringBuilder elementsInJiraIssues = new StringBuilder();
+		StringBuilder elementsInJiraIssueText = new StringBuilder();
+		StringBuilder elementsInCommitMessages = new StringBuilder();
+		StringBuilder elementsInCodeComments = new StringBuilder();
 		for (KnowledgeElement element : knowledgeElements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				elementsInJiraIssues += element.getKey() + " ";
+				elementsInJiraIssues.append(element.getKey()).append(" ");
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				if (element.getOrigin() == Origin.COMMIT) {
-					elementsInCommitMessages += element.getKey() + " ";
+					elementsInCommitMessages.append(element.getKey()).append(" ");
 				} else {
-					elementsInJiraIssueText += element.getKey() + " ";
+					elementsInJiraIssueText.append(element.getKey()).append(" ");
 				}
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-				elementsInCodeComments += element.getKey() + " ";
+				elementsInCodeComments.append(element.getKey()).append(" ");
 			}
 		}
-		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText.trim());
-		originMap.put("Entire Jira Issue", elementsInJiraIssues.trim());
-		originMap.put("Commit Message", elementsInCommitMessages.trim());
-		originMap.put("Code Comment", elementsInCodeComments.trim());
+		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText.toString().trim());
+		originMap.put("Entire Jira Issue", elementsInJiraIssues.toString().trim());
+		originMap.put("Commit Message", elementsInCommitMessages.toString().trim());
+		originMap.put("Code Comment", elementsInCodeComments.toString().trim());
 
 		return originMap;
 	}
@@ -145,8 +145,7 @@ public class GeneralMetricCalculator {
 		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
 		Map<String, String> resultMap = new HashMap<>();
 
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(
-			filterSettings.getProjectKey());
+		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings);
 
 		StringBuilder elementsWithDoDCheckSuccess = new StringBuilder();
 		StringBuilder elementsWithDoDCheckFail = new StringBuilder();

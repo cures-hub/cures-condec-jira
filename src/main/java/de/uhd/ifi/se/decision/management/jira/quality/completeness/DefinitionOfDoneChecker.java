@@ -125,11 +125,8 @@ public final class DefinitionOfDoneChecker {
 	 */
 	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
 			FilterSettings filterSettings) {
-		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings.getProjectKey());
-		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
-				knowledgeType);
-		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
-		return result < minimumCoverage;
+		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings);
+		return doesNotHaveMinimumCoverage(knowledgeElement, knowledgeType, filterSettings, calculator);
 	}
 
 	/**
@@ -161,9 +158,24 @@ public final class DefinitionOfDoneChecker {
 	 */
 	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
 			FilterSettings filterSettings) {
-		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings.getProjectKey());
+		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings);
+		return hasNoCoverage(knowledgeElement, knowledgeType, calculator);
+	}
+
+	/**
+	 * Iterates recursively over the knowledge graph of the
+	 * {@link KnowledgeElement}.
+	 *
+	 * @param calculator uses already existing RationaleCoverageCalculator to
+	 *                   increase performance when iterating over a set of elements.
+	 *
+	 * @return true if there is at least one element of the specified
+	 *         {@link KnowledgeType}, else it returns false.
+	 */
+	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
+			RationaleCoverageCalculator calculator) {
 		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
-				knowledgeType);
+			knowledgeType);
 		return result == 0;
 	}
 
