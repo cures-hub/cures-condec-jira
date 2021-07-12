@@ -32,9 +32,7 @@
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="warning-dialog-continue" class="aui-button">Continue anyway</button>
-            <button id="warning-dialog-fix-elements" class="aui-button aui-button-primary">Go back and fix</button>
-
+            <button id="warning-dialog-continue" class="aui-button">$i18n.getText('condec.button.continue')</button>
         </div>
     </footer>
 </section>
