@@ -40,7 +40,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
         </li>
         <li class="menu-item" id="menu-item-text-classification">
-            <a href="#text-classification-tab">Text classification</a>
+            <a href="#text-classification-tab">$i18n.getText('condec.label.text.classification')</a>
         </li>
         <li class="menu-item" id="menu-item-link-recommendation">
 			<a href="#link-recommendation-tab">$i18n.getText('condec.link.recommendation')</a>
@@ -71,6 +71,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #parse("templates/tabs/chronology.vm")
     </div>
     <div class="tabs-pane" id="quality-check-tab">
+        #set ($viewIdentifier = "jira-issue-module")
         #parse("templates/tabs/qualityCheck.vm")
     </div>
     <div class="tabs-pane" id="text-classification-tab">
