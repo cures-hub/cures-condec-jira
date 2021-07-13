@@ -105,10 +105,11 @@
 	}
 
 	ConDecTextClassificationAPI.prototype.validateAllElements = function (projectKey, issueKey) {
-		return generalApi.postJSON(`${this.restPrefix}
+		return generalApi.postJSONReturnPromise(`${this.restPrefix}
 		/validateAllElements.json
 		?projectKey=${projectKey}
-		&issueKey=${issueKey}`
+		&issueKey=${issueKey}`,
+			null
 		);
 	}
 

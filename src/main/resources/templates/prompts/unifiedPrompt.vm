@@ -16,25 +16,30 @@
         <br/>
         <div id="non-validated-elements-prompt" class="condec-prompt">
             #parse("templates/prompts/nonValidatedElementsPrompt.vm")
+            <aui-spinner id="non-validated-spinner"></aui-spinner>
+
         </div>
         <br/>
         <div id="link-recommendation-prompt" class="condec-prompt">
             #parse("templates/prompts/linkRecommendationPrompt.vm")
+            <aui-spinner id="link-recommendation-spinner"></aui-spinner>
         </div>
         <br/>
         <div id="definition-of-done-prompt" class="condec-prompt">
             #parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")
+            <aui-spinner id="dod-spinner"></aui-spinner>
+
         </div>
         <br/>
         <div id="decision-guidance-prompt" class="condec-prompt">
             #parse("templates/prompts/decisionGuidancePrompt.vm")
+            <aui-spinner id="decision-guidance-spinner"></aui-spinner>
+
         </div>
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="warning-dialog-continue" class="aui-button">Continue anyway</button>
-            <button id="warning-dialog-fix-elements" class="aui-button aui-button-primary">Go back and fix</button>
-
+            <button id="warning-dialog-continue" class="aui-button">$i18n.getText('condec.button.continue')</button>
         </div>
     </footer>
 </section>
