@@ -132,7 +132,8 @@
 					});
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
 					validateAllButton.onclick = function () {
-						conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
+						conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey)
+							.then(() => conDecObservable.notify());
 					};
 				}
 				document.getElementById("non-validated-spinner").style.display = "none";
