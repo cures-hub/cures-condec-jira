@@ -42,18 +42,38 @@
 						if (isDoDCheckActivated) {
 							conDecPrompt.promptDefinitionOfDoneChecking();
 							document.getElementById("definition-of-done-prompt").style.display = "block";
+							document.getElementById("go-to-quality-check-tab").onclick = () => {
+								AJS.tabs.change(jQuery('a[href="#quality-check-tab"]'));
+								window.open("#", "blank");
+							}
+
 						}
 						if (isLinkRecommendationActivated) {
 							conDecPrompt.promptLinkSuggestion();
 							document.getElementById("link-recommendation-prompt").style.display = "block";
+
+							document.getElementById("go-to-link-recomendation-tab").onclick = () => {
+								AJS.tabs.change(jQuery('a[href="#link-recommendation-tab"]'));
+								window.open("#", "blank");
+							}
 						}
 						if (isTextClassificationActivated) {
 							conDecPrompt.promptNonValidatedElements();
 							document.getElementById("non-validated-elements-prompt").style.display = "block";
+							document.getElementById("go-to-classification-tab").onclick =
+								() => {
+								AJS.tabs.change(jQuery('a[href="#text-classification-tab"]'));
+								window.open("#", "blank");
+							}
 						}
 						if (isDecisionGuidanceActivated) {
 							conDecPrompt.promptDecisionGuidance();
 							document.getElementById("decision-guidance-prompt").style.display = "block";
+							document.getElementById("go-to-decision-guidance-tab").onclick =
+								() => {
+									AJS.tabs.change(jQuery('a[href="#decision-guidance-tab"]'));
+									window.open("#", "blank");
+								}
 						}
 					});
 			}
@@ -110,7 +130,6 @@
 			return;
 		}
 		const validateAllButton = document.getElementById("non-validated-elements-validate-button");
-		const goToClassificationTabButton = document.getElementById("non-validated-elements-go-to-classification-tab");
 		conDecTextClassificationAPI.getNonValidatedElements(conDecAPI.projectKey, issueKey)
 			.then(response => {
 				const nonValidatedElements = response["nonValidatedElements"]

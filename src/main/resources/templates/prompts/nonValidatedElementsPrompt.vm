@@ -18,7 +18,7 @@
         <span class="aui-icon aui-icon-small aui-iconfont-check"></span>
         Validate all of these elements!
     </button>
-    <button id="non-validated-elements-go-to-classification-tab" class="aui-button aui-button-link">
+    <button id="go-to-classification-tab" class="aui-button aui-button-link">
         <span class="aui-icon aui-icon-small aui-iconfont-link">Go to text classification tab</span>
         Go to text classification tab
     </button>

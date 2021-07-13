@@ -8,10 +8,10 @@
         <li><strong id="link-recommendation-prompt-num-duplicate-recommendations">0</strong> possible duplicates</li>
     </ul>
     Please check that the links of this knowledge element are complete and that there are no duplicates.<br/>
-    ##	<button id="link-recommendation-prompt-button" class="aui-button aui-button-link">
-    ##		<span class="aui-icon aui-icon-small aui-iconfont-check">Confirm quality</span>
-    ##		I confirm the high documentation quality!
-    ##	</button>
-    <a href="#related-knowledge-elements-tab" style="width:100%" class="aui-button-link">View Link and Duplicate
-        Recommendation</a>
+
+    <button id="go-to-link-recomendation-tab" class="aui-button aui-button-link">
+        <span class="aui-icon aui-icon-small aui-iconfont-link">Go to link recommendation tab</span>
+        Go to link recommendation tab
+    </button>
+
 </div>
