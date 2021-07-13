@@ -44,7 +44,7 @@
 							document.getElementById("definition-of-done-prompt").style.display = "block";
 							document.getElementById("go-to-quality-check-tab").onclick = () => {
 								AJS.tabs.change(jQuery('a[href="#quality-check-tab"]'));
-								window.open("#", "blank");
+								window.open("#quality-check-tab", "blank");
 							}
 
 						}
@@ -54,7 +54,7 @@
 
 							document.getElementById("go-to-link-recomendation-tab").onclick = () => {
 								AJS.tabs.change(jQuery('a[href="#link-recommendation-tab"]'));
-								window.open("#", "blank");
+								window.open("#link-recommendation-tab", "blank");
 							}
 						}
 						if (isTextClassificationActivated) {
@@ -62,9 +62,10 @@
 							document.getElementById("non-validated-elements-prompt").style.display = "block";
 							document.getElementById("go-to-classification-tab").onclick =
 								() => {
-								AJS.tabs.change(jQuery('a[href="#text-classification-tab"]'));
-								window.open("#", "blank");
-							}
+									AJS.tabs.change(jQuery('a[href="#text-classification-tab"]'));
+									window.open("#text-classification-tab", "blank");
+
+								}
 						}
 						if (isDecisionGuidanceActivated) {
 							conDecPrompt.promptDecisionGuidance();
@@ -72,7 +73,7 @@
 							document.getElementById("go-to-decision-guidance-tab").onclick =
 								() => {
 									AJS.tabs.change(jQuery('a[href="#decision-guidance-tab"]'));
-									window.open("#", "blank");
+									window.open("#decision-guidance-tab", "blank");
 								}
 						}
 					});
