@@ -77,6 +77,7 @@
 					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerText = numDuplicates;
 					conDecNudgingAPI.decideAmbientFeedbackForTab(numDuplicates + numLinkRecommendations, "menu-item-link-recommendation");
 				}
+				document.getElementById("link-recommendation-spinner").style.display = "none";
 			});
 	}
 
@@ -90,18 +91,15 @@
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-
 		conDecAPI.getFilterSettings(projectKey, "", settings => {
-
 			document.getElementById("condec-prompt-minimum-coverage").innerHTML = settings.minimumDecisionCoverage;
 			document.getElementById("condec-prompt-link-distance").innerHTML = settings.linkDistance;
 		});
-
 		conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, (coverage) => {
 			document.getElementById("condec-prompt-issue-coverage").innerHTML = coverage["Issue"];
 			document.getElementById("condec-prompt-decision-coverage").innerHTML = coverage["Decision"];
+			document.getElementById("dod-spinner").style.display = "none";
 		});
-
 
 		document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
 	}
@@ -137,6 +135,7 @@
 						conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
 					};
 				}
+				document.getElementById("non-validated-spinner").style.display = "none";
 			})
 	};
 
@@ -149,28 +148,27 @@
 		const filterSettings = {
 			"projectKey": projectKey,
 			"selectedElement": issueKey
-		}
+		};
 		conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
-			.then((recommendationsMap, error) => {
-				if (error === null || error === undefined) {
-					document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length;
-					var totalNumberOfRecommendations = 0;
-					Object.keys(recommendationsMap).forEach((id) => {
-						conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
-							let numberOfRecommendations = recommendationsMap[id].length;
-							let tableRow = "<tr>";
-							tableRow += "<td>" + decisionProblem.summary + "</td>";
-							tableRow += "<td>" + numberOfRecommendations + "</td>";
-							tableRow += "</tr>";
-							document.getElementById("decision-problems-table-body").innerHTML += tableRow;
-							totalNumberOfRecommendations += numberOfRecommendations;
-							conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
-						});
+			.then((recommendationsMap) => {
+				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length;
+				var totalNumberOfRecommendations = 0;
+				Object.keys(recommendationsMap).forEach((id) => {
+					conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
+						let numberOfRecommendations = recommendationsMap[id].length;
+						let tableRow = "<tr>";
+						tableRow += "<td>" + decisionProblem.summary + "</td>";
+						tableRow += "<td>" + numberOfRecommendations + "</td>";
+						tableRow += "</tr>";
+						document.getElementById("decision-problems-table-body").innerHTML += tableRow;
+						totalNumberOfRecommendations += numberOfRecommendations;
+
+						document.getElementById("decision-guidance-spinner").style.display = "none";
+						conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
 					});
-				} else {
-					console.log("Error in making decision guidance prompt table was: ", error);
-				}
-			});
+				});
+			})
+			.catch(error => console.log("Error in making decision guidance prompt table was: ", error));
 	};
 	global.conDecPrompt = new ConDecPrompt();
 })(window);
