@@ -4,6 +4,7 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
 		jQuery(document).ajaxComplete(function (event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
+				AJS.tabs.setup();
 				const issueKey = conDecAPI.getIssueKey();
 				// Create unified prompt
 				document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey + "...";
@@ -110,15 +111,17 @@
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-
+		const validateAllButton = document.getElementById("non-validated-elements-validate-button");
+		const goToClassificationTabButton = document.getElementById("non-validated-elements-go-to-classification-tab");
 		conDecTextClassificationAPI.getNonValidatedElements(conDecAPI.projectKey, issueKey)
 			.then(response => {
 				const nonValidatedElements = response["nonValidatedElements"]
 				document.getElementById("num-non-validated-elements").innerHTML = nonValidatedElements.length;
+				conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElements.length, "text-classification-tab");
 
 				if (nonValidatedElements.length === 0) {
 					document.getElementById("non-validated-table-body").innerHTML = "<i>All elements have been validated!</i>";
-					document.getElementById("non-validated-elements-validate-button").style.display = "none";
+					validateAllButton.style.display = "none";
 				} else {
 					let tableContents = "";
 					nonValidatedElements.forEach(recommendation => {
@@ -130,7 +133,7 @@
 
 					});
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
-					document.getElementById("non-validated-elements-validate-button").onclick = function () {
+					validateAllButton.onclick = function () {
 						conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey);
 					};
 				}
