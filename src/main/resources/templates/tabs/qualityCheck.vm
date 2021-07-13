@@ -16,6 +16,8 @@
 <script>
     /* Fills tab when the document is ready */
     $(document).ready(function () {
-        conDecQualityCheck.initView("jira-issue-module", null);
+        if (AJS.$("#jira-issue-tabs").length) {
+            conDecQualityCheck.initView("jira-issue-module", null);
+        }
     });
 </script>

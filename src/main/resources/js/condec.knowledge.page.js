@@ -90,6 +90,7 @@
 		} else {
 			conDecTreeViewer.selectNodeInTreeViewer(nodeId, "#jstree");
 		}
+
 		addSelectNodeEventListenerToTreeViewer();
 	}
 
@@ -101,7 +102,6 @@
 			filterSettings["status"] = null;
 			document.getElementById("selected-element-overview").innerText = node.key;
 			filterSettings["selectedElement"] = node.key;
-
 			conDecTreant.buildTreant(filterSettings, true, "treant-overview");
 			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-overview", "#search-input-overview", "jstree-overview");
 			jQuery("#jstree-overview").on("loaded.jstree", function () {

@@ -7,7 +7,6 @@
 	};
 
 	ConDecRationaleBacklog.prototype.initView = function () {
-		console.log("conDecRationaleBacklog initView");
 			
 		// Fill filter elements
 		conDecFiltering.fillFilterElements("rationale-backlog", ["Alternative", "Decision", "Issue", "Argument"]);
