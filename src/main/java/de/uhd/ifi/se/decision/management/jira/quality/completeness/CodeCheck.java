@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem;
 
 /**
- * Checks whether a code file (i.e. a {@link ChangedFile} instance) fulfilles
+ * Checks whether a code file (i.e. a {@link ChangedFile} instance) fulfills
  * the criteria of the {@link DefinitionOfDone} (DoD).
  * 
  * Criteria are 1) the line count (small files are not checked, i.e. always
@@ -24,16 +24,19 @@ import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDa
  * @see RationaleCoverageCalculator
  * @see RationaleCoverageDashboardItem
  */
-public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
+public class CodeCheck implements KnowledgeElementCheck {
 
 	private ChangedFile codeFile;
-	private String projectKey;
 
 	@Override
-	public boolean execute(ChangedFile codeFile) {
-		this.codeFile = codeFile;
-		projectKey = codeFile.getProject().getProjectKey();
-		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings();
+	public boolean execute(KnowledgeElement codeFile) {
+		if (!(codeFile instanceof ChangedFile)) {
+			return true;
+		}
+		this.codeFile = (ChangedFile) codeFile;
+		String projectKey = codeFile.getProject().getProjectKey();
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
+		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
@@ -42,9 +45,7 @@ public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 	}
 
 	@Override
-	public boolean isCompleteAccordingToSettings() {
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-
+	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
 		int lineNumbersInCodeFile = definitionOfDone.getLineNumbersInCodeFile();
 		if (codeFile.getLineCount() < lineNumbersInCodeFile) {
 			return true;
@@ -65,7 +66,7 @@ public class CodeCompletenessCheck implements CompletenessCheck<ChangedFile> {
 	}
 
 	@Override
-	public List<String> getFailedCriteria(ChangedFile knowledgeElement) {
+	public List<QualityProblem> getQualityProblems(KnowledgeElement codeFile, DefinitionOfDone definitionOfDone) {
 		return new ArrayList<>();
 	}
 }
