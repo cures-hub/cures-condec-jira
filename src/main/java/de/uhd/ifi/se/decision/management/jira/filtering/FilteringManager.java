@@ -78,16 +78,16 @@ public class FilteringManager {
 		KnowledgeGraph filteredGraph = graph.getMutableSubgraphFor(elements);
 
 		if (filterSettings.getSelectedElement() != null) {
+			if (filterSettings.createTransitiveLinks()) {
+				addTransitiveLinksToFilteredGraph(filteredGraph);
+			}
+
 			SingleSourcePaths<KnowledgeElement, Link> paths = filteredGraph
 					.getShortestPathAlgorithm(filterSettings.getLinkDistance())
 					.getPaths(filterSettings.getSelectedElement());
 			Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
 					.getDistanceAndPredecessorMap().keySet();
 			filteredGraph = filteredGraph.getMutableSubgraphFor(reachableElements);
-
-			if (filterSettings.createTransitiveLinks()) {
-				addTransitiveLinksToFilteredGraph(filteredGraph);
-			}
 		}
 
 		removeLinksWithTypesNotInFilterSettings(filteredGraph);
