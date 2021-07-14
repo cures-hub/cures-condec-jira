@@ -77,9 +77,6 @@ public class FilteringManager {
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		KnowledgeGraph filteredGraph = graph.getMutableSubgraphFor(elements);
 
-		if (filterSettings.createTransitiveLinks() && filterSettings.getSelectedElement() != null) {
-			addTransitiveLinksToFilteredGraph(filteredGraph);
-		}
 		if (filterSettings.getSelectedElement() != null) {
 			SingleSourcePaths<KnowledgeElement, Link> paths = filteredGraph
 					.getShortestPathAlgorithm(filterSettings.getLinkDistance())
