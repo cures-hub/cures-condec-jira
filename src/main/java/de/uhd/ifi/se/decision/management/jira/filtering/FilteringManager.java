@@ -80,14 +80,9 @@ public class FilteringManager {
 		if (filterSettings.getSelectedElement() != null) {
 			if (filterSettings.createTransitiveLinks()) {
 				addTransitiveLinksToFilteredGraph(filteredGraph);
+			} else {
+				filteredGraph = ensureThatFilteredGraphHasCorrectLinkDistance(filteredGraph);
 			}
-
-			SingleSourcePaths<KnowledgeElement, Link> paths = filteredGraph
-					.getShortestPathAlgorithm(filterSettings.getLinkDistance())
-					.getPaths(filterSettings.getSelectedElement());
-			Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
-					.getDistanceAndPredecessorMap().keySet();
-			filteredGraph = filteredGraph.getMutableSubgraphFor(reachableElements);
 		}
 
 		removeLinksWithTypesNotInFilterSettings(filteredGraph);
@@ -165,6 +160,15 @@ public class FilteringManager {
 			}
 		}
 		return linksNotMatchingFilterSettings;
+	}
+
+	private KnowledgeGraph ensureThatFilteredGraphHasCorrectLinkDistance(KnowledgeGraph filteredGraph) {
+		SingleSourcePaths<KnowledgeElement, Link> paths = filteredGraph
+				.getShortestPathAlgorithm(filterSettings.getLinkDistance())
+				.getPaths(filterSettings.getSelectedElement());
+		Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
+				.getDistanceAndPredecessorMap().keySet();
+		return filteredGraph.getMutableSubgraphFor(reachableElements);
 	}
 
 	/**
