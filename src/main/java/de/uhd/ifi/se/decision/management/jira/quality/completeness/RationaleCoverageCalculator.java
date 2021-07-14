@@ -171,6 +171,14 @@ public class RationaleCoverageCalculator {
 			return 0;
 		}
 
+		if (knowledgeElement.getLinks().isEmpty()) {
+			if (knowledgeElement.getType() == knowledgeType) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
 		int numberOfElementsReachable;
 		if (!linkedElementMap.containsKey(knowledgeElement)) {
 			fillLinkedElementMap(knowledgeElement);
