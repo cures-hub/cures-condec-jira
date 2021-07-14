@@ -73,7 +73,8 @@ public class RationaleCoverageCalculator {
 
 	private void fillLinkedElementMap(KnowledgeElement sourceElement) {
 		Map<KnowledgeType, Integer> knowledgeTypeMap = new HashMap<>();
-		Set<KnowledgeElement> linkedElements = sourceElement.getLinkedElements(filterSettings.getLinkDistance());
+		Set<KnowledgeElement> linkedElements = sourceElement.getLinkedElements(
+			filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (!knowledgeTypeMap.containsKey(linkedElement.getType())) {
 				knowledgeTypeMap.put(linkedElement.getType(), 0);
@@ -168,14 +169,6 @@ public class RationaleCoverageCalculator {
 
 		if (knowledgeType == null) {
 			return 0;
-		}
-
-		if (knowledgeElement.getLinks().isEmpty()) {
-			if (knowledgeElement.getType() == knowledgeType) {
-				return 1;
-			} else {
-				return 0;
-			}
 		}
 
 		int numberOfElementsReachable;

@@ -41,7 +41,7 @@ public class TestCodeCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsNotDone() {
-		assertFalse(codeCompletenessCheck.execute(fileThatIsNotDone));
+		assertTrue(codeCompletenessCheck.execute(fileThatIsNotDone));
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class TestCodeCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
 		definitionOfDone.setLineNumbersInCodeFile(10);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertFalse(codeCompletenessCheck.execute(smallFileThatIsDone));
+		assertTrue(codeCompletenessCheck.execute(smallFileThatIsDone));
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class TestCodeCheck extends TestSetUp {
 		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		definitionOfDone.setMaximumLinkDistanceToDecisions(0);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
+		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
 	}
 
 	@Test

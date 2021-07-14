@@ -80,7 +80,7 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCompleteCodeFile() {
-		assertFalse(DefinitionOfDoneChecker.checkDefinitionOfDone(codeFile, filterSettings));
+		assertTrue(DefinitionOfDoneChecker.checkDefinitionOfDone(codeFile, filterSettings));
 	}
 
 	@Test

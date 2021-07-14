@@ -36,33 +36,17 @@ public class CodeCheck implements KnowledgeElementCheck {
 		this.codeFile = (ChangedFile) codeFile;
 		String projectKey = codeFile.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings(definitionOfDone);
+		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return codeFile.isTestCodeFile();
+		return true;
 	}
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		int lineNumbersInCodeFile = definitionOfDone.getLineNumbersInCodeFile();
-		if (codeFile.getLineCount() < lineNumbersInCodeFile) {
-			return true;
-		}
-
-		int linkDistanceFromCodeFileToDecision = definitionOfDone.getMaximumLinkDistanceToDecisions();
-		int minimumDecisionCoverage = definitionOfDone.getMinimumDecisionsWithinLinkDistance();
-		Set<KnowledgeElement> linkedElements = codeFile.getLinkedElements(linkDistanceFromCodeFileToDecision);
-		for (KnowledgeElement linkedElement : linkedElements) {
-			if (minimumDecisionCoverage == 0) {
-				return true;
-			}
-			if (linkedElement.getType() == KnowledgeType.DECISION) {
-				minimumDecisionCoverage--;
-			}
-		}
-		return false;
+		return true;
 	}
 
 	@Override

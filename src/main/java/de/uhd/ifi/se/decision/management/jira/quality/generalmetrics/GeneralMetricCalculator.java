@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -145,15 +146,13 @@ public class GeneralMetricCalculator {
 		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
 		Map<String, String> resultMap = new HashMap<>();
 
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings);
-
 		StringBuilder elementsWithDoDCheckSuccess = new StringBuilder();
 		StringBuilder elementsWithDoDCheckFail = new StringBuilder();
 		for (KnowledgeElement element : knowledgeElements) {
-			if (DefinitionOfDoneChecker.checkDefinitionOfDone(element, filterSettings, rationaleCoverageCalculator)) {
-				elementsWithDoDCheckFail.append(element.getKey()).append(" ");
-			} else {
+			if (DefinitionOfDoneChecker.checkDefinitionOfDone(element, filterSettings)) {
 				elementsWithDoDCheckSuccess.append(element.getKey()).append(" ");
+			} else {
+				elementsWithDoDCheckFail.append(element.getKey()).append(" ");
 			}
 		}
 		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess.toString().trim());

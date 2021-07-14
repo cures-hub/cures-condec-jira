@@ -5,15 +5,16 @@ import static java.util.Map.entry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
@@ -47,23 +48,6 @@ public final class DefinitionOfDoneChecker {
 	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		return !hasIncompleteKnowledgeLinked(knowledgeElement)
 				&& !doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings);
-	}
-
-	/**
-	 * Checks if the definition of done has been violated for a {@link KnowledgeElement}.
-	 * USed in {@link GeneralMetricCalculator}.
-	 *
-	 * @param knowledgeElement
-	 *            instance of {@link KnowledgeElement}.
-	 * @param calculator uses already existing RationaleCoverageCalculator to
-	 * 	                 increase performance when iterating over a set of elements.
-	 * @return true if the element is completely documented according to the default
-	 *         and configured rules of the {@link DefinitionOfDone}.
-	 */
-	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, FilterSettings filterSettings,
-												RationaleCoverageCalculator calculator) {
-		return !hasIncompleteKnowledgeLinked(knowledgeElement)
-			&& !doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings, calculator);
 	}
 
 	/**
@@ -117,7 +101,9 @@ public final class DefinitionOfDoneChecker {
 
 	/**
 	 * Iterates recursively over the knowledge graph of the
-	 * {@link KnowledgeElement}.
+	 * {@link KnowledgeElement} and checks if it fulfills the minimum coverage.
+	 * {@link ChangedFile} that are test files or with less lines of codes
+	 * than defined in the {@link DefinitionOfDone} don't require any coverage.
 	 *
 	 * @return true if there are at least as many elements of the specified
 	 *         {@link KnowledgeType} as the minimum coverage demands, else it
@@ -125,58 +111,56 @@ public final class DefinitionOfDoneChecker {
 	 */
 	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
 			FilterSettings filterSettings) {
-		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings);
-		return doesNotHaveMinimumCoverage(knowledgeElement, knowledgeType, filterSettings, calculator);
-	}
+		if (!checkIfCodeFileRequiresCoverage(knowledgeElement, filterSettings)) {
+			return false;
+		}
 
-	/**
-	 * Iterates recursively over the knowledge graph of the
-	 * {@link KnowledgeElement}.
-	 * Used in {@link GeneralMetricCalculator}.
-	 *
-	 * @param calculator uses already existing RationaleCoverageCalculator to
-	 *                   increase performance when iterating over a set of elements.
-	 *
-	 * @return true if there are at least as many elements of the specified
-	 *         {@link KnowledgeType} as the minimum coverage demands, else it
-	 *         returns false.
-	 */
-	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
-			 FilterSettings filterSettings, RationaleCoverageCalculator calculator) {
-		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
-			knowledgeType);
+		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
 		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
-		return result < minimumCoverage;
+		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
+		for (KnowledgeElement linkedElement : linkedElements) {
+			if (linkedElement.getType() == knowledgeType) {
+				minimumCoverage--;
+			}
+			if (minimumCoverage <= 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
 	 * Iterates recursively over the knowledge graph of the
-	 * {@link KnowledgeElement}.
+	 * {@link KnowledgeElement} and checks if it has any coverage.
+	 * {@link ChangedFile} that are test files or with less lines of codes
+	 * than defined in the {@link DefinitionOfDone} don't require any coverage.
 	 *
 	 * @return true if there is at least one element of the specified
 	 *         {@link KnowledgeType}, else it returns false.
 	 */
 	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
 			FilterSettings filterSettings) {
-		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings);
-		return hasNoCoverage(knowledgeElement, knowledgeType, calculator);
+		if (!checkIfCodeFileRequiresCoverage(knowledgeElement, filterSettings)) {
+			return false;
+		}
+
+		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
+		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
+		for (KnowledgeElement linkedElement : linkedElements) {
+			if (linkedElement.getType() == knowledgeType) {
+				return false;
+			}
+		}
+		return true;
 	}
 
-	/**
-	 * Iterates recursively over the knowledge graph of the
-	 * {@link KnowledgeElement}.
-	 *
-	 * @param calculator uses already existing RationaleCoverageCalculator to
-	 *                   increase performance when iterating over a set of elements.
-	 *
-	 * @return true if there is at least one element of the specified
-	 *         {@link KnowledgeType}, else it returns false.
-	 */
-	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
-			RationaleCoverageCalculator calculator) {
-		int result = calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
-			knowledgeType);
-		return result == 0;
+	private static boolean checkIfCodeFileRequiresCoverage(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
+		if (knowledgeElement instanceof ChangedFile) {
+			int lineNumbersInCodeFile = filterSettings.getDefinitionOfDone().getLineNumbersInCodeFile();
+			ChangedFile codeFile = (ChangedFile) knowledgeElement;
+			return codeFile.getLineCount() >= lineNumbersInCodeFile && !codeFile.isTestCodeFile();
+		}
+		return true;
 	}
 
 	/**
