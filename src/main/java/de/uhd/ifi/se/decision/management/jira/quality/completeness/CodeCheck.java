@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem;
 
 /**
- * Checks whether a code file (i.e. a {@link ChangedFile} instance) fulfilles
+ * Checks whether a code file (i.e. a {@link ChangedFile} instance) fulfills
  * the criteria of the {@link DefinitionOfDone} (DoD).
  * 
  * Criteria are 1) the line count (small files are not checked, i.e. always

@@ -189,14 +189,14 @@ public final class DefinitionOfDoneChecker {
 		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
 				filterSettings)) {
 			if (DefinitionOfDoneChecker.hasNoCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings)) {
-				qualityProblems.add(QualityProblem.NODECISIONCOVERAGE);
+				qualityProblems.add(QualityProblem.NO_DECISION_COVERAGE);
 			} else {
-				qualityProblems.add(QualityProblem.DECISIONCOVERAGETOOLOW);
+				qualityProblems.add(QualityProblem.DECISION_COVERAGE_TOO_LOW);
 			}
 		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			qualityProblems.add(QualityProblem.INCOMPLETEKNOWLEDGELINKED);
+			qualityProblems.add(QualityProblem.INCOMPLETE_KNOWLEDGE_LINKED);
 		}
 
 		if (knowledgeElement.getType().isDecisionKnowledge()) {
@@ -215,19 +215,19 @@ public final class DefinitionOfDoneChecker {
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		for (QualityProblem problem : qualityProblems) {
-			if (problem.equals(QualityProblem.NODECISIONCOVERAGE)) {
-				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
-			} else if (problem.equals(QualityProblem.DECISIONCOVERAGETOOLOW)) {
-				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
-			} else if (problem.equals(QualityProblem.INCOMPLETEKNOWLEDGELINKED)) {
-				text += problem.getDescription() + System.lineSeparator() + System.lineSeparator();
+			if (problem.equals(QualityProblem.NO_DECISION_COVERAGE)) {
+				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
+			} else if (problem.equals(QualityProblem.DECISION_COVERAGE_TOO_LOW)) {
+				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
+			} else if (problem.equals(QualityProblem.INCOMPLETE_KNOWLEDGE_LINKED)) {
+				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
 			} else {
-				text += problem.getDescription() + System.lineSeparator();
+				text.append(problem.getDescription()).append(System.lineSeparator());
 			}
 		}
-		return text.strip();
+		return text.toString().strip();
 	}
 
 	/**

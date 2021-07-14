@@ -41,14 +41,14 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!alternative.hasNeighborOfType(KnowledgeType.ISSUE)) {
-			qualityProblems.add(QualityProblem.ALTERNATIVEDOESNTHAVEISSUE);
+			qualityProblems.add(QualityProblem.ALTERNATIVE_DOESNT_HAVE_ISSUE);
 		}
 
 		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
 		if (hasToBeLinkedToArgument && !(alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
 				|| alternative.hasNeighborOfType(KnowledgeType.PRO)
 				|| alternative.hasNeighborOfType(KnowledgeType.CON))) {
-			qualityProblems.add(QualityProblem.ALTERNATIVEDOESNTHAVEARGUMENT);
+			qualityProblems.add(QualityProblem.ALTERNATIVE_DOESNT_HAVE_ARGUMENT);
 		}
 
 		return qualityProblems;

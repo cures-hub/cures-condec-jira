@@ -39,12 +39,12 @@ public class DecisionCheck implements KnowledgeElementCheck {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!decision.hasNeighborOfType(KnowledgeType.ISSUE)) {
-			qualityProblems.add(QualityProblem.DECISIONDOESNTHAVEISSUE);
+			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_ISSUE);
 		}
 
 		boolean hasToBeLinkedToProArgument = definitionOfDone.isDecisionIsLinkedToPro();
 		if (hasToBeLinkedToProArgument && !decision.hasNeighborOfType(KnowledgeType.PRO)) {
-			qualityProblems.add(QualityProblem.DECISIONDOESNTHAVEPRO);
+			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_PRO);
 		}
 
 		return qualityProblems;

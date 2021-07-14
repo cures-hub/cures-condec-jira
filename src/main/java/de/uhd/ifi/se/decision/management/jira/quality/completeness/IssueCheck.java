@@ -46,16 +46,16 @@ public class IssueCheck implements KnowledgeElementCheck {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!isValidDecisionLinkedToDecisionProblem(decisionProblem)) {
-			qualityProblems.add(QualityProblem.ISSUEDOESNTHAVEDECISION);
+			qualityProblems.add(QualityProblem.ISSUE_DOESNT_HAVE_DECISION);
 		}
 
 		if (decisionProblem.getStatus() == KnowledgeStatus.UNRESOLVED) {
-			qualityProblems.add(QualityProblem.ISSUEISUNRESOLVED);
+			qualityProblems.add(QualityProblem.ISSUE_IS_UNRESOLVED);
 		}
 
 		boolean hasToBeLinkedToAlternative = definitionOfDone.isIssueIsLinkedToAlternative();
 		if (hasToBeLinkedToAlternative && !decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
-			qualityProblems.add(QualityProblem.ISSUEDOESNTHAVEALTERNATIVE);
+			qualityProblems.add(QualityProblem.ISSUE_DOESNT_HAVE_ALTERNATIVE);
 		}
 
 		return qualityProblems;

@@ -76,8 +76,8 @@
 		var text = "";
 
 		qualityProblems.forEach(function(problem) {
-			if (problem.name === "NODECISIONCOVERAGE" || problem.name === "DECISIONCOVERAGETOOLOW" ||
-				problem.name === "INCOMPLETEKNOWLEDGELINKED") {
+			if (problem.name === "NO_DECISION_COVERAGE" || problem.name === "DECISION_COVERAGE_TOO_LOW" ||
+				problem.name === "INCOMPLETE_KNOWLEDGE_LINKED") {
 				text += problem.description;
 				text += "\n\n";
 			} else {
@@ -95,7 +95,7 @@
 
 		if (!qualityProblems || !qualityProblems.length) {
 			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-fine");
-		} else if (qualityProblems.some(problem => problem.name === "NODECISIONCOVERAGE")) {
+		} else if (qualityProblems.some(problem => problem.name === "NO_DECISION_COVERAGE")) {
 			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-error");
 		} else {
 			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-warning");

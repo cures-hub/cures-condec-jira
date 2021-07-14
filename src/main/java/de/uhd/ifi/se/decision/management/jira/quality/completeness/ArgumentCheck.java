@@ -33,7 +33,7 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 
 		if (!(argument.hasNeighborOfType(KnowledgeType.DECISION)
 				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE))) {
-			qualityProblems.add(QualityProblem.ARGUMENTDOESNTHAVEDECISIONORALTERNATIVE);
+			qualityProblems.add(QualityProblem.ARGUMENT_DOESNT_HAVE_DECISION_OR_ALTERNATIVE);
 		}
 
 		return qualityProblems;
