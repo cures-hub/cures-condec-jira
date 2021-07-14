@@ -232,7 +232,7 @@ public class TextClassificationRest {
 	 */
 	@Path("/getAllNonValidatedElements")
 	@GET
-	public Response getNonValidatedElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	public Response getAllNonValidatedElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 
 		if (request == null || projectKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
