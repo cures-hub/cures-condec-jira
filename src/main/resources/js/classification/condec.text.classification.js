@@ -43,7 +43,7 @@
 			this.validateAllButton.style.display = "inline";
 			this.validateAllButton.onclick = () => {
 				conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey())
-				conDecObservable.notify()
+					.then(() => conDecObservable.notify());
 			}
 		}
 		AJS.tabs.setup();

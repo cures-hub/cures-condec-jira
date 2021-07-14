@@ -16,16 +16,8 @@
         </table>
     </div>
 
-    ##<table id="recommendation-container-short" class="aui aui-table-list">
-    ##	<thead>
-    ##		<tr>
-    ##			<th>Recommendation</th>
-    ##			<th class="aui-table-column-issue-key">$i18n.getText("condec.recommendation.score")</th>
-    ##			<th class="aui-table-column-unsortable">$i18n.getText("condec.recommendation.manage")</th>
-    ##		</tr>
-    ##	</thead>
-    ##	<tbody id="quick-recommendations-table-body">
-    ##	</tbody>
-    ##</table>
-    ##<a href="#recommendation-container" style="width:100%" id="more-recommendations" class="aui-button-link">More</a>
+    <button id="go-to-decision-guidance-tab" class="aui-button aui-button-link">
+        <span class="aui-icon aui-icon-small aui-iconfont-link">Go to decision guidance tab</span>
+        Go to decision guidance tab
+    </button>
 </div>
