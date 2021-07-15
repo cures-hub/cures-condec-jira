@@ -85,9 +85,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph(String projectKey) {
 		this();
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
+		persistenceManager.getKnowledgeElements().forEach(element -> {
 			addVertex(element);
-			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
+			persistenceManager.getLinks(element).forEach(link -> {
 				if (!linkIds.contains(link.getId())) {
 					addEdge(link);
 					linkIds.add(link.getId());
@@ -346,8 +346,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         or null if not existing.
 	 */
 	public KnowledgeElement getElementByKey(String elementKey) {
-		Optional<KnowledgeElement> elementWithKey = vertexSet().parallelStream()
-				.filter(element -> element.getKey().equals(elementKey)).findFirst();
+		Optional<KnowledgeElement> elementWithKey = vertexSet().stream().filter(element -> element.getKey().equals(elementKey)).findFirst();
 		return elementWithKey.isPresent() ? elementWithKey.get() : null;
 	}
 
@@ -358,8 +357,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         summary or null if not existing.
 	 */
 	public KnowledgeElement getElementBySummary(String summary) {
-		Optional<KnowledgeElement> elementWithSummary = vertexSet().parallelStream()
-				.filter(element -> element.getSummary().equals(summary)).findFirst();
+		Optional<KnowledgeElement> elementWithSummary = vertexSet().stream().filter(element -> element.getSummary().equals(summary)).findFirst();
 		return elementWithSummary.isPresent() ? elementWithSummary.get() : null;
 	}
 
@@ -414,7 +412,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	public KnowledgeElement getElementById(long id) {
-		Optional<KnowledgeElement> vertexInGraph = vertexSet().parallelStream().filter(vertex -> vertex.getId() == id)
+		Optional<KnowledgeElement> vertexInGraph = vertexSet().stream().filter(vertex -> vertex.getId() == id)
 				.findFirst();
 		return vertexInGraph.isPresent() ? vertexInGraph.get() : null;
 	}
