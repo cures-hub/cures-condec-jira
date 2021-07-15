@@ -361,6 +361,7 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
+		filterSettings.definitionOfDone = {};
 
 		var knowledgeTypesList = getList(knowledgeTypes);
 		if (knowledgeTypesList && Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
@@ -383,13 +384,11 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 
 		if (linkDistance) {
-			filterSettings.linkDistance = linkDistance;
+			filterSettings.definitionOfDone.maximumLinkDistanceToDecisions = linkDistance;
 		}
+
 		if (minimumDecisionCoverage) {
-			filterSettings.definitionOfDone = {
-					"minimumDecisionsWithinLinkDistance": minimumDecisionCoverage,
-					"maximumLinkDistanceToDecisions": linkDistance
-			};
+			filterSettings.definitionOfDone.minimumDecisionsWithinLinkDistance = minimumDecisionCoverage;
 		}
 		if (minDegree) {
 			filterSettings.minDegree = minDegree;

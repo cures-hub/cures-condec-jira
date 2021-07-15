@@ -68,7 +68,7 @@ public class ConDecDashboardItem implements ContextProvider {
 		String linkDistance = request.getParameter("linkDistance");
 		newContext.put("linkDistance", linkDistance);
 		if (linkDistance != null) {
-			filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
+			filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(Integer.parseInt(linkDistance));
 		}
 
 		newContext.putAll(getAdditionalParameters());

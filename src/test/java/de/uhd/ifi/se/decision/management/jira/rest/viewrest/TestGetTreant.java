@@ -76,7 +76,7 @@ public class TestGetTreant extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setLinkDistance(2);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(2);
 		filterSettings.setSelectedElement("TEST-12");
 		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, filterSettings).getStatus());
 	}
@@ -87,7 +87,7 @@ public class TestGetTreant extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setLinkDistance(2);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(2);
 		filterSettings.setSelectedElement("TEST-12");
 		filterSettings.highlightChangeImpacts(true);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getTreant(request, filterSettings).getStatus());

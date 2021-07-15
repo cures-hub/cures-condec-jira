@@ -16,12 +16,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class IssueCheck implements KnowledgeElementCheck {
 
 	private KnowledgeElement issue;
-	private String projectKey;
 
 	@Override
 	public boolean execute(KnowledgeElement decisionProblem) {
 		this.issue = decisionProblem;
-		projectKey = decisionProblem.getProject().getProjectKey();
+		String projectKey = decisionProblem.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}

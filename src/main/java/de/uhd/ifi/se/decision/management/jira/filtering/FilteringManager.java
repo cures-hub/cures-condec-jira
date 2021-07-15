@@ -99,7 +99,7 @@ public class FilteringManager {
 	 */
 	private KnowledgeGraph addTransitiveLinksToFilteredGraph(KnowledgeGraph filteredGraph) {
 		SingleSourcePaths<KnowledgeElement, Link> paths = filterSettings.getSelectedElement()
-				.getAllPaths(filterSettings.getLinkDistance());
+				.getAllPaths(filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 		int id = Integer.MIN_VALUE;
 
 		for (KnowledgeElement element : filteredGraph.vertexSet()) {
@@ -130,7 +130,7 @@ public class FilteringManager {
 	}
 
 	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
-		int linkDistance = filterSettings.getLinkDistance();
+		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
 		return element.getLinkedElements(linkDistance);
 	}
 
@@ -164,7 +164,7 @@ public class FilteringManager {
 
 	private KnowledgeGraph ensureThatFilteredGraphHasCorrectLinkDistance(KnowledgeGraph filteredGraph) {
 		SingleSourcePaths<KnowledgeElement, Link> paths = filteredGraph
-				.getShortestPathAlgorithm(filterSettings.getLinkDistance())
+				.getShortestPathAlgorithm(filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions())
 				.getPaths(filterSettings.getSelectedElement());
 		Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
 				.getDistanceAndPredecessorMap().keySet();

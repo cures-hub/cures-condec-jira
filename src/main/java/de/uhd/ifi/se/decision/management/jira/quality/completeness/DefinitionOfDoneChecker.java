@@ -26,8 +26,7 @@ public final class DefinitionOfDoneChecker {
 			entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()), //
 			entry(KnowledgeType.ARGUMENT, new ArgumentCheck()), //
 			entry(KnowledgeType.PRO, new ArgumentCheck()), //
-			entry(KnowledgeType.CON, new ArgumentCheck()), //
-			entry(KnowledgeType.CODE, new CodeCheck()));
+			entry(KnowledgeType.CON, new ArgumentCheck()));
 
 	private DefinitionOfDoneChecker() {
 	}

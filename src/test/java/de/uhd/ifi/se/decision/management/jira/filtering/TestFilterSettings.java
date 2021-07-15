@@ -210,13 +210,13 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetLinkDistance() {
-		assertEquals(3, filterSettings.getLinkDistance());
+		assertEquals(4, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 	}
 
 	@Test
 	public void testSetLinkDistance() {
-		filterSettings.setLinkDistance(2);
-		assertEquals(2, filterSettings.getLinkDistance());
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(2);
+		assertEquals(2, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 	}
 
 	@Test

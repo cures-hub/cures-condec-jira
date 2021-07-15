@@ -333,6 +333,7 @@ define('dashboard/generalMetrics', [], function () {
 
 		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
+		filterSettings.definitionOfDone = {};
 
 		var knowledgeTypesList = getList(knowledgeTypes);
 		if (knowledgeTypesList && Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
@@ -355,8 +356,9 @@ define('dashboard/generalMetrics', [], function () {
 		}
 
 		if (linkDistance) {
-			filterSettings.linkDistance = linkDistance;
+			filterSettings.definitionOfDone.maximumLinkDistanceToDecisions = linkDistance;
 		}
+
 		if (minDegree) {
 			filterSettings.minDegree = minDegree;
 		}
@@ -442,8 +444,8 @@ define('dashboard/generalMetrics', [], function () {
 
 	function setDefaultLinkDistance(projectKey) {
 		if (projectKey) {
-			conDecAPI.getFilterSettings(projectKey, "", function(filterSettings) {
-				dashboardFilterLinkDistanceNode.value = filterSettings.linkDistance;
+			conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
+				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
 			});
 		}
 	}

@@ -10,12 +10,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class AlternativeCheck implements KnowledgeElementCheck {
 
 	private KnowledgeElement alternative;
-	private String projectKey;
 
 	@Override
 	public boolean execute(KnowledgeElement alternative) {
 		this.alternative = alternative;
-		projectKey = alternative.getProject().getProjectKey();
+		String projectKey = alternative.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}

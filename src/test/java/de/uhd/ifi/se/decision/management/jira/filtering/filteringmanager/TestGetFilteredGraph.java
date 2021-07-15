@@ -43,7 +43,7 @@ public class TestGetFilteredGraph extends TestSetUp {
 
 	@Test
 	public void testLinkDistanceZero() {
-		filterSettings.setLinkDistance(0);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(0);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(1, filteringManager.getFilteredGraph().vertexSet().size());
 		assertEquals(0, filteringManager.getFilteredGraph().edgeSet().size());
@@ -51,21 +51,21 @@ public class TestGetFilteredGraph extends TestSetUp {
 
 	@Test
 	public void testLinkDistanceOne() {
-		filterSettings.setLinkDistance(1);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(1);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(6, filteringManager.getFilteredGraph().vertexSet().size());
 	}
 
 	@Test
 	public void testLinkDistanceTwo() {
-		filterSettings.setLinkDistance(2);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(2);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(10, filteringManager.getFilteredGraph().vertexSet().size());
 	}
 
 	@Test
 	public void testLinkDistanceThree() {
-		filterSettings.setLinkDistance(3);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(3);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(10, filteringManager.getFilteredGraph().vertexSet().size());
 	}
@@ -74,7 +74,7 @@ public class TestGetFilteredGraph extends TestSetUp {
 	public void testTransitiveLinksEnabled() {
 		filterSettings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
 		filterSettings.setCreateTransitiveLinks(true);
-		filterSettings.setLinkDistance(4);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(4);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();
 		assertEquals(4, subgraph.edgeSet().size());
@@ -88,7 +88,7 @@ public class TestGetFilteredGraph extends TestSetUp {
 	public void testTransitiveLinksDisabled() {
 		filterSettings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
 		filterSettings.setCreateTransitiveLinks(false);
-		filterSettings.setLinkDistance(4);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(4);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();
 		assertEquals(3, subgraph.edgeSet().size());
