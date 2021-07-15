@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
@@ -24,7 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
 public class GeneralMetricCalculator {
 
@@ -55,7 +53,8 @@ public class GeneralMetricCalculator {
 		this.filterSettings = filterSettings;
 		this.graph = filteringManager.getFilteredGraph();
 		this.knowledgeElements = graph.vertexSet();
-		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
+		this.jiraIssues = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey()).getJiraIssueManager()
+				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 
 		this.numberOfCommentsPerIssue = calculateNumberOfCommentsPerIssue();

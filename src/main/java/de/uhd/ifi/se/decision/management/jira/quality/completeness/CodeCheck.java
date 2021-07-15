@@ -2,18 +2,16 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem;
 
 /**
- * Checks whether a code file (i.e. a {@link ChangedFile} instance) fulfills
- * the criteria of the {@link DefinitionOfDone} (DoD).
+ * Checks whether a code file (i.e. a {@link ChangedFile} instance) fulfills the
+ * criteria of the {@link DefinitionOfDone} (DoD).
  * 
  * Criteria are 1) the line count (small files are not checked, i.e. always
  * fulfill the DoD), 2) whether the file is a test code file (test classes are
