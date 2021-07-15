@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira;
 
 import static org.mockito.Mockito.mock;
 
+import com.atlassian.jira.jql.builder.JqlClauseBuilder;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockJqlClauseBuilder;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
@@ -25,7 +27,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 /**
  * Mocks a Jira server with Jira's {@link ComponentAccessor}, the custom
  * {@link ComponentGetter} of the ConDec plugin, and test data (e.g.,
- * {@link KnowledgeElements}, {@link Links}, {@link JiraUsers},
+ * {@link KnowledgeElements}, {@link Link}, {@link JiraUsers},
  * {@link JiraProjects}, {@link JiraIssueTypes}, and {@link JiraIssues}).
  * 
  * The following annotations are used to mock the active objects databases
@@ -48,6 +50,7 @@ public abstract class TestSetUp {
 		initComponentAccessor();
 		initComponentGetter();
 		initClassifierPaths();
+		new MockJqlClauseBuilder();
 	}
 
 	/**

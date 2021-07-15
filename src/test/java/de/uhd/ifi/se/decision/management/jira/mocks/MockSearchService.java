@@ -59,7 +59,7 @@ public class MockSearchService implements SearchService {
 
 	@Override
 	public String getQueryString(ApplicationUser applicationUser, Query query) {
-		return null;
+		return query.getQueryString();
 	}
 
 	@Nonnull
