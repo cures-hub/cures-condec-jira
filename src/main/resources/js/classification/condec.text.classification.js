@@ -11,8 +11,7 @@
 	ConDecTextClassification.prototype.init = function (isJiraIssueView = false) {
 		if (isJiraIssueView) {
 			this.viewIdentifier = "jira-issue-module";
-		}
-		else {
+		} else {
 			this.viewIdentifier = "decision-knowledge-page";
 		}
 
@@ -48,12 +47,17 @@
 				let row = generateTableRow(nonValidatedElementsList[i]);
 				this.nonValidatedTableContentElement.appendChild(row);
 			}
-			this.validateAllButton.style.display = "inline";
-			this.validateAllButton.onclick = () => {
-				conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey())
-					.then(() => conDecObservable.notify());
+			if (this.viewIdentifier === "jira-issue-module") {
+				this.validateAllButton.style.display = "inline";
+				this.validateAllButton.onclick = () => {
+					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey())
+						.then(() => conDecObservable.notify());
+				}
+			} else {
+				this.validateAllButton.style.display = "none";
 			}
 		}
+
 		AJS.tabs.setup();
 		conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElementsList.length, `menu-item-text-classification-${this.viewIdentifier}`);
 	};
@@ -84,9 +88,9 @@
 	};
 
 
-	//-----------------------------------------
-	// Load data and call display logic.
-	//-----------------------------------------
+//-----------------------------------------
+// Load data and call display logic.
+//-----------------------------------------
 
 	ConDecTextClassification.prototype.loadData = function () {
 		startLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement);
@@ -97,9 +101,9 @@
 			);
 	}
 
-	//-----------------------------------------
-	//		General purpose functions
-	//-----------------------------------------
+//-----------------------------------------
+//		General purpose functions
+//-----------------------------------------
 
 	function displayErrorMessage(error) {
 		conDecAPI.showFlag("error", "Something went wrong! <br/>" + error)
@@ -117,4 +121,5 @@
 	}
 
 	global.conDecTextClassification = new ConDecTextClassification();
-})(window);
+})
+(window);
