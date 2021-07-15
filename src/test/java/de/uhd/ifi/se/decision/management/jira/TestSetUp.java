@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueTypes;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -25,7 +26,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 /**
  * Mocks a Jira server with Jira's {@link ComponentAccessor}, the custom
  * {@link ComponentGetter} of the ConDec plugin, and test data (e.g.,
- * {@link KnowledgeElements}, {@link Links}, {@link JiraUsers},
+ * {@link KnowledgeElements}, {@link Link}s, {@link JiraUsers},
  * {@link JiraProjects}, {@link JiraIssueTypes}, and {@link JiraIssues}).
  * 
  * The following annotations are used to mock the active objects databases

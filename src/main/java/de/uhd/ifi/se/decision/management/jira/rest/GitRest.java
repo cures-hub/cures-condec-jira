@@ -18,10 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
@@ -33,7 +31,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 
 /**
@@ -103,8 +100,8 @@ public class GitRest {
 		gitConfig.setPostDefaultBranchCommitsActivated(isPostDefaultBranchCommits);
 		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
 		if (isPostDefaultBranchCommits) {
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			List<Issue> jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
+			List<Issue> jiraIssues = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+					.getAllJiraIssuesForProject();
 			jiraIssues
 					.forEach(jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
 		}

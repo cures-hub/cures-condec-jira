@@ -46,7 +46,6 @@
 								AJS.tabs.change(jQuery('a[href="#quality-check-tab"]'));
 								window.open("#quality-check-tab", "blank");
 							}
-
 						}
 						if (isLinkRecommendationActivated) {
 							conDecPrompt.promptLinkSuggestion();
@@ -112,9 +111,10 @@
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-		conDecAPI.getFilterSettings(projectKey, "", settings => {
-			document.getElementById("condec-prompt-minimum-coverage").innerHTML = settings.minimumDecisionCoverage;
-			document.getElementById("condec-prompt-link-distance").innerHTML = settings.linkDistance;
+
+		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
+			document.getElementById("condec-prompt-minimum-coverage").innerHTML = definitionOfDone.minimumDecisionsWithinLinkDistance;
+			document.getElementById("condec-prompt-link-distance").innerHTML = definitionOfDone.maximumLinkDistanceToDecisions;
 		});
 		conDecDoDCheckingAPI.getCoverageOfJiraIssue(projectKey, issueKey, (coverage) => {
 			document.getElementById("condec-prompt-issue-coverage").innerHTML = coverage["Issue"];
@@ -122,7 +122,7 @@
 			document.getElementById("dod-spinner").style.display = "none";
 		});
 
-		document.getElementById("definition-of-done-checking-prompt-jira-issue-key").innerHTML = conDecAPI.getIssueKey();
+		document.getElementById("definition-of-done-checking-prompt-jira-project-key").innerHTML = projectKey;
 	}
 
 	ConDecPrompt.prototype.promptNonValidatedElements = function () {
@@ -130,7 +130,6 @@
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-		const validateAllButton = document.getElementById("non-validated-elements-validate-button");
 		conDecTextClassificationAPI.getNonValidatedElements(conDecAPI.projectKey, issueKey)
 			.then(response => {
 				const nonValidatedElements = response["nonValidatedElements"]
@@ -139,7 +138,6 @@
 
 				if (nonValidatedElements.length === 0) {
 					document.getElementById("non-validated-table-body").innerHTML = "<i>All elements have been validated!</i>";
-					validateAllButton.style.display = "none";
 				} else {
 					let tableContents = "";
 					nonValidatedElements.forEach(recommendation => {
@@ -151,10 +149,8 @@
 
 					});
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
-					validateAllButton.onclick = function () {
-						conDecTextClassificationAPI.validateAllElements(conDecAPI.projectKey, issueKey)
-							.then(() => conDecObservable.notify());
-					};
+
+
 				}
 				document.getElementById("non-validated-spinner").style.display = "none";
 			})

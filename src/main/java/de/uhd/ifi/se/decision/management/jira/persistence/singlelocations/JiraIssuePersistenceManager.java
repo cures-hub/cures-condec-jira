@@ -16,7 +16,6 @@ import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.IssueService.TransitionValidationResult;
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.event.type.EventDispatchOption;
@@ -30,20 +29,14 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
-import com.atlassian.jira.issue.search.SearchException;
-import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.issue.status.Status;
-import com.atlassian.jira.jql.builder.JqlClauseBuilder;
-import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
-import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.jira.workflow.JiraWorkflow;
 import com.atlassian.jira.workflow.WorkflowManager;
-import com.atlassian.query.Query;
 import com.opensymphony.workflow.loader.ActionDescriptor;
 import com.opensymphony.workflow.loader.StepDescriptor;
 
@@ -267,7 +260,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		if (projectKey == null) {
 			return new ArrayList<>();
 		}
-		return getJiraIssues().stream().map(issue -> new KnowledgeElement(issue)).collect(Collectors.toList());
+		return getAllJiraIssuesForProject().stream().map(issue -> new KnowledgeElement(issue))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -373,7 +367,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 		updateJiraIssue(jiraIssue, user);
 	}
 
-	private List<Issue> getJiraIssues() {
+	public List<Issue> getAllJiraIssuesForProject() {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Project project = ComponentAccessor.getProjectManager().getProjectObjByKeyIgnoreCase(projectKey);
 		Collection<Long> jiraIssueIds;
@@ -416,29 +410,5 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 			isStatusUpdated = false;
 		}
 		return isStatusUpdated;
-	}
-
-	public static List<Issue> getAllJiraIssuesForProject(ApplicationUser user, String projectKey) {
-		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
-		return getIssuesMatchingQuery(user, query);
-	}
-
-	public static List<Issue> getAllJiraIssuesForProjectAndType(ApplicationUser user, String projectKey,
-			IssueType jiraIssueType) {
-		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		Query query = jqlClauseBuilder.project(projectKey).and().issueType(jiraIssueType.getName()).buildQuery();
-		return getIssuesMatchingQuery(user, query);
-	}
-
-	private static List<Issue> getIssuesMatchingQuery(ApplicationUser user, Query query) {
-		SearchResults<Issue> searchResult = null;
-		try {
-			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
-			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-		} catch (SearchException e) {
-			LOGGER.error("Getting all Jira issues for this project failed. Message: " + e.getMessage());
-		}
-		return searchResult.getResults();
 	}
 }

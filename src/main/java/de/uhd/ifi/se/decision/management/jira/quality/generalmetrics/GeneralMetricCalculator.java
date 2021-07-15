@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
 public class GeneralMetricCalculator {
 
@@ -49,7 +49,8 @@ public class GeneralMetricCalculator {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.graph = filteringManager.getFilteredGraph();
 		this.filterSettings = filterSettings;
-		this.jiraIssues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, filterSettings.getProjectKey());
+		this.jiraIssues = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey()).getJiraIssueManager()
+				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 
 		this.numberOfCommentsPerIssue = calculateNumberOfCommentsPerIssue();

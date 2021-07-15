@@ -1,16 +1,12 @@
 <div id="definition-of-done-checking-prompt">
     <h3>Definition of Done</h3>
-    <strong id="definition-of-done-checking-prompt-jira-issue-key"></strong> violates the definition of done for the
-    knowledge documentation. The following problems exist:
-    <br/>
-
     <div class="quality-check-container">
-        The definition of done reqiures a minimum coverage of <label id="condec-prompt-minimum-coverage"></label> within
-        a link distance of <label id="condec-prompt-link-distance"></label>.
+        The definition of done for the project <strong id="definition-of-done-checking-prompt-jira-project-key"></strong> requires a minimum coverage of <strong id="condec-prompt-minimum-coverage"></strong> within
+        a link distance of <strong id="condec-prompt-link-distance"></strong>.
 
         <br/>
-        This element is currently covered by <label id="condec-prompt-issue-coverage"></label> issues and <label
-        id="condec-prompt-decision-coverage"></label> decisions.
+        This element is currently covered by <strong id="condec-prompt-issue-coverage"></strong> issues and <strong
+        id="condec-prompt-decision-coverage"></strong> decisions.
 
     </div>
     <button id="go-to-quality-check-tab" class="aui-button aui-button-link">
