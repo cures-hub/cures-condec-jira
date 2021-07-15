@@ -172,11 +172,11 @@
 			decisionProblems.forEach(decisionProblem => {
 				const filterSettings = {
 					"projectKey": projectKey,
-					"selectedElement": decisionProblem.key
+					"selectedElement": decisionProblem.id
 				};
 				var totalNumberOfRecommendations = 0;
 				conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
-					.then(recommendations => {						
+					.then(recommendations => {
 						let numberOfRecommendations = recommendations.length;
 						let tableRow = "<tr>";
 						tableRow += "<td>" + decisionProblem.summary + "</td>";
