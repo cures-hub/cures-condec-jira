@@ -3,11 +3,9 @@
     <div class="quality-check-container">
         The definition of done for the project <strong id="definition-of-done-checking-prompt-jira-project-key"></strong> requires a minimum coverage of <strong id="condec-prompt-minimum-coverage"></strong> within
         a link distance of <strong id="condec-prompt-link-distance"></strong>.
-
         <br/>
         This element is currently covered by <strong id="condec-prompt-issue-coverage"></strong> issues and <strong
         id="condec-prompt-decision-coverage"></strong> decisions.
-
     </div>
     <button id="go-to-quality-check-tab" class="aui-button aui-button-link">
         <span class="aui-icon aui-icon-small aui-iconfont-link">Go to quality check tab</span>

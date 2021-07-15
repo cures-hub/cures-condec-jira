@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -330,9 +333,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph getMutableSubgraphFor(Collection<KnowledgeElement> elements) {
 		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
 		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
-		edgeSet().stream()
-				.filter(edge -> elements.contains(getEdgeSource(edge)) && elements.contains(getEdgeTarget(edge)))
-				.forEach(mutableSubgraph::addEdge);
+		edgeSet().stream().filter(edge -> {
+			return elements.contains(edge.getSource()) && elements.contains(edge.getTarget());
+		}).forEach(edge -> mutableSubgraph.addEdge(edge));
 		return mutableSubgraph;
 	}
 
@@ -343,7 +346,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         or null if not existing.
 	 */
 	public KnowledgeElement getElementByKey(String elementKey) {
-		Optional<KnowledgeElement> elementWithKey = vertexSet().parallelStream()
+		Optional<KnowledgeElement> elementWithKey = vertexSet().stream()
 				.filter(element -> element.getKey().equals(elementKey)).findFirst();
 		return elementWithKey.isPresent() ? elementWithKey.get() : null;
 	}
@@ -355,7 +358,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         summary or null if not existing.
 	 */
 	public KnowledgeElement getElementBySummary(String summary) {
-		Optional<KnowledgeElement> elementWithSummary = vertexSet().parallelStream()
+		Optional<KnowledgeElement> elementWithSummary = vertexSet().stream()
 				.filter(element -> element.getSummary().equals(summary)).findFirst();
 		return elementWithSummary.isPresent() ? elementWithSummary.get() : null;
 	}
@@ -411,8 +414,19 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	public KnowledgeElement getElementById(long id) {
-		Optional<KnowledgeElement> vertexInGraph = vertexSet().parallelStream().filter(vertex -> vertex.getId() == id)
+		Optional<KnowledgeElement> vertexInGraph = vertexSet().stream().filter(vertex -> vertex.getId() == id)
 				.findFirst();
 		return vertexInGraph.isPresent() ? vertexInGraph.get() : null;
+	}
+
+	/**
+	 * @param maxLinkDistance
+	 * @return {@link DijkstraShortestPath} algorithm to get all paths within a link
+	 *         distance. The paths do NOT depend on link direction because the
+	 *         method converts the directed graph into an undirected graph.
+	 */
+	public ShortestPathAlgorithm<KnowledgeElement, Link> getShortestPathAlgorithm(int maxLinkDistance) {
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(this);
+		return new DijkstraShortestPath<>(undirectedGraph, maxLinkDistance);
 	}
 }

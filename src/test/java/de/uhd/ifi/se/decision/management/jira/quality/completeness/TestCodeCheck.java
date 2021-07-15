@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.After;
 import org.junit.Before;
@@ -18,19 +18,19 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCodeCompletenessCheck extends TestSetUp {
+public class TestCodeCheck extends TestSetUp {
 
 	private ChangedFile fileThatIsNotDone;
 	private ChangedFile smallFileThatIsDone;
 	private ChangedFile testFileThatIsDone;
 	private ChangedFile linkedFileThatIsDone;
 
-	private CodeCompletenessCheck codeCompletenessCheck;
+	private CodeCheck codeCompletenessCheck;
 
 	@Before
 	public void setUp() {
 		init();
-		codeCompletenessCheck = new CodeCompletenessCheck();
+		codeCompletenessCheck = new CodeCheck();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		fileThatIsNotDone = CodeFiles.getCodeFileNotDone();
 		smallFileThatIsDone = CodeFiles.getSmallCodeFileDone();
@@ -69,7 +69,7 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 		KnowledgeElement decision = JiraIssues.addElementToDataBase(322, KnowledgeType.DECISION);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(linkedFileThatIsDone, decision,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
-		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
+		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		definitionOfDone.setMaximumLinkDistanceToDecisions(0);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
@@ -78,7 +78,8 @@ public class TestCodeCompletenessCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetFailedCompletenessCriteria() {
-		assertTrue(codeCompletenessCheck.getFailedCriteria(testFileThatIsDone).isEmpty());
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		assertTrue(codeCompletenessCheck.getQualityProblems(testFileThatIsDone, definitionOfDone).isEmpty());
 	}
 
 	@After
