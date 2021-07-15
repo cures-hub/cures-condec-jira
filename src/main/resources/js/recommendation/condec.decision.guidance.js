@@ -10,19 +10,10 @@
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
-		// get all the elements for the dropdown and fill the dropdown
+		
+		// get all the decision problems for the dropdown and fill the dropdown
+		conDecAPI.getDecisionProblems({}, fillDecisionProblemDropDown);
 
-		var jiraIssueKey = conDecAPI.getIssueKey();
-		console.log(jiraIssueKey);
-		const filterSettings = {
-			knowledgeTypes: ["Issue", "Problem", "Goal"],
-			selectedElement: jiraIssueKey !== undefined ? jiraIssueKey : ""
-		};
-		conDecAPI.getKnowledgeElements(filterSettings, (results) => {
-			const filteredResults = results.filter((element) => element.id !== JIRA.Issue.getIssueId()
-				|| filterSettings.knowledgeTypes.includes(element.type))
-			fillDecisionProblemDropDown(filteredResults);
-		});
 		// add button listener
 		this.addOnClickListenerForRecommendations();
 

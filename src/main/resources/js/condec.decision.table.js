@@ -1,12 +1,12 @@
-(function (global) {
+(function(global) {
 
 	let ConDecDecisionTable = function ConDecDecisionTable() {
 	};
 
 	let issues = [];
 	let currentIssue;
-	
-	ConDecDecisionTable.prototype.initView = function (isJiraIssueView = false) {		
+
+	ConDecDecisionTable.prototype.initView = function(isJiraIssueView = false) {
 		// Fill HTML elements for filter criteria
 		conDecFiltering.fillFilterElements("decision-table");
 		conDecFiltering.initDropdown("status-dropdown-decision-table", conDecAPI.issueStatus);
@@ -15,61 +15,44 @@
 			document.getElementById("link-distance-input-label-decision-table").remove();
 			document.getElementById("link-distance-input-decision-table").remove();
 		}
-		
+
 		// Add on click listeners to filter button
-     	conDecFiltering.addOnClickEventToFilterButton("decision-table", conDecDecisionTable.updateView);     	
-		this.addOnClickEventToDecisionTableButtons();		
+		conDecFiltering.addOnClickEventToFilterButton("decision-table", conDecDecisionTable.updateView);
+		this.addOnClickEventToDecisionTableButtons();
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
-		
+
 		// Fill view
 		this.updateView();
 	};
-	
-	ConDecDecisionTable.prototype.updateView = function () {
+
+	ConDecDecisionTable.prototype.updateView = function() {
 		conDecDecisionTable.loadDecisionProblems();
 	};
 
 	ConDecDecisionTable.prototype.getCurrentIssue = function() {
 		return currentIssue;
 	};
-	
-	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function (viewIdentifier = "decision-table") {
-		document.getElementById("add-criterion-button-" + viewIdentifier).addEventListener("click", function (event) {
-			conDecDecisionTable.showAddCriteriaToDecisionTableDialog(viewIdentifier);			
+
+	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function(viewIdentifier = "decision-table") {
+		document.getElementById("add-criterion-button-" + viewIdentifier).addEventListener("click", function(event) {
+			conDecDecisionTable.showAddCriteriaToDecisionTableDialog(viewIdentifier);
 		});
-		document.getElementById("add-alternative-button-" + viewIdentifier).addEventListener("click", function (event) {
+		document.getElementById("add-alternative-button-" + viewIdentifier).addEventListener("click", function(event) {
 			conDecDecisionTable.showCreateDialogForIssue();
 		});
 	};
-	
- 	/**
-	 * external references: none, called in updateView function
-	 */
-	ConDecDecisionTable.prototype.loadDecisionProblems = function () {
+
+	/**
+   * external references: none, called in updateView function
+   */
+	ConDecDecisionTable.prototype.loadDecisionProblems = function() {
 		console.log("conDecDecisionTable loadDecisionProblems");
 		var filterSettings = conDecFiltering.getFilterSettings("decision-table");
-		filterSettings["knowledgeTypes"] = ["Issue", "Problem", "Goal"];
-		const selectedElementKey = conDecAPI.getIssueKey();		
-		if (selectedElementKey !== null && selectedElementKey !== undefined) {
-			filterSettings["selectedElement"] = selectedElementKey;
-		}
-		conDecAPI.getKnowledgeElements(filterSettings, function (knowledgeElements) {
-			issues = knowledgeElements;
-			if (selectedElementKey !== null && selectedElementKey !== undefined) {
-				issues = knowledgeElements.filter(element => !isSelectedElement(element, selectedElementKey) || filterSettings["knowledgeTypes"].includes(element.type));
-			}
-			fillDecisionProblemDropDown(issues, "decision-table");
-		});
+		conDecAPI.getDecisionProblems(filterSettings, (decisionProblems) =>
+			fillDecisionProblemDropDown(decisionProblems, "decision-table"));
 	};
-	
-	/**
-	 * True if the element is the selected element in the filter settings.
-	 */
-	function isSelectedElement(element, selectedElementKey) {
-		return selectedElementKey.match(element.key);
-	}
 
 	/**
 	 * @param issues
@@ -90,7 +73,7 @@
 			dropDown.innerHTML += "<option value='" + issue.id + "'>" + issue.summary + "</option>";
 		}
 
-		function selectDecisionProblem () {
+		function selectDecisionProblem() {
 			currentIssue = issues.find(issue => (dropDown.value).match(issue.id));
 			const filterSettings = {
 				"selectedElement": currentIssue.key
@@ -105,28 +88,28 @@
 		}
 		selectDecisionProblem();
 	}
-	
+
 	function enableButtons(areButtonsEnabled, viewIdentifier) {
 		document.getElementById("add-criterion-button-" + viewIdentifier).disabled = !areButtonsEnabled;
 		document.getElementById("add-alternative-button-" + viewIdentifier).disabled = !areButtonsEnabled;
 		document.getElementById("add-argument-button-" + viewIdentifier).disabled = !areButtonsEnabled;
 	}
-	
-	ConDecDecisionTable.prototype.build = function (filterSettings, viewIdentifier = "decision-table", decisionProblem) {
+
+	ConDecDecisionTable.prototype.build = function(filterSettings, viewIdentifier = "decision-table", decisionProblem) {
 		this.viewIdentifier = viewIdentifier;
 		currentIssue = decisionProblem;
-		conDecAPI.getDecisionTable(filterSettings, function (decisionTable) {
+		conDecAPI.getDecisionTable(filterSettings, function(decisionTable) {
 			buildDecisionTable(decisionTable, viewIdentifier);
 		});
 	}
 
-	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function (viewIdentifier) {
-		showAddCriterionToDecisionTableDialog(decisionTableData.criteria, function (selectedCriteria) {					
+	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function(viewIdentifier) {
+		showAddCriterionToDecisionTableDialog(decisionTableData.criteria, function(selectedCriteria) {
 			var removedCriteria = decisionTableData.criteria.filter(criterion => !selectedCriteria.find(item => item.id === criterion.id));
 			for (removedCriterion of removedCriteria) {
 				const index = decisionTableData.criteria.findIndex(criterion => criterion.id === removedCriterion.id);
 				decisionTableData.criteria.splice(index, index >= 0 ? 1 : 0);
-				
+
 				for (alternative of decisionTableData.alternatives) {
 					for (argument of alternative.arguments) {
 						if (argument.hasOwnProperty("criterion") && argument.criterion.id == removedCriterion.id) {
@@ -135,10 +118,10 @@
 					}
 				}
 			}
-			
+
 			for (selectedCriterion of selectedCriteria) {
 				var isCriteriaAlreadyShown = decisionTableData.criteria.find(item => item.id === selectedCriterion.id) ? true : false;
-				if (!isCriteriaAlreadyShown) { 
+				if (!isCriteriaAlreadyShown) {
 					decisionTableData.criteria.push(selectedCriterion);
 				}
 			}
@@ -146,50 +129,50 @@
 			buildDecisionTable(decisionTableData, viewIdentifier);
 		});
 	};
-	
-	function showAddCriterionToDecisionTableDialog (currentCriteria, callback) {
+
+	function showAddCriterionToDecisionTableDialog(currentCriteria, callback) {
 		let criteriaDialog = document.getElementById("criteria-dialog");
 		let submitButton = document.getElementById("criteria-dialog-submit-button");
 		let cancelButton = document.getElementById("criteria-dialog-cancel-button");
 		let tableBody = document.getElementById("criteria-table-body");
-    	tableBody.innerHTML = "";
-        
-		conDecAPI.getDecisionTableCriteria(function (allCriteria) {        	
-        	for (let criterion of allCriteria) {
-        		let tableRow = document.createElement("tr");
-        		tableBody.appendChild(tableRow);
-           		let isChecked = currentCriteria.find(item => item.id === criterion.id) ? "checked" : "";
-           		let summary = allCriteria.find(item => item.id === criterion.id).summary;
-   
-           		tableRow.innerHTML += `<td headers="criterion-number">`
-           			+ `<input class="checkbox" type="checkbox" name="criteria-checkboxes" id="checkBoxOne" ${isChecked} value="${criterion.id}">`
-        			+ `</td>`
-        			+ `<td headers="criterion-name">${summary}</td>`;
-        	}
-        	
-        	document.getElementById("link-to-settings").href = "../../../plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey() 
-        		+ "&category=rationaleModel";
-			
-			submitButton.onclick = function () {				
-				var selectedCriteria = $('input[type="checkbox"][name="criteria-checkboxes"]:checked').map(function() { 
+		tableBody.innerHTML = "";
+
+		conDecAPI.getDecisionTableCriteria(function(allCriteria) {
+			for (let criterion of allCriteria) {
+				let tableRow = document.createElement("tr");
+				tableBody.appendChild(tableRow);
+				let isChecked = currentCriteria.find(item => item.id === criterion.id) ? "checked" : "";
+				let summary = allCriteria.find(item => item.id === criterion.id).summary;
+
+				tableRow.innerHTML += `<td headers="criterion-number">`
+					+ `<input class="checkbox" type="checkbox" name="criteria-checkboxes" id="checkBoxOne" ${isChecked} value="${criterion.id}">`
+					+ `</td>`
+					+ `<td headers="criterion-name">${summary}</td>`;
+			}
+
+			document.getElementById("link-to-settings").href = "../../../plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey()
+				+ "&category=rationaleModel";
+
+			submitButton.onclick = function() {
+				var selectedCriteria = $('input[type="checkbox"][name="criteria-checkboxes"]:checked').map(function() {
 					return allCriteria.find(criterion => (this.value).match(criterion.id));
 				}).get();
 				callback(selectedCriteria);
 				AJS.dialog2(criteriaDialog).hide();
 			}
 		});
-        
-        // Show dialog
-        AJS.dialog2(criteriaDialog).show();
 
-        cancelButton.onclick = function () {
+		// Show dialog
+		AJS.dialog2(criteriaDialog).show();
+
+		cancelButton.onclick = function() {
 			AJS.dialog2(criteriaDialog).hide();
-        }
+		}
 	}
-	
-	ConDecDecisionTable.prototype.showCreateDialogForIssue = function () {
+
+	ConDecDecisionTable.prototype.showCreateDialogForIssue = function() {
 		if (currentIssue) {
-			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative");		
+			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative");
 		}
 	}
 
@@ -213,14 +196,14 @@
 				+ `${alternative.summary}</aui-item-link>`;
 		}
 
-		dropDownMenu.addEventListener("click", function (event) {
+		dropDownMenu.addEventListener("click", function(event) {
 			const alternative = getElementObj(event.target.parentNode.id);
 			if (alternative) {
 				conDecDialog.showCreateDialog(alternative.id, alternative.documentationLocation, "Pro-argument");
 			}
 		});
 	}
-	
+
 	/**
 	 * 
 	 * @param {Array
@@ -228,25 +211,25 @@
 	 */
 	function addAlternativesToDecisionTable(alternatives, criteria, viewIdentifier) {
 		let body = document.getElementById("decision-table-body-" + viewIdentifier);
-		
-		if (alternatives.length === 0) {	
+
+		if (alternatives.length === 0) {
 			body.innerText = "Please add at least one solution option for this decision problem.";
 			return;
 		}
-		
+
 		body.innerHTML = "";
 		for (let alternative of alternatives) {
 			let rowElement = document.createElement("tr");
 			rowElement.id = `bodyRowAlternatives${alternative.id}`;
 			body.appendChild(rowElement);
-			
+
 			let image = "";
 			if (alternative.image) {
 				image = `<img src="${alternative.image}"</img>`;
 			}
-			
+
 			let content = `${image} ${alternative.summary}`;
-			
+
 			rowElement.innerHTML += `<td>
 				<div class="alternative" id="${alternative.id}">${content}</div></td>`;
 			if (criteria.length > 0) {
@@ -268,11 +251,11 @@
 	function addCriteriaToToDecisionTable(criteria, viewIdentifier) {
 		let header = document.getElementById("decision-table-header-row-" + viewIdentifier);
 		header.innerHTML = "";
-		
+
 		let firstRowHeaderCell = document.createElement("th");
 		firstRowHeaderCell.innerText = "Solution options (Alternatives and Decision)";
 		header.appendChild(firstRowHeaderCell);
-		
+
 		for (criterion of criteria) {
 			let criteriaColumn = document.createElement("th");
 			criteriaColumn.id = "criteriaClmTitle" + criterion.id;
@@ -302,7 +285,7 @@
 			if (argument.image) {
 				image = `<img src="${argument.image}"</img>`;
 			}
-			
+
 			let content = `<div id="${alternative.id}:${argument.id}" class="argument draggable" draggable="true">
 				${image} ${argument.summary}</div>`;
 			rowElement.innerHTML += rowElement.innerHTML.length ?
@@ -314,7 +297,7 @@
 		let elements = document.getElementsByClassName(className);
 		for (let index = 0; index < elements.length; index++) {
 			const element = elements[index];
-			element.addEventListener("contextmenu", function (event) {
+			element.addEventListener("contextmenu", function(event) {
 				event.preventDefault();
 				let object;
 				if (className === "argument") {
@@ -322,13 +305,13 @@
 					let argumentID = tmpIDs[1];
 					let alternativeID = tmpIDs[0];
 					object = decisionTableData.alternatives.find(alternative => alternative.id == alternativeID).arguments.find(
-							argument => argument.id == argumentID);
+						argument => argument.id == argumentID);
 				} else {
 					object = getElementObj(this.id);
 				}
 				object = Array.isArray(object) ? object[0] : object;
 				if (object) {
-					conDecContextMenu.createContextMenu(object.id, object.documentationLocation, event, "tbldecisionTable-"+ className);
+					conDecContextMenu.createContextMenu(object.id, object.documentationLocation, event, "tbldecisionTable-" + className);
 				}
 			});
 		}
@@ -338,15 +321,15 @@
 		let draggables = document.getElementsByClassName("draggable");
 		let droppables = document.getElementsByClassName("droppable");
 		for (let x = 0; x < draggables.length; x++) {
-			draggables[x].addEventListener("dragstart", function (event) {
+			draggables[x].addEventListener("dragstart", function(event) {
 				drag(event);
 			});
 		}
 		for (let x = 0; x < droppables.length; x++) {
-			droppables[x].addEventListener("drop", function (event) {
+			droppables[x].addEventListener("drop", function(event) {
 				drop(event);
 			});
-			droppables[x].addEventListener("dragover", function (event) {
+			droppables[x].addEventListener("dragover", function(event) {
 				allowDrop(event);
 			});
 		}
@@ -387,7 +370,7 @@
 		// moved arg. from unknown to criteria column
 		if (source.toLowerCase().includes("unknown") && target.toLowerCase().includes("unknown")) {
 			const sourceAlternative = getElementObj(source);
-			const targetAlternative = getElementObj(target);			
+			const targetAlternative = getElementObj(target);
 			const argument = decisionTableData.alternatives
 				.find(alternative => alternative.id == sourceAlternative.id).arguments
 				.find(argument => argument.id == elemId);
@@ -449,23 +432,23 @@
 			let concatinated = element.replace("cell", "").split(":");
 			let alternativeId = concatinated[0];
 			let criteriaId = concatinated[1];
-			return [decisionTableData.alternatives.find(alternative => alternative.id == alternativeId), 
-				decisionTableData.criteria.find(criteria => criteria.id == criteriaId)];
+			return [decisionTableData.alternatives.find(alternative => alternative.id == alternativeId),
+			decisionTableData.criteria.find(criteria => criteria.id == criteriaId)];
 		} else {
 			return decisionTableData.alternatives.find(object => object.id == element);
 		}
 	}
 
 	function createLink(parentObj, childObj) {
-		conDecAPI.createLink(parentObj.id, childObj.id, parentObj.documentationLocation, childObj.documentationLocation, null, function (data) {
+		conDecAPI.createLink(parentObj.id, childObj.id, parentObj.documentationLocation, childObj.documentationLocation, null, function(data) {
 		});
 	}
 
 	function deleteLink(parentObj, childObj) {
-		conDecAPI.deleteLink(childObj.id, parentObj.id, childObj.documentationLocation, parentObj.documentationLocation, function (data) {
+		conDecAPI.deleteLink(childObj.id, parentObj.id, childObj.documentationLocation, parentObj.documentationLocation, function(data) {
 		});
 	}
-	
+
 	// export ConDecDecisionTable
 	global.conDecDecisionTable = new ConDecDecisionTable();
 })(window);
