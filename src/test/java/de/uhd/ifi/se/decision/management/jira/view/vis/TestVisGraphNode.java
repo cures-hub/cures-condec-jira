@@ -56,7 +56,6 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testNodeDescription() {
 		VisNode node = new VisNode(element, 1);
-		element.setProject("TEST");
 		assertTrue(node.getTitle().contains("Linked decision knowledge is incomplete."));
 	}
 
@@ -108,8 +107,8 @@ public class TestVisGraphNode extends TestSetUp {
 	public void testGetFontProjectNull() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setProject((DecisionKnowledgeProject) null);
-		VisNode node = new VisNode(element, 1, filterSettings);
-		assertEquals("crimson", node.getFont().values().iterator().next());
+		VisNode node = new VisNode(knowledgeElement, 1, filterSettings);
+		assertEquals("black", node.getFont().values().iterator().next());
 	}
 
 	@Test

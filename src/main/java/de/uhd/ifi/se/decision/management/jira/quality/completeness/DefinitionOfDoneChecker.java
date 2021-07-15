@@ -33,7 +33,8 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * Checks if the definition of done has been violated for a {@link KnowledgeElement}.
+	 * Checks if the definition of done has been violated for a
+	 * {@link KnowledgeElement}.
 	 *
 	 * @issue Should knowledge elements without definition of done be assumed to be
 	 *        complete or incomplete?
@@ -53,8 +54,8 @@ public final class DefinitionOfDoneChecker {
 	/**
 	 * Checks if the documentation of this {@link KnowledgeElement} is incomplete.
 	 *
-	 * @return true if this knowledge element is incompletely documented,
-	 *         else it returns false.
+	 * @return true if this knowledge element is incompletely documented, else it
+	 *         returns false.
 	 */
 	public static boolean isIncomplete(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
@@ -100,10 +101,10 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * Iterates recursively over the knowledge graph of the
-	 * {@link KnowledgeElement} and checks if it fulfills the minimum coverage.
-	 * {@link ChangedFile} that are test files or with less lines of codes
-	 * than defined in the {@link DefinitionOfDone} don't require any coverage.
+	 * Iterates recursively over the knowledge graph of the {@link KnowledgeElement}
+	 * and checks if it fulfills the minimum coverage. {@link ChangedFile} that are
+	 * test files or with less lines of codes than defined in the
+	 * {@link DefinitionOfDone} don't require any coverage.
 	 *
 	 * @return true if there are at least as many elements of the specified
 	 *         {@link KnowledgeType} as the minimum coverage demands, else it
@@ -130,10 +131,10 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * Iterates recursively over the knowledge graph of the
-	 * {@link KnowledgeElement} and checks if it has any coverage.
-	 * {@link ChangedFile} that are test files or with less lines of codes
-	 * than defined in the {@link DefinitionOfDone} don't require any coverage.
+	 * Iterates recursively over the knowledge graph of the {@link KnowledgeElement}
+	 * and checks if it has any coverage. {@link ChangedFile} that are test files or
+	 * with less lines of codes than defined in the {@link DefinitionOfDone} don't
+	 * require any coverage.
 	 *
 	 * @return true if there is at least one element of the specified
 	 *         {@link KnowledgeType}, else it returns false.
@@ -154,7 +155,8 @@ public final class DefinitionOfDoneChecker {
 		return true;
 	}
 
-	private static boolean checkIfCodeFileRequiresCoverage(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
+	private static boolean checkIfCodeFileRequiresCoverage(KnowledgeElement knowledgeElement,
+			FilterSettings filterSettings) {
 		if (knowledgeElement instanceof ChangedFile) {
 			int lineNumbersInCodeFile = filterSettings.getDefinitionOfDone().getLineNumbersInCodeFile();
 			ChangedFile codeFile = (ChangedFile) knowledgeElement;
@@ -198,6 +200,9 @@ public final class DefinitionOfDoneChecker {
 	 */
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
+		if (knowledgeElement.getProject() == null) {
+			return "";
+		}
 		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityProblem problem : qualityProblems) {
