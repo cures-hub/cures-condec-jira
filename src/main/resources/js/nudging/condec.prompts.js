@@ -1,8 +1,8 @@
-(function(global) {
+(function (global) {
 
-	const ConDecPrompt = function() {
+	const ConDecPrompt = function () {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
-		jQuery(document).ajaxComplete(function(event, request, settings) {
+		jQuery(document).ajaxComplete(function (event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				AJS.tabs.setup();
 				const issueKey = conDecAPI.getIssueKey();
@@ -11,7 +11,7 @@
 
 				const unifiedPromptElement = document.getElementById("unified-prompt");
 
-				document.getElementById("warning-dialog-continue").onclick = function() {
+				document.getElementById("warning-dialog-continue").onclick = function () {
 					AJS.dialog2(unifiedPromptElement).hide();
 				}
 
@@ -80,7 +80,7 @@
 		});
 	};
 
-	ConDecPrompt.prototype.promptLinkSuggestion = function() {
+	ConDecPrompt.prototype.promptLinkSuggestion = function () {
 		const issueId = JIRA.Issue.getIssueId();
 		const projectKey = conDecAPI.projectKey;
 		if (issueId === null || issueId === undefined) {
@@ -88,7 +88,7 @@
 		}
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
+			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
 			.then((recommendations) => {
 				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
 				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
@@ -101,7 +101,7 @@
 			});
 	}
 
-	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
+	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function () {
 		const projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
@@ -130,7 +130,7 @@
 		document.getElementById("definition-of-done-checking-prompt-jira-project-key").innerHTML = projectKey;
 	}
 
-	ConDecPrompt.prototype.promptNonValidatedElements = function() {
+	ConDecPrompt.prototype.promptNonValidatedElements = function () {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -154,14 +154,12 @@
 
 					});
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
-
-
 				}
 				document.getElementById("non-validated-spinner").style.display = "none";
 			})
 	};
 
-	ConDecPrompt.prototype.promptDecisionGuidance = function() {
+	ConDecPrompt.prototype.promptDecisionGuidance = function () {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -169,28 +167,41 @@
 		const projectKey = conDecAPI.getProjectKey();
 
 		conDecAPI.getDecisionProblems({}, decisionProblems => {
-			decisionProblems.forEach(decisionProblem => {
+			// Get an array containing promises that resolve to the numbers of elements in each decision problem.
+			const recommendationsNumsPromises = decisionProblems.map(decisionProblem => {
 				const filterSettings = {
 					"projectKey": projectKey,
-					"selectedElement": decisionProblem.id
+					"selectedElementObject": decisionProblem
 				};
-				var totalNumberOfRecommendations = 0;
-				conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
-					.then(recommendations => {
-						let numberOfRecommendations = recommendations.length;
+				return conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
+					.then(res => res.length)
+					.catch(error => {
+						console.log("Error in making decision guidance prompt table was: ", error)
+						document.getElementById("decision-problems-table-body").innerHTML = "<i>An error occurred!</i>"
+					});
+			});
+			// Wait for all promises to resolve, then continue adding the numbers of recommendations to the table
+			Promise.all(recommendationsNumsPromises)
+				.then(numbersOfRecommendations => {
+					var totalNumberOfRecommendations = 0;
+					decisionProblems.forEach((decisionProblem, index) => {
 						let tableRow = "<tr>";
 						tableRow += "<td>" + decisionProblem.summary + "</td>";
-						tableRow += "<td>" + numberOfRecommendations + "</td>";
+						tableRow += "<td>" + numbersOfRecommendations[index] + "</td>";
 						tableRow += "</tr>";
 						document.getElementById("decision-problems-table-body").innerHTML += tableRow;
-						totalNumberOfRecommendations += numberOfRecommendations;
-					})
-					.catch(error => console.log("Error in making decision guidance prompt table was: ", error));
-				document.getElementById("decision-guidance-spinner").style.display = "none";
-				document.getElementById("num-decision-problems").innerText = totalNumberOfRecommendations;
-				conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
-			});
+						totalNumberOfRecommendations += numbersOfRecommendations[index];
+					});
+
+					document.getElementById("num-decision-problems").innerHTML = decisionProblems.length;
+					document.getElementById("num-recommendations").innerHTML = totalNumberOfRecommendations;
+					conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
+				});
 		});
-	};
+		document.getElementById("decision-guidance-spinner").style.display = "none";
+	}
+
+
 	global.conDecPrompt = new ConDecPrompt();
-})(window);
+})
+(window);
