@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class TestCodeCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsNotDone() {
-		assertTrue(codeCompletenessCheck.execute(fileThatIsNotDone));
+		assertFalse(codeCompletenessCheck.execute(fileThatIsNotDone));
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class TestCodeCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone("TEST");
 		definitionOfDone.setLineNumbersInCodeFile(10);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(codeCompletenessCheck.execute(smallFileThatIsDone));
+		assertFalse(codeCompletenessCheck.execute(smallFileThatIsDone));
 	}
 
 	@Test
@@ -69,10 +69,10 @@ public class TestCodeCheck extends TestSetUp {
 		KnowledgeElement decision = JiraIssues.addElementToDataBase(322, KnowledgeType.DECISION);
 		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(linkedFileThatIsDone, decision,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
-		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
+		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 		definitionOfDone.setMaximumLinkDistanceToDecisions(0);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(codeCompletenessCheck.execute(linkedFileThatIsDone));
+		assertFalse(codeCompletenessCheck.execute(linkedFileThatIsDone));
 	}
 
 	@Test

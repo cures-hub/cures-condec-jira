@@ -619,6 +619,7 @@ public class KnowledgeElement {
 
 	private ShortestPathAlgorithm<KnowledgeElement, Link> getShortestPathAlgorithm(int maxLinkDistance) {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(project);
+		graph.addVertex(this);
 		return graph.getShortestPathAlgorithm(maxLinkDistance);
 	}
 

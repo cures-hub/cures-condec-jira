@@ -34,17 +34,18 @@ public class CodeCheck implements KnowledgeElementCheck {
 		this.codeFile = (ChangedFile) codeFile;
 		String projectKey = codeFile.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
+		return isCompleteAccordingToDefault() || isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return true;
+		return codeFile.isTestCodeFile();
 	}
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return true;
+		int lineNumbersInCodeFile = definitionOfDone.getLineNumbersInCodeFile();
+		return codeFile.getLineCount() < lineNumbersInCodeFile;
 	}
 
 	@Override
