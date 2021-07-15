@@ -1,24 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.user.ApplicationUser;
-import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
-import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
-import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import smile.validation.ClassificationMetrics;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -28,12 +15,27 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import smile.validation.ClassificationMetrics;
 
 /**
  * REST resource for text classification and its configuration.
@@ -185,15 +187,16 @@ public class TextClassificationRest {
 			return isValidDataResponse;
 		}
 		TextClassificationConfiguration config = new DecisionKnowledgeProject(projectKey)
-			.getTextClassificationConfiguration();
+				.getTextClassificationConfiguration();
 		if (!config.isActivated()) {
 			return Response.status(Status.FORBIDDEN)
-				.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
+					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
 		}
-		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText(
-			projectKey);
-		for (Issue issue : JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey)) {
+				projectKey);
+		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+				.getAllJiraIssuesForProject();
+		for (Issue issue : jiraIssuesPerProject) {
 			classificationManager.classifyDescriptionAndAllComments(issue);
 		}
 		return Response.ok().build();
@@ -201,12 +204,13 @@ public class TextClassificationRest {
 
 	@Path("/getNonValidatedElements")
 	@GET
-	public Response getNonValidatedElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+	public Response getNonValidatedElements(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
 
 		if (request == null || projectKey == null || issueKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
-				.build();
+					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
+					.build();
 		}
 
 		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
@@ -226,27 +230,28 @@ public class TextClassificationRest {
 
 	/**
 	 * if no issue key is provided, gets all the issues
+	 * 
 	 * @param request
 	 * @param projectKey
 	 * @return
 	 */
 	@Path("/getAllNonValidatedElements")
 	@GET
-	public Response getAllNonValidatedElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	public Response getAllNonValidatedElements(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey) {
 
 		if (request == null || projectKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
-				.build();
+					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
+					.build();
 		}
-		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
-
-		List<Issue> issues = JiraIssuePersistenceManager.getAllJiraIssuesForProject(user, projectKey);
+		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+				.getAllJiraIssuesForProject();
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
 		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();
 
-		for (Issue issue : issues) {
-			List<KnowledgeElement> elements = manager.getElementsInJiraIssue(issue.getId());
+		for (Issue jiraIssue : jiraIssuesPerProject) {
+			List<KnowledgeElement> elements = manager.getElementsInJiraIssue(jiraIssue.getId());
 			for (KnowledgeElement element : elements) {
 				PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
 				if (!issueTextPart.isValidated()) {
@@ -259,12 +264,13 @@ public class TextClassificationRest {
 
 	@Path("/validateAllElements")
 	@POST
-	public Response validateAllElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+	public Response validateAllElements(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
 
 		if (request == null || projectKey == null || issueKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Elements could not be set to validated due to a bad request."))
-				.build();
+					.entity(ImmutableMap.of("error", "Elements could not be set to validated due to a bad request."))
+					.build();
 		}
 
 		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);

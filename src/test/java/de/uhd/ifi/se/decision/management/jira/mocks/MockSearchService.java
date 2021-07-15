@@ -23,8 +23,8 @@ import com.atlassian.query.clause.TerminalClauseImpl;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 /**
- * This class is currently not used because the JiraQueryHandler sets the
- * searchService via ComponentAccessor not the ComponentGetter.
+ * This class is currently not used because the JiraQueryBuilder is not mocked
+ * and not provided to {@link MockComponentAccessor}.
  */
 @SuppressWarnings("rawtypes")
 public class MockSearchService implements SearchService {
