@@ -58,8 +58,7 @@
 			}
 		}
 
-		AJS.tabs.setup();
-		conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElementsList.length, `menu-item-text-classification-${this.viewIdentifier}`);
+		conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElementsList.length, `menu-item-text-classification`);
 	};
 
 	let generateTableRow = function (nonValidatedElement) {
@@ -95,7 +94,7 @@
 	ConDecTextClassification.prototype.loadData = function () {
 		startLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement);
 		conDecTextClassificationAPI.getNonValidatedElements(this.projectKey, this.issueKey)
-			.then((result) => this.displayNonValidatedElements(result["nonValidatedElements"], this.viewIdentifier))
+			.then((result) => this.displayNonValidatedElements(result["nonValidatedElements"]))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement)
 			);

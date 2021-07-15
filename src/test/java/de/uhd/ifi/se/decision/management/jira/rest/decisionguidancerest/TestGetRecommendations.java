@@ -32,7 +32,7 @@ public class TestGetRecommendations extends TestSetUp {
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
 		filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setSelectedElement(KnowledgeElements.getSolvedDecisionProblem());
+		filterSettings.setSelectedElementObject(KnowledgeElements.getSolvedDecisionProblem());
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class TestGetRecommendations extends TestSetUp {
 
 	@Test
 	public void testGetRecommendationsForAllDecisionProblemsForWorkItem() {
-		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
+		filterSettings.setSelectedElementObject(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}
@@ -70,7 +70,7 @@ public class TestGetRecommendations extends TestSetUp {
 
 	@Test
 	public void testSelectedElementNull() {
-		filterSettings.setSelectedElement((KnowledgeElement) null);
+		filterSettings.setSelectedElementObject((KnowledgeElement) null);
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 	}

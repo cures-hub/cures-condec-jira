@@ -26,7 +26,7 @@ public class TestBoostWhenTextualSimilar extends TestSetUp {
 		target.setType(KnowledgeType.DECISION);
 		target.setSummary("MySQL");
 		filterSettings = new FilterSettings();
-		filterSettings.setSelectedElement(target);
+		filterSettings.setSelectedElementObject(target);
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class TestBoostWhenTextualSimilar extends TestSetUp {
 
 	@Test
 	public void testPropagationTrueDifferentElementType() {
-		filterSettings.setSelectedElement(currentElement);
+		filterSettings.setSelectedElementObject(currentElement);
 		assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_TEXTUAL_SIMILAR.getFunction()
 				.isChangePropagated(filterSettings, currentElement, null), 0.0);
 	}

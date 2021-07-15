@@ -39,7 +39,7 @@ public class TestGetElementsMatchingFilterSettings extends TestSetUp {
 
 	@Test
 	public void testNoSelectedElement() {
-		filterSettings.setSelectedElement((KnowledgeElement) null);
+		filterSettings.setSelectedElementObject((KnowledgeElement) null);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
 	}

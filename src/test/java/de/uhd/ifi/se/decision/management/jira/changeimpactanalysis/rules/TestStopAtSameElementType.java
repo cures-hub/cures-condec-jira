@@ -28,7 +28,7 @@ public class TestStopAtSameElementType extends TestSetUp {
 		target.setType(KnowledgeType.DECISION);
 		link = new Link(currentElement, target, LinkType.RELATE);
 		filterSettings = new FilterSettings();
-		filterSettings.setSelectedElement(target);
+		filterSettings.setSelectedElementObject(target);
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class TestStopAtSameElementType extends TestSetUp {
 
 	@Test
 	public void testPropagationTrueDifferentElementType() {
-		filterSettings.setSelectedElement(currentElement);
+		filterSettings.setSelectedElementObject(currentElement);
 		assertEquals(1.0, ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
 				.isChangePropagated(filterSettings, currentElement, link), 0.0);
 	}

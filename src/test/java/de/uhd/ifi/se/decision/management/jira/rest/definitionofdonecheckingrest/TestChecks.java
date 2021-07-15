@@ -42,14 +42,14 @@ public class TestChecks extends TestSetUp {
 	public void testGetFailedDefinitionOfDoneCriteria() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 
-		settings.setSelectedElement((KnowledgeElement) null);
+		settings.setSelectedElementObject((KnowledgeElement) null);
 		response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(400, response.getStatus());
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 
 		response = dodCheckingRest.getQualityProblems(request, null);
 		assertEquals(400, response.getStatus());
@@ -65,7 +65,7 @@ public class TestChecks extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -76,7 +76,7 @@ public class TestChecks extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.DECISION);
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -87,7 +87,7 @@ public class TestChecks extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -98,7 +98,7 @@ public class TestChecks extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.ARGUMENT);
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -109,7 +109,7 @@ public class TestChecks extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.PRO);
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -120,7 +120,7 @@ public class TestChecks extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		knowledgeElement.setType(KnowledgeType.CON);
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -131,7 +131,7 @@ public class TestChecks extends TestSetUp {
 		ChangedFile knowledgeElement = CodeFiles.getTestCodeFileDone();
 		knowledgeElement.setType(KnowledgeType.CODE);
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityProblems(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -141,7 +141,7 @@ public class TestChecks extends TestSetUp {
 	public void testGetCoverageOfJiraIssue() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
 		assertEquals(200, response.getStatus());
 	}
@@ -158,7 +158,7 @@ public class TestChecks extends TestSetUp {
 	public void testGetCoverageOfJiraIssueProjectKeyInvalid() {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		settings = new FilterSettings(null, "");
-		settings.setSelectedElement(knowledgeElement);
+		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
 		assertEquals(400, response.getStatus());
 	}
@@ -167,7 +167,7 @@ public class TestChecks extends TestSetUp {
 	@NonTransactional
 	public void testGetCoverageOfJiraIssueSelectedElementInvalid() {
 		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement((KnowledgeElement) null);
+		settings.setSelectedElementObject((KnowledgeElement) null);
 		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
 		assertEquals(400, response.getStatus());
 	}
