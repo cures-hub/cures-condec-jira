@@ -346,7 +346,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         or null if not existing.
 	 */
 	public KnowledgeElement getElementByKey(String elementKey) {
-		Optional<KnowledgeElement> elementWithKey = vertexSet().stream().filter(element -> element.getKey().equals(elementKey)).findFirst();
+		Optional<KnowledgeElement> elementWithKey = vertexSet().stream()
+				.filter(element -> element.getKey().equals(elementKey)).findFirst();
 		return elementWithKey.isPresent() ? elementWithKey.get() : null;
 	}
 
@@ -357,7 +358,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         summary or null if not existing.
 	 */
 	public KnowledgeElement getElementBySummary(String summary) {
-		Optional<KnowledgeElement> elementWithSummary = vertexSet().stream().filter(element -> element.getSummary().equals(summary)).findFirst();
+		Optional<KnowledgeElement> elementWithSummary = vertexSet().stream()
+				.filter(element -> element.getSummary().equals(summary)).findFirst();
 		return elementWithSummary.isPresent() ? elementWithSummary.get() : null;
 	}
 

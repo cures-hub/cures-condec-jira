@@ -154,7 +154,7 @@ public class FilteringManager {
 	public Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
-			if (filterSettings.getLinkTypes().parallelStream()
+			if (filterSettings.getLinkTypes().stream()
 					.noneMatch(selectedType -> selectedType.toLowerCase().startsWith(link.getTypeAsString()))) {
 				linksNotMatchingFilterSettings.add(link);
 			}
