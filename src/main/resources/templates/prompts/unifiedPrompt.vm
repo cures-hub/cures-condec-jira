@@ -12,7 +12,7 @@
         <button class="aui-close-button" type="button" aria-label="close"></button>
     </header>
     <div class="aui-dialog2-content">
-        <p>We have found the following problems with the decision knowledge documentation of this issue.</p>
+        <p>Overview of the decision knowledge documentation of this issue.</p>
         <br/>
         <div id="non-validated-elements-prompt" class="condec-prompt">
             #parse("templates/prompts/nonValidatedElementsPrompt.vm")

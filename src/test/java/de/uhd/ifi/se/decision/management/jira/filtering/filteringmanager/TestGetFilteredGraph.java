@@ -100,7 +100,7 @@ public class TestGetFilteredGraph extends TestSetUp {
 
 	@Test
 	public void testTransitiveLinksNoSelectedElement() {
-		filterSettings.setSelectedElement((KnowledgeElement) null);
+		filterSettings.setSelectedElementObject((KnowledgeElement) null);
 		filterSettings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
 		filterSettings.setCreateTransitiveLinks(true);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);

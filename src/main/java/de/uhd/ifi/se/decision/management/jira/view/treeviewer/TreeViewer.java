@@ -111,7 +111,7 @@ public class TreeViewer {
 		filteringManager.getFilterSettings().setStatus(null);
 
 		for (KnowledgeElement element : rootElements) {
-			filteringManager.getFilterSettings().setSelectedElement(element);
+			filteringManager.getFilterSettings().setSelectedElementObject(element);
 			graph = filteringManager.getFilteredGraph();
 			nodes.add(getTreeViewerNodeWithChildren(element));
 		}
