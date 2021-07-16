@@ -2,12 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
-import org.jgrapht.alg.shortestpath.TreeSingleSourcePathsImpl;
+import org.jgrapht.alg.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class FilteringManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringManager.class);
 	private FilterSettings filterSettings;
 	private KnowledgeGraph graph;
+	private Map<KnowledgeElement, Pair<Double, Link>> distanceAndPredecessorMap;
 
 	public FilteringManager(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
@@ -75,14 +77,16 @@ public class FilteringManager {
 		}
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		KnowledgeGraph filteredGraph = graph.getMutableSubgraphFor(elements);
+		KnowledgeGraph filteredGraph;
+		if (distanceAndPredecessorMap != null) {
+			filteredGraph = graph.getMutableSubgraphFor(elements, filterSettings.getLinkDistance(),
+					distanceAndPredecessorMap);
+		} else {
+			filteredGraph = graph.getMutableSubgraphFor(elements);
+		}
 
-		if (filterSettings.getSelectedElement() != null) {
-			if (filterSettings.createTransitiveLinks()) {
-				addTransitiveLinksToFilteredGraph(filteredGraph);
-			} else {
-				filteredGraph = ensureThatFilteredGraphHasCorrectLinkDistance(filteredGraph);
-			}
+		if (filterSettings.getSelectedElement() != null && filterSettings.createTransitiveLinks()) {
+			addTransitiveLinksToFilteredGraph(filteredGraph);
 		}
 
 		removeLinksWithTypesNotInFilterSettings(filteredGraph);
@@ -131,7 +135,8 @@ public class FilteringManager {
 
 	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
 		int linkDistance = filterSettings.getLinkDistance();
-		return element.getLinkedElements(linkDistance);
+		distanceAndPredecessorMap = element.getDistanceAndPredecessorMapForLinkedElements(linkDistance);
+		return distanceAndPredecessorMap.keySet();
 	}
 
 	/**
@@ -160,15 +165,6 @@ public class FilteringManager {
 			}
 		}
 		return linksNotMatchingFilterSettings;
-	}
-
-	private KnowledgeGraph ensureThatFilteredGraphHasCorrectLinkDistance(KnowledgeGraph filteredGraph) {
-		SingleSourcePaths<KnowledgeElement, Link> paths = filteredGraph
-				.getShortestPathAlgorithm(filterSettings.getLinkDistance())
-				.getPaths(filterSettings.getSelectedElement());
-		Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
-				.getDistanceAndPredecessorMap().keySet();
-		return filteredGraph.getMutableSubgraphFor(reachableElements);
 	}
 
 	/**

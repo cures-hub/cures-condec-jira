@@ -14,6 +14,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.util.Pair;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
@@ -85,9 +86,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph(String projectKey) {
 		this();
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		persistenceManager.getKnowledgeElements().forEach(element -> {
+		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
 			addVertex(element);
-			persistenceManager.getLinks(element).forEach(link -> {
+			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
 				if (!linkIds.contains(link.getId())) {
 					addEdge(link);
 					linkIds.add(link.getId());
@@ -310,6 +311,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
+	 * @param distanceAndPredecessorMap
 	 * @issue How can we get a subgraph of the entire knowledge graph that only
 	 *        contains certain elements (for filtering)?
 	 * @alternative Use the org.jgrapht.graph.AsSubgraph class to create a subgraph.
@@ -333,9 +335,24 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph getMutableSubgraphFor(Collection<KnowledgeElement> elements) {
 		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
 		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
-		edgeSet().stream().filter(edge -> {
-			return elements.contains(edge.getSource()) && elements.contains(edge.getTarget());
-		}).forEach(edge -> mutableSubgraph.addEdge(edge));
+		edgeSet().parallelStream()
+				.filter(edge -> elements.contains(edge.getSource()) && elements.contains(edge.getTarget()))
+				.forEach(edge -> mutableSubgraph.addEdge(edge));
+		return mutableSubgraph;
+	}
+
+	public KnowledgeGraph getMutableSubgraphFor(Collection<KnowledgeElement> elements, int maxLinkDistance,
+			Map<KnowledgeElement, Pair<Double, Link>> distanceAndPredecessorMap) {
+		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
+		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
+		distanceAndPredecessorMap.entrySet().parallelStream().forEach(entry -> {
+			Pair<Double, Link> distanceAndLink = entry.getValue();
+			Link link = distanceAndLink.getSecond();
+			Double distance = distanceAndLink.getFirst();
+			if (link != null && distance <= maxLinkDistance && elements.containsAll(link.getBothElements())) {
+				mutableSubgraph.addEdge(link);
+			}
+		});
 		return mutableSubgraph;
 	}
 
