@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.TreeSingleSourcePathsImpl;
+import org.jgrapht.alg.util.Pair;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
@@ -569,8 +571,21 @@ public class KnowledgeElement {
 	 *         undirected.
 	 */
 	public Set<KnowledgeElement> getLinkedElements(int maxDistance) {
-		SingleSourcePaths<KnowledgeElement, Link> paths = getAllPaths(maxDistance);
-		return ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths).getDistanceAndPredecessorMap().keySet();
+		return getDistanceAndPredecessorMapForLinkedElements(maxDistance).keySet();
+	}
+
+	/**
+	 * @param maxDistance
+	 *            maximal link distance that the {@link KnowledgeGraph} is travered
+	 *            to search for the other {@link KnowledgeElement}s starting from
+	 *            this element.
+	 * @return map of other reachable knowledge elements and links within a certain
+	 *         distance from this element.
+	 */
+	private Map<KnowledgeElement, Pair<Double, Link>> getDistanceAndPredecessorMapForLinkedElements(int maxDistance) {
+		TreeSingleSourcePathsImpl<KnowledgeElement, Link> paths = (TreeSingleSourcePathsImpl<KnowledgeElement, Link>) getAllPaths(
+				maxDistance);
+		return paths.getDistanceAndPredecessorMap();
 	}
 
 	/**
