@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
@@ -56,11 +57,17 @@ public class FilteringManager {
 			return new HashSet<>();
 		}
 		Set<KnowledgeElement> elements = getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet();
-		elements = elements.stream().filter(element -> isElementMatchingFilterSettings(element))
-				.collect(Collectors.toSet());
+		Stream<KnowledgeElement> filteredStream = elements.stream()
+				.filter(element -> isElementMatchingFilterSettings(element));
+		if (distanceAndPredecessorMap != null) {
+			filteredStream = filteredStream.filter(
+					element -> distanceAndPredecessorMap.get(element).getFirst() <= filterSettings.getLinkDistance());
+		}
+		elements = filteredStream.collect(Collectors.toSet());
 		if (filterSettings.getSelectedElement() != null) {
 			elements.add(filterSettings.getSelectedElement());
 		}
+
 		return elements;
 	}
 
@@ -78,12 +85,7 @@ public class FilteringManager {
 
 		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
 		KnowledgeGraph filteredGraph;
-		if (distanceAndPredecessorMap != null) {
-			filteredGraph = graph.getMutableSubgraphFor(elements, filterSettings.getLinkDistance(),
-					distanceAndPredecessorMap);
-		} else {
-			filteredGraph = graph.getMutableSubgraphFor(elements);
-		}
+		filteredGraph = graph.getMutableSubgraphFor(elements);
 
 		if (filterSettings.getSelectedElement() != null && filterSettings.createTransitiveLinks()) {
 			addTransitiveLinksToFilteredGraph(filteredGraph);

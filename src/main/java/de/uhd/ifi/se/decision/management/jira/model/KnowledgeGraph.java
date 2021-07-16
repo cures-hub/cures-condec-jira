@@ -14,7 +14,6 @@ import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.alg.util.Pair;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
@@ -335,23 +334,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph getMutableSubgraphFor(Collection<KnowledgeElement> elements) {
 		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
 		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
-		edgeSet().stream().filter(edge -> elements.contains(edge.getSource()) && elements.contains(edge.getTarget()))
+		edgeSet().stream().filter(edge -> elements.containsAll(edge.getBothElements()))
 				.forEach(edge -> mutableSubgraph.addEdge(edge));
-		return mutableSubgraph;
-	}
-
-	public KnowledgeGraph getMutableSubgraphFor(Collection<KnowledgeElement> elements, int maxLinkDistance,
-			Map<KnowledgeElement, Pair<Double, Link>> distanceAndPredecessorMap) {
-		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
-		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
-		distanceAndPredecessorMap.entrySet().forEach(entry -> {
-			Pair<Double, Link> distanceAndLink = entry.getValue();
-			Link link = distanceAndLink.getSecond();
-			Double distance = distanceAndLink.getFirst();
-			if (link != null && distance <= maxLinkDistance && elements.containsAll(link.getBothElements())) {
-				mutableSubgraph.addEdge(link);
-			}
-		});
 		return mutableSubgraph;
 	}
 
