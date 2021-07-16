@@ -335,8 +335,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	public KnowledgeGraph getMutableSubgraphFor(Collection<KnowledgeElement> elements) {
 		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
 		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
-		edgeSet().parallelStream()
-				.filter(edge -> elements.contains(edge.getSource()) && elements.contains(edge.getTarget()))
+		edgeSet().stream().filter(edge -> elements.contains(edge.getSource()) && elements.contains(edge.getTarget()))
 				.forEach(edge -> mutableSubgraph.addEdge(edge));
 		return mutableSubgraph;
 	}
@@ -345,7 +344,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			Map<KnowledgeElement, Pair<Double, Link>> distanceAndPredecessorMap) {
 		KnowledgeGraph mutableSubgraph = new KnowledgeGraph();
 		elements.forEach(vertex -> mutableSubgraph.addVertex(vertex));
-		distanceAndPredecessorMap.entrySet().parallelStream().forEach(entry -> {
+		distanceAndPredecessorMap.entrySet().forEach(entry -> {
 			Pair<Double, Link> distanceAndLink = entry.getValue();
 			Link link = distanceAndLink.getSecond();
 			Double distance = distanceAndLink.getFirst();
