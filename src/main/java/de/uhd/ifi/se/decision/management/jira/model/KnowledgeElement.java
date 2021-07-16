@@ -582,7 +582,7 @@ public class KnowledgeElement {
 	 * @return map of other reachable knowledge elements and links within a certain
 	 *         distance from this element.
 	 */
-	public Map<KnowledgeElement, Pair<Double, Link>> getDistanceAndPredecessorMapForLinkedElements(int maxDistance) {
+	private Map<KnowledgeElement, Pair<Double, Link>> getDistanceAndPredecessorMapForLinkedElements(int maxDistance) {
 		TreeSingleSourcePathsImpl<KnowledgeElement, Link> paths = (TreeSingleSourcePathsImpl<KnowledgeElement, Link>) getAllPaths(
 				maxDistance);
 		return paths.getDistanceAndPredecessorMap();
