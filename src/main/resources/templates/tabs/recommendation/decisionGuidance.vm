@@ -6,7 +6,10 @@ Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projek
 <form class="aui">
     <select id="decision-guidance-dropdown-items" class="select long-field">
     </select>
-    <button class="aui-button" id="recommendation-button">
+    <input id="recommendation-keywords" class="text medium-long-field" value="" placeholder="optional additional keywords" required/>
+    <br/>
+    <br/>
+    <button class="aui-button aui-button-primary" id="recommendation-button">
         <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
         $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
     </button>

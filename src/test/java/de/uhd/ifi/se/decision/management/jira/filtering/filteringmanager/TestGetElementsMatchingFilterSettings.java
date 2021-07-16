@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.filtering.filteringmanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestGetElementsMatchingFilterSettings extends TestSetUp {
 
@@ -39,9 +39,9 @@ public class TestGetElementsMatchingFilterSettings extends TestSetUp {
 
 	@Test
 	public void testNoSelectedElement() {
-		filterSettings.setSelectedElement((KnowledgeElement) null);
+		filterSettings.setSelectedElementObject((KnowledgeElement) null);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		assertEquals(JiraIssues.getTestJiraIssueCount(), filteringManager.getElementsMatchingFilterSettings().size());
+		assertTrue(filteringManager.getElementsMatchingFilterSettings().size() > 10);
 	}
 
 	@Test

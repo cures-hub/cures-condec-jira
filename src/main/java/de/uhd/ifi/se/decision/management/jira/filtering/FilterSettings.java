@@ -33,8 +33,8 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCheck;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCheck;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
@@ -408,7 +408,8 @@ public class FilterSettings {
 	 *            element in the knowlegde tree view). For example, this can be a
 	 *            Jira issue such as a work item, bug report or requirement.
 	 */
-	public void setSelectedElement(KnowledgeElement selectedElement) {
+	@JsonProperty
+	public void setSelectedElementObject(KnowledgeElement selectedElement) {
 		this.selectedElement = selectedElement;
 	}
 

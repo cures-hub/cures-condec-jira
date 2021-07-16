@@ -11,6 +11,8 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestIsElementMatchingDocumentationCompletenessFilter extends TestSetUp {
@@ -36,8 +38,7 @@ public class TestIsElementMatchingDocumentationCompletenessFilter extends TestSe
 	@Test
 	public void testCompleteElementAndAllElementsShouldBeShown() {
 		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(false);
-		assertTrue(
-				filteringManager.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getDecision()));
+		assertTrue(filteringManager.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getDecision()));
 		assertFalse(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getDecision()));
 	}
 
@@ -52,8 +53,8 @@ public class TestIsElementMatchingDocumentationCompletenessFilter extends TestSe
 	@Test
 	public void testCompleteElementAndOnlyIncompleteElementsShouldBeShown() {
 		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(true);
-		assertTrue(
-				filteringManager.isElementMatchingDocumentationCompletenessFilter(KnowledgeElements.getDecision()));
-		assertTrue(filteringManager.isElementMatchingFilterSettings(KnowledgeElements.getDecision()));
+		KnowledgeElement smallCodeFileThatIsAlwaysOK = CodeFiles.getSmallCodeFileDone();
+		assertFalse(filteringManager.isElementMatchingDocumentationCompletenessFilter(smallCodeFileThatIsAlwaysOK));
+		assertFalse(filteringManager.isElementMatchingFilterSettings(smallCodeFileThatIsAlwaysOK));
 	}
 }

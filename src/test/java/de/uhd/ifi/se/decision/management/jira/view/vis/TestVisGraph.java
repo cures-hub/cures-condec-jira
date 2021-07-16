@@ -59,7 +59,7 @@ public class TestVisGraph extends TestSetUp {
 	@Test
 	public void testGetSelectedVisNodeIdWithElementSelected() {
 		filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
+		filterSettings.setSelectedElementObject(KnowledgeElements.getTestKnowledgeElement());
 		visGraph = new VisGraph(filterSettings);
 		assertEquals("1_i", visGraph.getSelectedVisNodeId());
 	}

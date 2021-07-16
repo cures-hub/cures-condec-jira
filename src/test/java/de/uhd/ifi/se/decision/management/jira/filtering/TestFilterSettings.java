@@ -271,7 +271,7 @@ public class TestFilterSettings extends TestSetUp {
 		filterSettings.setSelectedElement("TEST-1");
 		assertEquals("TEST-1", filterSettings.getSelectedElement().getKey());
 
-		filterSettings.setSelectedElement(KnowledgeElements.getTestKnowledgeElement());
+		filterSettings.setSelectedElementObject(KnowledgeElements.getTestKnowledgeElement());
 		assertEquals("TEST-1", filterSettings.getSelectedElement().getKey());
 
 		filterSettings.setSelectedElement("TEST-1:123");

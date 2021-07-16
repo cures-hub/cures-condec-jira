@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -21,10 +18,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
@@ -239,16 +234,6 @@ public class DecisionGuidanceRest {
 		return Response.status(Status.OK).entity(numberOfRemovedElements).build();
 	}
 
-	/**
-	 * Get all recommendations for a Jira issue
-	 *
-	 * @param request
-	 * @param projectKey
-	 * @param issueKey
-	 * @return Map<KnoweledgeElement, List < Recommendation>> A map of
-	 *         knowledgeElements (currently only Issues), each with a list of
-	 *         recommendations.
-	 */
 	@Path("/recommendations")
 	@POST
 	public Response getRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
@@ -263,34 +248,13 @@ public class DecisionGuidanceRest {
 		}
 
 		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
-
-		Map<Long, List<Recommendation>> results = new HashMap<>();
-
-		if (selectedElement.getType().getSuperType() != KnowledgeType.PROBLEM) {
-			// the selected element is not a decision problem, but e.g. a requirement
-			// we need to get all decision problems related to the selected element
-			filterSettings.setCreateTransitiveLinks(true);
-			filterSettings.setOnlyDecisionKnowledgeShown(true);
-			filterSettings.setKnowledgeTypes(Set.of("Issue", "Problem", "Goal"));
-			Set<KnowledgeElement> filteredGraph = new FilteringManager(filterSettings)
-					.getElementsMatchingFilterSettings();
-			filteredGraph.remove(selectedElement);
-			for (KnowledgeElement element : filteredGraph) {
-				List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, element,
-						element.getSummary());
-				results.put(element.getId(), recommendations);
-			}
-		} else {
-			List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, selectedElement,
-					selectedElement.getSummary());
-			results.put(selectedElement.getId(), recommendations);
-			if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-					.isRecommendationAddedToKnowledgeGraph()) {
-				Recommender.addToKnowledgeGraph(selectedElement, AuthenticationManager.getUser(request),
-						recommendations);
-			}
+		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, selectedElement,
+				filterSettings.getSearchTerm());
+		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
+				.isRecommendationAddedToKnowledgeGraph()) {
+			Recommender.addToKnowledgeGraph(selectedElement, AuthenticationManager.getUser(request), recommendations);
 		}
-		return Response.ok(results).build();
+		return Response.ok(recommendations).build();
 	}
 
 	@Path("/recommendationEvaluation")

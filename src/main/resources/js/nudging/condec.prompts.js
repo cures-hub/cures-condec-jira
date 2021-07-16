@@ -88,7 +88,7 @@
 		}
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")]) // TODO: could add list of the elements here
+			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
 			.then((recommendations) => {
 				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
 				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
@@ -154,8 +154,6 @@
 
 					});
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
-
-
 				}
 				document.getElementById("non-validated-spinner").style.display = "none";
 			})
@@ -167,30 +165,43 @@
 			return;
 		}
 		const projectKey = conDecAPI.getProjectKey();
-		const filterSettings = {
-			"projectKey": projectKey,
-			"selectedElement": issueKey
-		};
-		conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
-			.then((recommendationsMap) => {
-				document.getElementById("num-decision-problems").innerHTML = Object.keys(recommendationsMap).length;
-				var totalNumberOfRecommendations = 0;
-				Object.keys(recommendationsMap).forEach((id) => {
-					conDecAPI.getDecisionKnowledgeElement(id, 's', (decisionProblem) => {
-						let numberOfRecommendations = recommendationsMap[id].length;
+
+		conDecAPI.getDecisionProblems({}, decisionProblems => {
+			// Get an array containing promises that resolve to the numbers of elements in each decision problem.
+			const recommendationsNumsPromises = decisionProblems.map(decisionProblem => {
+				const filterSettings = {
+					"projectKey": projectKey,
+					"selectedElementObject": decisionProblem
+				};
+				return conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
+					.then(res => res.length)
+					.catch(error => {
+						console.log("Error in making decision guidance prompt table was: ", error)
+						document.getElementById("decision-problems-table-body").innerHTML = "<i>An error occurred!</i>"
+					});
+			});
+			// Wait for all promises to resolve, then continue adding the numbers of recommendations to the table
+			Promise.all(recommendationsNumsPromises)
+				.then(numbersOfRecommendations => {
+					var totalNumberOfRecommendations = 0;
+					decisionProblems.forEach((decisionProblem, index) => {
 						let tableRow = "<tr>";
 						tableRow += "<td>" + decisionProblem.summary + "</td>";
-						tableRow += "<td>" + numberOfRecommendations + "</td>";
+						tableRow += "<td>" + numbersOfRecommendations[index] + "</td>";
 						tableRow += "</tr>";
 						document.getElementById("decision-problems-table-body").innerHTML += tableRow;
-						totalNumberOfRecommendations += numberOfRecommendations;
-
-						document.getElementById("decision-guidance-spinner").style.display = "none";
-						conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
+						totalNumberOfRecommendations += numbersOfRecommendations[index];
 					});
+
+					document.getElementById("num-decision-problems").innerHTML = decisionProblems.length;
+					document.getElementById("num-recommendations").innerHTML = totalNumberOfRecommendations;
+					conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
 				});
-			})
-			.catch(error => console.log("Error in making decision guidance prompt table was: ", error));
-	};
+		});
+		document.getElementById("decision-guidance-spinner").style.display = "none";
+	}
+
+
 	global.conDecPrompt = new ConDecPrompt();
-})(window);
+})
+(window);

@@ -74,7 +74,7 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testGetDataStructureFilled() {
 		KnowledgeElement rootElement = KnowledgeElements.getTestKnowledgeElement();
-		filterSettings.setSelectedElement(rootElement);
+		filterSettings.setSelectedElementObject(rootElement);
 		treeViewer = new TreeViewer(filterSettings);
 		assertTrue(treeViewer.getTreeViewerNodeWithChildren(rootElement).getId().endsWith("tv1"));
 	}
@@ -95,7 +95,7 @@ public class TestTreeViewer extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{alternative} This would be a great solution option! {alternative}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		filterSettings.setSelectedElement(sentence);
+		filterSettings.setSelectedElementObject(sentence);
 		treeViewer = new TreeViewer(filterSettings);
 		assertEquals(1, treeViewer.getNodes().size());
 	}
@@ -104,7 +104,7 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testTreeViewerForSingleKnowledgeElement() {
 		KnowledgeElement rootElement = KnowledgeElements.getTestKnowledgeElement();
-		filterSettings.setSelectedElement(rootElement);
+		filterSettings.setSelectedElementObject(rootElement);
 		treeViewer = new TreeViewer(filterSettings);
 		assertEquals(5, treeViewer.getTreeViewerNodeWithChildren(rootElement).getChildren().size());
 	}
@@ -121,7 +121,7 @@ public class TestTreeViewer extends TestSetUp {
 	@NonTransactional
 	public void testLinkDistanceZero() {
 		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(0);
-		filterSettings.setSelectedElement((KnowledgeElement) null);
+		filterSettings.setSelectedElementObject((KnowledgeElement) null);
 		treeViewer = new TreeViewer(filterSettings);
 		assertEquals(JiraIssues.getTestJiraIssueCount(), treeViewer.getNodes().size());
 	}
