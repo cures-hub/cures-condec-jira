@@ -58,6 +58,7 @@ public class FilterSettings {
 	private boolean isOnlyDecisionKnowledgeShown;
 	private boolean isTestCodeShown;
 	private boolean isOnlyIncompleteKnowledgeShown;
+	private int linkDistance;
 	private int minDegree;
 	private int maxDegree;
 	private KnowledgeElement selectedElement;
@@ -82,6 +83,7 @@ public class FilterSettings {
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isOnlyIncompleteKnowledgeShown = false;
+		this.linkDistance = 3;
 		this.minDegree = 0;
 		this.maxDegree = 50;
 		this.isHierarchical = false;
@@ -312,6 +314,26 @@ public class FilterSettings {
 	@JsonProperty("isOnlyDecisionKnowledgeShown")
 	public void setOnlyDecisionKnowledgeShown(boolean isOnlyDecisionKnowledgeShown) {
 		this.isOnlyDecisionKnowledgeShown = isOnlyDecisionKnowledgeShown;
+	}
+
+	/**
+	 * @return maximal distance from the start node to nodes to be included in the
+	 *         filtered graph. All nodes with a greater distance are not included.
+	 */
+	@XmlElement
+	public int getLinkDistance() {
+		return linkDistance;
+	}
+
+	/**
+	 * @param linkDistance
+	 *            nodes within this distance from the start node are included in the
+	 *            filtered graph. All nodes with a greater distance are not
+	 *            included. Also called "number of hops".
+	 */
+	@JsonProperty
+	public void setLinkDistance(int linkDistance) {
+		this.linkDistance = linkDistance;
 	}
 
 	/**

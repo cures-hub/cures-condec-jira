@@ -19,12 +19,13 @@ define('dashboard/rationaleCoverage', [], function () {
 
 	var dashboardFilterProjectNode;
 	var dashboardFilterSourceKnowledgeTypesNode;
+	var dashboardFilterMinimumDecisionCoverageNode;
+	var dashboardFilterMaximumLinkDistanceNode;
 	var dashboardFilterKnowledgeTypesNode;
 	var dashboardFilterDocumentationLocationsNode;
 	var dashboardFilterKnowledgeStatusNode;
 	var dashboardFilterLinkTypesNode;
 	var dashboardFilterLinkDistanceNode;
-	var dashboardFilterMinimumDecisionCoverageNode;
 	var dashboardFilterMinDegreeNode;
 	var dashboardFilterMaxDegreeNode;
 	var dashboardFilterStartDateNode;
@@ -74,6 +75,14 @@ define('dashboard/rationaleCoverage', [], function () {
 		if (preferences['sourceKnowledgeTypes']) {
 			sourceKnowledgeTypes = preferences['sourceKnowledgeTypes'];
 		}
+		var minimumDecisionCoverage;
+		if (preferences['minimumDecisionCoverage']) {
+			minimumDecisionCoverage = preferences['minimumDecisionCoverage'];
+		}
+		var maximumLinkDistance;
+		if (preferences['maximumLinkDistance']) {
+			maximumLinkDistance = preferences['maximumLinkDistance'];
+		}
 		var knowledgeTypes;
 		if (preferences['knowledgeTypes']) {
 			knowledgeTypes = preferences['knowledgeTypes'];
@@ -93,10 +102,6 @@ define('dashboard/rationaleCoverage', [], function () {
 		var linkDistance;
 		if (preferences['linkDistance']) {
 			linkDistance = preferences['linkDistance'];
-		}
-		var minimumDecisionCoverage;
-		if (preferences['minimumDecisionCoverage']) {
-			minimumDecisionCoverage = preferences['minimumDecisionCoverage'];
 		}
 		var minDegree;
 		if (preferences['minDegree']) {
@@ -131,8 +136,9 @@ define('dashboard/rationaleCoverage', [], function () {
 			transitiveLinksShown = preferences['transitiveLinksShown'];
 		}
 
-		var filterSettings = getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-			linkDistance, minimumDecisionCoverage, minDegree, maxDegree, startDate, endDate,
+		var filterSettings = getFilterSettings(projectKey, minimumDecisionCoverage, maximumLinkDistance,
+			knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
+			linkDistance, minDegree, maxDegree, startDate, endDate,
 			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
 		conDecRationaleCoverageDashboard.init(filterSettings, sourceKnowledgeTypes);
@@ -148,12 +154,13 @@ define('dashboard/rationaleCoverage', [], function () {
 			, "condec-rationale-coverage-dashboard-processing"
 			, "project-dropdown-rationale-coverage"
 			, "source-knowledgetype-multi-select-rationale-coverage"
+			, "minimum-number-of-decisions-input-rationale-coverage"
+			, "link-distance-to-decision-number-input-rationale-coverage"
 			, "knowledgetype-multi-select-rationale-coverage"
 			, "documentationlocation-multi-select-rationale-coverage"
 			, "knowledgestatus-multi-select-rationale-coverage"
 			, "linktype-multi-select-rationale-coverage"
-			, "link-distance-to-decision-number-input-rationale-coverage"
-			, "minimum-number-of-decisions-input-rationale-coverage"
+			, "link-distance-input-rationale-coverage"
 			, "min-degree-input-rationale-coverage"
 			, "max-degree-input-rationale-coverage"
 			, "start-date-picker-rationale-coverage"
@@ -209,15 +216,16 @@ define('dashboard/rationaleCoverage', [], function () {
 			setDocumentationLocations();
 			setKnowledgeStatus();
 			setLinkTypes(dashboardFilterProjectNode.value);
-			setDefaultLinkDistanceAndAndMinimumDecisionCoverage(dashboardFilterProjectNode.value);
+			setDefaultMaximumLinkDistanceAndAndMinimumDecisionCoverage(dashboardFilterProjectNode.value);
 		}
 
 		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
 	}
 
 	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName,
-						  projectName, sourceKnowledgeTypesName, knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
-						  linkDistanceName, minimumDecisionCoverageName, minDegreeName, maxDegreeName, startDateName, endDateName,
+						  projectName, sourceKnowledgeTypesName, minimumDecisionCoverageName, maximumLinkDistanceName,
+						  knowledgeTypesName, documentationLocationsName, knowledgeStatusName, linkTypesName,
+						  linkDistanceName, minDegreeName, maxDegreeName, startDateName, endDateName,
 						  decisionKnowledgeShownName, testCodeShownName, incompleteKnowledgeShownName, transitiveLinkShownName,
 						  saveButtonName, cancelButtonName) {
 		dashboardFilterNode = document.getElementById(filterName);
@@ -228,12 +236,13 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		dashboardFilterProjectNode = document.getElementById(projectName);
 		dashboardFilterSourceKnowledgeTypesNode = document.getElementById(sourceKnowledgeTypesName);
+		dashboardFilterMinimumDecisionCoverageNode = document.getElementById(minimumDecisionCoverageName);
+		dashboardFilterMaximumLinkDistanceNode = document.getElementById(maximumLinkDistanceName);
 		dashboardFilterKnowledgeTypesNode = document.getElementById(knowledgeTypesName);
 		dashboardFilterDocumentationLocationsNode = document.getElementById(documentationLocationsName);
 		dashboardFilterKnowledgeStatusNode = document.getElementById(knowledgeStatusName);
 		dashboardFilterLinkTypesNode = document.getElementById(linkTypesName);
 		dashboardFilterLinkDistanceNode = document.getElementById(linkDistanceName);
-		dashboardFilterMinimumDecisionCoverageNode = document.getElementById(minimumDecisionCoverageName);
 		dashboardFilterMinDegreeNode = document.getElementById(minDegreeName);
 		dashboardFilterMaxDegreeNode = document.getElementById(maxDegreeName);
 		dashboardFilterStartDateNode = document.getElementById(startDateName);
@@ -261,12 +270,13 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		preferences['projectKey'] = dashboardFilterProjectNode.value;
 		preferences['sourceKnowledgeTypes'] = getSelectValues(dashboardFilterSourceKnowledgeTypesNode);
+		preferences['minimumDecisionCoverage'] = dashboardFilterMinimumDecisionCoverageNode.value;
+		preferences['maximumLinkDistance'] = dashboardFilterMaximumLinkDistanceNode.value;
 		preferences['knowledgeTypes'] = getSelectValues(dashboardFilterKnowledgeTypesNode);
 		preferences['documentationLocations'] = getSelectValues(dashboardFilterDocumentationLocationsNode);
 		preferences['knowledgeStatus'] = getSelectValues(dashboardFilterKnowledgeStatusNode);
 		preferences['linkTypes'] = getSelectValues(dashboardFilterLinkTypesNode);
 		preferences['linkDistance'] = dashboardFilterLinkDistanceNode.value;
-		preferences['minimumDecisionCoverage'] = dashboardFilterMinimumDecisionCoverageNode.value;
 		preferences['minDegree'] = dashboardFilterMinDegreeNode.value;
 		preferences['maxDegree'] = dashboardFilterMaxDegreeNode.value;
 		preferences['startDate'] = dashboardFilterStartDateNode.value;
@@ -289,6 +299,14 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		if (preferences['sourceKnowledgeTypes']) {
 			setSelectValues(dashboardFilterSourceKnowledgeTypesNode, preferences['sourceKnowledgeTypes']);
+		}
+
+		if (preferences['minimumDecisionCoverage']) {
+			dashboardFilterMinimumDecisionCoverageNode.value = preferences['minimumDecisionCoverage'];
+		}
+
+		if (preferences['maximumLinkDistance']) {
+			dashboardFilterMaximumLinkDistanceNode.value = preferences['maximumLinkDistance'];
 		}
 
 		if (preferences['knowledgeTypes']) {
@@ -315,10 +333,6 @@ define('dashboard/rationaleCoverage', [], function () {
 
 		if (preferences['linkDistance']) {
 			dashboardFilterLinkDistanceNode.value = preferences['linkDistance'];
-		}
-
-		if (preferences['minimumDecisionCoverage']) {
-			dashboardFilterMinimumDecisionCoverageNode.value = preferences['minimumDecisionCoverage'];
 		}
 
 		if (preferences['minDegree']) {
@@ -354,14 +368,23 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 	}
 
-	function getFilterSettings(projectKey, knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
-							   linkDistance, minimumDecisionCoverage, minDegree, maxDegree, startDate, endDate,
+	function getFilterSettings(projectKey, minimumDecisionCoverage, maximumLinkDistance,
+							   knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
+							   linkDistance, minDegree, maxDegree, startDate, endDate,
 							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
 
 		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
 		filterSettings.definitionOfDone = {};
+
+		if (minimumDecisionCoverage) {
+			filterSettings.definitionOfDone.minimumDecisionsWithinLinkDistance = minimumDecisionCoverage;
+		}
+
+		if (maximumLinkDistance) {
+			filterSettings.definitionOfDone.maximumLinkDistanceToDecisions = maximumLinkDistance;
+		}
 
 		var knowledgeTypesList = getList(knowledgeTypes);
 		if (knowledgeTypesList && Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
@@ -384,12 +407,9 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 
 		if (linkDistance) {
-			filterSettings.definitionOfDone.maximumLinkDistanceToDecisions = linkDistance;
+			filterSettings.linkDistance = linkDistance;
 		}
 
-		if (minimumDecisionCoverage) {
-			filterSettings.definitionOfDone.minimumDecisionsWithinLinkDistance = minimumDecisionCoverage;
-		}
 		if (minDegree) {
 			filterSettings.minDegree = minDegree;
 		}
@@ -487,10 +507,10 @@ define('dashboard/rationaleCoverage', [], function () {
 		}
 	}
 
-	function setDefaultLinkDistanceAndAndMinimumDecisionCoverage(projectKey) {
+	function setDefaultMaximumLinkDistanceAndAndMinimumDecisionCoverage(projectKey) {
 		if (projectKey) {
 			conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
-				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
+				dashboardFilterMaximumLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
 				dashboardFilterMinimumDecisionCoverageNode.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
 			});
 		}

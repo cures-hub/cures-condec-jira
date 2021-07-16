@@ -196,7 +196,6 @@ define('dashboard/rationaleCompleteness', [], function () {
 			setDocumentationLocations();
 			setKnowledgeStatus();
 			setLinkTypes();
-			setDefaultLinkDistance(dashboardFilterProjectNode.value);
 		}
 
 		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
@@ -335,7 +334,6 @@ define('dashboard/rationaleCompleteness', [], function () {
 
 		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
-		filterSettings.definitionOfDone = {};
 
 		var knowledgeTypesList = getList(knowledgeTypes);
 		if (knowledgeTypesList && Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
@@ -358,7 +356,7 @@ define('dashboard/rationaleCompleteness', [], function () {
 		}
 
 		if (linkDistance) {
-			filterSettings.definitionOfDone.maximumLinkDistanceToDecisions = linkDistance;
+			filterSettings.linkDistance = linkDistance;
 		}
 
 		if (minDegree) {
@@ -441,14 +439,6 @@ define('dashboard/rationaleCompleteness', [], function () {
 			linkType.value = linkTypes[i];
 			linkType.text = linkTypes[i];
 			dashboardFilterLinkTypesNode.options.add(linkType);
-		}
-	}
-
-	function setDefaultLinkDistance(projectKey) {
-		if (projectKey) {
-			conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
-				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
-			});
 		}
 	}
 

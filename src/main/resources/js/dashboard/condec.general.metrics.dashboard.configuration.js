@@ -194,7 +194,6 @@ define('dashboard/generalMetrics', [], function () {
 			setDocumentationLocations();
 			setKnowledgeStatus();
 			setLinkTypes();
-			setDefaultLinkDistance(dashboardFilterProjectNode.value);
 		}
 
 		dashboardFilterProjectNode.addEventListener("change", onSelectProject);
@@ -333,7 +332,6 @@ define('dashboard/generalMetrics', [], function () {
 
 		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
-		filterSettings.definitionOfDone = {};
 
 		var knowledgeTypesList = getList(knowledgeTypes);
 		if (knowledgeTypesList && Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
@@ -356,7 +354,7 @@ define('dashboard/generalMetrics', [], function () {
 		}
 
 		if (linkDistance) {
-			filterSettings.definitionOfDone.maximumLinkDistanceToDecisions = linkDistance;
+			filterSettings.linkDistance = linkDistance;
 		}
 
 		if (minDegree) {
@@ -439,14 +437,6 @@ define('dashboard/generalMetrics', [], function () {
 			linkType.value = linkTypes[i];
 			linkType.text = linkTypes[i];
 			dashboardFilterLinkTypesNode.options.add(linkType);
-		}
-	}
-
-	function setDefaultLinkDistance(projectKey) {
-		if (projectKey) {
-			conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
-				dashboardFilterLinkDistanceNode.value = definitionOfDone.maximumLinkDistanceToDecisions;
-			});
 		}
 	}
 
