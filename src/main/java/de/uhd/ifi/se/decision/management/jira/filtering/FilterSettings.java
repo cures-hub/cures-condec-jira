@@ -85,7 +85,7 @@ public class FilterSettings {
 		this.isOnlyIncompleteKnowledgeShown = false;
 		this.linkDistance = 3;
 		this.minDegree = 0;
-		this.maxDegree = 50;
+		this.maxDegree = 100;
 		this.isHierarchical = false;
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;

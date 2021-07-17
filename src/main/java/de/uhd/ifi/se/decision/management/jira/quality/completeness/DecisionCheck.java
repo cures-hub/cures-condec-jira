@@ -21,32 +21,39 @@ public class DecisionCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return decision.hasNeighborOfType(KnowledgeType.ISSUE);
+		return hasIssue();
 	}
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		boolean hasToBeLinkedToProArgument = definitionOfDone.isDecisionIsLinkedToPro();
-		if (hasToBeLinkedToProArgument) {
-			return decision.hasNeighborOfType(KnowledgeType.PRO);
-		}
-		return true;
+		return hasPro(definitionOfDone);
 	}
 
 	@Override
 	public List<QualityProblem> getQualityProblems(KnowledgeElement decision, DefinitionOfDone definitionOfDone) {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (!decision.hasNeighborOfType(KnowledgeType.ISSUE)) {
+		if (!hasIssue()) {
 			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_ISSUE);
 		}
 
-		boolean hasToBeLinkedToProArgument = definitionOfDone.isDecisionIsLinkedToPro();
-		if (hasToBeLinkedToProArgument && !decision.hasNeighborOfType(KnowledgeType.PRO)) {
+		if (!hasPro(definitionOfDone)) {
 			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_PRO);
 		}
 
 		return qualityProblems;
+	}
+
+	private boolean hasIssue() {
+		return decision.hasNeighborOfType(KnowledgeType.ISSUE);
+	}
+
+	private boolean hasPro(DefinitionOfDone definitionOfDone) {
+		boolean hasToBeLinkedToProArgument = definitionOfDone.isDecisionIsLinkedToPro();
+		if (hasToBeLinkedToProArgument) {
+			return decision.hasNeighborOfType(KnowledgeType.PRO);
+		}
+		return true;
 	}
 
 }

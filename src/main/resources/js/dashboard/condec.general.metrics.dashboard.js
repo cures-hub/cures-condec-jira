@@ -9,63 +9,25 @@
  */
 
 (function (global) {
-	var dashboardFilterNode;
-	var dashboardContentNode;
-	var dashboardDataErrorNode;
-	var dashboardNoContentsNode;
-	var dashboardProcessingNode;
-	var dashboardProjectNode;
 
 	var ConDecGeneralMetricsDashboard = function() {
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.init = function init(filterSettings) {
-		getHTMLNodes("condec-general-metrics-dashboard-configproject"
-			, "condec-general-metrics-dashboard-contents-container"
-			, "condec-general-metrics-dashboard-contents-data-error"
-			, "condec-general-metrics-dashboard-no-project"
-			, "condec-general-metrics-dashboard-processing"
-			, "condec-dashboard-selected-project-general-metrics");
-
 		getMetrics(filterSettings);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
-		dashboardFilterNode = document.getElementById(filterName);
-		dashboardContentNode = document.getElementById(containerName);
-		dashboardDataErrorNode = document.getElementById(dataErrorName);
-		dashboardNoContentsNode = document.getElementById(noProjectName);
-		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectNode = document.getElementById(projectName);
-	}
-
-	function showDashboardSection(node) {
-		var hiddenClass = "hidden";
-		dashboardFilterNode.classList.add(hiddenClass);
-		dashboardContentNode.classList.add(hiddenClass);
-		dashboardDataErrorNode.classList.add(hiddenClass);
-		dashboardNoContentsNode.classList.add(hiddenClass);
-		dashboardProcessingNode.classList.add(hiddenClass);
-		node.classList.remove(hiddenClass);
-	}
-
 	function getMetrics(filterSettings) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
+		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length) {
 			return;
 		}
 
-		showDashboardSection(dashboardProcessingNode);
-		var projectKey = JSON.parse(filterSettings).projectKey;
-		dashboardProjectNode.innerText = projectKey;
+		conDecDashboard.showDashboardSection("condec-dashboard-processing-", "general-metrics");
+		document.getElementById("condec-dashboard-selected-project-general-metrics").innerText = JSON.parse(filterSettings).projectKey;
 
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
 		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json";
 
-		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
 			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
@@ -79,23 +41,13 @@
 	}
 
 	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
-		showDashboardSection(dashboardDataErrorNode);
+		conDecDashboard.showDashboardSection("condec-dashboard-contents-data-error-", "general-metrics");
 	};
 
 	ConDecGeneralMetricsDashboard.prototype.processData = function processData(data) {
-		processXhrResponseData(data);
-	};
-
-	function processXhrResponseData(data) {
-		doneWithXhrRequest();
-		showDashboardSection(dashboardContentNode);
+		conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", "general-metrics");
 		renderData(data);
-	}
-
-	function doneWithXhrRequest() {
-		dashboardProcessingNode.classList.remove("error");
-		showDashboardSection(dashboardProcessingNode);
-	}
+	};
 
 	function renderData(calculator) {
 		/*  init data for charts */
@@ -127,7 +79,7 @@
 		definitionOfDoneCheckResults = calculator.definitionOfDoneCheckResults;
 
 		/* define color palette */
-		var colorpalette = ['#91CC75', '#EE6666'];
+		var colorPalette = ['#91CC75', '#EE6666'];
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
@@ -144,7 +96,7 @@
 		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
-			"", "Definition of Done Check", definitionOfDoneCheckResults, colorpalette);
+			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);
 	}
 
 	global.conDecGeneralMetricsDashboard = new ConDecGeneralMetricsDashboard();

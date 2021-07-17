@@ -9,63 +9,25 @@
  */
 
 (function (global) {
-	var dashboardFilterNode;
-	var dashboardContentNode;
-	var dashboardDataErrorNode;
-	var dashboardNoContentsNode;
-	var dashboardProcessingNode;
-	var dashboardProjectNode;
 
 	var ConDecRationaleCompletenessDashboard = function () {
 		console.log("ConDecRationaleCompletenessDashboard constructor");
 	};
 
 	ConDecRationaleCompletenessDashboard.prototype.init = function (filterSettings) {
-		getHTMLNodes("condec-rationale-completeness-dashboard-configproject"
-			, "condec-rationale-completeness-dashboard-contents-container"
-			, "condec-rationale-completeness-dashboard-contents-data-error"
-			, "condec-rationale-completeness-dashboard-no-project"
-			, "condec-rationale-completeness-dashboard-processing"
-			, "condec-dashboard-selected-project-rationale-completeness");
-
 		getMetrics(filterSettings);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
-		dashboardFilterNode = document.getElementById(filterName);
-		dashboardContentNode = document.getElementById(containerName);
-		dashboardDataErrorNode = document.getElementById(dataErrorName);
-		dashboardNoContentsNode = document.getElementById(noProjectName);
-		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectNode = document.getElementById(projectName);
-	}
-
-	function showDashboardSection(node) {
-		var hiddenClass = "hidden";
-		dashboardFilterNode.classList.add(hiddenClass);
-		dashboardContentNode.classList.add(hiddenClass);
-		dashboardDataErrorNode.classList.add(hiddenClass);
-		dashboardNoContentsNode.classList.add(hiddenClass);
-		dashboardProcessingNode.classList.add(hiddenClass);
-		node.classList.remove(hiddenClass);
-	}
-
 	function getMetrics(filterSettings) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
+		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length) {
 			return;
 		}
 
-		showDashboardSection(dashboardProcessingNode);
-		var projectKey = JSON.parse(filterSettings).projectKey;
-		dashboardProjectNode.innerText = projectKey;
+		conDecDashboard.showDashboardSection("condec-dashboard-processing-", "rationale-completeness");
+		document.getElementById("condec-dashboard-selected-project-rationale-completeness").innerText = JSON.parse(filterSettings).projectKey;
 
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
 		url = conDecAPI.restPrefix + "/dashboard/rationaleCompleteness.json";
 
-		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
 			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
@@ -79,24 +41,13 @@
 	}
 
 	ConDecRationaleCompletenessDashboard.prototype.processDataBad = function processDataBad(data) {
-		console.log(data.responseJSON.error);
-		showDashboardSection(dashboardDataErrorNode);
+		conDecDashboard.showDashboardSection("condec-dashboard-contents-data-error-", "rationale-completeness");
 	};
 
 	ConDecRationaleCompletenessDashboard.prototype.processData = function processData(data) {
-		processXhrResponseData(data);
-	};
-
-	function processXhrResponseData(data) {
-		doneWithXhrRequest();
-		showDashboardSection(dashboardContentNode);
+		conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", "rationale-completeness");
 		renderData(data);
-	}
-
-	function doneWithXhrRequest() {
-		dashboardProcessingNode.classList.remove("error");
-		showDashboardSection(dashboardProcessingNode);
-	}
+	};
 
 	function renderData(calculator) {
 		/*  init data for charts */

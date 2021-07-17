@@ -539,7 +539,9 @@
 
 	<web-resource key="dashboard-item-condec-resources" name="ConDec Dashboard Web Resources">
 		<resource type="download" name="condec.dashboard.css" location="/css/condec.dashboard.css" />
-		<resource type="download" name="condec.git.branches.dashboard.js"
+        <resource type="download" name="condec.dashboard.js"
+                  location="js/dashboard/condec.dashboard.js" />
+        <resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
 		<resource type="download" name="condec.git.branches.dashboard.configuration.js"
 			location="js/dashboard/condec.git.branches.dashboard.configuration.js" />

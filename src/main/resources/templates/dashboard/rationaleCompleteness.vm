@@ -1,9 +1,9 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
 
-<div id="condec-rationale-completeness-dashboard-configproject" class="condec-dashboard-contents filtering hidden">
+#set ($viewIdentifier = "rationale-completeness")
+<div id="condec-dashboard-config-$viewIdentifier" class="condec-dashboard-contents filtering hidden">
     <form class="aui">
-        #set ($viewIdentifier = "rationale-completeness")
         <div class="field-group">
             #parse("templates/filter/project.vm")
         </div>
@@ -40,8 +40,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     </form>
 </div>
 
-<div id="condec-rationale-completeness-dashboard-contents-container" class="condec-dashboard-contents results hidden">
-    #set ($viewIdentifier = "rationale-completeness")
+<div id="condec-dashboard-contents-container-$viewIdentifier" class="condec-dashboard-contents results hidden">
     <div class="field-group">
         #parse("templates/dashboard/selectedProject.vm")
     </div>
@@ -53,15 +52,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     <div id="piechartRich-ConArgumentDocumentedForAlternative" class="piechart"></div>
 </div>
 
-<div id="condec-rationale-completeness-dashboard-contents-data-error" class="condec-dashboard-contents error hidden">
+<div id="condec-dashboard-contents-data-error-$viewIdentifier" class="condec-dashboard-contents error hidden">
     $i18n.getText("condec.dashboard.requirements.project.data.error")
 </div>
 
-<div id="condec-rationale-completeness-dashboard-no-project" class="condec-dashboard-contents init">
+<div id="condec-dashboard-no-project-$viewIdentifier" class="condec-dashboard-contents init">
     $i18n.getText("condec.dashboard.requirements.project.selection.not.done")
 </div>
 
-<div id="condec-rationale-completeness-dashboard-processing" class="condec-dashboard-contents waiting hidden">
+<div id="condec-dashboard-processing-$viewIdentifier" class="condec-dashboard-contents waiting hidden">
     $i18n.getText("condec.dashboard.requirements.project.processing")
 </div>
 

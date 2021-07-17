@@ -164,6 +164,31 @@ public final class DefinitionOfDoneChecker {
 		return true;
 	}
 
+	private static QualityProblem getCoverageQuality(KnowledgeElement knowledgeElement,
+			KnowledgeType knowledgeType, FilterSettings filterSettings) {
+		if (!checkIfCodeFileRequiresCoverage(knowledgeElement, filterSettings)) {
+			return null;
+		}
+
+		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
+		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
+		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
+		for (KnowledgeElement linkedElement : linkedElements) {
+			if (linkedElement.getType() == knowledgeType) {
+				minimumCoverage--;
+			}
+			if (minimumCoverage <= 0) {
+				return null;
+			}
+		}
+
+		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
+			return QualityProblem.DECISION_COVERAGE_TOO_LOW;
+		} else {
+			return QualityProblem.NO_DECISION_COVERAGE;
+		}
+	}
+
 	/**
 	 * @return a list of {@link QualityProblem} of the {@link KnowledgeElement}.
 	 */
@@ -171,13 +196,9 @@ public final class DefinitionOfDoneChecker {
 			FilterSettings filterSettings) {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION,
-				filterSettings)) {
-			if (DefinitionOfDoneChecker.hasNoCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings)) {
-				qualityProblems.add(QualityProblem.NO_DECISION_COVERAGE);
-			} else {
-				qualityProblems.add(QualityProblem.DECISION_COVERAGE_TOO_LOW);
-			}
+		QualityProblem coverageProblem = getCoverageQuality(knowledgeElement, KnowledgeType.DECISION, filterSettings);
+		if (coverageProblem != null) {
+			qualityProblems.add(coverageProblem);
 		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
@@ -190,6 +211,7 @@ public final class DefinitionOfDoneChecker {
 			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
 			qualityProblems.addAll(knowledgeElementCheck.getQualityProblems(knowledgeElement, definitionOfDone));
 		}
+
 		return qualityProblems;
 	}
 

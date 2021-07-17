@@ -9,63 +9,25 @@
  */
 
 (function (global) {
-	var dashboardFilterNode;
-	var dashboardContentNode;
-	var dashboardDataErrorNode;
-	var dashboardNoContentsNode;
-	var dashboardProcessingNode;
-	var dashboardProjectNode;
 
 	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.init = function (filterSettings, issueType) {
-		getHTMLNodes("condec-rationale-coverage-dashboard-configproject"
-			, "condec-rationale-coverage-dashboard-contents-container"
-			, "condec-rationale-coverage-dashboard-contents-data-error"
-			, "condec-rationale-coverage-dashboard-no-project"
-			, "condec-rationale-coverage-dashboard-processing"
-			, "condec-dashboard-selected-project-rationale-coverage");
-
 		getMetrics(filterSettings, issueType);
 	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
-		dashboardFilterNode = document.getElementById(filterName);
-		dashboardContentNode = document.getElementById(containerName);
-		dashboardDataErrorNode = document.getElementById(dataErrorName);
-		dashboardNoContentsNode = document.getElementById(noProjectName);
-		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectNode = document.getElementById(projectName);
-	}
-
-	function showDashboardSection(node) {
-		var hiddenClass = "hidden";
-		dashboardFilterNode.classList.add(hiddenClass);
-		dashboardContentNode.classList.add(hiddenClass);
-		dashboardDataErrorNode.classList.add(hiddenClass);
-		dashboardNoContentsNode.classList.add(hiddenClass);
-		dashboardProcessingNode.classList.add(hiddenClass);
-		node.classList.remove(hiddenClass);
-	}
-
 	function getMetrics(filterSettings, sourceKnowledgeTypes) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
+		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length) {
 			return;
 		}
 
-		showDashboardSection(dashboardProcessingNode);
-		var projectKey = JSON.parse(filterSettings).projectKey;
-		dashboardProjectNode.innerText = projectKey;
+		conDecDashboard.showDashboardSection("condec-dashboard-processing-", "rationale-coverage");
+		document.getElementById("condec-dashboard-selected-project-rationale-coverage").innerText = JSON.parse(filterSettings).projectKey;
 
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
 		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?sourceKnowledgeTypes=" + sourceKnowledgeTypes;
 
-		console.log("Starting REST query.");
 		AJS.$.ajax({
 			url: url,
 			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
@@ -79,24 +41,13 @@
 	}
 
 	ConDecRationaleCoverageDashboard.prototype.processDataBad = function (data) {
-		console.log(data.responseJSON.error);
-		showDashboardSection(dashboardDataErrorNode);
+		conDecDashboard.showDashboardSection("condec-dashboard-contents-data-error-", "rationale-coverage");
 	};
 
 	ConDecRationaleCoverageDashboard.prototype.processData = function (data) {
-		processXhrResponseData(data);
-	};
-
-	function processXhrResponseData(data) {
-		doneWithXhrRequest();
-		showDashboardSection(dashboardContentNode);
+		conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", "rationale-coverage");
 		renderData(data);
-	}
-
-	function doneWithXhrRequest() {
-		dashboardProcessingNode.classList.remove("error");
-		showDashboardSection(dashboardProcessingNode);
-	}
+	};
 
 	function renderData(calculator) {
 		/*  init data for charts */
@@ -119,22 +70,22 @@
 		decisionDocumentedForSelectedJiraIssue = calculator.decisionDocumentedForSelectedJiraIssue;
 
 		/* define color palette */
-		var colorpalette = ['#EE6666', '#FAC858', '#91CC75'];
+		var colorPalette = ['#EE6666', '#FAC858', '#91CC75'];
 
 		/* render box-plots */
 		ConDecReqDash.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
 			"", "# Issues per element", issuesPerSelectedJiraIssue,
-			colorpalette);
+			colorPalette);
 		ConDecReqDash.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
 			"", "# Decisions per element", decisionsPerSelectedJiraIssue,
-			colorpalette);
+			colorPalette);
 		/* render pie-charts */
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
 			"", "For how many elements is an issue documented?", issueDocumentedForSelectedJiraIssue,
-			colorpalette);
+			colorPalette);
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
 			"", "For how many elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
-			colorpalette);
+			colorPalette);
 	}
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();

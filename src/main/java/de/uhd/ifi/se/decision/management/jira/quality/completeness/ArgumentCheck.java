@@ -18,8 +18,7 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return argument.hasNeighborOfType(KnowledgeType.DECISION)
-				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+		return hasDecisionOrAlternative();
 	}
 
 	@Override
@@ -31,12 +30,16 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 	public List<QualityProblem> getQualityProblems(KnowledgeElement argument, DefinitionOfDone definitionOfDone) {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (!(argument.hasNeighborOfType(KnowledgeType.DECISION)
-				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE))) {
+		if (!hasDecisionOrAlternative()) {
 			qualityProblems.add(QualityProblem.ARGUMENT_DOESNT_HAVE_DECISION_OR_ALTERNATIVE);
 		}
 
 		return qualityProblems;
+	}
+
+	private boolean hasDecisionOrAlternative() {
+		return argument.hasNeighborOfType(KnowledgeType.DECISION)
+			|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 	}
 
 }

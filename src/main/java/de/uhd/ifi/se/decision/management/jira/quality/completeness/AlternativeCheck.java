@@ -21,36 +21,41 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return alternative.hasNeighborOfType(KnowledgeType.ISSUE);
+		return hasIssue();
 	}
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
-		if (hasToBeLinkedToArgument) {
-			return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
-					|| alternative.hasNeighborOfType(KnowledgeType.PRO)
-					|| alternative.hasNeighborOfType(KnowledgeType.CON);
-		}
-		return true;
+		return hasArgument(definitionOfDone);
 	}
 
 	@Override
 	public List<QualityProblem> getQualityProblems(KnowledgeElement alternative, DefinitionOfDone definitionOfDone) {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (!alternative.hasNeighborOfType(KnowledgeType.ISSUE)) {
+		if (!hasIssue()) {
 			qualityProblems.add(QualityProblem.ALTERNATIVE_DOESNT_HAVE_ISSUE);
 		}
 
-		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
-		if (hasToBeLinkedToArgument && !(alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
-				|| alternative.hasNeighborOfType(KnowledgeType.PRO)
-				|| alternative.hasNeighborOfType(KnowledgeType.CON))) {
+		if (!hasArgument(definitionOfDone)) {
 			qualityProblems.add(QualityProblem.ALTERNATIVE_DOESNT_HAVE_ARGUMENT);
 		}
 
 		return qualityProblems;
+	}
+
+	private boolean hasIssue() {
+		return alternative.hasNeighborOfType(KnowledgeType.ISSUE);
+	}
+
+	private boolean hasArgument(DefinitionOfDone definitionOfDone) {
+		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
+		if (hasToBeLinkedToArgument) {
+			return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
+				|| alternative.hasNeighborOfType(KnowledgeType.PRO)
+				|| alternative.hasNeighborOfType(KnowledgeType.CON);
+		}
+		return true;
 	}
 
 }
