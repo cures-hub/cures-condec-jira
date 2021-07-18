@@ -52,6 +52,7 @@ public class TestIsElementMatchingDocumentationCompletenessFilter extends TestSe
 
 	@Test
 	public void testCompleteElementAndOnlyIncompleteElementsShouldBeShown() {
+		filteringManager.getFilterSettings().getKnowledgeTypes().add("Code");
 		filteringManager.getFilterSettings().setOnlyIncompleteKnowledgeShown(true);
 		KnowledgeElement smallCodeFileThatIsAlwaysOK = CodeFiles.getSmallCodeFileDone();
 		assertFalse(filteringManager.isElementMatchingDocumentationCompletenessFilter(smallCodeFileThatIsAlwaysOK));

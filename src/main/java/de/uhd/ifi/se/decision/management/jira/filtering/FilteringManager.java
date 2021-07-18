@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
-import org.jgrapht.alg.shortestpath.TreeSingleSourcePathsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,17 +48,8 @@ public class FilteringManager {
 	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
 	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
-		if (filterSettings == null || graph == null) {
-			LOGGER.error("FilteringManager misses important attributes.");
-			return new HashSet<>();
-		}
-		Set<KnowledgeElement> elements = getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet();
-		elements = elements.stream().filter(element -> isElementMatchingFilterSettings(element))
-				.collect(Collectors.toSet());
-		if (filterSettings.getSelectedElement() != null) {
-			elements.add(filterSettings.getSelectedElement());
-		}
-		return elements;
+		KnowledgeGraph filteredGraph = getFilteredGraph();
+		return filteredGraph != null ? filteredGraph.vertexSet() : new HashSet<>();
 	}
 
 	/**
@@ -73,16 +63,24 @@ public class FilteringManager {
 			LOGGER.error("FilteringManager misses important attributes.");
 			return null;
 		}
-
-		Set<KnowledgeElement> elements = getElementsMatchingFilterSettings();
-		KnowledgeGraph filteredGraph = graph.getMutableSubgraphFor(elements);
-
+		KnowledgeGraph filteredGraph;
 		if (filterSettings.getSelectedElement() != null) {
-			if (filterSettings.createTransitiveLinks()) {
-				addTransitiveLinksToFilteredGraph(filteredGraph);
-			} else {
-				filteredGraph = ensureThatFilteredGraphHasCorrectLinkDistance(filteredGraph);
-			}
+			filteredGraph = graph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
+					filterSettings.getLinkDistance());
+		} else {
+			filteredGraph = graph.copy();
+		}
+
+		Set<KnowledgeElement> elementsNotMatchingFilterSettings = filteredGraph.vertexSet().stream()
+				.filter(element -> !isElementMatchingFilterSettings(element)).collect(Collectors.toSet());
+		if (filterSettings.getSelectedElement() != null) {
+			// the selected element is never filtered out
+			elementsNotMatchingFilterSettings.remove(filterSettings.getSelectedElement());
+		}
+		filteredGraph.removeAllVertices(elementsNotMatchingFilterSettings);
+
+		if (filterSettings.getSelectedElement() != null && filterSettings.createTransitiveLinks()) {
+			addTransitiveLinksToFilteredGraph(filteredGraph);
 		}
 
 		removeLinksWithTypesNotInFilterSettings(filteredGraph);
@@ -121,18 +119,6 @@ public class FilteringManager {
 		return filteredGraph;
 	}
 
-	private Set<KnowledgeElement> getElementsInLinkDistanceFromSelectedElementOrEntireVertexSet() {
-		if (filterSettings.getSelectedElement() != null) {
-			graph.addVertex(filterSettings.getSelectedElement());
-			return getElementsInLinkDistance(filterSettings.getSelectedElement());
-		}
-		return graph.vertexSet();
-	}
-
-	private Set<KnowledgeElement> getElementsInLinkDistance(KnowledgeElement element) {
-		return element.getLinkedElements(filterSettings.getLinkDistance());
-	}
-
 	/**
 	 * Removes those edges from the graph that have types that are not in the
 	 * {@link FilterSettings#getLinkTypes()}.
@@ -159,15 +145,6 @@ public class FilteringManager {
 			}
 		}
 		return linksNotMatchingFilterSettings;
-	}
-
-	private KnowledgeGraph ensureThatFilteredGraphHasCorrectLinkDistance(KnowledgeGraph filteredGraph) {
-		SingleSourcePaths<KnowledgeElement, Link> paths = filteredGraph
-				.getShortestPathAlgorithm(filterSettings.getLinkDistance())
-				.getPaths(filterSettings.getSelectedElement());
-		Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
-				.getDistanceAndPredecessorMap().keySet();
-		return filteredGraph.getMutableSubgraphFor(reachableElements);
 	}
 
 	/**
