@@ -28,6 +28,8 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 
 	@Override
 	public List<QualityProblem> getQualityProblems(KnowledgeElement argument, DefinitionOfDone definitionOfDone) {
+		this.argument = argument;
+
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!hasDecisionOrAlternative()) {

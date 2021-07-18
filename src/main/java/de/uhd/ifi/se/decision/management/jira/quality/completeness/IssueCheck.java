@@ -18,9 +18,9 @@ public class IssueCheck implements KnowledgeElementCheck {
 	private KnowledgeElement issue;
 
 	@Override
-	public boolean execute(KnowledgeElement decisionProblem) {
-		this.issue = decisionProblem;
-		String projectKey = decisionProblem.getProject().getProjectKey();
+	public boolean execute(KnowledgeElement issue) {
+		this.issue = issue;
+		String projectKey = issue.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}
@@ -36,11 +36,13 @@ public class IssueCheck implements KnowledgeElementCheck {
 	}
 
 	@Override
-	public List<QualityProblem> getQualityProblems(KnowledgeElement decisionProblem,
+	public List<QualityProblem> getQualityProblems(KnowledgeElement issue,
 			DefinitionOfDone definitionOfDone) {
+		this.issue = issue;
+
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (!isValidDecisionLinkedToDecisionProblem(decisionProblem)) {
+		if (!isValidDecisionLinkedToDecisionProblem(issue)) {
 			qualityProblems.add(QualityProblem.ISSUE_DOESNT_HAVE_DECISION);
 		}
 

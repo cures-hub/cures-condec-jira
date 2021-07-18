@@ -46,21 +46,21 @@ public class TestGetElementsMatchingFilterSettings extends TestSetUp {
 
 	@Test
 	public void testLinkDistanceZero() {
-		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(0);
+		filterSettings.setLinkDistance(0);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(1, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testLinkDistanceOne() {
-		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(1);
+		filterSettings.setLinkDistance(1);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(6, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
 	public void testLinkDistanceTwo() {
-		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(2);
+		filterSettings.setLinkDistance(2);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		assertEquals(10, filteringManager.getElementsMatchingFilterSettings().size());
 	}

@@ -31,6 +31,8 @@ public class DecisionCheck implements KnowledgeElementCheck {
 
 	@Override
 	public List<QualityProblem> getQualityProblems(KnowledgeElement decision, DefinitionOfDone definitionOfDone) {
+		this.decision = decision;
+
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!hasIssue()) {

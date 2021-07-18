@@ -31,6 +31,8 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 
 	@Override
 	public List<QualityProblem> getQualityProblems(KnowledgeElement alternative, DefinitionOfDone definitionOfDone) {
+		this.alternative = alternative;
+
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!hasIssue()) {
