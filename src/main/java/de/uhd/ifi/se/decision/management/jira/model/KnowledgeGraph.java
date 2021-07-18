@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.TreeSingleSourcePathsImpl;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
@@ -337,6 +339,24 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		edgeSet().stream().filter(edge -> elements.containsAll(edge.getBothElements()))
 				.forEach(edge -> mutableSubgraph.addEdge(edge));
 		return mutableSubgraph;
+	}
+
+	public KnowledgeGraph getMutableSubgraphFor(KnowledgeElement startElement, int maxLinkDistance) {
+		SingleSourcePaths<KnowledgeElement, Link> paths = getShortestPathAlgorithm(maxLinkDistance)
+				.getPaths(startElement);
+		Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
+				.getDistanceAndPredecessorMap().keySet();
+		return getMutableSubgraphFor(reachableElements);
+	}
+
+	/**
+	 * @return copied object of this graph that can be changed.
+	 */
+	public KnowledgeGraph copy() {
+		KnowledgeGraph copiedGraph = new KnowledgeGraph();
+		vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
+		edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
+		return copiedGraph;
 	}
 
 	/**
