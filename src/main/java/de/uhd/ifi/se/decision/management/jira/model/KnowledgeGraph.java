@@ -312,7 +312,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
-	 * @param distanceAndPredecessorMap
 	 * @issue How can we get a subgraph of the entire knowledge graph that only
 	 *        contains certain elements (for filtering)?
 	 * @alternative Use the org.jgrapht.graph.AsSubgraph class to create a subgraph.
@@ -341,6 +340,18 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return mutableSubgraph;
 	}
 
+	/**
+	 * @param startElement
+	 *            root {@link KnowledgeElement} to create a subgraph from.
+	 * @param maxLinkDistance
+	 *            number of hops/radius in the graph from the start element. All
+	 *            other {@link KnowledgeElement}s reachable from the start element
+	 *            are included in the subgraph.
+	 * @return new {@link KnowledgeGraph} containing {@link KnowledgeElement}s
+	 *         reachable from the start element as well {@link Link}s. New
+	 *         {@link Link}s and {@link KnowledgeElement}s can be added to this
+	 *         graph. Thus, it is no real subgraph but mutable.
+	 */
 	public KnowledgeGraph getMutableSubgraphFor(KnowledgeElement startElement, int maxLinkDistance) {
 		SingleSourcePaths<KnowledgeElement, Link> paths = getShortestPathAlgorithm(maxLinkDistance)
 				.getPaths(startElement);
@@ -350,7 +361,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
-	 * @return copied object of this graph that can be changed.
+	 * @return copied object of this graph that can be changed (e.g. to add
+	 *         transitive links for filtering).
 	 */
 	public KnowledgeGraph copy() {
 		KnowledgeGraph copiedGraph = new KnowledgeGraph();
