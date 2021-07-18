@@ -1,5 +1,5 @@
 /*
- This module renders the configuration screen used in the rationale coverage dashboard item.
+ This module renders the dashboard and its configuration screen used in the rationale coverage dashboard item.
 
  Requires
  * condec.requirements.dashboard.js
@@ -22,7 +22,8 @@ define('dashboard/rationaleCoverage', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.render = function (context, preferences) {
-		conDecDashboard.initRender(conDecRationaleCoverageDashboard, dashboardAPI, preferences);
+		conDecDashboard.initRender(conDecRationaleCoverageDashboard, "rationale-coverage",
+			dashboardAPI, preferences);
 	};
 
 	/**

@@ -1,5 +1,5 @@
 /*
- This module renders the configuration screen used in the feature branch dashboard item.
+ This module renders the dashboard and its configuration screen used in the feature branch dashboard item.
 
  Requires
  * condec.requirements.dashboard.js
@@ -22,7 +22,7 @@ define('dashboard/branches', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.render = function (context, preferences) {
-		conDecDashboard.initRender(conDecBranchesDashboard, dashboardAPI, preferences);
+		conDecDashboard.initRender(conDecBranchesDashboard, "branch", dashboardAPI, preferences);
 	};
 
 	/**

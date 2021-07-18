@@ -9,46 +9,19 @@
  */
 
 (function (global) {
+
 	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.init = function (filterSettings, issueType) {
-		getMetrics(filterSettings, issueType);
-	};
-
-	function getMetrics(filterSettings, sourceKnowledgeTypes) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length) {
-			return;
-		}
-
-		conDecDashboard.showDashboardSection("condec-dashboard-processing-", "rationale-coverage");
-		document.getElementById("condec-dashboard-selected-project-rationale-coverage").innerText = JSON.parse(filterSettings).projectKey;
-
-		url = conDecAPI.restPrefix + "/dashboard/rationaleCoverage.json?sourceKnowledgeTypes=" + sourceKnowledgeTypes;
-
-		AJS.$.ajax({
-			url: url,
-			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
-			type: "post",
-			dataType: "json",
-			data: filterSettings,
-			async: true,
-			success: conDecRationaleCoverageDashboard.processData,
-			error: conDecRationaleCoverageDashboard.processDataBad
+	ConDecRationaleCoverageDashboard.prototype.getData = function (dashboardAPI, filterSettings, sourceKnowledgeTypes) {
+		conDecDashboardAPI.getRationaleCoverage(filterSettings, sourceKnowledgeTypes, function (error, result) {
+			conDecDashboard.processData(error, result, conDecRationaleCoverageDashboard,
+				"rationale-coverage", dashboardAPI);
 		});
-	}
-
-	ConDecRationaleCoverageDashboard.prototype.processDataBad = function (data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-data-error-", "rationale-coverage");
 	};
 
-	ConDecRationaleCoverageDashboard.prototype.processData = function (data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", "rationale-coverage");
-		renderData(data);
-	};
-
-	function renderData(calculator) {
+	ConDecRationaleCoverageDashboard.prototype.renderData = function (data) {
 		/*  init data for charts */
 		var issuesPerSelectedJiraIssue = new Map();
 		var decisionsPerSelectedJiraIssue = new Map();
@@ -63,10 +36,10 @@
 		decisionDocumentedForSelectedJiraIssue.set("no code classes", "");
 
 		/* form data for charts */
-		issuesPerSelectedJiraIssue = calculator.issuesPerSelectedJiraIssue;
-		decisionsPerSelectedJiraIssue = calculator.decisionsPerSelectedJiraIssue;
-		issueDocumentedForSelectedJiraIssue = calculator.issueDocumentedForSelectedJiraIssue;
-		decisionDocumentedForSelectedJiraIssue = calculator.decisionDocumentedForSelectedJiraIssue;
+		issuesPerSelectedJiraIssue = data.issuesPerSelectedJiraIssue;
+		decisionsPerSelectedJiraIssue = data.decisionsPerSelectedJiraIssue;
+		issueDocumentedForSelectedJiraIssue = data.issueDocumentedForSelectedJiraIssue;
+		decisionDocumentedForSelectedJiraIssue = data.decisionDocumentedForSelectedJiraIssue;
 
 		/* define color palette */
 		var colorPalette = ['#EE6666', '#FAC858', '#91CC75'];

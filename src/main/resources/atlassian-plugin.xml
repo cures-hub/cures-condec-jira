@@ -541,6 +541,8 @@
 		<resource type="download" name="condec.dashboard.css" location="/css/condec.dashboard.css" />
         <resource type="download" name="condec.dashboard.js"
                   location="js/dashboard/condec.dashboard.js" />
+        <resource type="download" name="condec.dashboard.api.js"
+                  location="js/dashboard/condec.dashboard.api.js" />
         <resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
 		<resource type="download" name="condec.git.branches.dashboard.configuration.js"

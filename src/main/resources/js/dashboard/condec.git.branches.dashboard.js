@@ -16,67 +16,23 @@
 		console.log("ConDecBranchesDashboard constructor");
 	};
 
-	ConDecBranchesDashboard.prototype.init = function init(filterSettings) {
+	ConDecBranchesDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+		conDecDashboardAPI.getElementsFromBranchesOfJiraIssue(filterSettings.projectKey, function (error, result) {
+			conDecDashboard.processData(error, result, conDecBranchesDashboard, "branch",
+				dashboardAPI, filterSettings);
+		});
+	};
+
+	ConDecBranchesDashboard.prototype.renderData = function (data, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
 		 */
-		issueBranchKeyRx = RegExp("origin/(" + JSON.parse(filterSettings).projectKey
-			+ "-\\d+)\\.|origin/(" + JSON.parse(filterSettings).projectKey + "-\\d+)$", "i");
+		issueBranchKeyRx = RegExp("origin/(" + filterSettings.projectKey
+			+ "-\\d+)\\.|origin/(" + filterSettings.projectKey + "-\\d+)$", "i");
 
 		branchesQuality = [];
-		getBranches(filterSettings);
-	};
 
-	function getBranches(filterSettings) {
-		var projectKey = JSON.parse(filterSettings).projectKey;
-
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-
-		conDecDashboard.showDashboardSection("condec-dashboard-processing-", "branch");
-		document.getElementById("condec-dashboard-selected-project-branch").innerText = projectKey;
-
-		url = conDecGitAPI.restPrefix + "/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
-
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: true,
-			success: conDecBranchesDashboard.processData,
-			error: conDecBranchesDashboard.processDataBad
-		});
-	}
-
-	ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-data-error-", "branch");
-	};
-
-	ConDecBranchesDashboard.prototype.processData = function processData(data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", "branch");
-		processBranches(data);
-	};
-
-	function countElementType(targetType, branch) {
-		if (!targetType || !branch || !branch.elements || !branch.elements.length) {
-			return 0;
-		}
-		var filtered = branch.elements.filter(function (e) {
-			return e.type.toLowerCase() === targetType.toLowerCase();
-		});
-		return filtered.length;
-	}
-
-	/* lex sorting */
-	function sortBranches(branches) {
-		return branches.sort(function (a, b) {
-			return a.name.localeCompare(b.name);
-		});
-	}
-
-	function processBranches(data) {
 		var branches = data.branches;
 		for (var branchIdx = 0; branchIdx < branches.length; branchIdx++) {
 			var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
@@ -121,10 +77,10 @@
 		/* sort lexicographically */
 		branchesQuality = sortBranches(branchesQuality);
 		/* render charts and plots */
-		renderData();
+		renderChartsAndPlots();
 	}
 
-	function renderData() {
+	function renderChartsAndPlots() {
 		const BRANCHES_SEPARATOR_TOKEN = " ";
 
 		function branchesPerJiraIssueReducer(accumulator, currentBranch) {
@@ -300,6 +256,23 @@
 			"", "Pro arguments number in branches", prosInBranches);
 		ConDecReqDash.initializeChartForBranchSource("boxplot-ConsPerBranch",
 			"", "Con arguments number in branches", consInBranches);
+	}
+
+	function countElementType(targetType, branch) {
+		if (!targetType || !branch || !branch.elements || !branch.elements.length) {
+			return 0;
+		}
+		var filtered = branch.elements.filter(function (e) {
+			return e.type.toLowerCase() === targetType.toLowerCase();
+		});
+		return filtered.length;
+	}
+
+	/* lex sorting */
+	function sortBranches(branches) {
+		return branches.sort(function (a, b) {
+			return a.name.localeCompare(b.name);
+		});
 	}
 
 	global.conDecBranchesDashboard = new ConDecBranchesDashboard();

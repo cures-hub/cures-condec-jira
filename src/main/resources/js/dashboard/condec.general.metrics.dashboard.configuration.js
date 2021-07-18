@@ -1,5 +1,5 @@
 /*
- This module renders the configuration screen used in the general metrics dashboard item.
+ This module renders the dashboard and its configuration screen used in the general metrics dashboard item.
 
  Requires
  * condec.requirements.dashboard.js
@@ -22,7 +22,8 @@ define('dashboard/generalMetrics', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.render = function (context, preferences) {
-		conDecDashboard.initRender(conDecGeneralMetricsDashboard, dashboardAPI, preferences);
+		conDecDashboard.initRender(conDecGeneralMetricsDashboard, "general-metrics",
+			dashboardAPI, preferences);
 	};
 
 	/**

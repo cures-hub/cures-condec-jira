@@ -16,21 +16,11 @@
 		console.log("ConDecDashboard constructor");
 	};
 
-	ConDecDashboard.prototype.showDashboardSection = function (nodeName, viewIdentifier) {
-		var hiddenClass = "hidden";
-		document.getElementById("condec-dashboard-config-" + viewIdentifier).classList.add(hiddenClass);
-		document.getElementById("condec-dashboard-contents-container-" + viewIdentifier).classList.add(hiddenClass);
-		document.getElementById("condec-dashboard-contents-data-error-" + viewIdentifier).classList.add(hiddenClass);
-		document.getElementById("condec-dashboard-no-project-" + viewIdentifier).classList.add(hiddenClass);
-		document.getElementById("condec-dashboard-processing-" + viewIdentifier).classList.add(hiddenClass);
-		document.getElementById(nodeName + viewIdentifier).classList.remove(hiddenClass);
-	}
-
-	ConDecDashboard.prototype.initRender = function (dashboard, dashboardAPI, preferences) {
+	ConDecDashboard.prototype.initRender = function (dashboard, viewIdentifier, dashboardAPI, preferences) {
 		dashboardAPI.once("afterRender",
 			function() {
 				if (preferences['projectKey']) {
-					createRender(dashboard, dashboardAPI, preferences);
+					createRender(dashboard, viewIdentifier, dashboardAPI, preferences);
 				}
 			});
 	}
@@ -42,7 +32,7 @@
 			});
 	}
 
-	function createRender(dashboard, dashboardAPI, preferences) {
+	function createRender(dashboard, viewIdentifier, dashboardAPI, preferences) {
 		var projectKey = preferences['projectKey'];
 		var sourceKnowledgeTypes = "";
 		if (preferences['sourceKnowledgeTypes']) {
@@ -118,13 +108,13 @@
 			linkDistance, minDegree, maxDegree, startDate, endDate,
 			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
-		dashboard.init(filterSettings, sourceKnowledgeTypes);
+		getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes);
 
 		dashboardAPI.resize();
 	}
 
 	function createConfiguration(viewIdentifier, dashboardAPI, preferences) {
-		conDecDashboard.showDashboardSection("condec-dashboard-config-", viewIdentifier);
+		showDashboardSection("condec-dashboard-config-", viewIdentifier);
 
 		setPreferences(preferences, viewIdentifier);
 
@@ -154,7 +144,7 @@
 	function createCancelButton(preferences, dashboardAPI, viewIdentifier) {
 		function onCancelButton(event) {
 			if (preferences['projectKey']) {
-				conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", viewIdentifier);
+				showDashboardSection("condec-dashboard-contents-container-", viewIdentifier);
 			}
 
 			dashboardAPI.resize();
@@ -175,6 +165,39 @@
 		}
 
 		document.getElementById("project-dropdown-" + viewIdentifier).addEventListener("change", onSelectProject);
+	}
+
+	function showDashboardSection(nodeName, viewIdentifier) {
+		var hiddenClass = "hidden";
+		document.getElementById("condec-dashboard-config-" + viewIdentifier).classList.add(hiddenClass);
+		document.getElementById("condec-dashboard-contents-container-" + viewIdentifier).classList.add(hiddenClass);
+		document.getElementById("condec-dashboard-contents-data-error-" + viewIdentifier).classList.add(hiddenClass);
+		document.getElementById("condec-dashboard-no-project-" + viewIdentifier).classList.add(hiddenClass);
+		document.getElementById("condec-dashboard-processing-" + viewIdentifier).classList.add(hiddenClass);
+		document.getElementById(nodeName + viewIdentifier).classList.remove(hiddenClass);
+	}
+
+	function getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes) {
+		filterSettings = JSON.parse(filterSettings);
+		if (!filterSettings.projectKey || !filterSettings.projectKey.length) {
+			return;
+		}
+
+		showDashboardSection("condec-dashboard-processing-", viewIdentifier);
+		document.getElementById("condec-dashboard-selected-project-rationale-coverage").innerText = filterSettings.projectKey;
+
+		dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);
+	}
+
+	ConDecDashboard.prototype.processData = function (error, result, dashboard, viewIdentifier, dashboardAPI, filterSettings) {
+		if (error) {
+			showDashboardSection("condec-dashboard-contents-data-error-", viewIdentifier);
+		} else {
+			showDashboardSection("condec-dashboard-contents-container-", viewIdentifier);
+			dashboard.renderData(result, filterSettings);
+		}
+
+		dashboardAPI.resize();
 	}
 
 	function getPreferences(viewIdentifier) {

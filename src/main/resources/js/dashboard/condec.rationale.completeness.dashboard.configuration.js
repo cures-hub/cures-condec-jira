@@ -1,5 +1,5 @@
 /*
- This module renders the configuration screen used in the rationale completeness dashboard item.
+ This module renders the dashboard and its configuration screen used in the rationale completeness dashboard item.
 
  Requires
  * condec.requirements.dashboard.js
@@ -22,7 +22,8 @@ define('dashboard/rationaleCompleteness', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.render = function (context, preferences) {
-		conDecDashboard.initRender(conDecRationaleCompletenessDashboard, dashboardAPI, preferences);
+		conDecDashboard.initRender(conDecRationaleCompletenessDashboard, "rationale-completeness",
+			dashboardAPI, preferences);
 	};
 
 	/**

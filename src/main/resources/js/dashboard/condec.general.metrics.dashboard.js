@@ -14,42 +14,14 @@
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.init = function init(filterSettings) {
-		getMetrics(filterSettings);
-	};
-
-	function getMetrics(filterSettings) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length) {
-			return;
-		}
-
-		conDecDashboard.showDashboardSection("condec-dashboard-processing-", "general-metrics");
-		document.getElementById("condec-dashboard-selected-project-general-metrics").innerText = JSON.parse(filterSettings).projectKey;
-
-		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json";
-
-		AJS.$.ajax({
-			url: url,
-			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
-			type: "post",
-			dataType: "json",
-			data: filterSettings,
-			async: true,
-			success: conDecGeneralMetricsDashboard.processData,
-			error: conDecGeneralMetricsDashboard.processDataBad
+	ConDecGeneralMetricsDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+		conDecDashboardAPI.getGeneralMetrics(filterSettings, function (error, result) {
+			conDecDashboard.processData(error, result, conDecGeneralMetricsDashboard,
+				"general-metrics", dashboardAPI);
 		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-data-error-", "general-metrics");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.processData = function processData(data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", "general-metrics");
-		renderData(data);
-	};
-
-	function renderData(calculator) {
+	ConDecGeneralMetricsDashboard.prototype.renderData = function (data) {
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
 		var commitsPerIssue = new Map();
@@ -70,13 +42,13 @@
 		definitionOfDoneCheckResults.set("no rationale elements", "");
 
 		/* form data for charts */
-		commentsPerIssue = calculator.numberOfCommentsPerIssue;
-		commitsPerIssue = calculator.numberOfCommits;
-		reqCodeSummary = calculator.reqAndClassSummary;
-		decSources = calculator.elementsFromDifferentOrigins;
-		relevantSentences = calculator.numberOfRelevantComments;
-		knowledgeTypeDistribution = calculator.distributionOfKnowledgeTypes;
-		definitionOfDoneCheckResults = calculator.definitionOfDoneCheckResults;
+		commentsPerIssue = data.numberOfCommentsPerIssue;
+		commitsPerIssue = data.numberOfCommits;
+		reqCodeSummary = data.reqAndClassSummary;
+		decSources = data.elementsFromDifferentOrigins;
+		relevantSentences = data.numberOfRelevantComments;
+		knowledgeTypeDistribution = data.distributionOfKnowledgeTypes;
+		definitionOfDoneCheckResults = data.definitionOfDoneCheckResults;
 
 		/* define color palette */
 		var colorPalette = ['#91CC75', '#EE6666'];

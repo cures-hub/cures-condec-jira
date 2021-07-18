@@ -14,42 +14,14 @@
 		console.log("ConDecRationaleCompletenessDashboard constructor");
 	};
 
-	ConDecRationaleCompletenessDashboard.prototype.init = function (filterSettings) {
-		getMetrics(filterSettings);
-	};
-
-	function getMetrics(filterSettings) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length) {
-			return;
-		}
-
-		conDecDashboard.showDashboardSection("condec-dashboard-processing-", "rationale-completeness");
-		document.getElementById("condec-dashboard-selected-project-rationale-completeness").innerText = JSON.parse(filterSettings).projectKey;
-
-		url = conDecAPI.restPrefix + "/dashboard/rationaleCompleteness.json";
-
-		AJS.$.ajax({
-			url: url,
-			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
-			type: "post",
-			dataType: "json",
-			data: filterSettings,
-			async: true,
-			success: conDecRationaleCompletenessDashboard.processData,
-			error: conDecRationaleCompletenessDashboard.processDataBad
+	ConDecRationaleCompletenessDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+		conDecDashboardAPI.getRationaleCompleteness(filterSettings, function (error, result) {
+			conDecDashboard.processData(error, result, conDecRationaleCompletenessDashboard,
+				"rationale-completeness", dashboardAPI);
 		});
-	}
-
-	ConDecRationaleCompletenessDashboard.prototype.processDataBad = function processDataBad(data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-data-error-", "rationale-completeness");
 	};
 
-	ConDecRationaleCompletenessDashboard.prototype.processData = function processData(data) {
-		conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", "rationale-completeness");
-		renderData(data);
-	};
-
-	function renderData(calculator) {
+	ConDecRationaleCompletenessDashboard.prototype.renderData = function (data) {
 		/*  init data for charts */
 		var issuesSolvedByDecision = new Map();
 		var decisionsSolvingIssues = new Map();
@@ -67,12 +39,12 @@
 		proArgumentDocumentedForAlternative.set("none", "");
 
 		/* form data for charts */
-		issuesSolvedByDecision = calculator.issuesSolvedByDecision;
-		decisionsSolvingIssues = calculator.decisionsSolvingIssues;
-		proArgumentDocumentedForDecision = calculator.proArgumentDocumentedForDecision;
-		conArgumentDocumentedForAlternative = calculator.conArgumentDocumentedForAlternative;
-		conArgumentDocumentedForDecision = calculator.conArgumentDocumentedForDecision;
-		proArgumentDocumentedForAlternative = calculator.proArgumentDocumentedForAlternative;
+		issuesSolvedByDecision = data.issuesSolvedByDecision;
+		decisionsSolvingIssues = data.decisionsSolvingIssues;
+		proArgumentDocumentedForDecision = data.proArgumentDocumentedForDecision;
+		conArgumentDocumentedForAlternative = data.conArgumentDocumentedForAlternative;
+		conArgumentDocumentedForDecision = data.conArgumentDocumentedForDecision;
+		proArgumentDocumentedForAlternative = data.proArgumentDocumentedForAlternative;
 
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision",
