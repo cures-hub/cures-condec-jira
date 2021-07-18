@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -79,7 +80,6 @@ public class FilterSettings {
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
-		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isOnlyIncompleteKnowledgeShown = false;
@@ -104,6 +104,7 @@ public class FilterSettings {
 		setSearchTerm(searchTerm);
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
 		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
+		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
 		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		this.changeImpactAnalysisConfig = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey);
 	}

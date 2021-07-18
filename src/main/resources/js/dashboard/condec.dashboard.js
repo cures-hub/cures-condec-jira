@@ -72,6 +72,10 @@
 		if (preferences['linkTypes']) {
 			linkTypes = preferences['linkTypes'];
 		}
+		var decisionGroups;
+		if (preferences['decisionGroups']) {
+			decisionGroups = preferences['decisionGroups'];
+		}
 		var linkDistance;
 		if (preferences['linkDistance']) {
 			linkDistance = preferences['linkDistance'];
@@ -110,7 +114,7 @@
 		}
 
 		var filterSettings = getFilterSettings(projectKey, minimumDecisionCoverage, maximumLinkDistance,
-			knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
+			knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes, decisionGroups,
 			linkDistance, minDegree, maxDegree, startDate, endDate,
 			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
 
@@ -165,6 +169,7 @@
 			setDocumentationLocations(viewIdentifier);
 			setKnowledgeStatus(viewIdentifier);
 			setLinkTypes(viewIdentifier);
+			setDecisionGroups(document.getElementById("project-dropdown-" + viewIdentifier).value, viewIdentifier)
 			setDefaultMinimumDecisionCoverageAndMaximumLinkDistance(document.getElementById("project-dropdown-" + viewIdentifier).value, viewIdentifier);
 		}
 
@@ -212,6 +217,11 @@
 		var linkTypeNode = document.getElementById("linktype-multi-select-" + viewIdentifier);
 		if (linkTypeNode) {
 			preferences['linkTypes'] = getSelectedValues(linkTypeNode);
+		}
+
+		var decisionGroupNode = document.getElementById("decisiongroup-multi-select-" + viewIdentifier);
+		if (decisionGroupNode) {
+			preferences['decisionGroups'] = getSelectedValues(decisionGroupNode);
 		}
 
 		var linkDistanceNode = document.getElementById("link-distance-input-" + viewIdentifier);
@@ -269,6 +279,10 @@
 
 			setSourceKnowledgeTypes(preferences['projectKey'], viewIdentifier);
 			setKnowledgeTypes(preferences['projectKey'], viewIdentifier);
+			setDocumentationLocations(viewIdentifier);
+			setKnowledgeStatus(viewIdentifier);
+			setLinkTypes(viewIdentifier);
+			setDecisionGroups(preferences['projectKey'], viewIdentifier);
 		}
 
 		var sourceKnowledgeTypeNode = document.getElementById("source-knowledgetype-multi-select-" + viewIdentifier);
@@ -291,25 +305,24 @@
 			setSelectedValues(knowledgeTypeNode, preferences['knowledgeTypes']);
 		}
 
-		setDocumentationLocations(viewIdentifier);
-
 		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-" + viewIdentifier);
 		if (preferences['documentationLocations']) {
 			setSelectedValues(documentationLocationNode, preferences['documentationLocations']);
 		}
-
-		setKnowledgeStatus(viewIdentifier);
 
 		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-" + viewIdentifier);
 		if (preferences['knowledgeStatus']) {
 			setSelectedValues(knowledgeStatusNode, preferences['knowledgeStatus']);
 		}
 
-		setLinkTypes(viewIdentifier);
-
 		var linkTypeNode = document.getElementById("linktype-multi-select-" + viewIdentifier);
 		if (preferences['linkTypes']) {
 			setSelectedValues(linkTypeNode, preferences['linkTypes']);
+		}
+
+		var decisionGroupNode = document.getElementById("decisiongroup-multi-select-" + viewIdentifier);
+		if (preferences['decisionGroups']) {
+			setSelectedValues(decisionGroupNode, preferences['decisionGroups']);
 		}
 
 		var linkDistanceNode = document.getElementById("link-distance-input-" + viewIdentifier);
@@ -359,7 +372,7 @@
 	}
 
 	function getFilterSettings(projectKey, minimumDecisionCoverage, maximumLinkDistance,
-							   knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes,
+							   knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes, decisionGroups,
 							   linkDistance, minDegree, maxDegree, startDate, endDate,
 							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
 		var filterSettings = {};
@@ -394,6 +407,11 @@
 		var linkTypesList = getList(linkTypes);
 		if (linkTypesList && Array.isArray(linkTypesList) && linkTypesList.length) {
 			filterSettings.linkTypes = linkTypesList;
+		}
+
+		var decisionGroupsList = getList(decisionGroups);
+		if (decisionGroupsList && Array.isArray(decisionGroupsList) && decisionGroupsList.length) {
+			filterSettings.groups = decisionGroupsList;
 		}
 
 		if (linkDistance) {
@@ -462,11 +480,17 @@
 		setMultiSelection(linkTypeSelection, linkTypes);
 	}
 
+	function setDecisionGroups(projectKey, viewIdentifier) {
+		var decisionGroupSelection = document.getElementById("decisiongroup-multi-select-" + viewIdentifier);
+		var decisionGroups = conDecAPI.getAllDecisionGroups();
+		setMultiSelection(decisionGroupSelection, decisionGroups);
+	}
+
 	function setMultiSelection(selectionElement, options) {
 		if (selectionElement) {
 			removeOptions(selectionElement);
 
-			for (i = 0; i < options.length; i++) {
+			for (var i = 0; i < options.length; i++) {
 				var option = document.createElement('option');
 				option.value = options[i];
 				option.text = options[i];
