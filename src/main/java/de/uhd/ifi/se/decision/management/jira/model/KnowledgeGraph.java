@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.TreeSingleSourcePathsImpl;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.slf4j.Logger;
@@ -310,7 +312,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	/**
-	 * @param distanceAndPredecessorMap
 	 * @issue How can we get a subgraph of the entire knowledge graph that only
 	 *        contains certain elements (for filtering)?
 	 * @alternative Use the org.jgrapht.graph.AsSubgraph class to create a subgraph.
@@ -337,6 +338,37 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		edgeSet().stream().filter(edge -> elements.containsAll(edge.getBothElements()))
 				.forEach(edge -> mutableSubgraph.addEdge(edge));
 		return mutableSubgraph;
+	}
+
+	/**
+	 * @param startElement
+	 *            root {@link KnowledgeElement} to create a subgraph from.
+	 * @param maxLinkDistance
+	 *            number of hops/radius in the graph from the start element. All
+	 *            other {@link KnowledgeElement}s reachable from the start element
+	 *            are included in the subgraph.
+	 * @return new {@link KnowledgeGraph} containing {@link KnowledgeElement}s
+	 *         reachable from the start element as well {@link Link}s. New
+	 *         {@link Link}s and {@link KnowledgeElement}s can be added to this
+	 *         graph. Thus, it is no real subgraph but mutable.
+	 */
+	public KnowledgeGraph getMutableSubgraphFor(KnowledgeElement startElement, int maxLinkDistance) {
+		SingleSourcePaths<KnowledgeElement, Link> paths = getShortestPathAlgorithm(maxLinkDistance)
+				.getPaths(startElement);
+		Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)
+				.getDistanceAndPredecessorMap().keySet();
+		return getMutableSubgraphFor(reachableElements);
+	}
+
+	/**
+	 * @return copied object of this graph that can be changed (e.g. to add
+	 *         transitive links for filtering).
+	 */
+	public KnowledgeGraph copy() {
+		KnowledgeGraph copiedGraph = new KnowledgeGraph();
+		vertexSet().forEach(vertex -> copiedGraph.addVertex(vertex));
+		edgeSet().forEach(link -> copiedGraph.addEdge(link.getSource(), link.getTarget(), link));
+		return copiedGraph;
 	}
 
 	/**
