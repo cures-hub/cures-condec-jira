@@ -145,7 +145,6 @@
 				dashboardAPI.savePreferences(preferences);
 			}
 
-
 			dashboardAPI.resize();
 		}
 
@@ -155,8 +154,10 @@
 	function createCancelButton(preferences, dashboardAPI, viewIdentifier) {
 		function onCancelButton(event) {
 			if (preferences['projectKey']) {
-				dashboardAPI.closeEdit();
+				conDecDashboard.showDashboardSection("condec-dashboard-contents-container-", viewIdentifier);
 			}
+
+			dashboardAPI.resize();
 		}
 
 		document.getElementById("cancel-button-" + viewIdentifier).addEventListener("click", onCancelButton);

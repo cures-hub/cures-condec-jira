@@ -9,7 +9,6 @@
  */
 
 (function (global) {
-
 	var ConDecRationaleCoverageDashboard = function() {
 		console.log("ConDecRationaleCoverageDashboard constructor");
 	};

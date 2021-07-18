@@ -80,6 +80,7 @@ public class FilterSettings {
 		this.endDate = -1;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
+		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isOnlyIncompleteKnowledgeShown = false;
@@ -104,7 +105,6 @@ public class FilterSettings {
 		setSearchTerm(searchTerm);
 		this.knowledgeTypes = project.getNamesOfKnowledgeTypes();
 		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
-		this.decisionGroups = DecisionGroupManager.getAllDecisionGroups(projectKey);
 		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		this.changeImpactAnalysisConfig = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey);
 	}
