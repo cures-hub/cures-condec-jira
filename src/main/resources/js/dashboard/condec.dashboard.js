@@ -19,7 +19,7 @@
 	ConDecDashboard.prototype.initRender = function (dashboard, viewIdentifier, dashboardAPI, preferences) {
 		dashboardAPI.once("afterRender",
 			function() {
-				if (preferences['projectKey']) {
+				if (preferences["projectKey"]) {
 					createRender(dashboard, viewIdentifier, dashboardAPI, preferences);
 				}
 			});
@@ -33,81 +33,11 @@
 	}
 
 	function createRender(dashboard, viewIdentifier, dashboardAPI, preferences) {
-		var projectKey = preferences['projectKey'];
 		var sourceKnowledgeTypes = "";
-		if (preferences['sourceKnowledgeTypes']) {
-			sourceKnowledgeTypes = preferences['sourceKnowledgeTypes'];
+		if (preferences["sourceKnowledgeTypes"]) {
+			sourceKnowledgeTypes = preferences["sourceKnowledgeTypes"];
 		}
-		var minimumDecisionCoverage;
-		if (preferences['minimumDecisionCoverage']) {
-			minimumDecisionCoverage = preferences['minimumDecisionCoverage'];
-		}
-		var maximumLinkDistance;
-		if (preferences['maximumLinkDistance']) {
-			maximumLinkDistance = preferences['maximumLinkDistance'];
-		}
-		var knowledgeTypes;
-		if (preferences['knowledgeTypes']) {
-			knowledgeTypes = preferences['knowledgeTypes'];
-		}
-		var documentationLocations;
-		if (preferences['documentationLocations']) {
-			documentationLocations = preferences['documentationLocations'];
-		}
-		var knowledgeStatus;
-		if (preferences['knowledgeStatus']) {
-			knowledgeStatus = preferences['knowledgeStatus'];
-		}
-		var linkTypes;
-		if (preferences['linkTypes']) {
-			linkTypes = preferences['linkTypes'];
-		}
-		var decisionGroups;
-		if (preferences['decisionGroups']) {
-			decisionGroups = preferences['decisionGroups'];
-		}
-		var linkDistance;
-		if (preferences['linkDistance']) {
-			linkDistance = preferences['linkDistance'];
-		}
-		var minDegree;
-		if (preferences['minDegree']) {
-			minDegree = preferences['minDegree'];
-		}
-		var maxDegree;
-		if (preferences['maxDegree']) {
-			maxDegree = preferences['maxDegree'];
-		}
-		var startDate;
-		if (preferences['startDate']) {
-			startDate = preferences['startDate'];
-		}
-		var endDate;
-		if (preferences['endDate']) {
-			endDate = preferences['endDate'];
-		}
-		var decisionKnowledgeShown;
-		if (preferences['decisionKnowledgeShown']) {
-			decisionKnowledgeShown = preferences['decisionKnowledgeShown'];
-		}
-		var testCodeShown;
-		if (preferences['testCodeShown']) {
-			testCodeShown = preferences['testCodeShown'];
-		}
-		var incompleteKnowledgeShown;
-		if (preferences['incompleteKnowledgeShown']) {
-			incompleteKnowledgeShown = preferences['incompleteKnowledgeShown'];
-		}
-		var transitiveLinksShown;
-		if (preferences['transitiveLinksShown']) {
-			transitiveLinksShown = preferences['transitiveLinksShown'];
-		}
-
-		var filterSettings = getFilterSettings(projectKey, minimumDecisionCoverage, maximumLinkDistance,
-			knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes, decisionGroups,
-			linkDistance, minDegree, maxDegree, startDate, endDate,
-			decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown);
-
+		var filterSettings = getFilterSettings(preferences);
 		getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes);
 
 		dashboardAPI.resize();
@@ -117,11 +47,8 @@
 		showDashboardSection("condec-dashboard-config-", viewIdentifier);
 
 		setPreferences(preferences, viewIdentifier);
-
 		createSaveButton(dashboardAPI, viewIdentifier);
-
 		createCancelButton(preferences, dashboardAPI, viewIdentifier);
-
 		createListener(viewIdentifier);
 
 		dashboardAPI.resize();
@@ -131,7 +58,7 @@
 		function onSaveButton(event) {
 			var preferences = getPreferences(viewIdentifier);
 
-			if (preferences['projectKey']) {
+			if (preferences["projectKey"]) {
 				dashboardAPI.savePreferences(preferences);
 			}
 
@@ -143,7 +70,7 @@
 
 	function createCancelButton(preferences, dashboardAPI, viewIdentifier) {
 		function onCancelButton(event) {
-			if (preferences['projectKey']) {
+			if (preferences["projectKey"]) {
 				showDashboardSection("condec-dashboard-contents-container-", viewIdentifier);
 			}
 
@@ -178,7 +105,6 @@
 	}
 
 	function getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes) {
-		filterSettings = JSON.parse(filterSettings);
 		if (!filterSettings.projectKey || !filterSettings.projectKey.length) {
 			return;
 		}
@@ -203,287 +129,147 @@
 	function getPreferences(viewIdentifier) {
 		var preferences = {};
 
-		var projectNode = document.getElementById("project-dropdown-" + viewIdentifier);
-		if (projectNode) {
-			preferences['projectKey'] = projectNode.value;
-		}
-
-		var sourceKnowledgeTypeNode = document.getElementById("source-knowledgetype-multi-select-" + viewIdentifier);
-		if (sourceKnowledgeTypeNode) {
-			preferences['sourceKnowledgeTypes'] = getSelectedValues(sourceKnowledgeTypeNode);
-		}
-
-		var minimumDecisionCoverageNode = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
-		if (minimumDecisionCoverageNode) {
-			preferences['minimumDecisionCoverage'] = minimumDecisionCoverageNode.value;
-		}
-
-		var maximumLinkDistanceNode = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
-		if (maximumLinkDistanceNode) {
-			preferences['maximumLinkDistance'] = maximumLinkDistanceNode.value;
-		}
-
-		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-" + viewIdentifier);
-		if (knowledgeTypeNode) {
-			preferences['knowledgeTypes'] = getSelectedValues(knowledgeTypeNode);
-		}
-
-		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-" + viewIdentifier);
-		if (documentationLocationNode) {
-			preferences['documentationLocations'] = getSelectedValues(documentationLocationNode);
-		}
-
-		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-" + viewIdentifier);
-		if (knowledgeStatusNode) {
-			preferences['knowledgeStatus'] = getSelectedValues(knowledgeStatusNode);
-		}
-
-		var linkTypeNode = document.getElementById("linktype-multi-select-" + viewIdentifier);
-		if (linkTypeNode) {
-			preferences['linkTypes'] = getSelectedValues(linkTypeNode);
-		}
-
-		var decisionGroupNode = document.getElementById("decisiongroup-multi-select-" + viewIdentifier);
-		if (decisionGroupNode) {
-			preferences['decisionGroups'] = getSelectedValues(decisionGroupNode);
-		}
-
-		var linkDistanceNode = document.getElementById("link-distance-input-" + viewIdentifier);
-		if (linkDistanceNode) {
-			preferences['linkDistance'] = linkDistanceNode.value;
-		}
-
-		var minDegreeNode = document.getElementById("min-degree-input-" + viewIdentifier);
-		if (minDegreeNode) {
-			preferences['minDegree'] = minDegreeNode.value;
-		}
-
-		var maxDegreeNode = document.getElementById("max-degree-input-" + viewIdentifier);
-		if (maxDegreeNode) {
-			preferences['maxDegree'] = maxDegreeNode.value;
-		}
-
-		var startDateNode = document.getElementById("start-date-picker-" + viewIdentifier);
-		if (startDateNode) {
-			preferences['startDate'] = startDateNode.value;
-		}
-
-		var endDateNode = document.getElementById("end-date-picker-" + viewIdentifier);
-		if (endDateNode) {
-			preferences['endDate'] = endDateNode.value;
-		}
-
-		var decisionKnowledgeShownNode = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
-		if (decisionKnowledgeShownNode) {
-			preferences['decisionKnowledgeShown'] = decisionKnowledgeShownNode.checked;
-		}
-
-		var testCodeShown = document.getElementById("is-test-code-input-" + viewIdentifier);
-		if (testCodeShown) {
-			preferences['testCodeShown'] = testCodeShown.checked;
-		}
-
-		var incompleteKnowledgeShown = document.getElementById("is-incomplete-knowledge-input-" + viewIdentifier);
-		if (incompleteKnowledgeShown) {
-			preferences['incompleteKnowledgeShown'] = incompleteKnowledgeShown.checked;
-		}
-
-		var transitiveLinksShown = document.getElementById("is-transitive-links-input-" + viewIdentifier);
-		if (transitiveLinksShown) {
-			preferences['transitiveLinksShown'] = transitiveLinksShown.checked;
-		}
+		setPreferenceValue("projectKey", null, preferences, "project-dropdown-", viewIdentifier);
+		setPreferenceValue("sourceKnowledgeTypes", "list", preferences, "source-knowledgetype-multi-select-", viewIdentifier);
+		setPreferenceValue("minimumDecisionCoverage", null, preferences, "minimum-number-of-decisions-input-", viewIdentifier);
+		setPreferenceValue("maximumLinkDistance", null, preferences, "link-distance-to-decision-number-input-", viewIdentifier);
+		setPreferenceValue("knowledgeTypes", "list", preferences, "knowledgetype-multi-select-", viewIdentifier);
+		setPreferenceValue("documentationLocations", "list", preferences, "documentationlocation-multi-select-", viewIdentifier);
+		setPreferenceValue("knowledgeStatus", "list", preferences, "knowledgestatus-multi-select-", viewIdentifier);
+		setPreferenceValue("linkTypes", "list", preferences, "linktype-multi-select-", viewIdentifier);
+		setPreferenceValue("decisionGroups", "list", preferences, "decisiongroup-multi-select-", viewIdentifier);
+		setPreferenceValue("linkDistance", null, preferences, "link-distance-input-", viewIdentifier);
+		setPreferenceValue("minDegree", null, preferences, "min-degree-input-", viewIdentifier);
+		setPreferenceValue("maxDegree", null, preferences, "max-degree-input-", viewIdentifier);
+		setPreferenceValue("startDate", null, preferences, "start-date-picker-", viewIdentifier);
+		setPreferenceValue("endDate", null, preferences, "end-date-picker-", viewIdentifier);
+		setPreferenceValue("endDate", null, preferences, "end-date-picker-", viewIdentifier);
+		setPreferenceValue("decisionKnowledgeShown", "flag", preferences, "is-decision-knowledge-only-input-", viewIdentifier);
+		setPreferenceValue("testCodeShown", "flag", preferences, "is-test-code-input-", viewIdentifier);
+		setPreferenceValue("incompleteKnowledgeShown", "flag", preferences, "is-incomplete-knowledge-input-", viewIdentifier);
+		setPreferenceValue("transitiveLinksShown", "flag", preferences, "is-transitive-links-input-", viewIdentifier);
 
 		return preferences;
 	}
 
 	function setPreferences(preferences, viewIdentifier) {
-		var projectNode = document.getElementById("project-dropdown-" + viewIdentifier);
-		if (preferences['projectKey']) {
-			projectNode.value = preferences['projectKey'];
+		setSourceKnowledgeTypes(preferences["projectKey"], viewIdentifier);
+		setKnowledgeTypes(preferences["projectKey"], viewIdentifier);
+		setDocumentationLocations(viewIdentifier);
+		setKnowledgeStatus(viewIdentifier);
+		setLinkTypes(viewIdentifier);
+		setDecisionGroups(preferences["projectKey"], viewIdentifier);
 
-			setSourceKnowledgeTypes(preferences['projectKey'], viewIdentifier);
-			setKnowledgeTypes(preferences['projectKey'], viewIdentifier);
-			setDocumentationLocations(viewIdentifier);
-			setKnowledgeStatus(viewIdentifier);
-			setLinkTypes(viewIdentifier);
-			setDecisionGroups(preferences['projectKey'], viewIdentifier);
-		}
-
-		var sourceKnowledgeTypeNode = document.getElementById("source-knowledgetype-multi-select-" + viewIdentifier);
-		if (preferences['sourceKnowledgeTypes']) {
-			setSelectedValues(sourceKnowledgeTypeNode, preferences['sourceKnowledgeTypes']);
-		}
-
-		var minimumDecisionCoverageNode = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
-		if (preferences['minimumDecisionCoverage']) {
-			minimumDecisionCoverageNode.value = preferences['minimumDecisionCoverage'];
-		}
-
-		var maximumLinkDistanceNode = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
-		if (preferences['maximumLinkDistance']) {
-			maximumLinkDistanceNode.value = preferences['maximumLinkDistance'];
-		}
-
-		var knowledgeTypeNode = document.getElementById("knowledgetype-multi-select-" + viewIdentifier);
-		if (preferences['knowledgeTypes']) {
-			setSelectedValues(knowledgeTypeNode, preferences['knowledgeTypes']);
-		}
-
-		var documentationLocationNode = document.getElementById("documentationlocation-multi-select-" + viewIdentifier);
-		if (preferences['documentationLocations']) {
-			setSelectedValues(documentationLocationNode, preferences['documentationLocations']);
-		}
-
-		var knowledgeStatusNode = document.getElementById("knowledgestatus-multi-select-" + viewIdentifier);
-		if (preferences['knowledgeStatus']) {
-			setSelectedValues(knowledgeStatusNode, preferences['knowledgeStatus']);
-		}
-
-		var linkTypeNode = document.getElementById("linktype-multi-select-" + viewIdentifier);
-		if (preferences['linkTypes']) {
-			setSelectedValues(linkTypeNode, preferences['linkTypes']);
-		}
-
-		var decisionGroupNode = document.getElementById("decisiongroup-multi-select-" + viewIdentifier);
-		if (preferences['decisionGroups']) {
-			setSelectedValues(decisionGroupNode, preferences['decisionGroups']);
-		}
-
-		var linkDistanceNode = document.getElementById("link-distance-input-" + viewIdentifier);
-		if (preferences['linkDistance']) {
-			linkDistanceNode.value = preferences['linkDistance'];
-		}
-
-		var minDegreeNode = document.getElementById("min-degree-input-" + viewIdentifier);
-		if (preferences['minDegree']) {
-			minDegreeNode.value = preferences['minDegree'];
-		}
-
-		var maxDegreeNode = document.getElementById("max-degree-input-" + viewIdentifier);
-		if (preferences['maxDegree']) {
-			maxDegreeNode.value = preferences['maxDegree'];
-		}
-
-		var startDateNode = document.getElementById("start-date-picker-" + viewIdentifier);
-		if (preferences['startDate']) {
-			startDateNode.value = preferences['startDate'];
-		}
-
-		var endDateNode = document.getElementById("end-date-picker-" + viewIdentifier);
-		if (preferences['endDate']) {
-			endDateNode.value = preferences['endDate'];
-		}
-
-		var decisionKnowledgeShownNode = document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier);
-		if (preferences['decisionKnowledgeShown']) {
-			decisionKnowledgeShownNode.checked = preferences['decisionKnowledgeShown'];
-		}
-
-		var testCodeShown = document.getElementById("is-test-code-input-" + viewIdentifier);
-		if (preferences['testCodeShown']) {
-			testCodeShown.checked = preferences['testCodeShown'];
-		}
-
-		var incompleteKnowledgeShown = document.getElementById("is-incomplete-knowledge-input-" + viewIdentifier);
-		if (preferences['incompleteKnowledgeShown']) {
-			incompleteKnowledgeShown.checked = preferences['incompleteKnowledgeShown'];
-		}
-
-		var transitiveLinksShown = document.getElementById("is-transitive-links-input-" + viewIdentifier);
-		if (preferences['transitiveLinksShown']) {
-			transitiveLinksShown.checked = preferences['transitiveLinksShown'];
-		}
+		setPreference("projectKey", null, preferences, "project-dropdown-", viewIdentifier);
+		setPreference("sourceKnowledgeTypes", "list", preferences, "source-knowledgetype-multi-select-", viewIdentifier);
+		setPreference("minimumDecisionCoverage", null, preferences, "minimum-number-of-decisions-input-", viewIdentifier);
+		setPreference("maximumLinkDistance", null, preferences, "link-distance-to-decision-number-input-", viewIdentifier);
+		setPreference("knowledgeTypes", "list", preferences, "knowledgetype-multi-select-", viewIdentifier);
+		setPreference("documentationLocations", "list", preferences, "documentationlocation-multi-select-", viewIdentifier);
+		setPreference("knowledgeStatus", "list", preferences, "knowledgestatus-multi-select-", viewIdentifier);
+		setPreference("linkTypes", "list", preferences, "linktype-multi-select-", viewIdentifier);
+		setPreference("decisionGroups", "list", preferences, "decisiongroup-multi-select-", viewIdentifier);
+		setPreference("linkDistance", null, preferences, "link-distance-input-", viewIdentifier);
+		setPreference("minDegree", null, preferences, "min-degree-input-", viewIdentifier);
+		setPreference("maxDegree", null, preferences, "max-degree-input-", viewIdentifier);
+		setPreference("startDate", null, preferences, "start-date-picker-", viewIdentifier);
+		setPreference("endDate", null, preferences, "end-date-picker-", viewIdentifier);
+		setPreference("decisionKnowledgeShown", "flag", preferences, "is-decision-knowledge-only-input-", viewIdentifier);
+		setPreference("testCodeShown", "flag", preferences, "is-test-code-input-", viewIdentifier);
+		setPreference("incompleteKnowledgeShown", "flag", preferences, "is-test-code-input-", viewIdentifier);
+		setPreference("transitiveLinksShown", "flag", preferences, "is-transitive-links-input-", viewIdentifier);
 	}
 
-	function getFilterSettings(projectKey, minimumDecisionCoverage, maximumLinkDistance,
-							   knowledgeTypes, documentationLocations, knowledgeStatus, linkTypes, decisionGroups,
-							   linkDistance, minDegree, maxDegree, startDate, endDate,
-							   decisionKnowledgeShown, testCodeShown, incompleteKnowledgeShown, transitiveLinksShown) {
+	function getFilterSettings(preferences) {
 		var filterSettings = {};
 
-		filterSettings.projectKey = projectKey;
 		filterSettings.searchTerm = "";
 		filterSettings.definitionOfDone = {};
 
-		if (minimumDecisionCoverage) {
-			filterSettings.definitionOfDone.minimumDecisionsWithinLinkDistance = minimumDecisionCoverage;
-		}
+		setFilterSetting("projectKey", "projectKey", null, filterSettings, preferences);
+		setFilterSetting("minimumDecisionsWithinLinkDistance", "minimumDecisionCoverage", "DoD", filterSettings, preferences);
+		setFilterSetting("maximumLinkDistanceToDecisions", "maximumLinkDistance", "DoD", filterSettings, preferences);
+		setFilterSetting("knowledgeTypes", "knowledgeTypes", "list", filterSettings, preferences);
+		setFilterSetting("documentationLocations", "documentationLocations", "list", filterSettings, preferences);
+		setFilterSetting("status", "knowledgeStatus", "list", filterSettings, preferences);
+		setFilterSetting("linkTypes", "linkTypes", "list", filterSettings, preferences);
+		setFilterSetting("groups", "decisionGroups", "list", filterSettings, preferences);
+		setFilterSetting("linkDistance", "linkDistance", null, filterSettings, preferences);
+		setFilterSetting("minDegree", "minDegree", null, filterSettings, preferences);
+		setFilterSetting("maxDegree", "maxDegree", null, filterSettings, preferences);
+		setFilterSetting("startDate", "startDate", "date", filterSettings, preferences);
+		setFilterSetting("endDate", "endDate", "date", filterSettings, preferences);
+		setFilterSetting("isOnlyDecisionKnowledgeShown", "decisionKnowledgeShown", "list", filterSettings, preferences);
+		setFilterSetting("isTestCodeShown", "testCodeShown", "list", filterSettings, preferences);
+		setFilterSetting("isIncompleteKnowledgeShown", "incompleteKnowledgeShown", "list", filterSettings, preferences);
+		setFilterSetting("createTransitiveLinks", "transitiveLinksShown", "list", filterSettings, preferences);
 
-		if (maximumLinkDistance) {
-			filterSettings.definitionOfDone.maximumLinkDistanceToDecisions = maximumLinkDistance;
-		}
+		return filterSettings;
+	}
 
-		var knowledgeTypesList = getList(knowledgeTypes);
-		if (knowledgeTypesList && Array.isArray(knowledgeTypesList) && knowledgeTypesList.length) {
-			filterSettings.knowledgeTypes = knowledgeTypesList;
+	function setPreferenceValue(key, type, preferences, nodeId, viewIdentifier) {
+		var node = document.getElementById(nodeId + viewIdentifier);
+		if (node) {
+			if (type === "flag") {
+				preferences[key] = node.checked;
+			} else if (type === "list") {
+				preferences[key] = getSelectedValues(node);
+			} else {
+				preferences[key] = node.value;
+			}
 		}
+	}
 
-		var documentationLocationsList = getList(documentationLocations);
-		if (documentationLocationsList && Array.isArray(documentationLocationsList) && documentationLocationsList.length) {
-			filterSettings.documentationLocations = documentationLocationsList;
+	function setPreference(key, type, preferences, nodeId, viewIdentifier) {
+		var node = document.getElementById(nodeId + viewIdentifier);
+		if (preferences[key]) {
+			if (type === "flag") {
+				node.checked = preferences[key];
+			} else if (type === "list") {
+				setSelectedValues(node, preferences[key])
+			} else {
+				node.value = preferences[key];
+			}
 		}
+	}
 
-		var knowledgeStatusList = getList(knowledgeStatus);
-		if (knowledgeStatusList && Array.isArray(knowledgeStatusList) && knowledgeStatusList.length) {
-			filterSettings.status = knowledgeStatusList;
+	function setFilterSetting(filterSettingKey, preferencesKey, type, filterSettings, preferences) {
+		if (type === "list") {
+			var list = getList(preferences[preferencesKey]);
+			if (list && Array.isArray(list) && list.length) {
+				filterSettings[filterSettingKey] = list;
+			}
+		} else if (type === "date") {
+			if (preferences[preferencesKey]) {
+				filterSettings[filterSettingKey] = new Date(preferences[preferencesKey]).getTime();
+			}
+		} else if (type === "DoD") {
+			if (preferences[preferencesKey]) {
+				filterSettings["definitionOfDone"][filterSettingKey] = preferences[preferencesKey];
+			}
+		} else {
+			if (preferences[preferencesKey]) {
+				filterSettings[filterSettingKey] = preferences[preferencesKey];
+			}
 		}
-
-		var linkTypesList = getList(linkTypes);
-		if (linkTypesList && Array.isArray(linkTypesList) && linkTypesList.length) {
-			filterSettings.linkTypes = linkTypesList;
-		}
-
-		var decisionGroupsList = getList(decisionGroups);
-		if (decisionGroupsList && Array.isArray(decisionGroupsList) && decisionGroupsList.length) {
-			filterSettings.groups = decisionGroupsList;
-		}
-
-		if (linkDistance) {
-			filterSettings.linkDistance = linkDistance;
-		}
-
-		if (minDegree) {
-			filterSettings.minDegree = minDegree;
-		}
-		if (maxDegree) {
-			filterSettings.maxDegree = maxDegree;
-		}
-
-		if (startDate) {
-			filterSettings.startDate = new Date(startDate).getTime();
-		}
-		if (endDate) {
-			filterSettings.endDate = new Date(endDate).getTime();
-		}
-
-		if (decisionKnowledgeShown) {
-			filterSettings.isOnlyDecisionKnowledgeShown = decisionKnowledgeShown;
-		}
-		if (testCodeShown) {
-			filterSettings.isTestCodeShown = testCodeShown;
-		}
-		if (incompleteKnowledgeShown) {
-			filterSettings.isIncompleteKnowledgeShown = incompleteKnowledgeShown;
-		}
-		if (transitiveLinksShown) {
-			filterSettings.createTransitiveLinks = transitiveLinksShown;
-		}
-
-		return JSON.stringify(filterSettings);
 	}
 
 	function setSourceKnowledgeTypes(projectKey, viewIdentifier) {
-		var sourceKnowledgeTypeSelection = document.getElementById("source-knowledgetype-multi-select-" + viewIdentifier);
-		conDecAPI.projectKey = projectKey;
-		var sourceKnowledgeTypes = conDecAPI.getKnowledgeTypes();
-		setMultiSelection(sourceKnowledgeTypeSelection, sourceKnowledgeTypes);
+		if (projectKey) {
+			var sourceKnowledgeTypeSelection = document.getElementById("source-knowledgetype-multi-select-" + viewIdentifier);
+			conDecAPI.projectKey = projectKey;
+			var sourceKnowledgeTypes = conDecAPI.getKnowledgeTypes();
+			setMultiSelection(sourceKnowledgeTypeSelection, sourceKnowledgeTypes);
+		}
 	}
 
 	function setKnowledgeTypes(projectKey, viewIdentifier) {
-		var knowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-" + viewIdentifier);
-		conDecAPI.projectKey = projectKey;
-		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
-		setMultiSelection(knowledgeTypeSelection, knowledgeTypes);
+		if (projectKey) {
+			var knowledgeTypeSelection = document.getElementById("knowledgetype-multi-select-" + viewIdentifier);
+			conDecAPI.projectKey = projectKey;
+			var knowledgeTypes = conDecAPI.getKnowledgeTypes();
+			setMultiSelection(knowledgeTypeSelection, knowledgeTypes);
+		}
 	}
 
 	function setDocumentationLocations(viewIdentifier) {
@@ -505,9 +291,11 @@
 	}
 
 	function setDecisionGroups(projectKey, viewIdentifier) {
-		var decisionGroupSelection = document.getElementById("decisiongroup-multi-select-" + viewIdentifier);
-		var decisionGroups = conDecAPI.getAllDecisionGroups();
-		setMultiSelection(decisionGroupSelection, decisionGroups);
+		if (projectKey) {
+			var decisionGroupSelection = document.getElementById("decisiongroup-multi-select-" + viewIdentifier);
+			var decisionGroups = conDecAPI.getAllDecisionGroups();
+			setMultiSelection(decisionGroupSelection, decisionGroups);
+		}
 	}
 
 	function setMultiSelection(selectionElement, options) {
@@ -515,7 +303,7 @@
 			removeOptions(selectionElement);
 
 			for (var i = 0; i < options.length; i++) {
-				var option = document.createElement('option');
+				var option = document.createElement("option");
 				option.value = options[i];
 				option.text = options[i];
 				selectionElement.options.add(option);
