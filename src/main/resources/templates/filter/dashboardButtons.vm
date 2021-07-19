@@ -1,6 +1,0 @@
-<div class="buttons">
-    <input id="save-button-$viewIdentifier" class="button" type="button"
-           value=$i18n.getText("condec.project.button.save")>
-    <input id="cancel-button-$viewIdentifier" class="button" type="button"
-           value=$i18n.getText("condec.project.button.cancel")>
-</div>

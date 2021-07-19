@@ -1,6 +1,0 @@
-<div id="decisiongroup-multi-$viewIdentifier" class="condec-dashboard-filter">
-    <label for="decisiongroup-multi-select-$viewIdentifier">$i18n.getText('condec.label.decision.groups')</label>
-    <select name="decisionGroup" id="decisiongroup-multi-select-$viewIdentifier" class="select"
-            multiple size="3">
-    </select>
-</div>

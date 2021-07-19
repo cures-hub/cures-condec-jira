@@ -1,4 +1,4 @@
-<label for="project-dropdown-$viewIdentifier">Project:</label>
+<label for="project-dropdown-$viewIdentifier">$i18n.getText("condec.label.filter.project")</label>
 <select name="project" id="project-dropdown-$viewIdentifier" class="select long-field">
     <option value="">
         $i18n.getText("condec.project.selection.pickone")

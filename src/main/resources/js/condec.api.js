@@ -547,6 +547,9 @@
 	 * "Implication", "Issue", "Problem", and "Solution".
 	 */
 	ConDecAPI.prototype.getKnowledgeTypes = function() {
+		if (conDecAPI.projectKey === undefined || conDecAPI.projectKey === null || conDecAPI.projectKey.length === 0) {
+			return this.knowledgeTypes;
+		}
 		if (this.knowledgeTypes === undefined || this.knowledgeTypes.length === 0) {
 			this.knowledgeTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getKnowledgeTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
@@ -557,6 +560,9 @@
 	 * external references: condec.dialog, condec.filtering
 	 */
 	ConDecAPI.prototype.getLinkTypes = function() {
+		if (conDecAPI.projectKey === undefined || conDecAPI.projectKey === null || conDecAPI.projectKey.length === 0) {
+			return this.linkTypes;
+		}
 		if (this.linkTypes === undefined || this.linkTypes.length === 0) {
 			this.linkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getLinkTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
@@ -567,6 +573,9 @@
 	 * external references: condec.dialog, condec.filtering
 	 */
 	ConDecAPI.prototype.getAllLinkTypes = function() {
+		if (conDecAPI.projectKey === undefined || conDecAPI.projectKey === null || conDecAPI.projectKey.length === 0) {
+			return this.allLinkTypes;
+		}
 		if (this.allLinkTypes === undefined || this.allLinkTypes.length === 0) {
 			this.allLinkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllLinkTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
@@ -577,6 +586,9 @@
 	 * external references: condec.filtering
 	 */
 	ConDecAPI.prototype.getAllDecisionGroups = function() {
+		if (conDecAPI.projectKey === undefined || conDecAPI.projectKey === null || conDecAPI.projectKey.length === 0) {
+			return this.decisionGroups;
+		}
 		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
 			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + conDecAPI.projectKey);
 		}
