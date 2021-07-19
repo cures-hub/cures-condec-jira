@@ -46,10 +46,10 @@
 	function createConfiguration(viewIdentifier, dashboardAPI, preferences) {
 		showDashboardSection("condec-dashboard-config-", viewIdentifier);
 
-		setPreferences(preferences, viewIdentifier);
 		createSaveButton(dashboardAPI, viewIdentifier);
 		createCancelButton(preferences, dashboardAPI, viewIdentifier);
 		createListener(viewIdentifier);
+		setPreferences(preferences, viewIdentifier);
 
 		dashboardAPI.resize();
 	}
@@ -65,6 +65,8 @@
 			dashboardAPI.resize();
 		}
 
+		clearListener("save-button-", viewIdentifier);
+
 		document.getElementById("save-button-" + viewIdentifier).addEventListener("click", onSaveButton);
 	}
 
@@ -76,6 +78,8 @@
 
 			dashboardAPI.resize();
 		}
+
+		clearListener("cancel-button-", viewIdentifier);
 
 		document.getElementById("cancel-button-" + viewIdentifier).addEventListener("click", onCancelButton);
 	}
@@ -91,7 +95,14 @@
 			setDefaultMinimumDecisionCoverageAndMaximumLinkDistance(document.getElementById("project-dropdown-" + viewIdentifier).value, viewIdentifier);
 		}
 
+		clearListener("project-dropdown-", viewIdentifier);
+
 		document.getElementById("project-dropdown-" + viewIdentifier).addEventListener("change", onSelectProject);
+	}
+
+	function clearListener(elementId, viewIdentifier) {
+		var element = document.getElementById(elementId + viewIdentifier);
+		element.replaceWith(element.cloneNode(true));
 	}
 
 	function showDashboardSection(nodeName, viewIdentifier) {

@@ -58,7 +58,7 @@
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
 			"", "For how many elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
 			colorPalette);
-	}
+	};
 
 	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();
 })(window);

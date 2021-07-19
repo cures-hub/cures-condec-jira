@@ -69,7 +69,7 @@
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
 			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);
-	}
+	};
 
 	global.conDecGeneralMetricsDashboard = new ConDecGeneralMetricsDashboard();
 })(window);

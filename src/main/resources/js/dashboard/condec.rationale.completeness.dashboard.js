@@ -59,7 +59,7 @@
 			"", "How many alternatives have at least one pro argument documented?", proArgumentDocumentedForAlternative);
 		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForAlternative",
 			"", "How many alternatives have at least one con argument documented?", conArgumentDocumentedForAlternative);
-	}
+	};
 
 	global.conDecRationaleCompletenessDashboard = new ConDecRationaleCompletenessDashboard();
 })(window);
