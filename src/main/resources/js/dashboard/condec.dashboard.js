@@ -23,14 +23,14 @@
 					createRender(dashboard, viewIdentifier, dashboardAPI, preferences);
 				}
 			});
-	}
+	};
 
 	ConDecDashboard.prototype.initConfiguration = function (viewIdentifier, dashboardAPI, preferences) {
 		dashboardAPI.once("afterRender",
 			function() {
 				createConfiguration(viewIdentifier, dashboardAPI, preferences);
 			});
-	}
+	};
 
 	function createRender(dashboard, viewIdentifier, dashboardAPI, preferences) {
 		var sourceKnowledgeTypes = "";
@@ -120,7 +120,7 @@
 		}
 
 		showDashboardSection("condec-dashboard-processing-", viewIdentifier);
-		document.getElementById("condec-dashboard-selected-project-rationale-coverage").innerText = filterSettings.projectKey;
+		document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
 
 		dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);
 	}
@@ -134,7 +134,7 @@
 		}
 
 		dashboardAPI.resize();
-	}
+	};
 
 	function getPreferences(viewIdentifier) {
 		var preferences = {};
