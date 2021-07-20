@@ -16,6 +16,14 @@
 		console.log("ConDecBranchesDashboard constructor");
 	};
 
+	/**
+	 * Gets the data to fill the dashboard plots by making an API-call.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param filterSettings the filterSettings used for the API-call
+	 */
 	ConDecBranchesDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
 		conDecDashboardAPI.getElementsFromBranchesOfJiraIssue(filterSettings.projectKey, function (error, result) {
 			conDecDashboard.processData(error, result, conDecBranchesDashboard, "branch",
@@ -23,6 +31,14 @@
 		});
 	};
 
+	/**
+	 * Render the dashboard plots.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param data the data returned from the API-call
+	 * @param filterSettings the filterSettings used in the API-call
+	 */
 	ConDecBranchesDashboard.prototype.renderData = function (data, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR

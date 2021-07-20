@@ -238,6 +238,9 @@
 		return filterSettings;
 	};
 
+	/**
+	 * external references: condec.dashboard
+	 */
 	ConDecFiltering.prototype.fillDropdownMenus = function (viewIdentifier, selectedKnowledgeTypes) {
 		this.initDropdown("source-knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 			selectedKnowledgeTypes, ["Other", "Code"]);
@@ -251,7 +254,8 @@
 	}
 
 	/**
-	 * external references: condec.rationale.backlog
+	 * external references: condec.rationale.backlog, condec.decision.table
+	 * condec.dashboard
 	 */
 	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems, unselectedItems) {
 		var dropdown = document.getElementById(dropdownId);
@@ -281,7 +285,7 @@
 	};
 
 	/**
-	 * external references: none, only used locally in condec.filtering
+	 * external references: condec.dashboard
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
 		var dropdown = document.getElementById(dropdownId);
@@ -358,6 +362,8 @@
 	/**
 	 * Fills the filter for the minimum decision coverage and
 	 * the maximum link distance from the definition of done.
+	 *
+	 * external references: condec.dashboard
 	 */
 	ConDecFiltering.prototype.fillMinimumCoverageAndMaximumLinkDistance = function(viewIdentifier, projectKey) {
 		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {

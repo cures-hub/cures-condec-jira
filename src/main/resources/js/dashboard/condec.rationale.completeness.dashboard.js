@@ -14,6 +14,14 @@
 		console.log("ConDecRationaleCompletenessDashboard constructor");
 	};
 
+	/**
+	 * Gets the data to fill the dashboard plots by making an API-call.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param filterSettings the filterSettings used for the API-call
+	 */
 	ConDecRationaleCompletenessDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
 		conDecDashboardAPI.getRationaleCompleteness(filterSettings, function (error, result) {
 			conDecDashboard.processData(error, result, conDecRationaleCompletenessDashboard,
@@ -21,6 +29,13 @@
 		});
 	};
 
+	/**
+	 * Render the dashboard plots.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param data the data returned from the API-call
+	 */
 	ConDecRationaleCompletenessDashboard.prototype.renderData = function (data) {
 		/*  init data for charts */
 		var issuesSolvedByDecision = new Map();

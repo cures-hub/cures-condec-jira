@@ -14,6 +14,15 @@
 		console.log("ConDecRationaleCoverageDashboard constructor");
 	};
 
+	/**
+	 * Gets the data to fill the dashboard plots by making an API-call.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param filterSettings the filterSettings used for the API-call
+	 * @param sourceKnowledgeTypes the source knowledge types used for the API-call
+	 */
 	ConDecRationaleCoverageDashboard.prototype.getData = function (dashboardAPI, filterSettings, sourceKnowledgeTypes) {
 		conDecDashboardAPI.getRationaleCoverage(filterSettings, sourceKnowledgeTypes, function (error, result) {
 			conDecDashboard.processData(error, result, conDecRationaleCoverageDashboard,
@@ -21,6 +30,13 @@
 		});
 	};
 
+	/**
+	 * Render the dashboard plots.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param data the data returned from the API-call
+	 */
 	ConDecRationaleCoverageDashboard.prototype.renderData = function (data) {
 		/*  init data for charts */
 		var issuesPerSelectedJiraIssue = new Map();
