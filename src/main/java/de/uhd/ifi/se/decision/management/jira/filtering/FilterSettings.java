@@ -77,15 +77,15 @@ public class FilterSettings {
 	public FilterSettings() {
 		this.startDate = -1;
 		this.endDate = -1;
-		this.linkDistance = 3;
 		this.documentationLocations = DocumentationLocation.getAllDocumentationLocations();
 		this.knowledgeStatus = KnowledgeStatus.getAllKnowledgeStatus();
 		this.decisionGroups = Collections.emptyList();
 		this.isOnlyDecisionKnowledgeShown = false;
 		this.isTestCodeShown = false;
 		this.isOnlyIncompleteKnowledgeShown = false;
+		this.linkDistance = 3;
 		this.minDegree = 0;
-		this.maxDegree = 50;
+		this.maxDegree = 100;
 		this.isHierarchical = false;
 		this.isIrrelevantTextShown = false;
 		this.createTransitiveLinks = false;

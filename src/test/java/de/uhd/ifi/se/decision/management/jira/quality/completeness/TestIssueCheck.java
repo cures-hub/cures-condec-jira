@@ -94,7 +94,6 @@ public class TestIssueCheck extends TestSetUp {
 		// set criteria "issue has to be linked to alternative" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
-		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertTrue(issueCompletenessCheck.getQualityProblems(issue, definitionOfDone).isEmpty());
 		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());

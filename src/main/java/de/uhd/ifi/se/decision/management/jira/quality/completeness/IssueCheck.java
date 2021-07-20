@@ -16,45 +16,41 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class IssueCheck implements KnowledgeElementCheck {
 
 	private KnowledgeElement issue;
-	private String projectKey;
 
 	@Override
-	public boolean execute(KnowledgeElement decisionProblem) {
-		this.issue = decisionProblem;
-		projectKey = decisionProblem.getProject().getProjectKey();
+	public boolean execute(KnowledgeElement issue) {
+		this.issue = issue;
+		String projectKey = issue.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
 	}
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return isValidDecisionLinkedToDecisionProblem(issue) && issue.getStatus() != KnowledgeStatus.UNRESOLVED;
+		return isValidDecisionLinkedToDecisionProblem(issue) && isResolved();
 	}
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		boolean hasToBeLinkedToAlternative = definitionOfDone.isIssueIsLinkedToAlternative();
-		if (hasToBeLinkedToAlternative) {
-			return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
-		}
-		return true;
+		return hasAlternative(definitionOfDone);
 	}
 
 	@Override
-	public List<QualityProblem> getQualityProblems(KnowledgeElement decisionProblem,
+	public List<QualityProblem> getQualityProblems(KnowledgeElement issue,
 			DefinitionOfDone definitionOfDone) {
+		this.issue = issue;
+
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (!isValidDecisionLinkedToDecisionProblem(decisionProblem)) {
+		if (!isValidDecisionLinkedToDecisionProblem(issue)) {
 			qualityProblems.add(QualityProblem.ISSUE_DOESNT_HAVE_DECISION);
 		}
 
-		if (decisionProblem.getStatus() == KnowledgeStatus.UNRESOLVED) {
+		if (!isResolved()) {
 			qualityProblems.add(QualityProblem.ISSUE_IS_UNRESOLVED);
 		}
 
-		boolean hasToBeLinkedToAlternative = definitionOfDone.isIssueIsLinkedToAlternative();
-		if (hasToBeLinkedToAlternative && !decisionProblem.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
+		if (!hasAlternative(definitionOfDone)) {
 			qualityProblems.add(QualityProblem.ISSUE_DOESNT_HAVE_ALTERNATIVE);
 		}
 
@@ -70,8 +66,20 @@ public class IssueCheck implements KnowledgeElementCheck {
 		Set<KnowledgeElement> linkedDecisions = decisionProblem.getNeighborsOfType(KnowledgeType.DECISION);
 		linkedDecisions.addAll(decisionProblem.getNeighborsOfType(KnowledgeType.SOLUTION));
 		return !linkedDecisions.isEmpty()
-				&& linkedDecisions.stream().anyMatch(decision -> decision.getStatus() != KnowledgeStatus.CHALLENGED
-						&& decision.getStatus() != KnowledgeStatus.REJECTED);
+			&& linkedDecisions.stream().anyMatch(decision -> decision.getStatus() != KnowledgeStatus.CHALLENGED
+			&& decision.getStatus() != KnowledgeStatus.REJECTED);
+	}
+
+	private boolean isResolved() {
+		return issue.getStatus() != KnowledgeStatus.UNRESOLVED;
+	}
+
+	private boolean hasAlternative(DefinitionOfDone definitionOfDone) {
+		boolean hasToBeLinkedToAlternative = definitionOfDone.isIssueIsLinkedToAlternative();
+		if (hasToBeLinkedToAlternative) {
+			return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+		}
+		return true;
 	}
 
 }

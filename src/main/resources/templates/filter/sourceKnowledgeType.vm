@@ -1,0 +1,6 @@
+<label for="source-knowledge-type-dropdown-$viewIdentifier">$i18n.getText('condec.label.source.knowledge.types')</label>
+<button aria-controls="source-knowledge-type-dropdown-$viewIdentifier"
+        class="aui-button aui-dropdown2-trigger aui-style-default short-field" aria-haspopup="true">
+    $i18n.getText('condec.label.knowledge.type')
+</button>
+<aui-dropdown-menu id="source-knowledge-type-dropdown-$viewIdentifier" name="sourceKnowledgeTypes"></aui-dropdown-menu>

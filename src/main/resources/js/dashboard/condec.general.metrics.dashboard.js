@@ -9,95 +9,34 @@
  */
 
 (function (global) {
-	var dashboardFilterNode;
-	var dashboardContentNode;
-	var dashboardDataErrorNode;
-	var dashboardNoContentsNode;
-	var dashboardProcessingNode;
-	var dashboardProjectNode;
 
 	var ConDecGeneralMetricsDashboard = function() {
 		console.log("ConDecGeneralMetricsDashboard constructor");
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.init = function init(filterSettings) {
-		getHTMLNodes("condec-general-metrics-dashboard-configproject"
-			, "condec-general-metrics-dashboard-contents-container"
-			, "condec-general-metrics-dashboard-contents-data-error"
-			, "condec-general-metrics-dashboard-no-project"
-			, "condec-general-metrics-dashboard-processing"
-			, "condec-dashboard-selected-project-general-metrics");
-
-		getMetrics(filterSettings);
-	};
-
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
-		dashboardFilterNode = document.getElementById(filterName);
-		dashboardContentNode = document.getElementById(containerName);
-		dashboardDataErrorNode = document.getElementById(dataErrorName);
-		dashboardNoContentsNode = document.getElementById(noProjectName);
-		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectNode = document.getElementById(projectName);
-	}
-
-	function showDashboardSection(node) {
-		var hiddenClass = "hidden";
-		dashboardFilterNode.classList.add(hiddenClass);
-		dashboardContentNode.classList.add(hiddenClass);
-		dashboardDataErrorNode.classList.add(hiddenClass);
-		dashboardNoContentsNode.classList.add(hiddenClass);
-		dashboardProcessingNode.classList.add(hiddenClass);
-		node.classList.remove(hiddenClass);
-	}
-
-	function getMetrics(filterSettings) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
-			return;
-		}
-
-		showDashboardSection(dashboardProcessingNode);
-		var projectKey = JSON.parse(filterSettings).projectKey;
-		dashboardProjectNode.innerText = projectKey;
-
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/generalMetrics.json";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
-			type: "post",
-			dataType: "json",
-			data: filterSettings,
-			async: true,
-			success: conDecGeneralMetricsDashboard.processData,
-			error: conDecGeneralMetricsDashboard.processDataBad
+	/**
+	 * Gets the data to fill the dashboard plots by making an API-call.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param filterSettings the filterSettings used for the API-call
+	 */
+	ConDecGeneralMetricsDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+		conDecDashboardAPI.getGeneralMetrics(filterSettings, function (error, result) {
+			conDecDashboard.processData(error, result, conDecGeneralMetricsDashboard,
+				"general-metrics", dashboardAPI);
 		});
-	}
-
-	ConDecGeneralMetricsDashboard.prototype.processDataBad = function processDataBad(data) {
-		showDashboardSection(dashboardDataErrorNode);
 	};
 
-	ConDecGeneralMetricsDashboard.prototype.processData = function processData(data) {
-		processXhrResponseData(data);
-	};
-
-	function processXhrResponseData(data) {
-		doneWithXhrRequest();
-		showDashboardSection(dashboardContentNode);
-		renderData(data);
-	}
-
-	function doneWithXhrRequest() {
-		dashboardProcessingNode.classList.remove("error");
-		showDashboardSection(dashboardProcessingNode);
-	}
-
-	function renderData(calculator) {
+	/**
+	 * Render the dashboard plots.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param data the data returned from the API-call
+	 */
+	ConDecGeneralMetricsDashboard.prototype.renderData = function (data) {
 		/*  init data for charts */
 		var commentsPerIssue = new Map();
 		var commitsPerIssue = new Map();
@@ -118,16 +57,16 @@
 		definitionOfDoneCheckResults.set("no rationale elements", "");
 
 		/* form data for charts */
-		commentsPerIssue = calculator.numberOfCommentsPerIssue;
-		commitsPerIssue = calculator.numberOfCommits;
-		reqCodeSummary = calculator.reqAndClassSummary;
-		decSources = calculator.elementsFromDifferentOrigins;
-		relevantSentences = calculator.numberOfRelevantComments;
-		knowledgeTypeDistribution = calculator.distributionOfKnowledgeTypes;
-		definitionOfDoneCheckResults = calculator.definitionOfDoneCheckResults;
+		commentsPerIssue = data.numberOfCommentsPerIssue;
+		commitsPerIssue = data.numberOfCommits;
+		reqCodeSummary = data.reqAndClassSummary;
+		decSources = data.elementsFromDifferentOrigins;
+		relevantSentences = data.numberOfRelevantComments;
+		knowledgeTypeDistribution = data.distributionOfKnowledgeTypes;
+		definitionOfDoneCheckResults = data.definitionOfDoneCheckResults;
 
 		/* define color palette */
-		var colorpalette = ['#91CC75', '#EE6666'];
+		var colorPalette = ['#91CC75', '#EE6666'];
 
 		/* render box-plots */
 		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
@@ -144,8 +83,8 @@
 		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
-			"", "Definition of Done Check", definitionOfDoneCheckResults, colorpalette);
-	}
+			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);
+	};
 
 	global.conDecGeneralMetricsDashboard = new ConDecGeneralMetricsDashboard();
 })(window);

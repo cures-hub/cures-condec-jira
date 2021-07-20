@@ -31,12 +31,8 @@
 	 * types, status, ... of a view.
 	 */
 	ConDecFiltering.prototype.fillFilterElements = function(viewIdentifier, selectedKnowledgeTypes) {
-		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
-		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
-			selectedKnowledgeTypes, ["Other", "Code"]);
-		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
-		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier);
-		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
+		// dropdown menus
+		this.fillDropdownMenus(viewIdentifier, selectedKnowledgeTypes);
 
 		// selected element
 		var jiraIssueKey = conDecAPI.getIssueKey();
@@ -45,14 +41,7 @@
 		}
 
 		// quality highlighting	
-		conDecDoDCheckingAPI.getDefinitionOfDone(conDecAPI.getProjectKey(), (definitionOfDone) => {
-			var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
-			var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
-			if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
-				minDecisionCoverageInput.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
-				maxLinkDistanceInput.value = definitionOfDone.maximumLinkDistanceToDecisions;
-			}
-		});
+		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.getProjectKey())
 
 		// change impact highlighting	
 		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
@@ -250,7 +239,23 @@
 	};
 
 	/**
-	 * external references: condec.rationale.backlog
+	 * external references: condec.dashboard
+	 */
+	ConDecFiltering.prototype.fillDropdownMenus = function (viewIdentifier, selectedKnowledgeTypes) {
+		this.initDropdown("source-knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
+			selectedKnowledgeTypes, ["Other", "Code"]);
+		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
+			selectedKnowledgeTypes, ["Other", "Code"]);
+		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
+		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
+		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
+		this.initDropdown("decision-group-dropdown-" + viewIdentifier, conDecAPI.getAllDecisionGroups(), []);
+		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier, conDecAPI.getAllDecisionGroups());
+	}
+
+	/**
+	 * external references: condec.rationale.backlog, condec.decision.table
+	 * condec.dashboard
 	 */
 	ConDecFiltering.prototype.initDropdown = function(dropdownId, items, selectedItems, unselectedItems) {
 		var dropdown = document.getElementById(dropdownId);
@@ -258,26 +263,29 @@
 			return null;
 		}
 		dropdown.innerHTML = "";
-		for (var index = 0; index < items.length; index++) {
-			var isSelected = "checked";
-			if (selectedItems !== undefined) {
-				if (!selectedItems.includes(items[index])) {
-					isSelected = "";
+		if (items !== undefined && items !== null && items.length > 0) {
+			for (var index = 0; index < items.length; index++) {
+				var isSelected = "";
+				isSelected = "checked";
+				if (selectedItems !== undefined && selectedItems !== null) {
+					if (!selectedItems.includes(items[index])) {
+						isSelected = "";
+					}
 				}
-			}
-			if (unselectedItems !== undefined) {
-				if (unselectedItems.includes(items[index])) {
-					isSelected = "";
+				if (unselectedItems !== undefined && selectedItems !== null) {
+					if (unselectedItems.includes(items[index])) {
+						isSelected = "";
+					}
 				}
+				dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
+					+ items[index] + "</aui-item-checkbox>");
 			}
-			dropdown.insertAdjacentHTML("beforeend", "<aui-item-checkbox interactive " + isSelected + ">"
-				+ items[index] + "</aui-item-checkbox>");
 		}
 		return dropdown;
 	};
 
 	/**
-	 * external references: none, only used locally in condec.filtering
+	 * external references: condec.dashboard
 	 */
 	ConDecFiltering.prototype.getSelectedItems = function(dropdownId) {
 		var dropdown = document.getElementById(dropdownId);
@@ -335,13 +343,13 @@
 	/**
 	 * Fills the filter for decision groups/levels.
 	 */
-	ConDecFiltering.prototype.fillDecisionGroupSelect = function(elementId) {
+	ConDecFiltering.prototype.fillDecisionGroupSelect = function(elementId, groups) {
 		var selectGroupField = document.getElementById(elementId);
 		if (selectGroupField === null || selectGroupField === undefined) {
 			return null;
 		}
-		groups = conDecAPI.getAllDecisionGroups();
-		if (groups !== null && groups.length > 0) {
+		selectGroupField.innerHTML = "";
+		if (groups !== undefined && groups !== null && groups.length > 0) {
 			for (var i = 0; i < groups.length; i++) {
 				if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
 					selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
@@ -349,6 +357,23 @@
 			}
 		}
 		AJS.$("#" + elementId).auiSelect2();
+	};
+
+	/**
+	 * Fills the filter for the minimum decision coverage and
+	 * the maximum link distance from the definition of done.
+	 *
+	 * external references: condec.dashboard
+	 */
+	ConDecFiltering.prototype.fillMinimumCoverageAndMaximumLinkDistance = function(viewIdentifier, projectKey) {
+		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
+			var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
+			var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
+			if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+				minDecisionCoverageInput.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
+				maxLinkDistanceInput.value = definitionOfDone.maximumLinkDistanceToDecisions;
+			}
+		});
 	};
 
 	global.conDecFiltering = new ConDecFiltering();

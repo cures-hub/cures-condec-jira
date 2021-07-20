@@ -9,6 +9,17 @@
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
 
+	/**
+	 * Initializes the view.
+	 *
+	 * external references: condec.knowledge.page.js
+	 * condec.rationale.backlog.js,
+	 *
+	 * @param viewIdentifier identifies the html elements of the view
+	 * @param node the selected node, used to extract the Jira issue key
+	 *             used in the rationale backlog and overview
+	 *             can be ignored otherwise
+	 */
 	ConDecQualityCheck.prototype.initView = function(viewIdentifier, node) {
 		console.log("ConDecQualityCheck initView");
 
@@ -28,6 +39,12 @@
 		fillQualityCheckTab(filterSettings, viewIdentifier);
 	};
 
+	/**
+	 * Fills the quality check tab with information by making REST-calls.
+	 *
+	 * @param filterSettings containing the projectKey and the issueKey
+	 * @param viewIdentifier identifies the html elements of the view
+	 */
 	function fillQualityCheckTab(filterSettings, viewIdentifier) {
 		fillIssueKey(filterSettings.selectedElement, viewIdentifier);
 
@@ -45,6 +62,12 @@
 		});
 	}
 
+	/**
+	 * Fills the the tab with the key of the currently selected issue.
+	 *
+	 * @param issueKey the key of the selected issue
+	 * @param viewIdentifier identifies the html elements of the view
+	 */
 	function fillIssueKey(issueKey, viewIdentifier) {
 		var knowledgeTypeLabel = document.getElementById("quality-check-issue-key-" + viewIdentifier)
 
@@ -56,6 +79,12 @@
 		knowledgeTypeLabel.innerText = issueKey;
 	}
 
+	/**
+	 * Fills the tab with information about the requirements of the DoD-check.
+	 *
+	 * @param definitionOfDone containing the required coverage and the link distance
+	 * @param viewIdentifier identifies the html elements of the view
+	 */
 	function fillCoverageRequired(definitionOfDone, viewIdentifier) {
 		var minimumCoverageLabel = document.getElementById("quality-check-minimum-coverage-" + viewIdentifier);
 		var linkDistanceLabel = document.getElementById("quality-check-link-distance-" + viewIdentifier);
@@ -64,12 +93,24 @@
 		linkDistanceLabel.innerText = definitionOfDone.maximumLinkDistanceToDecisions;
 	}
 
+	/**
+	 * Fills the tab with the coverage the element reached in the DoD-check.
+	 *
+	 * @param coverage the coverage reached
+	 * @param viewIdentifier identifies the html elements of the view
+	 */
 	function fillCoverageReached(coverage, viewIdentifier) {
 		var coverageLabel = document.getElementById("quality-check-coverage-" + viewIdentifier);
 
 		coverageLabel.innerText = pluralize(coverage, "decision");
 	}
 
+	/**
+	 * Fills the tab with information about the quality problems of the element.
+	 *
+	 * @param qualityProblems a list of the quality problems of the element
+	 * @param viewIdentifier identifies the html elements of the view
+	 */
 	function fillQualityProblems(qualityProblems, viewIdentifier) {
 		var qualityProblemsTextField = document.getElementById("quality-check-problems-text-" + viewIdentifier);
 
@@ -90,6 +131,12 @@
 		conDecNudgingAPI.setAmbientFeedback(qualityProblemsTextField, "condec-error");
 	}
 
+	/**
+	 * Sets the colour of the tab according to the quality problems.
+	 *
+	 * @param qualityProblems a list of the quality problems of the element
+	 * @param viewIdentifier identifies the html elements of the view
+	 */
 	function updateTabStatus(qualityProblems, viewIdentifier) {
 		var qualityCheckTab = document.getElementById("menu-item-quality-check-" + viewIdentifier);
 

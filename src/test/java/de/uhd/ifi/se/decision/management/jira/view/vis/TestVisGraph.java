@@ -82,7 +82,7 @@ public class TestVisGraph extends TestSetUp {
 	@Test
 	public void testConstructorFilterSettingsFilledRootElementExisting() {
 		filterSettings.setSelectedElement("TEST-1");
-		filterSettings.setLinkDistance(1);
+		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(1);
 		visGraph = new VisGraph(filterSettings);
 		assertTrue(KnowledgeGraph.getInstance("TEST").vertexSet().size() > visGraph.getGraph().vertexSet().size());
 		assertTrue(KnowledgeGraph.getInstance("TEST").edgeSet().size() > visGraph.getGraph().edgeSet().size());

@@ -102,7 +102,7 @@ public class TreeViewer {
 
 		// many trees are shown in overview and rationale backlog
 		Set<KnowledgeElement> rootElements = graph.vertexSet();
-		if (filteringManager.getFilterSettings().getLinkDistance() == 0) {
+		if (filteringManager.getFilterSettings().getDefinitionOfDone().getMaximumLinkDistanceToDecisions() == 0) {
 			rootElements.forEach(element -> nodes.add(new TreeViewerNode(element, filterSettings)));
 			return;
 		}

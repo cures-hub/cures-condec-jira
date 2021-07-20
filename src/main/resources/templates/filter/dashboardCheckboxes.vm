@@ -1,6 +1,0 @@
-<div id="dashboard-checkboxes-$viewIdentifier" class="condec-dashboard-filter">
-    #parse("templates/filter/isDecisionKnowledgeOnly.vm")
-    #parse("templates/filter/isTestCode.vm")
-    #parse("templates/filter/isIncompleteKnowledge.vm")
-    #parse("templates/filter/isTransitiveLinks.vm")
-</div>

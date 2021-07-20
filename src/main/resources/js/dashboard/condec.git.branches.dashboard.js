@@ -8,137 +8,49 @@
  * dashboard/featureBranches.vm
  */
 
-/* DEV vars to be removed: */
-var ConDecDevBranchesQuality = [];
-var ConDecDevBranches = [];
-
 (function (global) {
-	var processing = null;
 	var issueBranchKeyRx = null;
-
-	var dashboardFilterNode;
-	var dashboardContentNode;
-	var dashboardDataErrorNode;
-	var dashboardNoContentsNode;
-	var dashboardProcessingNode;
-	var dashboardProjectNode;
-
 	var branchesQuality = [];
 
 	var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
 		console.log("ConDecBranchesDashboard constructor");
 	};
 
-	ConDecBranchesDashboard.prototype.init = function init(filterSettings) {
+	/**
+	 * Gets the data to fill the dashboard plots by making an API-call.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param filterSettings the filterSettings used for the API-call
+	 */
+	ConDecBranchesDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+		conDecDashboardAPI.getElementsFromBranchesOfJiraIssue(filterSettings.projectKey, function (error, result) {
+			conDecDashboard.processData(error, result, conDecBranchesDashboard, "branch",
+				dashboardAPI, filterSettings);
+		});
+	};
+
+	/**
+	 * Render the dashboard plots.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param data the data returned from the API-call
+	 * @param filterSettings the filterSettings used in the API-call
+	 */
+	ConDecBranchesDashboard.prototype.renderData = function (data, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
 		 */
-		issueBranchKeyRx = RegExp("origin/(" + JSON.parse(filterSettings).projectKey
-			+ "-\\d+)\\.|origin/(" + JSON.parse(filterSettings).projectKey + "-\\d+)$", "i");
-
-		getHTMLNodes("condec-branch-dashboard-configproject"
-			, "condec-branches-dashboard-contents-container"
-			, "condec-branches-dashboard-contents-data-error"
-			, "condec-branches-dashboard-no-project"
-			, "condec-branches-dashboard-processing"
-			, "condec-dashboard-selected-project-branch");
+		issueBranchKeyRx = RegExp("origin/(" + filterSettings.projectKey
+			+ "-\\d+)\\.|origin/(" + filterSettings.projectKey + "-\\d+)$", "i");
 
 		branchesQuality = [];
-		getBranches(filterSettings);
-	};
 
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
-		dashboardFilterNode = document.getElementById(filterName);
-		dashboardContentNode = document.getElementById(containerName);
-		dashboardDataErrorNode = document.getElementById(dataErrorName);
-		dashboardNoContentsNode = document.getElementById(noProjectName);
-		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectNode = document.getElementById(projectName);
-	}
-
-	function showDashboardSection(node) {
-		var hiddenClass = "hidden";
-		dashboardFilterNode.classList.add(hiddenClass);
-		dashboardContentNode.classList.add(hiddenClass);
-		dashboardDataErrorNode.classList.add(hiddenClass);
-		dashboardNoContentsNode.classList.add(hiddenClass);
-		dashboardProcessingNode.classList.add(hiddenClass);
-		node.classList.remove(hiddenClass);
-	}
-
-	function getBranches(filterSettings) {
-		var projectKey = JSON.parse(filterSettings).projectKey;
-
-		if (!projectKey || !projectKey.length || !projectKey.length > 0) {
-			return;
-		}
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		processing = projectKey;
-		showDashboardSection(dashboardProcessingNode);
-		dashboardProjectNode.innerText = projectKey;
-
-		url = conDecGitAPI.restPrefix + "/elementsFromBranchesOfProject.json?projectKey=" + projectKey;
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			type: "get",
-			dataType: "json",
-			async: true,
-			success: conDecBranchesDashboard.processData,
-			error: conDecBranchesDashboard.processDataBad
-		});
-	}
-
-	ConDecBranchesDashboard.prototype.processDataBad = function processDataBad(data) {
-		console.log(data.responseJSON.error);
-		showDashboardSection(dashboardDataErrorNode);
-	};
-
-	ConDecBranchesDashboard.prototype.processData = function processData(data) {
-		processXhrResponseData(data);
-	};
-
-	function processXhrResponseData(data) {
-		doneWithXhrRequest();
-		showDashboardSection(dashboardContentNode);
-		processing = null;
-		processBranches(data);
-	}
-
-	function doneWithXhrRequest() {
-		dashboardProcessingNode.classList.remove("error");
-		showDashboardSection(dashboardProcessingNode);
-	}
-
-	function countElementType(targetType, branch) {
-		if (!targetType || !branch || !branch.elements || !branch.elements.length) {
-			return 0;
-		}
-		var filtered = branch.elements.filter(function (e) {
-			return e.type.toLowerCase() === targetType.toLowerCase();
-		});
-		return filtered.length;
-	}
-
-	/* lex sorting */
-	function sortBranches(branches) {
-		return branches.sort(function (a, b) {
-			return a.name.localeCompare(b.name);
-		});
-	}
-
-	function processBranches(data) {
 		var branches = data.branches;
-		ConDecDevBranches = branches; /*
-										 * remember in global scope for
-										 * development/debugging
-										 */
-		for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
+		for (var branchIdx = 0; branchIdx < branches.length; branchIdx++) {
 			var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
 			/* these elements are sorted by commit age and occurrence in message */
@@ -167,7 +79,7 @@ var ConDecDevBranches = [];
 				branchIdx,
 				'');
 
-			branchQuality = {};
+			var branchQuality = {};
 			branchQuality.name = lastBranch.branchName;
 			branchQuality.status = conDecLinkBranchCandidates.getBranchStatus();
 			branchQuality.problems = conDecLinkBranchCandidates.getProblemNamesObserved();
@@ -181,11 +93,11 @@ var ConDecDevBranches = [];
 		/* sort lexicographically */
 		branchesQuality = sortBranches(branchesQuality);
 		/* render charts and plots */
-		renderData();
+		renderChartsAndPlots();
 	}
 
-	function renderData() {
-		BRANCHES_SEPARATOR_TOKEN = " ";
+	function renderChartsAndPlots() {
+		const BRANCHES_SEPARATOR_TOKEN = " ";
 
 		function branchesPerJiraIssueReducer(accumulator, currentBranch) {
 			var nameOfBranch = currentBranch.name;
@@ -310,7 +222,7 @@ var ConDecDevBranches = [];
 
 		/*  init data for charts */
 		var statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
-		var problemTypesOccurrance = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
+		var problemTypesOccurrence = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
 
 		var branchesPerIssue = new Map();
 		var issuesInBranches = new Map();
@@ -330,7 +242,7 @@ var ConDecDevBranches = [];
 
 		/* form data for charts */
 		branchesQuality.reduce(statusWithBranchesReducer, statusesForBranchesData);
-		branchesQuality.reduce(problemsWithBranchesReducer, problemTypesOccurrance);
+		branchesQuality.reduce(problemsWithBranchesReducer, problemTypesOccurrence);
 		branchesQuality.reduce(branchesPerJiraIssueReducer, branchesPerIssue);
 		branchesQuality.reduce(numberIssuesInBranchesReducer, issuesInBranches);
 		branchesQuality.reduce(numberDecisionsInBranchesReducer, decisionsInBranches);
@@ -339,14 +251,14 @@ var ConDecDevBranches = [];
 		branchesQuality.reduce(numberConInBranchesReducer, consInBranches);
 
 		/* sort some data by number of branches */
-		var sortedProblemTypesOccurrance = sortByBranchNumberDescending(problemTypesOccurrance);
+		var sortedProblemTypesOccurrence = sortByBranchNumberDescending(problemTypesOccurrence);
 		var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
 
 		/* render pie-charts */
 		ConDecReqDash.initializeChartForBranchSource("piechartRich-QualityStatusForBranches",
 			"", "How many branches document rationale well?", statusesForBranchesData); /* "Quality status" */
 		ConDecReqDash.initializeChartForBranchSource("piechartRich-ProblemTypesInBranches",
-			"", "Which documentation mistakes are most common?", sortedProblemTypesOccurrance); /*"Total quality problems" */
+			"", "Which documentation mistakes are most common?", sortedProblemTypesOccurrence); /*"Total quality problems" */
 		ConDecReqDash.initializeChartForBranchSource("piechartRich-BranchesPerIssue",
 			"", "How many branches do Jira tasks have?", sortedBranchesPerIssue);
 		/* render box-plots */
@@ -360,32 +272,23 @@ var ConDecDevBranches = [];
 			"", "Pro arguments number in branches", prosInBranches);
 		ConDecReqDash.initializeChartForBranchSource("boxplot-ConsPerBranch",
 			"", "Con arguments number in branches", consInBranches);
+	}
 
-		/* remember in global scope for development/debugging */
-		ConDecDevBranchesQuality = {branchesQuality: branchesQuality};
-		ConDecDevBranchesQuality.getTitleByName = function (branchNameShortened) {
-			for (var i = 0; i < this.branchesQuality.length; i++) {
-				if (this.branchesQuality[i].name.endsWith(branchNameShortened)) {
-					return this.getTitle(i);
-				}
-			}
-			return this.getTitle(-1);
-		};
-		ConDecDevBranchesQuality.getTitle = function (idx) {
-			if (!this.branchesQuality[idx]) {
-				return "";
-			}
-			var branch = this.branchesQuality[idx];
-			var buffer = " status: " + branch.status
-				+ "\n" + " numAlternatives: " + branch.numAlternatives
-				+ "\n" + " numCons: " + branch.numCons
-				+ "\n" + " numDecisions: " + branch.numDecisions
-				+ "\n" + " numIssues: " + branch.numIssues
-				+ "\n" + " numPros: " + branch.numIssues;
+	function countElementType(targetType, branch) {
+		if (!targetType || !branch || !branch.elements || !branch.elements.length) {
+			return 0;
+		}
+		var filtered = branch.elements.filter(function (e) {
+			return e.type.toLowerCase() === targetType.toLowerCase();
+		});
+		return filtered.length;
+	}
 
-			return buffer;
-		};
-
+	/* lex sorting */
+	function sortBranches(branches) {
+		return branches.sort(function (a, b) {
+			return a.name.localeCompare(b.name);
+		});
 	}
 
 	global.conDecBranchesDashboard = new ConDecBranchesDashboard();

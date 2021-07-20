@@ -222,6 +222,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testGetDefinitionOfDone() {
 		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
+		assertEquals(4, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 	}
 
 	@Test
@@ -232,20 +233,23 @@ public class TestFilterSettings extends TestSetUp {
 
 		// still default
 		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
+		assertEquals(4, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 	}
 
 	@Test
 	public void testSetDefinitionOfDoneValid() {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setMinimumDecisionsWithinLinkDistance(3);
+		definitionOfDone.setMaximumLinkDistanceToDecisions(5);
 		filterSettings.setDefinitionOfDone(definitionOfDone);
 		assertEquals(3, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
+		assertEquals(5, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 	}
 
 	@Test
 	public void testGetMinAndMaxDegree() {
 		assertEquals(0, filterSettings.getMinDegree());
-		assertEquals(50, filterSettings.getMaxDegree());
+		assertEquals(100, filterSettings.getMaxDegree());
 	}
 
 	@Test

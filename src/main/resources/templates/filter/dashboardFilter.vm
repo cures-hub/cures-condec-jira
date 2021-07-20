@@ -1,0 +1,52 @@
+<div id="condec-dashboard-config-$viewIdentifier" class="condec-dashboard-contents filtering hidden">
+    <form class="aui">
+        <div class="field-group">
+            #parse("templates/filter/project.vm")
+        </div>
+        #if($viewIdentifier == "rationale-coverage")
+            <div class="field-group">
+                #parse("templates/filter/sourceKnowledgeType.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/minimumDecisionCoverage.vm")
+            </div>
+        #end
+        #if($viewIdentifier != "branch")
+            #parse("templates/filter/filterLabel.vm")
+            <div class="field-group">
+                #parse("templates/filter/text.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/knowledgeType.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/status.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/documentationLocation.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/linkType.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/decisionGroupDropdown.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/linkDistance.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/degree.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/documentationDate.vm")
+            </div>
+            <div class="field-group">
+                #parse("templates/filter/isDecisionKnowledgeOnly.vm")
+                #parse("templates/filter/isIncompleteKnowledge.vm")
+                #parse("templates/filter/isTestCode.vm")
+                #parse("templates/filter/isTransitiveLinks.vm")
+            </div>
+        #end
+        #parse("templates/filter/dashboardFilterButtons.vm")
+    </form>
+</div>

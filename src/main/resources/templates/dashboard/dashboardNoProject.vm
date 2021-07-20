@@ -1,0 +1,3 @@
+<div id="condec-dashboard-no-project-$viewIdentifier" class="condec-dashboard-contents init">
+    $i18n.getText("condec.dashboard.requirements.project.selection.not.done")
+</div>

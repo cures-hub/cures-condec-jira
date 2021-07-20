@@ -9,96 +9,34 @@
  */
 
 (function (global) {
-	var dashboardFilterNode;
-	var dashboardContentNode;
-	var dashboardDataErrorNode;
-	var dashboardNoContentsNode;
-	var dashboardProcessingNode;
-	var dashboardProjectNode;
 
 	var ConDecRationaleCompletenessDashboard = function () {
 		console.log("ConDecRationaleCompletenessDashboard constructor");
 	};
 
-	ConDecRationaleCompletenessDashboard.prototype.init = function (filterSettings) {
-		getHTMLNodes("condec-rationale-completeness-dashboard-configproject"
-			, "condec-rationale-completeness-dashboard-contents-container"
-			, "condec-rationale-completeness-dashboard-contents-data-error"
-			, "condec-rationale-completeness-dashboard-no-project"
-			, "condec-rationale-completeness-dashboard-processing"
-			, "condec-dashboard-selected-project-rationale-completeness");
-
-		getMetrics(filterSettings);
-	};
-
-	function getHTMLNodes(filterName, containerName, dataErrorName, noProjectName, processingName, projectName) {
-		dashboardFilterNode = document.getElementById(filterName);
-		dashboardContentNode = document.getElementById(containerName);
-		dashboardDataErrorNode = document.getElementById(dataErrorName);
-		dashboardNoContentsNode = document.getElementById(noProjectName);
-		dashboardProcessingNode = document.getElementById(processingName);
-		dashboardProjectNode = document.getElementById(projectName);
-	}
-
-	function showDashboardSection(node) {
-		var hiddenClass = "hidden";
-		dashboardFilterNode.classList.add(hiddenClass);
-		dashboardContentNode.classList.add(hiddenClass);
-		dashboardDataErrorNode.classList.add(hiddenClass);
-		dashboardNoContentsNode.classList.add(hiddenClass);
-		dashboardProcessingNode.classList.add(hiddenClass);
-		node.classList.remove(hiddenClass);
-	}
-
-	function getMetrics(filterSettings) {
-		if (!JSON.parse(filterSettings).projectKey || !JSON.parse(filterSettings).projectKey.length || !JSON.parse(filterSettings).projectKey.length > 0) {
-			return;
-		}
-
-		showDashboardSection(dashboardProcessingNode);
-		var projectKey = JSON.parse(filterSettings).projectKey;
-		dashboardProjectNode.innerText = projectKey;
-
-		/*
-		 * on XHR HTTP failure codes the code aborts instead of processing with
-		 * processDataBad() !? if (processing) { return warnStillProcessing(); }
-		 */
-		url = conDecAPI.restPrefix + "/dashboard/rationaleCompleteness.json";
-
-		console.log("Starting REST query.");
-		AJS.$.ajax({
-			url: url,
-			headers: { "Content-Type": "application/json; charset=utf-8", "Accept": "application/json"},
-			type: "post",
-			dataType: "json",
-			data: filterSettings,
-			async: true,
-			success: conDecRationaleCompletenessDashboard.processData,
-			error: conDecRationaleCompletenessDashboard.processDataBad
+	/**
+	 * Gets the data to fill the dashboard plots by making an API-call.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param filterSettings the filterSettings used for the API-call
+	 */
+	ConDecRationaleCompletenessDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+		conDecDashboardAPI.getRationaleCompleteness(filterSettings, function (error, result) {
+			conDecDashboard.processData(error, result, conDecRationaleCompletenessDashboard,
+				"rationale-completeness", dashboardAPI);
 		});
-	}
-
-	ConDecRationaleCompletenessDashboard.prototype.processDataBad = function processDataBad(data) {
-		console.log(data.responseJSON.error);
-		showDashboardSection(dashboardDataErrorNode);
 	};
 
-	ConDecRationaleCompletenessDashboard.prototype.processData = function processData(data) {
-		processXhrResponseData(data);
-	};
-
-	function processXhrResponseData(data) {
-		doneWithXhrRequest();
-		showDashboardSection(dashboardContentNode);
-		renderData(data);
-	}
-
-	function doneWithXhrRequest() {
-		dashboardProcessingNode.classList.remove("error");
-		showDashboardSection(dashboardProcessingNode);
-	}
-
-	function renderData(calculator) {
+	/**
+	 * Render the dashboard plots.
+	 *
+	 * external references: condec.dashboard.js
+	 *
+	 * @param data the data returned from the API-call
+	 */
+	ConDecRationaleCompletenessDashboard.prototype.renderData = function (data) {
 		/*  init data for charts */
 		var issuesSolvedByDecision = new Map();
 		var decisionsSolvingIssues = new Map();
@@ -116,12 +54,12 @@
 		proArgumentDocumentedForAlternative.set("none", "");
 
 		/* form data for charts */
-		issuesSolvedByDecision = calculator.issuesSolvedByDecision;
-		decisionsSolvingIssues = calculator.decisionsSolvingIssues;
-		proArgumentDocumentedForDecision = calculator.proArgumentDocumentedForDecision;
-		conArgumentDocumentedForAlternative = calculator.conArgumentDocumentedForAlternative;
-		conArgumentDocumentedForDecision = calculator.conArgumentDocumentedForDecision;
-		proArgumentDocumentedForAlternative = calculator.proArgumentDocumentedForAlternative;
+		issuesSolvedByDecision = data.issuesSolvedByDecision;
+		decisionsSolvingIssues = data.decisionsSolvingIssues;
+		proArgumentDocumentedForDecision = data.proArgumentDocumentedForDecision;
+		conArgumentDocumentedForAlternative = data.conArgumentDocumentedForAlternative;
+		conArgumentDocumentedForDecision = data.conArgumentDocumentedForDecision;
+		proArgumentDocumentedForAlternative = data.proArgumentDocumentedForAlternative;
 
 		/* render pie-charts */
 		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision",
@@ -136,7 +74,7 @@
 			"", "How many alternatives have at least one pro argument documented?", proArgumentDocumentedForAlternative);
 		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForAlternative",
 			"", "How many alternatives have at least one con argument documented?", conArgumentDocumentedForAlternative);
-	}
+	};
 
 	global.conDecRationaleCompletenessDashboard = new ConDecRationaleCompletenessDashboard();
 })(window);

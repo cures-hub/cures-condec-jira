@@ -65,11 +65,6 @@ public class ConDecDashboardItem implements ContextProvider {
 		}
 
 		filterSettings = new FilterSettings(projectKey, "");
-		String linkDistance = request.getParameter("linkDistance");
-		newContext.put("linkDistance", linkDistance);
-		if (linkDistance != null) {
-			filterSettings.setLinkDistance(Integer.parseInt(linkDistance));
-		}
 
 		newContext.putAll(getAdditionalParameters());
 		newContext.putAll(getMetrics());

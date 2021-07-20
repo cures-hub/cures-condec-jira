@@ -2,7 +2,7 @@
  This module fills the box plots and pie charts used in the requirements dashboard page.
 
  Requires
- * echart
+ * eChart
 
  Is referenced in HTML by
  * dashboard/generalMetrics.vm
@@ -13,8 +13,6 @@
 (function (global) {
 
     var detailsOverlayClickHandlersSet = false;
-
-    var baseUrl = "";
 
     var issueKeyParser = /([^a-z]*)([a-z]+)-([0-9]+).*/gi
 
@@ -51,7 +49,7 @@
 
 		var jsMap = new Map();
 		var mapEntries = velocityMap.split(",");
-		for (i = 0; i < mapEntries.length; i++) {
+		for (var i = 0; i < mapEntries.length; i++) {
 			var mapEntry = mapEntries[i].split(" : ");
 			jsMap.set(mapEntry[0], mapEntry[1]);
 		}
@@ -125,7 +123,7 @@
     };
 
     /* TODO: Function does not need to be exposed */
-    ConDecReqDash.prototype.initializeDivWithPieChartData = function (piechart, title, subtitle,
+    ConDecReqDash.prototype.initializeDivWithPieChartData = function (pieChart, title, subtitle,
                                                                       objectsMap, hasRichData) {
         var data = [];
         var source = [];
@@ -154,11 +152,11 @@
             source.push(value);
         }
 
-        piechart.setOption(getOptionsForPieChart(title, subtitle, dataAsArray, data));
+		pieChart.setOption(getOptionsForPieChart(title, subtitle, dataAsArray, data));
         if (hasRichData) {
-            piechart.groupedConDecData = source;
+			pieChart.groupedConDecData = source;
         }
-        return piechart;
+        return pieChart;
     };
 
     ConDecReqDash.prototype.navigateToElement = function (elementName) {
@@ -188,19 +186,6 @@
         } else {
 			window.open(targetBaseUrl + '/browse/' + issueKey, '_blank');
 		}
-    }
-
-    ConDecReqDash.prototype.setClickedChart = function (domNode) {
-        node = domNode;
-    }
-
-    ConDecReqDash.prototype.setClickedData = function (idx, data) {
-        dataIndexClicked = idx;
-        dataClicked = data;
-    }
-
-    ConDecReqDash.prototype.setJiraBaseUrl = function (url) {
-        baseUrl = url;
     }
 
     ConDecReqDash.prototype.showClickedSource = function (chart, dataIndexClicked, dataClicked) {
@@ -356,9 +341,6 @@
         for (var i = 0; i < listArray.length; i++) {
             var span = document.createElement("p");
             span.dataset.isbranch = !isIssueData;
-            if (!isIssueData) {
-                span.title = ConDecDevBranchesQuality.getTitleByName(listArray[i]);
-            }
             span.innerText = listArray[i];
             node.appendChild(span);
         }
