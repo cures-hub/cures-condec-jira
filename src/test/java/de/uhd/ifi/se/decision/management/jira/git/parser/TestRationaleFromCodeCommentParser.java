@@ -11,6 +11,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRationaleFromCodeCommentParser {
 	private RationaleFromCodeCommentParser rationaleFromCodeCommentExtractor;
@@ -171,5 +172,30 @@ public class TestRationaleFromCodeCommentParser {
 				RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision: We will"));
 		assertEquals(KnowledgeType.DECISION,
 				RationaleFromCodeCommentParser.getRationaleTypeFromTag("@decision We will"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testTwoDecisionProblemsWithManyDecisionKnowledgeElements() {
+		codeComment.setCommentContent("/**" + //
+				"* @issue How to present related knowledge and change impact to developers?\n" + //
+				"* @alternative Present related knowledge and change impact as a list of\n" + //
+				"*              proposals.\n" + //
+				"* @con Would mislead developers. Developers associate content assist with\n" + //
+				"*      auto-completion and proposals for bug-fixes.\n" + //
+				"* @decision Present related knowledge and change impact in dedicated views!\n" + //
+				"*\n" + //
+				"* @issue How to trigger decision exploration and change impact analysis?\n" + //
+				"* @alternative Content assist invocation triggers decision exploration view and\n" + //
+				"*              change impact analysis view\n" + //
+				"* @con Would mislead developers. Developers associate content assist with\n" + //
+				"*      auto-completion and proposals for bug-fixes.\n" + //
+				"* @decision Use menu items in context menu to trigger decision exploration and\n" + //
+				"*           change impact analysis!" + //
+				"*/");
+		elementsFound = rationaleFromCodeCommentExtractor.getRationaleElementsFromCodeComment(codeComment);
+		assertEquals(8, elementsFound.size());
+		assertEquals("Use menu items in context menu to trigger decision exploration and change impact analysis!*",
+				elementsFound.get(7).getSummary());
 	}
 }
