@@ -61,6 +61,11 @@ public final class DefinitionOfDoneChecker {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return false;
 		}
+		if (knowledgeElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT
+				&& knowledgeElement.getType() == KnowledgeType.OTHER) {
+			// TODO Decide whether non-validated elements violate the DoD
+			return false;
+		}
 		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
 		return !(knowledgeElementCheck == null || knowledgeElementCheck.execute(knowledgeElement));
 	}
@@ -172,11 +177,8 @@ public final class DefinitionOfDoneChecker {
 			ChangedFile codeFile = (ChangedFile) knowledgeElement;
 			return codeFile.getLineCount() >= lineNumbersInCodeFile && !codeFile.isTestCodeFile();
 		}
-		if (knowledgeElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT
-				&& knowledgeElement.getType() == KnowledgeType.OTHER) {
-			return false;
-		}
-		return true;
+		return knowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT
+				|| knowledgeElement.getType() != KnowledgeType.OTHER;
 	}
 
 	private static QualityProblem getCoverageQuality(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
