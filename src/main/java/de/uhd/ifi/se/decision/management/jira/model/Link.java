@@ -287,10 +287,10 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	@JsonProperty("idOfSourceElement")
 	public void setIdOfSourceElement(long id) {
-		if (this.source == null) {
-			this.source = new KnowledgeElement();
+		if (source == null) {
+			source = new KnowledgeElement();
 		}
-		this.source.setId(id);
+		source.setId(id);
 	}
 
 	/**
@@ -303,10 +303,10 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	@JsonProperty("idOfDestinationElement")
 	public void setIdOfDestinationElement(long id) {
-		if (this.target == null) {
-			this.target = new KnowledgeElement();
+		if (target == null) {
+			target = new KnowledgeElement();
 		}
-		this.target.setId(id);
+		target.setId(id);
 	}
 
 	/**
@@ -353,7 +353,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	@JsonIgnore
 	public boolean isValid() {
-		return source.getId() != 0 && target.getId() != 0;
+		return source != null && target != null && source.getId() != 0 && target.getId() != 0;
 	}
 
 	/**

@@ -26,8 +26,17 @@ public class TestIsValid extends TestSetUp {
 	}
 
 	@Test
-	public void testFalse() {
+	public void testFalseIdZero() {
 		link.setIdOfDestinationElement(0);
+		assertFalse(link.isValid());
+	}
+
+	@Test
+	public void testFalseNullElements() {
+		link = new Link(link.getSource(), null);
+		assertFalse(link.isValid());
+
+		link = new Link(null, null);
 		assertFalse(link.isValid());
 	}
 }
