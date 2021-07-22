@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -111,7 +112,7 @@ public final class DefinitionOfDoneChecker {
 	 */
 	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
 			FilterSettings filterSettings) {
-		if (!checkIfCodeFileRequiresCoverage(knowledgeElement, filterSettings)) {
+		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
 			return false;
 		}
 
@@ -140,7 +141,7 @@ public final class DefinitionOfDoneChecker {
 	 */
 	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
 			FilterSettings filterSettings) {
-		if (!checkIfCodeFileRequiresCoverage(knowledgeElement, filterSettings)) {
+		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
 			return false;
 		}
 
@@ -154,19 +155,33 @@ public final class DefinitionOfDoneChecker {
 		return true;
 	}
 
-	private static boolean checkIfCodeFileRequiresCoverage(KnowledgeElement knowledgeElement,
+	/**
+	 * @param knowledgeElement
+	 *            {@link KnowledgeElement}, e.g. code file or decision knowledge
+	 *            element.
+	 * @param filterSettings
+	 *            {@link FilterSettings} with {@link DefinitionOfDone}.
+	 * @return true if the element should be checked, i.e. decision coverage should
+	 *         be measured. Returns false for small code files, test files, and
+	 *         irrelevant parts of text.
+	 */
+	private static boolean shouldCoverageOfKnowledgeElementBeChecked(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		if (knowledgeElement instanceof ChangedFile) {
 			int lineNumbersInCodeFile = filterSettings.getDefinitionOfDone().getLineNumbersInCodeFile();
 			ChangedFile codeFile = (ChangedFile) knowledgeElement;
 			return codeFile.getLineCount() >= lineNumbersInCodeFile && !codeFile.isTestCodeFile();
 		}
+		if (knowledgeElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT
+				&& knowledgeElement.getType() == KnowledgeType.OTHER) {
+			return false;
+		}
 		return true;
 	}
 
-	private static QualityProblem getCoverageQuality(KnowledgeElement knowledgeElement,
-			KnowledgeType knowledgeType, FilterSettings filterSettings) {
-		if (!checkIfCodeFileRequiresCoverage(knowledgeElement, filterSettings)) {
+	private static QualityProblem getCoverageQuality(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
+			FilterSettings filterSettings) {
+		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
 			return null;
 		}
 
