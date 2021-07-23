@@ -170,6 +170,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		setParameters(changedFile, databaseEntry);
 		databaseEntry.save();
 		changedFile.setId(databaseEntry.getId());
+		changedFile.setTreeWalkPath(databaseEntry.getFileName());
 		createLinksToJiraIssues(changedFile, user);
 
 		return changedFile;
