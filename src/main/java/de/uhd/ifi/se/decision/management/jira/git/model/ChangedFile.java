@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -555,6 +556,26 @@ public class ChangedFile extends KnowledgeElement {
 
 	public void setLineCount(int lineCount) {
 		this.lineCount = lineCount;
+	}
+
+	@Override
+	public Date getCreationDate() {
+		if (commits != null && !commits.isEmpty()) {
+			Date updatingDate = new Date();
+			updatingDate.setTime(commits.get(0).getCommitTime() * 1000);
+			return updatingDate;
+		}
+		return super.getCreationDate();
+	}
+
+	@Override
+	public Date getUpdatingDate() {
+		if (commits != null && !commits.isEmpty()) {
+			Date updatingDate = new Date();
+			updatingDate.setTime(commits.get(commits.size() - 1).getCommitTime() * 1000);
+			return updatingDate;
+		}
+		return super.getUpdatingDate();
 	}
 
 	@Override

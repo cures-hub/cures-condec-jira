@@ -165,4 +165,14 @@ public class TestChangedFile extends TestSetUpGit {
 		assertEquals(4, file.getRationaleElementsFromCodeComments().size());
 		assertEquals("Not secure.", file.getRationaleElementsFromCodeComments().get(3).getSummary());
 	}
+
+	@Test
+	public void testCreationDate() {
+		assertNotNull(changedFile.getCreationDate());
+	}
+
+	@Test
+	public void testUpdatingDate() {
+		assertNotNull(changedFile.getUpdatingDate());
+	}
 }

@@ -438,7 +438,8 @@ public class GitClientForSingleRepository {
 			commits = getCommits(branch);
 		}
 		for (RevCommit commit : commits) {
-			String jiraIssueKeyInCommitMessage = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(commit.getFullMessage());
+			String jiraIssueKeyInCommitMessage = JiraIssueKeyFromCommitMessageParser
+					.getFirstJiraIssueKey(commit.getFullMessage());
 			if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
 				commitsForJiraIssue.add(commit);
 				LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
