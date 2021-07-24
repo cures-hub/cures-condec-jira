@@ -96,7 +96,8 @@
 	};
 
 	/**
-	 * external references: condec.context.menu, condec.dialog, condec.vis
+	 * external references: condec.context.menu, condec.dialog, condec.vis, 
+	 * condec.export, condec.decision.guidance
 	 */
 	ConDecAPI.prototype.getKnowledgeElement = function(id, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/knowledge/knowledgeElement.json?projectKey="
@@ -108,7 +109,7 @@
 		});
 	};
 
-	/*
+	/**
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function(id, documentationLocation, callback) {

@@ -10,7 +10,7 @@
 </div>
 <script>
 $(document).ready(function () {
-#if(!$codeFileName)
+#if(!$codeFileName && !$knowledgeType)
 	/* Adds the on click listener on tab opening */
 	var isOnceClicked = false;
 	AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
@@ -19,13 +19,16 @@ $(document).ready(function () {
 			isOnceClicked = true;
 		}
 	}); 
-#else
-	/* Inits overview as the default tab */
+#elseif($codeFileName)
+	/* Inits overview as the default tab for code file */
 	conDecKnowledgePage.initView();
 	$("#jstree").bind('ready.jstree', function(e, data) {
 		var node = document.querySelector('[title="$codeFileName"]');
 		conDecTreeViewer.selectNodeInTreeViewer(node.id.substr(0, node.id.search('_anchor')), '#jstree');
     });
+#else
+	/* Inits overview as the default tab for a knowledge type */
+	conDecKnowledgePage.initView();
 #end
 });
 </script>

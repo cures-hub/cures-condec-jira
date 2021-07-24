@@ -22,7 +22,6 @@ import org.jgrapht.alg.util.Pair;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.link.IssueLink;
@@ -408,15 +407,19 @@ public class KnowledgeElement {
 	 */
 	@XmlElement
 	public String getUrl() {
-		String key = this.getKey();
-		// TODO Recognize code classes
+		String key = getKey();
+		String jiraBaseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
 		// TODO Simplify recognition of decision knowledge documented in Jira issue
-		// comments/description
-		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+		// comments/description and code comments, work with inheritance
+		if (getDocumentationLocation() == DocumentationLocation.CODE) {
+			String urlOfKnowledgePage = jiraBaseUrl + "/projects/" + getProject().getProjectKey()
+					+ "?selectedItem=decision-knowledge-page";
+			return urlOfKnowledgePage + "&type=" + getTypeAsString();
+		}
+		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			key = key.split(":")[0];
 		}
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key;
+		return jiraBaseUrl + "/browse/" + key;
 	}
 
 	/**

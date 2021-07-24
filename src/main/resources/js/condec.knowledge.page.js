@@ -37,6 +37,10 @@
 				if (knowledgeTypes[index] === "Code") {
 					isSelected = "selected ";
 				}
+			} else if (urlParams.has("type")) {
+				if (knowledgeTypes[index] === urlParams.get("type")) {					
+					isSelected = "selected ";
+				}
 			} else {
 				if (knowledgeTypes[index] === "Issue") {
 					isSelected = "selected ";

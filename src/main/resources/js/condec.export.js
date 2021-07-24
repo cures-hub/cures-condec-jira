@@ -29,7 +29,7 @@
 	 * external references: condec.dialog
 	 */
 	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
-		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
+		conDecAPI.getKnowledgeElement(id, documentationLocation, function(element) {
 			var query = getQuery(element);
 			const filterSettings = {
 					"searchTerm": query
