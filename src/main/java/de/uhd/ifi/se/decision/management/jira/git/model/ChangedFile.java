@@ -133,16 +133,8 @@ public class ChangedFile extends KnowledgeElement {
 		this.methodDeclarations = parseMethods();
 	}
 
-	public ChangedFile(String fileContent, String uri) {
-		this(fileContent);
-		this.repoUri = uri;
-	}
-
 	public ChangedFile(CodeClassInDatabase databaseEntry) {
 		this();
-		if (databaseEntry == null) {
-			return;
-		}
 		this.id = databaseEntry.getId();
 		this.project = new DecisionKnowledgeProject(databaseEntry.getProjectKey());
 		this.treeWalkPath = databaseEntry.getFileName();
@@ -169,11 +161,6 @@ public class ChangedFile extends KnowledgeElement {
 			LOGGER.error("Changed file could not be created. " + e.getMessage());
 		}
 		return fileContent;
-	}
-
-	public ChangedFile(Repository repository, TreeWalk treeWalk, String remoteUri) {
-		this(readFileContentFromGitObject(treeWalk, repository), remoteUri);
-		setTreeWalkPath(treeWalk.getPathString());
 	}
 
 	public static String readFileContentFromGitObject(TreeWalk treeWalk, Repository repository) {
@@ -570,8 +557,7 @@ public class ChangedFile extends KnowledgeElement {
 	@Override
 	public Date getUpdatingDate() {
 		if (commits != null && !commits.isEmpty()) {
-			Date updatingDate = new Date();
-			updatingDate.setTime(commits.get(commits.size() - 1).getCommitTime() * 1000L);
+			Date updatingDate = new Date(commits.get(commits.size() - 1).getCommitTime() * 1000L);
 			return updatingDate;
 		}
 		return super.getUpdatingDate();

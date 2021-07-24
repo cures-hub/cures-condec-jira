@@ -29,6 +29,9 @@ public class TestIsValid extends TestSetUp {
 	public void testFalseIdZero() {
 		link.setIdOfDestinationElement(0);
 		assertFalse(link.isValid());
+
+		link.setIdOfSourceElement(0);
+		assertFalse(link.isValid());
 	}
 
 	@Test
