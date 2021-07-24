@@ -19,12 +19,12 @@ public class TestVisTimeLineGroup extends TestSetUp {
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		visTimeLineGroup = new VisTimeLineGroup(user);
+		visTimeLineGroup = new VisTimeLineGroup(user.getName());
 	}
 
 	@Test
 	public void testGetId() {
-		assertEquals(user.getId(), visTimeLineGroup.getId(), 0.0);
+		assertEquals(user.getName().hashCode(), visTimeLineGroup.getId(), 0.0);
 	}
 
 	@Test

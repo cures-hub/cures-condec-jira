@@ -65,7 +65,7 @@
 	function fillElementField(elementFieldName, id, documentationLocation) {
 		var elementField = document.getElementById(elementFieldName);
 		if (id !== undefined && id !== -1 && documentationLocation !== undefined && documentationLocation !== null) {
-			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(sourceElement) {
+			conDecAPI.getKnowledgeElement(id, documentationLocation, function(sourceElement) {
 				elementField.value = sourceElement.type + " / " + sourceElement.summary;
 			});
 			document.getElementById(elementFieldName + "-group").style.display = "block";
@@ -269,7 +269,7 @@
 		fillElementField("link-form-source-element", id, documentationLocation);
 
 		if (idOfTarget !== undefined && documentationLocationOfTarget !== undefined) {
-			conDecAPI.getDecisionKnowledgeElement(idOfTarget, documentationLocationOfTarget, function(targetElement) {
+			conDecAPI.getKnowledgeElement(idOfTarget, documentationLocationOfTarget, function(targetElement) {
 				selectElementField.innerHTML = "";
 				var text = targetElement.type + " / " + targetElement.summary;
 				var value = targetElement.id + ":" + targetElement.documentationLocation;
@@ -286,7 +286,7 @@
 		fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation, linkType);
 
 		selectElementField.onchange = function() {
-			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation,
+			conDecAPI.getKnowledgeElement(id, documentationLocation,
 				function(element) {
 					selectLinkTypeField.value = suggestLinkType(element.type);
 					AJS.$(selectLinkTypeField).auiSelect2();
@@ -366,7 +366,7 @@
 	ConDecDialog.prototype.showEditDialog = function(id, documentationLocation, callback = function() { }) {
 		console.log("conDecDialog showEditDialog");
 
-		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
+		conDecAPI.getKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
@@ -497,7 +497,7 @@
 		var cancelButton = document.getElementById("change-status-dialog-cancel-button");
 
 		// Fill HTML elements
-		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
+		conDecAPI.getKnowledgeElement(id, documentationLocation, function(element) {
 			fillSelectStatusField(selectStatusField, element);
 
 			// Set onclick listener on buttons

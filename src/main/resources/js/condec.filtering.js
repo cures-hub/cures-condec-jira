@@ -37,7 +37,7 @@
 		// selected element
 		var jiraIssueKey = conDecAPI.getIssueKey();
 		if (jiraIssueKey !== null && jiraIssueKey !== undefined && viewIdentifier !== "chronology") {
-			document.getElementById("selected-element-" + viewIdentifier).innerText = jiraIssueKey;
+			conDecFiltering.setSelectedElement(viewIdentifier, jiraIssueKey);
 		}
 
 		// quality highlighting	
@@ -52,6 +52,14 @@
 		});
 
 		window.onbeforeunload = null;
+	};
+
+	/**
+	 * Sets the label of the selected element of a view. The label should be the element key or "-".
+	 */
+	ConDecFiltering.prototype.setSelectedElement = function(viewIdentifier, label) {
+		var selectedElementLabel = document.getElementById("selected-element-" + viewIdentifier);
+		selectedElementLabel.innerHTML = label + "<span class=aui-icon-close></span>";
 	};
 
 	/**
@@ -241,7 +249,7 @@
 	/**
 	 * external references: condec.dashboard
 	 */
-	ConDecFiltering.prototype.fillDropdownMenus = function (viewIdentifier, selectedKnowledgeTypes) {
+	ConDecFiltering.prototype.fillDropdownMenus = function(viewIdentifier, selectedKnowledgeTypes) {
 		this.initDropdown("source-knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 			selectedKnowledgeTypes, ["Other", "Code"]);
 		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),

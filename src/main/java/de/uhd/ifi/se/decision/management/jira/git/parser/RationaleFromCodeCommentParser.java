@@ -72,6 +72,7 @@ public class RationaleFromCodeCommentParser {
 			element.setDocumentationLocation(DocumentationLocation.CODE);
 			element.setCreationDate(codeFile.getCreationDate());
 			element.setUpdatingDate(codeFile.getUpdatingDate());
+			element.setCreator(codeFile.getCreatorName());
 			return element;
 		}).collect(Collectors.toList());
 		return knowledgeElements;

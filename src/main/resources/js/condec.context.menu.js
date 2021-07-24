@@ -158,7 +158,7 @@
 
 		// set root only works in Treant currently
 		document.getElementById("condec-context-menu-set-root-item").onclick = function () {
-			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function (knowledgeElement) {
+			conDecAPI.getKnowledgeElement(id, documentationLocation, function (knowledgeElement) {
 				var filterSettings = conDecFiltering.getFilterSettings("treant");
 				filterSettings["selectedElement"] = knowledgeElement.key;
 				conDecTreant.buildTreant(filterSettings, true);

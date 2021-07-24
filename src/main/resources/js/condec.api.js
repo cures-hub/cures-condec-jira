@@ -95,21 +95,21 @@
 		}
 	};
 
-	/*
-	 * external references: condec.context.menu, condec.dialog,
-	 * condec.knowledge.page
+	/**
+	 * external references: condec.context.menu, condec.dialog, condec.vis, 
+	 * condec.export, condec.decision.guidance
 	 */
-	ConDecAPI.prototype.getDecisionKnowledgeElement = function(id, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/knowledge/getDecisionKnowledgeElement.json?projectKey="
+	ConDecAPI.prototype.getKnowledgeElement = function(id, documentationLocation, callback) {
+		generalApi.getJSON(this.restPrefix + "/knowledge/knowledgeElement.json?projectKey="
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
-				decisionKnowledgeElement) {
+				knowledgeElement) {
 			if (error === null) {
-				callback(decisionKnowledgeElement);
+				callback(knowledgeElement);
 			}
 		});
 	};
 
-	/*
+	/**
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function(id, documentationLocation, callback) {

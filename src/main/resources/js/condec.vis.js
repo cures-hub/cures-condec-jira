@@ -47,11 +47,11 @@
 			graphNetwork.on("click", function(params) {
 				var clickedNode = params.nodes[0];
 				if (clickedNode === null || clickedNode === undefined) {
-					document.getElementById("selected-element-graph").innerText = "-";
+					conDecFiltering.setSelectedElement("graph", "-");
 				} else {
-					conDecAPI.getDecisionKnowledgeElement(getElementId(clickedNode),
+					conDecAPI.getKnowledgeElement(getElementId(clickedNode),
 						getDocumentationLocation(clickedNode), (element) => {
-							document.getElementById("selected-element-graph").innerText = element.key;
+							conDecFiltering.setSelectedElement("graph", element.key);
 						});
 				}
 			});

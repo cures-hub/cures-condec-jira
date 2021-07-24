@@ -31,7 +31,8 @@
 	function updateView(nodeId) {		
 		var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 		
-		filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
+		filterSettings.isOnlyDecisionKnowledgeShown = false; // since this only applies on right side
+		filterSettings.selectedElement = null; // we want to have a list of elements on the left
 		
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#rationale-backlog-tree", "#search-input-rationale-backlog", "rationale-backlog-tree");
 		if (nodeId === undefined) {
@@ -51,7 +52,7 @@
 			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
 			filterSettings["status"] = null;
-			document.getElementById("selected-element-rationale-backlog").innerText = node.key;
+			conDecFiltering.setSelectedElement("rationale-backlog", node.key);
 			filterSettings["selectedElement"] = node.key;
 			conDecTreant.buildTreant(filterSettings, true, "treant-rationale-backlog");
 			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-rationale-backlog", "#search-input-rationale-backlog", "jstree-rationale-backlog");
