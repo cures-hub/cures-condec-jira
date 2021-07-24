@@ -49,7 +49,7 @@
 				if (clickedNode === null || clickedNode === undefined) {
 					conDecFiltering.setSelectedElement("graph", "-");
 				} else {
-					conDecAPI.getDecisionKnowledgeElement(getElementId(clickedNode),
+					conDecAPI.getKnowledgeElement(getElementId(clickedNode),
 						getDocumentationLocation(clickedNode), (element) => {
 							conDecFiltering.setSelectedElement("graph", element.key);
 						});
