@@ -28,7 +28,7 @@
 
 	ConDecKnowledgePage.prototype.fetchAndRender = function() {
 		conDecFiltering.fillFilterElements("overview");
-		
+
 		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
@@ -62,10 +62,10 @@
 				createElementButton.style.display = "none";
 				elementInputField.style.display = "none";
 			}
-		});		
-		
+		});
+
 		// Add on click listeners to filter button
-     	conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);     	
+		conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
 		this.updateView();
@@ -78,9 +78,10 @@
 	function updateView(nodeId) {
 		var filterSettings = conDecFiltering.getFilterSettings("overview");
 		var knowledgeType = jQuery("select[name='knowledge-type-dropdown-overview']").val();
-		filterSettings["knowledgeTypes"] = [ knowledgeType ];
-		filterSettings["linkDistance"] = 0; // to speed-up loading
-		filterSettings["isOnlyDecisionKnowledgeShown"] = false; // since this only applies on right side
+		filterSettings.knowledgeTypes = [knowledgeType];
+		filterSettings.linkDistance = 0; // to speed-up loading
+		filterSettings.isOnlyDecisionKnowledgeShow = false; // since this only applies on right side
+		filterSettings.selectedElement = null; // we want to have a list of elements on the left
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();
@@ -100,11 +101,11 @@
 			var node = tree.node.data;
 			filterSettings["knowledgeTypes"] = null;
 			filterSettings["status"] = null;
-			document.getElementById("selected-element-overview").innerText = node.key;
+			conDecFiltering.setSelectedElement("overview", node.key);
 			filterSettings["selectedElement"] = node.key;
 			conDecTreant.buildTreant(filterSettings, true, "treant-overview");
 			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-overview", "#search-input-overview", "jstree-overview");
-			jQuery("#jstree-overview").on("loaded.jstree", function () {
+			jQuery("#jstree-overview").on("loaded.jstree", function() {
 				jQuery("#jstree-overview").jstree("open_all");
 			});
 			conDecVis.buildVis(filterSettings, "graph-overview");

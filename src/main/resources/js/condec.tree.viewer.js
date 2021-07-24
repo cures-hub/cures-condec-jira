@@ -51,7 +51,7 @@
 		});
 		jQuery("#jstree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
-			document.getElementById("selected-element-jstree").innerText = node.key;
+			conDecFiltering.setSelectedElement("jstree", node.key);
 		});
 	};
 
