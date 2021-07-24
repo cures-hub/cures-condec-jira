@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.junit.Before;
 import org.junit.Test;
@@ -164,5 +166,44 @@ public class TestChangedFile extends TestSetUpGit {
 		assertEquals(1, file.getCodeComments().size());
 		assertEquals(4, file.getRationaleElementsFromCodeComments().size());
 		assertEquals("Not secure.", file.getRationaleElementsFromCodeComments().get(3).getSummary());
+	}
+
+	@Test
+	public void testDescription() {
+		assertEquals("Tangled2.java", changedFile.getDescription());
+	}
+
+	@Test
+	public void testCreationDate() {
+		assertNotNull(changedFile.getCreationDate());
+	}
+
+	@Test
+	public void testCreationDateCommitsNull() {
+		changedFile.setCommits(null);
+		assertNotNull(changedFile.getCreationDate());
+	}
+
+	@Test
+	public void testCreationDateCommitsEmpty() {
+		changedFile.setCommits(List.of());
+		assertNotNull(changedFile.getCreationDate());
+	}
+
+	@Test
+	public void testUpdatingDate() {
+		assertNotNull(changedFile.getUpdatingDate());
+	}
+
+	@Test
+	public void testUpdatingDateCommitsNull() {
+		changedFile.setCommits(null);
+		assertNotNull(changedFile.getUpdatingDate());
+	}
+
+	@Test
+	public void testUpdatingDateCommitsEmpty() {
+		changedFile.setCommits(List.of());
+		assertNotNull(changedFile.getUpdatingDate());
 	}
 }

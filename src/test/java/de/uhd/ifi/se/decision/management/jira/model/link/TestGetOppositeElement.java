@@ -30,7 +30,7 @@ public class TestGetOppositeElement extends TestSetUp {
 	}
 
 	@Test
-	public void testInvalidLink() {
+	public void testInvalidLinkIdZero() {
 		link.setIdOfDestinationElement(0);
 		assertFalse(link.isValid());
 		assertNull(link.getOppositeElement(link.getTarget().getId()));

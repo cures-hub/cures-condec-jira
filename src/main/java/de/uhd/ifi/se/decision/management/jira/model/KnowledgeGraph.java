@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -417,26 +418,30 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	}
 
 	public void addElementsNotInDatabase(KnowledgeElement root, List<KnowledgeElement> otherElements) {
+		List<KnowledgeElement> otherElementsAddedToGraph = new ArrayList<>();
 		for (KnowledgeElement element : otherElements) {
-			addVertexNotBeingInDatabase(element);
+			otherElementsAddedToGraph.add(addVertexNotBeingInDatabase(element));
+		}
+		for (KnowledgeElement element : otherElementsAddedToGraph) {
 			if (element.getId() >= 0) {
 				return;
 			}
-			KnowledgeElement potentialParent = AutomaticLinkCreator.getPotentialParentElement(element, otherElements);
+			KnowledgeElement potentialParent = AutomaticLinkCreator.getPotentialParentElement(element,
+					otherElementsAddedToGraph);
 			Link link;
 			if (potentialParent == null) {
 				link = Link.instantiateDirectedLink(root, element);
 			} else {
-				addVertexNotBeingInDatabase(potentialParent);
 				link = Link.instantiateDirectedLink(potentialParent, element);
 			}
 			addEdgeNotBeingInDatabase(link);
 		}
-		updateStatusOfElements(otherElements);
+		updateStatusOfElements(otherElementsAddedToGraph);
 	}
 
 	public void updateStatusOfElements(List<KnowledgeElement> otherElements) {
 		otherElements.forEach(element -> {
+			element = getElementsNotInDatabaseBySummary(element.getSummary());
 			KnowledgeStatus newStatus = KnowledgeStatus.getNewStatus(element);
 			if (newStatus != element.getStatus()) {
 				element.setStatus(newStatus);

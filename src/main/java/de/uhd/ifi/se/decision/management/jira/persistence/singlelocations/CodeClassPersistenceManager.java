@@ -169,11 +169,11 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 		CodeClassInDatabase databaseEntry = ACTIVE_OBJECTS.create(CodeClassInDatabase.class);
 		setParameters(changedFile, databaseEntry);
 		databaseEntry.save();
-		ChangedFile newElement = new ChangedFile(databaseEntry);
-		newElement.setCommits(changedFile.getCommits());
-		createLinksToJiraIssues(newElement, user);
+		changedFile.setId(databaseEntry.getId());
+		changedFile.setTreeWalkPath(databaseEntry.getFileName());
+		createLinksToJiraIssues(changedFile, user);
 
-		return newElement;
+		return changedFile;
 	}
 
 	private void createLinksToJiraIssues(ChangedFile newElement, ApplicationUser user) {

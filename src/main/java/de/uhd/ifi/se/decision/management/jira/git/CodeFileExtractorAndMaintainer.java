@@ -56,6 +56,7 @@ public class CodeFileExtractorAndMaintainer {
 			}
 			List<KnowledgeElement> decisionKnowledgeInCodeComments = changedFile.getRationaleElementsFromCodeComments();
 			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+			graph.updateElement(source);
 			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
 		}
 	}

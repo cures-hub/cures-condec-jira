@@ -151,7 +151,7 @@
 
 		// Read whether only incompletely documented elements should be shown
 		if (status !== null) {
-			var indexOfIncomplete = status.indexOf("incomplete");
+			var indexOfIncomplete = status.indexOf("DoD violated");
 			if (indexOfIncomplete !== -1) {
 				filterSettings["isOnlyIncompleteKnowledgeShown"] = true;
 			}
