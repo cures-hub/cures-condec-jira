@@ -561,9 +561,8 @@ public class ChangedFile extends KnowledgeElement {
 	@Override
 	public Date getCreationDate() {
 		if (commits != null && !commits.isEmpty()) {
-			Date updatingDate = new Date();
-			updatingDate.setTime(commits.get(0).getCommitTime() * 1000);
-			return updatingDate;
+			Date creatingDate = new Date(commits.get(0).getCommitTime() * 1000L);
+			return creatingDate;
 		}
 		return super.getCreationDate();
 	}
@@ -572,7 +571,7 @@ public class ChangedFile extends KnowledgeElement {
 	public Date getUpdatingDate() {
 		if (commits != null && !commits.isEmpty()) {
 			Date updatingDate = new Date();
-			updatingDate.setTime(commits.get(commits.size() - 1).getCommitTime() * 1000);
+			updatingDate.setTime(commits.get(commits.size() - 1).getCommitTime() * 1000L);
 			return updatingDate;
 		}
 		return super.getUpdatingDate();

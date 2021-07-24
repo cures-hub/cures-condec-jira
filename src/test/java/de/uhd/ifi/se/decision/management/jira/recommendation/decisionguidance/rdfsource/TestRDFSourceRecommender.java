@@ -46,7 +46,6 @@ public class TestRDFSourceRecommender extends TestSetUp {
 
 	@Test
 	public void testRDFSourceWithKnowledgeElement() {
-
 		KnowledgeElement alternative = new KnowledgeElement();
 		alternative.setType(KnowledgeType.ALTERNATIVE);
 		alternative.setSummary("MySQL");
