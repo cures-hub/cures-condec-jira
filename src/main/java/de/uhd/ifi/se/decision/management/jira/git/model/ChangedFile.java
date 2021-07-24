@@ -564,6 +564,14 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	@Override
+	public String getCreatorName() {
+		if (commits != null && !commits.isEmpty()) {
+			return commits.get(commits.size() - 1).getAuthorIdent().getName();
+		}
+		return super.getCreatorName();
+	}
+
+	@Override
 	public boolean equals(Object object) {
 		if (object == null) {
 			return false;

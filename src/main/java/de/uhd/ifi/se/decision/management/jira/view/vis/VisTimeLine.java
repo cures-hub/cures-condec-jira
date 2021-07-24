@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class VisTimeLine {
 
-	private Set<Long> applicationUserIds;
+	private Set<Long> userIds;
 
 	@XmlElement(name = "groupSet")
 	private Set<VisTimeLineGroup> groups;
@@ -31,9 +31,9 @@ public class VisTimeLine {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VisTimeLine.class);
 
 	public VisTimeLine() {
-		this.nodes = new HashSet<VisTimeLineNode>();
-		this.groups = new HashSet<VisTimeLineGroup>();
-		this.applicationUserIds = new HashSet<Long>();
+		this.nodes = new HashSet<>();
+		this.groups = new HashSet<>();
+		this.userIds = new HashSet<>();
 		this.filterSettings = new FilterSettings();
 	}
 
@@ -67,14 +67,14 @@ public class VisTimeLine {
 	}
 
 	public boolean addElement(KnowledgeElement element) {
-		ApplicationUser user = element.getCreator();
-		if (user == null) {
+		String userName = element.getCreatorName();
+		if (userName == null) {
 			return false;
 		}
-		long userId = user.getId();
-		if (!applicationUserIds.contains(userId)) {
-			applicationUserIds.add(userId);
-			groups.add(new VisTimeLineGroup(user));
+		long userId = userName.hashCode();
+		if (!userIds.contains(userId)) {
+			userIds.add(userId);
+			groups.add(new VisTimeLineGroup(userName));
 		}
 		VisTimeLineNode node = new VisTimeLineNode(element, userId, isPlacedAtCreationDate, isPlacedAtUpdatingDate,
 				filterSettings);

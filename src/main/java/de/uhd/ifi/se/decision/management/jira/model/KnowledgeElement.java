@@ -56,6 +56,7 @@ public class KnowledgeElement {
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
 	protected KnowledgeStatus status;
+	protected String authorName;
 
 	public KnowledgeElement() {
 		this.description = "";
@@ -508,8 +509,15 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "creator")
 	public String getCreatorName() {
+		if (authorName != null) {
+			return authorName;
+		}
 		ApplicationUser user = getCreator();
 		return user != null ? user.getDisplayName() : "";
+	}
+
+	public void setCreator(String authorName) {
+		this.authorName = authorName;
 	}
 
 	/**

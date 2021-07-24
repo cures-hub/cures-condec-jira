@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import com.atlassian.jira.user.ApplicationUser;
-
 public class VisTimeLineGroup {
 
 	@XmlElement
@@ -12,9 +10,9 @@ public class VisTimeLineGroup {
 	@XmlElement
 	private String content;
 
-	public VisTimeLineGroup(ApplicationUser user) {
-		this.content = user.getName();
-		this.id = user.getId();
+	public VisTimeLineGroup(String userName) {
+		this.content = userName;
+		this.id = userName.hashCode();
 	}
 
 	public long getId() {
