@@ -216,7 +216,7 @@ public class KnowledgeRest {
 		KnowledgeElement formerElement = persistenceManager.getKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
 		if (formerElement == null || formerElement.getId() <= 0) {
-			return Response.status(Status.NOT_FOUND)
+			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Decision knowledge element could not be found in database."))
 					.build();
 		}

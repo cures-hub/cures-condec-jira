@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +19,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -47,8 +45,6 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
 	}
 
 	@Test
@@ -69,7 +65,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement();
 		decisionKnowledgeElement.setProject("TEST");
 
-		assertEquals(Status.NOT_FOUND.getStatusCode(),
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
 	}
 
@@ -144,10 +140,5 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUp {
 		MutableComment mutableComment = (MutableComment) ComponentAccessor.getCommentManager()
 				.getCommentById(sentence.getCommentId());
 		assertEquals("{issue}some fancy new text{issue}", mutableComment.getBody());
-	}
-
-	@After
-	public void tearDown() {
-		KnowledgeGraph.instances.clear();
 	}
 }
