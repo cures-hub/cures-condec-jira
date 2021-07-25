@@ -496,7 +496,7 @@ public class KnowledgeRest {
 		sentence.setRelevant(false);
 		sentence.setValidated(true); // Setting an element irrelevant should automatically validate it
 		sentence.setType(KnowledgeType.OTHER);
-		persistenceManager.updateInDatabase(sentence);
+		persistenceManager.updateElementInTextAndDatabase(sentence, AuthenticationManager.getUser(request));
 		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
 		return Response.status(Status.OK).build();
 	}

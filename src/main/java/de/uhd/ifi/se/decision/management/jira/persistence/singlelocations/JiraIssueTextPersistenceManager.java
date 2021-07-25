@@ -416,7 +416,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return true if updating the Jira issue description or comment and also the
 	 *         database entries was successful.
 	 */
-	private boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
+	public boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
 		String tag = sentence.getType().getTag();
 		String changedPartOfText = tag + sentence.getDescription() + tag;
 
