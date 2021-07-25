@@ -42,6 +42,7 @@
 
 			var graphContainer = document.getElementById(container);
 			var graphNetwork = new vis.Network(graphContainer, visData, options);
+			
 			graphNetwork.setSize("100%", "500px");
 
 			graphNetwork.on("click", function(params) {

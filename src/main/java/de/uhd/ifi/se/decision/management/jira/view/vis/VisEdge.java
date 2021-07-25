@@ -28,11 +28,21 @@ public class VisEdge {
 	@XmlElement
 	private Map<String, String> color;
 
+	/**
+	 * @issue How can we ensure that unique link ids are used in the vis graph
+	 *        because otherwise the vis graph cannot be shown?
+	 * @decision Hash the source and target element ids to generate a unique link
+	 *           id!
+	 * @alternative Use the link ids in the knowledge graph as vis edge link ids
+	 *              because they should be unique in theory.
+	 * @con The link ids in the knowledge graph for code elements are always -1 for
+	 *      an unknown reason. Thus, the vis graph cannot be shown.
+	 */
 	public VisEdge(Link link) {
 		this.setLabel(link.getTypeAsString());
 		this.setFrom(link.getSource().getId() + "_" + link.getSource().getDocumentationLocationAsString());
 		this.setTo(link.getTarget().getId() + "_" + link.getTarget().getDocumentationLocationAsString());
-		this.setId(link.getId());
+		this.setId((from + to).hashCode());
 		this.setColor(LinkType.getLinkTypeColor(link.getTypeAsString()));
 	}
 
