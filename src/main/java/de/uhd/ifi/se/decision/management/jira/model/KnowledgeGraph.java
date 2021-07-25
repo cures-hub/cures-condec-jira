@@ -162,7 +162,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		if (link.containsUnknownDocumentationLocation()) {
 			return null;
 		}
-		link.setId(nextLinkId--);
+		link.setId(--nextLinkId);
 		addEdge(link);
 		return link;
 	}
