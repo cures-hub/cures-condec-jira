@@ -1,5 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -22,12 +29,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Extends the abstract class
@@ -140,7 +141,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			KnowledgeGraph.getInstance(projectKey).removeVertex(new PartOfJiraIssueText(databaseEntry));
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-
 		}
 		return isDeleted;
 	}
@@ -352,7 +352,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			return null;
 		}
 		if (element.getId() > 0) {
-			return this.getKnowledgeElement(element.getId());
+			return getKnowledgeElement(element.getId());
 		}
 
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
@@ -384,7 +384,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	@Override
 	public boolean updateKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
 		if (element == null || element.getProject() == null
-				|| element.getDocumentationLocation() != this.documentationLocation) {
+				|| element.getDocumentationLocation() != documentationLocation) {
 			return false;
 		}
 
@@ -398,7 +398,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		sentence.setStatus(element.getStatus());
 		sentence.setType(element.getType());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
-		sentence.setValidated(((PartOfJiraIssueText) element).isValidated());
 		return updateElementInTextAndDatabase(sentence, user);
 	}
 
@@ -417,7 +416,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return true if updating the Jira issue description or comment and also the
 	 *         database entries was successful.
 	 */
-	private boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
+	public boolean updateElementInTextAndDatabase(PartOfJiraIssueText sentence, ApplicationUser user) {
 		String tag = sentence.getType().getTag();
 		String changedPartOfText = tag + sentence.getDescription() + tag;
 
@@ -502,9 +501,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.isLinked() > 0) {
 			return true;
 		}
-		KnowledgeElement parentElement = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgeElement parentElement = persistenceManager.getJiraIssueManager()
 				.getKnowledgeElement(element.getJiraIssue().getId());
-		long linkId = KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(parentElement, element, null);
+		long linkId = persistenceManager.insertLink(parentElement, element, null);
 		return linkId > 0;
 	}
 

@@ -24,7 +24,6 @@
 
 	ConDecObservable.prototype.notify = function () {
 		this.observers.forEach(function(observer) {
-			console.log(observer);
 			if (typeof observer.updateView === "function") {
 				observer.updateView();
 			} else {

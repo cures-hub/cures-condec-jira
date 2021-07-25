@@ -20,9 +20,6 @@
 
 	ConDecDialog.prototype.showCreateDialog = function(idOfParentElement, documentationLocationOfParentElement, selectedType = "Alternative", summary = "", description = "", callback = function() { }) {
 		console.log("conDecDialog showCreateDialog");
-		console.log(idOfParentElement);
-		console.log(documentationLocationOfParentElement);
-		console.log(selectedType);
 
 		// HTML elements
 		var createDialog = document.getElementById("create-dialog");
@@ -343,7 +340,6 @@
 		}
 		selectField.insertAdjacentHTML("afterBegin", insertString);
 		if (linkType !== null && linkType !== undefined) {
-			console.log(linkType);
 			selectField.value = linkTypes.find(type => type.toLowerCase().startsWith(linkType));
 		} else {
 			selectField.value = "Relates";
@@ -536,7 +532,6 @@
 		selectField.innerHTML = "";
 		for (var index = 0; index < knowledgeStatus.length; index++) {
 			var isSelected = "";
-			console.log(element.status);
 			if (element.status.toUpperCase() === knowledgeStatus[index].toUpperCase()) {
 				isSelected = "selected";
 			}
