@@ -206,7 +206,7 @@
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.changeKnowledgeType = function(id, type, documentationLocation, callback) {
-		this.getDecisionKnowledgeElement(id, documentationLocation, function(element) {
+		this.getKnowledgeElement(id, documentationLocation, function(element) {
 			conDecAPI.updateDecisionKnowledgeElement(id, element.summary, element.description, type,
 				documentationLocation, null, callback);
 		});
@@ -694,7 +694,7 @@
 	 */
 	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
 		let newTab = window.open();
-		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
+		this.getKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
 			newTab.location.href = decisionKnowledgeElement.url;
 		});
 	};
