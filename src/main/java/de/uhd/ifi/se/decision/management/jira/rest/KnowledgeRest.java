@@ -48,6 +48,17 @@ public class KnowledgeRest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeRest.class);
 
+	/**
+	 * @param id
+	 *            of the {@link KnowledgeElement} in database and knowledge graph.
+	 * @param projectKey
+	 *            of the Jira project.
+	 * @param documentationLocationIdentifier
+	 *            identifier of the {@link DocumentationLocation} of the element,
+	 *            e.g., "i" for Jira issue.
+	 * @return {@link KnowledgeElement} (e.g. decision problem, decision,
+	 *         requirement, or code file) if it was found.
+	 */
 	@Path("/knowledgeElement")
 	@GET
 	public Response getKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
@@ -485,7 +496,7 @@ public class KnowledgeRest {
 		sentence.setRelevant(false);
 		sentence.setValidated(true); // Setting an element irrelevant should automatically validate it
 		sentence.setType(KnowledgeType.OTHER);
-		persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
+		persistenceManager.updateInDatabase(sentence);
 		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
 		return Response.status(Status.OK).build();
 	}
@@ -493,7 +504,7 @@ public class KnowledgeRest {
 	/**
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
-	 * @param decisionKnowledgeElement
+	 * @param knowledgeElement
 	 *            JSON object containing at least the id, documentation location
 	 * @return {@link Status.OK} if setting the sentence validated was successful
 	 * @issue How should setting a single element "validated" be handled?
@@ -509,31 +520,29 @@ public class KnowledgeRest {
 	 */
 	@Path("/setSentenceValidated")
 	@POST
-	public Response setSentenceValidated(@Context HttpServletRequest request,
-			KnowledgeElement decisionKnowledgeElement) {
-		if (request == null || decisionKnowledgeElement == null) {
+	public Response setSentenceValidated(@Context HttpServletRequest request, KnowledgeElement knowledgeElement) {
+		if (request == null || knowledgeElement == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Setting element validated failed due to a bad request.")).build();
 		}
-		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
+		if (knowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Only decision knowledge elements documented in the description "
 							+ "or comments of a Jira issue can be set to validated."))
 					.build();
 		}
 
-		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
+		String projectKey = knowledgeElement.getProject().getProjectKey();
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 				.getJiraIssueTextManager();
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
-				.getKnowledgeElement(decisionKnowledgeElement);
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(knowledgeElement);
 		if (sentence == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
 
 		sentence.setValidated(true);
-		persistenceManager.updateKnowledgeElement(sentence, AuthenticationManager.getUser(request));
+		persistenceManager.updateInDatabase(sentence);
 		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
 		return Response.status(Status.OK).build();
 	}

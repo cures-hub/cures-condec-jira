@@ -200,6 +200,7 @@
 			}
 		});
 	};
+	
 	/**
 	 * Updates the knowledge type of the element.
 	 *
