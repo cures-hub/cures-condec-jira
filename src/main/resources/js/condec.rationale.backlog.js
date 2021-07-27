@@ -51,9 +51,10 @@
 		jQuery("#rationale-backlog-tree").on("select_node.jstree", function(error, tree) {
 			var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
 			var node = tree.node.data;
-			filterSettings["status"] = null;
+			filterSettings.status = null;
+			filterSettings.isOnlyIncompleteKnowledgeShown = false;
 			conDecFiltering.setSelectedElement("rationale-backlog", node.key);
-			filterSettings["selectedElement"] = node.key;
+			filterSettings.selectedElement = node.key;
 			conDecTreant.buildTreant(filterSettings, true, "treant-rationale-backlog");
 			conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree-rationale-backlog", "#search-input-rationale-backlog", "jstree-rationale-backlog");
 			jQuery("#jstree-rationale-backlog").on("loaded.jstree", function() {

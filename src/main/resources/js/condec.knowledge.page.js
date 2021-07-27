@@ -84,7 +84,7 @@
 		var knowledgeType = jQuery("select[name='knowledge-type-dropdown-overview']").val();
 		filterSettings.knowledgeTypes = [knowledgeType];
 		filterSettings.linkDistance = 0; // to speed-up loading
-		filterSettings.isOnlyDecisionKnowledgeShow = false; // since this only applies on right side
+		filterSettings.isOnlyDecisionKnowledgeShown = false; // since this only applies on right side
 		filterSettings.selectedElement = null; // we want to have a list of elements on the left
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");
 		if (nodeId === undefined) {
