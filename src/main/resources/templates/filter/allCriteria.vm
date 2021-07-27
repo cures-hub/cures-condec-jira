@@ -1,5 +1,6 @@
 #set($viewsWithChangeImpactHighlighting = ["jstree", "graph", "matrix"])
 #set($viewsWithoutLinkVisualization = ["chronology"])
+#set($viewsWithVisGraph = ["graph", "rationale-backlog", "overview"])
 <div class="aui-toolbar2" role="toolbar">
 	<form class="aui">	
 		<div class="condec-filter">  
@@ -35,7 +36,7 @@
 			#end
 			#parse("templates/filter/isIrrelevantText.vm")     
 			#parse("templates/filter/isTestCode.vm")   
-			#if($viewIdentifier == "graph")
+			#if ($viewsWithVisGraph.contains($viewIdentifier))
 				#parse("templates/filter/isHierarchicalGraph.vm")
 			#end
 			#if($viewIdentifier == "chronology")
