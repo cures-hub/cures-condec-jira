@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
  * needs to be changed as well. The impact value of an element (elementImpact)
  * is calculated using the following equation:
  * 
- * <b>elementImpact = parentImpact * decayValue * linkTypeWeight *
+ * <b>elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight *
  * ruleBasedValue</b>
  * 
  * where parentImpact is the element impact of the ancestor node in the
@@ -104,7 +104,7 @@ public class ChangeImpactAnalysisService {
 				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
 			}
 
-			double impact = parentImpact * linkTypeWeight * decayValue * ruleBasedValue;
+			double impact = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
 
 			KnowledgeElement nextElement = (isOutwardLink) ? link.getTarget() : link.getSource();
 

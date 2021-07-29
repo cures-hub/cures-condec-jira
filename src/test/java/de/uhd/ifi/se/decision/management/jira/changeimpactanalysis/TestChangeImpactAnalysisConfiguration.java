@@ -39,7 +39,7 @@ public class TestChangeImpactAnalysisConfiguration extends TestSetUp {
 	@Test
 	public void testDecayValue() {
 		// default value
-		assertEquals(0.75, config.getDecayValue(), 0.01);
+		assertEquals(0.25, config.getDecayValue(), 0.01);
 		config.setDecayValue(0.8f);
 		assertEquals(0.8, config.getDecayValue(), 0.01);
 	}

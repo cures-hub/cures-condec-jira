@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -102,10 +101,5 @@ public class TestKnowledgeGraph extends TestSetUp {
 		node = graph.getElementBySummary("Updated");
 		assertEquals("Updated", node.getSummary());
 		assertEquals(5, graph.edgesOf(node).size());
-	}
-
-	@After
-	public void tearDown() {
-		KnowledgeGraph.instances.clear();
 	}
 }

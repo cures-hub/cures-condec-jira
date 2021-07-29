@@ -99,8 +99,8 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testisIncompleteElementRecommendation() {
+	public void testIsCompleteElementRecommendation() {
 		ElementRecommendation recommendation = new ElementRecommendation();
-		assertFalse(DefinitionOfDoneChecker.isIncomplete(recommendation));
+		assertTrue(DefinitionOfDoneChecker.isComplete(recommendation));
 	}
 }

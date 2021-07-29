@@ -74,7 +74,6 @@ public class TestDecisionGroupView extends TestSetUp {
 	public void testGetAllClassElementsWithCertainGroup() {
 		Response resp = configRest.getAllClassElementsWithCertainGroup("TEST", "TestGroup2");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertEquals("[TEST:code:1]", resp.getEntity().toString());
 	}
 
 	@Test

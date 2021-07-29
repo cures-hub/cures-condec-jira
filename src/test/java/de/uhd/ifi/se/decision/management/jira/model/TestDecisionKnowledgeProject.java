@@ -90,7 +90,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetChangeImpactAnalysisConfiguration() {
-		assertEquals(0.75f, project.getChangeImpactAnalysisConfiguration().getDecayValue(), 0);
+		assertEquals(0.25f, project.getChangeImpactAnalysisConfiguration().getDecayValue(), 0);
 	}
 
 	@Test
