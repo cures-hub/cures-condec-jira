@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +15,6 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
@@ -81,10 +79,5 @@ public class TestAssignDecisionGroup extends TestSetUp {
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
 		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).size() == 4);
-	}
-
-	@After
-	public void tearDown() {
-		KnowledgeGraph.instances.clear();
 	}
 }

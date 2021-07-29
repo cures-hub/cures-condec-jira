@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -183,10 +182,5 @@ public class TestWebhookConnector extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
 		assertFalse(webhookConnector.sendElement(knowledgeElement, "new"));
-	}
-
-	@After
-	public void tearDown() {
-		KnowledgeGraph.instances.clear();
 	}
 }

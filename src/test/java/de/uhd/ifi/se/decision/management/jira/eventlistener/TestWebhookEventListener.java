@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,10 +92,5 @@ public class TestWebhookEventListener extends TestSetUp {
 		IssueLink link = new MockIssueLink(1, 2, 1);
 		IssueLinkDeletedEvent event = new IssueLinkDeletedEvent(link, null);
 		listener.onLinkDeletedIssueEvent(event);
-	}
-
-	@After
-	public void tearDown() {
-		KnowledgeGraph.instances.clear();
 	}
 }

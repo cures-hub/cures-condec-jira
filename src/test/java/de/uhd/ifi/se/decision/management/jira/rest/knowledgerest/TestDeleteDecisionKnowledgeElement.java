@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +15,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -76,10 +74,5 @@ public class TestDeleteDecisionKnowledgeElement extends TestSetUp {
 	public void testRequestFilledElementNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", DELETION_ERROR))
 				.build().getEntity(), knowledgeRest.deleteDecisionKnowledgeElement(request, null).getEntity());
-	}
-
-	@After
-	public void tearDown() {
-		KnowledgeGraph.instances.clear();
 	}
 }
