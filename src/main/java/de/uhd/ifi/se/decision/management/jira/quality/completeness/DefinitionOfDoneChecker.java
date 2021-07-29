@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
-public final class DefinitionOfDoneChecker {
+public class DefinitionOfDoneChecker {
 
 	private static final Map<KnowledgeType, KnowledgeElementCheck> knowledgeElementCheckMap = Map.ofEntries(
 			entry(KnowledgeType.DECISION, new DecisionCheck()), //
@@ -28,9 +28,6 @@ public final class DefinitionOfDoneChecker {
 			entry(KnowledgeType.ARGUMENT, new ArgumentCheck()), //
 			entry(KnowledgeType.PRO, new ArgumentCheck()), //
 			entry(KnowledgeType.CON, new ArgumentCheck()));
-
-	private DefinitionOfDoneChecker() {
-	}
 
 	/**
 	 * Checks if the definition of done has been violated for a
@@ -52,22 +49,21 @@ public final class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * Checks if the documentation of this {@link KnowledgeElement} is incomplete.
+	 * Checks if the documentation of this {@link KnowledgeElement} is complete.
 	 *
-	 * @return true if this knowledge element is incompletely documented, else it
+	 * @return true if this knowledge element is completely documented, else it
 	 *         returns false.
 	 */
-	public static boolean isIncomplete(KnowledgeElement knowledgeElement) {
+	public static boolean isComplete(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
-			return false;
+			return true;
 		}
 		if (knowledgeElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT
 				&& knowledgeElement.getType() == KnowledgeType.OTHER) {
-			// TODO Decide whether non-validated elements violate the DoD
-			return false;
+			return true;
 		}
 		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-		return !(knowledgeElementCheck == null || knowledgeElementCheck.execute(knowledgeElement));
+		return knowledgeElementCheck == null || knowledgeElementCheck.execute(knowledgeElement);
 	}
 
 	/**
@@ -78,27 +74,12 @@ public final class DefinitionOfDoneChecker {
 	 *         element, else it returns false.
 	 */
 	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement knowledgeElement) {
-		if (isIncomplete(knowledgeElement)) {
+		if (!isComplete(knowledgeElement)) {
 			return true;
 		}
 		for (Link link : knowledgeElement.getLinks()) {
 			KnowledgeElement oppositeElement = link.getOppositeElement(knowledgeElement);
-			if (isIncomplete(oppositeElement)) {
-				return true;
-			} else if (hasIncompleteKnowledgeLinked(oppositeElement, knowledgeElement)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement oppositeElement,
-			KnowledgeElement knowledgeElement) {
-		for (Link link : oppositeElement.getLinks()) {
-			KnowledgeElement nextElement = link.getOppositeElement(oppositeElement);
-			if (nextElement.getId() == knowledgeElement.getId()) {
-				continue;
-			} else if (isIncomplete(nextElement)) {
+			if (!isComplete(oppositeElement)) {
 				return true;
 			}
 		}

@@ -2,20 +2,20 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -104,7 +104,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 				KnowledgeGraph.getInstance("TEST").removeEdge(link);
 			}
 		}
-		assertTrue(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertFalse(DefinitionOfDoneChecker.isComplete(decision));
 		assertNotNull(workItem.getLink(decision));
 		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
@@ -118,17 +118,17 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 	@NonTransactional
 	public void testIncompleteLinkDistanceTwo() {
 		KnowledgeGraph.getInstance("TEST").removeEdge(workItem.getLink(anotherWorkItem));
-		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertTrue(DefinitionOfDoneChecker.isComplete(decision));
 		assertNotNull(decision.getLink(issue));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
+		assertTrue(DefinitionOfDoneChecker.isComplete(decision));
 		KnowledgeGraph.getInstance("TEST").removeEdge(issue.getLink(alternative));
 		assertNull(issue.getLink(alternative));
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertFalse(DefinitionOfDoneChecker.isIncomplete(decision));
-		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
+		assertTrue(DefinitionOfDoneChecker.isComplete(decision));
+		assertFalse(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(workItem));
 	}
 
 	@After
