@@ -96,14 +96,15 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testSetAndGetCiaSettings() {
 		ChangeImpactAnalysisConfiguration settings = new ChangeImpactAnalysisConfiguration();
-		assertEquals(0.75, settings.getDecayValue(), 0.01);
+		assertEquals(0.25, settings.getDecayValue(), 0.01);
 		assertEquals(0.25, settings.getThreshold(), 0.01);
 		assertEquals(9, settings.getLinkImpact().size());
 		settings.setDecayValue(0.75f);
 		settings.setThreshold(0.2f);
 		settings.setLinkImpact(Map.of("comment", 0.5f));
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", settings);
-		ChangeImpactAnalysisConfiguration loaded = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration("TEST");
+		ChangeImpactAnalysisConfiguration loaded = ConfigPersistenceManager
+				.getChangeImpactAnalysisConfiguration("TEST");
 		assertEquals(0.75, loaded.getDecayValue(), 0.01);
 		assertEquals(0.2, loaded.getThreshold(), 0.01);
 		assertEquals(1, loaded.getLinkImpact().size());
