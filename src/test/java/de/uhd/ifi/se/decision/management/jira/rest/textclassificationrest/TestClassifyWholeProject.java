@@ -51,6 +51,7 @@ public class TestClassifyWholeProject extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExistsTextClassifierDisabledForProject() {
+		ConfigPersistenceManager.setTextClassifierActivated("TEST", false);
 		assertEquals(Status.FORBIDDEN.getStatusCode(),
 				classificationRest.classifyWholeProject(request, "TEST").getStatus());
 	}
