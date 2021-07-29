@@ -16,7 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
  * Contains the configuration details for change impact analysis (CIA) for one
- * Jira project (see {@link DecisionKnowledgeProject}).
+ * Jira project (see {@link DecisionKnowledgeProject}). The change impact is
+ * calculated by the {@link ChangeImpactAnalysisService}.
  */
 public class ChangeImpactAnalysisConfiguration {
 
@@ -28,7 +29,7 @@ public class ChangeImpactAnalysisConfiguration {
 
 	@JsonCreator
 	public ChangeImpactAnalysisConfiguration() {
-		decayValue = 0.75f;
+		decayValue = 0.25f;
 		threshold = 0.25f;
 		linkImpact = new HashMap<>();
 		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
