@@ -24,8 +24,14 @@ public class TestGetType extends TestSetUp {
 	}
 
 	@Test
-	public void testGetType() {
+	public void testGetTypeValid() {
 		assertEquals(LinkType.RELATE.toString(), link.getTypeAsString().toLowerCase());
+	}
+
+	@Test
+	public void testGetTypeNull() {
+		link.setType((LinkType) null);
+		assertEquals(LinkType.RELATE, link.getType());
 	}
 
 	@Test
