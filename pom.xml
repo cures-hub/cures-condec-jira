@@ -421,7 +421,7 @@
 	<properties>
         <jira.version>8.17.1</jira.version>
         <amps.version>8.3.0-128eead6d</amps.version>
-        <ao.version>3.3.2</ao.version>
+        <ao.version>3.4.0</ao.version>
         <jacoco-version>0.8.7</jacoco-version>
         <atlassian.spring.scanner.version>2.2.2</atlassian.spring.scanner.version>
         <!-- This key is also used in atlassian-plugin.xml -->
