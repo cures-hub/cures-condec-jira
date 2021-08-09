@@ -71,6 +71,8 @@
 	 * @param preferences the options set in the dashboard configuration
 	 */
 	function createRender(dashboard, viewIdentifier, dashboardAPI, preferences) {
+		dashboardAPI.showLoadingBar();
+
 		var sourceKnowledgeTypes = "";
 		if (preferences["sourceKnowledgeTypes"]) {
 			sourceKnowledgeTypes = preferences["sourceKnowledgeTypes"];
@@ -97,7 +99,6 @@
 			return;
 		}
 
-		dashboardAPI.showLoadingBar();
 		document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
 
 		dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);

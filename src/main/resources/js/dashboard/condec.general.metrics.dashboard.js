@@ -74,7 +74,7 @@
 		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue",
 			"", "#Commits per Jira Issue", commitsPerIssue);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary",
+		ConDecReqDash.initializeChart("piechartRich-ReqCodeSummary",
 			"", "#Requirements and Code Classes", reqCodeSummary);
 		ConDecReqDash.initializeChart("piechartRich-DecSources",
 			"", "#Rationale Elements per Origin", decSources);
