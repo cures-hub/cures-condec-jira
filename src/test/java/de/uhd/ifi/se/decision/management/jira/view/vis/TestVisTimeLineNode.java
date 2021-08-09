@@ -77,7 +77,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 		definitionOfDone.setMinimumDecisionsWithinLinkDistance(0);
 		FilterSettings filterSettings = new FilterSettings();
 		filterSettings.setDefinitionOfDone(definitionOfDone);
-		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(1);
+		filterSettings.setLinkDistance(1);
 		KnowledgeElement element = new KnowledgeElement();
 		element.setProject("TEST");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);

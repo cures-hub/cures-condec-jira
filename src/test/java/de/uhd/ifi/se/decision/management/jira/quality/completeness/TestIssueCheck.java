@@ -90,10 +90,21 @@ public class TestIssueCheck extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetFailedCriteria() {
+	public void testGetFailedCriteriaWithAlternative() {
 		// set criteria "issue has to be linked to alternative" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
+		issue.setStatus(KnowledgeStatus.RESOLVED);
+		assertTrue(issueCompletenessCheck.getQualityProblems(issue, definitionOfDone).isEmpty());
+		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetFailedCriteriaWithoutAlternative() {
+		// set criteria "issue has to be linked to alternative" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setIssueLinkedToAlternative(false);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertTrue(issueCompletenessCheck.getQualityProblems(issue, definitionOfDone).isEmpty());
 		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());

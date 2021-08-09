@@ -75,7 +75,7 @@ public class TestGetTreeViewer extends TestSetUp {
 	@Test
 	public void testFilterSettingsValidCiaRequest() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(2);
+		filterSettings.setLinkDistance(2);
 		filterSettings.setSelectedElement("TEST-12");
 		filterSettings.highlightChangeImpacts(true);
 		assertEquals(Status.OK.getStatusCode(), viewRest.getTreeViewer(request, filterSettings).getStatus());
