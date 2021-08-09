@@ -84,7 +84,14 @@ public class TestMetricCalculator extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testGetDefinitionOfDoneCheckResultsFail() {
-		assertEquals(calculator.getDefinitionOfDoneCheckResults().size(), 2);
+		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMaximumLinkDistanceToDecisions(6);
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(0);
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+		assertEquals((new GeneralMetricCalculator(user, filterSettings)).getDefinitionOfDoneCheckResults().size(), 2);
 	}
 
 }

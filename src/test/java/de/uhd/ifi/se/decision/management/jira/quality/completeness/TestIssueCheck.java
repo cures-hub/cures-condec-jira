@@ -116,6 +116,20 @@ public class TestIssueCheck extends TestSetUp {
 		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
 	}
 
+	@Test
+	@NonTransactional
+	public void testGetFailedCriteriaWithoutAlternativeLinked() {
+		// set criteria "issue has to be linked to alternative" in definition of done
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setIssueLinkedToAlternative(true);
+		issue.setStatus(KnowledgeStatus.RESOLVED);
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setProject(new DecisionKnowledgeProject("TEST"));
+		knowledgeElement.setType(KnowledgeType.ISSUE);
+		assertTrue(issueCompletenessCheck.getQualityProblems(knowledgeElement, definitionOfDone).isEmpty());
+		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
+	}
+
 	@After
 	public void tearDown() {
 		// restore default
