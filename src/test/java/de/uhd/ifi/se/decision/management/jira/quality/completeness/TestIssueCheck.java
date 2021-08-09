@@ -78,6 +78,15 @@ public class TestIssueCheck extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testIsNotLinkedToAlternative() {
+		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setType(KnowledgeType.ISSUE);
+
+		assertFalse(issueCompletenessCheck.execute(knowledgeElement));
+	}
+
+	@Test
+	@NonTransactional
 	public void testIsCompleteAccordingToSettings() {
 		// set criteria "issue has to be linked to alternative" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
@@ -104,7 +113,7 @@ public class TestIssueCheck extends TestSetUp {
 	public void testGetFailedCriteriaWithoutAlternative() {
 		// set criteria "issue has to be linked to alternative" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
-		definitionOfDone.setIssueLinkedToAlternative(false);
+		definitionOfDone.setIssueLinkedToAlternative(true);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertTrue(issueCompletenessCheck.getQualityProblems(issue, definitionOfDone).isEmpty());
 		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
