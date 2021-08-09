@@ -6,16 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -80,6 +76,7 @@ public class TestIssueCheck extends TestSetUp {
 	@NonTransactional
 	public void testIsNotLinkedToAlternative() {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
+		knowledgeElement.setProject(new DecisionKnowledgeProject("TEST"));
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
 		assertFalse(issueCompletenessCheck.execute(knowledgeElement));
