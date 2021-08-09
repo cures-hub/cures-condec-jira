@@ -97,7 +97,7 @@
 			return;
 		}
 
-		showDashboardSection("condec-dashboard-processing-", viewIdentifier);
+		dashboardAPI.showLoadingBar();
 		document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
 
 		dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);
@@ -120,6 +120,7 @@
 	 * @param filterSettings the filterSettings used in the REST-call
 	 */
 	ConDecDashboard.prototype.processData = function (error, result, dashboard, viewIdentifier, dashboardAPI, filterSettings) {
+		dashboardAPI.hideLoadingBar();
 		if (error) {
 			showDashboardSection("condec-dashboard-contents-data-error-", viewIdentifier);
 		} else {
@@ -247,7 +248,6 @@
 		document.getElementById("condec-dashboard-contents-container-" + viewIdentifier).classList.add(hiddenClass);
 		document.getElementById("condec-dashboard-contents-data-error-" + viewIdentifier).classList.add(hiddenClass);
 		document.getElementById("condec-dashboard-no-project-" + viewIdentifier).classList.add(hiddenClass);
-		document.getElementById("condec-dashboard-processing-" + viewIdentifier).classList.add(hiddenClass);
 		document.getElementById(elementId + viewIdentifier).classList.remove(hiddenClass);
 	}
 

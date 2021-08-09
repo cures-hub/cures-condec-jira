@@ -61,19 +61,28 @@
 		conArgumentDocumentedForDecision = data.conArgumentDocumentedForDecision;
 		proArgumentDocumentedForAlternative = data.proArgumentDocumentedForAlternative;
 
+		/* define color palette */
+		var colorPalette = ['#EE6666', '#91CC75'];
+
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartRich-IssuesSolvedByDecision",
-			"", "How many issues (=decision problems) are solved by a decision?", issuesSolvedByDecision);
-		ConDecReqDash.initializeChart("piechartRich-DecisionsSolvingIssues",
-			"", "For how many decisions is the issue (=decision problem) documented?", decisionsSolvingIssues);
-		ConDecReqDash.initializeChart("piechartRich-ProArgumentDocumentedForDecision",
-			"", "How many decisions have at least one pro argument documented?", proArgumentDocumentedForDecision);
-		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForDecision",
-			"", "How many decisions have at least one con argument documented?", conArgumentDocumentedForDecision);
-		ConDecReqDash.initializeChart("piechartRich-ProArgumentDocumentedForAlternative",
-			"", "How many alternatives have at least one pro argument documented?", proArgumentDocumentedForAlternative);
-		ConDecReqDash.initializeChart("piechartRich-ConArgumentDocumentedForAlternative",
-			"", "How many alternatives have at least one con argument documented?", conArgumentDocumentedForAlternative);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-IssuesSolvedByDecision",
+			"", "How many issues (=decision problems) are solved by a decision?", issuesSolvedByDecision,
+			colorPalette);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionsSolvingIssues",
+			"", "For how many decisions is the issue (=decision problem) documented?", decisionsSolvingIssues,
+			colorPalette);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForDecision",
+			"", "How many decisions have at least one pro argument documented?", proArgumentDocumentedForDecision,
+			colorPalette);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForDecision",
+			"", "How many decisions have at least one con argument documented?", conArgumentDocumentedForDecision,
+			colorPalette);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForAlternative",
+			"", "How many alternatives have at least one pro argument documented?", proArgumentDocumentedForAlternative,
+			colorPalette);
+		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForAlternative",
+			"", "How many alternatives have at least one con argument documented?", conArgumentDocumentedForAlternative,
+			colorPalette);
 	};
 
 	global.conDecRationaleCompletenessDashboard = new ConDecRationaleCompletenessDashboard();
