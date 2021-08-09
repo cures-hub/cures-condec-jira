@@ -80,7 +80,7 @@
 			"", "#Rationale Elements per Origin", decSources);
 		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences",
 			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
-		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
+		ConDecReqDash.initializeChart("piechartRich-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
 			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);

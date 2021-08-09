@@ -39,7 +39,7 @@ public class GeneralMetricCalculator {
 
 	private Map<String, Integer> numberOfCommentsPerIssue;
 	private Map<String, Integer> numberOfCommits;
-	private Map<String, Integer> distributionOfKnowledgeTypes;
+	private Map<String, String> distributionOfKnowledgeTypes;
 	private Map<String, String> reqAndClassSummary;
 	private Map<String, String> elementsFromDifferentOrigins;
 	private Map<String, Integer> numberOfRelevantComments;
@@ -77,18 +77,25 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
-	private Map<String, Integer> calculateDistributionOfKnowledgeTypes() {
+	private Map<String, String> calculateDistributionOfKnowledgeTypes() {
 		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
-		Map<String, Integer> distributionMap = new HashMap<>();
+		Map<String, String> distributionMap = new HashMap<>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			List<KnowledgeElement> elements = graph.getElements(type);
-			distributionMap.put(type.toString(), elements.size());
+			for (KnowledgeElement element : graph.getElements(type)) {
+				if (!distributionMap.containsKey(type.toString())) {
+					distributionMap.put(type.toString(), element.getKey() + " ");
+				}
+				else {
+					distributionMap.put(type.toString(),
+						distributionMap.get(type.toString()) + element.getKey() + " ");
+				}
+			}
 		}
 		return distributionMap;
 	}
 
 	private Map<String, String> calculateReqAndClassSummary() {
-		LOGGER.info("RequirementsDashboard getReqAndClassSummary 3");
+		LOGGER.info("GeneralMetricsCalculator getReqAndClassSummary");
 		Map<String, String> summaryMap = new HashMap<>();
 		StringBuilder requirements = new StringBuilder();
 		StringBuilder codeFiles = new StringBuilder();
@@ -176,7 +183,7 @@ public class GeneralMetricCalculator {
 	}
 
 	@JsonProperty("distributionOfKnowledgeTypes")
-	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
+	public Map<String, String> getDistributionOfKnowledgeTypes() {
 		return distributionOfKnowledgeTypes;
 	}
 
