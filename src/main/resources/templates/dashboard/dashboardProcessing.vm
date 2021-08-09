@@ -1,3 +1,0 @@
-<div id="condec-dashboard-processing-$viewIdentifier" class="condec-dashboard-contents waiting hidden">
-    $i18n.getText("condec.dashboard.requirements.project.processing")
-</div>
