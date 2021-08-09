@@ -222,7 +222,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testGetDefinitionOfDone() {
 		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
-		assertEquals(4, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
+		assertEquals(3, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 	}
 
 	@Test
@@ -233,7 +233,7 @@ public class TestFilterSettings extends TestSetUp {
 
 		// still default
 		assertEquals(2, filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
-		assertEquals(4, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
+		assertEquals(3, filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 	}
 
 	@Test
