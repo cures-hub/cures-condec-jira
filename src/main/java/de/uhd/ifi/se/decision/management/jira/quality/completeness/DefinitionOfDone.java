@@ -38,7 +38,7 @@ public class DefinitionOfDone {
 		this.issueIsLinkedToAlternative = false;
 		this.decisionIsLinkedToPro = false;
 		this.alternativeIsLinkedToArgument = false;
-		this.maximumLinkDistanceToDecisions = 4;
+		this.maximumLinkDistanceToDecisions = 3;
 		this.lineNumbersInCodeFile = 50;
 		this.minimumDecisionsWithinLinkDistance = 2;
 	}
