@@ -126,7 +126,7 @@ public class TestIssueCheck extends TestSetUp {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setProject(new DecisionKnowledgeProject("TEST"));
 		knowledgeElement.setType(KnowledgeType.ISSUE);
-		assertTrue(issueCompletenessCheck.getQualityProblems(knowledgeElement, definitionOfDone).isEmpty());
+		assertFalse(issueCompletenessCheck.getQualityProblems(knowledgeElement, definitionOfDone).isEmpty());
 		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
 	}
 
