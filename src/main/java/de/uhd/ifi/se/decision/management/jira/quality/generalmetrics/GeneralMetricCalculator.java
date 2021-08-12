@@ -48,7 +48,7 @@ public class GeneralMetricCalculator {
 	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
+	public GeneralMetricCalculator(FilterSettings filterSettings) {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.filterSettings = filterSettings;
 		this.graph = filteringManager.getFilteredGraph();
