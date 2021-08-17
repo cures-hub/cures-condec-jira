@@ -43,9 +43,7 @@ public class DashboardRest {
 					.build();
 		}
 
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
-		GeneralMetricCalculator generalMetricsCalculator = new GeneralMetricCalculator(user, filterSettings);
+		GeneralMetricCalculator generalMetricsCalculator = new GeneralMetricCalculator(filterSettings);
 
 		return Response.status(Status.OK).entity(generalMetricsCalculator).build();
 	}

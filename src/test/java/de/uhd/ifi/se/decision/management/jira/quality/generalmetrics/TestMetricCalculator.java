@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,10 +23,13 @@ public class TestMetricCalculator extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		init();
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		calculator = new GeneralMetricCalculator(user, filterSettings);
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMaximumLinkDistanceToDecisions(0);
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(1);
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+		calculator = new GeneralMetricCalculator(filterSettings);
 	}
 
 	@Test
@@ -74,6 +78,18 @@ public class TestMetricCalculator extends TestSetUpGit {
 	@NonTransactional
 	public void testGetDefinitionOfDoneCheckResults() {
 		assertEquals(calculator.getDefinitionOfDoneCheckResults().size(), 2);
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetDefinitionOfDoneCheckResultsFail() {
+		String projectKey = "TEST";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
+		definitionOfDone.setMaximumLinkDistanceToDecisions(6);
+		definitionOfDone.setMinimumDecisionsWithinLinkDistance(0);
+		filterSettings.setDefinitionOfDone(definitionOfDone);
+		assertEquals((new GeneralMetricCalculator(filterSettings)).getDefinitionOfDoneCheckResults().size(), 2);
 	}
 
 }

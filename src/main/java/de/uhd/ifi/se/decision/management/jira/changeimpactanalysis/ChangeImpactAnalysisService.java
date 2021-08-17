@@ -81,7 +81,7 @@ public class ChangeImpactAnalysisService {
 		KnowledgeElement root = filterSettings.getSelectedElement();
 		results.put(root, 1.0);
 		calculateImpactedKnowledgeElementsHelper(root, 1.0, filterSettings, results,
-				(long) filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
+				(long) filterSettings.getLinkDistance());
 		LOGGER.info("ConDec change impact analysis estimated {} impacted elements.", results.size());
 		return results;
 	}

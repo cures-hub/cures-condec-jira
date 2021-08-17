@@ -120,7 +120,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testLinkDistanceZero() {
-		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(0);
+		filterSettings.setLinkDistance(0);
 		filterSettings.setSelectedElementObject((KnowledgeElement) null);
 		treeViewer = new TreeViewer(filterSettings);
 		assertEquals(JiraIssues.getTestJiraIssueCount(), treeViewer.getNodes().size());

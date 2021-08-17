@@ -74,13 +74,13 @@
 		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue",
 			"", "#Commits per Jira Issue", commitsPerIssue);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartInteger-ReqCodeSummary",
+		ConDecReqDash.initializeChart("piechartRich-ReqCodeSummary",
 			"", "#Requirements and Code Classes", reqCodeSummary);
 		ConDecReqDash.initializeChart("piechartRich-DecSources",
 			"", "#Rationale Elements per Origin", decSources);
 		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences",
 			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
-		ConDecReqDash.initializeChart("piechartInteger-KnowledgeTypeDistribution",
+		ConDecReqDash.initializeChart("piechartRich-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
 		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
 			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);

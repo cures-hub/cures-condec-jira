@@ -38,23 +38,23 @@ public class GeneralMetricCalculator {
 	private CommentMetricCalculator commentMetricCalculator;
 
 	private Map<String, Integer> numberOfCommentsPerIssue;
-	private Map<String, Integer> distributionOfKnowledgeTypes;
-	private Map<String, Integer> reqAndClassSummary;
+	private Map<String, Integer> numberOfCommits;
+	private Map<String, String> distributionOfKnowledgeTypes;
+	private Map<String, String> reqAndClassSummary;
 	private Map<String, String> elementsFromDifferentOrigins;
 	private Map<String, Integer> numberOfRelevantComments;
-	private Map<String, Integer> numberOfCommits;
 	private Map<String, String> definitionOfDoneCheckResults;
 
 	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
-	public GeneralMetricCalculator(ApplicationUser user, FilterSettings filterSettings) {
+	public GeneralMetricCalculator(FilterSettings filterSettings) {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		this.filterSettings = filterSettings;
 		this.graph = filteringManager.getFilteredGraph();
 		this.knowledgeElements = graph.vertexSet();
 		this.jiraIssues = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey()).getJiraIssueManager()
-				.getAllJiraIssuesForProject();
+			.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 
 		this.numberOfCommentsPerIssue = calculateNumberOfCommentsPerIssue();
@@ -70,28 +70,47 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfCommentsPerIssue();
 	}
 
-	private Map<String, Integer> calculateDistributionOfKnowledgeTypes() {
+	private Map<String, Integer> calculateNumberOfCommits() {
+		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
+			return new HashMap<>();
+		}
+		return commentMetricCalculator.getNumberOfCommitsPerIssue();
+	}
+
+	private Map<String, String> calculateDistributionOfKnowledgeTypes() {
 		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
-		Map<String, Integer> distributionMap = new HashMap<>();
+		Map<String, String> distributionMap = new HashMap<>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			List<KnowledgeElement> elements = graph.getElements(type);
-			distributionMap.put(type.toString(), elements.size());
+			for (KnowledgeElement element : graph.getElements(type)) {
+				if (!distributionMap.containsKey(type.toString())) {
+					distributionMap.put(type.toString(), element.getKey() + " ");
+				}
+				else {
+					distributionMap.put(type.toString(),
+						distributionMap.get(type.toString()) + element.getKey() + " ");
+				}
+			}
 		}
 		return distributionMap;
 	}
 
-	private Map<String, Integer> calculateReqAndClassSummary() {
-		LOGGER.info("RequirementsDashboard getReqAndClassSummary 3");
-		Map<String, Integer> summaryMap = new HashMap<>();
-		int numberOfRequirements = 0;
+	private Map<String, String> calculateReqAndClassSummary() {
+		LOGGER.info("GeneralMetricsCalculator getReqAndClassSummary");
+		Map<String, String> summaryMap = new HashMap<>();
+		StringBuilder requirements = new StringBuilder();
+		StringBuilder codeFiles = new StringBuilder();
 		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
 		for (Issue issue : jiraIssues) {
 			if (requirementsTypes.contains(issue.getIssueType().getName())) {
-				numberOfRequirements++;
+				KnowledgeElement knowledgeElement = new KnowledgeElement(issue);
+				requirements.append(knowledgeElement.getKey()).append(" ");
 			}
 		}
-		summaryMap.put("Requirements", numberOfRequirements);
-		summaryMap.put("Code Files", graph.getElements(KnowledgeType.CODE).size());
+		for (KnowledgeElement knowledgeElement : graph.getElements(KnowledgeType.CODE)) {
+			codeFiles.append(filterSettings.getProjectKey()).append('-').append(knowledgeElement.getDescription()).append(" ");
+		}
+		summaryMap.put("Requirements", requirements.toString().trim());
+		summaryMap.put("Code Files", codeFiles.toString().trim());
 		return summaryMap;
 	}
 
@@ -134,13 +153,6 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfRelevantComments();
 	}
 
-	private Map<String, Integer> calculateNumberOfCommits() {
-		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
-			return new HashMap<>();
-		}
-		return commentMetricCalculator.getNumberOfCommitsPerIssue();
-	}
-
 	private Map<String, String> calculateDefinitionOfDoneCheckResults() {
 		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
 		Map<String, String> resultMap = new HashMap<>();
@@ -165,13 +177,18 @@ public class GeneralMetricCalculator {
 		return numberOfCommentsPerIssue;
 	}
 
+	@JsonProperty("numberOfCommits")
+	public Map<String, Integer> getNumberOfCommits() {
+		return numberOfCommits;
+	}
+
 	@JsonProperty("distributionOfKnowledgeTypes")
-	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
+	public Map<String, String> getDistributionOfKnowledgeTypes() {
 		return distributionOfKnowledgeTypes;
 	}
 
 	@JsonProperty("reqAndClassSummary")
-	public Map<String, Integer> getReqAndClassSummary() {
+	public Map<String, String> getReqAndClassSummary() {
 		return reqAndClassSummary;
 	}
 
@@ -183,11 +200,6 @@ public class GeneralMetricCalculator {
 	@JsonProperty("numberOfRelevantComments")
 	public Map<String, Integer> getNumberOfRelevantComments() {
 		return numberOfRelevantComments;
-	}
-
-	@JsonProperty("numberOfCommits")
-	public Map<String, Integer> getNumberOfCommits() {
-		return numberOfCommits;
 	}
 
 	@JsonProperty("definitionOfDoneCheckResults")

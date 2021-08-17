@@ -88,7 +88,7 @@ public class TestTreant extends TestSetUp {
 	@NonTransactional
 	public void testConstructorFiltered() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "?jql=project=TEST");
-		filterSettings.getDefinitionOfDone().setMaximumLinkDistanceToDecisions(3);
+		filterSettings.setLinkDistance(3);
 		filterSettings.setSelectedElement("TEST-30");
 		this.treant = new Treant(filterSettings);
 		assertNotNull(this.treant);

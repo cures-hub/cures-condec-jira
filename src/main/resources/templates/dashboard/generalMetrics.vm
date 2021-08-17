@@ -10,10 +10,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     </div>
     <div id="boxplot-CommentsPerJiraIssue" class="boxplot"></div>
     <div id="boxplot-CommitsPerJiraIssue" class="boxplot"></div>
-    <div id="piechartInteger-ReqCodeSummary" class="piechart"></div>
+    <div id="piechartRich-ReqCodeSummary" class="piechart"></div>
     <div id="piechartRich-DecSources" class="piechart"></div>
     <div id="piechartInteger-RelevantSentences" class="piechart"></div>
-    <div id="piechartInteger-KnowledgeTypeDistribution" class="piechart"></div>
+    <div id="piechartRich-KnowledgeTypeDistribution" class="piechart"></div>
     <div id="piechartRich-DoDCheck" class="piechart"></div>
 </div>
 
