@@ -130,7 +130,7 @@
 		<dependency>
 			<groupId>com.atlassian.sal</groupId>
 			<artifactId>sal-api</artifactId>
-			<version>4.5.2</version>
+			<version>4.5.3</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Servlets -->
@@ -186,13 +186,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.12.3</version>
+			<version>2.12.4</version>
 		</dependency>
 		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.31</version>
+			<version>1.7.32</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Active Objects to store model objects via object relational mapping -->
@@ -421,9 +421,9 @@
 	<properties>
         <jira.version>8.17.1</jira.version>
         <amps.version>8.3.0-128eead6d</amps.version>
-        <ao.version>3.3.2</ao.version>
+        <ao.version>3.4.0</ao.version>
         <jacoco-version>0.8.7</jacoco-version>
-        <atlassian.spring.scanner.version>2.2.2</atlassian.spring.scanner.version>
+        <atlassian.spring.scanner.version>2.2.3</atlassian.spring.scanner.version>
         <!-- This key is also used in atlassian-plugin.xml -->
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
