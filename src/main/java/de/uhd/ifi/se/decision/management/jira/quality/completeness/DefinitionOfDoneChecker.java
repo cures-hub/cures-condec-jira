@@ -203,7 +203,7 @@ public class DefinitionOfDoneChecker {
 			qualityProblems.add(QualityProblem.INCOMPLETE_KNOWLEDGE_LINKED);
 		}
 
-		if (knowledgeElement.getType().isDecisionKnowledge()) {
+		if (knowledgeElementCheckMap.containsKey(knowledgeElement.getType())) {
 			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
 			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
