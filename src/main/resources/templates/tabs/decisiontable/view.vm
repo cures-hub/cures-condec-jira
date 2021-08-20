@@ -1,4 +1,4 @@
-#set ($viewIdentifier = "decision-table")	
+#set ($viewIdentifier = "criteria-matrix")	
 #parse("templates/filter/allCriteria.vm")
 #parse("templates/tabs/decisiontable/decisionTable.vm")
 <script>
@@ -6,13 +6,13 @@
 $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
+    	if (!isOnceClicked && event.target.href.includes("#criteria-matrix-tab")) {
     		conDecDecisionTable.initView(true);
 			isOnceClicked = true;
 		}
 	});
     AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#decision-table-tab")) {
+    	if (!isOnceClicked && event.target.href.includes("#criteria-matrix-tab")) {
             conDecDecisionTable.initView();
             isOnceClicked = true;
         }

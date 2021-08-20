@@ -16,10 +16,10 @@
             <a href="#graph-$viewIdentifier" title="vis.js">Graph Visualization</a>
         </li>
         <li class="menu-item">
-            <a href="#matrix-$viewIdentifier">$i18n.getText('condec.label.matrix')</a>
+            <a href="#adjacency-matrix-$viewIdentifier">$i18n.getText('condec.label.adjacency.matrix')</a>
         </li>
         <li class="menu-item">
-            <a href="#decision-table-$viewIdentifier">Decision Table</a>
+            <a href="#criteria-matrix-$viewIdentifier">$i18n.getText('condec.label.criteria.matrix')</a>
         </li>
         <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
             <a href="#quality-check-$viewIdentifier">$i18n.getText('condec.label.quality')</a>
@@ -32,10 +32,10 @@
      </div>
      <div class="tabs-pane" id="graph-$viewIdentifier">
      </div>
-     <div class="tabs-pane" id="matrix-$viewIdentifier">
+     <div class="tabs-pane" id="adjacency-matrix-$viewIdentifier">
          #parse("templates/tabs/matrix/matrix.vm")
      </div>
-     <div class="tabs-pane" id="decision-table-$viewIdentifier">
+     <div class="tabs-pane" id="criteria-matrix-$viewIdentifier">
          #parse("templates/tabs/decisiontable/decisionTable.vm")
      </div>
      <div class="tabs-pane" id="quality-check-$viewIdentifier">

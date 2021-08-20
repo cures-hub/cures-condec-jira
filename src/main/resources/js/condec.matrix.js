@@ -9,6 +9,8 @@
  * Is referenced in HTML by: matrix.vm
  */
 (function(global) {
+	
+	const viewIdentifier = "adjacency-matrix";
 
 	var ConDecMatrix = function ConDecMatrix() {
 		this.headerElementsWithHighlighting = [];
@@ -20,15 +22,15 @@
 
 		// Fill HTML elements for filter criteria and add on click listener
 		if (isJiraIssueView) {
-			conDecFiltering.fillFilterElements("matrix");
-			document.getElementById("is-transitive-links-input-matrix").checked = true;
-			document.getElementById("is-decision-knowledge-only-input-matrix").checked = true;
+			conDecFiltering.fillFilterElements(viewIdentifier);
+			document.getElementById("is-transitive-links-input-" + viewIdentifier).checked = true;
+			document.getElementById("is-decision-knowledge-only-input-" + viewIdentifier).checked = true;
 		} else {
-			conDecFiltering.fillFilterElements("matrix", ["Decision"]);
-			conDecFiltering.fillDatePickers("matrix", 120);
+			conDecFiltering.fillFilterElements(viewIdentifier, ["Decision"]);
+			conDecFiltering.fillDatePickers(viewIdentifier, 120);
 		}
-		conDecFiltering.addOnClickEventToFilterButton("matrix", conDecMatrix.buildMatrix);
-		conDecFiltering.addOnClickEventToChangeImpactButton("matrix", conDecMatrix.buildMatrix);
+		conDecFiltering.addOnClickEventToFilterButton(viewIdentifier, conDecMatrix.buildMatrix);
+		conDecFiltering.addOnClickEventToChangeImpactButton(viewIdentifier, conDecMatrix.buildMatrix);
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -40,7 +42,7 @@
 	/*
 	 * external references: condec.knowledge.page.js and condec.rationale.backlog.js
 	 */
-	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "matrix") {
+	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "adjacency-matrix") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			conDecMatrix.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
 
@@ -93,7 +95,7 @@
 	}
 
 	ConDecMatrix.prototype.updateView = function() {
-		document.getElementById("filter-button-matrix").click();
+		document.getElementById("filter-button-" + viewIdentifier).click();
 	};
 
 	function newTableHeaderCell(knowledgeElementWithColors, styleClass) {
@@ -108,7 +110,7 @@
 		});
 		headerCell.addEventListener("click", function(event) {
 			event.preventDefault();
-			document.getElementById("selected-element-matrix").innerText = knowledgeElement.key;
+			document.getElementById("selected-element-" + viewIdentifier).innerText = knowledgeElement.key;
 		});
 		const div = document.createElement("div");
 		div.innerText = knowledgeElement.type + ": " + knowledgeElement.summary;

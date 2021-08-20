@@ -1,4 +1,4 @@
-#set ($viewIdentifier = "matrix")
+#set ($viewIdentifier = "adjacency-matrix")
 #parse("templates/filter/allCriteria.vm")
 <div class="aui-group" id="legend"></div>
 <div class="aui-group">
@@ -9,13 +9,13 @@
 $(document).ready(function () {
 	var isOnceClicked = false;
 	AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#matrix-tab")) {
+    	if (!isOnceClicked && event.target.href.includes("#adjacency-matrix-tab")) {
     		conDecMatrix.initView(true);
 			isOnceClicked = true;
 		}
 	});
 	AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
-    	if (!isOnceClicked && event.target.href.includes("#matrix-tab")) {
+    	if (!isOnceClicked && event.target.href.includes("#adjacency-matrix-tab")) {
     		conDecMatrix.initView();
 			isOnceClicked = true;
 		}
