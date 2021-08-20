@@ -165,7 +165,7 @@ public class GeneralMetricCalculator {
 			}
 		}
 		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess.toString().trim());
-		resultMap.put("Definition of Done Failed", elementsWithDoDCheckFail.toString().trim());
+		resultMap.put("Definition of Done Violated", elementsWithDoDCheckFail.toString().trim());
 
 		return resultMap;
 	}

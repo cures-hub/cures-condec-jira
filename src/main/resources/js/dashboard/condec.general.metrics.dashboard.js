@@ -23,6 +23,7 @@
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
 	ConDecGeneralMetricsDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+		delete filterSettings.definitionOfDone;
 		conDecDashboardAPI.getGeneralMetrics(filterSettings, function (error, result) {
 			conDecDashboard.processData(error, result, conDecGeneralMetricsDashboard,
 				"general-metrics", dashboardAPI);
