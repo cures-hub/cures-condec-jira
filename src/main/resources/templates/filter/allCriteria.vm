@@ -1,4 +1,4 @@
-#set($viewsWithChangeImpactHighlighting = ["jstree", "graph", "matrix"])
+#set($viewsWithChangeImpactHighlighting = ["jstree", "graph", "adjacency-matrix"])
 #set($viewsWithoutLinkVisualization = ["chronology"])
 #set($viewsWithVisGraph = ["graph", "rationale-backlog", "overview"])
 <div class="aui-toolbar2" role="toolbar">
@@ -21,7 +21,7 @@
 				#parse("templates/filter/isTransitiveLinks.vm")		
 			#end 
 			#parse("templates/filter/isDecisionKnowledgeOnly.vm")    
-			#if($viewIdentifier == "decision-table")
+			#if($viewIdentifier == "criteria-matrix")
 				<select class="select long-field" id="decision-problem-dropdown"></select>         
 			#end			
 		</div>   

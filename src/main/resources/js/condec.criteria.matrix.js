@@ -1,4 +1,6 @@
 (function(global) {
+	
+	const viewIdentifier = "criteria-matrix";
 
 	let ConDecDecisionTable = function ConDecDecisionTable() {
 	};
@@ -8,16 +10,16 @@
 
 	ConDecDecisionTable.prototype.initView = function(isJiraIssueView = false) {
 		// Fill HTML elements for filter criteria
-		conDecFiltering.fillFilterElements("decision-table");
-		conDecFiltering.initDropdown("status-dropdown-decision-table", conDecAPI.issueStatus);
+		conDecFiltering.fillFilterElements(viewIdentifier);
+		conDecFiltering.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.issueStatus);
 
 		if (!isJiraIssueView) {
-			document.getElementById("link-distance-input-label-decision-table").remove();
-			document.getElementById("link-distance-input-decision-table").remove();
+			document.getElementById("link-distance-input-label-" + viewIdentifier).remove();
+			document.getElementById("link-distance-input-" + viewIdentifier).remove();
 		}
 
 		// Add on click listeners to filter button
-		conDecFiltering.addOnClickEventToFilterButton("decision-table", conDecDecisionTable.updateView);
+		conDecFiltering.addOnClickEventToFilterButton(viewIdentifier, conDecDecisionTable.updateView);
 		this.addOnClickEventToDecisionTableButtons();
 
 		// Register/subscribe this view as an observer
@@ -35,7 +37,7 @@
 		return currentIssue;
 	};
 
-	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function(viewIdentifier = "decision-table") {
+	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function(viewIdentifier = "criteria-matrix") {
 		document.getElementById("add-criterion-button-" + viewIdentifier).addEventListener("click", function(event) {
 			conDecDecisionTable.showAddCriteriaToDecisionTableDialog(viewIdentifier);
 		});
@@ -49,9 +51,9 @@
    */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function() {
 		console.log("conDecDecisionTable loadDecisionProblems");
-		var filterSettings = conDecFiltering.getFilterSettings("decision-table");
+		var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 		conDecAPI.getDecisionProblems(filterSettings, (decisionProblems) =>
-			fillDecisionProblemDropDown(decisionProblems, "decision-table"));
+			fillDecisionProblemDropDown(decisionProblems, viewIdentifier));
 	};
 
 	/**
