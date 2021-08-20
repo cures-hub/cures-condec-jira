@@ -387,6 +387,7 @@
 	function getFilterSettings(preferences) {
 		var filterSettings = {};
 		filterSettings.definitionOfDone = {};
+		filterSettings.searchTerm = "";
 
 		setFilterSetting("projectKey", "projectKey", null, filterSettings, preferences);
 		setFilterSetting("minimumDecisionsWithinLinkDistance", "minimumDecisionCoverage", "DoD", filterSettings, preferences);

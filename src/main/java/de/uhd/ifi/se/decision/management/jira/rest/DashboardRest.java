@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -11,10 +10,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
@@ -27,12 +24,12 @@ import de.uhd.ifi.se.decision.management.jira.quality.generalmetrics.GeneralMetr
 public class DashboardRest {
 
 	/**
-	 * Get general metrics for the elements of the knowledge graph filtered by the filter settings.
+	 * Get general metrics for the elements of the knowledge graph filtered by the
+	 * filter settings.
 	 *
 	 * @param request
 	 * @param filterSettings
-	 * @return GeneralMetricsCalculator
-	 * An object containing the metrics.
+	 * @return GeneralMetricsCalculator An object containing the metrics.
 	 */
 	@Path("/generalMetrics")
 	@POST
@@ -42,20 +39,18 @@ public class DashboardRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 					.build();
 		}
-
 		GeneralMetricCalculator generalMetricsCalculator = new GeneralMetricCalculator(filterSettings);
 
 		return Response.status(Status.OK).entity(generalMetricsCalculator).build();
 	}
 
 	/**
-	 * Get metrics about the intra-rationale completeness for the elements of the knowledge graph filtered
-	 * by the filter settings.
+	 * Get metrics about the intra-rationale completeness for the elements of the
+	 * knowledge graph filtered by the filter settings.
 	 *
 	 * @param request
 	 * @param filterSettings
-	 * @return RationaleCompletenessCalculator
-	 * An object containing the metrics.
+	 * @return RationaleCompletenessCalculator An object containing the metrics.
 	 */
 	@Path("/rationaleCompleteness")
 	@POST
@@ -66,20 +61,19 @@ public class DashboardRest {
 					.build();
 		}
 
-		RationaleCompletenessCalculator rationaleCompletenessCalculator =
-			new RationaleCompletenessCalculator(filterSettings);
+		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(
+				filterSettings);
 
 		return Response.status(Status.OK).entity(rationaleCompletenessCalculator).build();
 	}
 
 	/**
-	 * Get metrics about the rationale coverage for the elements of the knowledge graph filtered
-	 * by the filter settings.
+	 * Get metrics about the rationale coverage for the elements of the knowledge
+	 * graph filtered by the filter settings.
 	 *
 	 * @param request
 	 * @param filterSettings
-	 * @return RationaleCoverageCalculator
-	 * An object containing the metrics.
+	 * @return RationaleCoverageCalculator An object containing the metrics.
 	 */
 	@Path("/rationaleCoverage")
 	@POST
@@ -91,7 +85,8 @@ public class DashboardRest {
 					.build();
 		}
 
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings, sourceKnowledgeTypes);
+		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings,
+				sourceKnowledgeTypes);
 
 		return Response.status(Status.OK).entity(rationaleCoverageCalculator).build();
 	}

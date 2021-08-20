@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -54,7 +53,7 @@ public class GeneralMetricCalculator {
 		this.graph = filteringManager.getFilteredGraph();
 		this.knowledgeElements = graph.vertexSet();
 		this.jiraIssues = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey()).getJiraIssueManager()
-			.getAllJiraIssuesForProject();
+				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 
 		this.numberOfCommentsPerIssue = calculateNumberOfCommentsPerIssue();
@@ -84,10 +83,8 @@ public class GeneralMetricCalculator {
 			for (KnowledgeElement element : graph.getElements(type)) {
 				if (!distributionMap.containsKey(type.toString())) {
 					distributionMap.put(type.toString(), element.getKey() + " ");
-				}
-				else {
-					distributionMap.put(type.toString(),
-						distributionMap.get(type.toString()) + element.getKey() + " ");
+				} else {
+					distributionMap.put(type.toString(), distributionMap.get(type.toString()) + element.getKey() + " ");
 				}
 			}
 		}
@@ -107,7 +104,8 @@ public class GeneralMetricCalculator {
 			}
 		}
 		for (KnowledgeElement knowledgeElement : graph.getElements(KnowledgeType.CODE)) {
-			codeFiles.append(filterSettings.getProjectKey()).append('-').append(knowledgeElement.getDescription()).append(" ");
+			codeFiles.append(filterSettings.getProjectKey()).append('-').append(knowledgeElement.getDescription())
+					.append(" ");
 		}
 		summaryMap.put("Requirements", requirements.toString().trim());
 		summaryMap.put("Code Files", codeFiles.toString().trim());
@@ -167,7 +165,7 @@ public class GeneralMetricCalculator {
 			}
 		}
 		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess.toString().trim());
-		resultMap.put("Definition of Done Failed", elementsWithDoDCheckFail.toString().trim());
+		resultMap.put("Definition of Done Violated", elementsWithDoDCheckFail.toString().trim());
 
 		return resultMap;
 	}
