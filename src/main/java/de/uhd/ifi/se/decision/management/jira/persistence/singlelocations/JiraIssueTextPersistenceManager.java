@@ -297,28 +297,34 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (parentElement == null) {
 			return insertKnowledgeElement(element, user);
 		}
+		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			PartOfJiraIssueText parentSentence = (PartOfJiraIssueText) getKnowledgeElement(parentElement);
+			MutableComment existingComment = parentSentence.getComment();
+			if (existingComment != null) {
+				String commentText = existingComment.getBody();
+				StringBuffer stringBuffer = new StringBuffer(commentText);
+				stringBuffer.insert(parentSentence.getEndPosition(), "\n" + getTextInComment(element));
+				existingComment.setBody(stringBuffer.toString());
+				ComponentAccessor.getCommentManager().update(existingComment, true);
+				return element;
+			}
+		}
 		Issue jiraIssue = parentElement.getJiraIssue();
 		if (jiraIssue == null) {
 			return null;
 		}
-		Comment comment = createCommentInJiraIssue(element, jiraIssue, user);
-		return insertKnowledgeElement(getFirstPartOfTextInComment(comment), user);
-	}
-
-	public static PartOfJiraIssueText getFirstPartOfTextInComment(Comment comment) {
-		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfJiraIssueText> partsOfText = new JiraIssueTextParser(projectKey).getPartsOfText(comment.getBody());
-		if (partsOfText.isEmpty()) {
-			return null;
-		}
-		partsOfText.get(0).setComment(comment);
-		return partsOfText.get(0);
+		createCommentInJiraIssue(element, jiraIssue, user);
+		return element;
 	}
 
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
+		String text = getTextInComment(element);
+		return ComponentAccessor.getCommentManager().create(jiraIssue, user, text, true);
+	}
+
+	private String getTextInComment(KnowledgeElement element) {
 		String tag = element.getType().getTag();
-		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
-		return ComponentAccessor.getCommentManager().create(jiraIssue, user, text, false);
+		return tag + element.getSummary() + "\n" + element.getDescription() + tag;
 	}
 
 	@Override
