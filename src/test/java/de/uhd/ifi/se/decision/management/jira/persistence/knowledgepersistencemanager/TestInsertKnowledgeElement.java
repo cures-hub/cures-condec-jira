@@ -67,5 +67,7 @@ public class TestInsertKnowledgeElement extends TestSetUp {
 		element.setProject("TEST");
 		element.setDocumentationLocation("s");
 		element = knowledgePersistenceManager.insertKnowledgeElement(element, user, parentElement);
+		// id is not updated here because the event listener creates the new element
+		assertTrue(element.getId() == 0);
 	}
 }
