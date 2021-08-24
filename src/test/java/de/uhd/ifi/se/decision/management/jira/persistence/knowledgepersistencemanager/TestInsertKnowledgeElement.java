@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager;
 
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,5 +45,29 @@ public class TestInsertKnowledgeElement extends TestSetUp {
 		element.setDocumentationLocation("s");
 		element = knowledgePersistenceManager.insertKnowledgeElement(element, user, parentElement);
 		assertTrue(element.getId() > 0);
+	}
+
+	@Test
+	@NonTransactional
+	public void testParentElementInvalid() {
+		KnowledgeElement parentElement = new KnowledgeElement(42, "NOTEXISTING", "i");
+		KnowledgeElement element = JiraIssues.getSentencesForCommentText("Test comments").get(0);
+		element.setProject("TEST");
+		element.setDocumentationLocation("s");
+		element = knowledgePersistenceManager.insertKnowledgeElement(element, user, parentElement);
+		assertNull(element);
+	}
+
+	@Test
+	@NonTransactional
+	public void testElementValidUserValidButAlreadyInsertedByEventListener() {
+		KnowledgeElement parentElement = KnowledgeElements.getTestKnowledgeElement();
+		KnowledgeElement element = JiraIssues.getSentencesForCommentText("Test comments").get(0);
+		element.setId(0);
+		element.setProject("TEST");
+		element.setDocumentationLocation("s");
+		element = knowledgePersistenceManager.insertKnowledgeElement(element, user, parentElement);
+		// id is not updated here because the event listener creates the new element
+		assertTrue(element.getId() == 0);
 	}
 }
