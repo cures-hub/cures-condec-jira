@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.knowledgepersistencemanager;
 
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class TestInsertKnowledgeElement extends TestSetUp {
 		element.setProject("TEST");
 		element.setDocumentationLocation("s");
 		element = knowledgePersistenceManager.insertKnowledgeElement(element, user, parentElement);
-		assertNull(element);
+		assertNull(element.getLink(parentElement));
 	}
 
 	@Test

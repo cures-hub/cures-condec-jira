@@ -294,37 +294,38 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element == null || user == null) {
 			return null;
 		}
-		if (parentElement == null) {
+		if (parentElement == null || parentElement.getJiraIssue() == null) {
 			return insertKnowledgeElement(element, user);
 		}
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			PartOfJiraIssueText parentSentence = (PartOfJiraIssueText) getKnowledgeElement(parentElement);
 			MutableComment existingComment = parentSentence.getComment();
 			if (existingComment != null) {
-				String commentText = existingComment.getBody();
-				StringBuffer stringBuffer = new StringBuffer(commentText);
-				stringBuffer.insert(parentSentence.getEndPosition(), "\n" + getTextInComment(element));
+				StringBuffer stringBuffer = new StringBuffer(existingComment.getBody());
+				stringBuffer.insert(parentSentence.getEndPosition(), "\n" + getTextWithTags(element));
 				existingComment.setBody(stringBuffer.toString());
 				ComponentAccessor.getCommentManager().update(existingComment, true);
-				return element;
+			} else {
+				StringBuffer stringBuffer = new StringBuffer(parentSentence.getJiraIssueDescription());
+				stringBuffer.insert(parentSentence.getEndPosition(), "\n" + getTextWithTags(element));
+				JiraIssuePersistenceManager.updateDescription(parentSentence.getJiraIssue(), stringBuffer.toString(),
+						user);
 			}
+		} else {
+			createCommentInJiraIssue(element, parentElement.getJiraIssue(), user);
 		}
-		Issue jiraIssue = parentElement.getJiraIssue();
-		if (jiraIssue == null) {
-			return null;
-		}
-		createCommentInJiraIssue(element, jiraIssue, user);
+
 		return element;
 	}
 
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
-		String text = getTextInComment(element);
+		String text = getTextWithTags(element);
 		return ComponentAccessor.getCommentManager().create(jiraIssue, user, text, true);
 	}
 
-	private String getTextInComment(KnowledgeElement element) {
+	private String getTextWithTags(KnowledgeElement element) {
 		String tag = element.getType().getTag();
-		return tag + element.getSummary() + "\n" + element.getDescription() + tag;
+		return tag + element.getSummary() + " " + element.getDescription() + tag;
 	}
 
 	@Override
