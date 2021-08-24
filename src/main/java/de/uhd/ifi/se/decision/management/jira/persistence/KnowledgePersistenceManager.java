@@ -441,7 +441,9 @@ public class KnowledgePersistenceManager {
 			return null;
 		}
 		KnowledgeElement elementWithId = persistenceManager.insertKnowledgeElement(element, user, parentElement);
-		KnowledgeGraph.getInstance(projectKey).addVertex(elementWithId);
+		if (elementWithId != null && elementWithId.getId() > 0) {
+			KnowledgeGraph.getInstance(projectKey).addVertex(elementWithId);
+		}
 		return elementWithId;
 	}
 
