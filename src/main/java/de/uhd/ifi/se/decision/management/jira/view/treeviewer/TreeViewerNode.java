@@ -55,7 +55,8 @@ public class TreeViewerNode {
 			a_attr = ImmutableMap.of("title", knowledgeElement.getDescription());
 		}
 		a_attr = ImmutableMap.of("title",
-				knowledgeElement.getDescription() != null ? knowledgeElement.getDescription() : "");
+				knowledgeElement.getDescription() != null ? knowledgeElement.getDescription() : "", "style",
+				"color:" + knowledgeElement.getStatus().getColor());
 		li_attr = ImmutableMap.of("class", "issue");
 		if (knowledgeElement instanceof PartOfJiraIssueText) {
 			li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + knowledgeElement.getId());
