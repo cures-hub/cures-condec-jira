@@ -10,6 +10,7 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -50,11 +51,12 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	private String getCommentBody(String body, RenderContext renderContext, KnowledgeType knowledgeType,
 			String colorCode) {
 		String icon = getIconHTML(knowledgeType);
-		long elementId = getElementId(renderContext, body, knowledgeType);
+		KnowledgeElement element = getElement(renderContext, body, knowledgeType);
 		long jiraIssueId = getJiraIssueId(renderContext);
-		String eventCode = getOnContextMenuEventListener(elementId, jiraIssueId);
-		return "<p " + eventCode + "style='background-color:" + colorCode + "; padding:3px;'>" + icon + " "
-		+ body.replace("<p>", "").replace("</p>", "") + "</p>";
+		String eventCode = element != null ? getOnContextMenuEventListener(element.getId(), jiraIssueId) : "";
+		String statusColor = element != null ? " color:" + element.getStatus().getColor() : "";
+		return "<p " + eventCode + "style='background-color:" + colorCode + "; padding:3px;" + statusColor + "'>" + icon
+				+ " " + body.replace("<p>", "").replace("</p>", "") + "</p>";
 	}
 
 	private String getIconHTML(KnowledgeType knowledgeType) {
@@ -79,23 +81,19 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	 * @param type
 	 * @return the js context menu call for comment tab panel
 	 */
-	protected long getElementId(RenderContext renderContext, String body, KnowledgeType type) {
-		long id = 0;
+	protected KnowledgeElement getElement(RenderContext renderContext, String body, KnowledgeType type) {
 		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
 			String projectKey = getProjectKey(renderContext);
 			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
 					.getJiraIssueTextManager();
 			String summary = body.replace("<p>", "").replace("</p>", "").trim().replaceAll("<[^>]*>", "");
 			long jiraIssueId = getJiraIssueId(renderContext);
-			id = persistenceManager.getIdOfElement(summary, jiraIssueId, type);
+			return persistenceManager.getElement(summary, jiraIssueId, type);
 		}
-		return id;
+		return null;
 	}
 
 	private String getOnContextMenuEventListener(long id, long jiraIssueId) {
-		if (id <= 0) {
-			return "";
-		}
 		return "id=\"commentnode-" + id + "\" oncontextmenu=\"conDecContextMenu.createContextMenu(" + id
 				+ ",'s',this,null," + jiraIssueId + ",'i'); return false;\" ";
 	}

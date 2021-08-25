@@ -35,97 +35,97 @@ public class TestGetIdOfElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeNullKeyNull() {
-		assertEquals(0, manager.getIdOfElement(null, -1, null));
+		assertEquals(0, manager.getElement(null, -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeNullKeyNull() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, null));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeNullKeyNull() {
-		assertEquals(0, manager.getIdOfElement(null, 0, null));
+		assertEquals(0, manager.getElement(null, 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeNullKeyNull() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, null));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeFilledKeyNull() {
-		assertEquals(0, manager.getIdOfElement(null, -1, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement(null, -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeFilledKeyNull() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeFilledKeyNull() {
-		assertEquals(0, manager.getIdOfElement(null, 0, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement(null, 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeFilledKeyNull() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeNullKeyFilled() {
-		assertEquals(0, manager.getIdOfElement(null, -1, null));
+		assertEquals(0, manager.getElement(null, -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeNullKeyFilled() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, null));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", -1, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeNullKeyFilled() {
-		assertEquals(0, manager.getIdOfElement(null, 0, null));
+		assertEquals(0, manager.getElement(null, 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeNullKeyFilled() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, null));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", 0, null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeFilledKeyFilled() {
-		assertEquals(0, manager.getIdOfElement(null, -1, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement(null, -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdLessTypeFilledKeyFilled() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", -1, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", -1, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdZeroTypeFilledKeyFilled() {
-		assertEquals(0, manager.getIdOfElement(null, 0, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement(null, 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdZeroTypeFilledKeyFilled() {
-		assertEquals(0, manager.getIdOfElement("This is a comment for test purposes", 0, KnowledgeType.ISSUE));
+		assertEquals(0, manager.getElement("This is a comment for test purposes", 0, KnowledgeType.ISSUE));
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class TestGetIdOfElement extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertKnowledgeElement(comment.get(1), null);
-		assertEquals(0, manager.getIdOfElement("Not the right Body", comment.get(0).getJiraIssue().getId(),
+		assertEquals(0, manager.getElement("Not the right Body", comment.get(0).getJiraIssue().getId(),
 				KnowledgeType.ISSUE));
 	}
 
@@ -145,6 +145,6 @@ public class TestGetIdOfElement extends TestSetUp {
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		manager.insertKnowledgeElement(comment.get(1), null);
 		assertEquals(3,
-				manager.getIdOfElement("testobject", comment.get(0).getJiraIssue().getId(), KnowledgeType.ISSUE));
+				manager.getElement("testobject", comment.get(0).getJiraIssue().getId(), KnowledgeType.ISSUE));
 	}
 }

@@ -243,21 +243,21 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            documented in.
 	 * @param type
 	 *            {@link KnowledgeType} of the element.
-	 * @return id of the decision knowledge element documented in the description or
-	 *         comments of a Jira issue with the summary and type.
+	 * @return decision knowledge element documented in the description or comments
+	 *         of a Jira issue with the summary and type.
 	 */
-	public long getIdOfElement(String summary, long jiraIssueId, KnowledgeType type) {
+	public KnowledgeElement getElement(String summary, long jiraIssueId, KnowledgeType type) {
 		if (summary == null || jiraIssueId <= 0 || type == null || summary.isBlank()) {
-			return 0;
+			return null;
 		}
 		List<KnowledgeElement> sentences = getElementsWithTypeInJiraIssue(jiraIssueId, type);
 		for (KnowledgeElement sentence : sentences) {
 			if (sentence.getSummary().trim().equalsIgnoreCase(summary)) {
-				return sentence.getId();
+				return sentence;
 			}
 		}
 		LOGGER.debug("Nothing found for: " + summary);
-		return 0;
+		return null;
 	}
 
 	/**
