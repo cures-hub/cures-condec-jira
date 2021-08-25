@@ -80,3 +80,15 @@
 .vis-item.dodViolation {
 	color: crimson;
 }
+
+.vis-item.challenged {
+	color: crimson;
+}
+
+.vis-item.discarded {
+	color: gray;
+}
+
+.vis-item.rejected {
+	color: gray;
+}
