@@ -22,7 +22,7 @@ public class ElementWithHighlighting {
 
 	public ElementWithHighlighting(KnowledgeElement element) {
 		this.element = element;
-		this.qualityColor = "#000000";
+		this.qualityColor = element.getStatus().getColor();
 		this.qualityProblemExplanation = "";
 		this.changeImpactColor = "#FFFFFF";
 	}

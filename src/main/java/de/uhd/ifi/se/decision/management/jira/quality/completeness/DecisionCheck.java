@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -37,6 +38,10 @@ public class DecisionCheck implements KnowledgeElementCheck {
 
 		if (!hasIssue()) {
 			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_ISSUE);
+		}
+
+		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
+			qualityProblems.add(QualityProblem.DECISION_IS_CHALLENGED);
 		}
 
 		if (!hasPro(definitionOfDone)) {

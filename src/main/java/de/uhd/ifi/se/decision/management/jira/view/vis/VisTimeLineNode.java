@@ -54,6 +54,7 @@ public class VisTimeLineNode {
 			end = DATEFORMAT.format(element.getUpdatingDate());
 		}
 		className = element.getTypeAsString().toLowerCase();
+		className += " " + element.getStatusAsString();
 		title = element.getDescription();
 		documentationLocation = element.getDocumentationLocation().getIdentifier();
 

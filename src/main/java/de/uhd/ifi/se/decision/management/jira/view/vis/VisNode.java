@@ -54,7 +54,7 @@ public class VisNode {
 		group = determineGroup(element);
 		title = element.getTypeAsString().toUpperCase() + System.lineSeparator() + element.getKey() + ": "
 				+ element.getSummary() + System.lineSeparator() + element.getDescription();
-		font = ImmutableMap.of("color", "black");
+		font = ImmutableMap.of("color", element.getStatus().getColor());
 		if (filterSettings.areQualityProblemHighlighted()) {
 			String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element, filterSettings);
 			if (!problemExplanation.isEmpty()) {

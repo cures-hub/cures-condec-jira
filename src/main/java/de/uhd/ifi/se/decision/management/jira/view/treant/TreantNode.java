@@ -75,6 +75,7 @@ public class TreantNode {
 				knowledgeElement.getDocumentationLocationAsString(), "status", knowledgeElement.getStatusAsString(),
 				"desc", knowledgeElement.getKey());
 		htmlClass = knowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
+		htmlClass += " " + knowledgeElement.getStatusAsString();
 		link = new HashMap<>();
 		if (knowledgeElement.getDescription() != null) {
 			link.put("title", knowledgeElement.getDescription());
