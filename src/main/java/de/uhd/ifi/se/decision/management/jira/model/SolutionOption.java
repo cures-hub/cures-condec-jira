@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
  * Models a solution option for a decision problem (i.e. an alternative, a
  * decision, a solution, or a claim). Enables to easily retrieve the
  * {@link Argument}s for the solution option
- * ({@link SolutionOption#getArguments()}).
+ * ({@link SolutionOption#getArguments()}). Extends the generic
+ * {@link KnowledgeElement} class.
  * 
  * @see KnowledgeType
  */
@@ -29,6 +30,7 @@ public class SolutionOption extends KnowledgeElement {
 		this.id = alternative.getId();
 		this.type = alternative.getType();
 		this.setSummary(alternative.getSummary());
+		this.status = alternative.getStatus();
 		this.documentationLocation = alternative.getDocumentationLocation();
 	}
 

@@ -233,7 +233,7 @@
 			let content = `${image} ${alternative.summary}`;
 
 			rowElement.innerHTML += `<td>
-				<div class="alternative" id="${alternative.id}">${content}</div></td>`;
+				<div class="alternative ${alternative.status}" id="${alternative.id}">${content}</div></td>`;
 			if (criteria.length > 0) {
 				for (criterion of criteria) {
 					rowElement.innerHTML += `<td id="cell${alternative.id}:${criterion.id}" headers="${criterion.summary}" class="droppable"></td>`;

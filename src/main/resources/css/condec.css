@@ -109,3 +109,19 @@ a:focus a:hover {
 .discarded td {
   background: #e8e8e8;
 }
+
+.dodViolation {
+	color: crimson;
+}
+
+.challenged {
+	color: crimson;
+}
+
+.rejected {
+	color: gray;
+}
+
+.discarded {
+	color: gray;
+}

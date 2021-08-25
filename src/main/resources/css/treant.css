@@ -34,18 +34,6 @@
 	background-color: rgb(255, 255, 255);
 }
 
-.dodViolation {
-	color: crimson;
-}
-
-.rejected {
-	color: gray;
-}
-
-.discarded {
-	color: gray;
-}
-
 .Treant {
 	position: relative;
 	overflow: hidden;
