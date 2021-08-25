@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
 
@@ -68,7 +68,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetClassNameWithQualityHighlightingDoDViolated() {
-		assertEquals(element.getTypeAsString().toLowerCase() + " dodViolation", timeNode.getClassName());
+		assertEquals(element.getTypeAsString().toLowerCase() + "unresolved dodViolation", timeNode.getClassName());
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		timeNode = new VisTimeLineNode(element, true, true, filterSettings);
 		assertEquals(element.getSummary(), timeNode.getTitle());
-		assertEquals("other", timeNode.getClassName());
+		assertEquals("other undefined", timeNode.getClassName());
 	}
 
 	@Test
@@ -91,7 +91,8 @@ public class TestVisTimeLineNode extends TestSetUp {
 		FilterSettings filterSettings = new FilterSettings();
 		filterSettings.highlightQualityProblems(false);
 		timeNode = new VisTimeLineNode(element, true, false, filterSettings);
-		assertEquals(element.getTypeAsString().toLowerCase(), timeNode.getClassName());
+		assertEquals(element.getTypeAsString().toLowerCase() + " " + element.getStatusAsString(),
+				timeNode.getClassName());
 	}
 
 	@Test
