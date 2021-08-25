@@ -199,6 +199,6 @@ public class TestTreantNode extends TestSetUp {
 	public void testAreQualityProblemHighlightedTrue() {
 		filterSettings.highlightQualityProblems(true);
 		this.node = new TreantNode(element, true, filterSettings, isHyperlinked);
-		assertEquals("rationale dodViolation", node.getHtmlClass());
+		assertEquals("rationale undefined dodViolation", node.getHtmlClass());
 	}
 }

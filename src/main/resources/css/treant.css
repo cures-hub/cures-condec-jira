@@ -38,6 +38,18 @@
 	color: crimson;
 }
 
+.challenged {
+	color: crimson;
+}
+
+.rejected {
+	color: gray;
+}
+
+.discarded {
+	color: gray;
+}
+
 .Treant {
 	position: relative;
 	overflow: hidden;
