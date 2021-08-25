@@ -88,7 +88,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 					.getJiraIssueTextManager();
 			String summary = body.replace("<p>", "").replace("</p>", "").trim().replaceAll("<[^>]*>", "");
 			long jiraIssueId = getJiraIssueId(renderContext);
-			return persistenceManager.getElement(summary, jiraIssueId, type);
+			return persistenceManager.getElementBySummaryAndTypeInJiraIssue(summary, jiraIssueId, type);
 		}
 		return null;
 	}
