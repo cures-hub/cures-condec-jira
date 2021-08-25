@@ -33,7 +33,7 @@ public class TestMatrix extends TestSetUp {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.highlightQualityProblems(false);
 		matrix = new Matrix(filterSettings);
-		assertEquals("#000000", matrix.getHeaderElementsWithHighlighting().iterator().next().getQualityColor());
+		assertEquals("crimson", matrix.getHeaderElementsWithHighlighting().iterator().next().getQualityColor());
 	}
 
 	@Test

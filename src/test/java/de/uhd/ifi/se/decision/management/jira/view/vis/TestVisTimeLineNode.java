@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 
@@ -68,7 +68,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetClassNameWithQualityHighlightingDoDViolated() {
-		assertEquals(element.getTypeAsString().toLowerCase() + "unresolved dodViolation", timeNode.getClassName());
+		assertEquals(element.getTypeAsString().toLowerCase() + " unresolved dodViolation", timeNode.getClassName());
 	}
 
 	@Test
