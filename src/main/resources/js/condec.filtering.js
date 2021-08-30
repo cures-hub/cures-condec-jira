@@ -85,6 +85,24 @@
 		});
 	};
 
+	/**
+	 * Inits the button to create a new unlinked element (Jira issue persistence must be 
+	 * activated by the rationale manager for this to work).
+	 */
+	ConDecFiltering.prototype.addOnClickEventToCreateElementButton = function(viewIdentifier, callback) {
+		var createElementButton = document.getElementById("create-element-button-" + viewIdentifier);
+		var elementInputField = document.getElementById("create-element-input-field-" + viewIdentifier);
+		var selectField = document.getElementById("select-single-element-type-" + viewIdentifier);
+		addOnClickEventToButton(createElementButton, viewIdentifier, function() {
+			var summary = elementInputField.value;
+			var type = selectField.value;
+			elementInputField.value = "";
+			conDecAPI.createDecisionKnowledgeElement(summary, "", type, "i", 0, null, function(id) {
+				callback();
+			});
+		});
+	};
+
 	function addOnClickEventToButton(button, viewIdentifier, callback) {
 		button.addEventListener("click", function(event) {
 			var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
@@ -254,6 +272,7 @@
 			selectedKnowledgeTypes, ["Other", "Code"]);
 		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 			selectedKnowledgeTypes, ["Other", "Code"]);
+		this.initSingleSelect("select-single-element-type-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), ["Issue"]);
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
@@ -273,8 +292,7 @@
 		dropdown.innerHTML = "";
 		if (items !== undefined && items !== null && items.length > 0) {
 			for (var index = 0; index < items.length; index++) {
-				var isSelected = "";
-				isSelected = "checked";
+				var isSelected = "checked";
 				if (selectedItems !== undefined && selectedItems !== null) {
 					if (!selectedItems.includes(items[index])) {
 						isSelected = "";
@@ -290,6 +308,25 @@
 			}
 		}
 		return dropdown;
+	};
+
+	ConDecFiltering.prototype.initSingleSelect = function(selectId, items, selectedItems) {
+		selectField = document.getElementById(selectId);
+		if (selectField === null || selectField === undefined) {
+			return null;
+		}
+		selectField.innerHTML = "";
+		for (var index = 0; index < items.length; index++) {
+			var isSelected = "selected";
+			if (selectedItems !== undefined && selectedItems !== null) {
+				if (!selectedItems.includes(items[index])) {
+					isSelected = "";
+				}
+			}
+			selectField.insertAdjacentHTML("beforeend", "<option "
+				+ isSelected + " value='" + items[index] + "'>" + items[index] + "</option>");
+		}
+		return selectField;
 	};
 
 	/**

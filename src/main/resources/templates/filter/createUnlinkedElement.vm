@@ -1,0 +1,5 @@
+<select id="select-single-element-type-$viewIdentifier" class="select medium-field"></select>
+<input type="text" class="text long-field" id="create-element-input-field-$viewIdentifier" 
+	placeholder="$i18n.getText('condec.create.label')"/>
+<input type="button" id="create-element-button-$viewIdentifier"
+    class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>

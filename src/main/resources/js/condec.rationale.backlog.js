@@ -15,7 +15,8 @@
 		
 		// Add on click listeners to filter button
      	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecRationaleBacklog.updateView);
-		conDecDecisionTable.addOnClickEventToDecisionTableButtons("rationale-backlog");	
+     	conDecFiltering.addOnClickEventToCreateElementButton("rationale-backlog", conDecRationaleBacklog.updateView);
+     	conDecDecisionTable.addOnClickEventToDecisionTableButtons("rationale-backlog");	
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
@@ -30,6 +31,11 @@
 
 	function updateView(nodeId) {		
 		var filterSettings = conDecFiltering.getFilterSettings("rationale-backlog");
+		
+		var isOnlyFlatListInput = document.getElementById("is-only-flat-list-input-rationale-backlog");
+		if (isOnlyFlatListInput.checked) {
+			filterSettings.linkDistance = 0; // to speed-up loading
+		}
 		
 		filterSettings.isOnlyDecisionKnowledgeShown = false; // since this only applies on right side
 		filterSettings.selectedElement = null; // we want to have a list of elements on the left

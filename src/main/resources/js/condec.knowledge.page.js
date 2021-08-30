@@ -27,51 +27,25 @@
 	};
 
 	ConDecKnowledgePage.prototype.fetchAndRender = function() {
-		conDecFiltering.fillFilterElements("overview");
-
-		var knowledgeTypes = conDecAPI.getKnowledgeTypes();
-		for (var index = 0; index < knowledgeTypes.length; index++) {
-			var isSelected = "";
-			const urlParams = new URLSearchParams(window.location.href);
-			if (urlParams.has("codeFileName")) {
-				if (knowledgeTypes[index] === "Code") {
-					isSelected = "selected ";
-				}
-			} else if (urlParams.has("type")) {
-				if (knowledgeTypes[index] === urlParams.get("type")) {					
-					isSelected = "selected ";
-				}
-			} else {
-				if (knowledgeTypes[index] === "Issue") {
-					isSelected = "selected ";
-				}
-			}
-			jQuery("select[name='knowledge-type-dropdown-overview']")[0].insertAdjacentHTML("beforeend", "<option "
-				+ isSelected + " value='" + knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
+		var selectedKnowledgeTypes = [];
+		const urlParams = new URLSearchParams(window.location.href);
+		if (urlParams.has("codeFileName")) {
+			selectedKnowledgeTypes.push("Code");
+		} else if (urlParams.has("type")) {
+			selectedKnowledgeTypes.push(urlParams.get("type"));
+		} else {
+			selectedKnowledgeTypes.push("Issue");
 		}
-
-		var createElementButton = document.getElementById("create-element-button");
-		var elementInputField = document.getElementById("element-input-field");
-		conDecAPI.isJiraIssueDocumentationLocationActivated(function(isEnabled) {
-			if (isEnabled) {
-				createElementButton.addEventListener("click", function() {
-					var summary = elementInputField.value;
-					var type = jQuery("select[name='knowledge-type-dropdown-overview']").val();
-					elementInputField.value = "";
-					conDecAPI.createDecisionKnowledgeElement(summary, "", type, "i", 0, null, function(id) {
-						updateView(id, treant, treeViewer);
-					});
-				});
-			} else {
-				createElementButton.style.display = "none";
-				elementInputField.style.display = "none";
-			}
-		});
+		conDecFiltering.fillFilterElements("overview", selectedKnowledgeTypes);
 
 		// Add on click listeners to filter button
 		conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);
+		conDecFiltering.addOnClickEventToCreateElementButton("overview", conDecKnowledgePage.updateView);
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
+		// Speed up view loading per default
+		document.getElementById("is-only-flat-list-input-overview").checked = true;
+		
 		this.updateView();
 	};
 
@@ -81,9 +55,10 @@
 
 	function updateView(nodeId) {
 		var filterSettings = conDecFiltering.getFilterSettings("overview");
-		var knowledgeType = jQuery("select[name='knowledge-type-dropdown-overview']").val();
-		filterSettings.knowledgeTypes = [knowledgeType];
-		filterSettings.linkDistance = 0; // to speed-up loading
+		var isOnlyFlatListInput = document.getElementById("is-only-flat-list-input-overview");
+		if (isOnlyFlatListInput.checked) {
+			filterSettings.linkDistance = 0; // to speed-up loading
+		}
 		filterSettings.isOnlyDecisionKnowledgeShown = false; // since this only applies on right side
 		filterSettings.selectedElement = null; // we want to have a list of elements on the left
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");

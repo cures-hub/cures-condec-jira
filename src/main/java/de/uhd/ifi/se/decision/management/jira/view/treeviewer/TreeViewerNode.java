@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -48,7 +50,13 @@ public class TreeViewerNode {
 	public TreeViewerNode(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		this();
 		id = "tv" + knowledgeElement.getId();
-		text = knowledgeElement.getSummary();
+		/**
+		 * @issue How can we prevent that special characters are not displayed correctly
+		 *        in some views such as the indented outline created with jstree?
+		 * @decision Escape the charater in a String using HTML entities to prevent that
+		 *           they are not displayed correctly in some views!
+		 */
+		text = StringEscapeUtils.escapeHtml(knowledgeElement.getSummary());
 		icon = KnowledgeType.getIconUrl(knowledgeElement);
 		element = knowledgeElement;
 		if (element.getDescription() != null) {
