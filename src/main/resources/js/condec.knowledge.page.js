@@ -26,7 +26,7 @@
 		this.fetchAndRender();
 	};
 
-	ConDecKnowledgePage.prototype.fetchAndRender = function() {		
+	ConDecKnowledgePage.prototype.fetchAndRender = function() {
 		var selectedKnowledgeTypes = [];
 		const urlParams = new URLSearchParams(window.location.href);
 		if (urlParams.has("codeFileName")) {
@@ -35,7 +35,7 @@
 			selectedKnowledgeTypes.push(urlParams.get("type"));
 		} else {
 			selectedKnowledgeTypes.push("Issue");
-		}		
+		}
 		conDecFiltering.fillFilterElements("overview", selectedKnowledgeTypes);
 
 		// Add on click listeners to filter button
@@ -43,6 +43,9 @@
 		conDecFiltering.addOnClickEventToCreateElementButton("overview", conDecKnowledgePage.updateView);
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
+		// Speed up view loading per default
+		document.getElementById("is-only-flat-list-input-overview").checked = true;
+		
 		this.updateView();
 	};
 
@@ -52,7 +55,10 @@
 
 	function updateView(nodeId) {
 		var filterSettings = conDecFiltering.getFilterSettings("overview");
-		filterSettings.linkDistance = 0; // to speed-up loading
+		var isOnlyFlatListInput = document.getElementById("is-only-flat-list-input-overview");
+		if (isOnlyFlatListInput.checked) {
+			filterSettings.linkDistance = 0; // to speed-up loading
+		}
 		filterSettings.isOnlyDecisionKnowledgeShown = false; // since this only applies on right side
 		filterSettings.selectedElement = null; // we want to have a list of elements on the left
 		conDecTreeViewer.buildTreeViewer(filterSettings, "#jstree", "#search-input-overview", "jstree");

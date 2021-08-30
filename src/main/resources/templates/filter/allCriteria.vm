@@ -1,6 +1,7 @@
 #set($viewsWithChangeImpactHighlighting = ["jstree", "graph", "adjacency-matrix"])
 #set($viewsWithoutLinkVisualization = ["chronology"])
 #set($viewsWithVisGraph = ["graph", "rationale-backlog", "overview"])
+#set($viewsWithTreeViewer = ["rationale-backlog", "overview"])
 <div class="aui-toolbar2" role="toolbar">
 	<form class="aui">	
 		<div class="condec-filter">  
@@ -33,6 +34,9 @@
 			#if($viewIdentifier == "chronology")
 				#parse("templates/filter/chronologyElementPlacement.vm")
 			#end	
+			#if ($viewsWithTreeViewer.contains($viewIdentifier))
+				#parse("templates/filter/isOnlyFlatListShown.vm")
+			#end
 		</div>
 		<div id="quality-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
 		    #parse("templates/filter/qualityHighlightingCriteria.vm")	
@@ -41,16 +45,12 @@
 		    #parse("templates/filter/changeImpactAnalysisCriteria.vm")
 		</div>
 		<div id="element-creation-$viewIdentifier" class="aui-expander-content condec-filter">        
-		    <select id="select-single-element-type-$viewIdentifier"	class="select medium-field"></select>
-            <input type="text" class="text long-field"
-           		id="create-element-input-field-$viewIdentifier" placeholder="$i18n.getText('condec.create.label')"/>
-			<input type="button" id="create-element-button-$viewIdentifier"
-           		class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
+			#parse("templates/filter/createUnlinkedElement.vm")
 		</div>
 		<div class="condec-filter" style="float:right; margin-bottom:4px;"> 
 			<a data-replace-text="$i18n.getText('condec.label.less.filter.criteria')" class="aui-expander-trigger" 
 				aria-controls="management-filter-$viewIdentifier">$i18n.getText('condec.label.more.filter.criteria')</a> 
-			#if ($viewIdentifier == "overview" || $viewIdentifier == "rationale-backlog")
+			#if ($viewsWithTreeViewer.contains($viewIdentifier))
 			--- <a data-replace-text="$i18n.getText('condec.dialog.create')" class="aui-expander-trigger" 
 				aria-controls="element-creation-$viewIdentifier">$i18n.getText('condec.dialog.create')</a> 
 			#end

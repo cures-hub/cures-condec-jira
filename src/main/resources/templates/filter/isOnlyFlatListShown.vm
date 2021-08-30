@@ -1,0 +1,4 @@
+<div class="condec-filter-criterion">
+    <label for="is-only-flat-list-input-$viewIdentifier">Flat List</label>
+    <input type="checkbox" id="is-only-flat-list-input-$viewIdentifier"/>
+</div>
