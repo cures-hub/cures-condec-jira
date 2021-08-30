@@ -38,26 +38,9 @@
 		}		
 		conDecFiltering.fillFilterElements("overview", selectedKnowledgeTypes);
 
-		var createElementButton = document.getElementById("create-element-button");
-		var elementInputField = document.getElementById("element-input-field");
-		conDecAPI.isJiraIssueDocumentationLocationActivated(function(isEnabled) {
-			if (isEnabled) {
-				createElementButton.addEventListener("click", function() {
-					var summary = elementInputField.value;
-					var type = document.getElementById("select-single-element-type-overview").value;
-					elementInputField.value = "";
-					conDecAPI.createDecisionKnowledgeElement(summary, "", type, "i", 0, null, function(id) {
-						updateView(id, treant, treeViewer);
-					});
-				});
-			} else {
-				createElementButton.style.display = "none";
-				elementInputField.style.display = "none";
-			}
-		});
-
 		// Add on click listeners to filter button
 		conDecFiltering.addOnClickEventToFilterButton("overview", conDecKnowledgePage.updateView);
+		conDecFiltering.addOnClickEventToCreateElementButton("overview", conDecKnowledgePage.updateView);
 		conDecDecisionTable.addOnClickEventToDecisionTableButtons("overview");
 
 		this.updateView();

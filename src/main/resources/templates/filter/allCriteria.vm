@@ -43,8 +43,8 @@
 		<div id="element-creation-$viewIdentifier" class="aui-expander-content condec-filter">        
 		    <select id="select-single-element-type-$viewIdentifier"	class="select medium-field"></select>
             <input type="text" class="text long-field"
-           		id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
-			<input type="button" id="create-element-button"
+           		id="create-element-input-field-$viewIdentifier" placeholder="$i18n.getText('condec.create.label')"/>
+			<input type="button" id="create-element-button-$viewIdentifier"
            		class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
 		</div>
 		<div class="condec-filter" style="float:right; margin-bottom:4px;"> 
