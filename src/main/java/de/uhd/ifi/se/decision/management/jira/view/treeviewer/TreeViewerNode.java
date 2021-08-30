@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -48,7 +50,7 @@ public class TreeViewerNode {
 	public TreeViewerNode(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
 		this();
 		id = "tv" + knowledgeElement.getId();
-		text = knowledgeElement.getSummary();
+		text = StringEscapeUtils.escapeHtml(knowledgeElement.getSummary());
 		icon = KnowledgeType.getIconUrl(knowledgeElement);
 		element = knowledgeElement;
 		if (element.getDescription() != null) {
