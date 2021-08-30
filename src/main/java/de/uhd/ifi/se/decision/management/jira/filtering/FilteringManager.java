@@ -79,8 +79,12 @@ public class FilteringManager {
 		}
 		filteredGraph.removeAllVertices(elementsNotMatchingFilterSettings);
 
-		if (filterSettings.getSelectedElement() != null && filterSettings.createTransitiveLinks()) {
-			addTransitiveLinksToFilteredGraph(filteredGraph);
+		if (filterSettings.getSelectedElement() != null) {
+			filteredGraph = filteredGraph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
+					filterSettings.getLinkDistance());
+			if (filterSettings.createTransitiveLinks()) {
+				addTransitiveLinksToFilteredGraph(filteredGraph);
+			}
 		}
 
 		removeLinksWithTypesNotInFilterSettings(filteredGraph);
