@@ -1,5 +1,5 @@
 (function(global) {
-	
+
 	const viewIdentifier = "criteria-matrix";
 
 	let ConDecDecisionTable = function ConDecDecisionTable() {
@@ -230,7 +230,10 @@
 				image = `<img src="${alternative.image}"</img>`;
 			}
 
-			let content = `${image} ${alternative.summary}`;
+			let content = image + " " + alternative.summary
+				.replace(/&/g, "&amp;")
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;");
 
 			rowElement.innerHTML += `<td>
 				<div class="alternative ${alternative.status}" id="${alternative.id}">${content}</div></td>`;

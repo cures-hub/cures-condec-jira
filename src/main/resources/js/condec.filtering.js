@@ -254,6 +254,7 @@
 			selectedKnowledgeTypes, ["Other", "Code"]);
 		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
 			selectedKnowledgeTypes, ["Other", "Code"]);
+		this.initSingleSelect("select-single-element-type-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), ["Issue"]);
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
@@ -273,8 +274,7 @@
 		dropdown.innerHTML = "";
 		if (items !== undefined && items !== null && items.length > 0) {
 			for (var index = 0; index < items.length; index++) {
-				var isSelected = "";
-				isSelected = "checked";
+				var isSelected = "checked";
 				if (selectedItems !== undefined && selectedItems !== null) {
 					if (!selectedItems.includes(items[index])) {
 						isSelected = "";
@@ -290,6 +290,24 @@
 			}
 		}
 		return dropdown;
+	};
+
+	ConDecFiltering.prototype.initSingleSelect = function(selectId, items, selectedItems) {
+		selectField = document.getElementById(selectId);
+		if (selectField === null || selectField === undefined) {
+			return null;
+		}
+		selectField.innerHTML = "";
+		for (var index = 0; index < items.length; index++) {
+			var isSelected = "selected";
+			if (selectedItems !== undefined && selectedItems !== null) {
+				if (!selectedItems.includes(items[index])) {
+					isSelected = "";
+				}
+			}
+			selectField.insertAdjacentHTML("beforeend", "<option "
+				+ isSelected + " value='" + items[index] + "'>" + items[index] + "</option>");
+		}
 	};
 
 	/**
