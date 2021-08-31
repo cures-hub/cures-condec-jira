@@ -11,7 +11,6 @@
 		// Fill filter elements
 		conDecFiltering.fillFilterElements("rationale-backlog", ["Alternative", "Decision", "Issue", "Argument"]);
 		conDecFiltering.initDropdown("status-dropdown-rationale-backlog", conDecAPI.rationaleBacklogItemStatus);
-		conDecFiltering.fillDatePickers("rationale-backlog", 30);
 		
 		// Add on click listeners to filter button
      	conDecFiltering.addOnClickEventToFilterButton("rationale-backlog", conDecRationaleBacklog.updateView);
