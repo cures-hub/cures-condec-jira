@@ -72,12 +72,13 @@ public class TestGetFilteredGraph extends TestSetUp {
 
 	@Test
 	public void testTransitiveLinksEnabled() {
-		filterSettings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
+		filterSettings.setSelectedElement("TEST-1");
+		filterSettings.setKnowledgeTypes(Set.of("Task", "Decision", "Alternative"));
 		filterSettings.setCreateTransitiveLinks(true);
-		filterSettings.setLinkDistance(4);
+		filterSettings.setLinkDistance(5);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();
-		assertEquals(4, subgraph.edgeSet().size());
+		assertEquals(7, subgraph.edgeSet().size());
 
 		Set<Link> transitiveLinks = new HashSet<Link>(subgraph.edgeSet());
 		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
@@ -101,7 +102,7 @@ public class TestGetFilteredGraph extends TestSetUp {
 	@Test
 	public void testTransitiveLinksNoSelectedElement() {
 		filterSettings.setSelectedElementObject((KnowledgeElement) null);
-		filterSettings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Issue", "Argument", "Pro", "Con")));
+		filterSettings.setKnowledgeTypes(new HashSet<String>(Arrays.asList("Work Item", "Decision")));
 		filterSettings.setCreateTransitiveLinks(true);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();

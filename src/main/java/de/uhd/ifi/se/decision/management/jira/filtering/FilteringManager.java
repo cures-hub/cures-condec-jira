@@ -80,10 +80,11 @@ public class FilteringManager {
 		filteredGraph.removeAllVertices(elementsNotMatchingFilterSettings);
 
 		if (filterSettings.getSelectedElement() != null) {
-			filteredGraph = filteredGraph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
-					filterSettings.getLinkDistance());
 			if (filterSettings.createTransitiveLinks()) {
 				addTransitiveLinksToFilteredGraph(filteredGraph);
+			} else {
+				filteredGraph = filteredGraph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
+						filterSettings.getLinkDistance());
 			}
 		}
 
