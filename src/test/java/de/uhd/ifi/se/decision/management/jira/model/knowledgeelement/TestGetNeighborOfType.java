@@ -30,4 +30,10 @@ public class TestGetNeighborOfType extends TestSetUp {
 	public void testHasNoNeighborOfType() {
 		assertFalse(element.hasNeighborOfType(KnowledgeType.PRO));
 	}
+
+	@Test
+	public void testProjectKeyNull() {
+		KnowledgeElement element = new KnowledgeElement();
+		assertFalse(element.hasNeighborOfType(KnowledgeType.ISSUE));
+	}
 }
