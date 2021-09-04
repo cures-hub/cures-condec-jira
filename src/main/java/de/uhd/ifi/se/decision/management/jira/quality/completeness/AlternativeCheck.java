@@ -21,7 +21,7 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return hasIssue();
+		return hasDecisionProblem();
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (!hasIssue()) {
+		if (!hasDecisionProblem()) {
 			qualityProblems.add(QualityProblem.ALTERNATIVE_DOESNT_HAVE_ISSUE);
 		}
 
@@ -46,16 +46,16 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 		return qualityProblems;
 	}
 
-	private boolean hasIssue() {
-		return alternative.hasNeighborOfType(KnowledgeType.ISSUE);
+	private boolean hasDecisionProblem() {
+		return !alternative.getLinkedDecisionProblems().isEmpty();
 	}
 
 	private boolean hasArgument(DefinitionOfDone definitionOfDone) {
 		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
 		if (hasToBeLinkedToArgument) {
 			return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
-				|| alternative.hasNeighborOfType(KnowledgeType.PRO)
-				|| alternative.hasNeighborOfType(KnowledgeType.CON);
+					|| alternative.hasNeighborOfType(KnowledgeType.PRO)
+					|| alternative.hasNeighborOfType(KnowledgeType.CON);
 		}
 		return true;
 	}

@@ -22,7 +22,7 @@ public class DecisionCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToDefault() {
-		return hasIssue();
+		return hasDecisionProblem();
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class DecisionCheck implements KnowledgeElementCheck {
 
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
-		if (!hasIssue()) {
+		if (!hasDecisionProblem()) {
 			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_ISSUE);
 		}
 
@@ -51,8 +51,8 @@ public class DecisionCheck implements KnowledgeElementCheck {
 		return qualityProblems;
 	}
 
-	private boolean hasIssue() {
-		return decision.hasNeighborOfType(KnowledgeType.ISSUE);
+	private boolean hasDecisionProblem() {
+		return !decision.getLinkedDecisionProblems().isEmpty();
 	}
 
 	private boolean hasPro(DefinitionOfDone definitionOfDone) {

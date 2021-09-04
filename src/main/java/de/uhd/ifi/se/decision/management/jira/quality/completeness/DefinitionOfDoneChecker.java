@@ -23,7 +23,9 @@ public class DefinitionOfDoneChecker {
 
 	private static final Map<KnowledgeType, KnowledgeElementCheck> knowledgeElementCheckMap = Map.ofEntries(
 			entry(KnowledgeType.DECISION, new DecisionCheck()), //
+			entry(KnowledgeType.SOLUTION, new DecisionCheck()), //
 			entry(KnowledgeType.ISSUE, new IssueCheck()), //
+			entry(KnowledgeType.PROBLEM, new IssueCheck()), //
 			entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()), //
 			entry(KnowledgeType.ARGUMENT, new ArgumentCheck()), //
 			entry(KnowledgeType.PRO, new ArgumentCheck()), //
