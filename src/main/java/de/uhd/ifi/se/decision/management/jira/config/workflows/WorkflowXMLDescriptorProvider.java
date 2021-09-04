@@ -13,7 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 /**
  * @issue How can we create workflows (i.e. status of knowledge elements and
  *        their transitions) programmatically?
- * @issue How can we read XML files from the resources folder?
+ * @decision We programmatically create workflows of decision knowledge elements
+ *           when the plugin is installed using XML descriptors!
  */
 public class WorkflowXMLDescriptorProvider {
 

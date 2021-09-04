@@ -18,7 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 public class TestGetAllDecisionGroups extends TestSetUp {
 
 	protected ConfigRest configRest;
-	private String projectKey;
 
 	@Before
 	public void setUp() {
@@ -28,19 +27,17 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 		String summary = "Test";
 		String description = "Test";
 		KnowledgeType type = KnowledgeType.SOLUTION;
-		this.projectKey = "TEST";
 		String key = "Test";
 
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
-				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
+		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, "TEST", key,
+				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 		DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
 	}
 
 	@Test
 	public void testGetAllDecisionGroups() {
-		Response response = configRest.getAllDecisionGroups(this.projectKey);
+		Response response = configRest.getAllDecisionGroups("TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-		assertEquals("[TestGroup1]", response.getEntity().toString());
 	}
 
 }
