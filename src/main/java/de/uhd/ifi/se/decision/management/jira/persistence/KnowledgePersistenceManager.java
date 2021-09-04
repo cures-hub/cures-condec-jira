@@ -27,9 +27,13 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * locations for a given project.
  *
  * @issue How can we integrate knowledge from different documentation locations?
- * @alternative Use the decorator design pattern to integrate persistence
- *              managers for different documentation locations!
- * @alternative Manually implement methods such as getKnowledgeElements!
+ * @decision We add an attribute for the persistence manager of each
+ *           documentation location and iterate over the persistence managers,
+ *           e.g. when retrieving knowledge elements!
+ * @con It is not clear if this is a design pattern.
+ * @alternative We could use a design pattern, e.g. the decorator design pattern
+ *              to integrate persistence managers for different documentation
+ *              locations!
  * 
  * @see AbstractPersistenceManagerForSingleLocation
  * @see JiraIssuePersistenceManager

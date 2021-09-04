@@ -285,8 +285,15 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @issue How can we get the Jira issues that the diff entries were committed
-	 *        to?
+	 * @issue How can we get the Jira issues that the diff entries (i.e. changed
+	 *        files) were committed to?
+	 * @decision We iterate over all commits in a git repository, extract the diff
+	 *           entries (i.e. changed files) and store all commits that changed a
+	 *           file as an attribute of the ChangedFile class! We read the Jira
+	 *           issue keys from the commit messages of all commits of a ChangedFile
+	 *           object!
+	 * @alternative We could use "git blame" to get the commits that changed a file.
+	 * @con Git blame is hard to use since a treeWalk path is needed for it.
 	 */
 	public List<DiffEntry> getDiffEntries(RevCommit firstCommit, RevCommit lastCommit, DiffFormatter diffFormatter) {
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();

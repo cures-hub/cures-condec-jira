@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
 
 /**
@@ -136,6 +137,11 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 	public void testGetDocumentationLocationAsStringNull() {
 		this.decisionKnowledgeElement.setDocumentationLocation((DocumentationLocation) null);
 		assertEquals("", decisionKnowledgeElement.getDocumentationLocationAsString());
+	}
+
+	@Test
+	public void testGetOrigin() {
+		assertEquals(Origin.DOCUMENTATION_LOCATION, decisionKnowledgeElement.getOrigin());
 	}
 
 	@Test

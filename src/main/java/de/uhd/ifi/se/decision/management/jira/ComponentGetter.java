@@ -65,6 +65,11 @@ public class ComponentGetter {
 		ComponentGetter.activeObjects = checkNotNull(activeObjects);
 	}
 
+	/**
+	 * @issue How can we read files from the resources folder, e.g. the default
+	 *        training file for the text classifier?
+	 * @decision We use the URL of the resources folder to read files from it!
+	 */
 	private static String getUrlOfResourcesFolder() {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/" + PLUGIN_KEY;

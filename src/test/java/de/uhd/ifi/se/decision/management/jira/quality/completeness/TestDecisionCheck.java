@@ -5,8 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Set;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,9 +13,8 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -53,22 +50,20 @@ public class TestDecisionCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testIsNotLinkedToIssue() {
-		assertEquals(KnowledgeType.DECISION, decision.getType());
-		assertEquals(4, decision.getId());
-
-		Set<Link> links = decision.getLinks();
-		for (Link link : links) {
-			if (link.getOppositeElement(decision).getType() == KnowledgeType.ISSUE) {
-				KnowledgeGraph.getInstance("TEST").removeEdge(link);
-			}
-		}
-		assertFalse(decisionCompletenessCheck.execute(decision));
+		KnowledgeElement unlinkedDecision = new KnowledgeElement();
+		unlinkedDecision.setType(KnowledgeType.DECISION);
+		unlinkedDecision.setProject("TEST");
+		unlinkedDecision.setId(4242);
+		unlinkedDecision.setStatus(KnowledgeStatus.CHALLENGED);
+		assertFalse(decisionCompletenessCheck.execute(unlinkedDecision));
+		assertFalse(decisionCompletenessCheck.getQualityProblems(unlinkedDecision, new DefinitionOfDone()).isEmpty());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetFailedCriteria() {
-		// set criteria "decision has to be linked to pro argument" in definition of done
+		// set criteria "decision has to be linked to pro argument" in definition of
+		// done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);

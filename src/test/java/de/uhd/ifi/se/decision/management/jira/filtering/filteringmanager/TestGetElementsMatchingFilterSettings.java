@@ -72,7 +72,7 @@ public class TestGetElementsMatchingFilterSettings extends TestSetUp {
 		filterSettings.setKnowledgeTypes(knowledgeTypes);
 
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		assertEquals(2, filteringManager.getElementsMatchingFilterSettings().size());
+		assertEquals(1, filteringManager.getElementsMatchingFilterSettings().size());
 	}
 
 	@Test
