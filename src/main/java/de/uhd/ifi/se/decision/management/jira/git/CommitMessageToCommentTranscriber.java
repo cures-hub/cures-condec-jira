@@ -120,13 +120,17 @@ public class CommitMessageToCommentTranscriber {
 	/**
 	 * @issue Who should be the author of the new Jira issue comment that a commit
 	 *        messages was posted into?
-	 * @alternative The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
-	 *              that a commit messages was posted into!
+	 * @decision The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
+	 *           that a commit messages was posted into!
 	 * @pro It is clear that the comment origined from a commit messages.
 	 * @alternative The user that opens the Jira issue could be the creator of the
 	 *              Jira issue comment that a commit messages was posted into.
 	 * @con It would be confusing to users if they see that they posted something
 	 *      that they did not write.
+	 * @alternative The git user could be the creator of the Jira issue comment that
+	 *              a commit messages was posted into.
+	 * @con Git user names can be different to Jira user names and it is hard to
+	 *      match them.
 	 */
 	private ApplicationUser getUser() {
 		ApplicationUser defaultUser;

@@ -47,10 +47,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInData
 /**
  * Models a changed file as part of a {@link Diff}.
  * 
- * @issue How can we get the creation time and the updating time of the file?
- * @alternative Pass RevCommit::getCommitTime() to this class to store the
- *              updating time of the file.
- * 
  * @issue How to access the file content of a git file?
  * @decision Retrieve the file content from the git blob object and store it as
  *           a class attribute.
@@ -65,8 +61,14 @@ public class ChangedFile extends KnowledgeElement {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangedFile.class);
 
 	/**
-	 * @issue Can we use the repository object instead of a simple String to codify
-	 *        URI?
+	 * @issue How can we access the git repository that the code file belongs to?
+	 * @decision We use a simple String to codify the URI of the git repository that
+	 *           the code file belongs to!
+	 * @pro A String is easy to store and retrieve from the GitConfiguration
+	 *      classes.
+	 * @alternative We could use the repository object to access the git repository.
+	 * @pro More powerful: For example, the file content might be easier to retrieve
+	 *      when having such an object.
 	 */
 	@JsonIgnore
 	private String repoUri;
@@ -517,6 +519,20 @@ public class ChangedFile extends KnowledgeElement {
 		return fileContent;
 	}
 
+	/**
+	 * @issue To which Jira issues should a code file be linked to?
+	 * @decision We link a code file to all Jira issues that it was committed to
+	 *           (i.e. where the Jira issue key was mentioned in the messages of the
+	 *           commits that changed the file)!
+	 * @con Might contain wrong links introduced through tangled changes.
+	 * @alternative We could add some wrong link detection methods and link a code
+	 *              file only to those Jira issues that seem to be very related.
+	 * @con Hard to implement.
+	 * @con A wrong link removal technique might have false positives which leads to
+	 *      the removal of correct links.
+	 * 
+	 * @return keys of the Jira issues that the file was linked to via commit.
+	 */
 	public Set<String> getJiraIssueKeys() {
 		Set<String> jiraIssueKeys = new LinkedHashSet<>();
 		for (RevCommit commit : commits) {
@@ -545,6 +561,12 @@ public class ChangedFile extends KnowledgeElement {
 		this.lineCount = lineCount;
 	}
 
+	/**
+	 * @issue How can we get the creation time of a code file?
+	 * @decision We store all commits that changed a code file as an attribute of
+	 *           the ChangedFile class! We use the method RevCommit::getCommitTime()
+	 *           of the first commit to get the creation time of a code file!
+	 */
 	@Override
 	public Date getCreationDate() {
 		if (commits != null && !commits.isEmpty()) {
@@ -554,6 +576,13 @@ public class ChangedFile extends KnowledgeElement {
 		return super.getCreationDate();
 	}
 
+	/**
+	 * @issue How can we get the time of last update of a code file?
+	 * @decision We store all commits that changed a code file as an attribute of
+	 *           the ChangedFile class! We use the method RevCommit::getCommitTime()
+	 *           of the last (i.e. most recent) commit to get the creation time of a
+	 *           code file!
+	 */
 	@Override
 	public Date getUpdatingDate() {
 		if (commits != null && !commits.isEmpty()) {
@@ -563,6 +592,13 @@ public class ChangedFile extends KnowledgeElement {
 		return super.getUpdatingDate();
 	}
 
+	/**
+	 * @issue How can we get the author of a code file?
+	 * @decision We store all commits that changed a code file as an attribute of
+	 *           the ChangedFile class! We use the method
+	 *           RevCommit::getAuthorIdent() of the last (i.e. most recent) commit
+	 *           to get the author of a code file!
+	 */
 	@Override
 	public String getCreatorName() {
 		if (commits != null && !commits.isEmpty()) {
