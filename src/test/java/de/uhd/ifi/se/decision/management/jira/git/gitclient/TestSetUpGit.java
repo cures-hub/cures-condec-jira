@@ -239,10 +239,11 @@ public abstract class TestSetUpGit extends TestSetUp {
 		makeExampleCommit("GodClass.java", "public class GodClass {" + "//@issue:code issue in GodClass" + "\r\n}",
 				"Second message");
 
-		makeExampleCommit("HermesGodClass.java",
-				"public class HermesGodClass {" + "//@issue:1st code issue in one-line comment in HermesGodClass"
-						+ "\r\n/*\r\n@issue:2nd issue in comment block*/" + "\r\n/**\r\n* @issue:3rd issue in javadoc"
-						+ "\r\n*\r\n* @alternative:1st alt in javadoc*/" + "\r\n}",
+		makeExampleCommit("HermesGodClass.java", "public class HermesGodClass {" //
+				+ "//@issue 1st code issue in one-line comment in HermesGodClass\r\n"
+				+ "/*@issue 2nd issue in comment block*/\r\n" //
+				+ "/**\r\n* @issue 3rd issue in javadoc\r\n*\r\n" //
+				+ "* @alternative 1st alt in javadoc*/\r\n}",
 				"TEST-12: Develop great software" + "//[issue]Huston we have a small problem..[/issue]" + "\r\n"
 						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
 						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
