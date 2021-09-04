@@ -67,6 +67,7 @@ public class KnowledgeElement {
 
 	public KnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey,
 			String key, DocumentationLocation documentationLocation, KnowledgeStatus status) {
+		this();
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
