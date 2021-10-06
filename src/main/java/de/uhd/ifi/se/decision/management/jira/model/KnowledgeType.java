@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -84,7 +85,7 @@ public enum KnowledgeType {
 			return KnowledgeType.OTHER;
 		}
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			if (knowledgeType.name().toLowerCase(Locale.ENGLISH).matches(type.toLowerCase(Locale.ENGLISH) + "(.)*")) {
+			if (type.toLowerCase(Locale.ENGLISH).matches(knowledgeType.name().toLowerCase(Locale.ENGLISH) + "(-.*)?")) {
 				return knowledgeType;
 			}
 		}
