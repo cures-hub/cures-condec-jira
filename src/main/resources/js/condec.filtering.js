@@ -216,7 +216,7 @@
 
 		// Read selected element
 		var selectedElementOutput = document.getElementById("selected-element-" + viewIdentifier);
-		if (selectedElementOutput !== null && selectedElementOutput.innerText !== "-") {
+		if (selectedElementOutput !== null && !selectedElementOutput.innerText.startsWith("-")) {
 			filterSettings["selectedElement"] = selectedElementOutput.innerText;
 		}
 
