@@ -268,10 +268,8 @@
 	 * external references: condec.dashboard
 	 */
 	ConDecFiltering.prototype.fillDropdownMenus = function(viewIdentifier, selectedKnowledgeTypes) {
-		this.initDropdown("source-knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
-			selectedKnowledgeTypes, ["Other", "Code"]);
 		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypes(),
-			selectedKnowledgeTypes, ["Other", "Code"]);
+			selectedKnowledgeTypes, ["Other"]);
 		this.initSingleSelect("select-single-element-type-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), ["Issue"]);
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
