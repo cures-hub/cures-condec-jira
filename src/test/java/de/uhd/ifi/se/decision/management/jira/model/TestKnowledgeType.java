@@ -25,6 +25,8 @@ public class TestKnowledgeType {
 		for (KnowledgeType type : KnowledgeType.values()) {
 			assertEquals(type, KnowledgeType.getKnowledgeType(type.toString()));
 		}
+		assertEquals(KnowledgeType.PRO, KnowledgeType.getKnowledgeType("Pro-argument"));
+		assertEquals(KnowledgeType.CON, KnowledgeType.getKnowledgeType("Con-argument"));
 	}
 
 	@Test
