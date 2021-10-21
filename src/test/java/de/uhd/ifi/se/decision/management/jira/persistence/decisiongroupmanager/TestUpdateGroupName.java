@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestUpdateGroupName extends TestSetUp {
@@ -32,14 +32,14 @@ public class TestUpdateGroupName extends TestSetUp {
 		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
-		DecisionGroupManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
 	}
 
 	@Test
 	@NonTransactional
 	public void testUpdateGroupName() {
-		assertTrue(DecisionGroupManager.updateGroupName("TestGroup1", "ChangedGroup", "TEST"));
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("ChangedGroup"));
-		assertFalse(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
+		assertTrue(DecisionGroupPersistenceManager.updateGroupName("TestGroup1", "ChangedGroup", "TEST"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("ChangedGroup"));
+		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
 	}
 }

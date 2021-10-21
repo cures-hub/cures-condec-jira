@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
@@ -47,7 +47,7 @@ public class TestDecisionGroupView extends TestSetUp {
 		KnowledgeElement nextElement = kpManager
 				.getManagerForSingleLocation(decisionKnowledgeElement.getDocumentationLocation())
 				.insertKnowledgeElement(decisionKnowledgeElement, JiraUsers.SYS_ADMIN.getApplicationUser());
-		DecisionGroupManager.insertGroup("TestGroup1", nextElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup1", nextElement);
 
 		KnowledgeElement element = new ChangedFile();
 		element.setSummary("AbstractTestHandler.java");
@@ -55,7 +55,7 @@ public class TestDecisionGroupView extends TestSetUp {
 		element.setProject("TEST");
 		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("TEST");
 		newElement = ccManager.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
-		DecisionGroupManager.insertGroup("TestGroup2", newElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup2", newElement);
 
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
@@ -81,16 +81,16 @@ public class TestDecisionGroupView extends TestSetUp {
 	public void testRenameDecisionGroup() {
 		Response resp = configRest.renameDecisionGroup("TEST", "TestGroup2", "NewTestGroup2");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertEquals("NewTestGroup2", DecisionGroupManager.getGroupsForElement(newElement).get(0));
+		assertEquals("NewTestGroup2", DecisionGroupPersistenceManager.getGroupsForElement(newElement).get(0));
 		configRest.renameDecisionGroup("TEST", "NewTestGroup2", "TestGroup2");
 	}
 
 	@Test
 	@NonTransactional
 	public void testDeleteDecisionGroup() {
-		DecisionGroupManager.insertGroup("TestGroup3", newElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup3", newElement);
 		configRest.deleteDecisionGroup("TEST", "TestGroup3");
-		assertFalse(DecisionGroupManager.getGroupsForElement(newElement).contains("TestGroup3"));
+		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(newElement).contains("TestGroup3"));
 	}
 
 }

@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -39,63 +39,63 @@ public class TestGetGroups extends TestSetUp {
 		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
-		DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup1", decisionKnowledgeElement);
 	}
 
 	@Test
 	public void testGetGroupsForElementNull() {
-		assertNull(DecisionGroupManager.getGroupsForElement(null));
+		assertNull(DecisionGroupPersistenceManager.getGroupsForElement(null));
 	}
 
 	@Test
 	public void testGetGroupsForElementNotNull() {
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
 	}
 
 	@Test
 	public void testGetGroupsForElementIdZero() {
-		assertNull(DecisionGroupManager.getGroupsForElement(0, DocumentationLocation.JIRAISSUE));
+		assertNull(DecisionGroupPersistenceManager.getGroupsForElement(0, DocumentationLocation.JIRAISSUE));
 	}
 
 	@Test
 	public void testGetGroupsForElementIdNotNull() {
-		assertTrue(DecisionGroupManager.getGroupsForElement(this.id, DocumentationLocation.JIRAISSUE)
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(this.id, DocumentationLocation.JIRAISSUE)
 				.contains("TestGroup1"));
 	}
 
 	@Test
 	public void testGetGroupsForElementDocLocWrong() {
-		assertNull(DecisionGroupManager.getGroupsForElement(0, DocumentationLocation.CODE));
+		assertNull(DecisionGroupPersistenceManager.getGroupsForElement(0, DocumentationLocation.CODE));
 	}
 
 	@Test
 	public void testGetGroupsForElementDocLocNull() {
-		assertNull(DecisionGroupManager.getGroupsForElement(0, null));
+		assertNull(DecisionGroupPersistenceManager.getGroupsForElement(0, null));
 	}
 
 	@Test
 	public void testGetGroupsInDatabaseGroupNull() {
-		assertNull(DecisionGroupManager.getGroupInDatabase(null, decisionKnowledgeElement));
+		assertNull(DecisionGroupPersistenceManager.getGroupInDatabase(null, decisionKnowledgeElement));
 	}
 
 	@Test
 	public void testGetGroupsInDatabaseElementNull() {
-		assertNull(DecisionGroupManager.getGroupInDatabase("TestGroup1", null));
+		assertNull(DecisionGroupPersistenceManager.getGroupInDatabase("TestGroup1", null));
 	}
 
 	@Test
 	public void testGetGroupsInDatabaseArgsNotNull() {
-		assertNotNull(DecisionGroupManager.getGroupInDatabase("TestGroup1", decisionKnowledgeElement));
+		assertNotNull(DecisionGroupPersistenceManager.getGroupInDatabase("TestGroup1", decisionKnowledgeElement));
 	}
 
 	@Test
 	public void testGetAllDecisionGroups() {
-		assertTrue(DecisionGroupManager.getAllDecisionGroups("TEST").contains("TestGroup1"));
+		assertTrue(DecisionGroupPersistenceManager.getAllDecisionGroups("TEST").contains("TestGroup1"));
 	}
 
 	@Test
 	public void testGetAllDecisionElementsWithCertainGroup() {
-		assertEquals(0, DecisionGroupManager.getAllDecisionElementsWithCertainGroup("TestGroup1", "Test").size());
+		assertEquals(0, DecisionGroupPersistenceManager.getAllDecisionElementsWithCertainGroup("TestGroup1", "Test").size());
 	}
 
 	@Test
@@ -107,8 +107,8 @@ public class TestGetGroups extends TestSetUp {
 		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("TEST");
 		KnowledgeElement newElement = ccManager.insertKnowledgeElement(element,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
-		DecisionGroupManager.insertGroup("TestGroup2", newElement);
-		assertEquals(1, DecisionGroupManager.getAllClassElementsWithCertainGroup("TestGroup2", "TEST").size());
+		DecisionGroupPersistenceManager.insertGroup("TestGroup2", newElement);
+		assertEquals(1, DecisionGroupPersistenceManager.getAllClassElementsWithCertainGroup("TestGroup2", "TEST").size());
 	}
 
 }

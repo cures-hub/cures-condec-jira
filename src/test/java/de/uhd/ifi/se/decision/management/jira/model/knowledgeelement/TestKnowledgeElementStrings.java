@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 
 /**
  * Test class for decision knowledge element getter and setter methods
@@ -43,7 +43,7 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
 
-		DecisionGroupManager.insertGroup("TestGroup", this.decisionKnowledgeElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", this.decisionKnowledgeElement);
 	}
 
 	@Test

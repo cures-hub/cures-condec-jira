@@ -25,8 +25,15 @@ public interface DecisionGroupInDatabase extends RawEntity<Long> {
 
 	void setId(long id);
 
+	/**
+	 * @return name of the group/level, e.g. "high level" or "UI".
+	 */
 	String getGroup();
 
+	/**
+	 * @param group
+	 *            name of the group/level, e.g. "high level" or "UI".
+	 */
 	void setGroup(String group);
 
 	/**

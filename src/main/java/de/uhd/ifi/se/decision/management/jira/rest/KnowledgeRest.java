@@ -35,7 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -292,7 +292,7 @@ public class KnowledgeRest {
 		}
 		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(sourceId,
 				location);
-		DecisionGroupManager.setGroupAssignment(groupsToAssign, element);
+		DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element);
 		inheritGroupAssignment(groupsToAssign, element);
 
 		return Response.status(Status.OK).build();
@@ -306,12 +306,12 @@ public class KnowledgeRest {
 				KnowledgeElement linkedElement = link.getOppositeElement(element);
 				if (linkedElement != null && linkedElement.getDocumentationLocation() == DocumentationLocation.CODE) {
 					if (!linkedElement.getDecisionGroups().contains("Realization_Level")) {
-						DecisionGroupManager.insertGroup("Realization_Level", linkedElement);
+						DecisionGroupPersistenceManager.insertGroup("Realization_Level", linkedElement);
 					}
 					for (String group : groupsToAssign) {
 						if (!("High_Level").equals(group) && !("Medium_Level").equals(group)
 								&& !("Realization_Level").equals(group)) {
-							DecisionGroupManager.insertGroup(group, linkedElement);
+							DecisionGroupPersistenceManager.insertGroup(group, linkedElement);
 						}
 
 					}
@@ -337,7 +337,7 @@ public class KnowledgeRest {
 				}
 			}
 			for (KnowledgeElement ele : linkedElements) {
-				DecisionGroupManager.setGroupAssignment(groupsToAssign, ele);
+				DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, ele);
 			}
 		}
 	}
