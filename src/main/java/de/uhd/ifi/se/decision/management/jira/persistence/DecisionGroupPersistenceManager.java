@@ -11,7 +11,6 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import net.java.ao.Query;
 
@@ -26,6 +25,7 @@ import net.java.ao.Query;
 public class DecisionGroupPersistenceManager {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	public static final List<String> LEVELS = List.of("high_level", "medium_level", "realization_level");
 
 	public static boolean deleteGroupAssignment(long elementId) {
 		if (elementId < 0) {
@@ -148,44 +148,23 @@ public class DecisionGroupPersistenceManager {
 	}
 
 	/**
-	 * Returns all groups for a given KnowledgeElement.
-	 *
 	 * @param element
-	 *            node in the {@link KnowledgeGraph}.
-	 * @return list of Strings of group assignments
-	 * @see KnowledgeElement
+	 *            {@link KnowledgeElement}.
+	 * @return list of group/level names for the given {@link KnowledgeElement}.
 	 */
 	public static List<String> getGroupsForElement(KnowledgeElement element) {
-		if (element == null) {
-			return null;
-		}
-		return getGroupsForElement(element.getId(), element.getDocumentationLocation());
-	}
-
-	/**
-	 * Returns all groups for a given KnowledgeElement.
-	 *
-	 * @param elementId
-	 *            node id in the {@link KnowledgeGraph}.
-	 * @param documentationLocation
-	 *            location of the KnowledgeElement
-	 * @return list of Strings of group assignments
-	 * @see KnowledgeElement
-	 */
-	public static List<String> getGroupsForElement(long elementId, DocumentationLocation documentationLocation) {
 		List<String> groups = new ArrayList<>();
-		if (elementId == 0 || elementId == -1 || documentationLocation == null) {
+		if (element == null || element.getId() == 0 || element.getDocumentationLocation() == null) {
 			return null;
 		}
-		String identifier = documentationLocation.getIdentifier();
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", elementId, identifier));
+				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
+						element.getDocumentationLocation().getIdentifier()));
 		for (DecisionGroupInDatabase groupInDatabase : groupsInDatabase) {
-			String group = groupInDatabase.getGroup();
-			groups.add(group);
+			groups.add(groupInDatabase.getGroup());
 		}
 		for (String group : groups) {
-			if (("High_Level").equals(group) || ("Medium_Level").equals(group) || ("Realization_Level").equals(group)) {
+			if (LEVELS.contains(group.toLowerCase())) {
 				Collections.swap(groups, groups.indexOf(group), 0);
 			}
 		}
@@ -255,22 +234,20 @@ public class DecisionGroupPersistenceManager {
 	}
 
 	/**
-	 * Returns the GroupInDatabase object.
-	 *
-	 * @param group
-	 *            Name of the Group
-	 * @param sourceElement
+	 * @param groupName
+	 *            name of the group/level, e.g. "high level" or "UI".
+	 * @param element
 	 *            KnowledgeElement that the group is assigned to
-	 * @return GroupInDatabase object.
+	 * @return {@link DecisionGroupInDatabase} object.
 	 */
-	public static DecisionGroupInDatabase getGroupInDatabase(String group, KnowledgeElement sourceElement) {
-		if (group == null || sourceElement == null) {
+	public static DecisionGroupInDatabase getDecisionGroupInDatabase(String groupName, KnowledgeElement element) {
+		if (groupName == null || element == null) {
 			return null;
 		}
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (groupInDatabase.getGroup().equals(group) && groupInDatabase.getSourceId() == sourceElement.getId()
+			if (groupInDatabase.getGroup().equals(groupName) && groupInDatabase.getSourceId() == element.getId()
 					&& groupInDatabase.getSourceDocumentationLocation()
-							.equals(sourceElement.getDocumentationLocation().getIdentifier())) {
+							.equals(element.getDocumentationLocation().getIdentifier())) {
 				return groupInDatabase;
 			}
 		}

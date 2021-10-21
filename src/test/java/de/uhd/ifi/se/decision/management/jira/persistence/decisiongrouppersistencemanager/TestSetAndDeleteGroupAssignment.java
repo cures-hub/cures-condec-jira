@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -65,7 +65,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@NonTransactional
 	public void testDeleteGroupAssignmentIdNotNull() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup2", element);
-		long elementId = DecisionGroupPersistenceManager.getGroupInDatabase("TestGroup2", element).getId();
+		long elementId = DecisionGroupPersistenceManager.getDecisionGroupInDatabase("TestGroup2", element).getId();
 		assertTrue(DecisionGroupPersistenceManager.deleteGroupAssignment(elementId));
 	}
 

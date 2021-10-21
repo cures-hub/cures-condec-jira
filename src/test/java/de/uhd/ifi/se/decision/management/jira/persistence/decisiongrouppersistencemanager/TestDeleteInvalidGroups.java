@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

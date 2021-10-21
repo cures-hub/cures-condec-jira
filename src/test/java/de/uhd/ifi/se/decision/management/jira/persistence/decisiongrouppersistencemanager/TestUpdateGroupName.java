@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.decisiongroupmanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,9 +25,15 @@ public class TestUpdateGroupName extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testUpdateGroupName() {
+	public void testGroupExistingInDatabase() {
 		assertTrue(DecisionGroupPersistenceManager.updateGroupName("TestGroup", "ChangedGroup", "TEST"));
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("ChangedGroup"));
 		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testGroupNotExistingInDatabase() {
+		assertFalse(DecisionGroupPersistenceManager.updateGroupName("TestUnknownGroup", "ChangedGroup", "TEST"));
 	}
 }
