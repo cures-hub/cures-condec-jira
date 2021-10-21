@@ -14,40 +14,26 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.git.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-/**
- * Test class for the persistence of the assigned decision groups.
- */
 public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 
-	private KnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		super.setUp();
-		long id = 100;
-		String summary = "Test";
-		String description = "Test";
-		KnowledgeType type = KnowledgeType.SOLUTION;
-		String projectKey = "TEST";
-		String key = "Test";
-
-		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
-				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1a", this.decisionKnowledgeElement);
+		element = KnowledgeElements.getDecision();
+		DecisionGroupPersistenceManager.insertGroup("TestGroup1a", element);
 	}
 
 	@Test
 	public void testSetGroupAssignmentGroupNull() {
-		assertFalse(DecisionGroupPersistenceManager.setGroupAssignment(null, decisionKnowledgeElement));
+		assertFalse(DecisionGroupPersistenceManager.setGroupAssignment(null, element));
 	}
 
 	@Test
@@ -65,28 +51,28 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		List<String> groups = new ArrayList<String>();
 		groups.add("New1");
 		groups.add("New2");
-		DecisionGroupPersistenceManager.setGroupAssignment(groups, decisionKnowledgeElement);
-		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1a"));
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).size() == 2);
+		DecisionGroupPersistenceManager.setGroupAssignment(groups, element);
+		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup1a"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).size() == 2);
 	}
 
 	@Test
 	public void testDeleteGroupAssignmentIdNull() {
-		assertFalse(DecisionGroupPersistenceManager.deleteGroupAssignment(null));
+		assertFalse(DecisionGroupPersistenceManager.deleteGroupAssignment(-1));
 	}
 
 	@Test
 	@NonTransactional
 	public void testDeleteGroupAssignmentIdNotNull() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup2", this.decisionKnowledgeElement);
-		Long elementId = DecisionGroupPersistenceManager.getGroupInDatabase("TestGroup2", decisionKnowledgeElement).getId();
+		DecisionGroupPersistenceManager.insertGroup("TestGroup2", element);
+		long elementId = DecisionGroupPersistenceManager.getGroupInDatabase("TestGroup2", element).getId();
 		assertTrue(DecisionGroupPersistenceManager.deleteGroupAssignment(elementId));
 	}
 
 	@Test
 	@NonTransactional
 	public void testDeleteGroupAssignmentGroupNull() {
-		assertFalse(DecisionGroupPersistenceManager.deleteGroupAssignment(null, this.decisionKnowledgeElement));
+		assertFalse(DecisionGroupPersistenceManager.deleteGroupAssignment(null, this.element));
 	}
 
 	@Test
@@ -98,15 +84,15 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testDeleteGroupAssignmentGroupAndElementNotNull() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup3", this.decisionKnowledgeElement);
-		DecisionGroupPersistenceManager.deleteGroupAssignment("TestGroup3", this.decisionKnowledgeElement);
-		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup3"));
+		DecisionGroupPersistenceManager.insertGroup("TestGroup3", element);
+		DecisionGroupPersistenceManager.deleteGroupAssignment("TestGroup3", element);
+		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup3"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testDeleteGroupWithGroupNull() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup4", this.decisionKnowledgeElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup4", element);
 		assertFalse(DecisionGroupPersistenceManager.deleteGroup(null, "TEST"));
 
 	}
@@ -114,9 +100,10 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testDeleteGroup() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup4", this.decisionKnowledgeElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup4", element);
 		DecisionGroupPersistenceManager.deleteGroup("TestGroup4", "TEST");
-		assertTrue(DecisionGroupPersistenceManager.getAllDecisionElementsWithCertainGroup("TestGroup4", "TEST").size() == 0);
+		assertTrue(DecisionGroupPersistenceManager.getAllDecisionElementsWithCertainGroup("TestGroup4", "TEST")
+				.size() == 0);
 	}
 
 	@Test
@@ -136,12 +123,15 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		groups.add("New2");
 
 		DecisionGroupPersistenceManager.setGroupAssignment(groups, godClass);
-		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup1a"));
+		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass)
+				.contains("TestGroup1a"));
 		assertEquals(2, DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass).size());
 
 		DecisionGroupPersistenceManager.deleteGroupAssignment("New1", issueFromCodeCommentInGodClass);
-		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("New1"));
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("New2"));
+		assertFalse(
+				DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("New1"));
+		assertTrue(
+				DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("New2"));
 	}
 
 }

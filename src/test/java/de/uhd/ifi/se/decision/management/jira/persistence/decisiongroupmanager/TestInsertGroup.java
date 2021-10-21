@@ -10,47 +10,33 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.git.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-/**
- * Test class for the persistence of the assigned decision groups.
- */
 public class TestInsertGroup extends TestSetUpGit {
 
-	private KnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		super.setUp();
-		long id = 100;
-		String summary = "Test";
-		String description = "Test";
-		KnowledgeType type = KnowledgeType.SOLUTION;
-		String projectKey = "TEST";
-		String key = "Test";
-
-		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
-				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+		element = KnowledgeElements.getDecision();
+		DecisionGroupPersistenceManager.insertGroup("TestGroup1", element);
 	}
 
 	@Test
 	@NonTransactional
 	public void testInsertGroupAlreadyExisting() {
-		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup1", this.decisionKnowledgeElement) != -1);
+		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup1", element) != -1);
 	}
 
 	@Test
 	@NonTransactional
 	public void testInsertGroupNull() {
-		assertTrue(DecisionGroupPersistenceManager.insertGroup(null, decisionKnowledgeElement) == -1);
+		assertTrue(DecisionGroupPersistenceManager.insertGroup(null, element) == -1);
 	}
 
 	@Test
@@ -62,8 +48,8 @@ public class TestInsertGroup extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testInsertGroupArgsNotNull() {
-		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup2", decisionKnowledgeElement) != -1);
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup2"));
+		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup2", element) != -1);
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup2"));
 	}
 
 	@Test
@@ -81,7 +67,8 @@ public class TestInsertGroup extends TestSetUpGit {
 		assertNotNull(godClass.getLink(issueFromCodeCommentInGodClass));
 
 		DecisionGroupPersistenceManager.insertGroup("TestGroup2", godClass);
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass).contains("TestGroup2"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass)
+				.contains("TestGroup2"));
 	}
 
 }

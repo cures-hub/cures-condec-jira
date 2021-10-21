@@ -7,39 +7,27 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestUpdateGroupName extends TestSetUp {
 
-	private long id;
-	private KnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		init();
-		this.id = 100;
-		String summary = "Test";
-		String description = "Test";
-		KnowledgeType type = KnowledgeType.SOLUTION;
-		String projectKey = "TEST";
-		String key = "Test";
-
-		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
-				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1", this.decisionKnowledgeElement);
+		element = KnowledgeElements.getDecision();
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
 	}
 
 	@Test
 	@NonTransactional
 	public void testUpdateGroupName() {
-		assertTrue(DecisionGroupPersistenceManager.updateGroupName("TestGroup1", "ChangedGroup", "TEST"));
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("ChangedGroup"));
-		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElement).contains("TestGroup1"));
+		assertTrue(DecisionGroupPersistenceManager.updateGroupName("TestGroup", "ChangedGroup", "TEST"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("ChangedGroup"));
+		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup"));
 	}
 }

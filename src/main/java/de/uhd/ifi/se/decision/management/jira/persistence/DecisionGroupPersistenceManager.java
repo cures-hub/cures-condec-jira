@@ -16,10 +16,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupIn
 import net.java.ao.Query;
 
 /**
- * Responsible to persist groups/levels of decisions ("high level", "medium
- * level", "realization level", or "UI") from all documentation locations.
- * Groups/levels are stored in the internal database of Jira via object
- * relational mapping (active objects framework).
+ * Responsible to persist levels ("high level", "medium level", "realization
+ * level") and groups (e.g. "process", "UI") of decisions from all documentation
+ * locations. Groups/levels are stored in the internal database of Jira via
+ * object relational mapping (active objects framework).
  *
  * @see DecisionGroupInDatabase
  */
@@ -27,8 +27,8 @@ public class DecisionGroupPersistenceManager {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
-	public static boolean deleteGroupAssignment(Long elementId) {
-		if (elementId == null) {
+	public static boolean deleteGroupAssignment(long elementId) {
+		if (elementId < 0) {
 			return false;
 		}
 		boolean isDeleted = false;
