@@ -9,39 +9,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestTreant extends TestSetUp {
 	private Chart chart;
 	private TreantNode nodeStructure;
 	private Treant treant;
-	private KnowledgeElement classElement;
 
 	@Before
 	public void setUp() {
 		init();
-		this.chart = new Chart();
-		this.nodeStructure = new TreantNode();
+		chart = new Chart();
+		nodeStructure = new TreantNode();
 		FilterSettings filterSettings = new FilterSettings("TEST", null);
 		filterSettings.setSelectedElement("TEST-30");
-		this.treant = new Treant(filterSettings, false);
-		this.treant.setChart(chart);
-		this.treant.setNodeStructure(nodeStructure);
-		CodeClassPersistenceManager ccManager = new CodeClassPersistenceManager("Test");
-		classElement = new KnowledgeElement();
-		classElement.setProject("TEST");
-		classElement.setType("Other");
-		classElement.setDescription("TEST-1;");
-		classElement.setSummary("TestClass.java");
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		classElement = ccManager.insertKnowledgeElement(classElement, user);
+		treant = new Treant(filterSettings, false);
+		treant.setChart(chart);
+		treant.setNodeStructure(nodeStructure);
 	}
 
 	@Test

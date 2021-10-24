@@ -8,12 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetAllDecisionGroups extends TestSetUp {
 
@@ -23,21 +21,13 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 	public void setUp() {
 		init();
 		configRest = new ConfigRest();
-		long id = 100;
-		String summary = "Test";
-		String description = "Test";
-		KnowledgeType type = KnowledgeType.SOLUTION;
-		String key = "Test";
-
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, "TEST", key,
-				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1", decisionKnowledgeElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup1", KnowledgeElements.getDecision());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetAllDecisionGroups() {
 		Response response = configRest.getAllDecisionGroups("TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
-
 }
