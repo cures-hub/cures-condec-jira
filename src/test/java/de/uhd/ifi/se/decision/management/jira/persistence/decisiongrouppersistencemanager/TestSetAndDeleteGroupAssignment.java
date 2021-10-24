@@ -27,12 +27,13 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		super.setUp();
+		init();
 		element = KnowledgeElements.getDecision();
 		DecisionGroupPersistenceManager.insertGroup("TestGroup1a", element);
 	}
 
 	@Test
+	@NonTransactional
 	public void testSetGroupAssignmentGroupNull() {
 		assertFalse(DecisionGroupPersistenceManager.setGroupAssignment(null, element));
 	}
