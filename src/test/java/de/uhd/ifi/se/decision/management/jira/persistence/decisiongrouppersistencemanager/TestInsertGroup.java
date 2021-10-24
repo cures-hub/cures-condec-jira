@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.CodeFileExtractorAndMaintainer;
@@ -46,13 +47,15 @@ public class TestInsertGroup extends TestSetUpGit {
 	}
 
 	@Test
-	@NonTransactional
+
 	public void testInsertGroupArgsNotNull() {
 		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup2", element) != -1);
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup2"));
 	}
 
 	@Test
+	@NonTransactional
+	@Ignore
 	public void testInheritInsertGroup() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);

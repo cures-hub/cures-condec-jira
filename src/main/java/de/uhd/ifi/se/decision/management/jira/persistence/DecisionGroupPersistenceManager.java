@@ -122,8 +122,7 @@ public class DecisionGroupPersistenceManager {
 			}
 		}
 
-		return (success && id != -1);
-
+		return success && id != -1;
 	}
 
 	/**

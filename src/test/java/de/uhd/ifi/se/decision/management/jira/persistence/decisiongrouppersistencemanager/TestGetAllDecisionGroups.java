@@ -17,13 +17,10 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetAllDecisionGroups extends TestSetUp {
 
-	private KnowledgeElement element;
-
 	@Before
 	public void setUp() {
 		init();
-		element = KnowledgeElements.getDecision();
-		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", KnowledgeElements.getDecision());
 	}
 
 	@Test

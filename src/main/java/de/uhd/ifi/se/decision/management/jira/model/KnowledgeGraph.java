@@ -29,8 +29,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 /**
  * Creates the knowledge graph for the entire project. Nodes of the knowledge
  * graph are decision knowledge elements, Jira issues such as requirements and
- * work items, and code files. Extends the JGraphT graph interface. The
- * knowledge graph can be disconnected.
+ * work items, and code files. Extends the JGraphT class for directed weighted
+ * multigraphs. The knowledge graph can be disconnected.
  * 
  * @see GitClient
  * @see Graph
