@@ -8,19 +8,17 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestPostCommitsIntoJiraIssueComments extends TestSetUp {
+public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	private CommitMessageToCommentTranscriber transcriber;
 
 	@Before
 	public void setUp() {
-		init();
-		TestSetUpGit.mockGitRepository();
+		super.setUp();
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		transcriber = new CommitMessageToCommentTranscriber(issue);
 	}

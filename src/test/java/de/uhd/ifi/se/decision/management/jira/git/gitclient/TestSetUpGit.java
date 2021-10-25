@@ -26,6 +26,8 @@ import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import net.java.ao.test.jdbc.Data;
 
@@ -291,6 +293,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 	@AfterClass
 	public static void tidyUp() {
 		// gitClient.deleteRepositories();
-		// MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }
