@@ -119,6 +119,7 @@ public class CommitMessageToCommentTranscriber {
 			}
 		}
 		ApplicationUser user = getUser();
+		System.out.println("User: " + user);
 		return ComponentAccessor.getCommentManager().create(jiraIssue, user, commentText, true);
 	}
 

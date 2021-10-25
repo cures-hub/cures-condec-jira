@@ -67,11 +67,13 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public Comment create(Issue issue, ApplicationUser applicationUser, String string, boolean dispatchEvent) {
-		if (this.comments == null) {
-			this.comments = new ArrayList<Comment>();
+		if (comments == null) {
+			comments = new ArrayList<Comment>();
 		}
-		Comment comment = new MockComment((long) 1337, applicationUser.getName(), string, null, null, new Date(), issue);
-		this.comments.add(comment);
+		Comment comment = new MockComment((long) 1337, applicationUser.getName(), string, null, null, new Date(),
+				issue);
+		comments.add(comment);
+		System.out.println(comments.size());
 		return comment;
 	}
 
@@ -157,7 +159,7 @@ public class MockCommentManager implements CommentManager {
 				return comment;
 			}
 		}
-		if(comments.size() > 0) {
+		if (comments.size() > 0) {
 			return comments.get(0);
 		}
 		return null;
