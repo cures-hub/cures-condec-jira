@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
+package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscriber;
 
 import static org.junit.Assert.assertEquals;
 

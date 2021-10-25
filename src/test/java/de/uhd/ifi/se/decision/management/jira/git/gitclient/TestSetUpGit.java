@@ -15,7 +15,7 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 
 import com.atlassian.jira.mock.issue.MockIssue;
@@ -290,8 +290,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	@AfterClass
-	public static void tidyUp() {
+	@After
+	public void tidyUp() {
 		// gitClient.deleteRepositories();
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
