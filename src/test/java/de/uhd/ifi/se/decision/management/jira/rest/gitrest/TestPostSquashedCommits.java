@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -34,7 +33,6 @@ public class TestPostSquashedCommits extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testOk() {
 		assertEquals(Status.OK.getStatusCode(), gitRest.setPostDefaultBranchCommits(request, "TEST", true).getStatus());
 	}
