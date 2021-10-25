@@ -2,6 +2,10 @@ package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscr
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,9 +15,12 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 
+@Data(MockDatabase.class)
 public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	private CommitMessageToCommentTranscriber transcriber;
@@ -27,7 +34,6 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-		System.out.println("Num com: " + ComponentAccessor.getCommentManager().getComments(issue).size());
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		transcriber = new CommitMessageToCommentTranscriber(issue);
 	}
@@ -35,6 +41,9 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testPostCommits() {
+		Ref featureBranch = gitClient.getBranches("TEST-4.feature.branch").get(0);
+		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
+		assertEquals(5, commits.size());
 		assertEquals(4, transcriber.postCommitsIntoJiraIssueComments().size());
 	}
 

@@ -42,7 +42,7 @@ public class MockPluginSettings implements PluginSettings {
 		if (returnVal != null) {
 			return returnVal;
 		}
-		return "true";
+		return null;
 	}
 
 	@Override
