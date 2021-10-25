@@ -110,11 +110,13 @@ public class CommitMessageToCommentTranscriber {
 	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch, String uri) {
 		String commentText = generateCommentString(commit, branch, uri);
 		if (commentText == null || commentText.isBlank()) {
+			LOGGER.error("Commit messages cannot be posted to Jira issue comment because comment text would be blank.");
 			return null;
 		}
 		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(jiraIssue)) {
 			// if the hash of a commit is present in a comment, do not post it again
 			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
+				System.out.println("Already posted: " + commit.getName());
 				return null;
 			}
 		}

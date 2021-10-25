@@ -73,7 +73,6 @@ public class MockCommentManager implements CommentManager {
 		Comment comment = new MockComment((long) 1337, applicationUser.getName(), string, null, null, new Date(),
 				issue);
 		comments.add(comment);
-		System.out.println(comments.size());
 		return comment;
 	}
 
@@ -228,6 +227,6 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public void deleteCommentsForIssue(Issue issue) {
-
+		comments = new ArrayList<>();
 	}
 }
