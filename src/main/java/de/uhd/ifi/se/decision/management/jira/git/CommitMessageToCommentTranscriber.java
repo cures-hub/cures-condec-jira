@@ -70,12 +70,15 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		System.out.println("postFeatureBranchCommits");
+		System.err.println("postFeatureBranchCommits");
+		System.err.println("num branches: " + gitClient.getBranches(jiraIssue.getKey()).size());
 		List<Comment> newComments = new ArrayList<>();
 		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
-			System.out.println("branch: " + featureBranch.getName());
+			System.err.println("branch: " + featureBranch.getName());
 			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
+			System.err.println("num commits: " + featureBranchCommits.size());
 			String uri = gitClient.getRepoUriFromBranch(featureBranch);
+			System.err.println("uri: " + uri);
 			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch, uri));
 		}
 		return newComments;
