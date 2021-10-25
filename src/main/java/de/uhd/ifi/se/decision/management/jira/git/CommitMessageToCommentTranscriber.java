@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
@@ -35,6 +37,7 @@ public class CommitMessageToCommentTranscriber {
 	private Issue jiraIssue;
 
 	private static String COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommitMessageToCommentTranscriber.class);
 
 	public CommitMessageToCommentTranscriber(Issue jiraIssue) {
 		this.jiraIssue = jiraIssue;
@@ -53,6 +56,8 @@ public class CommitMessageToCommentTranscriber {
 	 */
 	public List<Comment> postCommitsIntoJiraIssueComments() {
 		if (jiraIssue == null || gitClient == null) {
+			LOGGER.error(
+					"Commit messages cannot be posted to Jira issue comment because preconditions are not fullfilled.");
 			return new ArrayList<>();
 		}
 		List<Comment> newComments = new ArrayList<>();

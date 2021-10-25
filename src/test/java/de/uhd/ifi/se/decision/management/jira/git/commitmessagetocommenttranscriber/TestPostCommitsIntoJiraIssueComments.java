@@ -9,7 +9,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
+import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
@@ -19,6 +21,11 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setPostDefaultBranchCommitsActivated(true);
+		gitConfig.setPostFeatureBranchCommitsActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		transcriber = new CommitMessageToCommentTranscriber(issue);
 	}
