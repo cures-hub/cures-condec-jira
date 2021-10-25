@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscriber;
+package de.uhd.ifi.se.decision.management.jira.git;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
