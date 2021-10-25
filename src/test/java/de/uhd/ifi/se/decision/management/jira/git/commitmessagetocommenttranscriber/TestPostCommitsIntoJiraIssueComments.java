@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.filtering;
+package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscriber;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,6 +36,7 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		transcriber = new CommitMessageToCommentTranscriber(issue);
+		transcriber.setGitClient(gitClient);
 	}
 
 	@Test

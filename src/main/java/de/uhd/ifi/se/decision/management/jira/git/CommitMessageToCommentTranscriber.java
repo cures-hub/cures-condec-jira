@@ -41,8 +41,7 @@ public class CommitMessageToCommentTranscriber {
 	public CommitMessageToCommentTranscriber(Issue jiraIssue) {
 		this.jiraIssue = jiraIssue;
 		if (jiraIssue != null) {
-			System.out.println("key: " + jiraIssue.getProjectObject().getKey());
-			this.gitClient = GitClient.getInstance(jiraIssue.getProjectObject().getKey());
+			gitClient = GitClient.getInstance(jiraIssue.getProjectObject().getKey());
 		}
 	}
 
@@ -180,5 +179,9 @@ public class CommitMessageToCommentTranscriber {
 	public static String generateRegexToFindAllTags(String tag) {
 		return RationaleFromCommitMessageParser.generateRegexForOpenTag(tag) + "|"
 				+ RationaleFromCommitMessageParser.generateRegexForCloseTag(tag);
+	}
+
+	public void setGitClient(GitClient gitClient) {
+		this.gitClient = gitClient;
 	}
 }
