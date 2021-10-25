@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscr
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -11,11 +10,8 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
-import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 
-@Data(MockDatabase.class)
 public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	private CommitMessageToCommentTranscriber transcriber;
@@ -29,7 +25,6 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testPostCommits() {
 		assertEquals(4, transcriber.postCommitsIntoJiraIssueComments().size());
 	}
@@ -49,14 +44,12 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testPostFeatureBranchCommits() {
 		assertEquals(4, transcriber.postFeatureBranchCommits().size());
 	}
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testPostCommitsAlreadyPosted() {
 		assertEquals(4, transcriber.postCommitsIntoJiraIssueComments().size());
 		assertEquals(0, transcriber.postCommitsIntoJiraIssueComments().size());
