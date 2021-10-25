@@ -71,6 +71,7 @@ public class CommitMessageToCommentTranscriber {
 
 	public List<Comment> postFeatureBranchCommits() {
 		System.err.println("postFeatureBranchCommits");
+		System.err.println("jira issue key: " + jiraIssue.getKey());
 		System.err.println("num branches: " + gitClient.getBranches(jiraIssue.getKey()).size());
 		List<Comment> newComments = new ArrayList<>();
 		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
