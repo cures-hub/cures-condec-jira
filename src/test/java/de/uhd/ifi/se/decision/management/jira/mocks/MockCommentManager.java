@@ -28,6 +28,10 @@ public class MockCommentManager implements CommentManager {
 
 	private List<Comment> comments;
 
+	public MockCommentManager() {
+		comments = new ArrayList<>();
+	}
+
 	@Override
 	public List<Comment> getCommentsForUser(Issue issue, ApplicationUser applicationUser) {
 		return null;
@@ -46,7 +50,7 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public Comment getLastComment(Issue issue) {
-		return this.comments.get(0);
+		return comments.get(0);
 	}
 
 	@Nonnull
@@ -59,17 +63,11 @@ public class MockCommentManager implements CommentManager {
 	@Override
 	public List<Comment> getComments(Issue issue) {
 		((MockIssue) issue).setIssueTypeId("alternative");
-		if (this.comments == null) {
-			return new ArrayList<Comment>();
-		}
-		return this.comments;
+		return comments;
 	}
 
 	@Override
 	public Comment create(Issue issue, ApplicationUser applicationUser, String string, boolean dispatchEvent) {
-		if (comments == null) {
-			comments = new ArrayList<Comment>();
-		}
 		Comment comment = new MockComment((long) 1337, applicationUser.getName(), string, null, null, new Date(),
 				issue);
 		comments.add(comment);
@@ -150,9 +148,6 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public Comment getCommentById(Long id) {
-		if (comments == null) {
-			return null;
-		}
 		for (Comment comment : comments) {
 			if (comment.getId() == id) {
 				return comment;
@@ -166,8 +161,8 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public MutableComment getMutableComment(Long aLong) {
-		if (this.comments != null && this.comments.size() > 0) {
-			return (MutableComment) this.comments.get(0);
+		if (comments.size() > 0) {
+			return (MutableComment) comments.get(0);
 		}
 		return null;
 	}
@@ -175,13 +170,13 @@ public class MockCommentManager implements CommentManager {
 	@Override
 	public void update(Comment comment, boolean b) {
 		int index = 0;
-		for (int i = 0; i < this.comments.size(); i++) {
-			if (this.comments.get(i).getId() == comment.getId()) {
+		for (int i = 0; i < comments.size(); i++) {
+			if (comments.get(i).getId() == comment.getId()) {
 				index = i;
 			}
 		}
-		this.comments.remove(index);
-		this.comments.add(comment);
+		comments.remove(index);
+		comments.add(comment);
 	}
 
 	@Override
@@ -206,7 +201,7 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public ChangeItemBean delete(Comment comment) {
-		this.comments.remove(comment);
+		comments.remove(comment);
 		return null;
 	}
 
