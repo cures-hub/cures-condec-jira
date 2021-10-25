@@ -16,7 +16,6 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 
-import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -44,10 +43,6 @@ public class CommitMessageToCommentTranscriber {
 		if (jiraIssue != null) {
 			this.gitClient = GitClient.getInstance(jiraIssue.getProjectObject().getKey());
 		}
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setPostDefaultBranchCommitsActivated(true);
-		gitConfig.setPostFeatureBranchCommitsActivated(true);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 	}
 
 	/**
@@ -55,11 +50,13 @@ public class CommitMessageToCommentTranscriber {
 	 *         already posted, an empty list is returned.
 	 */
 	public List<Comment> postCommitsIntoJiraIssueComments() {
+		System.out.println("postCommitsIntoJiraIssueComments");
 		if (jiraIssue == null || gitClient == null) {
 			LOGGER.error(
 					"Commit messages cannot be posted to Jira issue comment because preconditions are not fullfilled.");
 			return new ArrayList<>();
 		}
+		System.out.println("git client not null");
 		List<Comment> newComments = new ArrayList<>();
 		String projectKey = jiraIssue.getProjectObject().getKey();
 		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isPostFeatureBranchCommitsActivated()) {
@@ -72,6 +69,7 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
+		System.out.println("postFeatureBranchCommits");
 		List<Comment> newComments = new ArrayList<>();
 		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
 			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
@@ -82,6 +80,7 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
+		System.out.println("postDefaultBranchCommits");
 		List<Comment> newComments = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepository : gitClient.getGitClientsForSingleRepos()) {
 			Ref branch = gitClientForSingleRepository.getDefaultBranch();
