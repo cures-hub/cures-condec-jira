@@ -27,6 +27,7 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
+		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		transcriber = new CommitMessageToCommentTranscriber(issue);
 	}
 

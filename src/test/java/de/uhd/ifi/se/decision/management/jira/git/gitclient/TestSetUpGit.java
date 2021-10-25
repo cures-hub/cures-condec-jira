@@ -77,8 +77,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
-		gitConfig.setPostDefaultBranchCommitsActivated(false);
-		gitConfig.setPostFeatureBranchCommitsActivated(false);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		gitClient = GitClient.getInstance("TEST");
 		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
