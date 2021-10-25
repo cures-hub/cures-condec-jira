@@ -2,10 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscr
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,9 +38,6 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testPostCommits() {
-		Ref featureBranch = gitClient.getBranches("TEST-4").get(0);
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
-		assertEquals(5, commits.size());
 		assertEquals(4, transcriber.postCommitsIntoJiraIssueComments().size());
 	}
 

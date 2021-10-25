@@ -50,13 +50,11 @@ public class CommitMessageToCommentTranscriber {
 	 *         already posted, an empty list is returned.
 	 */
 	public List<Comment> postCommitsIntoJiraIssueComments() {
-		System.out.println("postCommitsIntoJiraIssueComments");
 		if (jiraIssue == null || gitClient == null) {
 			LOGGER.error(
 					"Commit messages cannot be posted to Jira issue comment because preconditions are not fullfilled.");
 			return new ArrayList<>();
 		}
-		System.out.println("git client not null");
 		List<Comment> newComments = new ArrayList<>();
 		String projectKey = jiraIssue.getProjectObject().getKey();
 		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isPostFeatureBranchCommitsActivated()) {
@@ -69,23 +67,16 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		System.err.println("postFeatureBranchCommits");
-		System.err.println("jira issue key: " + jiraIssue.getKey());
-		System.err.println("num branches: " + gitClient.getBranches(jiraIssue.getKey()).size());
 		List<Comment> newComments = new ArrayList<>();
 		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
-			System.err.println("branch: " + featureBranch.getName());
 			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
-			System.err.println("num commits: " + featureBranchCommits.size());
 			String uri = gitClient.getRepoUriFromBranch(featureBranch);
-			System.err.println("uri: " + uri);
 			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch, uri));
 		}
 		return newComments;
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
-		System.out.println("postDefaultBranchCommits");
 		List<Comment> newComments = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepository : gitClient.getGitClientsForSingleRepos()) {
 			Ref branch = gitClientForSingleRepository.getDefaultBranch();
@@ -114,19 +105,16 @@ public class CommitMessageToCommentTranscriber {
 	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch, String uri) {
 		String commentText = generateCommentString(commit, branch, uri);
 		if (commentText == null || commentText.isBlank()) {
-			System.out.println(
-					"Commit messages cannot be posted to Jira issue comment because comment text would be blank.");
+			LOGGER.warn("Commit messages cannot be posted to Jira issue comment because comment text would be blank.");
 			return null;
 		}
 		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(jiraIssue)) {
 			// if the hash of a commit is present in a comment, do not post it again
 			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
-				System.out.println("Already posted: " + commit.getName());
 				return null;
 			}
 		}
 		ApplicationUser user = getUser();
-		System.out.println("User: " + user);
 		return ComponentAccessor.getCommentManager().create(jiraIssue, user, commentText, true);
 	}
 
