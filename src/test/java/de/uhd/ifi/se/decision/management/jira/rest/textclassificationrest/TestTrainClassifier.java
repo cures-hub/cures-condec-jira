@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -52,6 +53,7 @@ public class TestTrainClassifier extends TestSetUp {
 	}
 
 	@Test
+	@Ignore
 	public void testRequestValidProjectKeyExistsTrainingFileNonExistentDefaultClassifierTypes() {
 		// ok because it falls back on the default training data
 		assertEquals(Status.OK.getStatusCode(),
