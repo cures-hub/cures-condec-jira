@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.git;
+package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscriber;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,6 +12,7 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
@@ -40,7 +41,7 @@ public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testPostCommits() {
-		Ref featureBranch = gitClient.getBranches("TEST-4.feature.branch").get(0);
+		Ref featureBranch = gitClient.getBranches("TEST-4").get(0);
 		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
 		assertEquals(5, commits.size());
 		assertEquals(4, transcriber.postCommitsIntoJiraIssueComments().size());
