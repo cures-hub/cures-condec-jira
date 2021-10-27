@@ -93,6 +93,10 @@ public class TextClassificationRest {
 			return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"The classifier could not be trained since the training file name is invalid.")).build();
 		}
+		File file = new File(TextClassifier.CLASSIFIER_DIRECTORY + trainingFileName);
+		if (!file.exists()) {
+			trainingFileName = "defaultTrainingData.csv";
+		}
 		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
 		if (classifier.train(trainingFileName, ClassifierType.valueOfOrDefault(binaryClassifierType),
