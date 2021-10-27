@@ -293,7 +293,6 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	@After
 	public void tidyUp() {
-		// gitClient.deleteRepositories();
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }
