@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -25,6 +26,7 @@ public class TestTrainClassifier extends TestSetUp {
 		classificationRest = new TextClassificationRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+		FileManager.copyDefaultTrainingDataToClassifierDirectory();
 	}
 
 	@Test
