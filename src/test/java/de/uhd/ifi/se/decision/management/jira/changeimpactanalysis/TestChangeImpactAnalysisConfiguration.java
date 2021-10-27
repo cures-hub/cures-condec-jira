@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map;

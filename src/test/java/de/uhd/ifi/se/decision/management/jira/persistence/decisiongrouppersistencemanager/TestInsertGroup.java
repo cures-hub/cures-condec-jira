@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Ignore;

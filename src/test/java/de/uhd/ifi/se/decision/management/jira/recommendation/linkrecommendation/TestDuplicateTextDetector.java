@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 

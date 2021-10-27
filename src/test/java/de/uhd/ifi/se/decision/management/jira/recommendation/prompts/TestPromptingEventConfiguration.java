@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.prompts;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;

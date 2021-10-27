@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
@@ -37,14 +37,13 @@ public class TestGetFilterSettings extends TestSetUp {
 
 	@Test
 	public void testRequestNullSearchTermEmptyElementEmpty() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-			viewRest.getFilterSettings(null, "", "").getStatus());
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), viewRest.getFilterSettings(null, "", "").getStatus());
 	}
 
 	@Test
 	public void testRequestFilledSearchTermEmptyElementNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-			viewRest.getFilterSettings(request, null, "").getStatus());
+				viewRest.getFilterSettings(request, null, "").getStatus());
 	}
 
 	@Test

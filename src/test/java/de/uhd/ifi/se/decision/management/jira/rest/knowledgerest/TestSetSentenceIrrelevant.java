@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
@@ -62,11 +62,9 @@ public class TestSetSentenceIrrelevant extends TestSetUp {
 	public void testRequestFilledElementFilled() {
 		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
 		sentence.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.setSentenceIrrelevant(request, sentence).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.setSentenceIrrelevant(request, sentence).getStatus());
 
-		sentence = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST")
-				.getJiraIssueTextManager()
+		sentence = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
 				.getKnowledgeElement(sentence);
 		assertFalse(sentence.isRelevant());
 		assertTrue(sentence.isValidated());

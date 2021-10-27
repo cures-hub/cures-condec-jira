@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 

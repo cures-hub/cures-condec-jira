@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
