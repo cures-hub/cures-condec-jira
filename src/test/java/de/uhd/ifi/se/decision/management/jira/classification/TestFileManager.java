@@ -57,11 +57,11 @@ public class TestFileManager extends TestSetUp {
 	}
 
 	@Test
-	@NonTransactional
 	@Ignore
+	@NonTransactional
 	public void testMockingOfClassifierDirectoryWorks() {
-		assertEquals(TextClassifier.CLASSIFIER_DIRECTORY, System.getProperty("user.home") + File.separator + "data" + File.separator
-				+ "condec-plugin" + File.separator + "classifier" + File.separator);
+		assertEquals(TextClassifier.CLASSIFIER_DIRECTORY, System.getProperty("user.home") + File.separator + "data"
+				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 
 }

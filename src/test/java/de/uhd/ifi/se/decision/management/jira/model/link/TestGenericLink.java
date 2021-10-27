@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -21,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -64,28 +62,6 @@ public class TestGenericLink extends TestSetUp {
 
 		assertTrue(link.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
 		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
-	}
-
-	/*
-	 * The constructor was removed!
-	 */
-	@Test
-	@Ignore
-	@NonTransactional
-	public void testThirdConstructor() {
-		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
-				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
-		KnowledgeElement element = new KnowledgeElement(issue);
-		PartOfJiraIssueText sentence = sentences.get(0);
-		Link link = new Link(sentence, element, LinkType.getDefaultLinkType());
-		assertTrue(link.getTarget().getId() == issue.getId());
-		assertTrue(link.getSource().getId() == sentence.getId());
-
-		assertTrue(link.getTarget().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
-		assertTrue(link.getSource().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
-		assertTrue(link.getTypeAsString().equals("contain"));
 	}
 
 	@Test
