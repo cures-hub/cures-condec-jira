@@ -60,10 +60,10 @@ public class TestCreateLink extends TestSetUp {
 		List<PartOfJiraIssueText> comment = JiraIssues
 				.getSentencesForCommentText("{issue} testobject {issue} {decision} testobject {decision}");
 		PartOfJiraIssueText sentenceIssue = comment.get(0);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertKnowledgeElement(sentenceIssue,
+		KnowledgePersistenceManager.getInstance("TEST").insertKnowledgeElement(sentenceIssue,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		PartOfJiraIssueText sentenceDecision = comment.get(1);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertKnowledgeElement(sentenceDecision,
+		KnowledgePersistenceManager.getInstance("TEST").insertKnowledgeElement(sentenceDecision,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest
@@ -76,7 +76,7 @@ public class TestCreateLink extends TestSetUp {
 	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledDocumentationLocationDifferLinkTypeNull() {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertKnowledgeElement(sentence,
+		KnowledgePersistenceManager.getInstance("TEST").insertKnowledgeElement(sentence,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", 4, "i", sentence.getId(), "s", null).getStatus());

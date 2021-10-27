@@ -57,7 +57,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
 		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(322, KnowledgeType.PRO);
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
 		assertTrue(argumentCompletenessCheck.execute(proArgument));
 	}
@@ -112,7 +112,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ARGUMENT, proArgument.getType().replaceProAndConWithArgument());
 		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(322, KnowledgeType.PRO);
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(proArgument, alternative, user);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
 		assertTrue(argumentCompletenessCheck.getQualityProblems(proArgument, definitionOfDone).isEmpty());
 	}

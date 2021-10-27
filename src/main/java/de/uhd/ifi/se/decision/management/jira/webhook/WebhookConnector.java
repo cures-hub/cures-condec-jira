@@ -95,7 +95,7 @@ public class WebhookConnector {
 			}
 		}
 
-		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey)
+		boolean isDeleted = KnowledgePersistenceManager.getInstance(projectKey)
 				.deleteKnowledgeElement(elementToBeDeleted, user);
 		if (isDeleted) {
 			isDeleted = postKnowledgeTrees(rootElements);

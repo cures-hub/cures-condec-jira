@@ -125,7 +125,7 @@ public class LinkRecommendationRest {
 		try {
 			// we do not want to create a new project here!
 			if (ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey) != null) {
-				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 				knowledgeElement = persistenceManager.getKnowledgeElement(elementId, elementLocation);
 			}
 

@@ -465,7 +465,7 @@ public class KnowledgeElement {
 	 * @return true if the element exists in database.
 	 */
 	public boolean existsInDatabase() {
-		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
+		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance("").getKnowledgeElement(id,
 				documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
@@ -495,7 +495,7 @@ public class KnowledgeElement {
 	 */
 	public ApplicationUser getCreator() {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(project.getProjectKey());
+				.getInstance(project.getProjectKey());
 		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			return persistenceManager.getJiraIssueManager().getCreator(this);
 		}

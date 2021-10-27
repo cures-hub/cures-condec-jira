@@ -25,7 +25,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		manager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
+		manager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 

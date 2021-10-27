@@ -51,7 +51,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testSecondConstructor() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		KnowledgeElement element = new KnowledgeElement(issue);
@@ -69,7 +69,7 @@ public class TestGenericLink extends TestSetUp {
 	public void testSimpleLink() {
 		KnowledgeElement element = new KnowledgeElement(issue);
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
@@ -85,7 +85,7 @@ public class TestGenericLink extends TestSetUp {
 	public void testSimpleLinkFlipped() {
 		KnowledgeElement element = new KnowledgeElement(issue);
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
@@ -101,7 +101,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testLinkSentenceSentence() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText s = sentences.get(0);
@@ -151,7 +151,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		PartOfJiraIssueText sentence = sentences.get(0);
@@ -173,7 +173,7 @@ public class TestGenericLink extends TestSetUp {
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		// JiraIssueComment comment = new JiraIssueCommentImpl();

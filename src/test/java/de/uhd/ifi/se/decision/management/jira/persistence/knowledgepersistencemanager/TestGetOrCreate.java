@@ -23,26 +23,26 @@ public class TestGetOrCreate extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testProjectKeyValid() {
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
-		assertEquals(manager, KnowledgePersistenceManager.getOrCreate("TEST"));
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance("TEST");
+		assertEquals(manager, KnowledgePersistenceManager.getInstance("TEST"));
 		assertEquals("TEST", manager.getProjectKey());
 	}
 
 	@Test
 	@NonTransactional
 	public void testProjectValid() {
-		assertNotNull(KnowledgePersistenceManager.getOrCreate(new DecisionKnowledgeProject("TEST")));
+		assertNotNull(KnowledgePersistenceManager.getInstance(new DecisionKnowledgeProject("TEST")));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	@NonTransactional
 	public void testProjectKeyNull() {
-		KnowledgePersistenceManager.getOrCreate((String) null);
+		KnowledgePersistenceManager.getInstance((String) null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	@NonTransactional
 	public void testProjectNull() {
-		KnowledgePersistenceManager.getOrCreate((DecisionKnowledgeProject) null);
+		KnowledgePersistenceManager.getInstance((DecisionKnowledgeProject) null);
 	}
 }

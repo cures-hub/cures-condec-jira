@@ -70,7 +70,7 @@ public class TestDecisionCheck extends TestSetUp {
 		assertFalse(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
 
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(decision, pro, user);
 
 		assertTrue(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
 
@@ -97,7 +97,7 @@ public class TestDecisionCheck extends TestSetUp {
 		definitionOfDone.setDecisionLinkedToPro(true);
 
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro, user);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(decision, pro, user);
 
 		assertTrue(decisionCompletenessCheck.execute(decision));
 	}

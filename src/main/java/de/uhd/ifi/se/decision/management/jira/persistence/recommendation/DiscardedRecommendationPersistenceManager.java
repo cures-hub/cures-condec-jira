@@ -59,7 +59,7 @@ public class DiscardedRecommendationPersistenceManager {
 						Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND TYPE = ?",
 								origin.getProject().getProjectKey(), origin.getId(), type)));
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(origin.getProject().getProjectKey());
+				.getInstance(origin.getProject().getProjectKey());
 
 		for (DiscardedRecommendationInDatabase discardedLinkSuggestion : discardedLinkSuggestions
 				.orElseGet(() -> new DiscardedRecommendationInDatabase[0])) {

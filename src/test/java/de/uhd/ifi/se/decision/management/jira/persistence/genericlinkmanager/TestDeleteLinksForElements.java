@@ -34,7 +34,7 @@ public class TestDeleteLinksForElements extends TestSetUp {
 		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
 		Link link = new Link(elementJiraIssue, element);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(link, null);
 		assertTrue(GenericLinkManager.deleteLinksForElement(1, DocumentationLocation.JIRAISSUE));
 	}
 }

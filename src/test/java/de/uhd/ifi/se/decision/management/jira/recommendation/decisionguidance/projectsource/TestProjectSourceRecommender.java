@@ -63,12 +63,12 @@ public class TestProjectSourceRecommender extends TestSetUp {
 	public void testWithArgument() {
 		KnowledgeElement alternative = KnowledgeElements.getDecision();
 		KnowledgeElement con = JiraIssues.addElementToDataBase(42, KnowledgeType.CON);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(alternative, con,
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(alternative, con,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 
 		KnowledgeElement decision = KnowledgeElements.getDecision();
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(decision, pro,
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(decision, pro,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();

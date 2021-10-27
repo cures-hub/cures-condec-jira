@@ -198,7 +198,7 @@ public class TextClassificationRest {
 		}
 		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText(
 				projectKey);
-		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		for (Issue issue : jiraIssuesPerProject) {
 			classificationManager.classifyDescriptionAndAllComments(issue);
@@ -249,7 +249,7 @@ public class TextClassificationRest {
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
 					.build();
 		}
-		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
 		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();

@@ -34,7 +34,7 @@ public class TestRemoveRecommendations extends TestSetUp {
 	public void testValid() {
 		PartOfJiraIssueText recommendation = JiraIssues.addElementToDataBase();
 		recommendation.setStatus(KnowledgeStatus.RECOMMENDED);
-		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(recommendation, null);
+		KnowledgePersistenceManager.getInstance("TEST").updateKnowledgeElement(recommendation, null);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.removeRecommendationsForKnowledgeElement(request, 1L).getStatus());
 	}

@@ -16,7 +16,7 @@ public class TestGetDuplicatesForIssue extends TestConsistencyRestSuper {
 	@Test
 	public void testGetDuplicatesForIssue() {
 		KnowledgeElement knowledgeElement = new KnowledgeElement(issues.get(0));
-		KnowledgePersistenceManager.getOrCreate(knowledgeElement.getProject().getProjectKey());
+		KnowledgePersistenceManager.getInstance(knowledgeElement.getProject().getProjectKey());
 		Response response = consistencyRest.getDuplicateKnowledgeElements(request,
 				knowledgeElement.getProject().getProjectKey(), knowledgeElement.getId(),
 				knowledgeElement.getDocumentationLocationAsString());

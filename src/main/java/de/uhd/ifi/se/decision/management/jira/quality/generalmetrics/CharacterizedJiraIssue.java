@@ -25,7 +25,7 @@ public class CharacterizedJiraIssue {
 
 		String projectKey = jiraIssue.getProjectObject().getKey();
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 		for (Comment comment : comments) {
 			List<PartOfJiraIssueText> elements = persistenceManager.getElementsInComment(comment.getId());

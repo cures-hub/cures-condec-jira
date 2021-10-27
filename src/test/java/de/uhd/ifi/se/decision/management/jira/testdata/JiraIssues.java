@@ -137,7 +137,7 @@ public class JiraIssues {
 		List<PartOfJiraIssueText> comment = JiraIssues.getSentencesForCommentText("{issue} testobject {issue}");
 		PartOfJiraIssueText sentence = comment.get(0);
 		sentence.setJiraIssue(issue.getId());
-		KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager().insertKnowledgeElement(sentence,
+		KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager().insertKnowledgeElement(sentence,
 			JiraUsers.SYS_ADMIN.getApplicationUser());
 		GenericLinkManager.insertLink(new Link(new KnowledgeElement(issue), sentence),
 			JiraUsers.SYS_ADMIN.getApplicationUser());
@@ -170,7 +170,7 @@ public class JiraIssues {
 		element.setValidated(false);
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
+		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager()
 			.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		return element;
 	}
@@ -186,7 +186,7 @@ public class JiraIssues {
 		element.setValidated(true);
 		element.setDescription("Old");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
+		element = (PartOfJiraIssueText) KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager()
 			.insertKnowledgeElement(element, JiraUsers.SYS_ADMIN.getApplicationUser());
 		return element;
 	}
@@ -197,7 +197,7 @@ public class JiraIssues {
 		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.createApplicationUser();
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 			.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
 		return sentences;

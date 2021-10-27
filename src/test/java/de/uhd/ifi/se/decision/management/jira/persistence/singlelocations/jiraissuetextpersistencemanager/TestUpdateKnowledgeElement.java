@@ -33,7 +33,7 @@ public class TestUpdateKnowledgeElement extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		manager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
+		manager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 

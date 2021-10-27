@@ -74,7 +74,7 @@ public class KnowledgeRest {
 			KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 			knowledgeElement = graph.getElementById(id);
 		} else {
-			KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+			KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 			knowledgeElement = persistenceManager.getKnowledgeElement(id, documentationLocationIdentifier);
 		}
 		if (knowledgeElement != null) {
@@ -109,7 +109,7 @@ public class KnowledgeRest {
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 		KnowledgeElement element = persistenceManager.getKnowledgeElement(id, documentationLocation);
 		if (element == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -167,7 +167,7 @@ public class KnowledgeRest {
 		}
 
 		String projectKey = element.getProject().getProjectKey();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
@@ -211,7 +211,7 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(element.getProject());
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(element.getProject());
 
 		KnowledgeElement formerElement = persistenceManager.getKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
@@ -256,7 +256,7 @@ public class KnowledgeRest {
 		String projectKey = knowledgeElement.getProject().getProjectKey();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		boolean isDeleted = KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(knowledgeElement,
+		boolean isDeleted = KnowledgePersistenceManager.getInstance(projectKey).deleteKnowledgeElement(knowledgeElement,
 				user);
 		if (isDeleted) {
 			return Response.status(Status.OK).entity(true).build();
@@ -290,7 +290,7 @@ public class KnowledgeRest {
 				}
 			}
 		}
-		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(sourceId,
+		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(sourceId,
 				location);
 		DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element);
 		inheritGroupAssignment(groupsToAssign, element);
@@ -356,7 +356,7 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 
 		KnowledgeElement parentElement = persistenceManager.getKnowledgeElement(idOfParent,
 				documentationLocationOfParent);
@@ -403,7 +403,7 @@ public class KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 
 		// to fill knowledge types
 		link.setSourceElement(persistenceManager.getKnowledgeElement(link.getSource()));
@@ -456,7 +456,7 @@ public class KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(decisionKnowledgeElement.getProject().getProjectKey()).getJiraIssueTextManager();
+				.getInstance(decisionKnowledgeElement.getProject().getProjectKey()).getJiraIssueTextManager();
 		Issue issue = persistenceManager.createJiraIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {
@@ -483,7 +483,7 @@ public class KnowledgeRest {
 		}
 
 		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
@@ -533,7 +533,7 @@ public class KnowledgeRest {
 		}
 
 		String projectKey = knowledgeElement.getProject().getProjectKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(knowledgeElement);
 		if (sentence == null) {
@@ -577,7 +577,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		String projectKey = jiraIssue.getProjectObject().getKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 
 		persistenceManager.deleteElementsInJiraIssue(jiraIssue);

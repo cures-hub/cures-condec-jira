@@ -63,7 +63,7 @@ import net.java.ao.test.jdbc.NonTransactional;public class TestSetSentenceValida
 		PartOfJiraIssueText sentence = JiraIssues.addNonValidatedElementToDataBase(120, KnowledgeType.ALTERNATIVE);
 		assertEquals(Response.Status.OK.getStatusCode(),
 				knowledgeRest.setSentenceValidated(request, sentence).getStatus());
-		PartOfJiraIssueText updatedElement = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("Test")
+		PartOfJiraIssueText updatedElement = (PartOfJiraIssueText) KnowledgePersistenceManager.getInstance("Test")
 				.getJiraIssueTextManager().getKnowledgeElement(sentence.getId());
 
 		assertTrue(updatedElement.isValidated());

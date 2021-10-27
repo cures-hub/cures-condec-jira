@@ -33,7 +33,7 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 		sentences = JiraIssues
 				.getSentencesForCommentText("Thanks for updating the unit tests! We expect this to be irrelevant. "
 						+ "How can we implement? The previous sentence should be much more relevant");
-		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
+		persistenceManager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager();
 	}
 
 	@Test

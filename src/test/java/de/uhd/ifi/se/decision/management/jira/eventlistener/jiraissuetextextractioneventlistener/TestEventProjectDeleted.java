@@ -20,7 +20,7 @@ public class TestEventProjectDeleted extends TestSetUpEventListener {
 		listener.onProjectDeletedEvent(null);
 
 		JiraIssues.addElementToDataBase();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		assertTrue(persistenceManager.getKnowledgeElements().size() > 0);
 

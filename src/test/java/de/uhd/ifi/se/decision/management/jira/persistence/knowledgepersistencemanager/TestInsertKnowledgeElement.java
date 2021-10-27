@@ -25,7 +25,7 @@ public class TestInsertKnowledgeElement extends TestSetUp {
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate("TEST");
+		knowledgePersistenceManager = KnowledgePersistenceManager.getInstance("TEST");
 	}
 
 	@Test

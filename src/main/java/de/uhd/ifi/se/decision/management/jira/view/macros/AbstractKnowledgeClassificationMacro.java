@@ -84,7 +84,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	protected KnowledgeElement getElement(RenderContext renderContext, String body, KnowledgeType type) {
 		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
 			String projectKey = getProjectKey(renderContext);
-			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 					.getJiraIssueTextManager();
 			String summary = body.replace("<p>", "").replace("</p>", "").trim().replaceAll("<[^>]*>", "");
 			long jiraIssueId = getJiraIssueId(renderContext);

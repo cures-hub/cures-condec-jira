@@ -136,7 +136,7 @@ public class DecisionGroupPersistenceManager {
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
 			String projectKey = databaseEntry.getProjectKey();
-			KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey)
+			KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey)
 					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
 			if (element == null || databaseEntry.getGroup().isBlank()) {
 				isGroupDeleted = true;

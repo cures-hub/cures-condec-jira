@@ -64,7 +64,7 @@ public class TestSetSentenceIrrelevant extends TestSetUp {
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Status.OK.getStatusCode(), knowledgeRest.setSentenceIrrelevant(request, sentence).getStatus());
 
-		sentence = (PartOfJiraIssueText) KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager()
+		sentence = (PartOfJiraIssueText) KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager()
 				.getKnowledgeElement(sentence);
 		assertFalse(sentence.isRelevant());
 		assertTrue(sentence.isValidated());

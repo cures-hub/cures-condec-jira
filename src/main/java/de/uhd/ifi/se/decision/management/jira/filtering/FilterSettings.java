@@ -460,13 +460,13 @@ public class FilterSettings {
 		}
 		AbstractPersistenceManagerForSingleLocation persistenceManager;
 		if (elementKey.contains(":code")) {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
+			persistenceManager = KnowledgePersistenceManager.getInstance(project)
 					.getManagerForSingleLocation(DocumentationLocation.CODE);
 		} else if (elementKey.contains(":")) {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(project)
+			persistenceManager = KnowledgePersistenceManager.getInstance(project)
 					.getManagerForSingleLocation(DocumentationLocation.JIRAISSUETEXT);
 		} else {
-			persistenceManager = KnowledgePersistenceManager.getOrCreate(project).getJiraIssueManager();
+			persistenceManager = KnowledgePersistenceManager.getInstance(project).getJiraIssueManager();
 		}
 		selectedElement = persistenceManager.getKnowledgeElement(elementKey);
 	}

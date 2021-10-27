@@ -48,13 +48,13 @@ public class AutomaticLinkCreator {
 			return linkId;
 		}
 		KnowledgeElement lastElement = getPotentialParentElement(element);
-		linkId = KnowledgePersistenceManager.getOrCreate(element.getProject()).insertLink(lastElement, element, null);
+		linkId = KnowledgePersistenceManager.getInstance(element.getProject()).insertLink(lastElement, element, null);
 		return linkId;
 	}
 
 	public static KnowledgeElement getPotentialParentElement(KnowledgeElement element) {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(element.getProject()).getJiraIssueTextManager();
+				.getInstance(element.getProject()).getJiraIssueTextManager();
 		List<KnowledgeElement> otherElements = persistenceManager
 				.getElementsInJiraIssue(element.getJiraIssue().getId());
 		KnowledgeElement potentialParentElement = getPotentialParentElement(element, otherElements);

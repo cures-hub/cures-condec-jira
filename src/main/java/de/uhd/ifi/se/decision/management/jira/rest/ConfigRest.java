@@ -320,7 +320,7 @@ public class ConfigRest {
 		if (id == -1 || location == null || projectKey == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
+		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(id,
 				location);
 		if (element != null) {
 			List<String> groups = element.getDecisionGroups();
@@ -421,7 +421,7 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		persistenceManager.deleteInvalidElements(user);
