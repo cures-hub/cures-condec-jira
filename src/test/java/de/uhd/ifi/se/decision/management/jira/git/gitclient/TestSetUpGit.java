@@ -15,8 +15,8 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
@@ -25,11 +25,9 @@ import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import net.java.ao.test.jdbc.Data;
 
 /**
  * @issue Should we have one or more git repositories for testing?
@@ -44,7 +42,6 @@ import net.java.ao.test.jdbc.Data;
  * @alternative We could have more than one mock git repositories for testing!
  * @con we do not have time for it at the moment..
  */
-@Data(MockDatabase.class)
 public abstract class TestSetUpGit extends TestSetUp {
 
 	public static String GIT_URI = getExampleUri();
@@ -56,10 +53,14 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
 	private static int commitTime = 0;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		init();
 		mockGitRepository();
+		createJiraIssueForGitTests();
+	}
+
+	public void createJiraIssueForGitTests() {
 		mockJiraIssueForGitTests = new MockIssue();
 		mockJiraIssueForGitTestsTangled = new MockIssue();
 		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();
@@ -290,7 +291,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void tidyUp() {
 		// gitClient.deleteRepositories();
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();

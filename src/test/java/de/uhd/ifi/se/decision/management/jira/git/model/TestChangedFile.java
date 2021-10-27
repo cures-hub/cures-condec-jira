@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 
@@ -23,7 +23,7 @@ public class TestChangedFile extends TestSetUpGit {
 	private ChangedFile changedFile;
 
 	@Override
-	@Before
+	@BeforeEach
 	public void setUp() {
 		super.setUp();
 		changedFile = TestDiff.createDiff(mockJiraIssueForGitTestsTangledSingleCommit).getChangedFiles().get(0);

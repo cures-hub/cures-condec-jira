@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.atlassian.jira.component.ComponentAccessor;
 
@@ -18,7 +18,7 @@ public class TestGenerateCommentString extends TestSetUpGit {
 	private Ref branch;
 
 	@Override
-	@Before
+	@BeforeEach
 	public void setUp() {
 		super.setUp();
 		branch = gitClient.getBranches("TEST-4.feature.branch").get(0);
