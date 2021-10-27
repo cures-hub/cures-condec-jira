@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDeleteRepositories extends TestSetUpGit {
@@ -12,8 +13,8 @@ public class TestDeleteRepositories extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testDeleteRepositoryNotNull() {
-		assertTrue(gitClient.deleteRepositories());
-		assertNotNull(gitClient);
+		assertTrue(GitClient.getInstance("TEST").deleteRepositories());
+		assertNotNull(GitClient.getInstance("TEST"));
 	}
 
 }
