@@ -24,7 +24,7 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraph("TEST");
+		graph = KnowledgeGraph.getInstance("TEST");
 		element = JiraIssues.addElementToDataBase();
 	}
 

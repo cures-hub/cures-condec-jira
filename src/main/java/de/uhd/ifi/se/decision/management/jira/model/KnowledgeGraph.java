@@ -68,8 +68,18 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		if (instances.containsKey(projectKey)) {
 			return instances.get(projectKey);
 		}
-		KnowledgeGraph knowledgeGraph = new KnowledgeGraph(projectKey);
+		KnowledgeGraph knowledgeGraph = new KnowledgeGraph();
 		instances.put(projectKey, knowledgeGraph);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		for (KnowledgeElement element : persistenceManager.getKnowledgeElements()) {
+			knowledgeGraph.addVertex(element);
+			for (Link link : persistenceManager.getLinks(element)) {
+				if (!knowledgeGraph.linkIds.contains(link.getId())) {
+					knowledgeGraph.addEdge(link);
+					knowledgeGraph.linkIds.add(link.getId());
+				}
+			}
+		}
 		return knowledgeGraph;
 	}
 
@@ -80,23 +90,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return getInstance(project.getProjectKey());
 	}
 
-	public KnowledgeGraph() {
+	private KnowledgeGraph() {
 		super(Link.class);
 		linkIds = new HashSet<>();
-	}
-
-	public KnowledgeGraph(String projectKey) {
-		this();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		for (KnowledgeElement element : persistenceManager.getKnowledgeElements()) {
-			addVertex(element);
-			for (Link link : persistenceManager.getLinks(element)) {
-				if (!linkIds.contains(link.getId())) {
-					addEdge(link);
-					linkIds.add(link.getId());
-				}
-			}
-		}
 	}
 
 	/**
