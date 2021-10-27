@@ -55,8 +55,7 @@ public class TestTrainClassifier extends TestSetUp {
 
 	@Test
 	public void testRequestValidProjectKeyExistsTrainingFileNonExistentDefaultClassifierTypes() {
-		// ok because it falls back on the default training data
-		assertEquals(Status.OK.getStatusCode(),
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.trainClassifier(request, "TEST", "fake.csv", "", null).getStatus());
 	}
 

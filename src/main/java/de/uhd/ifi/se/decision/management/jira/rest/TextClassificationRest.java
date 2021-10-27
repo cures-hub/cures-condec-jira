@@ -89,16 +89,12 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (trainingFileName == null || trainingFileName.isEmpty()) {
+		if (trainingFileName == null || trainingFileName.isEmpty()
+				|| !new File(TextClassifier.CLASSIFIER_DIRECTORY + trainingFileName).exists()) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"The classifier could not be trained since the training file name is invalid.")).build();
 		}
-		File file = new File(TextClassifier.CLASSIFIER_DIRECTORY + trainingFileName);
-		if (!file.exists()) {
-			ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, "defaultTrainingData.csv");
-		} else {
-			ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
-		}
+		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
 		if (classifier.train(trainingFileName, ClassifierType.valueOfOrDefault(binaryClassifierType),
 				ClassifierType.valueOfOrDefault(fineGrainedClassifierType))) {
