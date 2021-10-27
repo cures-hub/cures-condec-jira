@@ -88,27 +88,21 @@ public class GitClient {
 			return null;
 		}
 		if (extractAllCodeKnowledge) {
-			new Thread(() -> {
-				Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-				new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
-			}).start();
+			Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
 		}
 		return gitClient;
 	}
 
 	private GitClient(String projectKey) {
-		this();
 		this.projectKey = projectKey;
+		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 		for (GitRepositoryConfiguration gitRepositoryConfiguration : ConfigPersistenceManager
 				.getGitConfiguration(projectKey).getGitRepoConfigurations()) {
 			if (gitRepositoryConfiguration.isValid()) {
 				gitClientsForSingleRepos.add(new GitClientForSingleRepository(projectKey, gitRepositoryConfiguration));
 			}
 		}
-	}
-
-	public GitClient() {
-		gitClientsForSingleRepos = new ArrayList<GitClientForSingleRepository>();
 	}
 
 	private boolean fetchOrCloneRepositories() {

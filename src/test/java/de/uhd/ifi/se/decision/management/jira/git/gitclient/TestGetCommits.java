@@ -11,8 +11,6 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.git.GitClient;
-
 public class TestGetCommits extends TestSetUpGit {
 
 	@Test
@@ -33,13 +31,6 @@ public class TestGetCommits extends TestSetUpGit {
 	@Test
 	public void testJiraIssueNull() {
 		List<RevCommit> commits = gitClient.getCommits((Issue) null);
-		assertEquals(0, commits.size());
-	}
-
-	@Test
-	public void testGitNull() {
-		GitClient gitClient = new GitClient();
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		assertEquals(0, commits.size());
 	}
 }

@@ -95,9 +95,10 @@ public class TextClassificationRest {
 		}
 		File file = new File(TextClassifier.CLASSIFIER_DIRECTORY + trainingFileName);
 		if (!file.exists()) {
-			trainingFileName = "defaultTrainingData.csv";
+			ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, "defaultTrainingData.csv");
+		} else {
+			ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
 		}
-		ConfigPersistenceManager.setTrainingFileForClassifier(projectKey, trainingFileName);
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
 		if (classifier.train(trainingFileName, ClassifierType.valueOfOrDefault(binaryClassifierType),
 				ClassifierType.valueOfOrDefault(fineGrainedClassifierType))) {
