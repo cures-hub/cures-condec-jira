@@ -70,17 +70,21 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		}
 		KnowledgeGraph knowledgeGraph = new KnowledgeGraph();
 		instances.put(projectKey, knowledgeGraph);
+		knowledgeGraph.fillKnowledgeGraphWithPersistedData(projectKey);
+		return knowledgeGraph;
+	}
+
+	private void fillKnowledgeGraphWithPersistedData(String projectKey) {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
 		for (KnowledgeElement element : persistenceManager.getKnowledgeElements()) {
-			knowledgeGraph.addVertex(element);
+			addVertex(element);
 			for (Link link : persistenceManager.getLinks(element)) {
-				if (!knowledgeGraph.linkIds.contains(link.getId())) {
-					knowledgeGraph.addEdge(link);
-					knowledgeGraph.linkIds.add(link.getId());
+				if (!linkIds.contains(link.getId())) {
+					addEdge(link);
+					linkIds.add(link.getId());
 				}
 			}
 		}
-		return knowledgeGraph;
 	}
 
 	public static KnowledgeGraph getInstance(DecisionKnowledgeProject project) {

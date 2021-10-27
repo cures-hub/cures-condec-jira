@@ -73,8 +73,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
 		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
-		String projectKey = sentence.getProject().getProjectKey();
-		graph = KnowledgeGraph.getInstance(projectKey);
+		graph.addVertex(sentence);
 		assertTrue(graph.containsVertex(sentence));
 	}
 
