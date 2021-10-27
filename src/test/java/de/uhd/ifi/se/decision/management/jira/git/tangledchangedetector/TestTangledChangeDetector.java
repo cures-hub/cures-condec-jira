@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import de.uhd.ifi.se.decision.management.jira.git.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
@@ -23,7 +23,7 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	private TangledChangeDetector tangledCommitDetection;
 
 	@Override
-	@BeforeEach
+	@Before
 	public void setUp() {
 		super.setUp();
 		tangledCommitDetection = new TangledChangeDetector();

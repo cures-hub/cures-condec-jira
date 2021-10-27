@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import com.atlassian.jira.issue.Issue;
 
@@ -18,7 +18,7 @@ public class TestDiff extends TestSetUpGit {
 	private Diff diffForJiraIssue;
 
 	@Override
-	@BeforeEach
+	@Before
 	public void setUp() {
 		super.setUp();
 		diffForCommit = createDiff(mockJiraIssueForGitTestsTangledSingleCommit);

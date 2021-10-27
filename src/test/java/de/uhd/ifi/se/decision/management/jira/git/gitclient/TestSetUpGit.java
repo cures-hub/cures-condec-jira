@@ -15,8 +15,8 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.After;
+import org.junit.Before;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
@@ -53,7 +53,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
 	private static int commitTime = 0;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		init();
 		mockGitRepository();
@@ -291,7 +291,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	@AfterEach
+	@After
 	public void tidyUp() {
 		// gitClient.deleteRepositories();
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();

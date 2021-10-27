@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.git.commitmessagetocommenttranscr
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -11,14 +11,17 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 
+@Data(MockDatabase.class)
 public class TestPostCommitsIntoJiraIssueComments extends TestSetUpGit {
 
 	private CommitMessageToCommentTranscriber transcriber;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		super.setUp();
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");

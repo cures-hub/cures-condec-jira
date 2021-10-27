@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
@@ -19,7 +19,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	private CodeSummarizer summarizer;
 
 	@Override
-	@BeforeEach
+	@Before
 	public void setUp() {
 		super.setUp();
 		summarizer = new CodeSummarizer(gitClient);
