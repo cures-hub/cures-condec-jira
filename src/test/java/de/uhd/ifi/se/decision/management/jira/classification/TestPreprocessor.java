@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,24 +59,24 @@ public class TestPreprocessor extends TestSetUp {
 		String[] stemmedTokens = { "the", "quick", "unknownxyzabcsd" };
 		double[][] numberRepresentationOfTokens = preprocessor.convertToNumbers(stemmedTokens);
 		assertEquals(new double[3][50].length, numberRepresentationOfTokens.length);
-		assertEquals(0.418, numberRepresentationOfTokens[0][0]);
-		assertEquals(-0.78581, numberRepresentationOfTokens[0][49]);
-		assertEquals(0.0, numberRepresentationOfTokens[2][49]);
+		assertEquals(0.418, numberRepresentationOfTokens[0][0], 0.0);
+		assertEquals(-0.78581, numberRepresentationOfTokens[0][49], 0.0);
+		assertEquals(0.0, numberRepresentationOfTokens[2][49], 0.0);
 	}
 
 	@Test
 	public void testGetWordVectorForExistingWord() {
 		double[] wordVector = preprocessor.getGlove().getWordVector("the");
 		assertEquals(50, wordVector.length);
-		assertEquals(0.418, wordVector[0]);
+		assertEquals(0.418, wordVector[0], 0.0);
 	}
 
 	@Test
 	public void testGetWordVectorForUnknownWord() {
 		double[] wordVector = preprocessor.getGlove().getWordVector("unknownxyzabcsd");
 		assertEquals(50, wordVector.length);
-		assertEquals(0, wordVector[0]);
-		assertEquals(0, wordVector[49]);
+		assertEquals(0, wordVector[0], 0.0);
+		assertEquals(0, wordVector[49], 0.0);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class TestPreprocessor extends TestSetUp {
 		assertEquals(150, preprocessing[0].length);
 		assertEquals(10, preprocessing.length);
 		assertNotNull(preprocessing[0]);
-		assertEquals(0.418, preprocessing[0][0]);
+		assertEquals(0.418, preprocessing[0][0], 0.0);
 	}
 
 	@Test

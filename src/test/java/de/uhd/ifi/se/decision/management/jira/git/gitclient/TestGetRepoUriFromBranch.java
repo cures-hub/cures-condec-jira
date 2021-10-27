@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.git.gitclient;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Test;
