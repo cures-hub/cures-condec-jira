@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
