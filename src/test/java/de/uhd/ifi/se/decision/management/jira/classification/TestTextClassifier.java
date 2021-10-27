@@ -2,16 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
@@ -161,18 +158,4 @@ public class TestTextClassifier extends TestSetUp {
 	public void testIsTrained() {
 		assertTrue(classifier.isTrained());
 	}
-
-	@Test
-	@NonTransactional
-	@Ignore
-	public void testOnlineClassificationTrainerFromElementsInKnowledgeGraph() {
-		File file = classifier.saveTrainingFile();
-		assertTrue(file.exists());
-		classifier.setGroundTruthFile(file);
-		assertNotNull(classifier.getGroundTruthData());
-		classifier = TextClassifier.getInstance("TEST");
-		assertTrue(classifier.train(file.getName(), ClassifierType.LR, ClassifierType.LR));
-		file.delete();
-	}
-
 }
