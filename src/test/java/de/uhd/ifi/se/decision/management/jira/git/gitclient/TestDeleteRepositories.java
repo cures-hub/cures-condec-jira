@@ -14,6 +14,11 @@ public class TestDeleteRepositories extends TestSetUpGit {
 	public void testDeleteRepositoryNotNull() {
 		assertTrue(gitClient.deleteRepositories());
 		assertNotNull(gitClient);
+		try {
+			wait(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
