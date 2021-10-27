@@ -1,14 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.git.codesummarizer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
@@ -19,7 +19,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	private CodeSummarizer summarizer;
 
 	@Override
-	@BeforeEach
+	@Before
 	public void setUp() {
 		super.setUp();
 		summarizer = new CodeSummarizer(gitClient);
