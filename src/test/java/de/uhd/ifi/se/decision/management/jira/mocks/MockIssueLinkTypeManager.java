@@ -53,7 +53,7 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager {
 		issueLinkTypes.add(new MockIssueLinkType((long) 2, "attack", "attacks", "is attacked by"));
 		issueLinkTypes.add(new MockIssueLinkType((long) 3, "support", "supports", "is supported by"));
 		issueLinkTypes.add(new MockIssueLinkType((long) 4, "comment", "comments", "is commented by"));
-		issueLinkTypes.add(new MockIssueLinkType((long) 5, "relates to", "relates to", "relates to"));
+		issueLinkTypes.add(new MockIssueLinkType((long) 5, "relate", "relates to", "relates to"));
 		return issueLinkTypes;
 	}
 

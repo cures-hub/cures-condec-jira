@@ -83,7 +83,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetLinkTypes() {
-		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
+		assertEquals(5, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
 		// currently, all Mock issue link types are called "relate"
 		assertEquals(3, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
 	}
@@ -102,9 +102,10 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetAllNamesOfLinkTypes() {
-		assertEquals(9, DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().size());
+		assertEquals(10, DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().size());
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("other"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("contains"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("relates to"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("attacks"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("supports"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("comments"));
