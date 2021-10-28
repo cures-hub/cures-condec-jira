@@ -251,6 +251,14 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return removedLink != null;
 	}
 
+	@Override
+	public Set<Link> edgesOf(KnowledgeElement element) {
+		if (element == null || !containsVertex(element)) {
+			return new HashSet<Link>();
+		}
+		return super.edgesOf(element);
+	}
+
 	/**
 	 * Returns all unlinked elements of the knowledge element for a project. Sorts
 	 * the elements according to their similarity and their likelihood that they
