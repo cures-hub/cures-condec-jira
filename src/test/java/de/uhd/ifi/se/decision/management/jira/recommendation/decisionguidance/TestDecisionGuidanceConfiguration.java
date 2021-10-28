@@ -89,7 +89,7 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
 	@Test
 	public void testGetAllKnowledgeSources() {
-		assertEquals(2, config.getAllKnowledgeSources().size());
+		assertTrue(config.getAllKnowledgeSources().size() > 1);
 		assertEquals(1, config.getAllActivatedKnowledgeSources().size());
 	}
 

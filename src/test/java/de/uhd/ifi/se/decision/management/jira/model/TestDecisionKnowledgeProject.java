@@ -95,8 +95,9 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetProjectsWithConDecActivatedAndAccessableForUser() {
-		assertEquals(1, DecisionKnowledgeProject
-				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
+		assertTrue(DecisionKnowledgeProject
+				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser())
+				.size() > 0);
 	}
 
 	@Test

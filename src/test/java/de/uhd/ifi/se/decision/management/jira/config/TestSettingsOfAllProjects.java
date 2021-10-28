@@ -117,7 +117,7 @@ public class TestSettingsOfAllProjects {
 
 	@Test
 	public void testGetProjectMapNoProject() {
-		assertEquals(1, SettingsOfAllProjects.getProjects().size());
+		assertEquals(4, SettingsOfAllProjects.getProjects().size());
 	}
 
 	@Test
