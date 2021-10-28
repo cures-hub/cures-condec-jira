@@ -18,14 +18,12 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -272,12 +270,7 @@ public class GitClientForSingleRepository {
 	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
 		DiffFormatter diffFormatter = getDiffFormater();
 		List<DiffEntry> diffEntries = getDiffEntries(firstCommit, lastCommit, diffFormatter);
-		ObjectId treeId = null;
-		try {
-			treeId = getRepository().resolve(lastCommit.getName() + "^{tree}");
-		} catch (RevisionSyntaxException | IOException e) {
-			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
-		}
+		ObjectId treeId = lastCommit.getTree().getId();
 		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
 		diffFormatter.close();
 		return diff;
@@ -297,8 +290,8 @@ public class GitClientForSingleRepository {
 	public List<DiffEntry> getDiffEntries(RevCommit firstCommit, RevCommit lastCommit, DiffFormatter diffFormatter) {
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 		try {
-			RevCommit parentCommit = getParent(firstCommit);
-			if (parentCommit != null) {
+			if (firstCommit.getParentCount() > 0) {
+				RevCommit parentCommit = getParent(firstCommit);
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
@@ -329,39 +322,6 @@ public class GitClientForSingleRepository {
 			}
 		}
 		return diff;
-	}
-
-	/**
-	 * @return {@link Diff} object containing the {@link ChangedFile}s. Each
-	 *         {@link ChangedFile} is created from a diff entry and contains the
-	 *         respective edit list.
-	 */
-	public Diff getDiff(ObjectId oldHead, ObjectId newHead) {
-		if (oldHead.equals(newHead)) {
-			return new Diff();
-		}
-		ObjectReader reader = this.getRepository().newObjectReader();
-		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
-		String gitPath = "";
-		List<DiffEntry> diffEntries = new ArrayList<>();
-		try {
-			oldTreeIter.reset(reader, oldHead);
-			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
-			newTreeIter.reset(reader, newHead);
-			gitPath = getGitDirectory().getAbsolutePath();
-			gitPath = gitPath.substring(0, gitPath.length() - 5);
-			diffEntries = getGit().diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
-		} catch (IOException | GitAPIException e) {
-			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
-		}
-		DiffFormatter diffFormatter = getDiffFormater();
-		ObjectId treeId = null;
-		try {
-			treeId = getRepository().resolve(newHead.getName() + "^{tree}");
-		} catch (RevisionSyntaxException | IOException e) {
-			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
-		}
-		return getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
 	}
 
 	private DiffFormatter getDiffFormater() {
