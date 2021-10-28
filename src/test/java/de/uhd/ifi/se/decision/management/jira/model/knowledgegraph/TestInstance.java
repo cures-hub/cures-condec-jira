@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetOrCreate extends TestSetUp {
+public class TestInstance extends TestSetUp {
 
 	@Before
 	public void setUp() {

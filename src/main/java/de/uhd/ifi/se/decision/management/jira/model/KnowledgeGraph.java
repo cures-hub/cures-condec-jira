@@ -253,13 +253,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	@Override
 	public Set<Link> edgesOf(KnowledgeElement element) {
-		Set<Link> edges = new HashSet<Link>();
-		try {
-			edges = super.edgesOf(element);
-		} catch (IllegalArgumentException | NullPointerException e) {
-			LOGGER.error("Edges for node could not be returned. " + e);
+		if (element == null) {
+			return new HashSet<Link>();
 		}
-		return edges;
+		return super.edgesOf(element);
 	}
 
 	/**
