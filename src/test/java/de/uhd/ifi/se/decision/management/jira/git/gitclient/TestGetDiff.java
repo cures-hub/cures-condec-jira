@@ -77,6 +77,6 @@ public class TestGetDiff extends TestSetUpGit {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		assertEquals(5, diff.getChangedFiles().size());
 		assertEquals(1, diff.getChangedFiles().get(2).getCommits().size());
-		assertEquals("TEST-62", diff.getChangedFiles().get(2).getJiraIssueKeys().iterator().next());
+		assertEquals("TEST-30", diff.getChangedFiles().get(2).getJiraIssueKeys().iterator().next());
 	}
 }
