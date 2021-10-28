@@ -23,7 +23,6 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -400,16 +399,10 @@ public class GitClientForSingleRepository {
 	}
 
 	private RevCommit getParent(RevCommit revCommit) {
-		RevCommit parentCommit = null;
-		try {
-			Repository repository = getRepository();
-			RevWalk revWalk = new RevWalk(repository);
-			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
-			revWalk.close();
-		} catch (Exception e) {
-			LOGGER.error("Could not get the parent commit. Message: " + e.getMessage());
+		if (revCommit.getParentCount() > 0) {
+			return revCommit.getParent(0);
 		}
-		return parentCommit;
+		return null;
 	}
 
 	/**
