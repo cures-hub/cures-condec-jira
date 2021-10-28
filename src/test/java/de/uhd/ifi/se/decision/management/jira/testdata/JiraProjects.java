@@ -8,16 +8,18 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 
 /**
  * Enum for the JIRA projects used in the unit tests. There is only one project
- * called "TEST". The test project is included in the ComponentAccessor.getProjectManager().
+ * called "TEST". The test project is included in the
+ * ComponentAccessor.getProjectManager().
  * 
  * @see MockComponentAccessor
  */
 public enum JiraProjects {
-	TEST;
+	TEST, // test project commonly used during testing
+	HTTP, GITHUB, GITLAB; // test projects for git authentication tests
 
 	public Project createJiraProject(int id) {
-		Project project = new MockProject(id, this.name());
-		((MockProject) project).setKey(this.name());
+		Project project = new MockProject(id, name());
+		((MockProject) project).setKey(name());
 		return project;
 	}
 
