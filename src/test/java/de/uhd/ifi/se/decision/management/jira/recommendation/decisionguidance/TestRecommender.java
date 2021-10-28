@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class TestRecommender extends TestSetUp {
 				decisionProblem, "");
 		assertEquals(2, recommendations.size());
 
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate("TEST");
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance("TEST");
 		Recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
 				JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
 

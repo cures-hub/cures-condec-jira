@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgegraph;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class TestGetElementBySummary extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraph("TEST");
+		graph = KnowledgeGraph.getInstance("TEST");
 	}
 
 	@Test

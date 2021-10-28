@@ -84,7 +84,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	}
 
 	private void handleDeleteIssue() {
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 		KnowledgeElement element = new KnowledgeElement(issueEvent.getIssue());
@@ -92,7 +92,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	}
 
 	private void handleDeleteComment() {
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 		persistenceManager.deleteInvalidElements(issueEvent.getUser());
 	}
@@ -100,7 +100,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	private void handleNewOrUpdatedComment() {
 		replaceIconsWithTagsInComment();
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 
 		if (ConfigPersistenceManager.getTextClassificationConfiguration(projectKey).isActivated()) {
@@ -129,7 +129,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 	private void handleNewJiraIssueOrUpdatedDescription() {
 		replaceIconsWithTagsInDescription();
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 
 		if (ConfigPersistenceManager.getTextClassificationConfiguration(projectKey).isActivated()) {

@@ -406,7 +406,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManagerForSi
 				issueService.transition(user, transitionValidationResult);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Updating decision knowledge element in database failed. " + e.getLocalizedMessage());
+			LOGGER.debug("Updating decision knowledge element in database failed. " + e.getLocalizedMessage());
 			isStatusUpdated = false;
 		}
 		return isStatusUpdated;

@@ -218,20 +218,38 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
+			<artifactId>mockito-core</artifactId>
+			<version>4.0.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-tests</artifactId>
-			<version>8.6.1</version>
+			<version>${jira.version}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.jupiter</groupId>
+					<artifactId>junit-jupiter-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.junit.jupiter</groupId>
+					<artifactId>junit-jupiter-engine</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.junit.jupiter</groupId>
+					<artifactId>junit-jupiter-params</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-func-tests</artifactId>
-			<version>8.7.1</version>
+			<version>${jira.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- SMILE: Statistical Machine Intelligence & Learning Engine for classification 
@@ -419,9 +437,9 @@
     </profiles>
 
 	<properties>
-        <jira.version>8.19.1</jira.version>
+        <jira.version>8.20.0</jira.version>
         <amps.version>8.3.0-128eead6d</amps.version>
-        <ao.version>3.5.0</ao.version>
+        <ao.version>4.0.0-m02</ao.version>
         <jacoco-version>0.8.7</jacoco-version>
         <atlassian.spring.scanner.version>2.2.3</atlassian.spring.scanner.version>
         <!-- This key is also used in atlassian-plugin.xml -->

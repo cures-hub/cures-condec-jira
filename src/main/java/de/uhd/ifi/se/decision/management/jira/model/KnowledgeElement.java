@@ -28,7 +28,7 @@ import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
@@ -253,7 +253,7 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
-		return DecisionGroupManager.getGroupsForElement(this);
+		return DecisionGroupPersistenceManager.getGroupsForElement(this);
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class KnowledgeElement {
 	 *            to add as string
 	 */
 	public void addDecisionGroup(String group) {
-		DecisionGroupManager.insertGroup(group, this);
+		DecisionGroupPersistenceManager.insertGroup(group, this);
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class KnowledgeElement {
 	 *            to remove as string
 	 */
 	public void removeDecisionGroup(String group) {
-		DecisionGroupManager.deleteGroupAssignment(group, this);
+		DecisionGroupPersistenceManager.deleteGroupAssignment(group, this);
 	}
 
 	/**
@@ -465,7 +465,7 @@ public class KnowledgeElement {
 	 * @return true if the element exists in database.
 	 */
 	public boolean existsInDatabase() {
-		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id,
+		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance("").getKnowledgeElement(id,
 				documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
@@ -495,7 +495,7 @@ public class KnowledgeElement {
 	 */
 	public ApplicationUser getCreator() {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getOrCreate(project.getProjectKey());
+				.getInstance(project.getProjectKey());
 		if (getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			return persistenceManager.getJiraIssueManager().getCreator(this);
 		}

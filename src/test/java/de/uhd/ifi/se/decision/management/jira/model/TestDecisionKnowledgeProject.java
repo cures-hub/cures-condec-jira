@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +83,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetLinkTypes() {
-		assertEquals(4, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
+		assertEquals(5, DecisionKnowledgeProject.getJiraIssueLinkTypes().size());
 		// currently, all Mock issue link types are called "relate"
 		assertEquals(3, DecisionKnowledgeProject.getNamesOfLinkTypes().size());
 	}
@@ -95,15 +95,17 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 
 	@Test
 	public void testGetProjectsWithConDecActivatedAndAccessableForUser() {
-		assertEquals(1, DecisionKnowledgeProject
-				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser()).size());
+		assertTrue(DecisionKnowledgeProject
+				.getProjectsWithConDecActivatedAndAccessableForUser(JiraUsers.SYS_ADMIN.getApplicationUser())
+				.size() > 0);
 	}
 
 	@Test
 	public void testGetAllNamesOfLinkTypes() {
-		assertEquals(9, DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().size());
+		assertEquals(10, DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().size());
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("other"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("contains"));
+		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("relates to"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("attacks"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("supports"));
 		assertTrue(DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().contains("comments"));

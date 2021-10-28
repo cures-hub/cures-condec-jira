@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,18 +19,18 @@ public class TestCharacterizedJiraIssue extends TestSetUp {
 	public void testCommentWithTranscribedCommitMessage() {
 		JiraIssues.addCommentsToIssue(JiraIssues.getTestJiraIssues().get(0), "Hash:");
 		CharacterizedJiraIssue jiraIssue = new CharacterizedJiraIssue(JiraIssues.getTestJiraIssues().get(0));
-		assertEquals(1, jiraIssue.getNumberOfComments());
-		assertEquals(1, jiraIssue.getNumberOfIrrelevantComments());
-		assertEquals(1, jiraIssue.getNumberOfCommits());
+		assertTrue(jiraIssue.getNumberOfComments() == 1);
+		assertTrue(jiraIssue.getNumberOfIrrelevantComments() == 1);
+		assertTrue(jiraIssue.getNumberOfCommits() == 1);
 	}
 
 	@Test
 	public void testCommentWithRelevantDecisionKnowledge() {
 		JiraIssues.addComment(JiraIssues.getTestJiraIssues().get(0));
 		CharacterizedJiraIssue jiraIssue = new CharacterizedJiraIssue(JiraIssues.getTestJiraIssues().get(0));
-		assertEquals(1, jiraIssue.getNumberOfComments());
-		assertEquals(1, jiraIssue.getNumberOfRelevantComments());
-		assertEquals(0, jiraIssue.getNumberOfCommits());
+		assertTrue(jiraIssue.getNumberOfComments() == 1);
+		assertTrue(jiraIssue.getNumberOfRelevantComments() == 1);
+		assertTrue(jiraIssue.getNumberOfCommits() == 0);
 	}
 
 }

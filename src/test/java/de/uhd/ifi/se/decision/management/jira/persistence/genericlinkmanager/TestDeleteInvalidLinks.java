@@ -32,7 +32,7 @@ public class TestDeleteInvalidLinks extends TestSetUp {
 		Link link = new Link(elementJiraIssue, element);
 		assertNull(GenericLinkManager.getLinkInDatabase(link));
 
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(link, null);
 		assertFalse(GenericLinkManager.deleteInvalidLinks());
 	}
 
@@ -43,7 +43,7 @@ public class TestDeleteInvalidLinks extends TestSetUp {
 		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
 		Link link = new Link(elementJiraIssue, element);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(link, null);
 		LinkInDatabase databaseEntry = GenericLinkManager.getLinkInDatabase(link);
 		databaseEntry.setDestinationId(4223);
 		databaseEntry.save();

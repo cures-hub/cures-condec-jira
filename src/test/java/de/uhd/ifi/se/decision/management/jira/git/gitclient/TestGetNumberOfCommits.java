@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
+
 public class TestGetNumberOfCommits extends TestSetUpGit {
 
 	@Test
@@ -15,6 +17,6 @@ public class TestGetNumberOfCommits extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		assertEquals(1, gitClient.getNumberOfCommitsOnDefaultBranches(mockJiraIssueForGitTests));
+		assertEquals(1, gitClient.getNumberOfCommitsOnDefaultBranches(JiraIssues.getJiraIssueByKey("TEST-12")));
 	}
 }

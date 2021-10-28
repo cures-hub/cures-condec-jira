@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.jiraissuetextpersistencemanager;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class TestUpdateInDatabase extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		manager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
+		manager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 

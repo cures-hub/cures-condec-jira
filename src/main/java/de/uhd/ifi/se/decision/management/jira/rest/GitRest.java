@@ -100,7 +100,7 @@ public class GitRest {
 		gitConfig.setPostDefaultBranchCommitsActivated(isPostDefaultBranchCommits);
 		ConfigPersistenceManager.saveGitConfiguration(projectKey, gitConfig);
 		if (isPostDefaultBranchCommits) {
-			List<Issue> jiraIssues = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+			List<Issue> jiraIssues = KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
 					.getAllJiraIssuesForProject();
 			jiraIssues
 					.forEach(jiraIssue -> new CommitMessageToCommentTranscriber(jiraIssue).postDefaultBranchCommits());
@@ -220,7 +220,7 @@ public class GitRest {
 					.build();
 		}
 
-		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
+		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(id,
 				documentationLocation);
 		Issue jiraIssue = element.getJiraIssue();
 

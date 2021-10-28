@@ -31,7 +31,6 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	}
 
 	@Test
-	// TODO Only use one feature branch for unit testing
 	public void testGetFeatureBranchCommitsByJiraIssue() {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		assertEquals("TEST-4", issue.getKey());

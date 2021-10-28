@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,8 +38,8 @@ public class TestGitRepositoryFileSystemManager extends TestSetUp {
 		assertFalse(GitRepositoryFileSystemManager.deleteDirectory(new File("123-not-existing-file")));
 	}
 
-	@AfterClass
-	public static void tearDown() {
+	@After
+	public void tearDown() {
 		GitRepositoryFileSystemManager.deleteProjectDirectory("CONDEC");
 	}
 

@@ -122,7 +122,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	public static void addToKnowledgeGraph(KnowledgeElement decisionProblem, ApplicationUser user,
 			List<Recommendation> recommendations) {
 		String projectKey = decisionProblem.getProject().getProjectKey();
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance(projectKey);
 		for (Recommendation recommendation : recommendations) {
 			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
 			elementRecommendation.setProject(projectKey);

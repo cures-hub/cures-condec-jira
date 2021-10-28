@@ -219,7 +219,7 @@ public class DecisionGuidanceRest {
 					.build();
 		}
 		String projectKey = jiraIssue.getProjectObject().getKey();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<KnowledgeElement> knowledgeElementsInJiraIssue = persistenceManager.getJiraIssueTextManager()
 				.getElementsInJiraIssue(jiraIssueId);
@@ -268,7 +268,7 @@ public class DecisionGuidanceRest {
 			return checkIfDataIsValidResponse;
 		}
 
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance(projectKey);
 		KnowledgeElement issue = manager.getKnowledgeElement(issueId, documentationLocation);
 
 		if (issue == null) {

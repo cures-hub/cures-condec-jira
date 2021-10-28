@@ -50,7 +50,7 @@ public class KnowledgePersistenceManager {
 
 	/**
 	 * Map of persistence manager instances that are identified by the project key.
-	 * Use the {@link #getOrCreate(String) getOrCreate} method to either create or
+	 * Use the {@link #getInstance(String) getOrCreate} method to either create or
 	 * retrieve an existing object
 	 *
 	 * @issue How can we reuse existing objects instead of recreating them all the
@@ -64,7 +64,8 @@ public class KnowledgePersistenceManager {
 
 	/**
 	 * Retrieves an existing PersistenceManager instance or creates a new instance
-	 * if there is no instance for the given project key.
+	 * if there is no instance for the given project key. Uses the multiton design
+	 * pattern.
 	 *
 	 * @param projectKey
 	 *            of the Jira project that this persistence manager is responsible
@@ -72,7 +73,7 @@ public class KnowledgePersistenceManager {
 	 * @return either a new or already existing PersistenceManager instance.
 	 * @see DecisionKnowledgeProject
 	 */
-	public static KnowledgePersistenceManager getOrCreate(String projectKey) {
+	public static KnowledgePersistenceManager getInstance(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key must not be null.");
 		}
@@ -84,11 +85,11 @@ public class KnowledgePersistenceManager {
 		return instances.get(projectKey);
 	}
 
-	public static KnowledgePersistenceManager getOrCreate(DecisionKnowledgeProject project) {
+	public static KnowledgePersistenceManager getInstance(DecisionKnowledgeProject project) {
 		if (project == null) {
 			throw new IllegalArgumentException("The project must not be null.");
 		}
-		return getOrCreate(project.getProjectKey());
+		return getInstance(project.getProjectKey());
 	}
 
 	public KnowledgePersistenceManager(String projectKey) {
@@ -148,7 +149,7 @@ public class KnowledgePersistenceManager {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
 		String projectKey = element.getProject().getProjectKey();
-		return getOrCreate(projectKey).getManagerForSingleLocation(element.getDocumentationLocation());
+		return getInstance(projectKey).getManagerForSingleLocation(element.getDocumentationLocation());
 	}
 
 	/**

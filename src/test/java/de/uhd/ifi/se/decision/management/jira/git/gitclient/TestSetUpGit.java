@@ -15,10 +15,10 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 
-import com.atlassian.jira.mock.issue.MockIssue;
+import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfigurat
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 /**
  * @issue Should we have one or more git repositories for testing?
@@ -48,21 +49,18 @@ public abstract class TestSetUpGit extends TestSetUp {
 	protected static GitClient gitClient;
 	public static List<String> SECURE_GIT_URIS = getExampleUris();
 	protected static List<GitClient> secureGitClients;
-	protected MockIssue mockJiraIssueForGitTests;
-	protected MockIssue mockJiraIssueForGitTestsTangled;
-	protected MockIssue mockJiraIssueForGitTestsTangledSingleCommit;
+	protected Issue mockJiraIssueForGitTests;
+	protected Issue mockJiraIssueForGitTestsTangled;
+	protected Issue mockJiraIssueForGitTestsTangledSingleCommit;
 	private static int commitTime = 0;
 
 	@Before
 	public void setUp() {
 		init();
 		mockGitRepository();
-		mockJiraIssueForGitTests = new MockIssue();
-		mockJiraIssueForGitTestsTangled = new MockIssue();
-		mockJiraIssueForGitTestsTangledSingleCommit = new MockIssue();
-		mockJiraIssueForGitTests.setKey("TEST-12");
-		mockJiraIssueForGitTestsTangled.setKey("TEST-26");
-		mockJiraIssueForGitTestsTangledSingleCommit.setKey("TEST-62");
+		mockJiraIssueForGitTests = JiraIssues.getJiraIssueByKey("TEST-12");
+		mockJiraIssueForGitTestsTangled = JiraIssues.getJiraIssueByKey("TEST-14");
+		mockJiraIssueForGitTestsTangledSingleCommit = JiraIssues.getJiraIssueByKey("TEST-30");
 	}
 
 	public static void mockGitRepository() {
@@ -98,7 +96,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
 						+ "    public static void main(String[] args) {\n" + "        LOGGER.info((\"Hello World!\");\n"
 						+ "    }\n" + "}\n",
-				"TEST-26 add main");
+				"TEST-14 add main");
 		makeExampleCommit("Untangled2.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class D {\n" + "\n"
 						+ "    public int a;\n" + "    public int b ;\n" + "    public String c;\n" + "\n"
@@ -107,7 +105,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "        for(int i =0; i < b; i ++){\n" + "            for(int j =0; j < a; j++){\n"
 						+ "                LOGGER.info((c);\n" + "            }\n" + "        }\n" + "    };\n" + "\n"
 						+ "\n" + "}\n",
-				"TEST-26 add class d");
+				"TEST-14 add class d");
 
 		makeExampleCommit("Tangled1.java",
 				"package de.uhd.ifi.se.decision.management.jira;\n" + "public class E {\n" + "\n"
@@ -118,7 +116,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "    public void printSomeThing(){\n" + "        for(int i =0; i < b; i ++){\n"
 						+ "            for(int j =0; j < a; j++){\n" + "                LOGGER.info((c);\n"
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "\n" + "}\n",
-				"TEST-26 add class e");
+				"TEST-14 add class e");
 
 		makeExampleCommit("Tangled2.java",
 				"package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" + "public class A {\n" + "\n"
@@ -130,7 +128,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "    public void doOtherthing(){\n" + "        for(int i =0; i < 10; i ++){\n"
 						+ "            for(int j =0; j < 20; j++){\n" + "                LOGGER.info((i+j);\n"
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
-				"TEST-62 add class A");
+				"TEST-30 add class A");
 		setupFeatureBranch();
 		setUpBeforeClassSecure();
 	}
@@ -287,9 +285,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 	}
 
-	@AfterClass
-	public static void tidyUp() {
-		// gitClient.deleteRepositories();
+	@After
+	public void tidyUp() {
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }

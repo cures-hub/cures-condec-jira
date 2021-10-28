@@ -29,8 +29,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 /**
  * Creates the knowledge graph for the entire project. Nodes of the knowledge
  * graph are decision knowledge elements, Jira issues such as requirements and
- * work items, and code files. Extends the JGraphT graph interface. The
- * knowledge graph can be disconnected.
+ * work items, and code files. Extends the JGraphT class for directed weighted
+ * multigraphs. The knowledge graph can be disconnected.
  * 
  * @see GitClient
  * @see Graph
@@ -68,9 +68,23 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		if (instances.containsKey(projectKey)) {
 			return instances.get(projectKey);
 		}
-		KnowledgeGraph knowledgeGraph = new KnowledgeGraph(projectKey);
+		KnowledgeGraph knowledgeGraph = new KnowledgeGraph();
 		instances.put(projectKey, knowledgeGraph);
+		knowledgeGraph.fillKnowledgeGraphWithPersistedData(projectKey);
 		return knowledgeGraph;
+	}
+
+	private void fillKnowledgeGraphWithPersistedData(String projectKey) {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
+		for (KnowledgeElement element : persistenceManager.getKnowledgeElements()) {
+			addVertex(element);
+			for (Link link : persistenceManager.getLinks(element)) {
+				if (!linkIds.contains(link.getId())) {
+					addEdge(link);
+					linkIds.add(link.getId());
+				}
+			}
+		}
 	}
 
 	public static KnowledgeGraph getInstance(DecisionKnowledgeProject project) {
@@ -80,23 +94,9 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return getInstance(project.getProjectKey());
 	}
 
-	public KnowledgeGraph() {
+	private KnowledgeGraph() {
 		super(Link.class);
 		linkIds = new HashSet<>();
-	}
-
-	public KnowledgeGraph(String projectKey) {
-		this();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
-		persistenceManager.getKnowledgeElements().parallelStream().forEach(element -> {
-			addVertex(element);
-			persistenceManager.getLinks(element).parallelStream().forEach(link -> {
-				if (!linkIds.contains(link.getId())) {
-					addEdge(link);
-					linkIds.add(link.getId());
-				}
-			});
-		});
 	}
 
 	/**
@@ -253,13 +253,10 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 
 	@Override
 	public Set<Link> edgesOf(KnowledgeElement element) {
-		Set<Link> edges = new HashSet<Link>();
-		try {
-			edges = super.edgesOf(element);
-		} catch (IllegalArgumentException | NullPointerException e) {
-			LOGGER.error("Edges for node could not be returned. " + e);
+		if (element == null || !containsVertex(element)) {
+			return new HashSet<Link>();
 		}
-		return edges;
+		return super.edgesOf(element);
 	}
 
 	/**

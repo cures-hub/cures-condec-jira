@@ -52,7 +52,7 @@ public class GeneralMetricCalculator {
 		this.filterSettings = filterSettings;
 		this.graph = filteringManager.getFilteredGraph();
 		this.knowledgeElements = graph.vertexSet();
-		this.jiraIssues = KnowledgePersistenceManager.getOrCreate(filterSettings.getProjectKey()).getJiraIssueManager()
+		this.jiraIssues = KnowledgePersistenceManager.getInstance(filterSettings.getProjectKey()).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 

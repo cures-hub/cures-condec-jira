@@ -48,7 +48,7 @@ public abstract class TestSetUp {
 		removeTestData();
 		initComponentAccessor();
 		initComponentGetter();
-		initClassifierPaths();
+		initClassifierPath();
 	}
 
 	/**
@@ -89,9 +89,10 @@ public abstract class TestSetUp {
 	}
 
 	/**
-	 * Adapts the paths for the files used for preprocessing and classification.
+	 * Adapts the path for the files used for preprocessing and classification of
+	 * the text classifier for testing.
 	 */
-	public static void initClassifierPaths() {
+	public static void initClassifierPath() {
 		TextClassifier.CLASSIFIER_DIRECTORY = "src/main/resources/classifier/";
 	}
 }

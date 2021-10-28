@@ -16,7 +16,7 @@ public class TestGetAllJiraIssuesForProject extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
+		persistenceManager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueManager();
 	}
 
 	@Test
@@ -26,7 +26,7 @@ public class TestGetAllJiraIssuesForProject extends TestSetUp {
 
 	@Test
 	public void testProjectUnknown() {
-		assertTrue(KnowledgePersistenceManager.getOrCreate("UNKNOWN").getJiraIssueManager().getAllJiraIssuesForProject()
+		assertTrue(KnowledgePersistenceManager.getInstance("UNKNOWN").getJiraIssueManager().getAllJiraIssuesForProject()
 				.size() == 0);
 	}
 }

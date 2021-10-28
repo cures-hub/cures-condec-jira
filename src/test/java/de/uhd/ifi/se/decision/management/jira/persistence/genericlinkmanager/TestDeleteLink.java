@@ -33,7 +33,7 @@ public class TestDeleteLink extends TestSetUp {
 		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
 		Link link = new Link(elementJiraIssue, element);
-		long linkId = KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
+		long linkId = KnowledgePersistenceManager.getInstance("TEST").insertLink(link, null);
 		link.setId(linkId);
 		assertTrue(GenericLinkManager.deleteLink(link));
 	}

@@ -36,7 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
@@ -320,7 +320,7 @@ public class ConfigRest {
 		if (id == -1 || location == null || projectKey == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		KnowledgeElement element = KnowledgePersistenceManager.getOrCreate(projectKey).getKnowledgeElement(id,
+		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(id,
 				location);
 		if (element != null) {
 			List<String> groups = element.getDecisionGroups();
@@ -344,7 +344,7 @@ public class ConfigRest {
 	@GET
 	public Response getAllDecisionElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("group") String group) {
-		List<String> keys = DecisionGroupManager.getAllDecisionElementsWithCertainGroup(group, projectKey);
+		List<String> keys = DecisionGroupPersistenceManager.getAllDecisionElementsWithCertainGroup(group, projectKey);
 		return Response.ok(keys).build();
 	}
 
@@ -352,7 +352,7 @@ public class ConfigRest {
 	@GET
 	public Response getAllClassElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("group") String group) {
-		List<String> keys = DecisionGroupManager.getAllClassElementsWithCertainGroup(group, projectKey);
+		List<String> keys = DecisionGroupPersistenceManager.getAllClassElementsWithCertainGroup(group, projectKey);
 		return Response.ok(keys).build();
 	}
 
@@ -360,7 +360,7 @@ public class ConfigRest {
 	@GET
 	public Response renameDecisionGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("oldName") String oldGroupName, @QueryParam("newName") String newGroupName) {
-		if (DecisionGroupManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
+		if (DecisionGroupPersistenceManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
 			return Response.ok(true).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found")).build();
@@ -370,7 +370,7 @@ public class ConfigRest {
 	@GET
 	public Response deleteDecisionGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("groupName") String groupName) {
-		if (DecisionGroupManager.deleteGroup(groupName, projectKey)) {
+		if (DecisionGroupPersistenceManager.deleteGroup(groupName, projectKey)) {
 			return Response.ok(true).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found")).build();
@@ -379,8 +379,8 @@ public class ConfigRest {
 	@Path("/getAllDecisionGroups")
 	@GET
 	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
-		List<String> groups = DecisionGroupManager.getAllDecisionGroups(projectKey);
-		return Response.ok(groups).build();
+		Set<String> allGroups = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
+		return Response.ok(allGroups).build();
 	}
 
 	@Path("/setReleaseNoteMapping")
@@ -409,6 +409,10 @@ public class ConfigRest {
 		return Response.ok(mapping).build();
 	}
 
+	/**
+	 * Removes invalid entries e.g. of knowledge elements, links, and decision
+	 * groups from the database tables.
+	 */
 	@Path("/cleanDatabases")
 	@POST
 	public Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
@@ -417,13 +421,14 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		persistenceManager.deleteInvalidElements(user);
 		GenericLinkManager.deleteInvalidLinks();
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		persistenceManager.createLinksForNonLinkedElements();
+		DecisionGroupPersistenceManager.deleteInvalidGroups();
 		return Response.ok().build();
 	}
 }

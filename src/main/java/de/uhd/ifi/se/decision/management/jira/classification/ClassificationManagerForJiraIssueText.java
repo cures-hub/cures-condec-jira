@@ -27,7 +27,7 @@ public class ClassificationManagerForJiraIssueText {
 	private String projectKey;
 
 	public ClassificationManagerForJiraIssueText(String projectKey) {
-		persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueTextManager();
+		persistenceManager = KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueTextManager();
 		this.projectKey = projectKey;
 	}
 

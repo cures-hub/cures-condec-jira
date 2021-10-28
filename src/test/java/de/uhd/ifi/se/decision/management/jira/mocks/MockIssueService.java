@@ -183,16 +183,13 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public UpdateValidationResult validateUpdate(ApplicationUser user, Long arg1, IssueInputParameters arg2) {
-		MutableIssue issue = new MockIssue(1, "TEST-12");
-		IssueType issueType = new MockIssueType(12, "Solution");
-		issue.setIssueType(issueType);
+		Issue issue = JiraIssues.getJiraIssueByKey("TEST-12");
 		ErrorCollection col = new MockAction();
 		Map<String, Object> fieldValuesHolder = new ConcurrentHashMap<>();
-		if (user == null || JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
+		if (JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			col.addError("Test", "Test");
-			return new UpdateValidationResult(issue, col, fieldValuesHolder);
 		}
-		return new UpdateValidationResult(issue, col, fieldValuesHolder);
+		return new UpdateValidationResult((MutableIssue) issue, col, fieldValuesHolder);
 	}
 
 }

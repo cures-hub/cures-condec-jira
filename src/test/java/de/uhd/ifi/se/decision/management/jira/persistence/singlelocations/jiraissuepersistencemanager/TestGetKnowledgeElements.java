@@ -17,12 +17,12 @@ public class TestGetKnowledgeElements extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
+		persistenceManager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueManager();
 	}
 
 	@Test
 	public void testProjectNonExistent() {
-		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("NOTEXISTENT")
+		JiraIssuePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("NOTEXISTENT")
 				.getJiraIssueManager();
 		assertEquals(0, persistenceManager.getKnowledgeElements().size());
 	}

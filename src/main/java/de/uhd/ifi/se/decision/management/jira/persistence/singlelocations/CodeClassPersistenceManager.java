@@ -181,7 +181,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(key);
 			KnowledgeElement parentElement = new KnowledgeElement(jiraIssue);
 			Link link = new Link(newElement, parentElement);
-			KnowledgePersistenceManager.getOrCreate(projectKey).insertLink(link, user);
+			KnowledgePersistenceManager.getInstance(projectKey).insertLink(link, user);
 		}
 	}
 

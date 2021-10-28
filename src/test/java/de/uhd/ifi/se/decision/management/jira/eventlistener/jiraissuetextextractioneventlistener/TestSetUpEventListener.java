@@ -63,7 +63,7 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 	}
 
 	protected PartOfJiraIssueText getFirstElementInComment(Comment comment) {
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		List<PartOfJiraIssueText> elements = persistenceManager.getElementsInComment(comment.getId());
 		if (elements.size() > 0) {

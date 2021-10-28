@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
@@ -14,7 +16,6 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 
-import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -35,16 +36,13 @@ public class CommitMessageToCommentTranscriber {
 	private Issue jiraIssue;
 
 	private static String COMMIT_COMMENTATOR_USER_NAME = "GIT-COMMIT-COMMENTATOR";
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommitMessageToCommentTranscriber.class);
 
 	public CommitMessageToCommentTranscriber(Issue jiraIssue) {
 		this.jiraIssue = jiraIssue;
 		if (jiraIssue != null) {
-			this.gitClient = GitClient.getInstance(jiraIssue.getProjectObject().getKey());
+			gitClient = GitClient.getInstance(jiraIssue.getProjectObject().getKey());
 		}
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setPostDefaultBranchCommitsActivated(true);
-		gitConfig.setPostFeatureBranchCommitsActivated(true);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 	}
 
 	/**
@@ -53,6 +51,8 @@ public class CommitMessageToCommentTranscriber {
 	 */
 	public List<Comment> postCommitsIntoJiraIssueComments() {
 		if (jiraIssue == null || gitClient == null) {
+			LOGGER.error(
+					"Commit messages cannot be posted to Jira issue comment because preconditions are not fullfilled.");
 			return new ArrayList<>();
 		}
 		List<Comment> newComments = new ArrayList<>();
@@ -105,6 +105,7 @@ public class CommitMessageToCommentTranscriber {
 	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch, String uri) {
 		String commentText = generateCommentString(commit, branch, uri);
 		if (commentText == null || commentText.isBlank()) {
+			LOGGER.warn("Commit messages cannot be posted to Jira issue comment because comment text would be blank.");
 			return null;
 		}
 		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(jiraIssue)) {
@@ -166,5 +167,9 @@ public class CommitMessageToCommentTranscriber {
 	public static String generateRegexToFindAllTags(String tag) {
 		return RationaleFromCommitMessageParser.generateRegexForOpenTag(tag) + "|"
 				+ RationaleFromCommitMessageParser.generateRegexForCloseTag(tag);
+	}
+
+	public void setGitClient(GitClient gitClient) {
+		this.gitClient = gitClient;
 	}
 }

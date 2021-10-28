@@ -263,9 +263,6 @@ public class GroundTruthData {
 
 	public static DataFrame readDataFrameFromCSVFile(String csvFileName) {
 		File file = new File(TextClassifier.CLASSIFIER_DIRECTORY + csvFileName);
-		if (!file.exists()) {
-			return readDataFrameFromDefaultTrainingDataCSVFile();
-		}
 		return readDataFrameFromCSVFile(file);
 	}
 

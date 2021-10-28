@@ -19,7 +19,7 @@ public class TestGetUnlinkedElements extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraph("TEST");
+		graph = KnowledgeGraph.getInstance("TEST");
 	}
 
 	@Test

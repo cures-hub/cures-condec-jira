@@ -26,7 +26,7 @@ public class TestUpdateLink extends TestSetUp {
 		init();
 		link = Links.getTestLinks().get(0);
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		knowledgePersistenceManager = KnowledgePersistenceManager.getOrCreate("TEST");
+		knowledgePersistenceManager = KnowledgePersistenceManager.getInstance("TEST");
 	}
 
 	@Test

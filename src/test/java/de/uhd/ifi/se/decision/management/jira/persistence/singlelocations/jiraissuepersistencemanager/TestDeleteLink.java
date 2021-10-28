@@ -24,7 +24,7 @@ public class TestDeleteLink extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueManager();
+		persistenceManager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueManager();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		link = Links.getTestLink();
 	}

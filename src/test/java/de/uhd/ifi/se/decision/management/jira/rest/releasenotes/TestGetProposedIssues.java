@@ -86,7 +86,7 @@ public class TestGetProposedIssues extends TestSetUp {
 
 	private void fillSentenceList() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 		persistenceManager.updateElementsOfCommentInDatabase(comment);
 	}

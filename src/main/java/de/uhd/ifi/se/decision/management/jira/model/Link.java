@@ -157,7 +157,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
 		if (this.source == null) {
-			this.source = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id, documentationLocation);
+			this.source = KnowledgePersistenceManager.getInstance("").getKnowledgeElement(id, documentationLocation);
 		}
 		if (this.source == null) {
 			this.source = new KnowledgeElement();
@@ -214,7 +214,7 @@ public class Link extends DefaultWeightedEdge {
 	 */
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.target == null) {
-			this.target = KnowledgePersistenceManager.getOrCreate("").getKnowledgeElement(id, documentationLocation);
+			this.target = KnowledgePersistenceManager.getInstance("").getKnowledgeElement(id, documentationLocation);
 		}
 		if (this.target == null) {
 			this.target = new KnowledgeElement();

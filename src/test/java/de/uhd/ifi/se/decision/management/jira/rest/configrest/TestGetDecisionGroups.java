@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 
 public class TestGetDecisionGroups extends TestSetUp {
@@ -34,7 +34,7 @@ public class TestGetDecisionGroups extends TestSetUp {
 
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
 				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-		DecisionGroupManager.insertGroup("TestGroup1", decisionKnowledgeElement);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup1", decisionKnowledgeElement);
 	}
 
 	@Test

@@ -109,7 +109,7 @@ public interface FileManager {
 				LOGGER.info("Copied default preprocessing data to file. Message: " + file.getName());
 			}
 		} catch (Exception e) {
-			LOGGER.error("Failed to copy data to file. Message: " + e.getMessage());
+			LOGGER.debug("Failed to copy data to file. Message: " + e.getMessage());
 		}
 		return file;
 	}

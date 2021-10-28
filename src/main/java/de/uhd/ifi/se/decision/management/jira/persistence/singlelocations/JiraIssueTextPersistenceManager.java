@@ -508,7 +508,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		if (element.isLinked() > 0) {
 			return true;
 		}
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 		KnowledgeElement parentElement = persistenceManager.getJiraIssueManager()
 				.getKnowledgeElement(element.getJiraIssue().getId());
 		long linkId = persistenceManager.insertLink(parentElement, element, null);
@@ -562,10 +562,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) getKnowledgeElement(elementId);
 
 		// delete sentence in database and knowledge graph (not in description/comment)
-		KnowledgePersistenceManager.getOrCreate(projectKey).deleteKnowledgeElement(sentence, user);
+		KnowledgePersistenceManager.getInstance(projectKey).deleteKnowledgeElement(sentence, user);
 
 		// create Jira issue and link it
-		JiraIssuePersistenceManager jiraIssuePersistenceManager = KnowledgePersistenceManager.getOrCreate(projectKey)
+		JiraIssuePersistenceManager jiraIssuePersistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueManager();
 		KnowledgeElement jiraIssue = jiraIssuePersistenceManager.insertKnowledgeElement(sentence, user);
 		Link link = Link.instantiateDirectedLink(new KnowledgeElement(sentence.getJiraIssue()), jiraIssue);

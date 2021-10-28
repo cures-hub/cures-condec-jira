@@ -89,7 +89,8 @@ public class TextClassificationRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (trainingFileName == null || trainingFileName.isEmpty()) {
+		if (trainingFileName == null || trainingFileName.isEmpty()
+				|| !new File(TextClassifier.CLASSIFIER_DIRECTORY + trainingFileName).exists()) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"The classifier could not be trained since the training file name is invalid.")).build();
 		}
@@ -194,7 +195,7 @@ public class TextClassificationRest {
 		}
 		ClassificationManagerForJiraIssueText classificationManager = new ClassificationManagerForJiraIssueText(
 				projectKey);
-		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		for (Issue issue : jiraIssuesPerProject) {
 			classificationManager.classifyDescriptionAndAllComments(issue);
@@ -245,7 +246,7 @@ public class TextClassificationRest {
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
 					.build();
 		}
-		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getOrCreate(projectKey).getJiraIssueManager()
+		List<Issue> jiraIssuesPerProject = KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
 		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();

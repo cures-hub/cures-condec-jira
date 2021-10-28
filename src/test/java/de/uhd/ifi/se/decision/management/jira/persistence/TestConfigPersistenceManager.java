@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
@@ -35,8 +35,8 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
  */
 public class TestConfigPersistenceManager extends TestSetUp {
 
-	@BeforeClass
-	public static void setUpBeforeClass() {
+	@Before
+	public void setUpBeforeClass() {
 		init();
 	}
 
@@ -63,7 +63,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	@Test
 	public void testParameterUnknown() {
 		// because of MockPluginSettings, true is returned, not ""
-		assertEquals("true", ConfigPersistenceManager.getValue("TEST", "unknown"));
+		assertEquals("", ConfigPersistenceManager.getValue("TEST", "unknown"));
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		ChangeImpactAnalysisConfiguration settings = new ChangeImpactAnalysisConfiguration();
 		assertEquals(0.25, settings.getDecayValue(), 0.01);
 		assertEquals(0.25, settings.getThreshold(), 0.01);
-		assertEquals(9, settings.getLinkImpact().size());
+		assertEquals(10, settings.getLinkImpact().size());
 		settings.setDecayValue(0.25f);
 		settings.setThreshold(0.2f);
 		settings.setLinkImpact(Map.of("comment", 0.5f));
@@ -129,8 +129,8 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertFalse(webhookConfig.isActivated());
 	}
 
-	@AfterClass
-	public static void tearDown() {
+	@After
+	public void tearDown() {
 		// reset plugin settings to default settings
 		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}

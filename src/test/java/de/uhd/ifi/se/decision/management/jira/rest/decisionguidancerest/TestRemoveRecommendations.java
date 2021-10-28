@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
@@ -34,7 +34,7 @@ public class TestRemoveRecommendations extends TestSetUp {
 	public void testValid() {
 		PartOfJiraIssueText recommendation = JiraIssues.addElementToDataBase();
 		recommendation.setStatus(KnowledgeStatus.RECOMMENDED);
-		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(recommendation, null);
+		KnowledgePersistenceManager.getInstance("TEST").updateKnowledgeElement(recommendation, null);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.removeRecommendationsForKnowledgeElement(request, 1L).getStatus());
 	}

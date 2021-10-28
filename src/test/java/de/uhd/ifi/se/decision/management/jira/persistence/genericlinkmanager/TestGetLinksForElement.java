@@ -34,7 +34,7 @@ public class TestGetLinksForElement extends TestSetUp {
 		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
 		Link link = new Link(elementJiraIssue, element);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(link, null);
 		assertEquals(1, GenericLinkManager.getLinksForElement(1, DocumentationLocation.JIRAISSUE).size());
 	}
 
@@ -45,7 +45,7 @@ public class TestGetLinksForElement extends TestSetUp {
 		KnowledgeElement elementJiraIssue = new KnowledgeElement(
 				JiraIssues.getTestJiraIssues().get(0));
 		Link link = new Link(elementJiraIssue, element);
-		KnowledgePersistenceManager.getOrCreate("TEST").insertLink(link, null);
+		KnowledgePersistenceManager.getInstance("TEST").insertLink(link, null);
 		assertEquals(1, GenericLinkManager.getLinksForElement(element).size());
 	}
 }

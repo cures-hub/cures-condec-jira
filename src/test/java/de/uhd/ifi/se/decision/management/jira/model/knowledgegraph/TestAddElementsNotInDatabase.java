@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model.knowledgegraph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class TestAddElementsNotInDatabase extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraph("TEST");
+		graph = KnowledgeGraph.getInstance("TEST");
 	}
 
 	@Test

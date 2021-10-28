@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.classification;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 		sentences = JiraIssues
 				.getSentencesForCommentText("Thanks for updating the unit tests! We expect this to be irrelevant. "
 						+ "How can we implement? The previous sentence should be much more relevant");
-		persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST").getJiraIssueTextManager();
+		persistenceManager = KnowledgePersistenceManager.getInstance("TEST").getJiraIssueTextManager();
 	}
 
 	@Test

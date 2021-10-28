@@ -26,7 +26,7 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 		listener.onIssueEvent(issueEvent);
 		jiraIssue.setDescription(description);
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getOrCreate("TEST")
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
 
 		List<PartOfJiraIssueText> partsOfText = persistenceManager.updateElementsOfDescriptionInDatabase(jiraIssue);

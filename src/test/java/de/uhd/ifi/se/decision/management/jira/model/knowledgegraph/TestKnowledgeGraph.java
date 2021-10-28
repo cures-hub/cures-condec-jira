@@ -28,7 +28,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		graph = new KnowledgeGraph("TEST");
+		graph = KnowledgeGraph.getInstance("TEST");
 	}
 
 	@Test
@@ -73,8 +73,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 	@NonTransactional
 	public void testGraphWithIrrelevantComment() {
 		PartOfJiraIssueText sentence = JiraIssues.getIrrelevantSentence();
-		String projectKey = sentence.getProject().getProjectKey();
-		graph = KnowledgeGraph.getInstance(projectKey);
+		graph.addVertex(sentence);
 		assertTrue(graph.containsVertex(sentence));
 	}
 
@@ -97,7 +96,7 @@ public class TestKnowledgeGraph extends TestSetUp {
 		node.setSummary("Updated");
 		assertEquals(5, graph.edgesOf(node).size());
 
-		KnowledgePersistenceManager.getOrCreate("TEST").updateKnowledgeElement(node, null);
+		KnowledgePersistenceManager.getInstance("TEST").updateKnowledgeElement(node, null);
 		node = graph.getElementBySummary("Updated");
 		assertEquals("Updated", node.getSummary());
 		assertEquals(5, graph.edgesOf(node).size());

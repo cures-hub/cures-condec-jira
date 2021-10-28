@@ -16,7 +16,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
@@ -58,8 +58,8 @@ public class TestAssignDecisionGroup extends TestSetUp {
 		Response resp = knowledgeRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
 				decisionKnowledgeElementIss.getDocumentationLocationAsString(), "High_Level", "Safety", "", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).size() == 2);
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).size() == 2);
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class TestAssignDecisionGroup extends TestSetUp {
 		Response resp = knowledgeRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
 				decisionKnowledgeElementIss.getDocumentationLocationAsString(), "High_Level", "", "Safety", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).size() == 2);
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).size() == 2);
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class TestAssignDecisionGroup extends TestSetUp {
 				decisionKnowledgeElementIss.getDocumentationLocationAsString(), "High_Level", "Property,TestGroup",
 				"Safety", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
-		assertTrue(DecisionGroupManager.getGroupsForElement(decisionKnowledgeElementIss).size() == 4);
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).size() == 4);
 	}
 }
