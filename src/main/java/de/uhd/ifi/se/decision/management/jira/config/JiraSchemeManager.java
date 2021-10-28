@@ -228,7 +228,6 @@ public class JiraSchemeManager {
 		if (workflowDescriptor == null) {
 			return null;
 		}
-		// System.out.println(content);
 		JiraAuthenticationContext jiraAuthenticationContext = ComponentAccessor.getJiraAuthenticationContext();
 		ApplicationUser user = jiraAuthenticationContext.getLoggedInUser();
 

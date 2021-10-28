@@ -60,8 +60,6 @@ public class TestInsertGroup extends TestSetUpGit {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
 		KnowledgeElement godClass = graph.getElementBySummary("GodClass.java");
 
-		graph.vertexSet().stream().forEach(element -> System.out.println(element.getSummary()));
-
 		KnowledgeElement issueFromCodeCommentInGodClass = graph
 				.getElementsNotInDatabaseBySummary("Will this issue be parsed correctly?");
 		assertEquals("Will this issue be parsed correctly?", issueFromCodeCommentInGodClass.getSummary());
