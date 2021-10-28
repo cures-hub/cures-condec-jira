@@ -295,7 +295,7 @@ public class GitClientForSingleRepository {
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
-			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
+			LOGGER.debug("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
 		return diffEntries;
 	}
@@ -326,10 +326,7 @@ public class GitClientForSingleRepository {
 
 	private DiffFormatter getDiffFormater() {
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-		Repository repository = this.getRepository();
-		if (repository == null) {
-			return diffFormatter;
-		}
+		Repository repository = getRepository();
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
