@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -179,8 +178,8 @@ public class WebhookConnector {
 			if (httpResponse >= 200 && httpResponse < 300) {
 				return true;
 			}
-			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
-		} catch (IOException | IllegalArgumentException e) {
+			LOGGER.debug("Could not send webhook data. The HTTP response code is: " + httpResponse);
+		} catch (Exception e) {
 			LOGGER.error("Could not send webhook data because of " + e.getMessage());
 		}
 		return false;
