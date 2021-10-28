@@ -188,7 +188,6 @@ public class MockIssueService implements IssueService {
 		Map<String, Object> fieldValuesHolder = new ConcurrentHashMap<>();
 		if (JiraUsers.valueOf(user) == JiraUsers.BLACK_HEAD) {
 			col.addError("Test", "Test");
-			return new UpdateValidationResult((MutableIssue) issue, col, fieldValuesHolder);
 		}
 		return new UpdateValidationResult((MutableIssue) issue, col, fieldValuesHolder);
 	}
