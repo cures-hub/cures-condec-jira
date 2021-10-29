@@ -63,8 +63,7 @@
 		// HTML elements
 		var renameGroupDialog = document.getElementById("rename-group-dialog");
 		if (groupName === "High_Level" || groupName === "Medium_Level" || groupName === "Realization_Level") {
-			alert("Can't rename Decision Levels.");
-			AJS.dialog2(renameGroupDialog).hide();
+			alert("You cannot rename decision levels.");
 		} else {
 			var inputGroupName = document.getElementById("rename-group-input");
 			var submitButton = document.getElementById("rename-group-dialog-submit-button");
@@ -96,13 +95,12 @@
 		var deleteGroupDialog = document.getElementById("delete-group-dialog");
 		if (groupName === "High_Level" || groupName === "Medium_Level" || groupName === "Realization_Level") {
 			alert("You cannot delete decision levels.");
-			AJS.dialog2(deleteGroupDialog).hide();
 		} else {
 			var deleteMessageLabel = document.getElementById("delete-group-label");
 			var submitButton = document.getElementById("delete-group-dialog-submit-button");
 			var cancelButton = document.getElementById("delete-group-dialog-cancel-button");
 
-			deleteMessageLabel.innerHTML = "<br> Are you sure that you want to remove the Decision Group: <b>" + groupName + "</b> ?";
+			deleteMessageLabel.innerHTML = "Are you sure that you want to remove the decision group <b>" + groupName + "</b>?";
 
 			// Set onclick listener on buttons
 			submitButton.onclick = function() {

@@ -161,9 +161,10 @@ public class DecisionGroupingRest {
 	public Response renameDecisionGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("oldName") String oldGroupName, @QueryParam("newName") String newGroupName) {
 		if (DecisionGroupPersistenceManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
-			return Response.ok(true).build();
+			return Response.ok().build();
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found")).build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found."))
+				.build();
 	}
 
 	@Path("/deleteDecisionGroup")

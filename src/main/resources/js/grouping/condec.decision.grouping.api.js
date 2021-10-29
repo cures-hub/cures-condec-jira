@@ -42,7 +42,7 @@
 			return this.decisionGroups;
 		}
 		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
-			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(conDecGroupingAPI.restPrefix
+			this.decisionGroups = generalApi.getResponseAsReturnValue(conDecGroupingAPI.restPrefix
 				+ "/getAllDecisionGroups.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.decisionGroups;
@@ -65,10 +65,26 @@
 	 * external references: condec.decision.grouping.dialogs
 	 */
 	ConDecGroupingAPI.prototype.renameDecisionGroup = function(oldName, newName, callback) {
-		generalApi.getResponseAsReturnValue(conDecGroupingAPI.restPrefix
-			+ "/renameDecisionGroup.json?projectKey=" + projectKey
-			+ "&oldName=" + oldName + "&newName=" + newName);
-		callback();
+		generalApi.getJSON(this.restPrefix
+			+ "/renameDecisionGroup.json?projectKey=" + conDecAPI.projectKey
+			+ "&oldName=" + oldName + "&newName=" + newName, function() {
+				var index = conDecGroupingAPI.decisionGroups.indexOf(oldName);
+				conDecGroupingAPI.decisionGroups[index] = newName;
+				callback();
+			});
+	};
+	
+	/**
+	 * external references: condec.decision.grouping.dialogs
+	 */
+	ConDecGroupingAPI.prototype.deleteDecisionGroup = function(groupName, callback) {
+		generalApi.getJSON(this.restPrefix
+			+ "/deleteDecisionGroup.json?projectKey=" + conDecAPI.projectKey
+			+ "&groupName=" + groupName, function() {
+				var index = conDecGroupingAPI.decisionGroups.indexOf(groupName);
+				conDecGroupingAPI.decisionGroups.splice(index, 1);
+				callback();
+			});
 	};
 
 	global.conDecGroupingAPI = new ConDecGroupingAPI();
