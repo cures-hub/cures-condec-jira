@@ -394,9 +394,7 @@
 		selectGroupField.innerHTML = "";
 		if (groups !== undefined && groups !== null && groups.length > 0) {
 			for (var i = 0; i < groups.length; i++) {
-				if (groups[i] !== "High_Level" && groups[i] !== "Medium_Level" && groups[i] !== "Realization_Level") {
-					selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
-				}
+				selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
 			}
 		}
 		AJS.$("#" + elementId).auiSelect2();
