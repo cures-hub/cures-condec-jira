@@ -51,10 +51,14 @@
 	/**
 	 * external references: condec.dialog, condec.decision.grouping.dialogs
 	 */
-	ConDecGroupingAPI.prototype.getDecisionGroups = function(id, location, callback) {
-		// TODO Change to POST method and post knowledgeElement
-		generalApi.getJSON(this.restPrefix + "/getDecisionGroups.json?elementId=" + id
-			+ "&location=" + location + "&projectKey=" + projectKey, function(error, decisionGroups) {
+	ConDecGroupingAPI.prototype.getDecisionGroups = function(id, documentationLocation, callback) {
+		var element = {
+			"id": id,
+			"documentationLocation": documentationLocation,
+			"projectKey": conDecAPI.projectKey
+		};
+		generalApi.postJSON(this.restPrefix + "/getDecisionGroups.json", element,
+			function(error, decisionGroups) {
 				if (error === null) {
 					callback(decisionGroups);
 				}
@@ -73,7 +77,7 @@
 				callback();
 			});
 	};
-	
+
 	/**
 	 * external references: condec.decision.grouping.dialogs
 	 */

@@ -112,30 +112,24 @@ public class DecisionGroupingRest {
 		}
 	}
 
-	// TODO Refactor: too many ifs
 	@Path("/getDecisionGroups")
-	@GET
-	public Response getDecisionGroups(@QueryParam("elementId") long id, @QueryParam("location") String location,
-			@QueryParam("projectKey") String projectKey) {
-		if (id == -1 || location == null || projectKey == null) {
+	@POST
+	public Response getDecisionGroups(KnowledgeElement element) {
+		if (element == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(id,
-				location);
-		if (element != null) {
-			List<String> groups = element.getDecisionGroups();
-			if (groups != null) {
-				for (String group : groups) {
-					if (("High_Level").equals(group) || ("Medium_Level").equals(group)
-							|| ("Realization_Level").equals(group)) {
-						int index = groups.indexOf(group);
-						if (index != 0) {
-							Collections.swap(groups, 0, index);
-						}
+		List<String> groups = element.getDecisionGroups();
+		if (groups != null) {
+			for (String group : groups) {
+				if (("High_Level").equals(group) || ("Medium_Level").equals(group)
+						|| ("Realization_Level").equals(group)) {
+					int index = groups.indexOf(group);
+					if (index != 0) {
+						Collections.swap(groups, 0, index);
 					}
 				}
-				return Response.ok(groups).build();
 			}
+			return Response.ok(groups).build();
 		}
 		return Response.ok(Collections.emptyList()).build();
 	}
@@ -172,9 +166,10 @@ public class DecisionGroupingRest {
 	public Response deleteDecisionGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("groupName") String groupName) {
 		if (DecisionGroupPersistenceManager.deleteGroup(groupName, projectKey)) {
-			return Response.ok(true).build();
+			return Response.ok().build();
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found")).build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found."))
+				.build();
 	}
 
 	@Path("/getAllDecisionGroups")

@@ -8,66 +8,52 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGroupingRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetDecisionGroups extends TestSetUp {
 
-	protected DecisionGroupingRest decisionGroupingRest;
-	private long id;
-	private String projectKey;
+	private DecisionGroupingRest decisionGroupingRest;
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		init();
 		decisionGroupingRest = new DecisionGroupingRest();
-		this.id = 100;
-		String summary = "Test";
-		String description = "Test";
-		KnowledgeType type = KnowledgeType.SOLUTION;
-		this.projectKey = "TEST";
-		String key = "Test";
-
-		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey,
-				key, DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1", decisionKnowledgeElement);
+		element = KnowledgeElements.getDecision();
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
 	}
 
 	@Test
-	public void testGetDecisionGroupsIdInvalid() {
-		Response response = decisionGroupingRest.getDecisionGroups(-1, DocumentationLocation.JIRAISSUE.getIdentifier(),
-				this.projectKey);
+	@NonTransactional
+	public void testKnowledgeElementNull() {
+		Response response = decisionGroupingRest.getDecisionGroups(null);
 		assertEquals("[]", response.getEntity().toString());
 	}
 
 	@Test
-	public void testGetDecisionGroupsDocLocNull() {
-		Response response = decisionGroupingRest.getDecisionGroups(this.id, null, this.projectKey);
+	@NonTransactional
+	public void testKnowledgeElementWithInvalidAttributes() {
+		KnowledgeElement element = new KnowledgeElement();
+		Response response = decisionGroupingRest.getDecisionGroups(element);
 		assertEquals("[]", response.getEntity().toString());
 	}
 
 	@Test
-	public void testGetDecisionGroupsProjectKeyNull() {
-		Response response = decisionGroupingRest.getDecisionGroups(this.id,
-				DocumentationLocation.JIRAISSUE.getIdentifier(), null);
-		assertEquals("[]", response.getEntity().toString());
+	@NonTransactional
+	public void testKnowledgeElementValidOneGroup() {
+		Response response = decisionGroupingRest.getDecisionGroups(element);
+		assertEquals("[TestGroup]", response.getEntity().toString());
 	}
 
 	@Test
-	public void testGetDecisionGroupsNothingFound() {
-		Response response = decisionGroupingRest.getDecisionGroups(this.id,
-				DocumentationLocation.JIRAISSUE.getIdentifier(), "Test1");
-		assertEquals("[]", response.getEntity().toString());
+	@NonTransactional
+	public void testKnowledgeElementValidTwoGroups() {
+		DecisionGroupPersistenceManager.insertGroup("High_Level", element);
+		Response response = decisionGroupingRest.getDecisionGroups(element);
+		assertEquals("[High_Level, TestGroup]", response.getEntity().toString());
 	}
-	/*
-	 * @Test public void testProjectKeyValid() { Response response =
-	 * configRest.getDecisionGroups(this.id,
-	 * DocumentationLocation.JIRAISSUE.getIdentifier(), this.projectKey);
-	 * assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-	 * assertEquals("[TestGroup1]", response.getEntity().toString()); }
-	 */
 }
