@@ -21,80 +21,74 @@ import net.java.ao.Query;
  * object relational mapping (active objects framework).
  *
  * @see DecisionGroupInDatabase
+ * @see KnowledgeElement#getDecisionGroups()
  */
 public class DecisionGroupPersistenceManager {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	public static final List<String> LEVELS = List.of("high_level", "medium_level", "realization_level");
 
-	public static boolean deleteGroupAssignment(long elementId) {
-		if (elementId < 0) {
+	/**
+	 * @param groupId
+	 *            id of a decision group/level in the database.
+	 * @return true if decision group/level was deleted in database.
+	 */
+	public static boolean deleteGroup(long groupId) {
+		if (groupId < 0) {
 			return false;
 		}
 		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getId() == elementId) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
-		}
-		return isDeleted;
-	}
-
-	public static boolean deleteGroupAssignment(String group, KnowledgeElement element) {
-		if (element == null || group == null) {
-			return false;
-		}
-		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getGroup().equals(group) && dgData.getSourceId() == element.getId() && dgData
-					.getSourceDocumentationLocation().equals(element.getDocumentationLocation().getIdentifier())) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
-		}
-
-		if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
-			for (KnowledgeElement childElement : childElements) {
-				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
-					isDeleted = isDeleted && deleteGroupAssignment(group, childElement);
-				}
-			}
-		}
-		return isDeleted;
-	}
-
-	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
-		if (element == null) {
-			return false;
-		}
-		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getSourceId() == element.getId()
-					&& dgData.getSourceDocumentationLocation()
-							.equals(element.getDocumentationLocation().getIdentifier())
-					&& dgData.getProjectKey().equals(element.getProject().getProjectKey())) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
-		}
-		return isDeleted;
-	}
-
-	public static boolean deleteGroup(String group, String projectKey) {
-		if (group == null) {
-			return false;
-		}
-		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getGroup().equals(group) && dgData.getProjectKey().equals(projectKey)) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("ID = ?", groupId))) {
+			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
 		}
 		return isDeleted;
 	}
 
 	/**
-	 * Replaces all current existing assignments for that element with a list of new
-	 * groups
+	 * @param element
+	 *            {@link KnowledgeElement} that currently is assigned to 1..*
+	 *            decision groups/levels.
+	 * @return true if all decision groups/levels were successfully unassigned from
+	 *         the {@link KnowledgeElement}.
+	 */
+	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
+		if (element == null) {
+			return false;
+		}
+		boolean isDeleted = false;
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
+						element.getDocumentationLocation().getIdentifier()))) {
+			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
+		}
+		return isDeleted;
+	}
+
+	/**
+	 * @param group
+	 *            name of the decision level ("high level", "medium level",
+	 *            "realization level") or group (e.g. "process", "UI") to be
+	 *            unassigned.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return true if the decision group/level was successfully deleted.
+	 */
+	public static boolean deleteGroup(String group, String projectKey) {
+		if (group == null) {
+			return false;
+		}
+		boolean isDeleted = false;
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("GROUP = ? AND PROJECT_KEY", group, projectKey))) {
+			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
+		}
+		return isDeleted;
+	}
+
+	/**
+	 * Replaces all current existing decision group/level assignments for that
+	 * element with a list of new decision groups/levels.
 	 *
 	 * @param groups
 	 *            of groups to add

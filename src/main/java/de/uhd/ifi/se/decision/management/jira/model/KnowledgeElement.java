@@ -279,16 +279,6 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * Remove a group from the list of groups
-	 *
-	 * @param group
-	 *            to remove as string
-	 */
-	public void removeDecisionGroup(String group) {
-		DecisionGroupPersistenceManager.deleteGroupAssignment(group, this);
-	}
-
-	/**
 	 * @see DecisionKnowledgeProject
 	 * @return project that the knowledge element belongs to. The project is a Jira
 	 *         project that is extended with settings for this plug-in, for example,
