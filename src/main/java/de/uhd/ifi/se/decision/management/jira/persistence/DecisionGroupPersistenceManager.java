@@ -80,7 +80,7 @@ public class DecisionGroupPersistenceManager {
 		}
 		boolean isDeleted = false;
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("GROUP = ? AND PROJECT_KEY", group, projectKey))) {
+				Query.select().where("GROUP = ? AND PROJECT_KEY = ?", group, projectKey))) {
 			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
 		}
 		return isDeleted;
@@ -165,12 +165,12 @@ public class DecisionGroupPersistenceManager {
 	}
 
 	/**
-	 * Inserts a new group assignment into database.
+	 * Inserts a new decision group/level assignment into database.
 	 *
 	 * @param sourceElement
-	 *            Name of the Group
-	 * @param group
 	 *            KnowledgeElement that the group is assigned to
+	 * @param group
+	 *            name of the Group
 	 * @return internal database id of inserted group assignment, -1 if insertion
 	 *         failed.
 	 */
