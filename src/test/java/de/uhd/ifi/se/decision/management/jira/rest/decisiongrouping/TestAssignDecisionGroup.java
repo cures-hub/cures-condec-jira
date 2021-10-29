@@ -37,21 +37,19 @@ public class TestAssignDecisionGroup extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testAssignDecisionGroupAddGroupEmpty() {
-		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Safety", "",
-				element);
+		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Safety", "", element);
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).size() == 2);
+		assertEquals(2, DecisionGroupPersistenceManager.getGroupsForElement(element).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testAssignDecisionGroupCurrentGroupEmpty() {
-		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "", "Safety",
-				element);
+		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "", "Safety", element);
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).size() == 2);
+		assertEquals(2, DecisionGroupPersistenceManager.getGroupsForElement(element).size());
 	}
 
 	@Test

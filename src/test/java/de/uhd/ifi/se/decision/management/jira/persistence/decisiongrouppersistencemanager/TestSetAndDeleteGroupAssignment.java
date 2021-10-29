@@ -3,8 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersiste
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testSetGroupAssignmentElementNull() {
-		List<String> groups = new ArrayList<String>();
+		Set<String> groups = new HashSet<>();
 		groups.add("New1");
 		groups.add("New2");
 		assertFalse(DecisionGroupPersistenceManager.setGroupAssignment(groups, null));
@@ -44,7 +44,7 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testSetGroupAssignmentArgsNotNull() {
-		List<String> groups = new ArrayList<String>();
+		Set<String> groups = new HashSet<>();
 		groups.add("New1");
 		groups.add("New2");
 		DecisionGroupPersistenceManager.setGroupAssignment(groups, element);

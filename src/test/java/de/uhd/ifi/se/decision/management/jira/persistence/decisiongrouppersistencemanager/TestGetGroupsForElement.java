@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -28,7 +28,7 @@ public class TestGetGroupsForElement extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testElementNull() {
-		assertNull(DecisionGroupPersistenceManager.getGroupsForElement(null));
+		assertEquals(0, DecisionGroupPersistenceManager.getGroupsForElement(null).size());
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class TestGetGroupsForElement extends TestSetUp {
 	public void testElementIdZero() {
 		KnowledgeElement invalidElement = new KnowledgeElement();
 		invalidElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
-		assertNull(DecisionGroupPersistenceManager.getGroupsForElement(invalidElement));
+		assertEquals(0, DecisionGroupPersistenceManager.getGroupsForElement(invalidElement).size());
 	}
 
 	@Test
@@ -56,6 +56,6 @@ public class TestGetGroupsForElement extends TestSetUp {
 	public void testElementDocumentationLocationNull() {
 		KnowledgeElement invalidElement = new KnowledgeElement();
 		invalidElement.setId(1);
-		assertNull(DecisionGroupPersistenceManager.getGroupsForElement(invalidElement));
+		assertEquals(0, DecisionGroupPersistenceManager.getGroupsForElement(invalidElement).size());
 	}
 }

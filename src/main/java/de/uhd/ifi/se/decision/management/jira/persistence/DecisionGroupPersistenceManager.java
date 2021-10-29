@@ -96,7 +96,7 @@ public class DecisionGroupPersistenceManager {
 	 *            The element that the groups should be assigned to
 	 * @return If replacement was successful
 	 */
-	public static boolean setGroupAssignment(List<String> groups, KnowledgeElement element) {
+	public static boolean setGroupAssignment(Set<String> groups, KnowledgeElement element) {
 		if (groups == null || element == null) {
 			return false;
 		}
@@ -177,7 +177,7 @@ public class DecisionGroupPersistenceManager {
 	 *         if insertion failed.
 	 */
 	public static long insertGroup(String group, KnowledgeElement sourceElement) {
-		if (group == null || sourceElement == null) {
+		if (group == null || sourceElement == null || group.isBlank()) {
 			return -1;
 		}
 		long alreadyExistingId = isGroupAlreadyInDatabase(group, sourceElement);

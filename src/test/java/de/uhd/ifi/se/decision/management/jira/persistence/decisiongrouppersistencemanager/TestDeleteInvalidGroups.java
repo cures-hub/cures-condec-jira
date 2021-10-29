@@ -29,13 +29,6 @@ public class TestDeleteInvalidGroups extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testElementExistingGroupNameEmpty() {
-		DecisionGroupPersistenceManager.insertGroup(" ", KnowledgeElements.getDecision());
-		assertTrue(DecisionGroupPersistenceManager.deleteInvalidGroups());
-	}
-
-	@Test
-	@NonTransactional
 	public void testElementValidAndGroupNameValid() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", KnowledgeElements.getDecision());
 		assertFalse(DecisionGroupPersistenceManager.deleteInvalidGroups());

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,24 +41,17 @@ public class DecisionGroupingRest {
 	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("level") String level,
 			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
 			KnowledgeElement element) {
-		List<String> groupsToAssign = new ArrayList<String>();
+		Set<String> groupsToAssign = new HashSet<String>();
 		groupsToAssign.add(level);
-		if (!"".equals(existingGroups)) {
-			String[] groupSplitArray = existingGroups.replace(" ", "").split(",");
-			for (String group : groupSplitArray) {
-				if (!groupsToAssign.contains(group)) {
-					groupsToAssign.add(group);
-				}
-			}
+		String[] groupSplitArray = existingGroups.replace(" ", "").split(",");
+		for (String group : groupSplitArray) {
+			groupsToAssign.add(group);
 		}
-		if (!"".equals(addGroup)) {
-			String[] groupSplitArray = addGroup.replace(" ", "").split(",");
-			for (String group : groupSplitArray) {
-				if (!groupsToAssign.contains(group)) {
-					groupsToAssign.add(group);
-				}
-			}
+		groupSplitArray = addGroup.replace(" ", "").split(",");
+		for (String group : groupSplitArray) {
+			groupsToAssign.add(group);
 		}
+
 		DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element);
 		inheritGroupAssignment(groupsToAssign, element);
 
@@ -65,7 +59,7 @@ public class DecisionGroupingRest {
 	}
 
 	// TODO Simplify, this method is way too long and complex!
-	private void inheritGroupAssignment(List<String> groupsToAssign, KnowledgeElement element) {
+	private void inheritGroupAssignment(Set<String> groupsToAssign, KnowledgeElement element) {
 		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
 			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
 			for (Link link : element.getLinks()) {
