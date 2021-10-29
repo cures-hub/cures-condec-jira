@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.decisiongrouping;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,20 +14,20 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.DecisionGroupingRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDecisionGroupView extends TestSetUp {
 
-	private ConfigRest configRest;
+	private DecisionGroupingRest decisionGroupingRest;
 	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		decisionGroupingRest = new DecisionGroupingRest();
 		element = KnowledgeElements.getSolvedDecisionProblem();
 		DecisionGroupPersistenceManager.insertGroup("TestGroup1", KnowledgeElements.getDecision());
 		DecisionGroupPersistenceManager.insertGroup("TestGroup2", element);
@@ -39,7 +39,7 @@ public class TestDecisionGroupView extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllDecisionElementsWithCertainGroup() {
-		Response response = configRest.getAllDecisionElementsWithCertainGroup("TEST", "TestGroup1");
+		Response response = decisionGroupingRest.getAllDecisionElementsWithCertainGroup("TEST", "TestGroup1");
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 		assertEquals("[TEST-4]", response.getEntity().toString());
 	}
@@ -48,23 +48,23 @@ public class TestDecisionGroupView extends TestSetUp {
 	@NonTransactional
 	public void testGetAllClassElementsWithCertainGroup() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.getAllClassElementsWithCertainGroup("TEST", "TestGroup2").getStatus());
+				decisionGroupingRest.getAllClassElementsWithCertainGroup("TEST", "TestGroup2").getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRenameDecisionGroup() {
-		Response resp = configRest.renameDecisionGroup("TEST", "TestGroup2", "NewTestGroup2");
+		Response resp = decisionGroupingRest.renameDecisionGroup("TEST", "TestGroup2", "NewTestGroup2");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertEquals("NewTestGroup2", DecisionGroupPersistenceManager.getGroupsForElement(element).get(0));
-		configRest.renameDecisionGroup("TEST", "NewTestGroup2", "TestGroup2");
+		decisionGroupingRest.renameDecisionGroup("TEST", "NewTestGroup2", "TestGroup2");
 	}
 
 	@Test
 	@NonTransactional
 	public void testDeleteDecisionGroup() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup3", element);
-		configRest.deleteDecisionGroup("TEST", "TestGroup3");
+		decisionGroupingRest.deleteDecisionGroup("TEST", "TestGroup3");
 		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup3"));
 	}
 }

@@ -591,7 +591,7 @@
 			return this.decisionGroups;
 		}
 		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
-			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionGroups.json?projectKey=" + conDecAPI.projectKey);
+			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/getAllDecisionGroups.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.decisionGroups;
 	};
@@ -656,7 +656,7 @@
 
 	ConDecAPI.prototype.getDecisionGroups = function(id, location, callback) {
 		// TODO Change to POST method and post knowledgeElement
-		generalApi.getJSON(this.restPrefix + "/config/getDecisionGroups.json?elementId=" + id
+		generalApi.getJSON(this.restPrefix + "/grouping/getDecisionGroups.json?elementId=" + id
 			+ "&location=" + location + "&projectKey=" + projectKey, function(error, decisionGroups) {
 				if (error === null) {
 					callback(decisionGroups);
@@ -665,7 +665,7 @@
 	};
 
 	ConDecAPI.prototype.renameDecisionGroup = function(oldName, newName, callback) {
-		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/renameDecisionGroup.json?projectKey=" + projectKey
+		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/renameDecisionGroup.json?projectKey=" + projectKey
 			+ "&oldName=" + oldName + "&newName=" + newName);
 		callback();
 	};
