@@ -141,7 +141,6 @@
 		<resource type="download" name="condec.chronology.js" location="/js/condec.chronology.js" />
 		<resource type="download" name="condec.comparison.js" location="/js/condec.comparison.js" />
 		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
-		<resource type="download" name="condec.decision.groups.js" location="/js/condec.decision.groups.js" />
 		<resource type="download" name="condec.quality.check.js" location="/js/condec.quality.check.js" />
 		<resource type="download" name="condec.definition.of.done.checking.api.js"
 			location="/js/definitionofdone/condec.definition.of.done.checking.api.js" />
@@ -162,6 +161,12 @@
 			location="/js/classification/condec.text.classification.api.js" />
 		<resource type="download" name="condec.text.classification.js"
 			location="/js/classification/condec.text.classification.js" />
+		<resource type="download" name="condec.decision.grouping.js"
+			location="/js/grouping/condec.decision.grouping.js" />
+		<resource type="download" name="condec.decision.grouping.api.js"
+			location="/js/grouping/condec.decision.grouping.api.js" />
+			<resource type="download" name="condec.decision.grouping.dialogs.js"
+			location="/js/grouping/condec.decision.grouping.dialogs.js" />
 	</web-resource>
 
 	<web-resource key="release-notes-resources" name="ConDec Release Notes Page Resources">

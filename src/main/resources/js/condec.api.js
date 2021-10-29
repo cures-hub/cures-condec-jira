@@ -121,7 +121,7 @@
 			});
 	};
 
-	/*
+	/**
 	 * Creates a new decision knowledge element. If the element should be
 	 * unlinked the idOfExistingElement must be 0 and the
 	 * documentationLocationOfExistingElement must be null
@@ -142,22 +142,6 @@
 				if (error === null) {
 					showFlag("success", type + " and link have been created.");
 					callback(newElement.id);
-				}
-			});
-	};
-
-	ConDecAPI.prototype.assignDecisionGroup = function(level, existingGroups, addgroup, sourceId, documentationLocation, callback) {
-		var newElement = {};
-		generalApi.postJSON(this.restPrefix + "/grouping/assignDecisionGroup.json?sourceId="
-			+ sourceId + "&documentationLocation="
-			+ documentationLocation + "&projectKey="
-			+ projectKey + "&level="
-			+ level + "&existingGroups="
-			+ existingGroups + "&addGroup="
-			+ addgroup, newElement, function(error, newElement) {
-				if (error === null) {
-					showFlag("Success", "Group Assignments have been created.");
-					callback(sourceId);
 				}
 			});
 	};
@@ -584,19 +568,6 @@
 	};
 
 	/*
-	 * external references: condec.filtering
-	 */
-	ConDecAPI.prototype.getAllDecisionGroups = function() {
-		if (conDecAPI.projectKey === undefined || conDecAPI.projectKey === null || conDecAPI.projectKey.length === 0) {
-			return this.decisionGroups;
-		}
-		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
-			this.decisionGroups = decisionGroups = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/getAllDecisionGroups.json?projectKey=" + conDecAPI.projectKey);
-		}
-		return this.decisionGroups;
-	};
-
-	/*
 	 * external references: condec.decision.table
 	 */
 	ConDecAPI.prototype.getDecisionTable = function(filterSettings, callback) {
@@ -653,23 +624,7 @@
 				}
 			});
 	};
-
-	ConDecAPI.prototype.getDecisionGroups = function(id, location, callback) {
-		// TODO Change to POST method and post knowledgeElement
-		generalApi.getJSON(this.restPrefix + "/grouping/getDecisionGroups.json?elementId=" + id
-			+ "&location=" + location + "&projectKey=" + projectKey, function(error, decisionGroups) {
-				if (error === null) {
-					callback(decisionGroups);
-				}
-			});
-	};
-
-	ConDecAPI.prototype.renameDecisionGroup = function(oldName, newName, callback) {
-		generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/renameDecisionGroup.json?projectKey=" + projectKey
-			+ "&oldName=" + oldName + "&newName=" + newName);
-		callback();
-	};
-
+	
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */

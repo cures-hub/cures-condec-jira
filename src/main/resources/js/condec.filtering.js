@@ -274,8 +274,8 @@
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
-		this.initDropdown("decision-group-dropdown-" + viewIdentifier, conDecAPI.getAllDecisionGroups(), []);
-		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier, conDecAPI.getAllDecisionGroups());
+		this.initDropdown("decision-group-dropdown-" + viewIdentifier, conDecGroupingAPI.getAllDecisionGroups(), []);
+		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier, conDecGroupingAPI.getAllDecisionGroups());
 	}
 
 	/**
