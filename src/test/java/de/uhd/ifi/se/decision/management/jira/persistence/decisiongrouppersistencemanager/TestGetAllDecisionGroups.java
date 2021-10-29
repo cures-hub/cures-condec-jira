@@ -33,7 +33,7 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 	@NonTransactional
 	public void testGetAllDecisionElementsWithCertainGroup() {
 		assertEquals(0,
-				DecisionGroupPersistenceManager.getAllDecisionElementsWithCertainGroup("TestGroup", "Test").size());
+				DecisionGroupPersistenceManager.getAllKnowledgeElementsWithCertainGroup("TestGroup", "Test").size());
 	}
 
 	@Test

@@ -12,14 +12,14 @@
 
     // TODO Refactor, move API methods to ConDecAPI
     ConDecDecisionGroups.prototype.buildMatrix = function () {
-        const groups = conDecAPI.getAllDecisionGroups();
+        const groups = conDecGroupingAPI.getAllDecisionGroups();
         const projectKey = conDecAPI.getProjectKey();
         const body = document.getElementById("group-table-body");
         for (var i = 0; i < groups.length; i++) {
             var group = groups[i];
-            var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllDecisionElementsWithCertainGroup.json?projectKey=" + projectKey
+            var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/getAllDecisionElementsWithCertainGroup.json?projectKey=" + projectKey
                 + "&group=" + group);
-            var classes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllClassElementsWithCertainGroup.json?projectKey=" + projectKey
+            var classes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/getAllClassElementsWithCertainGroup.json?projectKey=" + projectKey
                 + "&group=" + group);
             newTableRow(body, group, keys.length, classes.length);
         }

@@ -14,7 +14,8 @@
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="rename-group-dialog-submit-button" class="aui-button aui-button-primary">Confirm</button>
+            <button id="rename-group-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText(
+                "condec.button.update")</button>
             <button id="rename-group-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText(
                 "condec.button.cancel")</button>
         </div>

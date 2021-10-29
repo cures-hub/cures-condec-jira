@@ -21,80 +21,74 @@ import net.java.ao.Query;
  * object relational mapping (active objects framework).
  *
  * @see DecisionGroupInDatabase
+ * @see KnowledgeElement#getDecisionGroups()
  */
 public class DecisionGroupPersistenceManager {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	public static final List<String> LEVELS = List.of("high_level", "medium_level", "realization_level");
 
-	public static boolean deleteGroupAssignment(long elementId) {
-		if (elementId < 0) {
+	/**
+	 * @param groupId
+	 *            id of a decision group/level in the database.
+	 * @return true if decision group/level was deleted in database.
+	 */
+	public static boolean deleteGroup(long groupId) {
+		if (groupId < 0) {
 			return false;
 		}
 		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getId() == elementId) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
-		}
-		return isDeleted;
-	}
-
-	public static boolean deleteGroupAssignment(String group, KnowledgeElement element) {
-		if (element == null || group == null) {
-			return false;
-		}
-		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getGroup().equals(group) && dgData.getSourceId() == element.getId() && dgData
-					.getSourceDocumentationLocation().equals(element.getDocumentationLocation().getIdentifier())) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
-		}
-
-		if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
-			for (KnowledgeElement childElement : childElements) {
-				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
-					isDeleted = isDeleted && deleteGroupAssignment(group, childElement);
-				}
-			}
-		}
-		return isDeleted;
-	}
-
-	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
-		if (element == null) {
-			return false;
-		}
-		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getSourceId() == element.getId()
-					&& dgData.getSourceDocumentationLocation()
-							.equals(element.getDocumentationLocation().getIdentifier())
-					&& dgData.getProjectKey().equals(element.getProject().getProjectKey())) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
-		}
-		return isDeleted;
-	}
-
-	public static boolean deleteGroup(String group, String projectKey) {
-		if (group == null) {
-			return false;
-		}
-		boolean isDeleted = false;
-		for (DecisionGroupInDatabase dgData : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (dgData.getGroup().equals(group) && dgData.getProjectKey().equals(projectKey)) {
-				isDeleted = DecisionGroupInDatabase.deleteGroup(dgData);
-			}
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("ID = ?", groupId))) {
+			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
 		}
 		return isDeleted;
 	}
 
 	/**
-	 * Replaces all current existing assignments for that element with a list of new
-	 * groups
+	 * @param element
+	 *            {@link KnowledgeElement} that currently is assigned to 1..*
+	 *            decision groups/levels.
+	 * @return true if all decision groups/levels were successfully unassigned from
+	 *         the {@link KnowledgeElement}.
+	 */
+	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
+		if (element == null) {
+			return false;
+		}
+		boolean isDeleted = false;
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
+						element.getDocumentationLocation().getIdentifier()))) {
+			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
+		}
+		return isDeleted;
+	}
+
+	/**
+	 * @param group
+	 *            name of the decision level ("high level", "medium level",
+	 *            "realization level") or group (e.g. "process", "UI") to be
+	 *            unassigned.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return true if the decision group/level was successfully deleted.
+	 */
+	public static boolean deleteGroup(String group, String projectKey) {
+		if (group == null) {
+			return false;
+		}
+		boolean isDeleted = false;
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("GROUP = ? AND PROJECT_KEY = ?", group, projectKey))) {
+			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
+		}
+		return isDeleted;
+	}
+
+	/**
+	 * Replaces all current existing decision group/level assignments for that
+	 * element with a list of new decision groups/levels.
 	 *
 	 * @param groups
 	 *            of groups to add
@@ -102,7 +96,7 @@ public class DecisionGroupPersistenceManager {
 	 *            The element that the groups should be assigned to
 	 * @return If replacement was successful
 	 */
-	public static boolean setGroupAssignment(List<String> groups, KnowledgeElement element) {
+	public static boolean setGroupAssignment(Set<String> groups, KnowledgeElement element) {
 		if (groups == null || element == null) {
 			return false;
 		}
@@ -152,10 +146,10 @@ public class DecisionGroupPersistenceManager {
 	 * @return list of group/level names for the given {@link KnowledgeElement}.
 	 */
 	public static List<String> getGroupsForElement(KnowledgeElement element) {
-		List<String> groups = new ArrayList<>();
 		if (element == null || element.getId() == 0 || element.getDocumentationLocation() == null) {
-			return null;
+			return new ArrayList<>();
 		}
+		List<String> groups = new ArrayList<>();
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
 						element.getDocumentationLocation().getIdentifier()));
@@ -171,17 +165,19 @@ public class DecisionGroupPersistenceManager {
 	}
 
 	/**
-	 * Inserts a new group assignment into database.
+	 * Inserts a new decision group/level assignment into database.
 	 *
 	 * @param sourceElement
-	 *            Name of the Group
+	 *            {@link KnowledgeElement} that the decision group/level is assigned
+	 *            to.
 	 * @param group
-	 *            KnowledgeElement that the group is assigned to
-	 * @return internal database id of inserted group assignment, -1 if insertion
-	 *         failed.
+	 *            name of the decision level ("high level", "medium level",
+	 *            "realization level") or group (e.g. "process", "UI").
+	 * @return internal database id of inserted decision group/level assignment, -1
+	 *         if insertion failed.
 	 */
 	public static long insertGroup(String group, KnowledgeElement sourceElement) {
-		if (group == null || sourceElement == null) {
+		if (group == null || sourceElement == null || group.isBlank()) {
 			return -1;
 		}
 		long alreadyExistingId = isGroupAlreadyInDatabase(group, sourceElement);
@@ -189,11 +185,7 @@ public class DecisionGroupPersistenceManager {
 			return alreadyExistingId;
 		}
 		final DecisionGroupInDatabase groupInDatabase = ACTIVE_OBJECTS.create(DecisionGroupInDatabase.class);
-		String documentationLocationOfSourceElement = sourceElement.getDocumentationLocation().getIdentifier();
-		groupInDatabase.setSourceDocumentationLocation(documentationLocationOfSourceElement);
-		groupInDatabase.setSourceId(sourceElement.getId());
-		groupInDatabase.setProjectKey(sourceElement.getProject().getProjectKey());
-		groupInDatabase.setGroup(group);
+		setParameters(sourceElement, group, groupInDatabase);
 		groupInDatabase.save();
 
 		List<Long> returnedIds = new ArrayList<Long>();
@@ -212,63 +204,68 @@ public class DecisionGroupPersistenceManager {
 		return groupInDatabase.getId();
 	}
 
-	/**
-	 * @param group
-	 *            name of the group/level, e.g. "high level" or "UI".
-	 * @param sourceElement
-	 *            {@link KnowledgeElement} that the group is assigned to
-	 * @return group id if the entry already exists in database, otherwise -1.
-	 */
-	public static long isGroupAlreadyInDatabase(String group, KnowledgeElement sourceElement) {
-		long groupId = -1;
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (groupInDatabase.getGroup() != null && groupInDatabase.getGroup().equals(group)
-					&& groupInDatabase.getSourceId() == sourceElement.getId()
-					&& groupInDatabase.getSourceDocumentationLocation()
-							.equals(sourceElement.getDocumentationLocation().getIdentifier())) {
-				groupId = groupInDatabase.getId();
-			}
-		}
-		return groupId;
+	private static void setParameters(KnowledgeElement element, String groupName,
+			DecisionGroupInDatabase databaseEntry) {
+		String documentationLocationOfSourceElement = element.getDocumentationLocation().getIdentifier();
+		databaseEntry.setSourceDocumentationLocation(documentationLocationOfSourceElement);
+		databaseEntry.setSourceId(element.getId());
+		databaseEntry.setProjectKey(element.getProject().getProjectKey());
+		databaseEntry.setGroup(groupName);
 	}
 
 	/**
 	 * @param groupName
 	 *            name of the group/level, e.g. "high level" or "UI".
 	 * @param element
-	 *            KnowledgeElement that the group is assigned to
+	 *            {@link KnowledgeElement} that the decision group/level is assigned
+	 *            to.
+	 * @return group id if the entry already exists in database, otherwise -1.
+	 */
+	public static long isGroupAlreadyInDatabase(String groupName, KnowledgeElement element) {
+		DecisionGroupInDatabase groupInDatabase = getDecisionGroupInDatabase(groupName, element);
+		return groupInDatabase != null ? groupInDatabase.getId() : -1;
+	}
+
+	/**
+	 * @param groupName
+	 *            name of the group/level, e.g. "high level" or "UI".
+	 * @param element
+	 *            {@link KnowledgeElement} that the decision group/level is assigned
+	 *            to.
 	 * @return {@link DecisionGroupInDatabase} object.
 	 */
 	public static DecisionGroupInDatabase getDecisionGroupInDatabase(String groupName, KnowledgeElement element) {
 		if (groupName == null || element == null) {
 			return null;
 		}
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (groupInDatabase.getGroup().equals(groupName) && groupInDatabase.getSourceId() == element.getId()
-					&& groupInDatabase.getSourceDocumentationLocation()
-							.equals(element.getDocumentationLocation().getIdentifier())) {
-				return groupInDatabase;
-			}
+		DecisionGroupInDatabase groupInDatabase = null;
+		for (DecisionGroupInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("GROUP = ? AND SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", groupName,
+						element.getId(), element.getDocumentationLocation().getIdentifier()))) {
+			groupInDatabase = databaseEntry;
 		}
-		return null;
+		return groupInDatabase;
 	}
 
+	/**
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return a set of all decision group/level names for the project.
+	 */
 	public static Set<String> getAllDecisionGroups(String projectKey) {
-		Set<String> groups = new HashSet<>();
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			String groupOfOneElement = groupInDatabase.getGroup();
-			if (groupInDatabase.getProjectKey().equals(projectKey) && !groupOfOneElement.isBlank()) {
-				groups.add(groupOfOneElement);
-			}
+		Set<String> groupNames = new HashSet<>();
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			groupNames.add(groupInDatabase.getGroup());
 		}
-		return groups;
+		return groupNames;
 	}
 
-	public static List<String> getAllDecisionElementsWithCertainGroup(String group, String projectKey) {
+	public static List<String> getAllKnowledgeElementsWithCertainGroup(String groupName, String projectKey) {
 		List<String> keys = new ArrayList<>();
 		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (groupInDatabase.getProjectKey().equals(projectKey) && groupInDatabase.getGroup().equals(group)
+			if (groupInDatabase.getProjectKey().equals(projectKey) && groupInDatabase.getGroup().equals(groupName)
 					&& !groupInDatabase.getSourceDocumentationLocation().equals("c")) {
 				KnowledgeElement element = kpManager
 						.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation())

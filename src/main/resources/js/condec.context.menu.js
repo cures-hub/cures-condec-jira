@@ -82,11 +82,11 @@
 
 	function setContextMenuItemsEventHandlers(id, documentationLocation, container, idOfTarget, documentationLocationOfTarget, linkType) {
 		document.getElementById("condec-context-menu-group-rename").onclick = function () {
-			conDecDialog.showRenameGroupDialog(id);
+			conDecGroupingDialog.showRenameGroupDialog(id);
 		};
 
 		document.getElementById("condec-context-menu-group-delete").onclick = function () {
-			conDecDialog.showDeleteGroupDialog(id);
+			conDecGroupingDialog.showDeleteGroupDialog(id);
 		};
 
 		document.getElementById("condec-context-menu-create-item").onclick = function () {
@@ -108,7 +108,7 @@
 		};
 
 		document.getElementById("condec-context-menu-assign-decision-group-item").onclick = function () {
-			conDecDialog.showAssignDialog(id, documentationLocation);
+			conDecGroupingDialog.showAssignDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-decision-item").onclick = function () {

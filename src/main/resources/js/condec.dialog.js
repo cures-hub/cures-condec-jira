@@ -71,116 +71,6 @@
 		}
 	}
 
-	ConDecDialog.prototype.showAssignDialog = function(sourceId, documentationLocation) {
-		console.log("conDecDialog showAssignDialog");
-
-		// HTML elements
-		var assignDialog = document.getElementById("assign-dialog");
-		var selectLevelField = document.getElementById("assign-form-select-level");
-		var inputExistingGroupsField = document.getElementById("assign-form-input-existing");
-		var inputAddGroupField = document.getElementById("assign-form-input-add");
-		var submitButton = document.getElementById("assign-dialog-submit-button");
-		var cancelButton = document.getElementById("assign-dialog-cancel-button");
-
-		// Fill HTML elements
-		inputAddGroupField.value = "";
-
-		conDecAPI.getDecisionGroups(sourceId, documentationLocation, function(groups) {
-			if (groups.length > 0) {
-				var level = groups[0];
-				selectLevelField.value = level;
-			}
-			if (groups.length > 1) {
-				groups.shift();
-				inputExistingGroupsField.value = groups;
-			} else {
-				inputExistingGroupsField.value = "";
-			}
-		});
-
-		// Set onclick listener on buttons
-		submitButton.onclick = function() {
-			var level = selectLevelField.value;
-			var existingGroups = inputExistingGroupsField.value;
-			var addgroup = inputAddGroupField.value;
-			conDecAPI.assignDecisionGroup(level, existingGroups, addgroup,
-				sourceId, documentationLocation, function(id) {
-					conDecObservable.notify();
-				});
-			AJS.dialog2(assignDialog).hide();
-		};
-
-		cancelButton.onclick = function() {
-			AJS.dialog2(assignDialog).hide();
-		};
-
-		// Show dialog
-		AJS.dialog2(assignDialog).show();
-	};
-
-	ConDecDialog.prototype.showRenameGroupDialog = function(groupName) {
-		console.log("conDecDialog showRenameGroupDialog");
-		// HTML elements
-		var renameGroupDialog = document.getElementById("rename-group-dialog");
-		if (groupName === "High_Level" || groupName === "Medium_Level" || groupName === "Realization_Level") {
-			alert("Can't rename Decision Levels.");
-			AJS.dialog2(renameGroupDialog).hide();
-		} else {
-			var inputGroupName = document.getElementById("rename-group-input");
-			var submitButton = document.getElementById("rename-group-dialog-submit-button");
-			var cancelButton = document.getElementById("rename-group-dialog-cancel-button");
-
-			inputGroupName.value = groupName;
-
-			// Set onclick listener on buttons
-			submitButton.onclick = function() {
-				var newName = inputGroupName.value;
-				conDecAPI.renameDecisionGroup(groupName, newName, function() {
-					conDecObservable.notify();
-				});
-				AJS.dialog2(renameGroupDialog).hide();
-			};
-
-			cancelButton.onclick = function() {
-				AJS.dialog2(renameGroupDialog).hide();
-			};
-
-			// Show dialog
-			AJS.dialog2(renameGroupDialog).show();
-		}
-	};
-
-	ConDecDialog.prototype.showDeleteGroupDialog = function(groupName) {
-		console.log("conDecDialog showDeleteGroupDialog");
-		// HTML elements
-		var deleteGroupDialog = document.getElementById("delete-group-dialog");
-		if (groupName === "High_Level" || groupName === "Medium_Level" || groupName === "Realization_Level") {
-			alert("Can't delete Decision Levels.");
-			AJS.dialog2(deleteGroupDialog).hide();
-		} else {
-			var deleteMessageLabel = document.getElementById("delete-group-label");
-			var submitButton = document.getElementById("delete-group-dialog-submit-button");
-			var cancelButton = document.getElementById("delete-group-dialog-cancel-button");
-
-			deleteMessageLabel.innerHTML = "<br> Are you sure that you want to remove the Decision Group: <b>" + groupName + "</b> ?";
-
-			// Set onclick listener on buttons
-			submitButton.onclick = function() {
-				conDecAPI.deleteDecisionGroup(groupName, function() {
-					conDecObservable.notify();
-				});
-				AJS.dialog2(deleteGroupDialog).hide();
-			};
-
-			cancelButton.onclick = function() {
-				AJS.dialog2(deleteGroupDialog).hide();
-			};
-
-			// Show dialog
-			AJS.dialog2(deleteGroupDialog).show();
-		}
-	};
-
 	ConDecDialog.prototype.showDeleteDialog = function(id, documentationLocation, callback = function() {
 	}) {
 		console.log("conDecDialog showDeleteDialog");
@@ -400,7 +290,7 @@
 				inputSummaryField.disabled = true;
 				selectLocationField.disabled = true;
 			}
-			conDecAPI.getDecisionGroups(id, documentationLocation, function(groups) {
+			conDecGroupingAPI.getDecisionGroups(id, documentationLocation, function(groups) {
 				if (groups.length > 0) {
 					var level = groups[0];
 					selectLevelField.value = level;
@@ -426,7 +316,7 @@
 				var level = selectLevelField.value;
 				var existingGroups = inputExistingGroupsField.value;
 				var addgroup = "";
-				conDecAPI.assignDecisionGroup(level, existingGroups, addgroup,
+				conDecGroupingAPI.assignDecisionGroup(level, existingGroups, addgroup,
 					id, documentationLocation, function(id) {
 						conDecObservable.notify();
 					});

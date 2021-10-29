@@ -28,7 +28,7 @@
     </div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
-			<button id="assign-dialog-submit-button" class="aui-button aui-button-primary">Add Changes</button>
+			<button id="assign-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText("condec.button.update")</button>
 			<button id="assign-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText("condec.button.cancel")</button>
 		</div>
 	</footer>

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +34,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -264,82 +262,6 @@ public class KnowledgeRest {
 		LOGGER.info(knowledgeElement.getKey() + " was deleted.");
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
-	}
-
-	@Path("/assignDecisionGroup")
-	@POST
-	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("sourceId") long sourceId,
-			@QueryParam("documentationLocation") String location, @QueryParam("level") String level,
-			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
-			@QueryParam("projectKey") String projectKey) {
-		List<String> groupsToAssign = new ArrayList<String>();
-		groupsToAssign.add(level);
-		if (!"".equals(existingGroups)) {
-			String[] groupSplitArray = existingGroups.replace(" ", "").split(",");
-			for (String group : groupSplitArray) {
-				if (!groupsToAssign.contains(group)) {
-					groupsToAssign.add(group);
-				}
-			}
-		}
-		if (!"".equals(addGroup)) {
-			String[] groupSplitArray = addGroup.replace(" ", "").split(",");
-			for (String group : groupSplitArray) {
-				if (!groupsToAssign.contains(group)) {
-					groupsToAssign.add(group);
-				}
-			}
-		}
-		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(sourceId,
-				location);
-		DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element);
-		inheritGroupAssignment(groupsToAssign, element);
-
-		return Response.status(Status.OK).build();
-	}
-
-	// TODO Simplify, this method is way too long and complex!
-	private void inheritGroupAssignment(List<String> groupsToAssign, KnowledgeElement element) {
-		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
-			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
-			for (Link link : element.getLinks()) {
-				KnowledgeElement linkedElement = link.getOppositeElement(element);
-				if (linkedElement != null && linkedElement.getDocumentationLocation() == DocumentationLocation.CODE) {
-					if (!linkedElement.getDecisionGroups().contains("Realization_Level")) {
-						DecisionGroupPersistenceManager.insertGroup("Realization_Level", linkedElement);
-					}
-					for (String group : groupsToAssign) {
-						if (!("High_Level").equals(group) && !("Medium_Level").equals(group)
-								&& !("Realization_Level").equals(group)) {
-							DecisionGroupPersistenceManager.insertGroup(group, linkedElement);
-						}
-
-					}
-				} else if (linkedElement != null) {
-					linkedElements.add(linkedElement);
-					if ((linkedElement.getTypeAsString().equals("Decision")
-							|| linkedElement.getTypeAsString().equals("Alternative")
-							|| linkedElement.getTypeAsString().equals("Issue")) && linkedElement.getLinks() != null) {
-						Set<Link> deeperLinks = linkedElement.getLinks();
-						for (Link deeperLink : deeperLinks) {
-							if (deeperLink != null && deeperLink.getTarget() != null
-									&& deeperLink.getSource() != null) {
-								KnowledgeElement deeperElement = deeperLink.getOppositeElement(linkedElement);
-								if (deeperElement != null && (deeperElement.getTypeAsString().equals("Pro")
-										|| deeperElement.getTypeAsString().equals("Con")
-										|| deeperElement.getTypeAsString().equals("Decision")
-										|| deeperElement.getTypeAsString().equals("Alternative"))) {
-									linkedElements.add(deeperElement);
-								}
-							}
-						}
-					}
-				}
-			}
-			for (KnowledgeElement ele : linkedElements) {
-				DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, ele);
-			}
-		}
 	}
 
 	@Path("/createLink")

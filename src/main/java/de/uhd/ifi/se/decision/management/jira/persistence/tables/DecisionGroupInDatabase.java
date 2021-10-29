@@ -4,17 +4,20 @@ import java.sql.SQLException;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * Interface for groups of decisions and solution options (alternatives).
- * Determines which table columns are used for object relational mapping to the
- * database.
+ * Interface for groups/levels of decisions and solution options (alternatives).
+ * For example, levels are "high level", "medium level", "realization level" and
+ * groups are "process", "UI". Determines which table columns are used for
+ * object relational mapping to the database.
  * 
  * @see KnowledgeElement
+ * @see DecisionGroupPersistenceManager
  */
 @Table("CondecDecGroup")
 public interface DecisionGroupInDatabase extends RawEntity<Long> {
