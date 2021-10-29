@@ -148,7 +148,7 @@
 
 	ConDecAPI.prototype.assignDecisionGroup = function(level, existingGroups, addgroup, sourceId, documentationLocation, callback) {
 		var newElement = {};
-		generalApi.postJSON(this.restPrefix + "/knowledge/assignDecisionGroup.json?sourceId="
+		generalApi.postJSON(this.restPrefix + "/grouping/assignDecisionGroup.json?sourceId="
 			+ sourceId + "&documentationLocation="
 			+ documentationLocation + "&projectKey="
 			+ projectKey + "&level="

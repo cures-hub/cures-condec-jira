@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
+package de.uhd.ifi.se.decision.management.jira.rest.decisiongrouping;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,45 +17,32 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.DecisionGroupingRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestAssignDecisionGroup extends TestSetUp {
 
-	private KnowledgeRest knowledgeRest;
+	private DecisionGroupingRest decisionGroupingRest;
 	private KnowledgeElement decisionKnowledgeElementIss;
-	// private KnowledgeElement decisionKnowledgeElemenDec;
-	// private KnowledgeElement decisionKnowledgeElementAlt;
-	// private KnowledgeElement decisionKnowledgeElementPro;
-	// private KnowledgeElement decisionKnowledgeElementCon;
 	private HttpServletRequest request;
 
 	@Before
 	public void setUp() {
-		knowledgeRest = new KnowledgeRest();
+		decisionGroupingRest = new DecisionGroupingRest();
 		init();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
 		decisionKnowledgeElementIss = new KnowledgeElement(issue);
 		decisionKnowledgeElementIss.setType(KnowledgeType.ISSUE);
-		/*
-		 * decisionKnowledgeElemenDec = new KnowledgeElement(issue);
-		 * decisionKnowledgeElemenDec.setType(KnowledgeType.DECISION);
-		 * decisionKnowledgeElementAlt = new KnowledgeElement(issue);
-		 * decisionKnowledgeElementAlt.setType(KnowledgeType.ALTERNATIVE);
-		 * decisionKnowledgeElementPro = new KnowledgeElement(issue);
-		 * decisionKnowledgeElementPro.setType(KnowledgeType.PRO);
-		 * decisionKnowledgeElementCon = new KnowledgeElement(issue);
-		 * decisionKnowledgeElementCon.setType(KnowledgeType.CON);
-		 */
-
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
+	@NonTransactional
 	public void testAssignDecisionGroupAddGroupEmpty() {
-		Response resp = knowledgeRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
+		Response resp = decisionGroupingRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
 				decisionKnowledgeElementIss.getDocumentationLocationAsString(), "High_Level", "Safety", "", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
@@ -63,8 +50,9 @@ public class TestAssignDecisionGroup extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testAssignDecisionGroupCurrentGroupEmpty() {
-		Response resp = knowledgeRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
+		Response resp = decisionGroupingRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
 				decisionKnowledgeElementIss.getDocumentationLocationAsString(), "High_Level", "", "Safety", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(decisionKnowledgeElementIss).contains("Safety"));
@@ -72,8 +60,9 @@ public class TestAssignDecisionGroup extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testAssignDecisionGroupNoEmpties() {
-		Response resp = knowledgeRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
+		Response resp = decisionGroupingRest.assignDecisionGroup(request, decisionKnowledgeElementIss.getId(),
 				decisionKnowledgeElementIss.getDocumentationLocationAsString(), "High_Level", "Property,TestGroup",
 				"Safety", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
