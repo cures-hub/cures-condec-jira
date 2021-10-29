@@ -146,10 +146,10 @@ public class DecisionGroupPersistenceManager {
 	 * @return list of group/level names for the given {@link KnowledgeElement}.
 	 */
 	public static List<String> getGroupsForElement(KnowledgeElement element) {
-		List<String> groups = new ArrayList<>();
 		if (element == null || element.getId() == 0 || element.getDocumentationLocation() == null) {
-			return null;
+			return new ArrayList<>();
 		}
+		List<String> groups = new ArrayList<>();
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
 						element.getDocumentationLocation().getIdentifier()));
@@ -238,12 +238,13 @@ public class DecisionGroupPersistenceManager {
 		if (groupName == null || element == null) {
 			return null;
 		}
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+		DecisionGroupInDatabase groupInDatabase = null;
+		for (DecisionGroupInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("GROUP = ? AND SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", groupName,
 						element.getId(), element.getDocumentationLocation().getIdentifier()))) {
-			return groupInDatabase;
+			groupInDatabase = databaseEntry;
 		}
-		return null;
+		return groupInDatabase;
 	}
 
 	/**

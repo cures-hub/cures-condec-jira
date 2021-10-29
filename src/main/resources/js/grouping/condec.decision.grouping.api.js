@@ -18,18 +18,18 @@
 	/**
 	 * external references: condec.dialog, condec.decision.grouping.dialogs
 	 */
-	ConDecGroupingAPI.prototype.assignDecisionGroup = function(level, existingGroups, addgroup, sourceId, documentationLocation, callback) {
-		var newElement = {};
-		generalApi.postJSON(this.restPrefix + "/assignDecisionGroup.json?sourceId="
-			+ sourceId + "&documentationLocation="
-			+ documentationLocation + "&projectKey="
-			+ projectKey + "&level="
-			+ level + "&existingGroups="
-			+ existingGroups + "&addGroup="
-			+ addgroup, newElement, function(error, newElement) {
+	ConDecGroupingAPI.prototype.assignDecisionGroup = function(level, existingGroups, addgroup, elementId, documentationLocation, callback) {
+		var element = {
+			"id": elementId,
+			"documentationLocation": documentationLocation,
+			"projectKey": conDecAPI.projectKey
+		};
+		generalApi.postJSON(this.restPrefix + "/assignDecisionGroup.json?level=" + level
+			+ "&existingGroups=" + existingGroups
+			+ "&addGroup=" + addgroup, element, function(error) {
 				if (error === null) {
 					conDecAPI.showFlag("Success", "Decision groups/levels have been assigned.");
-					callback(sourceId);
+					callback(elementId);
 				}
 			});
 	};

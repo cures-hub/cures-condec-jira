@@ -20,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 
 /**
@@ -38,10 +37,9 @@ public class DecisionGroupingRest {
 
 	@Path("/assignDecisionGroup")
 	@POST
-	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("sourceId") long sourceId,
-			@QueryParam("documentationLocation") String location, @QueryParam("level") String level,
+	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("level") String level,
 			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
-			@QueryParam("projectKey") String projectKey) {
+			KnowledgeElement element) {
 		List<String> groupsToAssign = new ArrayList<String>();
 		groupsToAssign.add(level);
 		if (!"".equals(existingGroups)) {
@@ -60,12 +58,10 @@ public class DecisionGroupingRest {
 				}
 			}
 		}
-		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(sourceId,
-				location);
 		DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element);
 		inheritGroupAssignment(groupsToAssign, element);
 
-		return Response.status(Status.OK).build();
+		return Response.ok().build();
 	}
 
 	// TODO Simplify, this method is way too long and complex!
@@ -118,20 +114,7 @@ public class DecisionGroupingRest {
 		if (element == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		List<String> groups = element.getDecisionGroups();
-		if (groups != null) {
-			for (String group : groups) {
-				if (("High_Level").equals(group) || ("Medium_Level").equals(group)
-						|| ("Realization_Level").equals(group)) {
-					int index = groups.indexOf(group);
-					if (index != 0) {
-						Collections.swap(groups, 0, index);
-					}
-				}
-			}
-			return Response.ok(groups).build();
-		}
-		return Response.ok(Collections.emptyList()).build();
+		return Response.ok(element.getDecisionGroups()).build();
 	}
 
 	@Path("/getAllDecisionElementsWithCertainGroup")
