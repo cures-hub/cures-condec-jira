@@ -261,46 +261,6 @@ public class DecisionGroupPersistenceManager {
 		return groupNames;
 	}
 
-	public static List<String> getAllKnowledgeElementsWithCertainGroup(String groupName, String projectKey) {
-		List<String> keys = new ArrayList<>();
-		for (DecisionGroupInDatabase groupInDatabase : getGroupsInDatabase(groupName, projectKey)) {
-			if (!groupInDatabase.getSourceDocumentationLocation().equals("c")) {
-				KnowledgeElement element = getKnowledgeElement(groupInDatabase);
-				if (element != null) {
-					keys.add(element.getKey());
-				}
-			}
-		}
-		return keys;
-	}
-
-	public static KnowledgeElement getKnowledgeElement(DecisionGroupInDatabase groupInDatabase) {
-		return KnowledgePersistenceManager.getInstance(groupInDatabase.getProjectKey())
-				.getKnowledgeElement(groupInDatabase.getSourceId(), groupInDatabase.getSourceDocumentationLocation());
-	}
-
-	public static List<DecisionGroupInDatabase> getGroupsInDatabase(String groupName, String projectKey) {
-		List<DecisionGroupInDatabase> groupsInDatabase = new ArrayList<>();
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND GROUP = ?", projectKey, groupName))) {
-			groupsInDatabase.add(groupInDatabase);
-		}
-		return groupsInDatabase;
-	}
-
-	public static List<String> getAllClassElementsWithCertainGroup(String group, String projectKey) {
-		List<String> keys = new ArrayList<>();
-		for (DecisionGroupInDatabase groupInDatabase : getGroupsInDatabase(group, projectKey)) {
-			if (groupInDatabase.getSourceDocumentationLocation().equals("c")) {
-				KnowledgeElement element = getKnowledgeElement(groupInDatabase);
-				if (element != null) {
-					keys.add(element.getKey());
-				}
-			}
-		}
-		return keys;
-	}
-
 	public static boolean updateGroupName(String oldGroup, String newGroup, String projectKey) {
 		boolean success = false;
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {

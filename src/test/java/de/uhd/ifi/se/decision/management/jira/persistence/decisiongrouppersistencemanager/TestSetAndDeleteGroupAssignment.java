@@ -78,7 +78,6 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 	public void testDeleteGroup() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup4", element);
 		DecisionGroupPersistenceManager.deleteGroup("TestGroup4", "TEST");
-		assertTrue(DecisionGroupPersistenceManager.getAllKnowledgeElementsWithCertainGroup("TestGroup4", "TEST")
-				.size() == 0);
+		assertFalse(DecisionGroupPersistenceManager.getAllDecisionGroups("TEST").contains("TestGroup4"));
 	}
 }

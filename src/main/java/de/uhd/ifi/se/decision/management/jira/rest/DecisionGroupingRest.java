@@ -111,22 +111,6 @@ public class DecisionGroupingRest {
 		return Response.ok(element.getDecisionGroups()).build();
 	}
 
-	@Path("/getAllDecisionElementsWithCertainGroup")
-	@GET
-	public Response getAllDecisionElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
-			@QueryParam("group") String group) {
-		List<String> keys = DecisionGroupPersistenceManager.getAllKnowledgeElementsWithCertainGroup(group, projectKey);
-		return Response.ok(keys).build();
-	}
-
-	@Path("/getAllClassElementsWithCertainGroup")
-	@GET
-	public Response getAllClassElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
-			@QueryParam("group") String group) {
-		List<String> keys = DecisionGroupPersistenceManager.getAllClassElementsWithCertainGroup(group, projectKey);
-		return Response.ok(keys).build();
-	}
-
 	@Path("/renameDecisionGroup")
 	@GET
 	public Response renameDecisionGroup(@QueryParam("projectKey") String projectKey,
