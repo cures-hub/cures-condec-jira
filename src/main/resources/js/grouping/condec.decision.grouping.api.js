@@ -16,7 +16,7 @@
 	/**
 	 * external references: condec.dialog, condec.decision.grouping.dialogs
 	 */
-	ConDecGroupingAPI.prototype.assignDecisionGroup = function(level, existingGroups, addgroup, elementId, documentationLocation, callback) {
+	ConDecGroupingAPI.prototype.assignDecisionGroup = function(level, existingGroups, groupName, elementId, documentationLocation, callback) {
 		var element = {
 			"id": elementId,
 			"documentationLocation": documentationLocation,
@@ -24,7 +24,7 @@
 		};
 		generalApi.postJSON(this.restPrefix + "/assignDecisionGroup.json?level=" + level
 			+ "&existingGroups=" + existingGroups
-			+ "&addGroup=" + addgroup, element, function(error) {
+			+ "&addGroup=" + groupName, element, function(error) {
 				if (error === null) {
 					conDecAPI.showFlag("Success", "Decision groups/levels have been assigned.");
 					callback(elementId);

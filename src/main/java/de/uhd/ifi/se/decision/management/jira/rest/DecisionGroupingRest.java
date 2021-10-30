@@ -60,7 +60,7 @@ public class DecisionGroupingRest {
 	}
 
 	// TODO Simplify, this method is way too long and complex!
-	private void inheritGroupAssignment(Set<String> groupsToAssign, KnowledgeElement element) {
+	public void inheritGroupAssignment(Set<String> groupsToAssign, KnowledgeElement element) {
 		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
 			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
 			for (Link link : element.getLinks()) {
@@ -104,7 +104,8 @@ public class DecisionGroupingRest {
 	}
 
 	/**
-	 * @issue How can we keep the sorting of the list?
+	 * @issue How can we keep the sorting of the list when passing it through the
+	 *        REST API?
 	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
 	 *           the REST API!
 	 * @pro No other java.util datastructure seems to keep the sorting than TreeSet.
@@ -146,7 +147,8 @@ public class DecisionGroupingRest {
 	}
 
 	/**
-	 * @issue How can we keep the sorting of the list?
+	 * @issue How can we keep the sorting of the list when passing it through the
+	 *        REST API?
 	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
 	 *           the REST API!
 	 * @pro No other java.util datastructure seems to keep the sorting than TreeSet.

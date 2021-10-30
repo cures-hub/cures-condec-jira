@@ -144,7 +144,8 @@ public class DecisionGroupPersistenceManager {
 	/**
 	 * @param element
 	 *            {@link KnowledgeElement}.
-	 * @return list of group/level names for the given {@link KnowledgeElement}.
+	 * @return group/level names for the given {@link KnowledgeElement}, sorted so
+	 *         that the level comes first.
 	 */
 	public static List<String> getGroupsForElement(KnowledgeElement element) {
 		if (element == null || element.getId() == 0 || element.getDocumentationLocation() == null) {

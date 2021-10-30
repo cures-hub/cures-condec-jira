@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
@@ -25,6 +26,7 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllDecisionGroups() {
+		assertNotNull(new DecisionGroupPersistenceManager());
 		assertTrue(DecisionGroupPersistenceManager.getAllDecisionGroups("TEST").contains("TestGroup"));
 	}
 

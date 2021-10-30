@@ -46,8 +46,6 @@
 
 		this.linkTypes = [];
 		this.allLinkTypes = [];
-
-		this.decisionGroups = [];
 	};
 
 	/**
