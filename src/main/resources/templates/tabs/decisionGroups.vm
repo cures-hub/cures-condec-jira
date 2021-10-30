@@ -5,7 +5,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
     	<thead>
     		<tr>
     			<th>Group</th>
-    			<th># Knowledge Elements</th>
+    			<th># Knowledge Elements Except Code Files</th>
     			<th># Code Files</th>
     		</tr>
     	</thead>

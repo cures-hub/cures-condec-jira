@@ -8,8 +8,6 @@
  */
 (function(global) {
 
-	var projectKey = null;
-
 	var ConDecGroupingAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/grouping";
 		this.decisionGroups = [];
@@ -89,15 +87,6 @@
 				conDecGroupingAPI.decisionGroups.splice(index, 1);
 				callback();
 			});
-	};
-
-	/**
-	 * external references: condec.decision.grouping
-	 */
-	ConDecGroupingAPI.prototype.getAllDecisionElementsWithCertainGroup = function(group) {
-		return generalApi.getResponseAsReturnValue(conDecGroupingAPI.restPrefix + "/getAllDecisionElementsWithCertainGroup.json?"
-			+ "projectKey=" + conDecAPI.projectKey
-			+ "&group=" + group);
 	};
 
 	global.conDecGroupingAPI = new ConDecGroupingAPI();

@@ -267,7 +267,7 @@
 		filterSettings["projectKey"] = projectKey;
 		generalApi.postJSON(this.restPrefix + "/knowledge/knowledgeElements.json", filterSettings, function(error, elements) {
 			if (error === null) {
-				callback(elements);
+				callback(elements, filterSettings);
 			}
 		});
 	};
