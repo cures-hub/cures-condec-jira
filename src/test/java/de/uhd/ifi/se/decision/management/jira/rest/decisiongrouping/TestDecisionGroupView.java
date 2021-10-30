@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisiongrouping;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -49,22 +48,5 @@ public class TestDecisionGroupView extends TestSetUp {
 	public void testGetAllClassElementsWithCertainGroup() {
 		assertEquals(Response.Status.OK.getStatusCode(),
 				decisionGroupingRest.getAllClassElementsWithCertainGroup("TEST", "TestGroup2").getStatus());
-	}
-
-	@Test
-	@NonTransactional
-	public void testRenameDecisionGroup() {
-		Response resp = decisionGroupingRest.renameDecisionGroup("TEST", "TestGroup2", "NewTestGroup2");
-		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertEquals("NewTestGroup2", DecisionGroupPersistenceManager.getGroupsForElement(element).get(0));
-		decisionGroupingRest.renameDecisionGroup("TEST", "NewTestGroup2", "TestGroup2");
-	}
-
-	@Test
-	@NonTransactional
-	public void testDeleteDecisionGroup() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup3", element);
-		decisionGroupingRest.deleteDecisionGroup("TEST", "TestGroup3");
-		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup3"));
 	}
 }

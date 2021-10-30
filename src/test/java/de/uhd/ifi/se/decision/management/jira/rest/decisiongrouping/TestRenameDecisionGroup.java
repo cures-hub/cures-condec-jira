@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisiongrouping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.core.Response;
 
@@ -21,7 +23,6 @@ public class TestRenameDecisionGroup extends TestSetUp {
 	public void setUp() {
 		decisionGroupingRest = new DecisionGroupingRest();
 		init();
-		KnowledgeElements.getSolvedDecisionProblem();
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", KnowledgeElements.getDecision());
 	}
 
@@ -37,6 +38,10 @@ public class TestRenameDecisionGroup extends TestSetUp {
 	public void testGroupNameValidProjectKeyValid() {
 		assertEquals(Response.Status.OK.getStatusCode(),
 				decisionGroupingRest.renameDecisionGroup("TEST", "TestGroup", "TestGroupNew").getStatus());
+		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(KnowledgeElements.getDecision())
+				.contains("TestGroup"));
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(KnowledgeElements.getDecision())
+				.contains("TestGroupNew"));
 	}
 
 	@Test

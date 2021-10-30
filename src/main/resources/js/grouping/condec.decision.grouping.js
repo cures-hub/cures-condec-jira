@@ -17,8 +17,8 @@
         const body = document.getElementById("group-table-body");
         for (var i = 0; i < groups.length; i++) {
             var group = groups[i];
-            var keys = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/getAllDecisionElementsWithCertainGroup.json?projectKey=" + projectKey
-                + "&group=" + group);
+            conDecGroupingAPI.getAllDecisionElementsWithCertainGroup
+            var keys = conDecGroupingAPI.getAllDecisionElementsWithCertainGroup(group);
             var classes = getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/grouping/getAllClassElementsWithCertainGroup.json?projectKey=" + projectKey
                 + "&group=" + group);
             newTableRow(body, group, keys.length, classes.length);

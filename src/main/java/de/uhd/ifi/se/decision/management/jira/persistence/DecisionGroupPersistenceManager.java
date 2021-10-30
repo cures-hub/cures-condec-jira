@@ -263,13 +263,9 @@ public class DecisionGroupPersistenceManager {
 
 	public static List<String> getAllKnowledgeElementsWithCertainGroup(String groupName, String projectKey) {
 		List<String> keys = new ArrayList<>();
-		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (groupInDatabase.getProjectKey().equals(projectKey) && groupInDatabase.getGroup().equals(groupName)
-					&& !groupInDatabase.getSourceDocumentationLocation().equals("c")) {
-				KnowledgeElement element = kpManager
-						.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation())
-						.getKnowledgeElement(groupInDatabase.getSourceId());
+		for (DecisionGroupInDatabase groupInDatabase : getGroupsInDatabase(groupName, projectKey)) {
+			if (!groupInDatabase.getSourceDocumentationLocation().equals("c")) {
+				KnowledgeElement element = getKnowledgeElement(groupInDatabase);
 				if (element != null) {
 					keys.add(element.getKey());
 				}
@@ -278,15 +274,25 @@ public class DecisionGroupPersistenceManager {
 		return keys;
 	}
 
+	public static KnowledgeElement getKnowledgeElement(DecisionGroupInDatabase groupInDatabase) {
+		return KnowledgePersistenceManager.getInstance(groupInDatabase.getProjectKey())
+				.getKnowledgeElement(groupInDatabase.getSourceId(), groupInDatabase.getSourceDocumentationLocation());
+	}
+
+	public static List<DecisionGroupInDatabase> getGroupsInDatabase(String groupName, String projectKey) {
+		List<DecisionGroupInDatabase> groupsInDatabase = new ArrayList<>();
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("PROJECT_KEY = ? AND GROUP = ?", projectKey, groupName))) {
+			groupsInDatabase.add(groupInDatabase);
+		}
+		return groupsInDatabase;
+	}
+
 	public static List<String> getAllClassElementsWithCertainGroup(String group, String projectKey) {
 		List<String> keys = new ArrayList<>();
-		KnowledgePersistenceManager kpManager = new KnowledgePersistenceManager(projectKey);
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
-			if (groupInDatabase.getProjectKey().equals(projectKey) && groupInDatabase.getGroup().equals(group)
-					&& groupInDatabase.getSourceDocumentationLocation().equals("c")) {
-				KnowledgeElement element = kpManager
-						.getManagerForSingleLocation(groupInDatabase.getSourceDocumentationLocation())
-						.getKnowledgeElement(groupInDatabase.getSourceId());
+		for (DecisionGroupInDatabase groupInDatabase : getGroupsInDatabase(group, projectKey)) {
+			if (groupInDatabase.getSourceDocumentationLocation().equals("c")) {
+				KnowledgeElement element = getKnowledgeElement(groupInDatabase);
 				if (element != null) {
 					keys.add(element.getKey());
 				}
