@@ -169,7 +169,11 @@ public class DecisionGroupPersistenceManager {
 	public static List<String> sortGroupNames(List<String> groupNames) {
 		for (String group : groupNames) {
 			if (LEVELS.contains(group.toLowerCase())) {
-				Collections.swap(groupNames, groupNames.indexOf(group), LEVELS.indexOf(group.toLowerCase()));
+				int indexOfLevel = LEVELS.indexOf(group.toLowerCase());
+				if (groupNames.size() <= indexOfLevel) {
+					indexOfLevel = 0;
+				}
+				Collections.swap(groupNames, groupNames.indexOf(group), indexOfLevel);
 			}
 		}
 		return groupNames;

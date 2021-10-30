@@ -30,7 +30,18 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testLevelSortingWorks() {
+	public void testLevelSortingWorksForSingleLevel() {
+		DecisionGroupPersistenceManager.insertGroup("Realization_Level", KnowledgeElements.getDecision());
+
+		List<String> allGroups = DecisionGroupPersistenceManager.getAllDecisionGroups("TEST");
+		Iterator<String> iterator = allGroups.iterator();
+		assertEquals("Realization_Level", iterator.next());
+		assertEquals("TestGroup", iterator.next());
+	}
+
+	@Test
+	@NonTransactional
+	public void testLevelSortingWorksForAllLevels() {
 		DecisionGroupPersistenceManager.insertGroup("Realization_Level", KnowledgeElements.getDecision());
 		DecisionGroupPersistenceManager.insertGroup("High_Level", KnowledgeElements.getDecision());
 		DecisionGroupPersistenceManager.insertGroup("UI", KnowledgeElements.getDecision());
