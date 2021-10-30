@@ -49,13 +49,13 @@
 	/**
 	 * external references: condec.dialog, condec.decision.grouping.dialogs
 	 */
-	ConDecGroupingAPI.prototype.getDecisionGroups = function(id, documentationLocation, callback) {
+	ConDecGroupingAPI.prototype.getDecisionGroupsForElement = function(id, documentationLocation, callback) {
 		var element = {
 			"id": id,
 			"documentationLocation": documentationLocation,
 			"projectKey": conDecAPI.projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/getDecisionGroups.json", element,
+		generalApi.postJSON(this.restPrefix + "/getDecisionGroupsForElement.json", element,
 			function(error, decisionGroups) {
 				if (error === null) {
 					callback(decisionGroups);

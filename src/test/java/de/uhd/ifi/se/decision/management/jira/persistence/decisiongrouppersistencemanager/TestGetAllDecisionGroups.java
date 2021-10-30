@@ -1,6 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,5 +26,22 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 	@NonTransactional
 	public void testGetAllDecisionGroups() {
 		assertTrue(DecisionGroupPersistenceManager.getAllDecisionGroups("TEST").contains("TestGroup"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testLevelSortingWorks() {
+		DecisionGroupPersistenceManager.insertGroup("Realization_Level", KnowledgeElements.getDecision());
+		DecisionGroupPersistenceManager.insertGroup("High_Level", KnowledgeElements.getDecision());
+		DecisionGroupPersistenceManager.insertGroup("UI", KnowledgeElements.getDecision());
+		DecisionGroupPersistenceManager.insertGroup("Medium_Level", KnowledgeElements.getDecision());
+
+		List<String> allGroups = DecisionGroupPersistenceManager.getAllDecisionGroups("TEST");
+		Iterator<String> iterator = allGroups.iterator();
+		assertEquals("High_Level", iterator.next());
+		assertEquals("Medium_Level", iterator.next());
+		assertEquals("Realization_Level", iterator.next());
+		assertEquals("TestGroup", iterator.next());
+		assertEquals("UI", iterator.next());
 	}
 }

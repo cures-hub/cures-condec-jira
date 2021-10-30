@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -102,13 +103,24 @@ public class DecisionGroupingRest {
 		}
 	}
 
-	@Path("/getDecisionGroups")
+	/**
+	 * @issue How can we keep the sorting of the list?
+	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
+	 *           the REST API!
+	 * @pro No other java.util datastructure seems to keep the sorting than TreeSet.
+	 * 
+	 * @param element
+	 *            {@link KnowledgeElement}, e.g., decision, code file, or
+	 *            requirement.
+	 * @return all decision groups/levels for one {@link KnowledgeElement}.
+	 */
+	@Path("/getDecisionGroupsForElement")
 	@POST
-	public Response getDecisionGroups(KnowledgeElement element) {
+	public Response getDecisionGroupsForElement(KnowledgeElement element) {
 		if (element == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		return Response.ok(element.getDecisionGroups()).build();
+		return Response.ok(new TreeSet<>(element.getDecisionGroups())).build();
 	}
 
 	@Path("/renameDecisionGroup")
@@ -133,10 +145,21 @@ public class DecisionGroupingRest {
 				.build();
 	}
 
+	/**
+	 * @issue How can we keep the sorting of the list?
+	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
+	 *           the REST API!
+	 * @pro No other java.util datastructure seems to keep the sorting than TreeSet.
+	 * 
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return all decision groups/levels for one project sorted so that levels
+	 *         (high level, medium level, realization level) come first.
+	 */
 	@Path("/getAllDecisionGroups")
 	@GET
 	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
-		Set<String> allGroups = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
-		return Response.ok(allGroups).build();
+		List<String> allGroupNames = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
+		return Response.ok(new TreeSet<>(allGroupNames)).build();
 	}
 }

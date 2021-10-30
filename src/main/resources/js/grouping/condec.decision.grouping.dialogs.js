@@ -25,7 +25,7 @@
 		// Fill HTML elements
 		inputAddGroupField.value = "";
 
-		conDecGroupingAPI.getDecisionGroups(sourceId, documentationLocation, function(groups) {
+		conDecGroupingAPI.getDecisionGroupsForElement(sourceId, documentationLocation, function(groups) {
 			if (groups.length > 0) {
 				var level = groups[0];
 				selectLevelField.value = level;

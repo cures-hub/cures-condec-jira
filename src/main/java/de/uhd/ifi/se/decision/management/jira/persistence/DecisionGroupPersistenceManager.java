@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -149,19 +150,29 @@ public class DecisionGroupPersistenceManager {
 		if (element == null || element.getId() == 0 || element.getDocumentationLocation() == null) {
 			return new ArrayList<>();
 		}
-		List<String> groups = new ArrayList<>();
+		List<String> groups = new LinkedList<>();
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
 						element.getDocumentationLocation().getIdentifier()));
 		for (DecisionGroupInDatabase groupInDatabase : groupsInDatabase) {
 			groups.add(groupInDatabase.getGroup());
 		}
-		for (String group : groups) {
+		return sortGroupNames(groups);
+	}
+
+	/**
+	 * @param groupNames
+	 *            names of decision groups and levels as a List of Strings.
+	 * @return sorted List of decision groups and levels so that the levels come
+	 *         first.
+	 */
+	public static List<String> sortGroupNames(List<String> groupNames) {
+		for (String group : groupNames) {
 			if (LEVELS.contains(group.toLowerCase())) {
-				Collections.swap(groups, groups.indexOf(group), 0);
+				Collections.swap(groupNames, groupNames.indexOf(group), LEVELS.indexOf(group.toLowerCase()));
 			}
 		}
-		return groups;
+		return groupNames;
 	}
 
 	/**
@@ -250,26 +261,26 @@ public class DecisionGroupPersistenceManager {
 	/**
 	 * @param projectKey
 	 *            of a Jira project.
-	 * @return a set of all decision group/level names for the project.
+	 * @return all decision group/level names for the project.
 	 */
-	public static Set<String> getAllDecisionGroups(String projectKey) {
+	public static List<String> getAllDecisionGroups(String projectKey) {
 		Set<String> groupNames = new HashSet<>();
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			groupNames.add(groupInDatabase.getGroup());
 		}
-		return groupNames;
+		return sortGroupNames(new ArrayList<>(groupNames));
 	}
 
 	public static boolean updateGroupName(String oldGroup, String newGroup, String projectKey) {
-		boolean success = false;
+		boolean isRenamed = false;
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class)) {
 			if (groupInDatabase.getGroup().equals(oldGroup) && groupInDatabase.getProjectKey().equals(projectKey)) {
 				groupInDatabase.setGroup(newGroup);
 				groupInDatabase.save();
-				success = true;
+				isRenamed = true;
 			}
 		}
-		return success;
+		return isRenamed;
 	}
 }
