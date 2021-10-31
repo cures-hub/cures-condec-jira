@@ -55,35 +55,31 @@ public class DecisionGroupPersistenceManager {
 	 * Replaces all current existing decision group/level assignments for that
 	 * element with a list of new decision groups/levels.
 	 *
-	 * @param groups
+	 * @param groupNames
 	 *            of groups to add
 	 * @param element
 	 *            The element that the groups should be assigned to
 	 * @return If replacement was successful
 	 */
-	public static boolean setGroupAssignment(Set<String> groups, KnowledgeElement element) {
-		if (groups == null || element == null) {
+	public static boolean setGroupAssignment(Set<String> groupNames, KnowledgeElement element) {
+		if (groupNames == null || element == null) {
 			return false;
 		}
-		boolean success;
-		long id = 0;
-		success = deleteAllGroupAssignments(element);
-		for (String group : groups) {
-			id = insertGroup(group, element);
-		}
+		boolean success = deleteAllGroupAssignments(element);
+		success &= insertGroups(groupNames, element);
 
 		if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
 			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
 			for (KnowledgeElement childElement : childElements) {
 				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
-					success = success && setGroupAssignment(groups, childElement);
+					success = success && setGroupAssignment(groupNames, childElement);
 				}
 			}
 		}
 
-		inheritGroupAssignment(groups, element);
+		inheritGroupAssignment(groupNames, element);
 
-		return success & id != -1;
+		return success;
 	}
 
 	/**
@@ -208,6 +204,25 @@ public class DecisionGroupPersistenceManager {
 			}
 		}
 		return groupNames;
+	}
+
+	/**
+	 * Inserts new decision group/level assignments into database.
+	 *
+	 * @param groupNames
+	 *            names of the decision level ("high level", "medium level",
+	 *            "realization level") or groups (e.g. "process", "UI").
+	 * @param sourceElement
+	 *            {@link KnowledgeElement} that the decision group/level is assigned
+	 *            to.
+	 * @return true if insertion of group into database was successful.
+	 */
+	public static boolean insertGroups(Set<String> groupNames, KnowledgeElement sourceElement) {
+		boolean isInserted = true;
+		for (String group : groupNames) {
+			isInserted = isInserted && insertGroup(group, sourceElement) > -1;
+		}
+		return isInserted;
 	}
 
 	/**
