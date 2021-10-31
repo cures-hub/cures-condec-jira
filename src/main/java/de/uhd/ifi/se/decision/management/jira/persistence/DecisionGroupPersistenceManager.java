@@ -64,17 +64,20 @@ public class DecisionGroupPersistenceManager {
 		if (groupNames == null || element == null) {
 			return false;
 		}
-		boolean success = deleteAllGroupAssignments(element);
-		success &= insertGroups(groupNames, element);
+		boolean success = resetGroups(groupNames, element);
 
 		Set<KnowledgeElement> childElements = element.getLinkedElements(3);
 		for (KnowledgeElement childElement : childElements) {
 			if (childElement.getType() != KnowledgeType.OTHER) {
-				success = success && insertGroups(groupNames, childElement);
+				success &= resetGroups(groupNames, childElement);
 			}
 		}
 
 		return success;
+	}
+
+	private static boolean resetGroups(Set<String> groupNames, KnowledgeElement element) {
+		return deleteAllGroupAssignments(element) && insertGroups(groupNames, element);
 	}
 
 	/**
