@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -18,9 +17,7 @@ import javax.ws.rs.core.Response.Status;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 
@@ -52,55 +49,11 @@ public class DecisionGroupingRest {
 		for (String group : groupSplitArray) {
 			groupsToAssign.add(group);
 		}
-
-		DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element);
-		inheritGroupAssignment(groupsToAssign, element);
-
-		return Response.ok().build();
-	}
-
-	// TODO Simplify, this method is way too long and complex!
-	public void inheritGroupAssignment(Set<String> groupsToAssign, KnowledgeElement element) {
-		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
-			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
-			for (Link link : element.getLinks()) {
-				KnowledgeElement linkedElement = link.getOppositeElement(element);
-				if (linkedElement != null && linkedElement.getDocumentationLocation() == DocumentationLocation.CODE) {
-					if (!linkedElement.getDecisionGroups().contains("Realization_Level")) {
-						DecisionGroupPersistenceManager.insertGroup("Realization_Level", linkedElement);
-					}
-					for (String group : groupsToAssign) {
-						if (!("High_Level").equals(group) && !("Medium_Level").equals(group)
-								&& !("Realization_Level").equals(group)) {
-							DecisionGroupPersistenceManager.insertGroup(group, linkedElement);
-						}
-
-					}
-				} else if (linkedElement != null) {
-					linkedElements.add(linkedElement);
-					if ((linkedElement.getTypeAsString().equals("Decision")
-							|| linkedElement.getTypeAsString().equals("Alternative")
-							|| linkedElement.getTypeAsString().equals("Issue")) && linkedElement.getLinks() != null) {
-						Set<Link> deeperLinks = linkedElement.getLinks();
-						for (Link deeperLink : deeperLinks) {
-							if (deeperLink != null && deeperLink.getTarget() != null
-									&& deeperLink.getSource() != null) {
-								KnowledgeElement deeperElement = deeperLink.getOppositeElement(linkedElement);
-								if (deeperElement != null && (deeperElement.getTypeAsString().equals("Pro")
-										|| deeperElement.getTypeAsString().equals("Con")
-										|| deeperElement.getTypeAsString().equals("Decision")
-										|| deeperElement.getTypeAsString().equals("Alternative"))) {
-									linkedElements.add(deeperElement);
-								}
-							}
-						}
-					}
-				}
-			}
-			for (KnowledgeElement ele : linkedElements) {
-				DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, ele);
-			}
+		if (DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element)) {
+			return Response.ok().build();
 		}
+		return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Decision groups and level could not be assigned.")).build();
 	}
 
 	/**
@@ -108,7 +61,8 @@ public class DecisionGroupingRest {
 	 *        REST API?
 	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
 	 *           the REST API!
-	 * @pro No other java.util datastructure seems to keep the sorting than TreeSet.
+	 * @pro No other java.util data structure seems to keep the sorting than
+	 *      TreeSet.
 	 * 
 	 * @param element
 	 *            {@link KnowledgeElement}, e.g., decision, code file, or
@@ -151,7 +105,8 @@ public class DecisionGroupingRest {
 	 *        REST API?
 	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
 	 *           the REST API!
-	 * @pro No other java.util datastructure seems to keep the sorting than TreeSet.
+	 * @pro No other java.util data structure seems to keep the sorting than
+	 *      TreeSet.
 	 * 
 	 * @param projectKey
 	 *            of a Jira project.

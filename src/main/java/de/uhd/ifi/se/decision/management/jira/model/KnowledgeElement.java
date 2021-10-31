@@ -257,8 +257,9 @@ public class KnowledgeElement {
 	 * @con We would have to propagate changes (e.g. renamed groups) to the
 	 *      knowledge graph object.
 	 *
-	 * @return decision groups and the decision level assigned to this knowledge
-	 *         element.
+	 * @return decision groups (e.g. process, UI, non-existence, ...) and the
+	 *         decision level (high level, medium level, or realization level)
+	 *         assigned to this knowledge element.
 	 * @see DecisionGroupPersistenceManager
 	 * @see DecisionGroupInDatabase
 	 */

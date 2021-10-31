@@ -36,7 +36,7 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testAssignDecisionGroupAddGroupEmpty() {
+	public void testAddGroupEmpty() {
 		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Safety", "", element);
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
@@ -45,7 +45,7 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testAssignDecisionGroupCurrentGroupEmpty() {
+	public void testCurrentGroupsEmpty() {
 		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "", "Safety", element);
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
@@ -54,11 +54,18 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testAssignDecisionGroupNoEmpties() {
+	public void testGroupNoEmpties() {
 		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Property,TestGroup", "Safety",
 				element);
 		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).size() == 4);
+	}
+
+	@Test
+	@NonTransactional
+	public void testElementNull() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Security", "", null).getStatus());
 	}
 }
