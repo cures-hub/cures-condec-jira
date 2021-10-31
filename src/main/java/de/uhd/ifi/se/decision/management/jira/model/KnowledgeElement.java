@@ -30,6 +30,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
@@ -243,39 +244,28 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * TODO Address issue
+	 * @issue How do we access the decision groups/level for a knowledge element?
+	 * @decision We query the database table to access the decision groups/level for
+	 *           a knowledge element!
+	 * @con It seems not to be very efficient to query the database all the time.
+	 * @pro We don't have to propagate changes (e.g. renamed groups) to the
+	 *      knowledge graph object.
+	 * @alternative We could make decision groups/levels a "real" attribute of the
+	 *              KnowledgeElement class and only query it from database when the
+	 *              element is added to knowledge graph.
+	 * @pro Might be more efficient.
+	 * @con We would have to propagate changes (e.g. renamed groups) to the
+	 *      knowledge graph object.
 	 *
-	 * @issue Currently, groups are a derived attribute of this class. How efficient
-	 *        is it to query the database via the DecisionGroupsManager? Would it be
-	 *        more efficient to have a "real" groups attribute in this class?
-	 *
-	 * @return List<String> of groups assigned to this knowledge element.
+	 * @return decision groups (e.g. process, UI, non-existence, ...) and the
+	 *         decision level (high level, medium level, or realization level)
+	 *         assigned to this knowledge element.
+	 * @see DecisionGroupPersistenceManager
+	 * @see DecisionGroupInDatabase
 	 */
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
 		return DecisionGroupPersistenceManager.getGroupsForElement(this);
-	}
-
-	/**
-	 * Add a list of groups assigned to this decision
-	 *
-	 * @param decisionGroup
-	 *            of groups
-	 */
-	public void addDecisionGroups(List<String> decisionGroup) {
-		for (String group : decisionGroup) {
-			this.addDecisionGroup(group);
-		}
-	}
-
-	/**
-	 * Add a group to the list of groups
-	 *
-	 * @param group
-	 *            to add as string
-	 */
-	public void addDecisionGroup(String group) {
-		DecisionGroupPersistenceManager.insertGroup(group, this);
 	}
 
 	/**

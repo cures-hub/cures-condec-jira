@@ -8,8 +8,6 @@
  */
 (function(global) {
 
-	var projectKey = null;
-
 	var ConDecGroupingAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/grouping";
 		this.decisionGroups = [];
@@ -18,7 +16,7 @@
 	/**
 	 * external references: condec.dialog, condec.decision.grouping.dialogs
 	 */
-	ConDecGroupingAPI.prototype.assignDecisionGroup = function(level, existingGroups, addgroup, elementId, documentationLocation, callback) {
+	ConDecGroupingAPI.prototype.assignDecisionGroup = function(level, existingGroups, groupName, elementId, documentationLocation, callback) {
 		var element = {
 			"id": elementId,
 			"documentationLocation": documentationLocation,
@@ -26,7 +24,7 @@
 		};
 		generalApi.postJSON(this.restPrefix + "/assignDecisionGroup.json?level=" + level
 			+ "&existingGroups=" + existingGroups
-			+ "&addGroup=" + addgroup, element, function(error) {
+			+ "&addGroup=" + groupName, element, function(error) {
 				if (error === null) {
 					conDecAPI.showFlag("Success", "Decision groups/levels have been assigned.");
 					callback(elementId);
@@ -51,13 +49,13 @@
 	/**
 	 * external references: condec.dialog, condec.decision.grouping.dialogs
 	 */
-	ConDecGroupingAPI.prototype.getDecisionGroups = function(id, documentationLocation, callback) {
+	ConDecGroupingAPI.prototype.getDecisionGroupsForElement = function(id, documentationLocation, callback) {
 		var element = {
 			"id": id,
 			"documentationLocation": documentationLocation,
 			"projectKey": conDecAPI.projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/getDecisionGroups.json", element,
+		generalApi.postJSON(this.restPrefix + "/getDecisionGroupsForElement.json", element,
 			function(error, decisionGroups) {
 				if (error === null) {
 					callback(decisionGroups);

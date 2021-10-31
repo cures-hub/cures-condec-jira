@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -17,9 +17,7 @@ import javax.ws.rs.core.Response.Status;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 
@@ -39,92 +37,50 @@ public class DecisionGroupingRest {
 	@Path("/assignDecisionGroup")
 	@POST
 	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("level") String level,
-			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
+			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String groupsToAdd,
 			KnowledgeElement element) {
 		Set<String> groupsToAssign = new HashSet<String>();
 		groupsToAssign.add(level);
-		String[] groupSplitArray = existingGroups.replace(" ", "").split(",");
+		String[] groupSplitArray = parseGroupNamesString(existingGroups);
 		for (String group : groupSplitArray) {
 			groupsToAssign.add(group);
 		}
-		groupSplitArray = addGroup.replace(" ", "").split(",");
+		groupSplitArray = parseGroupNamesString(groupsToAdd);
 		for (String group : groupSplitArray) {
 			groupsToAssign.add(group);
 		}
-
-		DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element);
-		inheritGroupAssignment(groupsToAssign, element);
-
-		return Response.ok().build();
-	}
-
-	// TODO Simplify, this method is way too long and complex!
-	private void inheritGroupAssignment(Set<String> groupsToAssign, KnowledgeElement element) {
-		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
-			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
-			for (Link link : element.getLinks()) {
-				KnowledgeElement linkedElement = link.getOppositeElement(element);
-				if (linkedElement != null && linkedElement.getDocumentationLocation() == DocumentationLocation.CODE) {
-					if (!linkedElement.getDecisionGroups().contains("Realization_Level")) {
-						DecisionGroupPersistenceManager.insertGroup("Realization_Level", linkedElement);
-					}
-					for (String group : groupsToAssign) {
-						if (!("High_Level").equals(group) && !("Medium_Level").equals(group)
-								&& !("Realization_Level").equals(group)) {
-							DecisionGroupPersistenceManager.insertGroup(group, linkedElement);
-						}
-
-					}
-				} else if (linkedElement != null) {
-					linkedElements.add(linkedElement);
-					if ((linkedElement.getTypeAsString().equals("Decision")
-							|| linkedElement.getTypeAsString().equals("Alternative")
-							|| linkedElement.getTypeAsString().equals("Issue")) && linkedElement.getLinks() != null) {
-						Set<Link> deeperLinks = linkedElement.getLinks();
-						for (Link deeperLink : deeperLinks) {
-							if (deeperLink != null && deeperLink.getTarget() != null
-									&& deeperLink.getSource() != null) {
-								KnowledgeElement deeperElement = deeperLink.getOppositeElement(linkedElement);
-								if (deeperElement != null && (deeperElement.getTypeAsString().equals("Pro")
-										|| deeperElement.getTypeAsString().equals("Con")
-										|| deeperElement.getTypeAsString().equals("Decision")
-										|| deeperElement.getTypeAsString().equals("Alternative"))) {
-									linkedElements.add(deeperElement);
-								}
-							}
-						}
-					}
-				}
-			}
-			for (KnowledgeElement ele : linkedElements) {
-				DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, ele);
-			}
+		groupsToAssign.removeIf(groupName -> groupName.isBlank());
+		if (DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element)) {
+			return Response.ok().build();
 		}
+		return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Decision groups and level could not be assigned.")).build();
 	}
 
-	@Path("/getDecisionGroups")
+	private static String[] parseGroupNamesString(String groupNamesString) {
+		return groupNamesString.replace(" ", "").split(",");
+	}
+
+	/**
+	 * @issue How can we keep the sorting of the list when passing it through the
+	 *        REST API?
+	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
+	 *           the REST API!
+	 * @pro No other java.util data structure seems to keep the sorting than
+	 *      TreeSet.
+	 * 
+	 * @param element
+	 *            {@link KnowledgeElement}, e.g., decision, code file, or
+	 *            requirement.
+	 * @return all decision groups/levels for one {@link KnowledgeElement}.
+	 */
+	@Path("/getDecisionGroupsForElement")
 	@POST
-	public Response getDecisionGroups(KnowledgeElement element) {
+	public Response getDecisionGroupsForElement(KnowledgeElement element) {
 		if (element == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		return Response.ok(element.getDecisionGroups()).build();
-	}
-
-	@Path("/getAllDecisionElementsWithCertainGroup")
-	@GET
-	public Response getAllDecisionElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
-			@QueryParam("group") String group) {
-		List<String> keys = DecisionGroupPersistenceManager.getAllKnowledgeElementsWithCertainGroup(group, projectKey);
-		return Response.ok(keys).build();
-	}
-
-	@Path("/getAllClassElementsWithCertainGroup")
-	@GET
-	public Response getAllClassElementsWithCertainGroup(@QueryParam("projectKey") String projectKey,
-			@QueryParam("group") String group) {
-		List<String> keys = DecisionGroupPersistenceManager.getAllClassElementsWithCertainGroup(group, projectKey);
-		return Response.ok(keys).build();
+		return Response.ok(new TreeSet<>(element.getDecisionGroups())).build();
 	}
 
 	@Path("/renameDecisionGroup")
@@ -149,10 +105,23 @@ public class DecisionGroupingRest {
 				.build();
 	}
 
+	/**
+	 * @issue How can we keep the sorting of the list when passing it through the
+	 *        REST API?
+	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
+	 *           the REST API!
+	 * @pro No other java.util data structure seems to keep the sorting than
+	 *      TreeSet.
+	 * 
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return all decision groups/levels for one project sorted so that levels
+	 *         (high level, medium level, realization level) come first.
+	 */
 	@Path("/getAllDecisionGroups")
 	@GET
 	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
-		Set<String> allGroups = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
-		return Response.ok(allGroups).build();
+		List<String> allGroupNames = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
+		return Response.ok(new TreeSet<>(allGroupNames)).build();
 	}
 }

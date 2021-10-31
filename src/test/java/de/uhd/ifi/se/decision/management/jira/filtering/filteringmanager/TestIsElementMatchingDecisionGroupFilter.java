@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -38,29 +39,27 @@ public class TestIsElementMatchingDecisionGroupFilter extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testElementWithoutGroupAndGroupsInFilterSettings() {
-		List<String> decGroups = List.of("Low", "Medium", "High");
+		List<String> decGroups = List.of("Medium_Level", "UI", "process");
 		filteringManager.getFilterSettings().setDecisionGroups(decGroups);
 		assertFalse(filteringManager.isElementMatchingDecisionGroupFilter(element));
 		assertFalse(filteringManager.isElementMatchingFilterSettings(element));
 	}
 
 	@Test
+	@NonTransactional
 	public void testElementWithGroupsAndGroupsInFilterSettings() {
-		List<String> decGroups = List.of("Low", "Medium", "High");
+		List<String> decGroups = List.of("Medium_Level", "UI", "process");
 		filteringManager.getFilterSettings().setDecisionGroups(decGroups);
-
-		element.addDecisionGroup("Low");
-		element.addDecisionGroup("Medium");
-		element.addDecisionGroup("High");
+		DecisionGroupPersistenceManager.insertGroups(decGroups, element);
 		assertTrue(filteringManager.isElementMatchingDecisionGroupFilter(element));
 	}
 
 	@Test
+	@NonTransactional
 	public void testElementWithGroupButGroupNotInFilterSettings() {
-		List<String> decGroups = List.of("Low", "Medium", "High");
+		List<String> decGroups = List.of("Medium_Level", "UI", "process");
 		filteringManager.getFilterSettings().setDecisionGroups(decGroups);
-
-		element.addDecisionGroup("link recommendation");
+		DecisionGroupPersistenceManager.insertGroup("link recommendation", element);
 		assertFalse(filteringManager.isElementMatchingDecisionGroupFilter(element));
 	}
 }

@@ -1,73 +1,56 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersistencemanager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.git.CodeFileExtractorAndMaintainer;
-import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestInsertGroup extends TestSetUpGit {
+public class TestInsertGroup extends TestSetUp {
 
 	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
-		super.setUp();
+		init();
 		element = KnowledgeElements.getDecision();
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1", element);
 	}
 
 	@Test
 	@NonTransactional
-	public void testInsertGroupAlreadyExisting() {
-		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup1", element) != -1);
+	public void testGroupAlreadyExisting() {
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
+		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup", element) != -1);
 	}
 
 	@Test
 	@NonTransactional
-	public void testInsertGroupNull() {
-		assertTrue(DecisionGroupPersistenceManager.insertGroup(null, element) == -1);
+	public void testGroupNameNullElementValid() {
+		assertEquals(-1, DecisionGroupPersistenceManager.insertGroup(null, element));
 	}
 
 	@Test
 	@NonTransactional
-	public void testInsertGroupElementNull() {
-		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup2", null) == -1);
-	}
-
-	@Test
-
-	public void testInsertGroupArgsNotNull() {
-		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup2", element) != -1);
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup2"));
+	public void testGroupNameBlankElementValid() {
+		assertEquals(-1, DecisionGroupPersistenceManager.insertGroup("", element));
 	}
 
 	@Test
 	@NonTransactional
-	public void testInheritInsertGroup() {
-		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);
-		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
-		KnowledgeElement godClass = graph.getElementBySummary("GodClass.java");
-
-		KnowledgeElement issueFromCodeCommentInGodClass = graph
-				.getElementsNotInDatabaseBySummary("Will this issue be parsed correctly?");
-		assertEquals("Will this issue be parsed correctly?", issueFromCodeCommentInGodClass.getSummary());
-		assertNotNull(godClass.getLink(issueFromCodeCommentInGodClass));
-
-		DecisionGroupPersistenceManager.insertGroup("TestGroup2", godClass);
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass)
-				.contains("TestGroup2"));
+	public void testGroupNameValidElementNull() {
+		assertEquals(-1, DecisionGroupPersistenceManager.insertGroup("TestGroup", null));
 	}
 
+	@Test
+	@NonTransactional
+	public void testGroupNameValidElementValid() {
+		assertTrue(DecisionGroupPersistenceManager.insertGroup("TestGroup", element) != -1);
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup"));
+	}
 }

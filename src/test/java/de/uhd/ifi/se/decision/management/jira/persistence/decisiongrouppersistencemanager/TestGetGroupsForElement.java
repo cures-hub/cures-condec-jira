@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersiste
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,13 +35,21 @@ public class TestGetGroupsForElement extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testElementValid() {
+		List<String> groups = DecisionGroupPersistenceManager.getGroupsForElement(element);
+		assertEquals("High_Level", groups.get(0));
+		assertEquals("TestGroup", groups.get(1));
+	}
+
+	@Test
+	@NonTransactional
 	public void testElementNotNull() {
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup"));
 	}
 
 	@Test
 	@NonTransactional
-	public void testElementIdZero() {
+	public void testElementInvalidIdZero() {
 		KnowledgeElement invalidElement = new KnowledgeElement();
 		invalidElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
 		assertEquals(0, DecisionGroupPersistenceManager.getGroupsForElement(invalidElement).size());
@@ -47,13 +57,7 @@ public class TestGetGroupsForElement extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testElementIdValid() {
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup"));
-	}
-
-	@Test
-	@NonTransactional
-	public void testElementDocumentationLocationNull() {
+	public void testElementInvalidDocumentationLocationNull() {
 		KnowledgeElement invalidElement = new KnowledgeElement();
 		invalidElement.setId(1);
 		assertEquals(0, DecisionGroupPersistenceManager.getGroupsForElement(invalidElement).size());

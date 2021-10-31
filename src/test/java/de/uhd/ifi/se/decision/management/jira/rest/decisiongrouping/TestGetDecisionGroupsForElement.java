@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.rest.DecisionGroupingRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetDecisionGroups extends TestSetUp {
+public class TestGetDecisionGroupsForElement extends TestSetUp {
 
 	private DecisionGroupingRest decisionGroupingRest;
 	private KnowledgeElement element;
@@ -30,7 +30,7 @@ public class TestGetDecisionGroups extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testKnowledgeElementNull() {
-		Response response = decisionGroupingRest.getDecisionGroups(null);
+		Response response = decisionGroupingRest.getDecisionGroupsForElement(null);
 		assertEquals("[]", response.getEntity().toString());
 	}
 
@@ -38,14 +38,14 @@ public class TestGetDecisionGroups extends TestSetUp {
 	@NonTransactional
 	public void testKnowledgeElementWithInvalidAttributes() {
 		KnowledgeElement element = new KnowledgeElement();
-		Response response = decisionGroupingRest.getDecisionGroups(element);
+		Response response = decisionGroupingRest.getDecisionGroupsForElement(element);
 		assertEquals("[]", response.getEntity().toString());
 	}
 
 	@Test
 	@NonTransactional
 	public void testKnowledgeElementValidOneGroup() {
-		Response response = decisionGroupingRest.getDecisionGroups(element);
+		Response response = decisionGroupingRest.getDecisionGroupsForElement(element);
 		assertEquals("[TestGroup]", response.getEntity().toString());
 	}
 
@@ -53,7 +53,7 @@ public class TestGetDecisionGroups extends TestSetUp {
 	@NonTransactional
 	public void testKnowledgeElementValidTwoGroups() {
 		DecisionGroupPersistenceManager.insertGroup("High_Level", element);
-		Response response = decisionGroupingRest.getDecisionGroups(element);
+		Response response = decisionGroupingRest.getDecisionGroupsForElement(element);
 		assertEquals("[High_Level, TestGroup]", response.getEntity().toString());
 	}
 }
