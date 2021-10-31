@@ -183,7 +183,7 @@ public class DecisionGroupPersistenceManager {
 	 *            assigned to.
 	 * @return true if insertion of group into database was successful.
 	 */
-	public static boolean insertGroups(Set<String> groupNames, KnowledgeElement sourceElement) {
+	public static boolean insertGroups(Collection<String> groupNames, KnowledgeElement sourceElement) {
 		boolean isInserted = true;
 		for (String group : groupNames) {
 			isInserted &= insertGroup(group, sourceElement) > -1;

@@ -269,28 +269,6 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * Add a list of groups assigned to this decision
-	 *
-	 * @param decisionGroup
-	 *            of groups
-	 */
-	public void addDecisionGroups(List<String> decisionGroup) {
-		for (String group : decisionGroup) {
-			this.addDecisionGroup(group);
-		}
-	}
-
-	/**
-	 * Add a group to the list of groups
-	 *
-	 * @param group
-	 *            to add as string
-	 */
-	public void addDecisionGroup(String group) {
-		DecisionGroupPersistenceManager.insertGroup(group, this);
-	}
-
-	/**
 	 * @see DecisionKnowledgeProject
 	 * @return project that the knowledge element belongs to. The project is a Jira
 	 *         project that is extended with settings for this plug-in, for example,

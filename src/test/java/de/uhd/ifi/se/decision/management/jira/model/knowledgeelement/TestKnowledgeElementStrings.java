@@ -3,9 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -18,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
+import net.java.ao.test.jdbc.NonTransactional;
 
 /**
  * Test class for decision knowledge element getter and setter methods
@@ -28,7 +27,7 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 	private String description;
 	private KnowledgeType type;
 	private String projectKey;
-	private KnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -40,15 +39,13 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 		this.projectKey = "TEST";
 		String key = "Test";
 
-		this.decisionKnowledgeElement = new KnowledgeElement(id, summary, description, type, projectKey, key,
+		this.element = new KnowledgeElement(id, summary, description, type, projectKey, key,
 				DocumentationLocation.JIRAISSUE, KnowledgeStatus.UNDEFINED);
-
-		DecisionGroupPersistenceManager.insertGroup("TestGroup", this.decisionKnowledgeElement);
 	}
 
 	@Test
 	public void testGetTypeAsString() {
-		assertEquals("Solution", decisionKnowledgeElement.getType().toString());
+		assertEquals("Solution", element.getType().toString());
 	}
 
 	@Test
@@ -60,57 +57,57 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testGetId() {
-		assertEquals(this.id, this.decisionKnowledgeElement.getId());
+		assertEquals(this.id, this.element.getId());
 	}
 
 	@Test
 	public void testGetName() {
-		assertEquals(this.summary, this.decisionKnowledgeElement.getSummary());
+		assertEquals(this.summary, this.element.getSummary());
 	}
 
 	@Test
 	public void testGetDescription() {
-		assertEquals(this.description, this.decisionKnowledgeElement.getDescription());
+		assertEquals(this.description, this.element.getDescription());
 	}
 
 	@Test
 	public void testGetType() {
-		assertEquals(this.type, this.decisionKnowledgeElement.getType());
+		assertEquals(this.type, this.element.getType());
 	}
 
 	@Test
 	public void testGetProjectKey() {
-		assertEquals(this.projectKey, this.decisionKnowledgeElement.getProject().getProjectKey());
+		assertEquals(this.projectKey, this.element.getProject().getProjectKey());
 	}
 
 	@Test
 	public void testSetId() {
-		this.decisionKnowledgeElement.setId(this.id + 1);
-		assertEquals(this.id + 1, this.decisionKnowledgeElement.getId());
+		this.element.setId(this.id + 1);
+		assertEquals(this.id + 1, this.element.getId());
 	}
 
 	@Test
 	public void testSetSummary() {
-		this.decisionKnowledgeElement.setSummary(this.summary + "New");
-		assertEquals(this.summary + "New", this.decisionKnowledgeElement.getSummary());
+		this.element.setSummary(this.summary + "New");
+		assertEquals(this.summary + "New", this.element.getSummary());
 	}
 
 	@Test
 	public void testSetDescription() {
-		this.decisionKnowledgeElement.setDescription(this.description + "New");
-		assertEquals(this.description + "New", this.decisionKnowledgeElement.getDescription());
+		this.element.setDescription(this.description + "New");
+		assertEquals(this.description + "New", this.element.getDescription());
 	}
 
 	@Test
 	public void testSetType() {
-		this.decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals(KnowledgeType.ALTERNATIVE, this.decisionKnowledgeElement.getType());
+		this.element.setType(KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeType.ALTERNATIVE, this.element.getType());
 	}
 
 	@Test
 	public void testSetProjectKey() {
-		this.decisionKnowledgeElement.setProject("TEST");
-		assertEquals("TEST", this.decisionKnowledgeElement.getProject().getProjectKey());
+		this.element.setProject("TEST");
+		assertEquals("TEST", this.element.getProject().getProjectKey());
 	}
 
 	@Test
@@ -123,50 +120,39 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testDecisionKnowledgeElementInitialized() {
-		assertNotNull(this.decisionKnowledgeElement);
+		assertNotNull(this.element);
 	}
 
 	@Test
 	public void testEqualsNotTheObject() {
 		KnowledgeElement element = new KnowledgeElement();
 		element.setId(123);
-		assertFalse(this.decisionKnowledgeElement.equals(element));
+		assertFalse(this.element.equals(element));
 	}
 
 	@Test
 	public void testGetDocumentationLocationAsStringNull() {
-		this.decisionKnowledgeElement.setDocumentationLocation((DocumentationLocation) null);
-		assertEquals("", decisionKnowledgeElement.getDocumentationLocationAsString());
+		this.element.setDocumentationLocation((DocumentationLocation) null);
+		assertEquals("", element.getDocumentationLocationAsString());
 	}
 
 	@Test
 	public void testGetOrigin() {
-		assertEquals(Origin.DOCUMENTATION_LOCATION, decisionKnowledgeElement.getOrigin());
+		assertEquals(Origin.DOCUMENTATION_LOCATION, element.getOrigin());
 	}
 
 	@Test
 	public void isLinked() {
-		assertEquals(0, decisionKnowledgeElement.isLinked());
+		assertEquals(0, element.isLinked());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetDecisionGroups() {
-		List<String> groups = decisionKnowledgeElement.getDecisionGroups();
-		assertEquals("TestGroup", groups.get(0));
-	}
-
-	@Test
-	public void testAddDecisionGroupSingle() {
-		String group = "NewTestGroup";
-		decisionKnowledgeElement.addDecisionGroup(group);
-		assertTrue(decisionKnowledgeElement.getDecisionGroups().contains("NewTestGroup"));
-	}
-
-	@Test
-	public void testAddDecisionGroupsList() {
-		List<String> groups = new ArrayList<String>();
-		groups.add("ListTestGroup");
-		decisionKnowledgeElement.addDecisionGroups(groups);
-		assertTrue(decisionKnowledgeElement.getDecisionGroups().contains("ListTestGroup"));
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
+		DecisionGroupPersistenceManager.insertGroup("High_Level", element);
+		List<String> groups = element.getDecisionGroups();
+		assertEquals("High_Level", groups.get(0));
+		assertEquals("TestGroup", groups.get(1));
 	}
 }
