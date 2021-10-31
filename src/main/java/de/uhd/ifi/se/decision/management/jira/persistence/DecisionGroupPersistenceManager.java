@@ -267,9 +267,6 @@ public class DecisionGroupPersistenceManager {
 	 * @return {@link DecisionGroupInDatabase} object.
 	 */
 	private static DecisionGroupInDatabase getDecisionGroupInDatabase(String groupName, KnowledgeElement element) {
-		if (groupName == null || element == null) {
-			return null;
-		}
 		DecisionGroupInDatabase groupInDatabase = null;
 		for (DecisionGroupInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("GROUP = ? AND SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", groupName,
