@@ -216,37 +216,23 @@ public class DecisionGroupPersistenceManager {
 	 * @param sourceElement
 	 *            {@link KnowledgeElement} that the decision group/level is assigned
 	 *            to.
-	 * @param group
+	 * @param groupName
 	 *            name of the decision level ("high level", "medium level",
 	 *            "realization level") or group (e.g. "process", "UI").
 	 * @return internal database id of inserted decision group/level assignment, -1
 	 *         if insertion failed.
 	 */
-	public static long insertGroup(String group, KnowledgeElement sourceElement) {
-		if (group == null || sourceElement == null || group.isBlank()) {
+	public static long insertGroup(String groupName, KnowledgeElement sourceElement) {
+		if (groupName == null || sourceElement == null || groupName.isBlank()) {
 			return -1;
 		}
-		long alreadyExistingId = isGroupAlreadyInDatabase(group, sourceElement);
-		if (alreadyExistingId != -1) {
-			return alreadyExistingId;
+		long isGroupAlreadyInDatabase = isGroupAlreadyInDatabase(groupName, sourceElement);
+		if (isGroupAlreadyInDatabase != -1) {
+			return isGroupAlreadyInDatabase;
 		}
-		final DecisionGroupInDatabase groupInDatabase = ACTIVE_OBJECTS.create(DecisionGroupInDatabase.class);
-		setParameters(sourceElement, group, groupInDatabase);
+		DecisionGroupInDatabase groupInDatabase = ACTIVE_OBJECTS.create(DecisionGroupInDatabase.class);
+		setParameters(sourceElement, groupName, groupInDatabase);
 		groupInDatabase.save();
-
-		List<Long> returnedIds = new ArrayList<Long>();
-
-		if (sourceElement.getDocumentationLocation() == DocumentationLocation.CODE) {
-			Set<KnowledgeElement> childElements = sourceElement.getLinkedElements(3);
-			for (KnowledgeElement childElement : childElements) {
-				if (childElement.getId() < 0 && childElement.getDescription().contains(sourceElement.getSummary())) {
-					returnedIds.add(insertGroup(group, childElement));
-				}
-			}
-		}
-		if (returnedIds.contains(-1L)) {
-			return -1;
-		}
 		return groupInDatabase.getId();
 	}
 
