@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -28,33 +28,30 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		element = KnowledgeElements.getDecision();
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1a", element);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
 	}
 
 	@Test
 	@NonTransactional
-	public void testSetGroupAssignmentGroupNull() {
+	public void testGroupNamesNullElementValid() {
 		assertFalse(DecisionGroupPersistenceManager.setGroupAssignment(null, element));
 	}
 
 	@Test
 	@NonTransactional
-	public void testSetGroupAssignmentElementNull() {
-		Set<String> groups = new HashSet<>();
-		groups.add("New1");
-		groups.add("New2");
-		assertFalse(DecisionGroupPersistenceManager.setGroupAssignment(groups, null));
+	public void testGroupNamesNullElementNull() {
+		assertFalse(DecisionGroupPersistenceManager.setGroupAssignment(Set.of("UI", "process"), null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSetGroupAssignmentArgsNotNull() {
-		Set<String> groups = new HashSet<>();
-		groups.add("New1");
-		groups.add("New2");
-		DecisionGroupPersistenceManager.setGroupAssignment(groups, element);
-		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup1a"));
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).size() == 2);
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("UI", "process"), element);
+		List<String> groups = DecisionGroupPersistenceManager.getGroupsForElement(element);
+		assertFalse(groups.contains("TestGroup"));
+		assertTrue(groups.contains("process"));
+		assertTrue(groups.contains("UI"));
+		assertEquals(2, groups.size());
 	}
 
 	@Test

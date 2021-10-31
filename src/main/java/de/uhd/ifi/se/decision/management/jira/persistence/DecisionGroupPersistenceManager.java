@@ -10,9 +10,7 @@ import java.util.Set;
 import com.atlassian.activeobjects.external.ActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import net.java.ao.Query;
 
@@ -68,16 +66,10 @@ public class DecisionGroupPersistenceManager {
 		boolean success = deleteAllGroupAssignments(element);
 		success &= insertGroups(groupNames, element);
 
-		if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-			Set<KnowledgeElement> childElements = element.getLinkedElements(3);
-			for (KnowledgeElement childElement : childElements) {
-				if (childElement.getId() < 0 && childElement.getDescription().contains(element.getSummary())) {
-					success = success && setGroupAssignment(groupNames, childElement);
-				}
-			}
+		Set<KnowledgeElement> childElements = element.getLinkedElements(3);
+		for (KnowledgeElement childElement : childElements) {
+			success = success && insertGroups(groupNames, childElement);
 		}
-
-		inheritGroupAssignment(groupNames, element);
 
 		return success;
 	}
@@ -100,50 +92,6 @@ public class DecisionGroupPersistenceManager {
 			isDeleted &= DecisionGroupInDatabase.deleteGroup(groupInDatabase);
 		}
 		return isDeleted;
-	}
-
-	// TODO Simplify, this method is way too long and complex!
-	public static void inheritGroupAssignment(Set<String> groupsToAssign, KnowledgeElement element) {
-		if (element.getDocumentationLocation() != DocumentationLocation.CODE) {
-			List<KnowledgeElement> linkedElements = new ArrayList<KnowledgeElement>();
-			for (Link link : element.getLinks()) {
-				KnowledgeElement linkedElement = link.getOppositeElement(element);
-				if (linkedElement != null && linkedElement.getDocumentationLocation() == DocumentationLocation.CODE) {
-					if (!linkedElement.getDecisionGroups().contains("Realization_Level")) {
-						DecisionGroupPersistenceManager.insertGroup("Realization_Level", linkedElement);
-					}
-					for (String group : groupsToAssign) {
-						if (!("High_Level").equals(group) && !("Medium_Level").equals(group)
-								&& !("Realization_Level").equals(group)) {
-							DecisionGroupPersistenceManager.insertGroup(group, linkedElement);
-						}
-
-					}
-				} else if (linkedElement != null) {
-					linkedElements.add(linkedElement);
-					if ((linkedElement.getTypeAsString().equals("Decision")
-							|| linkedElement.getTypeAsString().equals("Alternative")
-							|| linkedElement.getTypeAsString().equals("Issue")) && linkedElement.getLinks() != null) {
-						Set<Link> deeperLinks = linkedElement.getLinks();
-						for (Link deeperLink : deeperLinks) {
-							if (deeperLink != null && deeperLink.getTarget() != null
-									&& deeperLink.getSource() != null) {
-								KnowledgeElement deeperElement = deeperLink.getOppositeElement(linkedElement);
-								if (deeperElement != null && (deeperElement.getTypeAsString().equals("Pro")
-										|| deeperElement.getTypeAsString().equals("Con")
-										|| deeperElement.getTypeAsString().equals("Decision")
-										|| deeperElement.getTypeAsString().equals("Alternative"))) {
-									linkedElements.add(deeperElement);
-								}
-							}
-						}
-					}
-				}
-			}
-			// for (KnowledgeElement ele : linkedElements) {
-			// DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, ele);
-			// }
-		}
 	}
 
 	/**

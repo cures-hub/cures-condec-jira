@@ -49,6 +49,7 @@ public class DecisionGroupingRest {
 		for (String group : groupSplitArray) {
 			groupsToAssign.add(group);
 		}
+		groupsToAssign.removeIf(groupName -> groupName.isBlank());
 		if (DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element)) {
 			return Response.ok().build();
 		}
