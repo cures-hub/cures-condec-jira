@@ -11,6 +11,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import net.java.ao.Query;
 
@@ -68,7 +69,9 @@ public class DecisionGroupPersistenceManager {
 
 		Set<KnowledgeElement> childElements = element.getLinkedElements(3);
 		for (KnowledgeElement childElement : childElements) {
-			success = success && insertGroups(groupNames, childElement);
+			if (childElement.getType() != KnowledgeType.OTHER) {
+				success = success && insertGroups(groupNames, childElement);
+			}
 		}
 
 		return success;
@@ -82,9 +85,6 @@ public class DecisionGroupPersistenceManager {
 	 *         the {@link KnowledgeElement}.
 	 */
 	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
-		if (element == null) {
-			return false;
-		}
 		boolean isDeleted = true;
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),

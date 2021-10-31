@@ -37,15 +37,15 @@ public class DecisionGroupingRest {
 	@Path("/assignDecisionGroup")
 	@POST
 	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("level") String level,
-			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String addGroup,
+			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String groupsToAdd,
 			KnowledgeElement element) {
 		Set<String> groupsToAssign = new HashSet<String>();
 		groupsToAssign.add(level);
-		String[] groupSplitArray = existingGroups.replace(" ", "").split(",");
+		String[] groupSplitArray = parseGroupNamesString(existingGroups);
 		for (String group : groupSplitArray) {
 			groupsToAssign.add(group);
 		}
-		groupSplitArray = addGroup.replace(" ", "").split(",");
+		groupSplitArray = parseGroupNamesString(groupsToAdd);
 		for (String group : groupSplitArray) {
 			groupsToAssign.add(group);
 		}
@@ -55,6 +55,10 @@ public class DecisionGroupingRest {
 		}
 		return Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", "Decision groups and level could not be assigned.")).build();
+	}
+
+	private static String[] parseGroupNamesString(String groupNamesString) {
+		return groupNamesString.replace(" ", "").split(",");
 	}
 
 	/**

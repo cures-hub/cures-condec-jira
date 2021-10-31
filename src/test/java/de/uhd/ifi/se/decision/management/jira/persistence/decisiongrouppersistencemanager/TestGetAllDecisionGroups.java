@@ -25,9 +25,15 @@ public class TestGetAllDecisionGroups extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetAllDecisionGroups() {
+	public void testProjectKeyValid() {
 		assertNotNull(new DecisionGroupPersistenceManager());
 		assertTrue(DecisionGroupPersistenceManager.getAllDecisionGroups("TEST").contains("TestGroup"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testProjectKeyInvalid() {
+		assertTrue(DecisionGroupPersistenceManager.getAllDecisionGroups("UNKNOWN").isEmpty());
 	}
 
 	@Test
