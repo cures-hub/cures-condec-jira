@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence.decisiongrouppersiste
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -11,24 +10,20 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.git.CodeFileExtractorAndMaintainer;
-import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
-import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestSetGroupAssignment extends TestSetUpGit {
+public class TestSetGroupAssignment extends TestSetUp {
 
 	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
-		super.setUp();
+		init();
 		element = KnowledgeElements.getDecision();
-		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
 	}
 
 	@Test
@@ -52,6 +47,7 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testGroupNamesElementValid() {
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
 		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("UI", "process"), element);
 		List<String> groups = DecisionGroupPersistenceManager.getGroupsForElement(element);
 		assertFalse(groups.contains("TestGroup"));
@@ -62,19 +58,27 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	public void testInheritInsertGroup() {
-		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);
-		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
-		KnowledgeElement godClass = graph.getElementBySummary("GodClass.java");
+	public void testInheritGroupAssigment() {
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("TestGroup"), element);
+		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element.getLinkedDecisionProblems().get(0))
+				.contains("TestGroup"));
+	}
 
-		KnowledgeElement issueFromCodeCommentInGodClass = graph
-				.getElementsNotInDatabaseBySummary("Will this issue be parsed correctly?");
-		assertEquals("Will this issue be parsed correctly?", issueFromCodeCommentInGodClass.getSummary());
-		assertNotNull(godClass.getLink(issueFromCodeCommentInGodClass));
+	@Test
+	@NonTransactional
+	public void testIsEqualCollectionTrue() {
+		Set<String> setA = Set.of("UI");
+		Set<String> setB = Set.of("UI");
+		assertTrue(DecisionGroupPersistenceManager.isEqual(setA, setB));
+		assertTrue(DecisionGroupPersistenceManager.isEqual(setB, setA));
+	}
 
-		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("TestGroup2"), godClass);
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(issueFromCodeCommentInGodClass)
-				.contains("TestGroup2"));
+	@Test
+	@NonTransactional
+	public void testIsEqualCollectionFalse() {
+		Set<String> setA = Set.of("UI");
+		Set<String> setB = Set.of("process", "UI");
+		assertFalse(DecisionGroupPersistenceManager.isEqual(setA, setB));
+		assertFalse(DecisionGroupPersistenceManager.isEqual(setB, setA));
 	}
 }

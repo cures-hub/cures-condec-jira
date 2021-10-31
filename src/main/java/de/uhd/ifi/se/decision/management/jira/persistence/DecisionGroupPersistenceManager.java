@@ -66,14 +66,7 @@ public class DecisionGroupPersistenceManager {
 		if (groupNames == null || element == null) {
 			return false;
 		}
-		boolean success = resetGroups(groupNames, element);
-		success &= inheritGroups(groupNames, element, 3);
-		return success;
-	}
-
-	private static boolean resetGroups(Set<String> groupNames, KnowledgeElement element) {
-		deleteAllGroupAssignments(element);
-		return insertGroups(groupNames, element);
+		return inheritGroups(groupNames, element, 3);
 	}
 
 	private static boolean inheritGroups(Set<String> groupNames, KnowledgeElement element, int distance) {
@@ -87,6 +80,11 @@ public class DecisionGroupPersistenceManager {
 			}
 		}
 		return success;
+	}
+
+	private static boolean resetGroups(Set<String> groupNames, KnowledgeElement element) {
+		deleteAllGroupAssignments(element);
+		return insertGroups(groupNames, element);
 	}
 
 	private static boolean shouldElementInheritGroupNames(Set<String> groupNames, KnowledgeElement element) {
