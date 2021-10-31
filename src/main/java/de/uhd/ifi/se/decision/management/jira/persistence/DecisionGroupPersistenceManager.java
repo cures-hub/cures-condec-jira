@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -51,14 +52,15 @@ public class DecisionGroupPersistenceManager {
 	}
 
 	/**
-	 * Replaces all current existing decision group/level assignments for that
-	 * element with a list of new decision groups/levels.
-	 *
 	 * @param groupNames
-	 *            of groups to add
+	 *            names of the decision level ("high level", "medium level",
+	 *            "realization level") and groups (e.g. "process", "UI").
 	 * @param element
-	 *            The element that the groups should be assigned to
-	 * @return If replacement was successful
+	 *            {@link KnowledgeElement} that the decision group/level should be
+	 *            assigned to.
+	 * @return true if all current existing decision group/level assignments for
+	 *         that element and for neighbor elements in a link distance of 3 were
+	 *         replaced with new decision groups and a level.
 	 */
 	public static boolean setGroupAssignment(Set<String> groupNames, KnowledgeElement element) {
 		if (groupNames == null || element == null) {
@@ -70,7 +72,8 @@ public class DecisionGroupPersistenceManager {
 	}
 
 	private static boolean resetGroups(Set<String> groupNames, KnowledgeElement element) {
-		return deleteAllGroupAssignments(element) && insertGroups(groupNames, element);
+		deleteAllGroupAssignments(element);
+		return insertGroups(groupNames, element);
 	}
 
 	private static boolean inheritGroups(Set<String> groupNames, KnowledgeElement element, int distance) {
@@ -79,11 +82,19 @@ public class DecisionGroupPersistenceManager {
 			return success;
 		}
 		for (KnowledgeElement neighborElement : element.getLinkedElements(1)) {
-			if (neighborElement.getType() != KnowledgeType.OTHER) {
+			if (shouldElementInheritGroupNames(groupNames, neighborElement)) {
 				success &= inheritGroups(groupNames, neighborElement, distance - 1);
 			}
 		}
 		return success;
+	}
+
+	private static boolean shouldElementInheritGroupNames(Set<String> groupNames, KnowledgeElement element) {
+		return element.getType() != KnowledgeType.OTHER && !isEqual(element.getDecisionGroups(), groupNames);
+	}
+
+	public static boolean isEqual(Collection<String> groups1, Collection<String> groups2) {
+		return groups1.containsAll(groups2) && groups2.containsAll(groups1);
 	}
 
 	/**
@@ -168,16 +179,16 @@ public class DecisionGroupPersistenceManager {
 	 *
 	 * @param groupNames
 	 *            names of the decision level ("high level", "medium level",
-	 *            "realization level") or groups (e.g. "process", "UI").
+	 *            "realization level") and groups (e.g. "process", "UI").
 	 * @param sourceElement
-	 *            {@link KnowledgeElement} that the decision group/level is assigned
-	 *            to.
+	 *            {@link KnowledgeElement} that the decision group/level should be
+	 *            assigned to.
 	 * @return true if insertion of group into database was successful.
 	 */
 	public static boolean insertGroups(Set<String> groupNames, KnowledgeElement sourceElement) {
 		boolean isInserted = true;
 		for (String group : groupNames) {
-			isInserted = isInserted && insertGroup(group, sourceElement) > -1;
+			isInserted &= insertGroup(group, sourceElement) > -1;
 		}
 		return isInserted;
 	}
@@ -186,8 +197,8 @@ public class DecisionGroupPersistenceManager {
 	 * Inserts a new decision group/level assignment into database.
 	 *
 	 * @param sourceElement
-	 *            {@link KnowledgeElement} that the decision group/level is assigned
-	 *            to.
+	 *            {@link KnowledgeElement} that the decision group/level should be
+	 *            assigned to.
 	 * @param groupName
 	 *            name of the decision level ("high level", "medium level",
 	 *            "realization level") or group (e.g. "process", "UI").

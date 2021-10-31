@@ -51,7 +51,7 @@ public class TestSetGroupAssignment extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	public void testSetGroupAssignmentArgsNotNull() {
+	public void testGroupNamesElementValid() {
 		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("UI", "process"), element);
 		List<String> groups = DecisionGroupPersistenceManager.getGroupsForElement(element);
 		assertFalse(groups.contains("TestGroup"));
