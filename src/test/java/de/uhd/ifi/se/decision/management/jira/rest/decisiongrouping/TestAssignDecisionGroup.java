@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.rest.decisiongrouping;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
@@ -36,35 +38,38 @@ public class TestAssignDecisionGroup extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testAddGroupEmpty() {
-		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Safety", "", element);
-		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
-		assertEquals(2, DecisionGroupPersistenceManager.getGroupsForElement(element).size());
+	public void testElementValidLevelValidCurrentGroupsValidAddGroupEmpty() {
+		assertEquals(Response.Status.OK.getStatusCode(),
+				decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Safety", "", element).getStatus());
+		List<String> groups = DecisionGroupPersistenceManager.getGroupsForElement(element);
+		assertTrue(groups.contains("Safety"));
+		assertEquals(2, groups.size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testCurrentGroupsEmpty() {
-		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "", "Safety", element);
-		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
-		assertEquals(2, DecisionGroupPersistenceManager.getGroupsForElement(element).size());
+	public void testElementValidLevelValidCurrentGroupsEmptyAddGroupValid() {
+		assertEquals(Response.Status.OK.getStatusCode(),
+				decisionGroupingRest.assignDecisionGroup(request, "High_Level", "", "Safety", element).getStatus());
+		List<String> groups = DecisionGroupPersistenceManager.getGroupsForElement(element);
+		assertTrue(groups.contains("Safety"));
+		assertEquals(2, groups.size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGroupNoEmpties() {
-		Response resp = decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Property,TestGroup", "Safety",
-				element);
-		assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("Safety"));
-		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).size() == 4);
+	public void testElementValidLevelValidCurrentGroupsValidAddGroupValid() {
+		assertEquals(Response.Status.OK.getStatusCode(), decisionGroupingRest
+				.assignDecisionGroup(request, "High_Level", "Property,TestGroup", "Safety", element).getStatus());
+		List<String> groups = DecisionGroupPersistenceManager.getGroupsForElement(element);
+		assertEquals("High_Level", groups.get(0));
+		assertTrue(groups.contains("Safety"));
+		assertEquals(4, groups.size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testElementNull() {
+	public void testElementNullLevelValidCurrentGroupsValidAddGroupValid() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				decisionGroupingRest.assignDecisionGroup(request, "High_Level", "Security", "", null).getStatus());
 	}

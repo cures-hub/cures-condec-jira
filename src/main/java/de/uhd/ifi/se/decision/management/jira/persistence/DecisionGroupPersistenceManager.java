@@ -31,58 +31,21 @@ public class DecisionGroupPersistenceManager {
 	public static final List<String> LEVELS = List.of("high_level", "medium_level", "realization_level");
 
 	/**
-	 * @param groupId
-	 *            id of a decision group/level in the database.
-	 * @return true if decision group/level was deleted in database.
-	 */
-	public static boolean deleteGroup(long groupId) {
-		if (groupId < 0) {
-			return false;
-		}
-		boolean isDeleted = false;
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("ID = ?", groupId))) {
-			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
-		}
-		return isDeleted;
-	}
-
-	/**
-	 * @param element
-	 *            {@link KnowledgeElement} that currently is assigned to 1..*
-	 *            decision groups/levels.
-	 * @return true if all decision groups/levels were successfully unassigned from
-	 *         the {@link KnowledgeElement}.
-	 */
-	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
-		if (element == null) {
-			return false;
-		}
-		boolean isDeleted = true;
-		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
-						element.getDocumentationLocation().getIdentifier()))) {
-			isDeleted &= DecisionGroupInDatabase.deleteGroup(groupInDatabase);
-		}
-		return isDeleted;
-	}
-
-	/**
-	 * @param group
-	 *            name of the decision level ("high level", "medium level",
-	 *            "realization level") or group (e.g. "process", "UI") to be
-	 *            unassigned.
+	 * @param groupName
+	 *            name of the decision group (e.g. "process", "UI") to be deleted.
+	 *            Decision levels ("high level", "medium level", "realization
+	 *            level") cannot be deleted.
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @return true if the decision group/level was successfully deleted.
 	 */
-	public static boolean deleteGroup(String group, String projectKey) {
-		if (group == null) {
+	public static boolean deleteGroup(String groupName, String projectKey) {
+		if (groupName == null) {
 			return false;
 		}
 		boolean isDeleted = false;
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("GROUP = ? AND PROJECT_KEY = ?", group, projectKey))) {
+				Query.select().where("GROUP = ? AND PROJECT_KEY = ?", groupName, projectKey))) {
 			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
 		}
 		return isDeleted;
@@ -121,6 +84,26 @@ public class DecisionGroupPersistenceManager {
 		inheritGroupAssignment(groups, element);
 
 		return success & id != -1;
+	}
+
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} that currently is assigned to 1..*
+	 *            decision groups/levels.
+	 * @return true if all decision groups/levels were successfully unassigned from
+	 *         the {@link KnowledgeElement}.
+	 */
+	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
+		if (element == null) {
+			return false;
+		}
+		boolean isDeleted = true;
+		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
+						element.getDocumentationLocation().getIdentifier()))) {
+			isDeleted &= DecisionGroupInDatabase.deleteGroup(groupInDatabase);
+		}
+		return isDeleted;
 	}
 
 	// TODO Simplify, this method is way too long and complex!
@@ -284,7 +267,7 @@ public class DecisionGroupPersistenceManager {
 	 *            to.
 	 * @return group id if the entry already exists in database, otherwise -1.
 	 */
-	public static long isGroupAlreadyInDatabase(String groupName, KnowledgeElement element) {
+	private static long isGroupAlreadyInDatabase(String groupName, KnowledgeElement element) {
 		DecisionGroupInDatabase groupInDatabase = getDecisionGroupInDatabase(groupName, element);
 		return groupInDatabase != null ? groupInDatabase.getId() : -1;
 	}
@@ -297,7 +280,7 @@ public class DecisionGroupPersistenceManager {
 	 *            to.
 	 * @return {@link DecisionGroupInDatabase} object.
 	 */
-	public static DecisionGroupInDatabase getDecisionGroupInDatabase(String groupName, KnowledgeElement element) {
+	private static DecisionGroupInDatabase getDecisionGroupInDatabase(String groupName, KnowledgeElement element) {
 		if (groupName == null || element == null) {
 			return null;
 		}

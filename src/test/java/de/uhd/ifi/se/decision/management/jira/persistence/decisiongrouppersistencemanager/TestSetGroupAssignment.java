@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersisten
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
+public class TestSetGroupAssignment extends TestSetUpGit {
 
 	private KnowledgeElement element;
 
@@ -50,34 +50,5 @@ public class TestSetAndDeleteGroupAssignment extends TestSetUpGit {
 		DecisionGroupPersistenceManager.setGroupAssignment(groups, element);
 		assertFalse(DecisionGroupPersistenceManager.getGroupsForElement(element).contains("TestGroup1a"));
 		assertTrue(DecisionGroupPersistenceManager.getGroupsForElement(element).size() == 2);
-	}
-
-	@Test
-	public void testDeleteGroupAssignmentIdNull() {
-		assertFalse(DecisionGroupPersistenceManager.deleteGroup(-1));
-	}
-
-	@Test
-	@NonTransactional
-	public void testDeleteGroupAssignmentIdNotNull() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup2", element);
-		long elementId = DecisionGroupPersistenceManager.getDecisionGroupInDatabase("TestGroup2", element).getId();
-		assertTrue(DecisionGroupPersistenceManager.deleteGroup(elementId));
-	}
-
-	@Test
-	@NonTransactional
-	public void testDeleteGroupWithGroupNull() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup4", element);
-		assertFalse(DecisionGroupPersistenceManager.deleteGroup(null, "TEST"));
-
-	}
-
-	@Test
-	@NonTransactional
-	public void testDeleteGroup() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup4", element);
-		DecisionGroupPersistenceManager.deleteGroup("TestGroup4", "TEST");
-		assertFalse(DecisionGroupPersistenceManager.getAllDecisionGroups("TEST").contains("TestGroup4"));
 	}
 }
