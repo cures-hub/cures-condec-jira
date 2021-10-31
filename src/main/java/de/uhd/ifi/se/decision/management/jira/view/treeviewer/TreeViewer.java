@@ -173,11 +173,11 @@ public class TreeViewer {
 			KnowledgeElement sourceElement = edge.getSource();
 			KnowledgeElement targetElement = edge.getTarget();
 
-			KnowledgeElement childElement = targetElement;
-			TreeViewerNode parentNode = elementToTreeViewerNodeMap.get(sourceElement);
+			KnowledgeElement childElement = sourceElement;
+			TreeViewerNode parentNode = elementToTreeViewerNodeMap.get(targetElement);
 			if (parentNode == null) {
-				parentNode = elementToTreeViewerNodeMap.get(targetElement);
-				childElement = sourceElement;
+				parentNode = elementToTreeViewerNodeMap.get(sourceElement);
+				childElement = targetElement;
 			}
 			if (parentNode == null) {
 				continue;
