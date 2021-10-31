@@ -65,19 +65,25 @@ public class DecisionGroupPersistenceManager {
 			return false;
 		}
 		boolean success = resetGroups(groupNames, element);
-
-		Set<KnowledgeElement> childElements = element.getLinkedElements(3);
-		for (KnowledgeElement childElement : childElements) {
-			if (childElement.getType() != KnowledgeType.OTHER) {
-				success &= resetGroups(groupNames, childElement);
-			}
-		}
-
+		success &= inheritGroups(groupNames, element, 3);
 		return success;
 	}
 
 	private static boolean resetGroups(Set<String> groupNames, KnowledgeElement element) {
 		return deleteAllGroupAssignments(element) && insertGroups(groupNames, element);
+	}
+
+	private static boolean inheritGroups(Set<String> groupNames, KnowledgeElement element, int distance) {
+		boolean success = resetGroups(groupNames, element);
+		if (distance == 0) {
+			return success;
+		}
+		for (KnowledgeElement neighborElement : element.getLinkedElements(1)) {
+			if (neighborElement.getType() != KnowledgeType.OTHER) {
+				success &= inheritGroups(groupNames, neighborElement, distance - 1);
+			}
+		}
+		return success;
 	}
 
 	/**
