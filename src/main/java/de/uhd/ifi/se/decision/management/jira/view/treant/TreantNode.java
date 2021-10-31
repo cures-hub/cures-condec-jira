@@ -107,11 +107,13 @@ public class TreantNode {
 		case "support":
 			if (knowledgeElement.getId() == link.getSource().getId()) {
 				htmlClass = htmlClass.replaceFirst("\\S+", "pro");
+				image = KnowledgeType.PRO.getIconUrl();
 			}
 			break;
 		case "attack":
 			if (knowledgeElement.getId() == link.getSource().getId()) {
 				htmlClass = htmlClass.replaceFirst("\\S+", "con");
+				image = KnowledgeType.CON.getIconUrl();
 			}
 			break;
 		default:

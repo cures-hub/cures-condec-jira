@@ -244,12 +244,12 @@ public enum KnowledgeType {
 		if (linkType == null) {
 			return getIconUrl(element);
 		}
-		switch (element.getType()) {
+		switch (element.getType().replaceProAndConWithArgument()) {
 		case ARGUMENT:
 			if (linkType.equals("support")) {
-				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+				return PRO.getIconUrl();
 			} else if (linkType.equals("attack")) {
-				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+				return CON.getIconUrl();
 			}
 		default:
 			return getIconUrl(element);

@@ -127,11 +127,11 @@ public class Treant {
 			KnowledgeElement sourceElement = edge.getSource();
 			KnowledgeElement targetElement = edge.getTarget();
 
-			KnowledgeElement childElement = targetElement;
-			TreantNode parentNode = elementToTreantNodeMap.get(sourceElement);
+			KnowledgeElement childElement = sourceElement;
+			TreantNode parentNode = elementToTreantNodeMap.get(targetElement);
 			if (parentNode == null) {
-				parentNode = elementToTreantNodeMap.get(targetElement);
-				childElement = sourceElement;
+				parentNode = elementToTreantNodeMap.get(sourceElement);
+				childElement = targetElement;
 			}
 			if (parentNode == null) {
 				continue;
