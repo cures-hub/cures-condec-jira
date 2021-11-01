@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class AdditionalConfigurationOptionsTest {
+public class TestAdditionalConfigurationOptions {
 
 	@Test
 	public void testToString() {
@@ -14,7 +14,7 @@ public class AdditionalConfigurationOptionsTest {
 
 	@Test
 	public void testToUpperString() {
-		assertEquals("INCLUDE_BUG_FIXES", INCLUDE_BUG_FIXES.toUpperString());
+		assertEquals("INCLUDE_BUG_FIXES", INCLUDE_BUG_FIXES.name());
 	}
 
 	@Test

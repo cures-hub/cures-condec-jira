@@ -106,8 +106,8 @@ public class MarkdownCreator {
 					markdownAddIssue(stringBuilder, issue);
 					// add decision knowledge of the issue
 					if (additionalConfiguration != null && additionalConfiguration
-							.contains(AdditionalConfigurationOptions.INCLUDE_DECISION_KNOWLEDGE.toUpperString())) {
-						List<KnowledgeElement> comments = new ArrayList<KnowledgeElement>();
+							.contains(AdditionalConfigurationOptions.INCLUDE_DECISION_KNOWLEDGE.name())) {
+						List<KnowledgeElement> comments = new ArrayList<>();
 						issues.forEach(sameIssue -> {
 							// check if dk knowledge is in issues which contains the issuekey and is one of
 							// types issue or decision
@@ -116,8 +116,8 @@ public class MarkdownCreator {
 							Boolean b1 = sameIssueKey.contains(issueKey);
 							Boolean b2 = sameIssueKey.contains(":");
 							Boolean b3 = sameIssueKey.equals(issueKey);
-							Boolean isIssue = sameIssue.getType().equals(KnowledgeType.ISSUE);
-							Boolean isDecision = sameIssue.getType().equals(KnowledgeType.DECISION);
+							Boolean isIssue = sameIssue.getType() == KnowledgeType.ISSUE;
+							Boolean isDecision = sameIssue.getType() == KnowledgeType.DECISION;
 							if ((b1 && b2 && !b3) && (isIssue || isDecision)) {
 								comments.add(sameIssue);
 							}

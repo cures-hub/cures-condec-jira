@@ -26,7 +26,6 @@ public class TestPostProposedKeys extends TestSetUp {
 	protected HttpServletRequest request;
 	private ReleaseNotesRest releaseNoteRest;
 	private String projectKey;
-	private Map<String, List<String>> keysForContent;
 	private Map<String, Map<String, List<String>>> postObject;
 
 	@Before
@@ -37,7 +36,7 @@ public class TestPostProposedKeys extends TestSetUp {
 		projectKey = "TEST";
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		keysForContent = new HashMap<>();
+		Map<String, List<String>> keysForContent = new HashMap<>();
 		keysForContent.put(ReleaseNotesCategory.BUG_FIXES.toString(), new ArrayList<>(List.of("TEST-14", "TEST-30")));
 		keysForContent.put(ReleaseNotesCategory.NEW_FEATURES.toString(),
 				new ArrayList<>(List.of("TEST-14", "TEST-30")));

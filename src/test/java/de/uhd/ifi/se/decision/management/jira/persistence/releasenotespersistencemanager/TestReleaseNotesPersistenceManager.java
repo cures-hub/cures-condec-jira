@@ -2,18 +2,41 @@ package de.uhd.ifi.se.decision.management.jira.persistence.releasenotespersisten
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestReleaseNotesPersistenceManager extends TestReleaseNotesPersistenceManagerSetUp {
+public class TestReleaseNotesPersistenceManager extends TestSetUp {
+
+	protected static ReleaseNotesPersistenceManager releaseNotesPersistenceManager;
+	protected static ApplicationUser user;
+	protected static ReleaseNotes releaseNotes;
+	public static String aVeryLongContent;
+	public static String projectKey;
+
+	@Before
+	public void setUp() {
+		init();
+		releaseNotesPersistenceManager = new ReleaseNotesPersistenceManager();
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		aVeryLongContent = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+		projectKey = "TEST";
+		releaseNotes = new ReleaseNotes();
+		releaseNotes.setContent(aVeryLongContent);
+		releaseNotes.setProjectKey(projectKey);
+	}
 
 	@Test
 	@NonTransactional
 	public void testCreateReleaseNote() {
-		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
+		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
 		ReleaseNotes newReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
 		assertEquals(aVeryLongContent, newReleaseNote.getContent());
 	}
@@ -21,32 +44,30 @@ public class TestReleaseNotesPersistenceManager extends TestReleaseNotesPersiste
 	@Test
 	@NonTransactional
 	public void testDeleteReleaseNote() {
-		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
-		ReleaseNotesPersistenceManager.deleteReleaseNotes(newId,user);
+		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		ReleaseNotesPersistenceManager.deleteReleaseNotes(newId, user);
 		assertEquals(null, ReleaseNotesPersistenceManager.getReleaseNotes(newId));
 	}
 
 	@Test
 	@NonTransactional
 	public void testUpdateReleaseNote() {
-		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
-		String someChangedContent="some other content";
-		ReleaseNotes updateReleaseNote=ReleaseNotesPersistenceManager.getReleaseNotes(newId);
+		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		String someChangedContent = "some other content";
+		ReleaseNotes updateReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
 		updateReleaseNote.setContent(someChangedContent);
-		assertEquals(true,ReleaseNotesPersistenceManager.updateReleaseNotes(updateReleaseNote,user));
+		assertEquals(true, ReleaseNotesPersistenceManager.updateReleaseNotes(updateReleaseNote, user));
 		assertEquals(someChangedContent, ReleaseNotesPersistenceManager.getReleaseNotes(newId).getContent());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAllReleaseNote() {
-		ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
-		String someChangedContent="some other content";
-		releaseNote.setContent(someChangedContent);
-		ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
-		assertEquals(2, ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey,"").size());
+		ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		String someChangedContent = "some other content";
+		releaseNotes.setContent(someChangedContent);
+		ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		assertEquals(2, ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey, "").size());
 	}
-
-
 
 }
