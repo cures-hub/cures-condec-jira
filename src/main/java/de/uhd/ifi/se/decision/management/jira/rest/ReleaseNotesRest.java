@@ -42,7 +42,6 @@ public class ReleaseNotesRest {
 	@POST
 	public Response getProposedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			ReleaseNotesConfiguration releaseNoteConfiguration) {
-
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
 				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
@@ -89,12 +88,11 @@ public class ReleaseNotesRest {
 
 	@Path("/createReleaseNotes")
 	@POST
-	public Response createReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ReleaseNotes releaseNotes) {
+	public Response createReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
 
-		LOGGER.info("Release notes were created for project: " + projectKey);
+		LOGGER.info("Release notes were created for project: " + releaseNotes.getProjectKey());
 		return Response.ok(id).build();
 	}
 

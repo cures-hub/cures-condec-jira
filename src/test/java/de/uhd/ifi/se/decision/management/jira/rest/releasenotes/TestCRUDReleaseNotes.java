@@ -38,7 +38,7 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 	@NonTransactional
 	public void testCreateReleaseNotes() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNotesRest.createReleaseNotes(request, projectKey, releaseNotes).getStatus());
+				releaseNotesRest.createReleaseNotes(request, releaseNotes).getStatus());
 	}
 
 	@Test

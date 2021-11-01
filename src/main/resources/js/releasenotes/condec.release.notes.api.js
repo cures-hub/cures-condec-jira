@@ -172,8 +172,8 @@
 	};
 
 	ConDecReleaseNotesAPI.prototype.createReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/createReleaseNotes.json?projectKey="
-			+ projectKey, releaseNotes);
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/createReleaseNotes.json",
+			releaseNotes);
 	};
 
 	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
