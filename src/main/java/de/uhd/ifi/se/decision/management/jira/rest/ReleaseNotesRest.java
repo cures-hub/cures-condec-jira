@@ -31,8 +31,8 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesIssueProposal;
 
 /**
- * REST resource for the management of release notes with explicit decision
- * knowledge.
+ * REST resource for the management of {@link ReleaseNotes} with explicit
+ * decision knowledge.
  */
 @Path("/releasenotes")
 public class ReleaseNotesRest {

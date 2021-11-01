@@ -10,6 +10,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInD
 
 /**
  * Models one release notes with its typical attributes (title, content, ...).
+ * The content contains explicit decision knowledge (i.e. decision problems and
+ * decisions relevant for the release).
  */
 public class ReleaseNotes {
 
@@ -138,8 +140,8 @@ public class ReleaseNotes {
 
 	/**
 	 * @param content
-	 *            description of the release note. The content is in HTML, txt or md
-	 *            format.
+	 *            description of the release notes. The content is in HTML, txt or
+	 *            md format.
 	 */
 	@JsonProperty
 	public void setContent(String content) {

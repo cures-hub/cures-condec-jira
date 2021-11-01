@@ -149,9 +149,9 @@
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
-	ConDecReleaseNotesAPI.prototype.getProposedIssues = function(releaseNoteConfiguration) {
+	ConDecReleaseNotesAPI.prototype.getProposedIssues = function(relaseNotesConfiguration) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/getProposedIssues.json?projectKey="
-			+ projectKey, releaseNoteConfiguration);
+			+ projectKey, relaseNotesConfiguration);
 	};
 
 	ConDecReleaseNotesAPI.prototype.postProposedKeys = function(proposedKeys) {
