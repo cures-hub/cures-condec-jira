@@ -446,7 +446,6 @@
 			var features = $("#multipleFeatures").val();
 			var improvements = $("#multipleImprovements").val();
 			var title = $("#release-notes-title").val();
-			console.log(title);
 			// submit configuration
 			var configuration = {
 				title: title,

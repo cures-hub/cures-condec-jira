@@ -94,7 +94,7 @@ public class TestGetProposedIssues extends TestSetUp {
 	@Test
 	public void testGetProposedIssues() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.getProposedIssues(request, projectKey, releaseNoteConfiguration).getStatus());
+				releaseNoteRest.proposeElements(request, projectKey, releaseNoteConfiguration).getStatus());
 	}
 
 }

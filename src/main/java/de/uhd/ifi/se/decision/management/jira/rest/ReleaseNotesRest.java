@@ -9,6 +9,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -39,7 +40,27 @@ public class ReleaseNotesRest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesRest.class);
 
-	@Path("/createReleaseNotes")
+	@GET
+	public Response getReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("searchTerm") String searchTerm) {
+		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesMatchingFilter(projectKey,
+				searchTerm);
+		LOGGER.info("Release notes were viewed for project: " + projectKey);
+		return Response.ok(releaseNotes).build();
+	}
+
+	@Path("/{id}")
+	@GET
+	public Response getReleaseNotesById(@Context HttpServletRequest request, @PathParam("id") long id) {
+		ReleaseNotes releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesById(id);
+		if (releaseNotes == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes for given id could not be found.")).build();
+		}
+		return Response.ok(releaseNotes).build();
+	}
+
+	@Path("/create")
 	@POST
 	public Response createReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -52,7 +73,7 @@ public class ReleaseNotesRest {
 		return Response.ok(id).build();
 	}
 
-	@Path("/updateReleaseNotes")
+	@Path("/update")
 	@POST
 	public Response updateReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -64,28 +85,7 @@ public class ReleaseNotesRest {
 		return Response.ok().build();
 	}
 
-	@Path("/getReleaseNotesById")
-	@GET
-	public Response getReleaseNotesById(@Context HttpServletRequest request, @QueryParam("id") long id) {
-		ReleaseNotes releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesById(id);
-		if (releaseNotes == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Release notes for given id could not be found.")).build();
-		}
-		return Response.ok(releaseNotes).build();
-	}
-
-	@Path("/getReleaseNotes")
-	@GET
-	public Response getReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("searchTerm") String searchTerm) {
-		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesMatchingFilter(projectKey,
-				searchTerm);
-		LOGGER.info("Release notes were viewed for project: " + projectKey);
-		return Response.ok(releaseNotes).build();
-	}
-
-	@Path("/deleteReleaseNotes")
+	@Path("/delete")
 	@DELETE
 	public Response deleteReleaseNotes(@Context HttpServletRequest request, @QueryParam("id") long id) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -97,9 +97,9 @@ public class ReleaseNotesRest {
 		return Response.ok().build();
 	}
 
-	@Path("/getProposedIssues")
+	@Path("/propose-elements")
 	@POST
-	public Response getProposedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response proposeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			ReleaseNotesConfiguration releaseNoteConfiguration) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
