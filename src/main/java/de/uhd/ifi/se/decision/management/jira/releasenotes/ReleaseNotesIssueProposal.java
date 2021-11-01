@@ -1,5 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
+import java.util.EnumMap;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -8,14 +17,8 @@ import com.atlassian.jira.issue.priority.Priority;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.EnumMap;
-import java.util.HashMap;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
  * Model class for the release notes Jira issue proposal. It saves the knowledge
@@ -24,7 +27,7 @@ import java.util.HashMap;
 public class ReleaseNotesIssueProposal {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesIssueProposal.class);
 
-	private KnowledgeElement decisionKnowledgeElement;
+	private KnowledgeElement knowledgeElement;
 
 	private EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics;
 	private double rating;
@@ -36,7 +39,7 @@ public class ReleaseNotesIssueProposal {
 	 * @param countDecisionKnowledge
 	 */
 	public ReleaseNotesIssueProposal(KnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
-		this.decisionKnowledgeElement = decisionKnowledgeElement;
+		this.knowledgeElement = decisionKnowledgeElement;
 		// set default values
 		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();
 		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, countDecisionKnowledge);
@@ -47,7 +50,7 @@ public class ReleaseNotesIssueProposal {
 	 */
 	@XmlElement(name = "decisionKnowledgeElement")
 	public KnowledgeElement getDecisionKnowledgeElement() {
-		return this.decisionKnowledgeElement;
+		return knowledgeElement;
 	}
 
 	/**
@@ -56,7 +59,7 @@ public class ReleaseNotesIssueProposal {
 	 */
 	@JsonProperty("decisionKnowledgeElement")
 	public void setDecisionKnowledgeElement(KnowledgeElement decisionKnowledgeElement) {
-		this.decisionKnowledgeElement = decisionKnowledgeElement;
+		this.knowledgeElement = decisionKnowledgeElement;
 	}
 
 	/**
@@ -170,7 +173,7 @@ public class ReleaseNotesIssueProposal {
 	 * @param user
 	 *            Application user which makes the request
 	 */
-	public void getAndSetExperienceReporter(Issue issue, HashMap<String, Integer> existingReporterCount,
+	public void getAndSetExperienceReporter(Issue issue, Map<String, Integer> existingReporterCount,
 			ApplicationUser user) {
 		// first check if user was already checked
 		SearchService searchProvider = ComponentAccessor.getComponentOfType(SearchService.class);
@@ -209,7 +212,7 @@ public class ReleaseNotesIssueProposal {
 	 * @param user
 	 *            Application user which makes the request
 	 */
-	public void getAndSetExperienceResolver(Issue issue, HashMap<String, Integer> existingResolverCount,
+	public void getAndSetExperienceResolver(Issue issue, Map<String, Integer> existingResolverCount,
 			ApplicationUser user) {
 		// the resolver is most of the times the last assigned user
 		JqlQueryBuilder builderResolver = JqlQueryBuilder.newBuilder();

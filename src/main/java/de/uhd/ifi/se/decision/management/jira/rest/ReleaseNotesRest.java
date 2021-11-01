@@ -1,19 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +32,75 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesIssueProposal;
 
 /**
- * REST resource for release notes
+ * REST resource for the management of {@link ReleaseNotes} with explicit
+ * decision knowledge.
  */
-@Path("/release-note")
+@Path("/releasenotes")
 public class ReleaseNotesRest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesRest.class);
 
-	@Path("/getProposedIssues")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getProposedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ReleaseNotesConfiguration releaseNoteConfiguration) {
+	@GET
+	public Response getReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("searchTerm") String searchTerm) {
+		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesMatchingFilter(projectKey,
+				searchTerm);
+		LOGGER.info("Release notes were viewed for project: " + projectKey);
+		return Response.ok(releaseNotes).build();
+	}
 
+	@Path("/{id}")
+	@GET
+	public Response getReleaseNotesById(@Context HttpServletRequest request, @PathParam("id") long id) {
+		ReleaseNotes releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesById(id);
+		if (releaseNotes == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes for given id could not be found.")).build();
+		}
+		return Response.ok(releaseNotes).build();
+	}
+
+	@Path("/create")
+	@POST
+	public Response createReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		long id = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
+		if (id < 0) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes could not be created.")).build();
+		}
+		LOGGER.info("Release notes were created for project: " + releaseNotes.getProjectKey());
+		return Response.ok(id).build();
+	}
+
+	@Path("/update")
+	@POST
+	public Response updateReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		boolean isUpdated = ReleaseNotesPersistenceManager.updateReleaseNotes(releaseNotes, user);
+		if (!isUpdated) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes could not be updated.")).build();
+		}
+		return Response.ok().build();
+	}
+
+	@Path("/delete")
+	@DELETE
+	public Response deleteReleaseNotes(@Context HttpServletRequest request, @QueryParam("id") long id) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		boolean isDeleted = ReleaseNotesPersistenceManager.deleteReleaseNotes(id, user);
+		if (!isDeleted) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes could not be deleted.")).build();
+		}
+		return Response.ok().build();
+	}
+
+	@Path("/propose-elements")
+	@POST
+	public Response proposeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			ReleaseNotesConfiguration releaseNoteConfiguration) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
 				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
@@ -56,15 +112,14 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		HashMap<String, ArrayList<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator
-				.getMappedProposals();
+		Map<String, List<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
 
 		if (mappedProposals == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "No issues with the mapped types are resolved in this date range!"))
 					.build();
 		}
-		HashMap<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		result.put("proposals", mappedProposals);
 		result.put("additionalConfiguration", releaseNoteConfiguration.getAdditionalConfiguration());
 		result.put("title", releaseNoteConfiguration.getTitle());
@@ -75,11 +130,10 @@ public class ReleaseNotesRest {
 
 	@Path("/postProposedKeys")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			HashMap<String, HashMap<String, List<String>>> postObject) {
+			Map<String, Map<String, List<String>>> postObject) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		HashMap<String, List<String>> keysForContent = postObject.get("selectedKeys");
+		Map<String, List<String>> keysForContent = postObject.get("selectedKeys");
 		String title = postObject.get("title").get("id").get(0);
 		List<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
 		MarkdownCreator markdownCreator = new MarkdownCreator(user, projectKey, keysForContent, title,
@@ -88,69 +142,6 @@ public class ReleaseNotesRest {
 		// generate text string
 		String markDownString = markdownCreator.getMarkdownString();
 		// return text string
-		HashMap<String, String> result = new HashMap<String, String>();
-		result.put("markdown", markDownString);
-		return Response.ok(result).build();
+		return Response.ok(Map.of("markdown", markDownString)).build();
 	}
-
-	@Path("/createReleaseNote")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			HashMap<String, String> postObject) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		String title = postObject.get("title");
-		String startDate = postObject.get("startDate");
-		String endDate = postObject.get("endDate");
-		String releaseNoteContent = postObject.get("content");
-
-		ReleaseNotes releaseNote = new ReleaseNotes(title, releaseNoteContent, projectKey, startDate, endDate);
-		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNote, user);
-
-		LOGGER.info("Release notes were created for project: " + projectKey);
-		return Response.ok(id).build();
-	}
-
-	@Path("/updateReleaseNote")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response updateReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ReleaseNotes releaseNote) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
-		boolean updated = ReleaseNotesPersistenceManager.updateReleaseNotes(releaseNote, user);
-
-		return Response.ok(updated).build();
-	}
-
-	@Path("/getReleaseNote")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("id") long id) {
-		ReleaseNotes releaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(id);
-		return Response.ok(releaseNote).build();
-	}
-
-	@Path("/getAllReleaseNotes")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query) {
-		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey, query);
-
-		LOGGER.info("Release notes were viewed for project: " + projectKey);
-		return Response.ok(releaseNotes).build();
-	}
-
-	@Path("/deleteReleaseNote")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("id") long id) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		boolean deleted = ReleaseNotesPersistenceManager.deleteReleaseNotes(id, user);
-		return Response.ok(deleted).build();
-	}
-
 }

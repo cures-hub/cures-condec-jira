@@ -1,4 +1,4 @@
-<table id="release-notes-table" class="aui aui-table-sortable aui-table-list">
+<table id="release-notes-table" class="aui aui-table-list">
 	<thead>
 	    <tr>
 	        <th class="aui-table-column-issue-key" id="id">ID</th>

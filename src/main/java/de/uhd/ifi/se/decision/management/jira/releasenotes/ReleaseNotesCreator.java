@@ -31,7 +31,7 @@ public class ReleaseNotesCreator {
 		this.user = user;
 	}
 
-	public HashMap<String, ArrayList<ReleaseNotesIssueProposal>> getMappedProposals() {
+	public Map<String, List<ReleaseNotesIssueProposal>> getMappedProposals() {
 		setMetrics();
 		compareProposals();
 		return mapProposals();
@@ -43,14 +43,14 @@ public class ReleaseNotesCreator {
 	 * sets Proposals
 	 */
 	private void setMetrics() {
-		ArrayList<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<ReleaseNotesIssueProposal>();
+		List<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<>();
 		// set up components we need to gather metrics
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 		// create plain array with no duplicates
-		List<String> usedKeys = new ArrayList<String>();
-		HashMap<String, Integer> reporterIssueCount = new HashMap<String, Integer>();
-		HashMap<String, Integer> resolverIssueCount = new HashMap<String, Integer>();
+		List<String> usedKeys = new ArrayList<>();
+		Map<String, Integer> reporterIssueCount = new HashMap<>();
+		Map<String, Integer> resolverIssueCount = new HashMap<>();
 		// for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element
 		// with the data
 		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
@@ -196,13 +196,13 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private HashMap<String, ArrayList<ReleaseNotesIssueProposal>> mapProposals() {
+	private Map<String, List<ReleaseNotesIssueProposal>> mapProposals() {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-		HashMap<String, ArrayList<ReleaseNotesIssueProposal>> resultMap = new HashMap<String, ArrayList<ReleaseNotesIssueProposal>>();
-		ArrayList<ReleaseNotesIssueProposal> bugs = new ArrayList<ReleaseNotesIssueProposal>();
-		ArrayList<ReleaseNotesIssueProposal> features = new ArrayList<ReleaseNotesIssueProposal>();
-		ArrayList<ReleaseNotesIssueProposal> improvements = new ArrayList<ReleaseNotesIssueProposal>();
+		Map<String, List<ReleaseNotesIssueProposal>> resultMap = new HashMap<>();
+		List<ReleaseNotesIssueProposal> bugs = new ArrayList<>();
+		List<ReleaseNotesIssueProposal> features = new ArrayList<>();
+		List<ReleaseNotesIssueProposal> improvements = new ArrayList<>();
 		var ref = new Object() {
 			Boolean hasResult = false;
 		};
@@ -232,7 +232,7 @@ public class ReleaseNotesCreator {
 		if (!ref.hasResult) {
 			return null;
 		}
-		Comparator<ReleaseNotesIssueProposal> compareByRating = new Comparator<ReleaseNotesIssueProposal>() {
+		Comparator<ReleaseNotesIssueProposal> compareByRating = new Comparator<>() {
 			@Override
 			public int compare(ReleaseNotesIssueProposal o1, ReleaseNotesIssueProposal o2) {
 				Double rating1 = o1.getRating();

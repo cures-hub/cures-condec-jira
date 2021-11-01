@@ -2,12 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -16,14 +17,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  * Class to generate the markdown string out of the selected jira-issue-keys
  */
 public class MarkdownCreator {
-	private final String pathToIcons = "https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/";
 	private final ApplicationUser user;
 	private final String projectKey;
 	private final List<String> additionalConfiguration;
-	private final HashMap<String, List<String>> keysForContent;
+	private final Map<String, List<String>> keysForContent;
 	private final String title;
 
-	public MarkdownCreator(ApplicationUser user, String projectKey, HashMap<String, List<String>> keysForContent2,
+	public MarkdownCreator(ApplicationUser user, String projectKey, Map<String, List<String>> keysForContent2,
 			String title, List<String> additionalConfiguration2) {
 		this.user = user;
 		this.projectKey = projectKey;
@@ -41,12 +41,14 @@ public class MarkdownCreator {
 		String issueQuery = buildQueryFromIssueKeys(keysForContent);
 		// make one jql request and later seperate by bugs, features and improvements
 		String query = "?jql=project=" + projectKey + "&& key in(" + issueQuery + ")";
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		filterSettings.setOnlyDecisionKnowledgeShown(true);
 		FilteringManager extractor = new FilteringManager(projectKey, user, query);
 		Set<KnowledgeElement> elementsQueryLinked = extractor.getElementsMatchingFilterSettings();
 		return elementsQueryLinked;
 	}
 
-	private String buildQueryFromIssueKeys(HashMap<String, List<String>> keysForContent) {
+	private String buildQueryFromIssueKeys(Map<String, List<String>> keysForContent) {
 		String result = "";
 		StringBuilder jql = new StringBuilder();
 
@@ -94,8 +96,9 @@ public class MarkdownCreator {
 				if (keysForContent.get(cat).contains(issue.getKey())) {
 					// add title once
 					if (!containsTitle.get(ReleaseNotesCategory.getTargetGroup(cat))) {
-						stringBuilder.append("## ").append(
-								ReleaseNotesCategory.getTargetGroupReadable(ReleaseNotesCategory.getTargetGroup(cat)))
+						stringBuilder.append("## ")
+								.append(ReleaseNotesCategory
+										.getTargetGroupReadable(ReleaseNotesCategory.getTargetGroup(cat)))
 								.append(" \n");
 						containsTitle.put(ReleaseNotesCategory.getTargetGroup(cat), true);
 					}
@@ -103,8 +106,8 @@ public class MarkdownCreator {
 					markdownAddIssue(stringBuilder, issue);
 					// add decision knowledge of the issue
 					if (additionalConfiguration != null && additionalConfiguration
-							.contains(AdditionalConfigurationOptions.INCLUDE_DECISION_KNOWLEDGE.toUpperString())) {
-						List<KnowledgeElement> comments = new ArrayList<KnowledgeElement>();
+							.contains(AdditionalConfigurationOptions.INCLUDE_DECISION_KNOWLEDGE.name())) {
+						List<KnowledgeElement> comments = new ArrayList<>();
 						issues.forEach(sameIssue -> {
 							// check if dk knowledge is in issues which contains the issuekey and is one of
 							// types issue or decision
@@ -113,8 +116,8 @@ public class MarkdownCreator {
 							Boolean b1 = sameIssueKey.contains(issueKey);
 							Boolean b2 = sameIssueKey.contains(":");
 							Boolean b3 = sameIssueKey.equals(issueKey);
-							Boolean isIssue = sameIssue.getType().equals(KnowledgeType.ISSUE);
-							Boolean isDecision = sameIssue.getType().equals(KnowledgeType.DECISION);
+							Boolean isIssue = sameIssue.getType() == KnowledgeType.ISSUE;
+							Boolean isDecision = sameIssue.getType() == KnowledgeType.DECISION;
 							if ((b1 && b2 && !b3) && (isIssue || isDecision)) {
 								comments.add(sameIssue);
 							}
@@ -134,12 +137,8 @@ public class MarkdownCreator {
 
 	private void markdownAddComments(StringBuilder stringBuilder, List<KnowledgeElement> dkElements) {
 		dkElements.forEach(element -> {
-			String iconUrl = "decision.png";
-			if (element.getType().equals(KnowledgeType.ISSUE)) {
-				iconUrl = "issue.png";
-			}
-			stringBuilder.append("\t- ").append("![").append(element.getTypeAsString()).append("](").append(pathToIcons)
-					.append(iconUrl).append(")").append(element.getTypeAsString()).append(": ")
+			stringBuilder.append("\t- ").append("![").append(element.getTypeAsString()).append("](")
+					.append(element.getType().getIconUrl()).append(")").append(element.getTypeAsString()).append(": ")
 					.append(element.getSummary()).append("\n");
 		});
 	}
@@ -150,12 +149,12 @@ public class MarkdownCreator {
 	}
 
 	private void addAdditionalConfigurationToMarkDownString(StringBuilder stringBuilder,
-			List<String> additionalConfiguration) {
-		if (additionalConfiguration == null) {
+			List<String> additionalConfigurations) {
+		if (additionalConfigurations == null) {
 			return;
 		}
-		additionalConfiguration.forEach(type -> {
-			stringBuilder.append(AdditionalConfigurationOptions.getMarkdownOptionsString(type));
+		additionalConfigurations.forEach(configuration -> {
+			stringBuilder.append(AdditionalConfigurationOptions.getMarkdownInstruction(configuration));
 		});
 	}
 }

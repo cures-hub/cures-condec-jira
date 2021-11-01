@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -25,8 +26,7 @@ public class TestPostProposedKeys extends TestSetUp {
 	protected HttpServletRequest request;
 	private ReleaseNotesRest releaseNoteRest;
 	private String projectKey;
-	private HashMap<String, List<String>> keysForContent;
-	private HashMap<String, HashMap<String, List<String>>> postObject;
+	private Map<String, Map<String, List<String>>> postObject;
 
 	@Before
 	public void setUp() {
@@ -36,21 +36,20 @@ public class TestPostProposedKeys extends TestSetUp {
 		projectKey = "TEST";
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
-		keysForContent = new HashMap<String, List<String>>();
-		keysForContent.put(ReleaseNotesCategory.BUG_FIXES.toString(),
-				new ArrayList<String>(List.of("TEST-14", "TEST-30")));
+		Map<String, List<String>> keysForContent = new HashMap<>();
+		keysForContent.put(ReleaseNotesCategory.BUG_FIXES.toString(), new ArrayList<>(List.of("TEST-14", "TEST-30")));
 		keysForContent.put(ReleaseNotesCategory.NEW_FEATURES.toString(),
-				new ArrayList<String>(List.of("TEST-14", "TEST-30")));
+				new ArrayList<>(List.of("TEST-14", "TEST-30")));
 		keysForContent.put(ReleaseNotesCategory.IMPROVEMENTS.toString(),
-				new ArrayList<String>(List.of("TEST-14", "TEST-30")));
-		postObject = new HashMap<String, HashMap<String, List<String>>>();
+				new ArrayList<>(List.of("TEST-14", "TEST-30")));
+		postObject = new HashMap<>();
 		postObject.put("selectedKeys", keysForContent);
 		HashMap<String, List<String>> title = new HashMap<String, List<String>>();
 		List<String> titleArray = new ArrayList<String>();
 		titleArray.add("some great title");
 		title.put("id", titleArray);
 		postObject.put("title", title);
-		HashMap<String, List<String>> additionalConfiguration = new HashMap<String, List<String>>();
+		Map<String, List<String>> additionalConfiguration = new HashMap<>();
 		List<String> additionalConfigurationArray = AdditionalConfigurationOptions.toList();
 		additionalConfiguration.put("id", additionalConfigurationArray);
 		postObject.put("additionalConfiguration", additionalConfiguration);

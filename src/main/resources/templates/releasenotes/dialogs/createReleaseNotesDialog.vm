@@ -17,8 +17,8 @@
                 <form class="aui" id="configurationForm">
                     <h1>General</h1>
                     <div class="field-group">
-                        <label for="title">Title</label>
-                        <input class="text" id="title"/>
+                        <label for="release-notes-title">Title</label>
+                        <input class="text" id="release-notes-title"/>
                     </div>
                     <h1>Timerange</h1>
 

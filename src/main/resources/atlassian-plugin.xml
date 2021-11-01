@@ -262,11 +262,6 @@
 			Provides REST resources to manage decision knowledge.
 		</description>
 	</rest>
-	<rest name="Release Note REST" key="release-note-rest" path="/release-note" version="1.0">
-		<description>
-			Provides REST resources to manage Release Notes.
-		</description>
-	</rest>
 
 	<!-- Global Settings -->
 	<web-section key="condec-admin-section" name="Web Section Label for ConDec Plug-in Administration"

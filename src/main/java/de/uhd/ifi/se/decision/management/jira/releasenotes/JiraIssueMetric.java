@@ -11,7 +11,7 @@ public enum JiraIssueMetric {
 
 	@Override
 	public String toString() {
-		return this.name().toLowerCase(Locale.ENGLISH);
+		return name().toLowerCase();
 	}
 
 	public static JiraIssueMetric getJiraIssueMetric(String type) {
@@ -63,12 +63,10 @@ public enum JiraIssueMetric {
 	}
 
 	/**
-	 * Convert all metrics to strings.
-	 *
-	 * @return list of metrics as Strings.
+	 * @return list of all metrics as Strings.
 	 */
 	public static List<String> toList() {
-		List<String> criteriaTypes = new ArrayList<String>();
+		List<String> criteriaTypes = new ArrayList<>();
 		for (JiraIssueMetric criteriaType : JiraIssueMetric.values()) {
 			criteriaTypes.add(criteriaType.toString());
 		}
@@ -79,7 +77,7 @@ public enum JiraIssueMetric {
 	 * @return list of metrics.
 	 */
 	public static List<JiraIssueMetric> getOriginalList() {
-		return new ArrayList<JiraIssueMetric>(Arrays.asList(JiraIssueMetric.values()));
+		return new ArrayList<>(Arrays.asList(JiraIssueMetric.values()));
 	}
 
 }

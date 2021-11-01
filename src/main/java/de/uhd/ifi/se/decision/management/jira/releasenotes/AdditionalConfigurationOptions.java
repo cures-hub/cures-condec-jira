@@ -2,28 +2,23 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
- * Type of additional configuration options for release notes
+ * Additional configuration options for release notes creation.
  */
 public enum AdditionalConfigurationOptions {
 	INCLUDE_BREAKING_CHANGES, INCLUDE_BUG_FIXES, INCLUDE_DECISION_KNOWLEDGE, INCLUDE_EXTRA_LINK, INCLUDE_TEST_INSTRUCTIONS, INCLUDE_UPGRADE_GUIDE;
 
 	@Override
 	public String toString() {
-		return this.name().toLowerCase(Locale.ENGLISH);
+		return name().toLowerCase();
 	}
 
-	public String toUpperString() {
-		return this.name();
-	}
-
-	public static String getMarkdownOptionsString(String type) {
-		if (type == null) {
+	public static String getMarkdownInstruction(String configurationOptionAsString) {
+		if (configurationOptionAsString == null) {
 			return "";
 		}
-		switch (type.toLowerCase(Locale.ENGLISH)) {
+		switch (configurationOptionAsString.toLowerCase()) {
 		case "include_breaking_changes":
 			return "### Breaking Changes\n Add your breaking changes here\n";
 		case "include_extra_link":
@@ -38,16 +33,13 @@ public enum AdditionalConfigurationOptions {
 	}
 
 	/**
-	 * Converts all additional configuration options to a list of String.
-	 *
-	 * @return list additional configuration options as strings in upper case.
+	 * @return list of additional configuration options as strings in upper case.
 	 */
 	public static List<String> toList() {
-		ArrayList<String> configurationTypes = new ArrayList<String>();
+		List<String> configurationTypes = new ArrayList<>();
 		for (AdditionalConfigurationOptions type : AdditionalConfigurationOptions.values()) {
 			configurationTypes.add(type.name());
 		}
 		return configurationTypes;
 	}
-
 }

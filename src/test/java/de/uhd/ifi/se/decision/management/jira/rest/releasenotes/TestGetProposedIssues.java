@@ -45,7 +45,7 @@ public class TestGetProposedIssues extends TestSetUp {
 		SimpleDateFormat now = new SimpleDateFormat();
 		releaseNoteConfiguration.setStartDate(now.toString());
 		releaseNoteConfiguration.setEndDate(now.toString());
-		List<Integer> issueKeyList = new ArrayList<Integer>();
+		List<Integer> issueKeyList = new ArrayList<>();
 		issueKeyList.add(0);
 		issueKeyList.add(2);
 		issueKeyList.add(3);
@@ -94,7 +94,7 @@ public class TestGetProposedIssues extends TestSetUp {
 	@Test
 	public void testGetProposedIssues() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.getProposedIssues(request, projectKey, releaseNoteConfiguration).getStatus());
+				releaseNoteRest.proposeElements(request, projectKey, releaseNoteConfiguration).getStatus());
 	}
 
 }
