@@ -112,11 +112,14 @@ public class ReleaseNotesRest {
 		return Response.ok().build();
 	}
 
-	@Path("/getReleaseNote")
+	@Path("/getReleaseNotesById")
 	@GET
-	public Response getReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("id") long id) {
-		ReleaseNotes releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotes(id);
+	public Response getReleaseNotesById(@Context HttpServletRequest request, @QueryParam("id") long id) {
+		ReleaseNotes releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesById(id);
+		if (releaseNotes == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes for given id could not be found.")).build();
+		}
 		return Response.ok(releaseNotes).build();
 	}
 

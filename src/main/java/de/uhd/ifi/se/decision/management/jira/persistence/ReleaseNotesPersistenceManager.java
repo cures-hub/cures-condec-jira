@@ -18,14 +18,15 @@ import net.java.ao.Query;
  * @see ReleaseNotesInDatabase
  */
 public class ReleaseNotesPersistenceManager {
+
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	/**
-	 * Delete release notes
-	 *
 	 * @param id
+	 *            internal database id of the release notes.
 	 * @param user
-	 * @return
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if the release notes were successfully deleted.
 	 */
 	public static boolean deleteReleaseNotes(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
@@ -37,21 +38,6 @@ public class ReleaseNotesPersistenceManager {
 			isDeleted = ReleaseNotesInDatabase.deleteReleaseNotes(databaseEntry);
 		}
 		return isDeleted;
-	}
-
-	/**
-	 * Get release notes
-	 *
-	 * @param id
-	 * @return
-	 */
-	public static ReleaseNotes getReleaseNotes(long id) {
-		ReleaseNotes releaseNote = null;
-		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
-				Query.select().where("ID = ?", id))) {
-			releaseNote = new ReleaseNotes(databaseEntry);
-		}
-		return releaseNote;
 	}
 
 	/**
@@ -70,6 +56,17 @@ public class ReleaseNotesPersistenceManager {
 		setParameters(releaseNotes, databaseEntry, false);
 		databaseEntry.save();
 		return databaseEntry.getId();
+	}
+
+	private static void setParameters(ReleaseNotes releaseNotes, ReleaseNotesInDatabase databaseEntry,
+			boolean isUpdated) {
+		databaseEntry.setTitle(releaseNotes.getTitle());
+		databaseEntry.setContent(releaseNotes.getContent());
+		if (!isUpdated) {
+			databaseEntry.setStartDate(releaseNotes.getStartDate());
+			databaseEntry.setEndDate(releaseNotes.getEndDate());
+			databaseEntry.setProjectKey(releaseNotes.getProjectKey());
+		}
 	}
 
 	/**
@@ -96,6 +93,20 @@ public class ReleaseNotesPersistenceManager {
 	}
 
 	/**
+	 * @param id
+	 *            internal database id of the release notes.
+	 * @return release notes for the given id or null if non existing.
+	 */
+	public static ReleaseNotes getReleaseNotesById(long id) {
+		ReleaseNotes releaseNotes = null;
+		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
+				Query.select().where("ID = ?", id))) {
+			releaseNotes = new ReleaseNotes(databaseEntry);
+		}
+		return releaseNotes;
+	}
+
+	/**
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param searchTerm
@@ -110,16 +121,5 @@ public class ReleaseNotesPersistenceManager {
 			releaseNotes.add(new ReleaseNotes(databaseEntry));
 		}
 		return releaseNotes;
-	}
-
-	private static void setParameters(ReleaseNotes releaseNotes, ReleaseNotesInDatabase databaseEntry,
-			boolean isUpdated) {
-		databaseEntry.setTitle(releaseNotes.getTitle());
-		databaseEntry.setContent(releaseNotes.getContent());
-		if (!isUpdated) {
-			databaseEntry.setStartDate(releaseNotes.getStartDate());
-			databaseEntry.setEndDate(releaseNotes.getEndDate());
-			databaseEntry.setProjectKey(releaseNotes.getProjectKey());
-		}
 	}
 }

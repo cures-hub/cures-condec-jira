@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.releasenotes;
 import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +16,9 @@ import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCRUDReleaseNotes extends TestSetUp {
-	protected HttpServletRequest request;
+public class TestGetReleaseNotesById extends TestSetUp {
+	private HttpServletRequest request;
 	private ReleaseNotesRest releaseNotesRest;
-	private String projectKey;
 	private ReleaseNotes releaseNotes;
 
 	@Before
@@ -27,25 +26,25 @@ public class TestCRUDReleaseNotes extends TestSetUp {
 		releaseNotesRest = new ReleaseNotesRest();
 		init();
 		request = new MockHttpServletRequest();
-		projectKey = "TEST";
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 		releaseNotes = new ReleaseNotes();
 		releaseNotes.setTitle("some title");
 		releaseNotes.setContent("some short content");
+		releaseNotes.setProjectKey("TEST");
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetAllReleaseNotes() {
-		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNotesRest.getAllReleaseNotes(request, projectKey, "").getStatus());
+	public void testRequestValidReleaseNotesExisting() {
+		long databaseId = Long
+				.parseLong(releaseNotesRest.createReleaseNotes(request, releaseNotes).getEntity().toString());
+		assertEquals(Status.OK.getStatusCode(), releaseNotesRest.getReleaseNotesById(request, databaseId).getStatus());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetReleaseNote() {
-		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNotesRest.getReleaseNote(request, projectKey, releaseNotes.getId()).getStatus());
+	public void testRequestValidReleaseNotesNotExisting() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), releaseNotesRest.getReleaseNotesById(request, -1).getStatus());
 	}
 
 }

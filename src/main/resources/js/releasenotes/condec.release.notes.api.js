@@ -135,9 +135,8 @@
 	};
 
 	ConDecReleaseNotesAPI.prototype.getReleaseNotesById = function(id) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNote.json?projectKey="
-			+ projectKey + "&id=" + id);
-
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNotesById.json?"
+			+ "id=" + id);
 	};
 
 	ConDecReleaseNotesAPI.prototype.getAllReleaseNotes = function(query) {

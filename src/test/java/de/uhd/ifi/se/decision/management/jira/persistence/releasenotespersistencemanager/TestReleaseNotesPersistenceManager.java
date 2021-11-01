@@ -37,7 +37,7 @@ public class TestReleaseNotesPersistenceManager extends TestSetUp {
 	@NonTransactional
 	public void testCreateReleaseNote() {
 		long newId = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
-		ReleaseNotes newReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
+		ReleaseNotes newReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotesById(newId);
 		assertEquals(aVeryLongContent, newReleaseNote.getContent());
 	}
 
@@ -46,7 +46,7 @@ public class TestReleaseNotesPersistenceManager extends TestSetUp {
 	public void testDeleteReleaseNote() {
 		long newId = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		ReleaseNotesPersistenceManager.deleteReleaseNotes(newId, user);
-		assertEquals(null, ReleaseNotesPersistenceManager.getReleaseNotes(newId));
+		assertEquals(null, ReleaseNotesPersistenceManager.getReleaseNotesById(newId));
 	}
 
 	@Test
@@ -54,10 +54,10 @@ public class TestReleaseNotesPersistenceManager extends TestSetUp {
 	public void testUpdateReleaseNote() {
 		long newId = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		String someChangedContent = "some other content";
-		ReleaseNotes updateReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
+		ReleaseNotes updateReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotesById(newId);
 		updateReleaseNote.setContent(someChangedContent);
 		assertEquals(true, ReleaseNotesPersistenceManager.updateReleaseNotes(updateReleaseNote, user));
-		assertEquals(someChangedContent, ReleaseNotesPersistenceManager.getReleaseNotes(newId).getContent());
+		assertEquals(someChangedContent, ReleaseNotesPersistenceManager.getReleaseNotesById(newId).getContent());
 	}
 
 	@Test
