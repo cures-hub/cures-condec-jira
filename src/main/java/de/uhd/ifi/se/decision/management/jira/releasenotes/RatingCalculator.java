@@ -35,8 +35,7 @@ class RatingCalculator {
 	protected static EnumMap<JiraIssueMetric, ArrayList<Integer>> getFlatListOfValues(
 			List<ReleaseNotesIssueProposal> proposals) {
 
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = new EnumMap<JiraIssueMetric, ArrayList<Integer>>(
-				JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = new EnumMap<>(JiraIssueMetric.class);
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 
 		proposals.forEach(dkElement -> {
@@ -76,9 +75,9 @@ class RatingCalculator {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 		criteriaEnumList.forEach(criteria -> {
 			ArrayList<Integer> values = countValues.get(criteria);
-			ArrayList<ArrayList<Integer>> valuesInInterval = new ArrayList<ArrayList<Integer>>();
-			ArrayList<Integer> firstInterval = new ArrayList<Integer>();
-			ArrayList<Integer> secondInterval = new ArrayList<Integer>();
+			ArrayList<ArrayList<Integer>> valuesInInterval = new ArrayList<>();
+			ArrayList<Integer> firstInterval = new ArrayList<>();
+			ArrayList<Integer> secondInterval = new ArrayList<>();
 			if (values != null && values.size() > 0) {
 				// first interval
 				values.forEach(value -> {
@@ -91,8 +90,8 @@ class RatingCalculator {
 				});
 				valuesInInterval.add(firstInterval);
 				valuesInInterval.add(secondInterval);
-				ArrayList<Integer> mins = new ArrayList<Integer>();
-				ArrayList<Integer> maxs = new ArrayList<Integer>();
+				ArrayList<Integer> mins = new ArrayList<>();
+				ArrayList<Integer> maxs = new ArrayList<>();
 				if (valuesInInterval.get(0).size() > 0) {
 					mins.add(Collections.min(valuesInInterval.get(0)));
 					maxs.add(Collections.max(valuesInInterval.get(0)));
@@ -110,9 +109,9 @@ class RatingCalculator {
 
 	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(List<ReleaseNotesIssueProposal> proposals) {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
-		EnumMap<JiraIssueMetric, Integer> medians = new EnumMap<JiraIssueMetric, Integer>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, Integer> medians = new EnumMap<>(JiraIssueMetric.class);
 		criteriaEnumList.forEach(criteria -> {
-			ArrayList<Integer> flatList = new ArrayList<Integer>();
+			ArrayList<Integer> flatList = new ArrayList<>();
 			proposals.forEach(proposal -> {
 				flatList.add(proposal.getMetrics().get(criteria));
 			});

@@ -48,9 +48,9 @@ public class ReleaseNotesCreator {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 		// create plain array with no duplicates
-		List<String> usedKeys = new ArrayList<String>();
-		HashMap<String, Integer> reporterIssueCount = new HashMap<String, Integer>();
-		HashMap<String, Integer> resolverIssueCount = new HashMap<String, Integer>();
+		List<String> usedKeys = new ArrayList<>();
+		Map<String, Integer> reporterIssueCount = new HashMap<>();
+		Map<String, Integer> resolverIssueCount = new HashMap<>();
 		// for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element
 		// with the data
 		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();

@@ -13,7 +13,7 @@ public enum ReleaseNotesCategory {
 
 	@Override
 	public String toString() {
-		return this.name().toLowerCase(Locale.ENGLISH);
+		return name().toLowerCase();
 	}
 
 	public static ReleaseNotesCategory getTargetGroup(String type) {
@@ -54,7 +54,7 @@ public enum ReleaseNotesCategory {
 	 * @return list of Categories as Strings.
 	 */
 	public static List<String> toList() {
-		List<String> releaseNoteCategoryTypes = new ArrayList<String>();
+		List<String> releaseNoteCategoryTypes = new ArrayList<>();
 		for (ReleaseNotesCategory releaseNoteCategory : ReleaseNotesCategory.values()) {
 			releaseNoteCategoryTypes.add(releaseNoteCategory.toString());
 		}
@@ -65,8 +65,7 @@ public enum ReleaseNotesCategory {
 	 * @return EnumMap with Categories and false
 	 */
 	public static EnumMap<ReleaseNotesCategory, Boolean> toBooleanMap() {
-		EnumMap<ReleaseNotesCategory, Boolean> releaseNoteCategoryTypes = new EnumMap<ReleaseNotesCategory, Boolean>(
-				ReleaseNotesCategory.class);
+		EnumMap<ReleaseNotesCategory, Boolean> releaseNoteCategoryTypes = new EnumMap<>(ReleaseNotesCategory.class);
 		for (ReleaseNotesCategory releaseNoteCategory : ReleaseNotesCategory.values()) {
 			releaseNoteCategoryTypes.put(releaseNoteCategory, false);
 		}
@@ -77,7 +76,7 @@ public enum ReleaseNotesCategory {
 	 * @return list of categories.
 	 */
 	public static List<ReleaseNotesCategory> toOriginalList() {
-		List<ReleaseNotesCategory> releaseNoteCategoryTypes = new ArrayList<ReleaseNotesCategory>();
+		List<ReleaseNotesCategory> releaseNoteCategoryTypes = new ArrayList<>();
 		for (ReleaseNotesCategory releaseNoteCategory : ReleaseNotesCategory.values()) {
 			releaseNoteCategoryTypes.add(releaseNoteCategory);
 		}

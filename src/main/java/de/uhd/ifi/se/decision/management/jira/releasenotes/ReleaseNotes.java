@@ -37,8 +37,7 @@ public class ReleaseNotes {
 				dbEntry.getEndDate());
 	}
 
-	private ReleaseNotes(long id, String title, String projectKey, String content, String startDate,
-			String endDate) {
+	private ReleaseNotes(long id, String title, String projectKey, String content, String startDate, String endDate) {
 		this.id = id;
 		this.title = title;
 		this.projectKey = projectKey;
@@ -52,7 +51,7 @@ public class ReleaseNotes {
 	 */
 	@XmlElement(name = "id")
 	public long getId() {
-		return this.id;
+		return id;
 	}
 
 	/**
@@ -69,7 +68,7 @@ public class ReleaseNotes {
 	 */
 	@XmlElement(name = "title")
 	public String getTitle() {
-		return this.title;
+		return title;
 	}
 
 	/**
@@ -86,7 +85,7 @@ public class ReleaseNotes {
 	 */
 	@XmlElement(name = "startDate")
 	public String getStartDate() {
-		return this.startDate;
+		return startDate;
 	}
 
 	/**
@@ -103,7 +102,7 @@ public class ReleaseNotes {
 	 */
 	@XmlElement(name = "endDate")
 	public String getEndDate() {
-		return this.endDate;
+		return endDate;
 	}
 
 	/**
@@ -121,7 +120,7 @@ public class ReleaseNotes {
 	 */
 	@XmlElement(name = "projectKey")
 	public String getProjectKey() {
-		return this.projectKey;
+		return projectKey;
 	}
 
 	/**
@@ -139,7 +138,7 @@ public class ReleaseNotes {
 	 */
 	@XmlElement(name = "content")
 	public String getContent() {
-		return this.content;
+		return content;
 	}
 
 	/**

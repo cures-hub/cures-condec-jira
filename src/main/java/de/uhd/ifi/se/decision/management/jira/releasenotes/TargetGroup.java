@@ -10,7 +10,7 @@ public enum TargetGroup {
 
 	@Override
 	public String toString() {
-		return this.name().toLowerCase(Locale.ENGLISH);
+		return name().toLowerCase();
 	}
 
 	public static TargetGroup getTargetGroup(String type) {

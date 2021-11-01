@@ -31,7 +31,7 @@ public class ReleaseNotesConfiguration {
 	 * @return title of the release notes.
 	 */
 	public String getTitle() {
-		return this.title;
+		return title;
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class ReleaseNotesConfiguration {
 	 * @return startDate of the release notes.
 	 */
 	public String getStartDate() {
-		return this.startDate;
+		return startDate;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class ReleaseNotesConfiguration {
 	 * @return end date of the release notes.
 	 */
 	public String getEndDate() {
-		return this.endDate;
+		return endDate;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class ReleaseNotesConfiguration {
 	 * @return sprint id of the release notes.
 	 */
 	public String getSprintId() {
-		return this.sprintId;
+		return sprintId;
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class ReleaseNotesConfiguration {
 	 * @return targetGroup of the release notes.
 	 */
 	public TargetGroup getTargetGroup() {
-		return this.targetGroup;
+		return targetGroup;
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class ReleaseNotesConfiguration {
 	 * @return weight of JiraIssueMetric of the release notes.
 	 */
 	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeight() {
-		return this.jiraIssueMetric;
+		return jiraIssueMetric;
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class ReleaseNotesConfiguration {
 	 * @return list with mapped bug fix issues.
 	 */
 	public List<Integer> getBugFixMapping() {
-		return this.bugFixMapping;
+		return bugFixMapping;
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class ReleaseNotesConfiguration {
 	 * @return map with the additional configuration of the release notes.
 	 */
 	public EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration() {
-		return this.additionalConfiguration;
+		return additionalConfiguration;
 	}
 
 	/**
