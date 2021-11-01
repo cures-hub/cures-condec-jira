@@ -36,7 +36,7 @@
 	ConDecReleaseNotePage.prototype.getReleaseNotes = function () {
 		var searchTerm = $("#search-release-notes-input").val();
 		emptyTable();
-		conDecReleaseNotesAPI.getAllReleaseNotes(searchTerm).then(function(response){
+		conDecReleaseNotesAPI.getReleaseNotes(searchTerm).then(function(response){
 			if(response && response.length){
 				fillTable(response)
 			}else{

@@ -139,9 +139,9 @@
 			+ "id=" + id);
 	};
 
-	ConDecReleaseNotesAPI.prototype.getAllReleaseNotes = function(query) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getAllReleaseNotes.json?projectKey="
-			+ projectKey + "&query=" + query);
+	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function(searchTerm) {
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
+			+ projectKey + "&searchTerm=" + searchTerm);
 	};
 
 	/*

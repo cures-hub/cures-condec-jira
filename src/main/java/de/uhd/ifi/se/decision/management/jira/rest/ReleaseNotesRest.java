@@ -123,9 +123,9 @@ public class ReleaseNotesRest {
 		return Response.ok(releaseNotes).build();
 	}
 
-	@Path("/getAllReleaseNotes")
+	@Path("/getReleaseNotes")
 	@GET
-	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response getReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("searchTerm") String searchTerm) {
 		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesMatchingFilter(projectKey,
 				searchTerm);
