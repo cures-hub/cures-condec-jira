@@ -162,25 +162,6 @@ public class KnowledgePersistenceManager {
 	}
 
 	/**
-	 * @param documentationLocationIdentifier
-	 *            String identifier indicating the documentation location of
-	 *            knowledge (e.g., "i" for Jira issue).
-	 * @return persistence manager for a single documentation location. Returns the
-	 *         default persistence manager in case the documentation location cannot
-	 *         be found.
-	 * @see AbstractPersistenceManagerForSingleLocation
-	 */
-	public AbstractPersistenceManagerForSingleLocation getManagerForSingleLocation(
-			String documentationLocationIdentifier) {
-		if (documentationLocationIdentifier == null) {
-			return null;
-		}
-		DocumentationLocation documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		return getManagerForSingleLocation(documentationLocation);
-	}
-
-	/**
 	 * @param documentationLocation
 	 *            of knowledge.
 	 * @return persistence manager for a single documentation location. Returns the

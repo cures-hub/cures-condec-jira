@@ -668,13 +668,9 @@
 		saveButton.onclick = function() {
 			setButtonBusyAndDisabled(saveButton, true);
 			var releaseNote = { id: id, title: titleInput.value, content: editor.codemirror.getValue() };
-			conDecReleaseNotesAPI.updateReleaseNotes(releaseNote).then(function(response) {
-				if (response) {
-					fireChangeEvent();
-					AJS.dialog2(editDialog).hide();
-				} else {
-					throwAlert("Saving failed", "Could not save the release notes")
-				}
+			conDecReleaseNotesAPI.updateReleaseNotes(releaseNote).then(function() {
+				fireChangeEvent();
+				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
 				throwAlert("Saving failed", err.toString());
 			}).finally(function() {
@@ -682,7 +678,6 @@
 			});
 		};
 		cancelButton.onclick = function() {
-
 			AJS.dialog2(editDialog).hide();
 		};
 		deleteButton.onclick = function() {
