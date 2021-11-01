@@ -14,11 +14,15 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInD
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import net.java.ao.Query;
 
-
+/**
+ * Responsible to persist release notes with explicit decision knowledge into
+ * database.
+ * 
+ * @see ReleaseNotesInDatabase
+ */
 public class ReleaseNotesPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-
 
 	/**
 	 * Delete release notes
@@ -29,11 +33,13 @@ public class ReleaseNotesPersistenceManager {
 	 */
 	public static boolean deleteReleaseNotes(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
-			LOGGER.error("Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
+			LOGGER.error(
+					"Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
 			return false;
 		}
 		boolean isDeleted = false;
-		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("ID = ?", id))) {
+		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
+				Query.select().where("ID = ?", id))) {
 			isDeleted = ReleaseNotesInDatabase.deleteReleaseNotes(databaseEntry);
 		}
 		return isDeleted;
@@ -47,12 +53,12 @@ public class ReleaseNotesPersistenceManager {
 	 */
 	public static ReleaseNotes getReleaseNotes(long id) {
 		ReleaseNotes releaseNote = null;
-		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("ID = ?", id))) {
+		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
+				Query.select().where("ID = ?", id))) {
 			releaseNote = new ReleaseNotes(databaseEntry);
 		}
 		return releaseNote;
 	}
-
 
 	/**
 	 * Create Release Notes
@@ -83,7 +89,8 @@ public class ReleaseNotesPersistenceManager {
 			return false;
 		}
 		boolean isUpdated = false;
-		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("ID = ?", releaseNote.getId()))) {
+		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
+				Query.select().where("ID = ?", releaseNote.getId()))) {
 			setParameters(releaseNote, databaseEntry, true);
 			databaseEntry.save();
 			isUpdated = true;
@@ -92,25 +99,26 @@ public class ReleaseNotesPersistenceManager {
 		return isUpdated;
 	}
 
-	public static List<ReleaseNotes> getAllReleaseNotes(String projectKey,String query) {
+	public static List<ReleaseNotes> getAllReleaseNotes(String projectKey, String query) {
 		List<ReleaseNotes> result = new ArrayList<ReleaseNotes>();
-		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class, Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey,"%"+query+"%"))) {
+		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
+				Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey, "%" + query + "%"))) {
 			result.add(new ReleaseNotes(databaseEntry));
 		}
 		return result;
 	}
 
 	private static void setParameters(ReleaseNotes releaseNote, ReleaseNotesInDatabase dbEntry, Boolean update) {
-		//title
+		// title
 		dbEntry.setTitle(releaseNote.getTitle());
 		if (!update) {
-			//start date
+			// start date
 			dbEntry.setStartDate(releaseNote.getStartDate());
-			//end date
+			// end date
 			dbEntry.setEndDate(releaseNote.getEndDate());
-			//project key
+			// project key
 			dbEntry.setProjectKey(releaseNote.getProjectKey());
-			//content
+			// content
 		}
 		dbEntry.setContent(releaseNote.getContent());
 	}

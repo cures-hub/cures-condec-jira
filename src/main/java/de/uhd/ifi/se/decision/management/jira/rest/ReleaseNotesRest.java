@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -56,15 +57,14 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		HashMap<String, ArrayList<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator
-				.getMappedProposals();
+		Map<String, ArrayList<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
 
 		if (mappedProposals == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "No issues with the mapped types are resolved in this date range!"))
 					.build();
 		}
-		HashMap<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		result.put("proposals", mappedProposals);
 		result.put("additionalConfiguration", releaseNoteConfiguration.getAdditionalConfiguration());
 		result.put("title", releaseNoteConfiguration.getTitle());
@@ -77,9 +77,9 @@ public class ReleaseNotesRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			HashMap<String, HashMap<String, List<String>>> postObject) {
+			Map<String, Map<String, List<String>>> postObject) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		HashMap<String, List<String>> keysForContent = postObject.get("selectedKeys");
+		Map<String, List<String>> keysForContent = postObject.get("selectedKeys");
 		String title = postObject.get("title").get("id").get(0);
 		List<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
 		MarkdownCreator markdownCreator = new MarkdownCreator(user, projectKey, keysForContent, title,
@@ -88,16 +88,14 @@ public class ReleaseNotesRest {
 		// generate text string
 		String markDownString = markdownCreator.getMarkdownString();
 		// return text string
-		HashMap<String, String> result = new HashMap<String, String>();
-		result.put("markdown", markDownString);
-		return Response.ok(result).build();
+		return Response.ok(Map.of("markdown", markDownString)).build();
 	}
 
 	@Path("/createReleaseNote")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			HashMap<String, String> postObject) {
+			Map<String, String> postObject) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		String title = postObject.get("title");
 		String startDate = postObject.get("startDate");

@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import java.util.Locale;
-
 /**
- * Type of target groups for release notes
+ * Stakeholders who are interested in release notes.
  */
 public enum TargetGroup {
 	DEVELOPER, TESTER, ENDUSER;
@@ -13,17 +11,15 @@ public enum TargetGroup {
 		return name().toLowerCase();
 	}
 
-	public static TargetGroup getTargetGroup(String type) {
-		if (type == null) {
-			return TargetGroup.DEVELOPER;
+	public static TargetGroup getTargetGroup(String targetGroupAsString) {
+		if (targetGroupAsString == null) {
+			return DEVELOPER;
 		}
-		switch (type.toLowerCase(Locale.ENGLISH)) {
-		case "tester":
-			return TargetGroup.TESTER;
-		case "enduser":
-			return TargetGroup.ENDUSER;
-		default:
-			return TargetGroup.DEVELOPER;
+		for (TargetGroup targetGroup : TargetGroup.values()) {
+			if (targetGroupAsString.equalsIgnoreCase(targetGroup.name())) {
+				return targetGroup;
+			}
 		}
+		return DEVELOPER;
 	}
 }

@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -16,14 +16,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  * Class to generate the markdown string out of the selected jira-issue-keys
  */
 public class MarkdownCreator {
-	private final String pathToIcons = "https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/";
 	private final ApplicationUser user;
 	private final String projectKey;
 	private final List<String> additionalConfiguration;
-	private final HashMap<String, List<String>> keysForContent;
+	private final Map<String, List<String>> keysForContent;
 	private final String title;
 
-	public MarkdownCreator(ApplicationUser user, String projectKey, HashMap<String, List<String>> keysForContent2,
+	public MarkdownCreator(ApplicationUser user, String projectKey, Map<String, List<String>> keysForContent2,
 			String title, List<String> additionalConfiguration2) {
 		this.user = user;
 		this.projectKey = projectKey;
@@ -46,7 +45,7 @@ public class MarkdownCreator {
 		return elementsQueryLinked;
 	}
 
-	private String buildQueryFromIssueKeys(HashMap<String, List<String>> keysForContent) {
+	private String buildQueryFromIssueKeys(Map<String, List<String>> keysForContent) {
 		String result = "";
 		StringBuilder jql = new StringBuilder();
 
@@ -94,8 +93,9 @@ public class MarkdownCreator {
 				if (keysForContent.get(cat).contains(issue.getKey())) {
 					// add title once
 					if (!containsTitle.get(ReleaseNotesCategory.getTargetGroup(cat))) {
-						stringBuilder.append("## ").append(
-								ReleaseNotesCategory.getTargetGroupReadable(ReleaseNotesCategory.getTargetGroup(cat)))
+						stringBuilder.append("## ")
+								.append(ReleaseNotesCategory
+										.getTargetGroupReadable(ReleaseNotesCategory.getTargetGroup(cat)))
 								.append(" \n");
 						containsTitle.put(ReleaseNotesCategory.getTargetGroup(cat), true);
 					}
@@ -134,12 +134,8 @@ public class MarkdownCreator {
 
 	private void markdownAddComments(StringBuilder stringBuilder, List<KnowledgeElement> dkElements) {
 		dkElements.forEach(element -> {
-			String iconUrl = "decision.png";
-			if (element.getType().equals(KnowledgeType.ISSUE)) {
-				iconUrl = "issue.png";
-			}
-			stringBuilder.append("\t- ").append("![").append(element.getTypeAsString()).append("](").append(pathToIcons)
-					.append(iconUrl).append(")").append(element.getTypeAsString()).append(": ")
+			stringBuilder.append("\t- ").append("![").append(element.getTypeAsString()).append("](")
+					.append(element.getType().getIconUrl()).append(")").append(element.getTypeAsString()).append(": ")
 					.append(element.getSummary()).append("\n");
 		});
 	}
