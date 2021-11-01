@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		Map<String, ArrayList<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
+		Map<String, List<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
 
 		if (mappedProposals == null) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(
