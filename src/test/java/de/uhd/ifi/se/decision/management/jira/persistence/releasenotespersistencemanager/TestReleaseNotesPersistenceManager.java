@@ -36,7 +36,7 @@ public class TestReleaseNotesPersistenceManager extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCreateReleaseNote() {
-		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		long newId = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		ReleaseNotes newReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
 		assertEquals(aVeryLongContent, newReleaseNote.getContent());
 	}
@@ -44,7 +44,7 @@ public class TestReleaseNotesPersistenceManager extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDeleteReleaseNote() {
-		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		long newId = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		ReleaseNotesPersistenceManager.deleteReleaseNotes(newId, user);
 		assertEquals(null, ReleaseNotesPersistenceManager.getReleaseNotes(newId));
 	}
@@ -52,7 +52,7 @@ public class TestReleaseNotesPersistenceManager extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testUpdateReleaseNote() {
-		long newId = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		long newId = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		String someChangedContent = "some other content";
 		ReleaseNotes updateReleaseNote = ReleaseNotesPersistenceManager.getReleaseNotes(newId);
 		updateReleaseNote.setContent(someChangedContent);
@@ -63,10 +63,10 @@ public class TestReleaseNotesPersistenceManager extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetAllReleaseNote() {
-		ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		String someChangedContent = "some other content";
 		releaseNotes.setContent(someChangedContent);
-		ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		assertEquals(2, ReleaseNotesPersistenceManager.getReleaseNotesMatchingFilter(projectKey, "").size());
 	}
 

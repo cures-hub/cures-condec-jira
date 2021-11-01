@@ -91,7 +91,7 @@ public class ReleaseNotesRest {
 	@POST
 	public Response createReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
+		long id = ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, user);
 		if (id < 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Release notes could not be created.")).build();
@@ -102,8 +102,7 @@ public class ReleaseNotesRest {
 
 	@Path("/updateReleaseNotes")
 	@POST
-	public Response updateReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ReleaseNotes releaseNotes) {
+	public Response updateReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		boolean isUpdated = ReleaseNotesPersistenceManager.updateReleaseNotes(releaseNotes, user);
 		if (!isUpdated) {
@@ -131,12 +130,15 @@ public class ReleaseNotesRest {
 		return Response.ok(releaseNotes).build();
 	}
 
-	@Path("/deleteReleaseNote")
+	@Path("/deleteReleaseNotes")
 	@DELETE
-	public Response deleteReleaseNote(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("id") long id) {
+	public Response deleteReleaseNotes(@Context HttpServletRequest request, @QueryParam("id") long id) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		boolean isDeleted = ReleaseNotesPersistenceManager.deleteReleaseNotes(id, user);
-		return Response.ok(isDeleted).build();
+		if (!isDeleted) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes could not be deleted.")).build();
+		}
+		return Response.ok().build();
 	}
 }

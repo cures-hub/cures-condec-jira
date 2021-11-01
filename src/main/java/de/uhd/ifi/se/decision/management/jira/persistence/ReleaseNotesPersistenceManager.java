@@ -3,9 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -21,7 +18,6 @@ import net.java.ao.Query;
  * @see ReleaseNotesInDatabase
  */
 public class ReleaseNotesPersistenceManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	/**
@@ -33,8 +29,6 @@ public class ReleaseNotesPersistenceManager {
 	 */
 	public static boolean deleteReleaseNotes(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
-			LOGGER.error(
-					"Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
 			return false;
 		}
 		boolean isDeleted = false;
@@ -68,7 +62,7 @@ public class ReleaseNotesPersistenceManager {
 	 * @return internal database id of inserted release notes, -1 if insertion
 	 *         failed.
 	 */
-	public static long createReleaseNotes(ReleaseNotes releaseNotes, ApplicationUser user) {
+	public static long insertReleaseNotes(ReleaseNotes releaseNotes, ApplicationUser user) {
 		if (releaseNotes == null || releaseNotes.getProjectKey() == null || user == null) {
 			return -1;
 		}

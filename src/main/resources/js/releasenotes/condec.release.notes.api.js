@@ -177,13 +177,13 @@
 	};
 
 	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNotes.json?projectKey="
-			+ projectKey, releaseNotes)
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNotes.json",
+			releaseNotes)
 	};
 
-	ConDecReleaseNotesAPI.prototype.deleteReleaseNote = function(id) {
-		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/release-note/deleteReleaseNote.json?projectKey="
-			+ projectKey + "&id=" + id, null);
+	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
+		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/release-note/deleteReleaseNotes.json?"
+			+ "id=" + id, null);
 	};
 
 	global.conDecReleaseNotesAPI = new ConDecReleaseNotesAPI();

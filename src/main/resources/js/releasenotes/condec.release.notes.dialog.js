@@ -687,7 +687,7 @@
 		};
 		deleteButton.onclick = function() {
 			setButtonBusyAndDisabled(deleteButton, true);
-			conDecReleaseNotesAPI.deleteReleaseNote(id).then(function(response) {
+			conDecReleaseNotesAPI.deleteReleaseNotes(id).then(function(response) {
 				if (response) {
 					fireChangeEvent();
 					AJS.dialog2(editDialog).hide();

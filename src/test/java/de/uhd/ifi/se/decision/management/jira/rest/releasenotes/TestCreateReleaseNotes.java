@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCreateReleaseNotes extends TestSetUp {
-	protected HttpServletRequest request;
+	private HttpServletRequest request;
 	private ReleaseNotesRest releaseNotesRest;
 	private ReleaseNotes releaseNotes;
 
