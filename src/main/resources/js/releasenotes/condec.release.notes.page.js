@@ -34,9 +34,9 @@
 	};
 
 	ConDecReleaseNotePage.prototype.getReleaseNotes = function () {
-		var query = $("#search-release-notes-input").val();
+		var searchTerm = $("#search-release-notes-input").val();
 		emptyTable();
-		conDecReleaseNotesAPI.getAllReleaseNotes(query).then(function(response){
+		conDecReleaseNotesAPI.getAllReleaseNotes(searchTerm).then(function(response){
 			if(response && response.length){
 				fillTable(response)
 			}else{

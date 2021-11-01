@@ -12,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,10 @@ public class ReleaseNotesRest {
 	public Response createReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		long id = ReleaseNotesPersistenceManager.createReleaseNotes(releaseNotes, user);
-
+		if (id < 0) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes could not be created.")).build();
+		}
 		LOGGER.info("Release notes were created for project: " + releaseNotes.getProjectKey());
 		return Response.ok(id).build();
 	}
@@ -102,7 +106,11 @@ public class ReleaseNotesRest {
 			ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		boolean isUpdated = ReleaseNotesPersistenceManager.updateReleaseNotes(releaseNotes, user);
-		return Response.ok(isUpdated).build();
+		if (!isUpdated) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Release notes could not be updated.")).build();
+		}
+		return Response.ok().build();
 	}
 
 	@Path("/getReleaseNote")
@@ -116,8 +124,9 @@ public class ReleaseNotesRest {
 	@Path("/getAllReleaseNotes")
 	@GET
 	public Response getAllReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query) {
-		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getAllReleaseNotes(projectKey, query);
+			@QueryParam("searchTerm") String searchTerm) {
+		List<ReleaseNotes> releaseNotes = ReleaseNotesPersistenceManager.getReleaseNotesMatchingFilter(projectKey,
+				searchTerm);
 		LOGGER.info("Release notes were viewed for project: " + projectKey);
 		return Response.ok(releaseNotes).build();
 	}

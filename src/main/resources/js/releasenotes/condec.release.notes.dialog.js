@@ -668,7 +668,7 @@
 		saveButton.onclick = function() {
 			setButtonBusyAndDisabled(saveButton, true);
 			var releaseNote = { id: id, title: titleInput.value, content: editor.codemirror.getValue() };
-			conDecReleaseNotesAPI.updateReleaseNote(releaseNote).then(function(response) {
+			conDecReleaseNotesAPI.updateReleaseNotes(releaseNote).then(function(response) {
 				if (response) {
 					fireChangeEvent();
 					AJS.dialog2(editDialog).hide();

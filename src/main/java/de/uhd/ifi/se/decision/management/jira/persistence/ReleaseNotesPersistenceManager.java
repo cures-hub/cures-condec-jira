@@ -61,28 +61,30 @@ public class ReleaseNotesPersistenceManager {
 	}
 
 	/**
-	 * Create Release Notes
-	 *
-	 * @param releaseNote
+	 * @param releaseNotes
+	 *            {@link ReleaseNotes} to be created.
 	 * @param user
-	 * @return
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return internal database id of inserted release notes, -1 if insertion
+	 *         failed.
 	 */
-	public static long createReleaseNotes(ReleaseNotes releaseNote, ApplicationUser user) {
-		if (releaseNote == null || user == null) {
-			return 0;
+	public static long createReleaseNotes(ReleaseNotes releaseNotes, ApplicationUser user) {
+		if (releaseNotes == null || releaseNotes.getProjectKey() == null || user == null) {
+			return -1;
 		}
-		ReleaseNotesInDatabase dbEntry = ACTIVE_OBJECTS.create(ReleaseNotesInDatabase.class);
-		setParameters(releaseNote, dbEntry, false);
-		dbEntry.save();
-		return dbEntry.getId();
+		ReleaseNotesInDatabase databaseEntry = ACTIVE_OBJECTS.create(ReleaseNotesInDatabase.class);
+		setParameters(releaseNotes, databaseEntry, false);
+		databaseEntry.save();
+		return databaseEntry.getId();
 	}
 
 	/**
-	 * Update Release Notes
-	 *
 	 * @param releaseNotes
+	 *            {@link ReleaseNotes} to be updated by title and/or content.
 	 * @param user
-	 * @return
+	 *            authenticated Jira {@link ApplicationUser}.
+	 * @return true if the release notes were successfully updated. Only the title
+	 *         and/or textual content of the {@link ReleaseNotes} can be updated.
 	 */
 	public static boolean updateReleaseNotes(ReleaseNotes releaseNotes, ApplicationUser user) {
 		if (releaseNotes == null || user == null) {
@@ -99,10 +101,18 @@ public class ReleaseNotesPersistenceManager {
 		return isUpdated;
 	}
 
-	public static List<ReleaseNotes> getAllReleaseNotes(String projectKey, String query) {
-		List<ReleaseNotes> releaseNotes = new ArrayList<ReleaseNotes>();
+	/**
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param searchTerm
+	 *            for substring filtering.
+	 * @return all release notes with explicit decision knowledge for the Jira
+	 *         project.
+	 */
+	public static List<ReleaseNotes> getReleaseNotesMatchingFilter(String projectKey, String searchTerm) {
+		List<ReleaseNotes> releaseNotes = new ArrayList<>();
 		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey, "%" + query + "%"))) {
+				Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey, "%" + searchTerm + "%"))) {
 			releaseNotes.add(new ReleaseNotes(databaseEntry));
 		}
 		return releaseNotes;
