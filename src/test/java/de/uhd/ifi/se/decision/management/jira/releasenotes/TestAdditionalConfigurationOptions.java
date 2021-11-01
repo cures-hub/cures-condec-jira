@@ -13,12 +13,22 @@ public class TestAdditionalConfigurationOptions {
 	}
 
 	@Test
-	public void testToUpperString() {
+	public void testName() {
 		assertEquals("INCLUDE_BUG_FIXES", INCLUDE_BUG_FIXES.name());
 	}
 
 	@Test
 	public void testToList() {
 		assertEquals(6, AdditionalConfigurationOptions.toList().size());
+	}
+
+	@Test
+	public void testGetMarkdownInstructionNull() {
+		assertEquals("", AdditionalConfigurationOptions.getMarkdownInstruction(null));
+	}
+
+	@Test
+	public void testGetMarkdownInstructionUnknown() {
+		assertEquals("", AdditionalConfigurationOptions.getMarkdownInstruction("unknown"));
 	}
 }

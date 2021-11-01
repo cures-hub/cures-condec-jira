@@ -149,12 +149,12 @@ public class MarkdownCreator {
 	}
 
 	private void addAdditionalConfigurationToMarkDownString(StringBuilder stringBuilder,
-			List<String> additionalConfiguration) {
-		if (additionalConfiguration == null) {
+			List<String> additionalConfigurations) {
+		if (additionalConfigurations == null) {
 			return;
 		}
-		additionalConfiguration.forEach(type -> {
-			stringBuilder.append(AdditionalConfigurationOptions.getMarkdownOptionsString(type));
+		additionalConfigurations.forEach(configuration -> {
+			stringBuilder.append(AdditionalConfigurationOptions.getMarkdownInstruction(configuration));
 		});
 	}
 }

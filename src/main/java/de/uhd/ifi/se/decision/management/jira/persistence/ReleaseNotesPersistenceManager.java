@@ -80,18 +80,18 @@ public class ReleaseNotesPersistenceManager {
 	/**
 	 * Update Release Notes
 	 *
-	 * @param releaseNote
+	 * @param releaseNotes
 	 * @param user
 	 * @return
 	 */
-	public static boolean updateReleaseNotes(ReleaseNotes releaseNote, ApplicationUser user) {
-		if (releaseNote == null || user == null) {
+	public static boolean updateReleaseNotes(ReleaseNotes releaseNotes, ApplicationUser user) {
+		if (releaseNotes == null || user == null) {
 			return false;
 		}
 		boolean isUpdated = false;
 		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
-				Query.select().where("ID = ?", releaseNote.getId()))) {
-			setParameters(releaseNote, databaseEntry, true);
+				Query.select().where("ID = ?", releaseNotes.getId()))) {
+			setParameters(releaseNotes, databaseEntry, true);
 			databaseEntry.save();
 			isUpdated = true;
 		}
@@ -100,26 +100,22 @@ public class ReleaseNotesPersistenceManager {
 	}
 
 	public static List<ReleaseNotes> getAllReleaseNotes(String projectKey, String query) {
-		List<ReleaseNotes> result = new ArrayList<ReleaseNotes>();
+		List<ReleaseNotes> releaseNotes = new ArrayList<ReleaseNotes>();
 		for (ReleaseNotesInDatabase databaseEntry : ACTIVE_OBJECTS.find(ReleaseNotesInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey, "%" + query + "%"))) {
-			result.add(new ReleaseNotes(databaseEntry));
+			releaseNotes.add(new ReleaseNotes(databaseEntry));
 		}
-		return result;
+		return releaseNotes;
 	}
 
-	private static void setParameters(ReleaseNotes releaseNote, ReleaseNotesInDatabase dbEntry, Boolean update) {
-		// title
-		dbEntry.setTitle(releaseNote.getTitle());
-		if (!update) {
-			// start date
-			dbEntry.setStartDate(releaseNote.getStartDate());
-			// end date
-			dbEntry.setEndDate(releaseNote.getEndDate());
-			// project key
-			dbEntry.setProjectKey(releaseNote.getProjectKey());
-			// content
+	private static void setParameters(ReleaseNotes releaseNotes, ReleaseNotesInDatabase databaseEntry,
+			boolean isUpdated) {
+		databaseEntry.setTitle(releaseNotes.getTitle());
+		databaseEntry.setContent(releaseNotes.getContent());
+		if (!isUpdated) {
+			databaseEntry.setStartDate(releaseNotes.getStartDate());
+			databaseEntry.setEndDate(releaseNotes.getEndDate());
+			databaseEntry.setProjectKey(releaseNotes.getProjectKey());
 		}
-		dbEntry.setContent(releaseNote.getContent());
 	}
 }

@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.rest.releasenotes;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
@@ -11,64 +9,63 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCRUDReleaseNotes extends TestSetUp {
 	protected HttpServletRequest request;
-	private ReleaseNotesRest releaseNoteRest;
+	private ReleaseNotesRest releaseNotesRest;
 	private String projectKey;
-	private String releaseNoteContent;
-	private ReleaseNotes releaseNote;
-	private HashMap<String, String> postObject;
+	private ReleaseNotes releaseNotes;
 
 	@Before
 	public void setUp() {
-		releaseNoteRest = new ReleaseNotesRest();
+		releaseNotesRest = new ReleaseNotesRest();
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";
-
-		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
-		request.setAttribute("user", user);
-		releaseNoteContent = "some short content";
-		releaseNote = new ReleaseNotes();
-		postObject = new HashMap<String, String>();
-		postObject.put("title", "some title");
-		postObject.put("content", releaseNoteContent);
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+		releaseNotes = new ReleaseNotes();
+		releaseNotes.setTitle("some title");
+		releaseNotes.setContent("some short content");
 	}
 
 	@Test
+	@NonTransactional
 	public void testCreateReleaseNotes() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.createReleaseNote(request, projectKey, postObject).getStatus());
+				releaseNotesRest.createReleaseNotes(request, projectKey, releaseNotes).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testUpdateReleaseNotes() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.updateReleaseNote(request, projectKey, releaseNote).getStatus());
+				releaseNotesRest.updateReleaseNotes(request, projectKey, releaseNotes).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetAllReleaseNotes() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.getAllReleaseNotes(request, projectKey, "").getStatus());
+				releaseNotesRest.getAllReleaseNotes(request, projectKey, "").getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetReleaseNote() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.getReleaseNote(request, projectKey, releaseNote.getId()).getStatus());
+				releaseNotesRest.getReleaseNote(request, projectKey, releaseNotes.getId()).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testDeleteReleaseNotes() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.deleteReleaseNote(request, projectKey, releaseNote.getId()).getStatus());
+				releaseNotesRest.deleteReleaseNote(request, projectKey, releaseNotes.getId()).getStatus());
 	}
 }

@@ -14,7 +14,7 @@ public enum AdditionalConfigurationOptions {
 		return name().toLowerCase();
 	}
 
-	public static String getMarkdownOptionsString(String configurationOptionAsString) {
+	public static String getMarkdownInstruction(String configurationOptionAsString) {
 		if (configurationOptionAsString == null) {
 			return "";
 		}
