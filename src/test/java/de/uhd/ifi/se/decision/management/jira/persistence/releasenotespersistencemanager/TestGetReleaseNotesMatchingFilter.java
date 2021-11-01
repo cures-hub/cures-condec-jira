@@ -14,12 +14,10 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetReleaseNotesMatchingFilter extends TestSetUp {
 
-	private ReleaseNotes releaseNotes;
-
 	@Before
 	public void setUp() {
 		init();
-		releaseNotes = new ReleaseNotes();
+		ReleaseNotes releaseNotes = new ReleaseNotes();
 		releaseNotes.setContent("release notes text");
 		releaseNotes.setProjectKey("TEST");
 		ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, JiraUsers.SYS_ADMIN.getApplicationUser());

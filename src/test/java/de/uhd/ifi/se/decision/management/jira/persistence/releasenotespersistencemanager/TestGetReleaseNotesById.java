@@ -14,13 +14,11 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetReleaseNotesById extends TestSetUp {
 
-	private ReleaseNotes releaseNotes;
-
 	@Before
 	public void setUp() {
 		init();
 		assertNotNull(new ReleaseNotesPersistenceManager());
-		releaseNotes = new ReleaseNotes();
+		ReleaseNotes releaseNotes = new ReleaseNotes();
 		releaseNotes.setContent("release notes text");
 		releaseNotes.setProjectKey("TEST");
 		ReleaseNotesPersistenceManager.insertReleaseNotes(releaseNotes, JiraUsers.SYS_ADMIN.getApplicationUser());

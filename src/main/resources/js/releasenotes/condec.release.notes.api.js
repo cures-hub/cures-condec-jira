@@ -7,14 +7,14 @@
  * Is required by: conDecReleaseNotesPage
  * 
  * Is referenced in HTML by
- * templates/releaseNotesSettings.vm
+ * templates/settings/releaseNotesSettings.vm
  */
 (function(global) {
 
 	var projectKey = null;
 
 	var ConDecReleaseNotesAPI = function() {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest";
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/releasenotes";
 		projectKey = conDecAPI.getProjectKey();
 	};
 
@@ -65,7 +65,7 @@
 
 	ConDecReleaseNotesAPI.prototype.getProjectWideSelectedIssueTypes = function() {
 		return new Promise(function(resolve, reject) {
-			var preSelectedIssueUrl = conDecReleaseNotesAPI.restPrefix + "/config/releaseNoteMapping.json?projectKey=" + projectKey;
+			var preSelectedIssueUrl = conDecAPI.restPrefix + "/config/releaseNoteMapping.json?projectKey=" + projectKey;
 			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
 			issuePromise.then(function(result) {
 				if (result) {
@@ -113,7 +113,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecReleaseNotesAPI.prototype.setReleaseNoteMapping = function(releaseNoteCategory, projectKey, selectedIssueTypes) {
-		generalApi.postJSON(this.restPrefix + "/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function(
+		generalApi.postJSON(conDecAPI.restPrefix + "/config/setReleaseNoteMapping.json?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function(
 			error, response) {
 			if (error === null) {
 				conDecAPI.showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
@@ -125,8 +125,7 @@
 	 * external references: condec.release.notes.page
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function(callback) {
-		var projectKey = getProjectKey();
-		generalApi.getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
+		generalApi.getJSON(this.restPrefix + "/getReleaseNotes.json?projectKey="
 			+ projectKey, function(error, elements) {
 				if (error === null) {
 					callback(elements);
@@ -135,53 +134,43 @@
 	};
 
 	ConDecReleaseNotesAPI.prototype.getReleaseNotesById = function(id) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNotesById.json?"
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/getReleaseNotesById.json?"
 			+ "id=" + id);
 	};
 
+	/**
+	 * external references: condec.release.notes.page
+	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function(searchTerm) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/getReleaseNotes.json?projectKey="
 			+ projectKey + "&searchTerm=" + searchTerm);
 	};
 
-	/*
-	 * external references: condec.release.notes.page
-	 */
-	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function(callback) {
-		var projectKey = getProjectKey();
-		generalApi.getJSON(this.restPrefix + "/release-note/getReleaseNotes.json?projectKey="
-			+ projectKey, function(error, elements) {
-				if (error === null) {
-					callback(elements);
-				}
-			});
-	};
-
-	/*
+	/**
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.getProposedIssues = function(releaseNoteConfiguration) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/getProposedIssues.json?projectKey="
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/getProposedIssues.json?projectKey="
 			+ projectKey, releaseNoteConfiguration);
 	};
 
 	ConDecReleaseNotesAPI.prototype.postProposedKeys = function(proposedKeys) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/postProposedKeys.json?projectKey="
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/postProposedKeys.json?projectKey="
 			+ projectKey, proposedKeys);
 	};
 
 	ConDecReleaseNotesAPI.prototype.createReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/createReleaseNotes.json",
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/createReleaseNotes.json",
 			releaseNotes);
 	};
 
 	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNotes.json",
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/updateReleaseNotes.json",
 			releaseNotes);
 	};
 
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
-		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/release-note/deleteReleaseNotes.json?"
+		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/deleteReleaseNotes.json?"
 			+ "id=" + id, null);
 	};
 

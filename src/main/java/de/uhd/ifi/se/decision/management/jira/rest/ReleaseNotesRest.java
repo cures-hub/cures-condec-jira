@@ -34,58 +34,10 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesIssueProp
  * REST resource for the management of release notes with explicit decision
  * knowledge.
  */
-@Path("/release-note")
+@Path("/releasenotes")
 public class ReleaseNotesRest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesRest.class);
-
-	@Path("/getProposedIssues")
-	@POST
-	public Response getProposedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			ReleaseNotesConfiguration releaseNoteConfiguration) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
-				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
-		List<Issue> jiraIssuesMatchingQuery = queryHandler.getJiraIssuesFromQuery();
-		if (jiraIssuesMatchingQuery.size() == 0) {
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "No resolved issues were found in this date range!")).build();
-		}
-		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
-				releaseNoteConfiguration, user);
-		Map<String, List<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
-
-		if (mappedProposals == null) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "No issues with the mapped types are resolved in this date range!"))
-					.build();
-		}
-		Map<String, Object> result = new HashMap<>();
-		result.put("proposals", mappedProposals);
-		result.put("additionalConfiguration", releaseNoteConfiguration.getAdditionalConfiguration());
-		result.put("title", releaseNoteConfiguration.getTitle());
-		result.put("startDate", releaseNoteConfiguration.getStartDate());
-		result.put("endDate", releaseNoteConfiguration.getEndDate());
-		return Response.ok(result).build();
-	}
-
-	@Path("/postProposedKeys")
-	@POST
-	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			Map<String, Map<String, List<String>>> postObject) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		Map<String, List<String>> keysForContent = postObject.get("selectedKeys");
-		String title = postObject.get("title").get("id").get(0);
-		List<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
-		MarkdownCreator markdownCreator = new MarkdownCreator(user, projectKey, keysForContent, title,
-				additionalConfiguration);
-
-		// generate text string
-		String markDownString = markdownCreator.getMarkdownString();
-		// return text string
-		return Response.ok(Map.of("markdown", markDownString)).build();
-	}
 
 	@Path("/createReleaseNotes")
 	@POST
@@ -143,5 +95,53 @@ public class ReleaseNotesRest {
 					.entity(ImmutableMap.of("error", "Release notes could not be deleted.")).build();
 		}
 		return Response.ok().build();
+	}
+
+	@Path("/getProposedIssues")
+	@POST
+	public Response getProposedIssues(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			ReleaseNotesConfiguration releaseNoteConfiguration) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
+				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
+		List<Issue> jiraIssuesMatchingQuery = queryHandler.getJiraIssuesFromQuery();
+		if (jiraIssuesMatchingQuery.size() == 0) {
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "No resolved issues were found in this date range!")).build();
+		}
+		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
+				releaseNoteConfiguration, user);
+		Map<String, List<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
+
+		if (mappedProposals == null) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "No issues with the mapped types are resolved in this date range!"))
+					.build();
+		}
+		Map<String, Object> result = new HashMap<>();
+		result.put("proposals", mappedProposals);
+		result.put("additionalConfiguration", releaseNoteConfiguration.getAdditionalConfiguration());
+		result.put("title", releaseNoteConfiguration.getTitle());
+		result.put("startDate", releaseNoteConfiguration.getStartDate());
+		result.put("endDate", releaseNoteConfiguration.getEndDate());
+		return Response.ok(result).build();
+	}
+
+	@Path("/postProposedKeys")
+	@POST
+	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			Map<String, Map<String, List<String>>> postObject) {
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		Map<String, List<String>> keysForContent = postObject.get("selectedKeys");
+		String title = postObject.get("title").get("id").get(0);
+		List<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
+		MarkdownCreator markdownCreator = new MarkdownCreator(user, projectKey, keysForContent, title,
+				additionalConfiguration);
+
+		// generate text string
+		String markDownString = markdownCreator.getMarkdownString();
+		// return text string
+		return Response.ok(Map.of("markdown", markDownString)).build();
 	}
 }
