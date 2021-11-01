@@ -177,7 +177,7 @@
 
 	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/release-note/updateReleaseNotes.json",
-			releaseNotes)
+			releaseNotes);
 	};
 
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
