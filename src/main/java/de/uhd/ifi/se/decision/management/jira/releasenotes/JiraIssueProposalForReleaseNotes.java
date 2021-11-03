@@ -13,9 +13,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.priority.Priority;
-import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
@@ -23,19 +23,17 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * Model class for the release notes Jira issue proposal. It saves the knowledge
  * element, the final rating and the issue metrics.
  */
-public class ReleaseNotesIssueProposal {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesIssueProposal.class);
+public class JiraIssueProposalForReleaseNotes {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueProposalForReleaseNotes.class);
 
-	private KnowledgeElement knowledgeElement;
-
+	private Issue jiraIssue;
 	private EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics;
 	private double rating;
 
-	public ReleaseNotesIssueProposal(KnowledgeElement element, int countDecisionKnowledge) {
-		this.knowledgeElement = element;
-		// set default values
+	public JiraIssueProposalForReleaseNotes(Issue jiraIssue) {
+		this.jiraIssue = jiraIssue;
 		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();
-		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, countDecisionKnowledge);
+		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, 0);
 	}
 
 	/**
@@ -43,7 +41,7 @@ public class ReleaseNotesIssueProposal {
 	 */
 	@XmlElement(name = "decisionKnowledgeElement")
 	public KnowledgeElement getDecisionKnowledgeElement() {
-		return knowledgeElement;
+		return new KnowledgeElement(jiraIssue);
 	}
 
 	/**
@@ -51,8 +49,8 @@ public class ReleaseNotesIssueProposal {
 	 *            of the ReleaseNoteIssueProposal.
 	 */
 	@JsonProperty("decisionKnowledgeElement")
-	public void setDecisionKnowledgeElement(KnowledgeElement decisionKnowledgeElement) {
-		this.knowledgeElement = decisionKnowledgeElement;
+	public void setDecisionKnowledgeElement(Issue decisionKnowledgeElement) {
+		this.jiraIssue = decisionKnowledgeElement;
 	}
 
 	/**
@@ -155,68 +153,49 @@ public class ReleaseNotesIssueProposal {
 
 	/**
 	 * Gets the total count of created issues of the issue reporter and sets the
-	 * experienceReporter criteria of the ReleaseNoteIssueProposal. The existing
-	 * Reporter count HashMap is used to avoid duplicated equal JQL queries. The
-	 * result may differ, depending of the logged-in user and his permissions.
+	 * experienceReporter criteria of the ReleaseNoteIssueProposal.
 	 *
-	 * @param issue
+	 * @param jiraIssue
 	 *            of the associated DecisionKnowledgeElement
 	 * @param existingReporterCount
 	 *            HashMap to save JQL results
 	 * @param user
 	 *            Application user which makes the request
 	 */
-	public void getAndSetExperienceReporter(Issue issue, ApplicationUser user) {
-		// first check if user was already checked
-		SearchService searchProvider = ComponentAccessor.getComponentOfType(SearchService.class);
-		String reporterId = issue.getReporterId();
-		if (reporterId == null) {
-			reporterId = issue.getReporter().getKey();
-		}
+	public void calculateReporterExperience(Issue jiraIssue, ApplicationUser user) {
+		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		int countReporter = 0;
-		JqlQueryBuilder builder = JqlQueryBuilder.newBuilder();
-		builder.where().reporterUser(reporterId);
 		try {
-			countReporter = Math.toIntExact(searchProvider.searchCount(user, builder.buildQuery()));
-		} catch (SearchException e) {
-			LOGGER.error(e.getMessage());
+			Query query = JqlQueryBuilder.newBuilder().where().reporterUser(jiraIssue.getReporterId()).buildQuery();
+			countReporter = (int) searchService.searchCount(user, query);
+		} catch (Exception e) {
+			LOGGER.debug(e.getMessage());
 		}
 		getMetrics().put(JiraIssueMetric.EXPERIENCE_REPORTER, countReporter);
 	}
 
 	/**
 	 * Gets the total count of resolved issues of the issue resolver and sets the
-	 * experienceResolver criteria of the ReleaseNoteIssueProposal. The existing
-	 * Resolver count HashMap is used to avoid duplicated equal JQL queries. The
-	 * result may differ, depending of the logged-in user and his permissions.
+	 * experienceResolver criteria of the ReleaseNoteIssueProposal.
 	 *
-	 * @param issue
+	 * @param jiraIssue
 	 *            of the associated DecisionKnowledgeElement
 	 * @param existingResolverCount
 	 *            HashMap to save JQL results
 	 * @param user
 	 *            Application user which makes the request
 	 */
-	public void getAndSetExperienceResolver(Issue issue, ApplicationUser user) {
-		// the resolver is most of the times the last assigned user
-		JqlQueryBuilder builderResolver = JqlQueryBuilder.newBuilder();
+	public void calculateResolverExperience(Issue jiraIssue, ApplicationUser user) {
 		SearchService searchProvider = ComponentAccessor.getComponentOfType(SearchService.class);
 
-		String assigneeId = issue.getAssigneeId();
-		// not all issues have assigneeId, if it is null use the reporterId
-		if (assigneeId == null) {
-			assigneeId = issue.getReporterId();
-			if (assigneeId == null) {
-				assigneeId = issue.getReporter().getKey();
-			}
-		}
-		// first check if user was already checked
+		String assigneeId = jiraIssue.getAssigneeId();
 		int countResolver = 0;
-		builderResolver.where().status("resolved").and().assigneeUser(assigneeId);
 		try {
-			countResolver = Math.toIntExact(searchProvider.searchCount(user, builderResolver.buildQuery()));
-		} catch (SearchException e) {
-			LOGGER.error(e.getMessage());
+			Query query = JqlQueryBuilder.newBuilder().where().status("resolved").and().assigneeUser(assigneeId)
+					.buildQuery();
+			countResolver = (int) searchProvider.searchCount(user, query);
+		} catch (Exception e) {
+			LOGGER.debug(e.getMessage());
 		}
 		getMetrics().put(JiraIssueMetric.EXPERIENCE_RESOLVER, countResolver);
 	}

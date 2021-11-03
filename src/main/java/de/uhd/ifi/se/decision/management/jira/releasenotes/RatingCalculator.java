@@ -33,7 +33,7 @@ class RatingCalculator {
 	 * @return
 	 */
 	protected static EnumMap<JiraIssueMetric, List<Integer>> getFlatListOfValues(
-			List<ReleaseNotesIssueProposal> proposals) {
+			List<JiraIssueProposalForReleaseNotes> proposals) {
 
 		EnumMap<JiraIssueMetric, List<Integer>> countValues = new EnumMap<>(JiraIssueMetric.class);
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
@@ -106,7 +106,7 @@ class RatingCalculator {
 		});
 	}
 
-	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(List<ReleaseNotesIssueProposal> proposals) {
+	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(List<JiraIssueProposalForReleaseNotes> proposals) {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 		EnumMap<JiraIssueMetric, Integer> medians = new EnumMap<>(JiraIssueMetric.class);
 		criteriaEnumList.forEach(criteria -> {

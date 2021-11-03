@@ -13,13 +13,11 @@ import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-
 /**
  * Class to compute the metrics for the proposals and to compare the ratings.
  */
 public class ReleaseNotesCreator {
-	private List<ReleaseNotesIssueProposal> proposals;
+	private List<JiraIssueProposalForReleaseNotes> proposals;
 	private final List<Issue> jiraIssuesMatchingQuery;
 	private final ReleaseNotesConfiguration config;
 	private final ApplicationUser user;
@@ -31,7 +29,7 @@ public class ReleaseNotesCreator {
 		this.user = user;
 	}
 
-	public Map<String, List<ReleaseNotesIssueProposal>> getMappedProposals() {
+	public Map<String, List<JiraIssueProposalForReleaseNotes>> getMappedProposals() {
 		proposals = setMetrics();
 		compareProposals(proposals);
 		return mapProposals(proposals);
@@ -40,41 +38,19 @@ public class ReleaseNotesCreator {
 	/**
 	 * Gather priority metrics for the Release Note Issue Proposal sets Proposals
 	 */
-	private List<ReleaseNotesIssueProposal> setMetrics() {
-		List<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<>();
-
-		List<String> usedKeys = new ArrayList<>();
-		// for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element
-		// with the data
-		Map<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
+	private List<JiraIssueProposalForReleaseNotes> setMetrics() {
+		List<JiraIssueProposalForReleaseNotes> releaseNoteIssueProposals = new ArrayList<>();
 
 		for (Issue jiraIssue : jiraIssuesMatchingQuery) {
-			KnowledgeElement element = new KnowledgeElement(jiraIssue);
-			// add key to used keys
-			usedKeys.add(element.getKey());
-			// create Release note issue proposal with the element and the count of
-			// associated decision knowledge
-			// check if DK or Comment
-			ReleaseNotesIssueProposal proposal = new ReleaseNotesIssueProposal(element, 0);
+			JiraIssueProposalForReleaseNotes proposal = new JiraIssueProposalForReleaseNotes(jiraIssue);
 			proposal.getAndSetPriority(jiraIssue);
 			proposal.getAndSetCountOfComments(jiraIssue);
 			proposal.getAndSetSizeOfSummary();
 			proposal.getAndSetSizeOfDescription();
 			proposal.getAndSetDaysToCompletion(jiraIssue);
-			proposal.getAndSetExperienceReporter(jiraIssue, user);
-			proposal.getAndSetExperienceResolver(jiraIssue, user);
+			proposal.calculateReporterExperience(jiraIssue, user);
+			proposal.calculateResolverExperience(jiraIssue, user);
 			releaseNoteIssueProposals.add(proposal);
-		}
-
-		// now check DK element links
-		for (Map.Entry<String, Integer> entry : dkLinkedCount.entrySet()) {
-			String key = entry.getKey();
-			Integer value = entry.getValue();
-			releaseNoteIssueProposals.forEach(proposal -> {
-				if (proposal.getDecisionKnowledgeElement().getKey().equals(key)) {
-					proposal.getMetrics().put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, value);
-				}
-			});
 		}
 		return releaseNoteIssueProposals;
 	}
@@ -89,7 +65,7 @@ public class ReleaseNotesCreator {
 	 * 
 	 * @param proposals2
 	 */
-	private void compareProposals(List<ReleaseNotesIssueProposal> proposals) {
+	private void compareProposals(List<JiraIssueProposalForReleaseNotes> proposals) {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 
 		// find median
@@ -159,13 +135,13 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private Map<String, List<ReleaseNotesIssueProposal>> mapProposals(List<ReleaseNotesIssueProposal> proposals) {
+	private Map<String, List<JiraIssueProposalForReleaseNotes>> mapProposals(List<JiraIssueProposalForReleaseNotes> proposals) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-		Map<String, List<ReleaseNotesIssueProposal>> resultMap = new HashMap<>();
-		List<ReleaseNotesIssueProposal> bugs = new ArrayList<>();
-		List<ReleaseNotesIssueProposal> features = new ArrayList<>();
-		List<ReleaseNotesIssueProposal> improvements = new ArrayList<>();
+		Map<String, List<JiraIssueProposalForReleaseNotes>> resultMap = new HashMap<>();
+		List<JiraIssueProposalForReleaseNotes> bugs = new ArrayList<>();
+		List<JiraIssueProposalForReleaseNotes> features = new ArrayList<>();
+		List<JiraIssueProposalForReleaseNotes> improvements = new ArrayList<>();
 		var ref = new Object() {
 			Boolean hasResult = false;
 		};
@@ -195,9 +171,9 @@ public class ReleaseNotesCreator {
 		if (!ref.hasResult) {
 			return null;
 		}
-		Comparator<ReleaseNotesIssueProposal> compareByRating = new Comparator<>() {
+		Comparator<JiraIssueProposalForReleaseNotes> compareByRating = new Comparator<>() {
 			@Override
-			public int compare(ReleaseNotesIssueProposal o1, ReleaseNotesIssueProposal o2) {
+			public int compare(JiraIssueProposalForReleaseNotes o1, JiraIssueProposalForReleaseNotes o2) {
 				Double rating1 = o1.getRating();
 				Double rating2 = o2.getRating();
 				return rating2.compareTo(rating1);

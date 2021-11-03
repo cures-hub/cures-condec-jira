@@ -17,12 +17,12 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestReleaseNotesIssueProposal extends TestSetUp {
 	private long idOfDKElement;
-	private ReleaseNotesIssueProposal proposal;
+	private JiraIssueProposalForReleaseNotes proposal;
 	private double rating;
 	private Issue issue;
 	private CommentManager commentManager;
@@ -32,11 +32,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	public void setUp() {
 		init();
 		idOfDKElement = 14;
-		KnowledgeElement dkElement = new KnowledgeElement();
-		dkElement.setId(idOfDKElement);
-		dkElement.setDescription("this is a test helloo");
-		dkElement.setSummary("this is a summary test helloo");
-		proposal = new ReleaseNotesIssueProposal(dkElement, 3);
+		proposal = new JiraIssueProposalForReleaseNotes(JiraIssues.getJiraIssueByKey("TEST-14"));
 		rating = 54.21;
 		proposal.setRating(rating);
 		// get managers
@@ -66,15 +62,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeElement() {
-		assertEquals(idOfDKElement, proposal.getDecisionKnowledgeElement().getId());
-	}
-
-	@Test
-	public void testSetDecisionKnowledgeElement() {
-		KnowledgeElement dkElement2 = new KnowledgeElement();
-		dkElement2.setId(15);
-		proposal.setDecisionKnowledgeElement(dkElement2);
-		assertEquals(15, proposal.getDecisionKnowledgeElement().getId());
+		assertEquals(idOfDKElement, (long) proposal.getDecisionKnowledgeElement().getId());
 	}
 
 	@Test
@@ -118,7 +106,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	@Test
 	public void testGetAndSetSizeOfSummary() {
 		proposal.getAndSetSizeOfSummary();
-		assertEquals(6, proposal.getMetrics().get(JiraIssueMetric.SIZE_SUMMARY), 0.0);
+		assertEquals(5, proposal.getMetrics().get(JiraIssueMetric.SIZE_SUMMARY), 0.0);
 
 	}
 
@@ -137,7 +125,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	// @todo fix this test should be 1 as a mockIssue was created
 	@Test
 	public void testGetAndSetExperienceReporter() {
-		proposal.getAndSetExperienceReporter(issue, user);
+		proposal.calculateReporterExperience(issue, user);
 		assertEquals(0, proposal.getMetrics().get(JiraIssueMetric.EXPERIENCE_REPORTER), 0.0);
 	}
 
@@ -145,7 +133,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	// @todo set mockissue to status resolved
 	@Test
 	public void testGetAndSetExperienceResolver() {
-		proposal.getAndSetExperienceResolver(issue, user);
+		proposal.calculateResolverExperience(issue, user);
 		assertEquals(0, proposal.getMetrics().get(JiraIssueMetric.EXPERIENCE_RESOLVER), 0.0);
 	}
 
