@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -141,4 +142,8 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 		assertFalse(project.getGitConfiguration().isPostFeatureBranchCommitsActivated());
 	}
 
+	@Test
+	public void testGetReleaseNotesConfiguration() {
+		assertNotNull(project.getReleaseNotesConfiguration());
+	}
 }

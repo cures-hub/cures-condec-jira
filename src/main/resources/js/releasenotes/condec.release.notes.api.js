@@ -17,10 +17,98 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/releasenotes";
 		projectKey = conDecAPI.getProjectKey();
 	};
+	
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.getReleaseNotesConfiguration = function() {
+		return new Promise(function(resolve, reject) {
+			var preSelectedIssueUrl = conDecReleaseNotesAPI.restPrefix + "/configuration?projectKey=" + projectKey;
+			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
+			issuePromise.then(function(result) {
+				if (result) {
+					resolve(result);
+				} else {
+					reject();
+				}
+			}).catch(function(err) {
+				reject(err);
+			})
+		})
+	};
 
+	/**
+	 * external references: template/settings/releaseNotesSettings.vm
+	 */
+	ConDecReleaseNotesAPI.prototype.saveReleaseNotesConfiguration = function(projectKey, releaseNotesConfig) {
+		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig, 
+				function(error, response) {
+			if (error === null) {
+				conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
+			}
+		});
+	};
+
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.getReleaseNotesById = function(id) {
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/" + id);
+	};
+
+	/**
+	 * external references: condec.release.notes.page
+	 */
+	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function(searchTerm) {
+		return generalApi.getJSONReturnPromise(this.restPrefix + "?projectKey="
+			+ projectKey + "&searchTerm=" + searchTerm);
+	};
+
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.proposeElements = function(relaseNotesConfiguration) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/propose-elements?projectKey="
+			+ projectKey, relaseNotesConfiguration);
+	};
+
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.postProposedKeys = function(proposedKeys) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/postProposedKeys?projectKey="
+			+ projectKey, proposedKeys);
+	};
+
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.createReleaseNotes = function(releaseNotes) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/create",
+			releaseNotes);
+	};
+
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/update",
+			releaseNotes);
+	};
+
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
+		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete/" + id, null);
+	};
+	
+	/**
+	 * external references: condec.release.notes.dialog
+	 * 
+	 * @return all Jira issue types for a project.
+	 */
 	ConDecReleaseNotesAPI.prototype.getIssueTypes = function() {
-		// first we need the boards then we can get the sprints for each
-		// board
 		return new Promise(function(resolve, reject) {
 			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
 			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -33,10 +121,10 @@
 					if (correctIssueTypes && correctIssueTypes.length) {
 						resolve(correctIssueTypes);
 					} else {
-						reject("No issue types could be found for this project");
+						reject("No Jira issue types could be found for this project");
 					}
 				} else {
-					reject("No Projects were found.");
+					reject("No Jira projects were found.");
 				}
 
 			}).catch(function(err) {
@@ -45,9 +133,12 @@
 		})
 	};
 
+	/**
+	 * external references: condec.release.notes.dialog
+	 * 
+	 * @return releases for a Jira project.
+	 */
 	ConDecReleaseNotesAPI.prototype.getReleases = function() {
-		// first we need the boards then we can get the Sprints for each
-		// board
 		return new Promise(function(resolve, reject) {
 			var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
 			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
@@ -62,29 +153,13 @@
 			})
 		})
 	};
-
-	ConDecReleaseNotesAPI.prototype.getProjectWideSelectedIssueTypes = function() {
-		return new Promise(function(resolve, reject) {
-			var preSelectedIssueUrl = conDecAPI.restPrefix + "/config/releaseNoteMapping?projectKey=" + projectKey;
-			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
-			issuePromise.then(function(result) {
-				if (result) {
-					resolve(result);
-				} else {
-					reject();
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
-	};
-
-	/*
+	
+	/**
 	 * external references: condec.release.notes.dialog
+	 * 
+	 * @return sprints for the Jira project. Finds the board(s) first, then the sprints for the board(s).
 	 */
 	ConDecReleaseNotesAPI.prototype.getSprintsByProject = function() {
-		// first we need the boards then we can get the Sprints for each
-		// board
 		return new Promise(function(resolve, reject) {
 			var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
 			var boardPromise = generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl);
@@ -107,58 +182,6 @@
 				reject(err);
 			})
 		})
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecReleaseNotesAPI.prototype.setReleaseNoteMapping = function(releaseNoteCategory, projectKey, selectedIssueTypes) {
-		generalApi.postJSON(conDecAPI.restPrefix + "/config/setReleaseNoteMapping?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
-			}
-		});
-	};
-
-	ConDecReleaseNotesAPI.prototype.getReleaseNotesById = function(id) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/" + id);
-	};
-
-	/**
-	 * external references: condec.release.notes.page
-	 */
-	ConDecReleaseNotesAPI.prototype.getReleaseNotes = function(searchTerm) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "?projectKey="
-			+ projectKey + "&searchTerm=" + searchTerm);
-	};
-
-	/**
-	 * external references: condec.release.notes.dialog
-	 */
-	ConDecReleaseNotesAPI.prototype.getProposedIssues = function(relaseNotesConfiguration) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/propose-elements?projectKey="
-			+ projectKey, relaseNotesConfiguration);
-	};
-
-	ConDecReleaseNotesAPI.prototype.postProposedKeys = function(proposedKeys) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/postProposedKeys?projectKey="
-			+ projectKey, proposedKeys);
-	};
-
-	ConDecReleaseNotesAPI.prototype.createReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/create",
-			releaseNotes);
-	};
-
-	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/update",
-			releaseNotes);
-	};
-
-	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
-		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete?"
-			+ "id=" + id, null);
 	};
 
 	global.conDecReleaseNotesAPI = new ConDecReleaseNotesAPI();

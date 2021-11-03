@@ -22,10 +22,10 @@ public class TestUserContextInformationProvider extends TestSetUp {
 
 	@Test
 	public void testSameCreatorAndReporter() {
-		assertEquals(0.6,
+		assertEquals(0.9,
 				userContextInformationProvider
 						.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getDecision()).getValue(),
-				0.01);
+				0.1);
 	}
 
 	@Test

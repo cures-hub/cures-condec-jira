@@ -34,7 +34,7 @@ public class MockSearchService implements SearchService {
 			throws SearchException {
 		List<Issue> jiraIssues = new ArrayList<Issue>();
 		if (query == null || query.getQueryString() == null
-				|| query.getQueryString().equals("project=UNKNOWNPROJECT")) {
+				|| query.getQueryString().contains("project=UNKNOWNPROJECT")) {
 			return new SearchResults<Issue>(jiraIssues, 0, 0, 0);
 		}
 		jiraIssues.addAll(JiraIssues.getTestJiraIssues());
@@ -49,7 +49,7 @@ public class MockSearchService implements SearchService {
 
 	@Override
 	public long searchCount(ApplicationUser applicationUser, Query query) throws SearchException {
-		return 0;
+		return 1;
 	}
 
 	@Override

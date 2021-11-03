@@ -13,7 +13,7 @@ import net.java.ao.Query;
 
 /**
  * Responsible to persist release notes with explicit decision knowledge into
- * database.
+ * database and to retrieve existing release notes from database.
  * 
  * @see ReleaseNotesInDatabase
  */
@@ -23,7 +23,8 @@ public class ReleaseNotesPersistenceManager {
 
 	/**
 	 * @param id
-	 *            internal database id of the release notes.
+	 *            internal database id of the {@link ReleaseNotes}, i.e. the value
+	 *            of {@link ReleaseNotes#getId()}.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return true if the release notes were successfully deleted.
@@ -42,7 +43,7 @@ public class ReleaseNotesPersistenceManager {
 
 	/**
 	 * @param releaseNotes
-	 *            {@link ReleaseNotes} to be created.
+	 *            {@link ReleaseNotes} to be created without database id set.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @return internal database id of inserted release notes, -1 if insertion
@@ -71,11 +72,13 @@ public class ReleaseNotesPersistenceManager {
 
 	/**
 	 * @param releaseNotes
-	 *            {@link ReleaseNotes} to be updated by title and/or content.
+	 *            {@link ReleaseNotes} to be updated by title and/or content. The
+	 *            database id must be set, i.e. {@link ReleaseNotes#getId()} must be
+	 *            > 0. Only the title and/or textual content of the
+	 *            {@link ReleaseNotes} can be updated.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
-	 * @return true if the release notes were successfully updated. Only the title
-	 *         and/or textual content of the {@link ReleaseNotes} can be updated.
+	 * @return true if the release notes were successfully updated.
 	 */
 	public static boolean updateReleaseNotes(ReleaseNotes releaseNotes, ApplicationUser user) {
 		if (releaseNotes == null || user == null) {
@@ -110,7 +113,8 @@ public class ReleaseNotesPersistenceManager {
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param searchTerm
-	 *            for substring filtering.
+	 *            for substring filtering so that only the release notes that match
+	 *            the term are returned.
 	 * @return all release notes with explicit decision knowledge for the Jira
 	 *         project.
 	 */

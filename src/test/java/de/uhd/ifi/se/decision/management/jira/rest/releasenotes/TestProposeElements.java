@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfigura
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestGetProposedIssues extends TestSetUp {
+public class TestProposeElements extends TestSetUp {
 	protected HttpServletRequest request;
 	private ReleaseNotesRest releaseNoteRest;
 	private String projectKey;
@@ -95,6 +96,12 @@ public class TestGetProposedIssues extends TestSetUp {
 	public void testGetProposedIssues() {
 		assertEquals(Response.Status.OK.getStatusCode(),
 				releaseNoteRest.proposeElements(request, projectKey, releaseNoteConfiguration).getStatus());
+	}
+
+	@Test
+	public void testProjectUnknown() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				releaseNoteRest.proposeElements(request, "UNKNOWNPROJECT", releaseNoteConfiguration).getStatus());
 	}
 
 }

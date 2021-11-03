@@ -12,7 +12,6 @@
 		var configurationSubmitButton = document.getElementById("create-release-note-submit-button");
 		var issueSelectSubmitButton = document.getElementById("create-release-note-submit-issues-button");
 		var saveContentButton = document.getElementById("create-release-note-submit-content");
-		var loader = document.getElementById("createReleaseNoteDialogLoader");
 		var useSprintSelect = document.getElementById("useSprint");
 		var titleInput = document.getElementById("title");
 		var sprintOptions = document.getElementById("selectSprints");
@@ -27,9 +26,9 @@
 
 		// add task prioritisation
 		var criteria = [
-			{ title: "#Decision Knowledge", id: "count_decision_knowledge" },
+			{ title: "#Decision Knowledge", id: "decision_knowledge_count" },
 			{ title: "Priority", id: "priority" },
-			{ title: "#Comments", id: "count_comments" },
+			{ title: "#Comments", id: "comment_count" },
 			{ title: "Words Description", id: "size_description" },
 			{ title: "Words Summary", id: "size_summary" },
 			{ title: "Days to completion", id: "days_completion" },
@@ -175,10 +174,10 @@
 			var issueTypePromise = new Promise(function(resolve, reject) {
 				conDecReleaseNotesAPI.getIssueTypes()
 					.then(function(issueTypes) {
-						conDecReleaseNotesAPI.getProjectWideSelectedIssueTypes().then(function(preSelectedIssueTypes) {
-							resolve({ issueTypes: issueTypes, preSelectedIssueTypes: preSelectedIssueTypes });
+						conDecReleaseNotesAPI.getReleaseNotesConfiguration().then(function(releaseNotesConfig) {
+							resolve({ issueTypes: issueTypes, releaseNotesConfig: releaseNotesConfig });
 						}).catch(function() {
-							resolve({ issueTypes: issueTypes, preSelectedIssueTypes: null });
+							resolve({ issueTypes: issueTypes, releaseNotesConfig: null });
 						});
 					}).catch(function(err) {
 						reject(err);
@@ -186,8 +185,8 @@
 			}).then(function(values) {
 				// set issue types
 				var issueTypes = values.issueTypes;
-				var preSelectedIssueTypes = values.preSelectedIssueTypes;
-				manageIssueTypes(issueTypes, preSelectedIssueTypes);
+				var releaseNotesConfig = values.releaseNotesConfig;
+				manageIssueTypes(issueTypes, releaseNotesConfig);
 			}).catch(function(err) {
 				throwAlert("No issue-types could be loaded", "This won't be working without Jira-Issues associated to a project: " + err);
 			});
@@ -229,7 +228,7 @@
 				})
 		}
 
-		function manageIssueTypes(issueTypes, preSelectedIssueTypes) {
+		function manageIssueTypes(issueTypes, releaseNotesConfig) {
 			if (issueTypes && issueTypes.length) {
 				// empty lists
 				var bugSelector = $("#multipleBugs");
@@ -238,7 +237,7 @@
 				bugSelector.empty();
 				featureSelector.empty();
 				improvementSelector.empty();
-				console.log(preSelectedIssueTypes);
+				console.log(releaseNotesConfig);
 				issueTypes.map(function(issueType) {
 					var bugSelected = false;
 					var bugString = '<option value="' + issueType.id + '"';
@@ -246,15 +245,15 @@
 					var featureString = '<option value="' + issueType.id + '"';
 					var improvementSelected = false;
 					var improvementString = '<option value="' + issueType.id + '"';
-					if (preSelectedIssueTypes) {
-						if (preSelectedIssueTypes.bug_fixes) {
-							bugSelected = preSelectedIssueTypes.bug_fixes.indexOf(issueType.name) > -1;
+					if (releaseNotesConfig) {
+						if (releaseNotesConfig.jiraIssueTypesForBugFixes) {
+							bugSelected = releaseNotesConfig.jiraIssueTypesForBugFixes.indexOf(issueType.name) > -1;
 						}
-						if (preSelectedIssueTypes.new_features) {
-							featureSelected = preSelectedIssueTypes.new_features.indexOf(issueType.name) > -1;
+						if (releaseNotesConfig.jiraIssueTypesForNewFeatures) {
+							featureSelected = releaseNotesConfig.jiraIssueTypesForNewFeatures.indexOf(issueType.name) > -1;
 						}
-						if (preSelectedIssueTypes.improvements) {
-							improvementSelected = preSelectedIssueTypes.improvements.indexOf(issueType.name) > -1;
+						if (releaseNotesConfig.jiraIssueTypesForImprovements) {
+							improvementSelected = releaseNotesConfig.jiraIssueTypesForImprovements.indexOf(issueType.name) > -1;
 						}
 					}
 					if (bugSelected) {
@@ -440,7 +439,7 @@
 			// set button busy and disabled
 			setButtonBusyAndDisabled(configurationSubmitButton, true);
 			getAdditionalConfiguration();
-			var jiraIssueMetric = getjiraIssueMetric(criteria);
+			var jiraIssueMetricWeights = getjiraIssueMetric(criteria);
 			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
@@ -457,10 +456,10 @@
 				featureMapping: features,
 				improvementMapping: improvements,
 				additionalConfiguration: additionalConfiguration,
-				jiraIssueMetric: jiraIssueMetric
+				jiraIssueMetricWeights: jiraIssueMetricWeights
 			};
 
-			conDecReleaseNotesAPI.getProposedIssues(configuration).then(function(response) {
+			conDecReleaseNotesAPI.proposeElements(configuration).then(function(response) {
 
 				if (response) {
 					// change tab
@@ -515,9 +514,9 @@
 					"</tr></thead>";
 				var tableRows = "";
 				issues.map(function(issue) {
-					var expander = "<div id='expanderOfRating_" + category + issue.decisionKnowledgeElement.key + "' class='aui-expander-content'>" +
+					var expander = "<div id='expanderOfRating_" + category + issue.element.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
-						"<li>#Comments: " + issue.jiraIssueMetrics.COUNT_COMMENTS + "</li>" +
+						"<li>#Comments: " + issue.jiraIssueMetrics.element + "</li>" +
 						"<li>#Decision Knowledge: " + issue.jiraIssueMetrics.COUNT_DECISION_KNOWLEDGE + "</li>" +
 						"<li>Days Completion: " + issue.jiraIssueMetrics.DAYS_COMPLETION + "</li>" +
 						"<li>Exp. Reporter: " + issue.jiraIssueMetrics.EXPERIENCE_REPORTER + "</li>" +
@@ -527,13 +526,13 @@
 						"<li>Summary Size: " + issue.jiraIssueMetrics.SIZE_SUMMARY + "</li>" +
 						"</ul>" +
 						"</div>" +
-						"<a data-replace-text='" + issue.rating + " less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + issue.decisionKnowledgeElement.key + "'>" + issue.rating + " details</a>";
+						"<a data-replace-text='" + issue.rating + " less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + issue.element.key + "'>" + issue.rating + " details</a>";
 					var tableRow = "<tr>" +
-						"<td><input class='checkbox includeInReleaseNote_" + category + "' checked type='checkbox' name='useSprint' id='includeInReleaseNote_" + issue.decisionKnowledgeElement.key + "'></td>" +
+						"<td><input class='checkbox includeInReleaseNote_" + category + "' checked type='checkbox' name='useSprint' id='includeInReleaseNote_" + issue.element.key + "'></td>" +
 						"<td>" + expander + "</td>" +
-						"<td><a target='_blank' href='" + issue.decisionKnowledgeElement.url + "'>" + issue.decisionKnowledgeElement.key + "</a></td>" +
-						"<td>" + issue.decisionKnowledgeElement.summary + "</td>" +
-						"<td>" + issue.decisionKnowledgeElement.type + "</td>" +
+						"<td><a target='_blank' href='" + issue.element.url + "'>" + issue.element.key + "</a></td>" +
+						"<td>" + issue.element.summary + "</td>" +
+						"<td>" + issue.element.type + "</td>" +
 						"</tr>";
 					tableRows += tableRow;
 				});
@@ -682,16 +681,11 @@
 		};
 		deleteButton.onclick = function() {
 			setButtonBusyAndDisabled(deleteButton, true);
-			conDecReleaseNotesAPI.deleteReleaseNotes(id).then(function(response) {
-				if (response) {
-					fireChangeEvent();
-					AJS.dialog2(editDialog).hide();
-				} else {
-					throwAlert("Deleting failed", "The release notes could not be deleted");
-				}
+			conDecReleaseNotesAPI.deleteReleaseNotes(id).then(function() {
+				fireChangeEvent();
+				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
 				throwAlert("Deleting failed", err.toString());
-
 			}).finally(function() {
 				setButtonBusyAndDisabled(deleteButton, false);
 			});

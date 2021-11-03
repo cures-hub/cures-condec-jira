@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +35,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersisten
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 
 /**
  * REST resource for basic plug-in configuration (see
@@ -308,32 +304,6 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		return Response.ok(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
-	}
-
-	@Path("/setReleaseNoteMapping")
-	@POST
-	public Response setReleaseNoteMapping(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("releaseNoteCategory") ReleaseNotesCategory category, List<String> selectedIssueNames) {
-		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		ConfigPersistenceManager.setReleaseNoteMapping(projectKey, category, selectedIssueNames);
-		return Response.ok().build();
-	}
-
-	@Path("/releaseNoteMapping")
-	@GET
-	public Response getReleaseNoteMapping(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Map<ReleaseNotesCategory, List<String>> mapping = new HashMap<>();
-		ReleaseNotesCategory.toOriginalList().forEach(category -> mapping.put(category,
-				ConfigPersistenceManager.getReleaseNoteMapping(projectKey, category)));
-		return Response.ok(mapping).build();
 	}
 
 	/**

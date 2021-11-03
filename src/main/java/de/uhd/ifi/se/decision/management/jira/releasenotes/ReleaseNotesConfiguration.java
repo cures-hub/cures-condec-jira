@@ -1,12 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+
 /**
- * Models release notes configuration.
+ * Contains the configuration details for the release notes creation for one
+ * Jira project (see {@link DecisionKnowledgeProject}).
  */
 public class ReleaseNotesConfiguration {
 	private String title;
@@ -14,17 +20,21 @@ public class ReleaseNotesConfiguration {
 	private String endDate;
 	private String sprintId;
 	private TargetGroup targetGroup;
-	private EnumMap<JiraIssueMetric, Double> jiraIssueMetric;
+	private transient EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
 	private List<Integer> bugFixMapping;
 	private List<Integer> featureMapping;
 	private List<Integer> improvementMapping;
-	private EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
+	private transient EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
+	private List<String> jiraIssueTypesForImprovements;
+	private List<String> jiraIssueTypesForBugFixes;
+	private List<String> jiraIssueTypesForNewFeatures;
 
-	// This default constructor is necessary for the JSON string to object mapping.
-	// Do not delete it!
 	public ReleaseNotesConfiguration() {
 		this.targetGroup = TargetGroup.getTargetGroup("");
-		this.jiraIssueMetric = JiraIssueMetric.toDoubleEnumMap();
+		this.jiraIssueMetricWeights = JiraIssueMetric.toEnumMap();
+		jiraIssueTypesForImprovements = new ArrayList<>();
+		jiraIssueTypesForBugFixes = new ArrayList<>();
+		jiraIssueTypesForNewFeatures = new ArrayList<>();
 	}
 
 	/**
@@ -53,7 +63,7 @@ public class ReleaseNotesConfiguration {
 	 * @param startDate
 	 *            of the release notes.
 	 */
-	@JsonProperty("startDate")
+	@JsonProperty
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
@@ -69,7 +79,7 @@ public class ReleaseNotesConfiguration {
 	 * @param endDate
 	 *            of the release notes.
 	 */
-	@JsonProperty("endDate")
+	@JsonProperty
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
@@ -85,7 +95,7 @@ public class ReleaseNotesConfiguration {
 	 * @param sprintId
 	 *            of the release notes.
 	 */
-	@JsonProperty("sprintId")
+	@JsonProperty
 	public void setSprintId(String sprintId) {
 		this.sprintId = sprintId;
 	}
@@ -101,25 +111,26 @@ public class ReleaseNotesConfiguration {
 	 * @param targetGroup
 	 *            of the release notes.
 	 */
-	@JsonProperty("targetGroup")
+	@JsonProperty
 	public void setTargetGroup(TargetGroup targetGroup) {
 		this.targetGroup = targetGroup;
 	}
 
 	/**
-	 * @return weight of JiraIssueMetric of the release notes.
+	 * @return weights of {@link JiraIssueMetric}s used for Jira issue rating in
+	 *         release notes.
 	 */
-	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeight() {
-		return jiraIssueMetric;
+	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeights() {
+		return jiraIssueMetricWeights;
 	}
 
 	/**
 	 * @param issueMetricWeight
 	 *            of the release notes.
 	 */
-	@JsonProperty("jiraIssueMetric")
-	public void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeight) {
-		this.jiraIssueMetric = jiraIssueMetricWeight;
+	@JsonProperty
+	public void setJiraIssueMetricWeights(EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights) {
+		this.jiraIssueMetricWeights = jiraIssueMetricWeights;
 	}
 
 	/**
@@ -133,7 +144,7 @@ public class ReleaseNotesConfiguration {
 	 * @param bugFixMapping
 	 *            list with mapped bug fix issues of the release notes.
 	 */
-	@JsonProperty("bugFixMapping")
+	@JsonProperty
 	public void setBugFixMapping(List<Integer> bugFixMapping) {
 		this.bugFixMapping = bugFixMapping;
 	}
@@ -149,7 +160,7 @@ public class ReleaseNotesConfiguration {
 	 * @param featureMapping
 	 *            list with mapped bug fix issues of the release note.
 	 */
-	@JsonProperty("featureMapping")
+	@JsonProperty
 	public void setFeatureMapping(List<Integer> featureMapping) {
 		this.featureMapping = featureMapping;
 	}
@@ -165,7 +176,7 @@ public class ReleaseNotesConfiguration {
 	 * @param improvementMapping
 	 *            list with mapped bug fix issues of the release notes.
 	 */
-	@JsonProperty("improvementMapping")
+	@JsonProperty
 	public void setImprovementMapping(List<Integer> improvementMapping) {
 		this.improvementMapping = improvementMapping;
 	}
@@ -181,9 +192,39 @@ public class ReleaseNotesConfiguration {
 	 * @param additionalConfiguration
 	 *            map with the additional configuration of the release notes.
 	 */
-	@JsonProperty("additionalConfiguration")
+	@JsonProperty
 	public void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration) {
 		this.additionalConfiguration = additionalConfiguration;
+	}
+
+	@XmlElement
+	public List<String> getJiraIssueTypesForImprovements() {
+		return jiraIssueTypesForImprovements;
+	}
+
+	@XmlElement
+	public List<String> getJiraIssueTypesForBugFixes() {
+		return jiraIssueTypesForBugFixes;
+	}
+
+	@XmlElement
+	public List<String> getJiraIssueTypesForNewFeatures() {
+		return jiraIssueTypesForNewFeatures;
+	}
+
+	@JsonProperty
+	public void setJiraIssueTypesForImprovements(List<String> jiraIssueTypesForImprovements) {
+		this.jiraIssueTypesForImprovements = jiraIssueTypesForImprovements;
+	}
+
+	@JsonProperty
+	public void setJiraIssueTypesForBugFixes(List<String> jiraIssueTypesForBugFixes) {
+		this.jiraIssueTypesForBugFixes = jiraIssueTypesForBugFixes;
+	}
+
+	@JsonProperty
+	public void setJiraIssueTypesForNewFeatures(List<String> jiraIssueTypesForNewFeatures) {
+		this.jiraIssueTypesForNewFeatures = jiraIssueTypesForNewFeatures;
 	}
 
 }

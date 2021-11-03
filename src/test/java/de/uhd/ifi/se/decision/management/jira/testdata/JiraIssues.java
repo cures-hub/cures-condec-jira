@@ -128,7 +128,7 @@ public class JiraIssues {
 	public static MutableIssue createJiraIssue(int id, IssueType issueType, Project project, String summary,
 			ApplicationUser user) {
 		MutableIssue issue = new MockIssue(id, project.getKey() + "-" + id);
-		((MockIssue) issue).setProjectId(project.getId());
+		issue.setProjectId(project.getId());
 		issue.setProjectObject(project);
 		issue.setIssueType(issueType);
 		issue.setSummary(summary);
@@ -139,6 +139,8 @@ public class JiraIssues {
 		Status status = new MockStatus("1", "Unresolved");
 		issue.setStatus(status);
 		issue.setReporter(user);
+		issue.setReporterId(user.getUsername());
+		issue.setAssignee(user);
 		return issue;
 	}
 

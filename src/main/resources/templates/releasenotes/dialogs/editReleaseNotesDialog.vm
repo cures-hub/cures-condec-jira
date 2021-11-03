@@ -4,31 +4,25 @@
         <h2 id="edit-release-note-header" class="aui-dialog2-header-main">Edit Release Note</h2>
         <button class="aui-close-button" type="button" id="link-dialog-cancel-icon" aria-label="close"></button>
     </header>
-
     <form class="aui">
         <div class="field-group">
             <label for="edit-release-note-dialog-title">Title</label>
-            <input class="text" type="text" id="edit-release-note-dialog-title" name="edit-release-note-dialog-title" title="Title">
-
+            <input class="text" type="text" id="edit-release-note-dialog-title" 
+            	name="edit-release-note-dialog-title" title="Title">
         </div>
     </form>
         <div id="edit-release-note-dialog-content" class="aui-dialog2-content">
-
             <div id="edit-release-note-dialog-contain-editor">
                 <textarea id="edit-release-note-textarea"></textarea>
-
             </div>
         </div>
     <aui-inline-dialog id="delete-confirmation">
         <button id="deleteReleaseNote" class="aui-button aui-button-primary">Delete permanently!</button>
-
     </aui-inline-dialog>
     <footer class="aui-dialog2-footer">
         <button data-aui-trigger aria-controls="delete-confirmation" class="aui-button aui-button-compact">
             Delete
         </button>
-
-
         <div class="aui-dialog2-footer-actions">
             <button id="edit-release-note-dialog-export-as-markdown-button" class="aui-button">Download as Markdown</button>
             <button id="edit-release-note-dialog-export-as-word-button" class="aui-button">Download as Document</button>

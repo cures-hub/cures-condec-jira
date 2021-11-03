@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -13,109 +14,23 @@ import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-
 /**
  * Class to compute the metrics for the proposals and to compare the ratings.
  */
 public class ReleaseNotesCreator {
-	private List<ReleaseNotesIssueProposal> proposals;
-	private final List<Issue> elementsMatchingQuery;
+	private List<ReleaseNotesEntry> proposals;
 	private final ReleaseNotesConfiguration config;
-	private final ApplicationUser user;
 
 	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNotesConfiguration releaseNoteConfiguration,
 			ApplicationUser user) {
-		this.elementsMatchingQuery = jiraIssuesMatchingQuery;
 		this.config = releaseNoteConfiguration;
-		this.user = user;
+		this.proposals = jiraIssuesMatchingQuery.stream()
+				.map(jiraIssue -> new ReleaseNotesEntry(jiraIssue, user)).collect(Collectors.toList());
 	}
 
-	public Map<String, List<ReleaseNotesIssueProposal>> getMappedProposals() {
-		setMetrics();
-		compareProposals();
-		return mapProposals();
-	}
-
-	/**
-	 * Gather priority metrics for the Release Note Issue Proposal
-	 * <p>
-	 * sets Proposals
-	 */
-	private void setMetrics() {
-		List<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<>();
-		// set up components we need to gather metrics
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-
-		// create plain array with no duplicates
-		List<String> usedKeys = new ArrayList<>();
-		Map<String, Integer> reporterIssueCount = new HashMap<>();
-		Map<String, Integer> resolverIssueCount = new HashMap<>();
-		// for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element
-		// with the data
-		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
-
-		for (int i = 0; i < elementsMatchingQuery.size(); i++) {
-			KnowledgeElement dkElement = new KnowledgeElement(elementsMatchingQuery.get(i));
-			// add key to used keys
-			usedKeys.add(dkElement.getKey());
-			// create Release note issue proposal with the element and the count of
-			// associated decision knowledge
-			// check if DK or Comment
-			ReleaseNotesIssueProposal proposal = new ReleaseNotesIssueProposal(dkElement, 0);
-			String dkKey = dkElement.getKey();
-
-			// check if it is a dk Issue or just a DK comment
-			// comments are not rated, just counted
-			if (dkKey.contains(":")) {
-				String[] parts = dkKey.split(":");
-				Integer currentCount = dkLinkedCount.get(parts[0]);
-				if (currentCount != null) {
-					currentCount += 1;
-					dkLinkedCount.put(parts[0], currentCount);
-				} else {
-					dkLinkedCount.put(parts[0], 1);
-				}
-			} else {
-				Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
-
-				// set priority
-				proposal.getAndSetPriority(issue);
-
-				// set count of comments
-				proposal.getAndSetCountOfComments(issue);
-
-				// set size summary
-				proposal.getAndSetSizeOfSummary();
-
-				// set size description
-				proposal.getAndSetSizeOfDescription();
-
-				// set days to complete
-				proposal.getAndSetDaysToCompletion(issue);
-
-				// set experience reporter
-				proposal.getAndSetExperienceReporter(issue, reporterIssueCount, user);
-
-				// set experience resolver
-				proposal.getAndSetExperienceResolver(issue, resolverIssueCount, user);
-
-				// add to results
-				releaseNoteIssueProposals.add(proposal);
-			}
-		}
-
-		// now check DK element links
-		for (Map.Entry<String, Integer> entry : dkLinkedCount.entrySet()) {
-			String key = entry.getKey();
-			Integer value = entry.getValue();
-			releaseNoteIssueProposals.forEach(proposal -> {
-				if (proposal.getDecisionKnowledgeElement().getKey().equals(key)) {
-					proposal.getMetrics().put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, value);
-				}
-			});
-		}
-		proposals = releaseNoteIssueProposals;
+	public Map<String, List<ReleaseNotesEntry>> getMappedProposals() {
+		compareProposals(proposals);
+		return mapProposals(proposals);
 	}
 
 	/**
@@ -125,16 +40,18 @@ public class ReleaseNotesCreator {
 	 * https://stackoverflow.com/questions/5294955/how-to-scale-down-a-range-of-numbers-with-a-known-min-and-max-value
 	 * alternative algorithm could be gaussian standard distribution other
 	 * alternative could be median-interval-separation
+	 * 
+	 * @param proposals2
 	 */
-	private void compareProposals() {
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+	private void compareProposals(List<ReleaseNotesEntry> proposals) {
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 
 		// find median
 		EnumMap<JiraIssueMetric, Integer> medianOfProposals = RatingCalculator.getMedianOfProposals(proposals);
 
 		// for each criteria create a list of integers, so we can then compute min, max
 		// values and the scales
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = RatingCalculator.getFlatListOfValues(proposals);
+		EnumMap<JiraIssueMetric, List<Integer>> countValues = RatingCalculator.getFlatListOfValues(proposals);
 
 		// we later check in which interval the proposal would be and apply the
 		// corresponding lower and higher value
@@ -142,12 +59,12 @@ public class ReleaseNotesCreator {
 		// add min and max to lists
 		// the first value of the ArrayList is for the first interval and the second is
 		// for the second interval
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> minValues = new EnumMap<>(JiraIssueMetric.class);
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> maxValues = new EnumMap<>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, List<Integer>> minValues = new EnumMap<>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, List<Integer>> maxValues = new EnumMap<>(JiraIssueMetric.class);
 		RatingCalculator.getMinAndMaxValues(minValues, maxValues, countValues, medianOfProposals);
 
 		proposals.forEach(dkElement -> {
-			EnumMap<JiraIssueMetric, Integer> existingCriteriaValues = dkElement.getMetrics();
+			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getJiraIssueMetrics();
 			// use ref object due to atomic problem etc.
 			var totalRef = new Object() {
 				Double total = 0.0;
@@ -183,7 +100,7 @@ public class ReleaseNotesCreator {
 							minValues.get(criteria).get(index), maxValues.get(criteria).get(index), minVal, maxVal);
 				}
 				// multiply scaling with associated weighting input from user
-				Double userWeight = config.getJiraIssueMetricWeight().get(criteria);
+				Double userWeight = config.getJiraIssueMetricWeights().get(criteria);
 				if (userWeight != null) {
 					scaling *= userWeight;
 				} else {
@@ -196,18 +113,19 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private Map<String, List<ReleaseNotesIssueProposal>> mapProposals() {
+	private Map<String, List<ReleaseNotesEntry>> mapProposals(
+			List<ReleaseNotesEntry> proposals) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-		Map<String, List<ReleaseNotesIssueProposal>> resultMap = new HashMap<>();
-		List<ReleaseNotesIssueProposal> bugs = new ArrayList<>();
-		List<ReleaseNotesIssueProposal> features = new ArrayList<>();
-		List<ReleaseNotesIssueProposal> improvements = new ArrayList<>();
+		Map<String, List<ReleaseNotesEntry>> resultMap = new HashMap<>();
+		List<ReleaseNotesEntry> bugs = new ArrayList<>();
+		List<ReleaseNotesEntry> features = new ArrayList<>();
+		List<ReleaseNotesEntry> improvements = new ArrayList<>();
 		var ref = new Object() {
 			Boolean hasResult = false;
 		};
 		proposals.forEach(proposal -> {
-			Issue issue = issueManager.getIssueByCurrentKey(proposal.getDecisionKnowledgeElement().getKey());
+			Issue issue = issueManager.getIssueByCurrentKey(proposal.getElement().getKey());
 			IssueType issueType = issue.getIssueType();
 			Integer issueTypeId = Integer.valueOf(issueType.getId());
 			// new features
@@ -232,9 +150,9 @@ public class ReleaseNotesCreator {
 		if (!ref.hasResult) {
 			return null;
 		}
-		Comparator<ReleaseNotesIssueProposal> compareByRating = new Comparator<>() {
+		Comparator<ReleaseNotesEntry> compareByRating = new Comparator<>() {
 			@Override
-			public int compare(ReleaseNotesIssueProposal o1, ReleaseNotesIssueProposal o2) {
+			public int compare(ReleaseNotesEntry o1, ReleaseNotesEntry o2) {
 				Double rating1 = o1.getRating();
 				Double rating2 = o2.getRating();
 				return rating2.compareTo(rating1);

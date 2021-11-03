@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
 /**
@@ -94,7 +93,7 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetCiaSettings() {
+	public void testGetAndSaveChangeImpactAnalysisConfiguration() {
 		ChangeImpactAnalysisConfiguration settings = new ChangeImpactAnalysisConfiguration();
 		assertEquals(0.25, settings.getDecayValue(), 0.01);
 		assertEquals(0.25, settings.getThreshold(), 0.01);
@@ -112,12 +111,12 @@ public class TestConfigPersistenceManager extends TestSetUp {
 	}
 
 	@Test
-	public void testSetAndGetReleaseNoteMapping() {
-		List<String> input = new ArrayList<>();
-		input.add("someOtherString");
-		ReleaseNotesCategory category = ReleaseNotesCategory.IMPROVEMENTS;
-		ConfigPersistenceManager.setReleaseNoteMapping("TEST", category, input);
-		assertEquals(input, ConfigPersistenceManager.getReleaseNoteMapping("TEST", category));
+	public void testGetAndSaveReleaseNotesConfiguration() {
+		ReleaseNotesConfiguration releaseNotesConfiguration = new ReleaseNotesConfiguration();
+		releaseNotesConfiguration.setJiraIssueTypesForNewFeatures(List.of("Story"));
+		ConfigPersistenceManager.saveReleaseNotesConfiguration("TEST", releaseNotesConfiguration);
+		assertEquals("Story",
+				ConfigPersistenceManager.getReleaseNotesConfiguration("TEST").getJiraIssueTypesForNewFeatures().get(0));
 	}
 
 	@Test

@@ -24,7 +24,7 @@ class RatingCalculator {
 		if (baseMax - baseMin == 0) {
 			return limitMax;
 		}
-		return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
+		return (limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin) + limitMin;
 	}
 
 	/**
@@ -32,29 +32,29 @@ class RatingCalculator {
 	 * @param proposals
 	 * @return
 	 */
-	protected static EnumMap<JiraIssueMetric, ArrayList<Integer>> getFlatListOfValues(
-			List<ReleaseNotesIssueProposal> proposals) {
+	protected static EnumMap<JiraIssueMetric, List<Integer>> getFlatListOfValues(
+			List<ReleaseNotesEntry> proposals) {
 
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = new EnumMap<>(JiraIssueMetric.class);
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+		EnumMap<JiraIssueMetric, List<Integer>> countValues = new EnumMap<>(JiraIssueMetric.class);
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 
 		proposals.forEach(dkElement -> {
-			EnumMap<JiraIssueMetric, Integer> existingCriteriaValues = dkElement.getMetrics();
+			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getJiraIssueMetrics();
 			// add values to
 			criteriaEnumList.forEach(criteria -> {
 
-				Integer currentValue = existingCriteriaValues.get(criteria);
+				double currentValue = existingCriteriaValues.get(criteria);
 
-				ArrayList<Integer> existingValues = countValues.get(criteria);
+				List<Integer> existingValues = countValues.get(criteria);
 
 				if (existingValues == null) {
 					// init new list
-					ArrayList<Integer> newList = new ArrayList<>();
+					List<Integer> newList = new ArrayList<>();
 					// add value to new list
-					newList.add(currentValue);
+					newList.add((int) currentValue);
 					countValues.put(criteria, newList);
 				} else {
-					existingValues.add(currentValue);
+					existingValues.add((int) currentValue);
 				}
 			});
 		});
@@ -68,16 +68,15 @@ class RatingCalculator {
 	 * @param countValues
 	 * @param medianOfProposals
 	 */
-	protected static void getMinAndMaxValues(EnumMap<JiraIssueMetric, ArrayList<Integer>> minValues,
-			EnumMap<JiraIssueMetric, ArrayList<Integer>> maxValues,
-			EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues,
+	protected static void getMinAndMaxValues(EnumMap<JiraIssueMetric, List<Integer>> minValues,
+			EnumMap<JiraIssueMetric, List<Integer>> maxValues, EnumMap<JiraIssueMetric, List<Integer>> countValues,
 			EnumMap<JiraIssueMetric, Integer> medianOfProposals) {
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 		criteriaEnumList.forEach(criteria -> {
-			ArrayList<Integer> values = countValues.get(criteria);
-			ArrayList<ArrayList<Integer>> valuesInInterval = new ArrayList<>();
-			ArrayList<Integer> firstInterval = new ArrayList<>();
-			ArrayList<Integer> secondInterval = new ArrayList<>();
+			List<Integer> values = countValues.get(criteria);
+			List<List<Integer>> valuesInInterval = new ArrayList<>();
+			List<Integer> firstInterval = new ArrayList<>();
+			List<Integer> secondInterval = new ArrayList<>();
 			if (values != null && values.size() > 0) {
 				// first interval
 				values.forEach(value -> {
@@ -107,13 +106,14 @@ class RatingCalculator {
 		});
 	}
 
-	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(List<ReleaseNotesIssueProposal> proposals) {
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(
+			List<ReleaseNotesEntry> proposals) {
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 		EnumMap<JiraIssueMetric, Integer> medians = new EnumMap<>(JiraIssueMetric.class);
 		criteriaEnumList.forEach(criteria -> {
-			ArrayList<Integer> flatList = new ArrayList<>();
+			List<Double> flatList = new ArrayList<>();
 			proposals.forEach(proposal -> {
-				flatList.add(proposal.getMetrics().get(criteria));
+				flatList.add(proposal.getJiraIssueMetrics().get(criteria));
 			});
 			// sort list
 			Collections.sort(flatList);
@@ -125,7 +125,7 @@ class RatingCalculator {
 			// use floor value
 			medianIndex = Math.floor(medianIndex);
 			// the median is the value at index medianIndex
-			medians.put(criteria, (flatList.get((int) medianIndex)));
+			medians.put(criteria, (int) Math.floor(flatList.get((int) (medianIndex))));
 		});
 		return medians;
 	}
