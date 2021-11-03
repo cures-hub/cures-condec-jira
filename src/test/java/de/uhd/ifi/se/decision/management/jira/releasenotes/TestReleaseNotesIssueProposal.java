@@ -32,14 +32,15 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	public void setUp() {
 		init();
 		idOfDKElement = 14;
-		proposal = new JiraIssueProposalForReleaseNotes(JiraIssues.getJiraIssueByKey("TEST-14"));
+		user = JiraUsers.SYS_ADMIN.getApplicationUser();
+		proposal = new JiraIssueProposalForReleaseNotes(JiraIssues.getJiraIssueByKey("TEST-14"), user);
 		rating = 54.21;
 		proposal.setRating(rating);
 		// get managers
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		// constantsManager = ComponentAccessor.getConstantsManager();
 		commentManager = ComponentAccessor.getCommentManager();
-		user = JiraUsers.BLACK_HEAD.getApplicationUser();
+
 		// List allPriorities =
 		// Arrays.asList(constantsManager.getPriorities().stream().toArray());
 		// priority= (Priority) allPriorities.get(0);

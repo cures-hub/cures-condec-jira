@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -18,41 +19,18 @@ import com.atlassian.jira.user.ApplicationUser;
  */
 public class ReleaseNotesCreator {
 	private List<JiraIssueProposalForReleaseNotes> proposals;
-	private final List<Issue> jiraIssuesMatchingQuery;
 	private final ReleaseNotesConfiguration config;
-	private final ApplicationUser user;
 
 	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNotesConfiguration releaseNoteConfiguration,
 			ApplicationUser user) {
-		this.jiraIssuesMatchingQuery = jiraIssuesMatchingQuery;
 		this.config = releaseNoteConfiguration;
-		this.user = user;
+		this.proposals = jiraIssuesMatchingQuery.stream()
+				.map(jiraIssue -> new JiraIssueProposalForReleaseNotes(jiraIssue, user)).collect(Collectors.toList());
 	}
 
 	public Map<String, List<JiraIssueProposalForReleaseNotes>> getMappedProposals() {
-		proposals = setMetrics();
 		compareProposals(proposals);
 		return mapProposals(proposals);
-	}
-
-	/**
-	 * Gather priority metrics for the Release Note Issue Proposal sets Proposals
-	 */
-	private List<JiraIssueProposalForReleaseNotes> setMetrics() {
-		List<JiraIssueProposalForReleaseNotes> releaseNoteIssueProposals = new ArrayList<>();
-
-		for (Issue jiraIssue : jiraIssuesMatchingQuery) {
-			JiraIssueProposalForReleaseNotes proposal = new JiraIssueProposalForReleaseNotes(jiraIssue);
-			proposal.getAndSetPriority(jiraIssue);
-			proposal.getAndSetCountOfComments(jiraIssue);
-			proposal.getAndSetSizeOfSummary();
-			proposal.getAndSetSizeOfDescription();
-			proposal.getAndSetDaysToCompletion(jiraIssue);
-			proposal.calculateReporterExperience(jiraIssue, user);
-			proposal.calculateResolverExperience(jiraIssue, user);
-			releaseNoteIssueProposals.add(proposal);
-		}
-		return releaseNoteIssueProposals;
 	}
 
 	/**
@@ -135,7 +113,8 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private Map<String, List<JiraIssueProposalForReleaseNotes>> mapProposals(List<JiraIssueProposalForReleaseNotes> proposals) {
+	private Map<String, List<JiraIssueProposalForReleaseNotes>> mapProposals(
+			List<JiraIssueProposalForReleaseNotes> proposals) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 		Map<String, List<JiraIssueProposalForReleaseNotes>> resultMap = new HashMap<>();

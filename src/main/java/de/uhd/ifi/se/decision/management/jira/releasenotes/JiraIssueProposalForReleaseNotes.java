@@ -30,10 +30,17 @@ public class JiraIssueProposalForReleaseNotes {
 	private EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics;
 	private double rating;
 
-	public JiraIssueProposalForReleaseNotes(Issue jiraIssue) {
+	public JiraIssueProposalForReleaseNotes(Issue jiraIssue, ApplicationUser user) {
 		this.jiraIssue = jiraIssue;
 		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();
 		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, 0);
+		getAndSetPriority(jiraIssue);
+		getAndSetCountOfComments(jiraIssue);
+		getAndSetSizeOfSummary();
+		getAndSetSizeOfDescription();
+		getAndSetDaysToCompletion(jiraIssue);
+		calculateReporterExperience(jiraIssue, user);
+		calculateResolverExperience(jiraIssue, user);
 	}
 
 	/**
