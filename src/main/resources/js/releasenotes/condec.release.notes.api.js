@@ -17,91 +17,19 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/releasenotes";
 		projectKey = conDecAPI.getProjectKey();
 	};
-
-	ConDecReleaseNotesAPI.prototype.getIssueTypes = function() {
-		// first we need the boards then we can get the sprints for each
-		// board
+	
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
+	ConDecReleaseNotesAPI.prototype.getReleaseNotesConfiguration = function() {
 		return new Promise(function(resolve, reject) {
-			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function(result) {
-				if (result && result.projects && result.projects.length) {
-					var correctIssueTypes = result.projects.filter(function(project) {
-						return project.key === projectKey;
-					});
-					correctIssueTypes = correctIssueTypes[0].issuetypes;
-					if (correctIssueTypes && correctIssueTypes.length) {
-						resolve(correctIssueTypes);
-					} else {
-						reject("No issue types could be found for this project");
-					}
-				} else {
-					reject("No Projects were found.");
-				}
-
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
-	};
-
-	ConDecReleaseNotesAPI.prototype.getReleases = function() {
-		// first we need the boards then we can get the Sprints for each
-		// board
-		return new Promise(function(resolve, reject) {
-			var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function(result) {
-				if (result && result.length) {
-					resolve(result);
-				} else {
-					reject("No releases were found");
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
-	};
-
-	ConDecReleaseNotesAPI.prototype.getProjectWideSelectedIssueTypes = function() {
-		return new Promise(function(resolve, reject) {
-			var preSelectedIssueUrl = this.restPrefix + "/releaseNoteMapping?projectKey=" + projectKey;
+			var preSelectedIssueUrl = conDecReleaseNotesAPI.restPrefix + "/configuration?projectKey=" + projectKey;
 			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
 			issuePromise.then(function(result) {
 				if (result) {
 					resolve(result);
 				} else {
 					reject();
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
-	};
-
-	/*
-	 * external references: condec.release.notes.dialog
-	 */
-	ConDecReleaseNotesAPI.prototype.getSprintsByProject = function() {
-		// first we need the boards then we can get the Sprints for each
-		// board
-		return new Promise(function(resolve, reject) {
-			var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
-			var boardPromise = generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl);
-			boardPromise.then(function(boards) {
-				if (boards && boards.values && boards.values.length) {
-					var sprintPromises = boards.values.map(function(board) {
-						var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
-						return generalApi.getJSONReturnPromise(AJS.contextPath() + sprintUrl);
-					});
-					Promise.all(sprintPromises)
-						.then(function(sprints) {
-							resolve(sprints);
-						}).catch(function(err) {
-							reject(err);
-						})
-				} else {
-					reject("No boards could be found, so the sprints could also not be loaded");
 				}
 			}).catch(function(err) {
 				reject(err);
@@ -174,6 +102,87 @@
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
 		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete?"
 			+ "id=" + id, null);
+	};
+	
+	/**
+	 * external references: condec.release.notes.dialog
+	 * 
+	 * @return all Jira issue types for a project.
+	 */
+	ConDecReleaseNotesAPI.prototype.getIssueTypes = function() {
+		return new Promise(function(resolve, reject) {
+			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
+			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+			issuePromise.then(function(result) {
+				if (result && result.projects && result.projects.length) {
+					var correctIssueTypes = result.projects.filter(function(project) {
+						return project.key === projectKey;
+					});
+					correctIssueTypes = correctIssueTypes[0].issuetypes;
+					if (correctIssueTypes && correctIssueTypes.length) {
+						resolve(correctIssueTypes);
+					} else {
+						reject("No Jira issue types could be found for this project");
+					}
+				} else {
+					reject("No Jira projects were found.");
+				}
+
+			}).catch(function(err) {
+				reject(err);
+			})
+		})
+	};
+
+	/**
+	 * external references: condec.release.notes.dialog
+	 * 
+	 * @return releases for a Jira project.
+	 */
+	ConDecReleaseNotesAPI.prototype.getReleases = function() {
+		return new Promise(function(resolve, reject) {
+			var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
+			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+			issuePromise.then(function(result) {
+				if (result && result.length) {
+					resolve(result);
+				} else {
+					reject("No releases were found");
+				}
+			}).catch(function(err) {
+				reject(err);
+			})
+		})
+	};
+	
+	/**
+	 * external references: condec.release.notes.dialog
+	 * 
+	 * @return sprints for the Jira project. Finds the board(s) first, then the sprints for the board(s).
+	 */
+	ConDecReleaseNotesAPI.prototype.getSprintsByProject = function() {
+		return new Promise(function(resolve, reject) {
+			var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
+			var boardPromise = generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl);
+			boardPromise.then(function(boards) {
+				if (boards && boards.values && boards.values.length) {
+					var sprintPromises = boards.values.map(function(board) {
+						var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
+						return generalApi.getJSONReturnPromise(AJS.contextPath() + sprintUrl);
+					});
+					Promise.all(sprintPromises)
+						.then(function(sprints) {
+							resolve(sprints);
+						}).catch(function(err) {
+							reject(err);
+						})
+				} else {
+					reject("No boards could be found, so the sprints could also not be loaded");
+				}
+			}).catch(function(err) {
+				reject(err);
+			})
+		})
 	};
 
 	global.conDecReleaseNotesAPI = new ConDecReleaseNotesAPI();

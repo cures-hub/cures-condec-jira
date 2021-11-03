@@ -205,9 +205,9 @@ public class ReleaseNotesRest {
 		return Response.ok().build();
 	}
 
-	@Path("/releaseNoteMapping")
+	@Path("/configuration")
 	@GET
-	public Response getReleaseNoteMapping(@QueryParam("projectKey") String projectKey) {
+	public Response getReleaseNotesConfiguration(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;

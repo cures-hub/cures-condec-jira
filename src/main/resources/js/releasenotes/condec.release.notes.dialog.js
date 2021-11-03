@@ -12,7 +12,6 @@
 		var configurationSubmitButton = document.getElementById("create-release-note-submit-button");
 		var issueSelectSubmitButton = document.getElementById("create-release-note-submit-issues-button");
 		var saveContentButton = document.getElementById("create-release-note-submit-content");
-		var loader = document.getElementById("createReleaseNoteDialogLoader");
 		var useSprintSelect = document.getElementById("useSprint");
 		var titleInput = document.getElementById("title");
 		var sprintOptions = document.getElementById("selectSprints");
@@ -175,10 +174,10 @@
 			var issueTypePromise = new Promise(function(resolve, reject) {
 				conDecReleaseNotesAPI.getIssueTypes()
 					.then(function(issueTypes) {
-						conDecReleaseNotesAPI.getProjectWideSelectedIssueTypes().then(function(preSelectedIssueTypes) {
-							resolve({ issueTypes: issueTypes, preSelectedIssueTypes: preSelectedIssueTypes });
+						conDecReleaseNotesAPI.getReleaseNotesConfiguration().then(function(releaseNotesConfig) {
+							resolve({ issueTypes: issueTypes, releaseNotesConfig: releaseNotesConfig });
 						}).catch(function() {
-							resolve({ issueTypes: issueTypes, preSelectedIssueTypes: null });
+							resolve({ issueTypes: issueTypes, releaseNotesConfig: null });
 						});
 					}).catch(function(err) {
 						reject(err);
@@ -186,8 +185,8 @@
 			}).then(function(values) {
 				// set issue types
 				var issueTypes = values.issueTypes;
-				var preSelectedIssueTypes = values.preSelectedIssueTypes;
-				manageIssueTypes(issueTypes, preSelectedIssueTypes);
+				var releaseNotesConfig = values.releaseNotesConfig;
+				manageIssueTypes(issueTypes, releaseNotesConfig);
 			}).catch(function(err) {
 				throwAlert("No issue-types could be loaded", "This won't be working without Jira-Issues associated to a project: " + err);
 			});
@@ -229,7 +228,7 @@
 				})
 		}
 
-		function manageIssueTypes(issueTypes, preSelectedIssueTypes) {
+		function manageIssueTypes(issueTypes, releaseNotesConfig) {
 			if (issueTypes && issueTypes.length) {
 				// empty lists
 				var bugSelector = $("#multipleBugs");
@@ -238,7 +237,7 @@
 				bugSelector.empty();
 				featureSelector.empty();
 				improvementSelector.empty();
-				console.log(preSelectedIssueTypes);
+				console.log(releaseNotesConfig);
 				issueTypes.map(function(issueType) {
 					var bugSelected = false;
 					var bugString = '<option value="' + issueType.id + '"';
@@ -246,15 +245,15 @@
 					var featureString = '<option value="' + issueType.id + '"';
 					var improvementSelected = false;
 					var improvementString = '<option value="' + issueType.id + '"';
-					if (preSelectedIssueTypes) {
-						if (preSelectedIssueTypes.bug_fixes) {
-							bugSelected = preSelectedIssueTypes.bug_fixes.indexOf(issueType.name) > -1;
+					if (releaseNotesConfig) {
+						if (releaseNotesConfig.jiraIssueTypesForBugFixes) {
+							bugSelected = releaseNotesConfig.jiraIssueTypesForBugFixes.indexOf(issueType.name) > -1;
 						}
-						if (preSelectedIssueTypes.new_features) {
-							featureSelected = preSelectedIssueTypes.new_features.indexOf(issueType.name) > -1;
+						if (releaseNotesConfig.jiraIssueTypesForNewFeatures) {
+							featureSelected = releaseNotesConfig.jiraIssueTypesForNewFeatures.indexOf(issueType.name) > -1;
 						}
-						if (preSelectedIssueTypes.improvements) {
-							improvementSelected = preSelectedIssueTypes.improvements.indexOf(issueType.name) > -1;
+						if (releaseNotesConfig.jiraIssueTypesForImprovements) {
+							improvementSelected = releaseNotesConfig.jiraIssueTypesForImprovements.indexOf(issueType.name) > -1;
 						}
 					}
 					if (bugSelected) {

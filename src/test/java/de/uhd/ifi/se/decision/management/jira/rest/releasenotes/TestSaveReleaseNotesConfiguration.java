@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfigura
 import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestSetReleaseNoteMapping extends TestSetUp {
+public class TestSaveReleaseNotesConfiguration extends TestSetUp {
 
 	private HttpServletRequest request;
 	private ReleaseNotesRest releaseNotesRest;
@@ -29,26 +29,14 @@ public class TestSetReleaseNoteMapping extends TestSetUp {
 	}
 
 	@Test
-	public void testSetReleaseNoteMappingWithEmptyValues() {
+	public void testRequestValidProjectKeyNullReleaseNotesConfigNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				releaseNotesRest.saveReleaseNotesConfiguration(request, null, null).getStatus());
 	}
 
 	@Test
-	public void testSetReleaseNoteMappingWithValidValues() {
-		String projectKey = "TEST";
-		assertEquals(Status.OK.getStatusCode(),
-				releaseNotesRest.saveReleaseNotesConfiguration(request, projectKey, new ReleaseNotesConfiguration()).getStatus());
-	}
-
-	@Test
-	public void testGetReleaseNoteMappingWithEmptyValues() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), releaseNotesRest.getReleaseNoteMapping(null).getStatus());
-	}
-
-	@Test
-	public void testGetReleaseNoteMappingWithValidValues() {
-		String projectKey = "TEST";
-		assertEquals(Status.OK.getStatusCode(), releaseNotesRest.getReleaseNoteMapping(projectKey).getStatus());
+	public void testRequestValidProjectKeyValidReleaseNotesConfigValid() {
+		assertEquals(Status.OK.getStatusCode(), releaseNotesRest
+				.saveReleaseNotesConfiguration(request, "TEST", new ReleaseNotesConfiguration()).getStatus());
 	}
 }
