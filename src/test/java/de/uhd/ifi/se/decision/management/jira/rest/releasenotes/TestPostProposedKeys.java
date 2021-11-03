@@ -24,13 +24,13 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestPostProposedKeys extends TestSetUp {
 	protected HttpServletRequest request;
-	private ReleaseNotesRest releaseNoteRest;
+	private ReleaseNotesRest releaseNotesRest;
 	private String projectKey;
 	private Map<String, Map<String, List<String>>> postObject;
 
 	@Before
 	public void setUp() {
-		releaseNoteRest = new ReleaseNotesRest();
+		releaseNotesRest = new ReleaseNotesRest();
 		init();
 		request = new MockHttpServletRequest();
 		projectKey = "TEST";
@@ -58,7 +58,7 @@ public class TestPostProposedKeys extends TestSetUp {
 	@Test
 	public void testPostProposedKeys() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.postProposedKeys(request, projectKey, postObject).getStatus());
+				releaseNotesRest.postProposedKeys(request, projectKey, postObject).getStatus());
 	}
 
 }

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -167,13 +166,7 @@ public class ReleaseNotesRest {
 					ImmutableMap.of("error", "No issues with the mapped types are resolved in this date range!"))
 					.build();
 		}
-		Map<String, Object> result = new HashMap<>();
-		result.put("proposals", mappedProposals);
-		result.put("additionalConfiguration", releaseNoteConfiguration.getAdditionalConfiguration());
-		result.put("title", releaseNoteConfiguration.getTitle());
-		result.put("startDate", releaseNoteConfiguration.getStartDate());
-		result.put("endDate", releaseNoteConfiguration.getEndDate());
-		return Response.ok(result).build();
+		return Response.ok(mappedProposals).build();
 	}
 
 	@Path("/postProposedKeys")

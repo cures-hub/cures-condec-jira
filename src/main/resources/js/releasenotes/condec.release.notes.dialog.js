@@ -463,14 +463,12 @@
 					addTabAndChangeToIt("tab-issues", "Suggested Issues");
 					console.log(response);
 
-					firstResultObject = response;
+					firstResultObject = configuration;
 					// display issues and information
-					if (response.proposals) {
-						showTables(response.proposals);
+					if (response) {
+						showTables(response);
 					}
-					if (response.title) {
-						showTitle(response.title)
-					}
+					showTitle(configuration.title)
 				}
 
 			}).catch(function(err) {

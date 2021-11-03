@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
@@ -20,13 +19,13 @@ import de.uhd.ifi.se.decision.management.jira.rest.ReleaseNotesRest;
 public class TestProposeElements extends TestSetUp {
 
 	private HttpServletRequest request;
-	private ReleaseNotesRest releaseNoteRest;
+	private ReleaseNotesRest releaseNotesRest;
 	private ReleaseNotesConfiguration releaseNoteConfiguration;
 
 	@Before
 	public void setUp() {
 		init();
-		releaseNoteRest = new ReleaseNotesRest();
+		releaseNotesRest = new ReleaseNotesRest();
 		request = new MockHttpServletRequest();
 		releaseNoteConfiguration = new ReleaseNotesConfiguration();
 	}
@@ -34,19 +33,19 @@ public class TestProposeElements extends TestSetUp {
 	@Test
 	public void testJiraIssuesCanBeFound() {
 		releaseNoteConfiguration.setJiraIssueTypesForImprovements(List.of("Task"));
-		assertEquals(Response.Status.OK.getStatusCode(),
-				releaseNoteRest.proposeElements(request, "TEST", releaseNoteConfiguration).getStatus());
+		assertEquals(Status.OK.getStatusCode(),
+				releaseNotesRest.proposeElements(request, "TEST", releaseNoteConfiguration).getStatus());
 	}
 
 	@Test
 	public void testJiraIssuesCannotBeFound() {
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				releaseNoteRest.proposeElements(request, "TEST", releaseNoteConfiguration).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				releaseNotesRest.proposeElements(request, "TEST", releaseNoteConfiguration).getStatus());
 	}
 
 	@Test
 	public void testProjectUnknown() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				releaseNoteRest.proposeElements(request, "UNKNOWNPROJECT", releaseNoteConfiguration).getStatus());
+				releaseNotesRest.proposeElements(request, "UNKNOWNPROJECT", releaseNoteConfiguration).getStatus());
 	}
 }
