@@ -39,7 +39,7 @@ class RatingCalculator {
 		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 
 		proposals.forEach(dkElement -> {
-			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getMetrics();
+			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getJiraIssueMetrics();
 			// add values to
 			criteriaEnumList.forEach(criteria -> {
 
@@ -113,7 +113,7 @@ class RatingCalculator {
 		criteriaEnumList.forEach(criteria -> {
 			List<Double> flatList = new ArrayList<>();
 			proposals.forEach(proposal -> {
-				flatList.add(proposal.getMetrics().get(criteria));
+				flatList.add(proposal.getJiraIssueMetrics().get(criteria));
 			});
 			// sort list
 			Collections.sort(flatList);

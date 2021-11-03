@@ -5,8 +5,11 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+
 /**
- * Models release notes configuration.
+ * Contains the configuration details for the release notes creation for one
+ * Jira project (see {@link DecisionKnowledgeProject}).
  */
 public class ReleaseNotesConfiguration {
 	private String title;
@@ -14,17 +17,15 @@ public class ReleaseNotesConfiguration {
 	private String endDate;
 	private String sprintId;
 	private TargetGroup targetGroup;
-	private EnumMap<JiraIssueMetric, Double> jiraIssueMetric;
+	private EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
 	private List<Integer> bugFixMapping;
 	private List<Integer> featureMapping;
 	private List<Integer> improvementMapping;
 	private EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
 
-	// This default constructor is necessary for the JSON string to object mapping.
-	// Do not delete it!
 	public ReleaseNotesConfiguration() {
 		this.targetGroup = TargetGroup.getTargetGroup("");
-		this.jiraIssueMetric = JiraIssueMetric.toEnumMap();
+		this.jiraIssueMetricWeights = JiraIssueMetric.toEnumMap();
 	}
 
 	/**
@@ -107,19 +108,20 @@ public class ReleaseNotesConfiguration {
 	}
 
 	/**
-	 * @return weight of JiraIssueMetric of the release notes.
+	 * @return weights of {@link JiraIssueMetric}s used for Jira issue rating in
+	 *         release notes.
 	 */
-	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeight() {
-		return jiraIssueMetric;
+	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeights() {
+		return jiraIssueMetricWeights;
 	}
 
 	/**
 	 * @param issueMetricWeight
 	 *            of the release notes.
 	 */
-	@JsonProperty("jiraIssueMetric")
-	public void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeight) {
-		this.jiraIssueMetric = jiraIssueMetricWeight;
+	@JsonProperty("jiraIssueMetricWeights")
+	public void setJiraIssueMetricWeight(EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights) {
+		this.jiraIssueMetricWeights = jiraIssueMetricWeights;
 	}
 
 	/**

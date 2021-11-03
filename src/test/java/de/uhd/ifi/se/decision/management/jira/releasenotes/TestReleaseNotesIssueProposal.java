@@ -63,7 +63,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 
 	@Test
 	public void testGetDecisionKnowledgeElement() {
-		assertEquals(idOfDKElement, (long) proposal.getDecisionKnowledgeElement().getId());
+		assertEquals(idOfDKElement, (long) proposal.getElement().getId());
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 
 	@Test
 	public void testGetissueMetric() {
-		assertEquals(8, proposal.getMetrics().size());
+		assertEquals(8, proposal.getJiraIssueMetrics().size());
 	}
 
 	@Test
@@ -88,46 +88,46 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 		EnumMap<JiraIssueMetric, Double> issueMetric = JiraIssueMetric.toEnumMap();
 		issueMetric.put(JiraIssueMetric.DAYS_COMPLETION, 135.0);
 		proposal.setMetrics(issueMetric);
-		assertEquals(135, proposal.getMetrics().get(JiraIssueMetric.DAYS_COMPLETION), 0.0);
+		assertEquals(135, proposal.getJiraIssueMetrics().get(JiraIssueMetric.DAYS_COMPLETION), 0.0);
 	}
 
 	// @todo fix this test setting priority
 	public void testGetAndSetPriority() {
 		proposal.getAndSetPriority(issue);
-		assertEquals(issue.getPriority(), proposal.getMetrics().get(JiraIssueMetric.PRIORITY));
+		assertEquals(issue.getPriority(), proposal.getJiraIssueMetrics().get(JiraIssueMetric.PRIORITY));
 	}
 
 	@Test
 	public void testGetAndSetCountOfComments() {
 		proposal.getAndSetCountOfComments(issue);
 		assertEquals(commentManager.getComments(issue).size(),
-				proposal.getMetrics().get(JiraIssueMetric.COMMENT_COUNT), 0.0);
+				proposal.getJiraIssueMetrics().get(JiraIssueMetric.COMMENT_COUNT), 0.0);
 	}
 
 	@Test
 	public void testGetAndSetSizeOfSummary() {
 		proposal.getAndSetSizeOfSummary();
-		assertEquals(5, proposal.getMetrics().get(JiraIssueMetric.SIZE_SUMMARY), 0.0);
+		assertEquals(5, proposal.getJiraIssueMetrics().get(JiraIssueMetric.SIZE_SUMMARY), 0.0);
 
 	}
 
 	@Test
 	public void testGetAndSetSizeOfDescription() {
 		proposal.getAndSetSizeOfDescription();
-		assertEquals(5, proposal.getMetrics().get(JiraIssueMetric.SIZE_DESCRIPTION), 0.0);
+		assertEquals(5, proposal.getJiraIssueMetrics().get(JiraIssueMetric.SIZE_DESCRIPTION), 0.0);
 	}
 
 	@Test
 	public void testGetAndSetDaysToCompletion() {
 		proposal.getAndSetDaysToCompletion(issue);
-		assertEquals(2, proposal.getMetrics().get(JiraIssueMetric.DAYS_COMPLETION), 0.0);
+		assertEquals(2, proposal.getJiraIssueMetrics().get(JiraIssueMetric.DAYS_COMPLETION), 0.0);
 	}
 
 	// @todo fix this test should be 1 as a mockIssue was created
 	@Test
 	public void testGetAndSetExperienceReporter() {
 		proposal.calculateReporterExperience(issue, user);
-		assertEquals(0, proposal.getMetrics().get(JiraIssueMetric.EXPERIENCE_REPORTER), 0.0);
+		assertEquals(0, proposal.getJiraIssueMetrics().get(JiraIssueMetric.EXPERIENCE_REPORTER), 0.0);
 	}
 
 	// @todo fix this test should be 1 as a mockIssue was created
@@ -135,7 +135,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	@Test
 	public void testGetAndSetExperienceResolver() {
 		proposal.calculateResolverExperience(issue, user);
-		assertEquals(0, proposal.getMetrics().get(JiraIssueMetric.EXPERIENCE_RESOLVER), 0.0);
+		assertEquals(0, proposal.getJiraIssueMetrics().get(JiraIssueMetric.EXPERIENCE_RESOLVER), 0.0);
 	}
 
 }

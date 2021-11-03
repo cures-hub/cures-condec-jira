@@ -46,33 +46,24 @@ public class JiraIssueProposalForReleaseNotes {
 	/**
 	 * @return decisionKnowledgeElement of the ReleaseNoteIssueProposal.
 	 */
-	@XmlElement(name = "decisionKnowledgeElement")
-	public KnowledgeElement getDecisionKnowledgeElement() {
+	@XmlElement
+	public KnowledgeElement getElement() {
 		return new KnowledgeElement(jiraIssue);
-	}
-
-	/**
-	 * @param decisionKnowledgeElement
-	 *            of the ReleaseNoteIssueProposal.
-	 */
-	@JsonProperty("decisionKnowledgeElement")
-	public void setDecisionKnowledgeElement(Issue decisionKnowledgeElement) {
-		this.jiraIssue = decisionKnowledgeElement;
 	}
 
 	/**
 	 * @return rating of the ReleaseNoteIssueProposal.
 	 */
-	@XmlElement(name = "rating")
+	@XmlElement
 	public double getRating() {
-		return this.rating;
+		return rating;
 	}
 
 	/**
 	 * @param rating
 	 *            of the ReleaseNoteIssueProposal.
 	 */
-	@JsonProperty("rating")
+	@JsonProperty
 	public void setRating(double rating) {
 		this.rating = rating;
 	}
@@ -81,9 +72,9 @@ public class JiraIssueProposalForReleaseNotes {
 	 * @return jiraIssueMetrics (criteria for prioritisation) of the
 	 *         ReleaseNoteIssueProposal.
 	 */
-	@XmlElement(name = "jiraIssueMetrics")
-	public EnumMap<JiraIssueMetric, Double> getMetrics() {
-		return this.jiraIssueMetrics;
+	@XmlElement
+	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetrics() {
+		return jiraIssueMetrics;
 	}
 
 	/**
@@ -105,10 +96,10 @@ public class JiraIssueProposalForReleaseNotes {
 		Priority priority = issue.getPriority();
 		if (priority != null) {
 			double sequence = priority.getSequence();
-			this.getMetrics().put(JiraIssueMetric.PRIORITY, sequence);
+			this.getJiraIssueMetrics().put(JiraIssueMetric.PRIORITY, sequence);
 		} else {
 			// set medium value for DK elements for priority
-			this.getMetrics().put(JiraIssueMetric.PRIORITY, 3.0);
+			this.getJiraIssueMetrics().put(JiraIssueMetric.PRIORITY, 3.0);
 		}
 	}
 
@@ -122,7 +113,7 @@ public class JiraIssueProposalForReleaseNotes {
 	public void getAndSetCountOfComments(Issue issue) {
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		double countComments = commentManager.getComments(issue).size();
-		this.getMetrics().put(JiraIssueMetric.COMMENT_COUNT, countComments);
+		this.getJiraIssueMetrics().put(JiraIssueMetric.COMMENT_COUNT, countComments);
 	}
 
 	/**
@@ -130,8 +121,8 @@ public class JiraIssueProposalForReleaseNotes {
 	 * ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfSummary() {
-		double sizeSummary = countWordsUsingSplit(this.getDecisionKnowledgeElement().getSummary());
-		this.getMetrics().put(JiraIssueMetric.SIZE_SUMMARY, sizeSummary);
+		double sizeSummary = countWordsUsingSplit(this.getElement().getSummary());
+		this.getJiraIssueMetrics().put(JiraIssueMetric.SIZE_SUMMARY, sizeSummary);
 	}
 
 	/**
@@ -139,8 +130,8 @@ public class JiraIssueProposalForReleaseNotes {
 	 * the ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfDescription() {
-		double sizeDescription = countWordsUsingSplit(this.getDecisionKnowledgeElement().getDescription());
-		this.getMetrics().put(JiraIssueMetric.SIZE_DESCRIPTION, sizeDescription);
+		double sizeDescription = countWordsUsingSplit(this.getElement().getDescription());
+		this.getJiraIssueMetrics().put(JiraIssueMetric.SIZE_DESCRIPTION, sizeDescription);
 	}
 
 	/**
@@ -155,7 +146,7 @@ public class JiraIssueProposalForReleaseNotes {
 		Long resolved = issue.getResolutionDate().getTime();
 		Long diff = resolved - created;
 		double days = diff / (1000 * 60 * 60 * 24);
-		this.getMetrics().put(JiraIssueMetric.DAYS_COMPLETION, days);
+		this.getJiraIssueMetrics().put(JiraIssueMetric.DAYS_COMPLETION, days);
 	}
 
 	/**
@@ -178,7 +169,7 @@ public class JiraIssueProposalForReleaseNotes {
 		} catch (Exception e) {
 			LOGGER.debug(e.getMessage());
 		}
-		getMetrics().put(JiraIssueMetric.EXPERIENCE_REPORTER, countReporter);
+		getJiraIssueMetrics().put(JiraIssueMetric.EXPERIENCE_REPORTER, countReporter);
 	}
 
 	/**
@@ -204,7 +195,7 @@ public class JiraIssueProposalForReleaseNotes {
 		} catch (Exception e) {
 			LOGGER.debug(e.getMessage());
 		}
-		getMetrics().put(JiraIssueMetric.EXPERIENCE_RESOLVER, countResolver);
+		getJiraIssueMetrics().put(JiraIssueMetric.EXPERIENCE_RESOLVER, countResolver);
 	}
 
 	/**

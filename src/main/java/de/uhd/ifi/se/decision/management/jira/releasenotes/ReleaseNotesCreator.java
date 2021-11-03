@@ -64,7 +64,7 @@ public class ReleaseNotesCreator {
 		RatingCalculator.getMinAndMaxValues(minValues, maxValues, countValues, medianOfProposals);
 
 		proposals.forEach(dkElement -> {
-			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getMetrics();
+			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getJiraIssueMetrics();
 			// use ref object due to atomic problem etc.
 			var totalRef = new Object() {
 				Double total = 0.0;
@@ -100,7 +100,7 @@ public class ReleaseNotesCreator {
 							minValues.get(criteria).get(index), maxValues.get(criteria).get(index), minVal, maxVal);
 				}
 				// multiply scaling with associated weighting input from user
-				Double userWeight = config.getJiraIssueMetricWeight().get(criteria);
+				Double userWeight = config.getJiraIssueMetricWeights().get(criteria);
 				if (userWeight != null) {
 					scaling *= userWeight;
 				} else {
@@ -125,7 +125,7 @@ public class ReleaseNotesCreator {
 			Boolean hasResult = false;
 		};
 		proposals.forEach(proposal -> {
-			Issue issue = issueManager.getIssueByCurrentKey(proposal.getDecisionKnowledgeElement().getKey());
+			Issue issue = issueManager.getIssueByCurrentKey(proposal.getElement().getKey());
 			IssueType issueType = issue.getIssueType();
 			Integer issueTypeId = Integer.valueOf(issueType.getId());
 			// new features

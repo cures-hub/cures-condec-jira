@@ -49,8 +49,6 @@ public enum ReleaseNotesCategory {
 	}
 
 	/**
-	 * Convert all Categories to strings.
-	 *
 	 * @return list of Categories as Strings.
 	 */
 	public static List<String> toList() {

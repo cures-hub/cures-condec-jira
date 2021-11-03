@@ -8,7 +8,7 @@ public class TestJiraIssueMetric {
 
 	@Test
 	public void testToString() {
-		assertEquals("count_decision_knowledge", JiraIssueMetric.DECISION_KNOWLEDGE_COUNT.toString());
+		assertEquals("decision_knowledge_count", JiraIssueMetric.DECISION_KNOWLEDGE_COUNT.toString());
 	}
 
 	@Test

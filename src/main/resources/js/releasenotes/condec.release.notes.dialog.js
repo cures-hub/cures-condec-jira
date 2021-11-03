@@ -440,7 +440,7 @@
 			// set button busy and disabled
 			setButtonBusyAndDisabled(configurationSubmitButton, true);
 			getAdditionalConfiguration();
-			var jiraIssueMetric = getjiraIssueMetric(criteria);
+			var jiraIssueMetricWeights = getjiraIssueMetric(criteria);
 			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
@@ -457,7 +457,7 @@
 				featureMapping: features,
 				improvementMapping: improvements,
 				additionalConfiguration: additionalConfiguration,
-				jiraIssueMetric: jiraIssueMetric
+				jiraIssueMetricWeights: jiraIssueMetricWeights
 			};
 
 			conDecReleaseNotesAPI.proposeElements(configuration).then(function(response) {
@@ -515,9 +515,9 @@
 					"</tr></thead>";
 				var tableRows = "";
 				issues.map(function(issue) {
-					var expander = "<div id='expanderOfRating_" + category + issue.decisionKnowledgeElement.key + "' class='aui-expander-content'>" +
+					var expander = "<div id='expanderOfRating_" + category + issue.element.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
-						"<li>#Comments: " + issue.jiraIssueMetrics.COUNT_COMMENTS + "</li>" +
+						"<li>#Comments: " + issue.jiraIssueMetrics.element+ "</li>" +
 						"<li>#Decision Knowledge: " + issue.jiraIssueMetrics.COUNT_DECISION_KNOWLEDGE + "</li>" +
 						"<li>Days Completion: " + issue.jiraIssueMetrics.DAYS_COMPLETION + "</li>" +
 						"<li>Exp. Reporter: " + issue.jiraIssueMetrics.EXPERIENCE_REPORTER + "</li>" +
@@ -527,13 +527,13 @@
 						"<li>Summary Size: " + issue.jiraIssueMetrics.SIZE_SUMMARY + "</li>" +
 						"</ul>" +
 						"</div>" +
-						"<a data-replace-text='" + issue.rating + " less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + issue.decisionKnowledgeElement.key + "'>" + issue.rating + " details</a>";
+						"<a data-replace-text='" + issue.rating + " less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + issue.element.key + "'>" + issue.rating + " details</a>";
 					var tableRow = "<tr>" +
-						"<td><input class='checkbox includeInReleaseNote_" + category + "' checked type='checkbox' name='useSprint' id='includeInReleaseNote_" + issue.decisionKnowledgeElement.key + "'></td>" +
+						"<td><input class='checkbox includeInReleaseNote_" + category + "' checked type='checkbox' name='useSprint' id='includeInReleaseNote_" + issue.element.key + "'></td>" +
 						"<td>" + expander + "</td>" +
-						"<td><a target='_blank' href='" + issue.decisionKnowledgeElement.url + "'>" + issue.decisionKnowledgeElement.key + "</a></td>" +
-						"<td>" + issue.decisionKnowledgeElement.summary + "</td>" +
-						"<td>" + issue.decisionKnowledgeElement.type + "</td>" +
+						"<td><a target='_blank' href='" + issue.element.url + "'>" + issue.element.key + "</a></td>" +
+						"<td>" + issue.element.summary + "</td>" +
+						"<td>" + issue.element.type + "</td>" +
 						"</tr>";
 					tableRows += tableRow;
 				});

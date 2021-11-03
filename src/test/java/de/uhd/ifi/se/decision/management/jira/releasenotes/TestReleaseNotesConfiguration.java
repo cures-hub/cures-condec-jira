@@ -64,7 +64,7 @@ public class TestReleaseNotesConfiguration {
 	@Test
 	public void testissueMetric() {
 		config.setJiraIssueMetricWeight(issueMetric);
-		assertEquals(issueMetric, config.getJiraIssueMetricWeight());
+		assertEquals(issueMetric, config.getJiraIssueMetricWeights());
 	}
 
 	@Test
