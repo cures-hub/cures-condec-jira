@@ -452,15 +452,14 @@
 				endDate: timeRange.endDate,
 				sprintId: selectedSprint,
 				targetGroup: targetGroup,
-				bugFixMapping: bugFixes,
-				featureMapping: features,
-				improvementMapping: improvements,
+				jiraIssueTypesForBugFixes: bugFixes,
+				jiraIssueTypesForNewFeatures: features,
+				jiraIssueTypesForImprovements: improvements,
 				additionalConfiguration: additionalConfiguration,
 				jiraIssueMetricWeights: jiraIssueMetricWeights
 			};
 
 			conDecReleaseNotesAPI.proposeElements(configuration).then(function(response) {
-
 				if (response) {
 					// change tab
 					addTabAndChangeToIt("tab-issues", "Suggested Issues");

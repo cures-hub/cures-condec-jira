@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -21,9 +19,6 @@ public class ReleaseNotesConfiguration {
 	private String sprintId;
 	private TargetGroup targetGroup;
 	private transient EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
-	private List<Integer> bugFixMapping;
-	private List<Integer> featureMapping;
-	private List<Integer> improvementMapping;
 	private transient EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
 	private List<String> jiraIssueTypesForImprovements;
 	private List<String> jiraIssueTypesForBugFixes;
@@ -48,6 +43,7 @@ public class ReleaseNotesConfiguration {
 	 * @param title
 	 *            of the release notes.
 	 */
+	@JsonProperty
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -134,54 +130,6 @@ public class ReleaseNotesConfiguration {
 	}
 
 	/**
-	 * @return list with mapped bug fix issues.
-	 */
-	public List<Integer> getBugFixMapping() {
-		return bugFixMapping;
-	}
-
-	/**
-	 * @param bugFixMapping
-	 *            list with mapped bug fix issues of the release notes.
-	 */
-	@JsonProperty
-	public void setBugFixMapping(List<Integer> bugFixMapping) {
-		this.bugFixMapping = bugFixMapping;
-	}
-
-	/**
-	 * @return list with mapped bug fix issues.
-	 */
-	public List<Integer> getFeatureMapping() {
-		return this.featureMapping;
-	}
-
-	/**
-	 * @param featureMapping
-	 *            list with mapped bug fix issues of the release note.
-	 */
-	@JsonProperty
-	public void setFeatureMapping(List<Integer> featureMapping) {
-		this.featureMapping = featureMapping;
-	}
-
-	/**
-	 * @return list with mapped bug fix issues.
-	 */
-	public List<Integer> getImprovementMapping() {
-		return this.improvementMapping;
-	}
-
-	/**
-	 * @param improvementMapping
-	 *            list with mapped bug fix issues of the release notes.
-	 */
-	@JsonProperty
-	public void setImprovementMapping(List<Integer> improvementMapping) {
-		this.improvementMapping = improvementMapping;
-	}
-
-	/**
 	 * @return map with the additional configuration of the release notes.
 	 */
 	public EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration() {
@@ -197,19 +145,8 @@ public class ReleaseNotesConfiguration {
 		this.additionalConfiguration = additionalConfiguration;
 	}
 
-	@XmlElement
 	public List<String> getJiraIssueTypesForImprovements() {
 		return jiraIssueTypesForImprovements;
-	}
-
-	@XmlElement
-	public List<String> getJiraIssueTypesForBugFixes() {
-		return jiraIssueTypesForBugFixes;
-	}
-
-	@XmlElement
-	public List<String> getJiraIssueTypesForNewFeatures() {
-		return jiraIssueTypesForNewFeatures;
 	}
 
 	@JsonProperty
@@ -217,14 +154,21 @@ public class ReleaseNotesConfiguration {
 		this.jiraIssueTypesForImprovements = jiraIssueTypesForImprovements;
 	}
 
+	public List<String> getJiraIssueTypesForBugFixes() {
+		return jiraIssueTypesForBugFixes;
+	}
+
 	@JsonProperty
 	public void setJiraIssueTypesForBugFixes(List<String> jiraIssueTypesForBugFixes) {
 		this.jiraIssueTypesForBugFixes = jiraIssueTypesForBugFixes;
+	}
+
+	public List<String> getJiraIssueTypesForNewFeatures() {
+		return jiraIssueTypesForNewFeatures;
 	}
 
 	@JsonProperty
 	public void setJiraIssueTypesForNewFeatures(List<String> jiraIssueTypesForNewFeatures) {
 		this.jiraIssueTypesForNewFeatures = jiraIssueTypesForNewFeatures;
 	}
-
 }

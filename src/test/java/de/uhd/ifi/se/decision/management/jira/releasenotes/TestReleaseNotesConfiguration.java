@@ -69,20 +69,20 @@ public class TestReleaseNotesConfiguration {
 
 	@Test
 	public void testBugFixMapping() {
-		config.setBugFixMapping(bugFixMapping);
-		assertEquals(bugFixMapping, config.getBugFixMapping());
+		config.setJiraIssueTypesForBugFixes(List.of("Bug"));
+		assertEquals("Bug", config.getJiraIssueTypesForBugFixes().get(0));
 	}
 
 	@Test
 	public void testFeatureMapping() {
-		config.setFeatureMapping(featureMapping);
-		assertEquals(featureMapping, config.getFeatureMapping());
+		config.setJiraIssueTypesForNewFeatures(List.of("User Story"));
+		assertEquals("User Story", config.getJiraIssueTypesForNewFeatures().get(0));
 	}
 
 	@Test
-	public void testImprovementMapping() {
-		config.setImprovementMapping(improvementMapping);
-		assertEquals(improvementMapping, config.getImprovementMapping());
+	public void testJiraMapping() {
+		config.setJiraIssueTypesForImprovements(List.of("Work Item"));
+		assertEquals("Work Item", config.getJiraIssueTypesForImprovements().get(0));
 	}
 
 }

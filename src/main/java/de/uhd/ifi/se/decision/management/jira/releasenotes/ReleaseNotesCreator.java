@@ -24,8 +24,8 @@ public class ReleaseNotesCreator {
 	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNotesConfiguration releaseNoteConfiguration,
 			ApplicationUser user) {
 		this.config = releaseNoteConfiguration;
-		this.proposals = jiraIssuesMatchingQuery.stream()
-				.map(jiraIssue -> new ReleaseNotesEntry(jiraIssue, user)).collect(Collectors.toList());
+		this.proposals = jiraIssuesMatchingQuery.stream().map(jiraIssue -> new ReleaseNotesEntry(jiraIssue, user))
+				.collect(Collectors.toList());
 	}
 
 	public Map<String, List<ReleaseNotesEntry>> getMappedProposals() {
@@ -113,8 +113,7 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private Map<String, List<ReleaseNotesEntry>> mapProposals(
-			List<ReleaseNotesEntry> proposals) {
+	private Map<String, List<ReleaseNotesEntry>> mapProposals(List<ReleaseNotesEntry> proposals) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 		Map<String, List<ReleaseNotesEntry>> resultMap = new HashMap<>();
@@ -127,21 +126,21 @@ public class ReleaseNotesCreator {
 		proposals.forEach(proposal -> {
 			Issue issue = issueManager.getIssueByCurrentKey(proposal.getElement().getKey());
 			IssueType issueType = issue.getIssueType();
-			Integer issueTypeId = Integer.valueOf(issueType.getId());
+			String issueTypeName = issueType.getName();
 			// new features
-			if (config.getFeatureMapping() != null && config.getFeatureMapping().contains(issueTypeId)) {
+			if (config.getJiraIssueTypesForNewFeatures().contains(issueTypeName)) {
 				features.add(proposal);
 				ref.hasResult = true;
 			}
 			// bugs
 			// check if include bugs is false
-			if (config.getBugFixMapping() != null && config.getBugFixMapping().contains(issueTypeId)
+			if (config.getJiraIssueTypesForBugFixes().contains(issueTypeName)
 					&& config.getAdditionalConfiguration().get(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
 				bugs.add(proposal);
 				ref.hasResult = true;
 			}
 			// improvements
-			if (config.getImprovementMapping() != null && config.getImprovementMapping().contains(issueTypeId)) {
+			if (config.getJiraIssueTypesForImprovements().contains(issueTypeName)) {
 				improvements.add(proposal);
 				ref.hasResult = true;
 			}

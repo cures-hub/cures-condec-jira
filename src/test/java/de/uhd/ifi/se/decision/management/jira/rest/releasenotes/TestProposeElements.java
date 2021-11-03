@@ -50,9 +50,9 @@ public class TestProposeElements extends TestSetUp {
 		issueKeyList.add(0);
 		issueKeyList.add(2);
 		issueKeyList.add(3);
-		releaseNoteConfiguration.setBugFixMapping(issueKeyList);
-		releaseNoteConfiguration.setFeatureMapping(issueKeyList);
-		releaseNoteConfiguration.setImprovementMapping(issueKeyList);
+		releaseNoteConfiguration.setJiraIssueTypesForBugFixes(List.of("Bug"));
+		releaseNoteConfiguration.setJiraIssueTypesForNewFeatures(List.of("Non functional requirement"));
+		releaseNoteConfiguration.setJiraIssueTypesForImprovements(List.of("Task"));
 		releaseNoteConfiguration.setAdditionalConfiguration(toBooleanList(true));
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request.setAttribute("user", user);
