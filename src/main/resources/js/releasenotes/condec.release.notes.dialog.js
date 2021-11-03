@@ -240,11 +240,11 @@
 				console.log(releaseNotesConfig);
 				issueTypes.map(function(issueType) {
 					var bugSelected = false;
-					var bugString = '<option value="' + issueType.id + '"';
+					var bugString = '<option value="' + issueType.name + '"';
 					var featureSelected = false;
-					var featureString = '<option value="' + issueType.id + '"';
+					var featureString = '<option value="' + issueType.name + '"';
 					var improvementSelected = false;
-					var improvementString = '<option value="' + issueType.id + '"';
+					var improvementString = '<option value="' + issueType.name + '"';
 					if (releaseNotesConfig) {
 						if (releaseNotesConfig.jiraIssueTypesForBugFixes) {
 							bugSelected = releaseNotesConfig.jiraIssueTypesForBugFixes.indexOf(issueType.name) > -1;

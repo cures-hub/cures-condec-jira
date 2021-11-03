@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -13,18 +16,21 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
  * Jira project (see {@link DecisionKnowledgeProject}).
  */
 public class ReleaseNotesConfiguration {
+
 	private String title;
 	private String startDate;
 	private String endDate;
 	private String sprintId;
 	private TargetGroup targetGroup;
-	private transient EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
-	private transient EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
 	private List<String> jiraIssueTypesForImprovements;
 	private List<String> jiraIssueTypesForBugFixes;
 	private List<String> jiraIssueTypesForNewFeatures;
+	private transient EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
+	private transient EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
 
+	@JsonCreator
 	public ReleaseNotesConfiguration() {
+		this.title = "";
 		this.targetGroup = TargetGroup.getTargetGroup("");
 		this.jiraIssueMetricWeights = JiraIssueMetric.toEnumMap();
 		jiraIssueTypesForImprovements = new ArrayList<>();
@@ -145,6 +151,7 @@ public class ReleaseNotesConfiguration {
 		this.additionalConfiguration = additionalConfiguration;
 	}
 
+	@XmlElement
 	public List<String> getJiraIssueTypesForImprovements() {
 		return jiraIssueTypesForImprovements;
 	}
@@ -154,6 +161,7 @@ public class ReleaseNotesConfiguration {
 		this.jiraIssueTypesForImprovements = jiraIssueTypesForImprovements;
 	}
 
+	@XmlElement
 	public List<String> getJiraIssueTypesForBugFixes() {
 		return jiraIssueTypesForBugFixes;
 	}
@@ -163,6 +171,7 @@ public class ReleaseNotesConfiguration {
 		this.jiraIssueTypesForBugFixes = jiraIssueTypesForBugFixes;
 	}
 
+	@XmlElement
 	public List<String> getJiraIssueTypesForNewFeatures() {
 		return jiraIssueTypesForNewFeatures;
 	}
