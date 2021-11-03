@@ -20,13 +20,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class ReleaseNotesCreator {
 	private List<ReleaseNotesIssueProposal> proposals;
-	private final List<Issue> elementsMatchingQuery;
+	private final List<Issue> jiraIssuesMatchingQuery;
 	private final ReleaseNotesConfiguration config;
 	private final ApplicationUser user;
 
 	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNotesConfiguration releaseNoteConfiguration,
 			ApplicationUser user) {
-		this.elementsMatchingQuery = jiraIssuesMatchingQuery;
+		this.jiraIssuesMatchingQuery = jiraIssuesMatchingQuery;
 		this.config = releaseNoteConfiguration;
 		this.user = user;
 	}
@@ -42,7 +42,6 @@ public class ReleaseNotesCreator {
 	 */
 	private void setMetrics() {
 		List<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<>();
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 		List<String> usedKeys = new ArrayList<>();
 		Map<String, Integer> reporterIssueCount = new HashMap<>();
@@ -51,54 +50,41 @@ public class ReleaseNotesCreator {
 		// with the data
 		Map<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
 
-		for (int i = 0; i < elementsMatchingQuery.size(); i++) {
-			KnowledgeElement element = new KnowledgeElement(elementsMatchingQuery.get(i));
+		for (Issue jiraIssue : jiraIssuesMatchingQuery) {
+			KnowledgeElement element = new KnowledgeElement(jiraIssue);
 			// add key to used keys
 			usedKeys.add(element.getKey());
 			// create Release note issue proposal with the element and the count of
 			// associated decision knowledge
 			// check if DK or Comment
 			ReleaseNotesIssueProposal proposal = new ReleaseNotesIssueProposal(element, 0);
-			String dkKey = element.getKey();
 
 			// check if it is a dk Issue or just a DK comment
 			// comments are not rated, just counted
-			if (dkKey.contains(":")) {
-				String[] parts = dkKey.split(":");
-				Integer currentCount = dkLinkedCount.get(parts[0]);
-				if (currentCount != null) {
-					currentCount += 1;
-					dkLinkedCount.put(parts[0], currentCount);
-				} else {
-					dkLinkedCount.put(parts[0], 1);
-				}
-			} else {
-				Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
 
-				// set priority
-				proposal.getAndSetPriority(issue);
+			// set priority
+			proposal.getAndSetPriority(jiraIssue);
 
-				// set count of comments
-				proposal.getAndSetCountOfComments(issue);
+			// set count of comments
+			proposal.getAndSetCountOfComments(jiraIssue);
 
-				// set size summary
-				proposal.getAndSetSizeOfSummary();
+			// set size summary
+			proposal.getAndSetSizeOfSummary();
 
-				// set size description
-				proposal.getAndSetSizeOfDescription();
+			// set size description
+			proposal.getAndSetSizeOfDescription();
 
-				// set days to complete
-				proposal.getAndSetDaysToCompletion(issue);
+			// set days to complete
+			proposal.getAndSetDaysToCompletion(jiraIssue);
 
-				// set experience reporter
-				proposal.getAndSetExperienceReporter(issue, reporterIssueCount, user);
+			// set experience reporter
+			proposal.getAndSetExperienceReporter(jiraIssue, reporterIssueCount, user);
 
-				// set experience resolver
-				proposal.getAndSetExperienceResolver(issue, resolverIssueCount, user);
+			// set experience resolver
+			proposal.getAndSetExperienceResolver(jiraIssue, resolverIssueCount, user);
 
-				// add to results
-				releaseNoteIssueProposals.add(proposal);
-			}
+			// add to results
+			releaseNoteIssueProposals.add(proposal);
 		}
 
 		// now check DK element links
