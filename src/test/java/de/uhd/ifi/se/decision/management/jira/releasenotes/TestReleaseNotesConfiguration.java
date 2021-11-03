@@ -27,7 +27,7 @@ public class TestReleaseNotesConfiguration {
 		endDate = "2020-01-12";
 		sprintId = "15";
 		targetGroup = TargetGroup.DEVELOPER;
-		issueMetric = JiraIssueMetric.toDoubleEnumMap();
+		issueMetric = JiraIssueMetric.toEnumMap();
 		bugFixMapping = new ArrayList<Integer>();
 		featureMapping = new ArrayList<Integer>();
 		improvementMapping = new ArrayList<Integer>();

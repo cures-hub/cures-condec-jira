@@ -27,13 +27,13 @@ public class JiraIssueProposalForReleaseNotes {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueProposalForReleaseNotes.class);
 
 	private Issue jiraIssue;
-	private EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics;
+	private EnumMap<JiraIssueMetric, Double> jiraIssueMetrics;
 	private double rating;
 
 	public JiraIssueProposalForReleaseNotes(Issue jiraIssue, ApplicationUser user) {
 		this.jiraIssue = jiraIssue;
-		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();
-		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, 0);
+		this.jiraIssueMetrics = JiraIssueMetric.toEnumMap();
+		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, 0.0);
 		getAndSetPriority(jiraIssue);
 		getAndSetCountOfComments(jiraIssue);
 		getAndSetSizeOfSummary();
@@ -82,7 +82,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 *         ReleaseNoteIssueProposal.
 	 */
 	@XmlElement(name = "jiraIssueMetrics")
-	public EnumMap<JiraIssueMetric, Integer> getMetrics() {
+	public EnumMap<JiraIssueMetric, Double> getMetrics() {
 		return this.jiraIssueMetrics;
 	}
 
@@ -90,7 +90,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 * @param jiraIssueMetrics
 	 *            of the ReleaseNoteIssueProposal.
 	 */
-	public void setMetrics(EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics) {
+	public void setMetrics(EnumMap<JiraIssueMetric, Double> jiraIssueMetrics) {
 		this.jiraIssueMetrics = jiraIssueMetrics;
 	}
 
@@ -104,11 +104,11 @@ public class JiraIssueProposalForReleaseNotes {
 	public void getAndSetPriority(Issue issue) {
 		Priority priority = issue.getPriority();
 		if (priority != null) {
-			int sequence = Math.toIntExact(priority.getSequence());
+			double sequence = priority.getSequence();
 			this.getMetrics().put(JiraIssueMetric.PRIORITY, sequence);
 		} else {
 			// set medium value for DK elements for priority
-			this.getMetrics().put(JiraIssueMetric.PRIORITY, 3);
+			this.getMetrics().put(JiraIssueMetric.PRIORITY, 3.0);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 */
 	public void getAndSetCountOfComments(Issue issue) {
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		int countComments = commentManager.getComments(issue).size();
+		double countComments = commentManager.getComments(issue).size();
 		this.getMetrics().put(JiraIssueMetric.COUNT_COMMENTS, countComments);
 	}
 
@@ -130,7 +130,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 * ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfSummary() {
-		int sizeSummary = countWordsUsingSplit(this.getDecisionKnowledgeElement().getSummary());
+		double sizeSummary = countWordsUsingSplit(this.getDecisionKnowledgeElement().getSummary());
 		this.getMetrics().put(JiraIssueMetric.SIZE_SUMMARY, sizeSummary);
 	}
 
@@ -139,7 +139,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 * the ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfDescription() {
-		int sizeDescription = countWordsUsingSplit(this.getDecisionKnowledgeElement().getDescription());
+		double sizeDescription = countWordsUsingSplit(this.getDecisionKnowledgeElement().getDescription());
 		this.getMetrics().put(JiraIssueMetric.SIZE_DESCRIPTION, sizeDescription);
 	}
 
@@ -154,7 +154,7 @@ public class JiraIssueProposalForReleaseNotes {
 		Long created = issue.getCreated().getTime();
 		Long resolved = issue.getResolutionDate().getTime();
 		Long diff = resolved - created;
-		int days = (int) Math.floor(diff / (1000 * 60 * 60 * 24));
+		double days = diff / (1000 * 60 * 60 * 24);
 		this.getMetrics().put(JiraIssueMetric.DAYS_COMPLETION, days);
 	}
 
@@ -171,7 +171,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 */
 	public void calculateReporterExperience(Issue jiraIssue, ApplicationUser user) {
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
-		int countReporter = 0;
+		double countReporter = 0;
 		try {
 			Query query = JqlQueryBuilder.newBuilder().where().reporterUser(jiraIssue.getReporterId()).buildQuery();
 			countReporter = (int) searchService.searchCount(user, query);
@@ -196,7 +196,7 @@ public class JiraIssueProposalForReleaseNotes {
 		SearchService searchProvider = ComponentAccessor.getComponentOfType(SearchService.class);
 
 		String assigneeId = jiraIssue.getAssigneeId();
-		int countResolver = 0;
+		double countResolver = 0;
 		try {
 			Query query = JqlQueryBuilder.newBuilder().where().status("resolved").and().assigneeUser(assigneeId)
 					.buildQuery();

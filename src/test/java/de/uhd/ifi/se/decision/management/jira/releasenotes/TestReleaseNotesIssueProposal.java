@@ -85,8 +85,8 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 
 	@Test
 	public void testSetissueMetric() {
-		EnumMap<JiraIssueMetric, Integer> issueMetric = JiraIssueMetric.toIntegerEnumMap();
-		issueMetric.put(JiraIssueMetric.DAYS_COMPLETION, 135);
+		EnumMap<JiraIssueMetric, Double> issueMetric = JiraIssueMetric.toEnumMap();
+		issueMetric.put(JiraIssueMetric.DAYS_COMPLETION, 135.0);
 		proposal.setMetrics(issueMetric);
 		assertEquals(135, proposal.getMetrics().get(JiraIssueMetric.DAYS_COMPLETION), 0.0);
 	}

@@ -64,7 +64,7 @@ public class ReleaseNotesCreator {
 		RatingCalculator.getMinAndMaxValues(minValues, maxValues, countValues, medianOfProposals);
 
 		proposals.forEach(dkElement -> {
-			EnumMap<JiraIssueMetric, Integer> existingCriteriaValues = dkElement.getMetrics();
+			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getMetrics();
 			// use ref object due to atomic problem etc.
 			var totalRef = new Object() {
 				Double total = 0.0;

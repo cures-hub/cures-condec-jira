@@ -24,7 +24,7 @@ public class ReleaseNotesConfiguration {
 	// Do not delete it!
 	public ReleaseNotesConfiguration() {
 		this.targetGroup = TargetGroup.getTargetGroup("");
-		this.jiraIssueMetric = JiraIssueMetric.toDoubleEnumMap();
+		this.jiraIssueMetric = JiraIssueMetric.toEnumMap();
 	}
 
 	/**
