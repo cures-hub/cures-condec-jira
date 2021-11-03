@@ -289,8 +289,6 @@
 			}
 			AJS.tabs.setup();
 			AJS.tabs.change(jQuery('a[href="#' + tabId + '"]'));
-
-
 		}
 
 		function addjiraIssueMetric(listOfCriteria) {

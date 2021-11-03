@@ -84,12 +84,12 @@ public class TestJiraSchemeManager extends TestSetUp {
 
 	@Test
 	public void testGetJiraIssueTypesZero() {
-		assertEquals(6, JiraSchemeManager.getJiraIssueTypes(1).size());
+		assertEquals(7, JiraSchemeManager.getJiraIssueTypes(1).size());
 	}
 
 	@Test
 	public void testGetJiraIssueTypesByProjectKeyValid() {
-		assertEquals(6, jiraSchemeManager.getJiraIssueTypes().size());
+		assertEquals(7, jiraSchemeManager.getJiraIssueTypes().size());
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class TestJiraSchemeManager extends TestSetUp {
 
 	@Test
 	public void testGetJiraIssueTypesOk() {
-		assertEquals(6, JiraSchemeManager.getJiraIssueTypes(1).size());
+		assertEquals(7, JiraSchemeManager.getJiraIssueTypes(1).size());
 	}
 
 	@Test
