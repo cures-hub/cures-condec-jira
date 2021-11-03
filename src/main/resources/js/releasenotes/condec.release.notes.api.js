@@ -100,8 +100,7 @@
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
-		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete?"
-			+ "id=" + id, null);
+		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete/" + id, null);
 	};
 	
 	/**

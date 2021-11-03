@@ -516,7 +516,7 @@
 				issues.map(function(issue) {
 					var expander = "<div id='expanderOfRating_" + category + issue.element.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
-						"<li>#Comments: " + issue.jiraIssueMetrics.element+ "</li>" +
+						"<li>#Comments: " + issue.jiraIssueMetrics.element + "</li>" +
 						"<li>#Decision Knowledge: " + issue.jiraIssueMetrics.COUNT_DECISION_KNOWLEDGE + "</li>" +
 						"<li>Days Completion: " + issue.jiraIssueMetrics.DAYS_COMPLETION + "</li>" +
 						"<li>Exp. Reporter: " + issue.jiraIssueMetrics.EXPERIENCE_REPORTER + "</li>" +
@@ -681,16 +681,11 @@
 		};
 		deleteButton.onclick = function() {
 			setButtonBusyAndDisabled(deleteButton, true);
-			conDecReleaseNotesAPI.deleteReleaseNotes(id).then(function(response) {
-				if (response) {
-					fireChangeEvent();
-					AJS.dialog2(editDialog).hide();
-				} else {
-					throwAlert("Deleting failed", "The release notes could not be deleted");
-				}
+			conDecReleaseNotesAPI.deleteReleaseNotes(id).then(function() {
+				fireChangeEvent();
+				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
 				throwAlert("Deleting failed", err.toString());
-
 			}).finally(function() {
 				setButtonBusyAndDisabled(deleteButton, false);
 			});

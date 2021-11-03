@@ -135,9 +135,9 @@ public class ReleaseNotesRest {
 	 *            of {@link ReleaseNotes#getId()}.
 	 * @return ok if the release notes were successfully deleted.
 	 */
-	@Path("/delete")
+	@Path("/delete/{id}")
 	@DELETE
-	public Response deleteReleaseNotes(@Context HttpServletRequest request, @QueryParam("id") long id) {
+	public Response deleteReleaseNotes(@Context HttpServletRequest request, @PathParam("id") long id) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		boolean isDeleted = ReleaseNotesPersistenceManager.deleteReleaseNotes(id, user);
 		if (!isDeleted) {
