@@ -138,4 +138,11 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 		assertEquals(0, proposal.getJiraIssueMetrics().get(JiraIssueMetric.EXPERIENCE_RESOLVER), 0.0);
 	}
 
+	@Test
+	public void testCountWords() {
+		assertEquals(0, JiraIssueProposalForReleaseNotes.countWords(null));
+		assertEquals(0, JiraIssueProposalForReleaseNotes.countWords(""));
+		assertEquals(2, JiraIssueProposalForReleaseNotes.countWords("Hello world!"));
+	}
+
 }

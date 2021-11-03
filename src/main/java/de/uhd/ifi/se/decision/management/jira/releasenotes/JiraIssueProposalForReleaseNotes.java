@@ -121,7 +121,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 * ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfSummary() {
-		double sizeSummary = countWordsUsingSplit(this.getElement().getSummary());
+		double sizeSummary = countWords(this.getElement().getSummary());
 		this.getJiraIssueMetrics().put(JiraIssueMetric.SIZE_SUMMARY, sizeSummary);
 	}
 
@@ -130,7 +130,7 @@ public class JiraIssueProposalForReleaseNotes {
 	 * the ReleaseNoteIssueProposal
 	 */
 	public void getAndSetSizeOfDescription() {
-		double sizeDescription = countWordsUsingSplit(this.getElement().getDescription());
+		double sizeDescription = countWords(this.getElement().getDescription());
 		this.getJiraIssueMetrics().put(JiraIssueMetric.SIZE_DESCRIPTION, sizeDescription);
 	}
 
@@ -199,13 +199,11 @@ public class JiraIssueProposalForReleaseNotes {
 	}
 
 	/**
-	 * Count words of a string
-	 *
 	 * @param input
-	 *            of string with space separated words
-	 * @return count of words
+	 *            String with words separated by spaces.
+	 * @return number of words in the input string.
 	 */
-	private int countWordsUsingSplit(String input) {
+	public static int countWords(String input) {
 		if (input == null || input.isEmpty()) {
 			return 0;
 		}
