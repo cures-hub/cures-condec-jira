@@ -36,7 +36,7 @@ class RatingCalculator {
 			List<JiraIssueProposalForReleaseNotes> proposals) {
 
 		EnumMap<JiraIssueMetric, List<Integer>> countValues = new EnumMap<>(JiraIssueMetric.class);
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 
 		proposals.forEach(dkElement -> {
 			EnumMap<JiraIssueMetric, Integer> existingCriteriaValues = dkElement.getMetrics();
@@ -71,7 +71,7 @@ class RatingCalculator {
 	protected static void getMinAndMaxValues(EnumMap<JiraIssueMetric, List<Integer>> minValues,
 			EnumMap<JiraIssueMetric, List<Integer>> maxValues, EnumMap<JiraIssueMetric, List<Integer>> countValues,
 			EnumMap<JiraIssueMetric, Integer> medianOfProposals) {
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 		criteriaEnumList.forEach(criteria -> {
 			List<Integer> values = countValues.get(criteria);
 			List<List<Integer>> valuesInInterval = new ArrayList<>();
@@ -106,8 +106,9 @@ class RatingCalculator {
 		});
 	}
 
-	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(List<JiraIssueProposalForReleaseNotes> proposals) {
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+	protected static EnumMap<JiraIssueMetric, Integer> getMedianOfProposals(
+			List<JiraIssueProposalForReleaseNotes> proposals) {
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 		EnumMap<JiraIssueMetric, Integer> medians = new EnumMap<>(JiraIssueMetric.class);
 		criteriaEnumList.forEach(criteria -> {
 			ArrayList<Integer> flatList = new ArrayList<>();

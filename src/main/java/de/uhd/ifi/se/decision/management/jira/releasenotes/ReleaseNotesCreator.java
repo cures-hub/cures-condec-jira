@@ -44,7 +44,7 @@ public class ReleaseNotesCreator {
 	 * @param proposals2
 	 */
 	private void compareProposals(List<JiraIssueProposalForReleaseNotes> proposals) {
-		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
+		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 
 		// find median
 		EnumMap<JiraIssueMetric, Integer> medianOfProposals = RatingCalculator.getMedianOfProposals(proposals);

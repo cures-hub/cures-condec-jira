@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Locale;
 
 public enum JiraIssueMetric {
@@ -41,7 +38,7 @@ public enum JiraIssueMetric {
 	}
 
 	/**
-	 * @return hashMap of metrics with integer default 0.
+	 * @return map of metrics with integer default 0.
 	 */
 	public static EnumMap<JiraIssueMetric, Integer> toIntegerEnumMap() {
 		EnumMap<JiraIssueMetric, Integer> criteriaTypes = new EnumMap<>(JiraIssueMetric.class);
@@ -52,7 +49,7 @@ public enum JiraIssueMetric {
 	}
 
 	/**
-	 * @return hashMap of metrics with double default 1.0
+	 * @return map of metrics with double default 1.0
 	 */
 	public static EnumMap<JiraIssueMetric, Double> toDoubleEnumMap() {
 		EnumMap<JiraIssueMetric, Double> criteriaTypes = new EnumMap<>(JiraIssueMetric.class);
@@ -61,23 +58,4 @@ public enum JiraIssueMetric {
 		}
 		return criteriaTypes;
 	}
-
-	/**
-	 * @return list of all metrics as Strings.
-	 */
-	public static List<String> toList() {
-		List<String> criteriaTypes = new ArrayList<>();
-		for (JiraIssueMetric criteriaType : JiraIssueMetric.values()) {
-			criteriaTypes.add(criteriaType.toString());
-		}
-		return criteriaTypes;
-	}
-
-	/**
-	 * @return list of metrics.
-	 */
-	public static List<JiraIssueMetric> getOriginalList() {
-		return new ArrayList<>(Arrays.asList(JiraIssueMetric.values()));
-	}
-
 }
