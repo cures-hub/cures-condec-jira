@@ -38,32 +38,28 @@ public class ReleaseNotesCreator {
 	}
 
 	/**
-	 * Gather priority metrics for the Release Note Issue Proposal
-	 * <p>
-	 * sets Proposals
+	 * Gather priority metrics for the Release Note Issue Proposal sets Proposals
 	 */
 	private void setMetrics() {
 		List<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<>();
-		// set up components we need to gather metrics
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-		// create plain array with no duplicates
 		List<String> usedKeys = new ArrayList<>();
 		Map<String, Integer> reporterIssueCount = new HashMap<>();
 		Map<String, Integer> resolverIssueCount = new HashMap<>();
 		// for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element
 		// with the data
-		HashMap<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
+		Map<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
 
 		for (int i = 0; i < elementsMatchingQuery.size(); i++) {
-			KnowledgeElement dkElement = new KnowledgeElement(elementsMatchingQuery.get(i));
+			KnowledgeElement element = new KnowledgeElement(elementsMatchingQuery.get(i));
 			// add key to used keys
-			usedKeys.add(dkElement.getKey());
+			usedKeys.add(element.getKey());
 			// create Release note issue proposal with the element and the count of
 			// associated decision knowledge
 			// check if DK or Comment
-			ReleaseNotesIssueProposal proposal = new ReleaseNotesIssueProposal(dkElement, 0);
-			String dkKey = dkElement.getKey();
+			ReleaseNotesIssueProposal proposal = new ReleaseNotesIssueProposal(element, 0);
+			String dkKey = element.getKey();
 
 			// check if it is a dk Issue or just a DK comment
 			// comments are not rated, just counted
@@ -77,7 +73,7 @@ public class ReleaseNotesCreator {
 					dkLinkedCount.put(parts[0], 1);
 				}
 			} else {
-				Issue issue = issueManager.getIssueByCurrentKey(dkElement.getKey());
+				Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
 
 				// set priority
 				proposal.getAndSetPriority(issue);
