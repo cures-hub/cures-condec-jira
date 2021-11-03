@@ -102,20 +102,18 @@ public class ReleaseNotesRest {
 	public Response proposeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			ReleaseNotesConfiguration releaseNoteConfiguration) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		String query = "?jql=project=" + projectKey + " && resolved >= " + releaseNoteConfiguration.getStartDate()
-				+ " && resolved <= " + releaseNoteConfiguration.getEndDate();
-		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
-		List<Issue> jiraIssuesMatchingQuery = queryHandler.getJiraIssuesFromQuery();
-		if (jiraIssuesMatchingQuery.size() == 0) {
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "No resolved issues were found in this date range!")).build();
+		List<Issue> jiraIssuesMatchingQuery = JiraQueryHandler.getJiraIssuesResolvedDuringTimeRange(user, projectKey,
+				releaseNoteConfiguration.getStartDate(), releaseNoteConfiguration.getEndDate());
+		if (jiraIssuesMatchingQuery.isEmpty()) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "No resolved Jira issues were found in this date range!")).build();
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
 		Map<String, List<ReleaseNotesIssueProposal>> mappedProposals = releaseNotesCreator.getMappedProposals();
 
 		if (mappedProposals == null) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(
+			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "No issues with the mapped types are resolved in this date range!"))
 					.build();
 		}

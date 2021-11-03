@@ -264,6 +264,13 @@ public class JiraQueryHandler {
 		return jiraIssues;
 	}
 
+	public static List<Issue> getJiraIssuesResolvedDuringTimeRange(ApplicationUser user, String projectKey, String startDate,
+			String endDate) {
+		String query = "?jql=project=" + projectKey + " && resolved >= " + startDate + " && resolved <= " + endDate;
+		JiraQueryHandler queryHandler = new JiraQueryHandler(user, projectKey, query);
+		return queryHandler.getJiraIssuesFromQuery();
+	}
+
 	private ParseResult getParseResult() {
 		return searchService.parseQuery(this.user, query.substring(5));
 	}
