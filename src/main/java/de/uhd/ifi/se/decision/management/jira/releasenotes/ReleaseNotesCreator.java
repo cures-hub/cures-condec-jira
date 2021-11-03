@@ -32,15 +32,15 @@ public class ReleaseNotesCreator {
 	}
 
 	public Map<String, List<ReleaseNotesIssueProposal>> getMappedProposals() {
-		setMetrics();
-		compareProposals();
-		return mapProposals();
+		proposals = setMetrics();
+		compareProposals(proposals);
+		return mapProposals(proposals);
 	}
 
 	/**
 	 * Gather priority metrics for the Release Note Issue Proposal sets Proposals
 	 */
-	private void setMetrics() {
+	private List<ReleaseNotesIssueProposal> setMetrics() {
 		List<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<>();
 
 		List<String> usedKeys = new ArrayList<>();
@@ -58,32 +58,13 @@ public class ReleaseNotesCreator {
 			// associated decision knowledge
 			// check if DK or Comment
 			ReleaseNotesIssueProposal proposal = new ReleaseNotesIssueProposal(element, 0);
-
-			// check if it is a dk Issue or just a DK comment
-			// comments are not rated, just counted
-
-			// set priority
 			proposal.getAndSetPriority(jiraIssue);
-
-			// set count of comments
 			proposal.getAndSetCountOfComments(jiraIssue);
-
-			// set size summary
 			proposal.getAndSetSizeOfSummary();
-
-			// set size description
 			proposal.getAndSetSizeOfDescription();
-
-			// set days to complete
 			proposal.getAndSetDaysToCompletion(jiraIssue);
-
-			// set experience reporter
 			proposal.getAndSetExperienceReporter(jiraIssue, reporterIssueCount, user);
-
-			// set experience resolver
 			proposal.getAndSetExperienceResolver(jiraIssue, resolverIssueCount, user);
-
-			// add to results
 			releaseNoteIssueProposals.add(proposal);
 		}
 
@@ -97,7 +78,7 @@ public class ReleaseNotesCreator {
 				}
 			});
 		}
-		proposals = releaseNoteIssueProposals;
+		return releaseNoteIssueProposals;
 	}
 
 	/**
@@ -107,8 +88,10 @@ public class ReleaseNotesCreator {
 	 * https://stackoverflow.com/questions/5294955/how-to-scale-down-a-range-of-numbers-with-a-known-min-and-max-value
 	 * alternative algorithm could be gaussian standard distribution other
 	 * alternative could be median-interval-separation
+	 * 
+	 * @param proposals2
 	 */
-	private void compareProposals() {
+	private void compareProposals(List<ReleaseNotesIssueProposal> proposals) {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 
 		// find median
@@ -178,7 +161,7 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private Map<String, List<ReleaseNotesIssueProposal>> mapProposals() {
+	private Map<String, List<ReleaseNotesIssueProposal>> mapProposals(List<ReleaseNotesIssueProposal> proposals) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
 		Map<String, List<ReleaseNotesIssueProposal>> resultMap = new HashMap<>();

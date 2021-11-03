@@ -32,14 +32,8 @@ public class ReleaseNotesIssueProposal {
 	private EnumMap<JiraIssueMetric, Integer> jiraIssueMetrics;
 	private double rating;
 
-	/**
-	 * Constructer to initialize default values and add count of DK
-	 *
-	 * @param decisionKnowledgeElement
-	 * @param countDecisionKnowledge
-	 */
-	public ReleaseNotesIssueProposal(KnowledgeElement decisionKnowledgeElement, int countDecisionKnowledge) {
-		this.knowledgeElement = decisionKnowledgeElement;
+	public ReleaseNotesIssueProposal(KnowledgeElement element, int countDecisionKnowledge) {
+		this.knowledgeElement = element;
 		// set default values
 		this.jiraIssueMetrics = JiraIssueMetric.toIntegerEnumMap();
 		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, countDecisionKnowledge);

@@ -40,6 +40,18 @@ public class ReleaseNotesRest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesRest.class);
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param searchTerm
+	 *            for substring filtering so that only the release notes that match
+	 *            the term are returned.
+	 * @return all release notes with explicit decision knowledge for the Jira
+	 *         project.
+	 */
 	@GET
 	public Response getReleaseNotes(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("searchTerm") String searchTerm) {
@@ -49,6 +61,14 @@ public class ReleaseNotesRest {
 		return Response.ok(releaseNotes).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param id
+	 *            internal database id of the release notes.
+	 * @return release notes for the given id or bad request if non existing.
+	 */
 	@Path("/{id}")
 	@GET
 	public Response getReleaseNotesById(@Context HttpServletRequest request, @PathParam("id") long id) {
@@ -60,6 +80,15 @@ public class ReleaseNotesRest {
 		return Response.ok(releaseNotes).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param releaseNotes
+	 *            {@link ReleaseNotes} to be created without database id set.
+	 * @return internal database id of inserted release notes, -1 if insertion
+	 *         failed.
+	 */
 	@Path("/create")
 	@POST
 	public Response createReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
@@ -73,6 +102,17 @@ public class ReleaseNotesRest {
 		return Response.ok(id).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param releaseNotes
+	 *            {@link ReleaseNotes} to be updated by title and/or content. The
+	 *            database id must be set, i.e. {@link ReleaseNotes#getId()} must be
+	 *            > 0. Only the title and/or textual content of the
+	 *            {@link ReleaseNotes} can be updated.
+	 * @return ok if the release notes were successfully updated.
+	 */
 	@Path("/update")
 	@POST
 	public Response updateReleaseNotes(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
@@ -85,6 +125,15 @@ public class ReleaseNotesRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param id
+	 *            internal database id of the {@link ReleaseNotes}, i.e. the value
+	 *            of {@link ReleaseNotes#getId()}.
+	 * @return ok if the release notes were successfully deleted.
+	 */
 	@Path("/delete")
 	@DELETE
 	public Response deleteReleaseNotes(@Context HttpServletRequest request, @QueryParam("id") long id) {
