@@ -1,20 +1,20 @@
 <h2>Release Notes</h2>
 <h3>Default Jira Issue Type Mapping</h3>
+#set($releaseNotesConfig = $project.getReleaseNotesConfiguration())
 
 <div class="field-group">
     <label for="select-issue-type-new_features">New features</label>
     <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-new_features" name="select-issue-type-new_features">
 		#foreach ($issueType in $project.getJiraIssueTypeNames())
             <option name="$issueType"
-				#if ( $releaseNotesMapping.getJiraIssueTypesForNewFeatures().contains($issueType) )
+				#if ( $releaseNotesConfig.getJiraIssueTypesForNewFeatures().contains($issueType) )
                     selected
 				#end
             >
 				$issueType</option>
 		#end
     </select>
-    <div class="description">Selects the issue types which should be considered as "new feature".</div>
-    <input type="button" value="Set new feature mapping" onclick="getReleaseNotesMultipleSelectedValues('new_features')" class="aui-button aui-button-primary"/>
+    <div class="description">Selects the Jira issue types which should be considered as "new feature".</div>
 </div>
     
 <div class="field-group">
@@ -22,15 +22,14 @@
     <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-bug_fixes" name="select-issue-type-bug_fixes">
 		#foreach ($issueType in $project.getJiraIssueTypeNames())
             <option name="$issueType"
-				#if ( $releaseNotesMapping.getJiraIssueTypesForBugFixes().contains($issueType) )
+				#if ( $releaseNotesConfig.getJiraIssueTypesForBugFixes().contains($issueType) )
                     selected
 				#end
             >
 				$issueType</option>
 		#end
     </select>
-    <div class="description">Selects the issue types which should be considered as "bug fixes".</div>
-    <input type="button" value="Set bug fixes mapping" onclick="getReleaseNotesMultipleSelectedValues('bug_fixes')" class="aui-button aui-button-primary"/>
+    <div class="description">Selects the Jira issue types which should be considered as "bug fixes".</div>
 </div>
     
 <div class="field-group">
@@ -38,19 +37,30 @@
     <select class="multi-select" size="8" multiple="multiple" id="select-issue-type-improvements" name="select-issue-type-improvements">
 		#foreach ($issueType in $project.getJiraIssueTypeNames())
             <option name="$issueType"
-				#if ( $releaseNotesMapping.getJiraIssueTypesForImprovements().contains($issueType) )
+				#if ( $releaseNotesConfig.getJiraIssueTypesForImprovements().contains($issueType) )
                     selected
 				#end
             >
 				$issueType</option>
 		#end
     </select>
-    <div class="description">Selects the issue types which should be considered as "improvements".</div>
-    <input type="button" value="Set improvements mapping" onclick="getReleaseNotesMultipleSelectedValues('improvements')" class="aui-button aui-button-primary"/>
+    <div class="description">Selects the Jira issue types which should be considered as "improvements".</div>
 </div>
+<input type="button" id="save-release-notes-configuration" 
+	value="Save release notes configuration" class="aui-button aui-button-primary"/>
 
-<script>				
-	function getReleaseNotesMultipleSelectedValues(type) {
+<script>		
+	var saveReleaseNotesConfigButton = document.getElementById("save-release-notes-configuration");
+	saveReleaseNotesConfigButton.addEventListener("click", function () {
+		var releaseNotesConfig = {
+			"jiraIssueTypesForImprovements" : getSelectedValues("improvements"),
+			"jiraIssueTypesForBugFixes" : getSelectedValues("bug_fixes"),
+			"jiraIssueTypesForNewFeatures" : getSelectedValues("new_features")
+		}
+        conDecReleaseNotesAPI.saveReleaseNotesConfiguration("$projectKey", releaseNotesConfig);
+    });
+    
+	function getSelectedValues(type) {
 		var x = document.getElementById("select-issue-type-" + type);
 		var selectedItems = [];
         for (var i = 0; i < x.options.length; i++) {
@@ -58,6 +68,6 @@
         		selectedItems.push(x.options[i].value)
         	}
         }
-        conDecReleaseNotesAPI.setReleaseNoteMapping(type.toUpperCase(), "$projectKey", selectedItems);
+        return selectedItems;
 	}
 </script>        

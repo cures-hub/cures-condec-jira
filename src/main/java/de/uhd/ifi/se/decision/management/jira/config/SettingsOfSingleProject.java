@@ -12,7 +12,6 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.classification.FileManager;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesMapping;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -56,7 +55,6 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("trainingFiles", FileManager.getGroundTruthFileNames());
 		velocityParameters.put("trainedClassifiers", FileManager.getTrainedClassifierNames());
 
-		velocityParameters.put("releaseNotesMapping", new ReleaseNotesMapping(projectKey));
 		velocityParameters.put("workflowActionNames",
 				JiraSchemeManager.getWorkflowActionNames(decisionKnowledgeProject.getJiraProject()));
 		return velocityParameters;

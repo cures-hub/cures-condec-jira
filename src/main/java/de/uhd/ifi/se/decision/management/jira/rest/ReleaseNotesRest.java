@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
@@ -190,5 +191,29 @@ public class ReleaseNotesRest {
 		String markDownString = markdownCreator.getMarkdownString();
 		// return text string
 		return Response.ok(Map.of("markdown", markDownString)).build();
+	}
+
+	@Path("/save-configuration")
+	@POST
+	public Response saveReleaseNotesConfiguration(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey, ReleaseNotesConfiguration releaseNotesConfiguration) {
+		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		ConfigPersistenceManager.saveReleaseNotesConfiguration(projectKey, releaseNotesConfiguration);
+		return Response.ok().build();
+	}
+
+	@Path("/releaseNoteMapping")
+	@GET
+	public Response getReleaseNoteMapping(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		ReleaseNotesConfiguration releaseNotesConfiguration = ConfigPersistenceManager
+				.getReleaseNotesConfiguration(projectKey);
+		return Response.ok(releaseNotesConfiguration).build();
 	}
 }

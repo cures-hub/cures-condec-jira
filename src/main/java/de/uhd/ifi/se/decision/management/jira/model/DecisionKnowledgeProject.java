@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
 /**
@@ -156,6 +157,14 @@ public class DecisionKnowledgeProject {
 	 */
 	public PromptingEventConfiguration getPromptingEventConfiguration() {
 		return ConfigPersistenceManager.getPromptingEventConfiguration(getProjectKey());
+	}
+
+	/**
+	 * @return configuration information of the release notes creation including
+	 *         explicit decision knowledge.
+	 */
+	public ReleaseNotesConfiguration getReleaseNotesConfiguration() {
+		return ConfigPersistenceManager.getReleaseNotesConfiguration(getProjectKey());
 	}
 
 	/**

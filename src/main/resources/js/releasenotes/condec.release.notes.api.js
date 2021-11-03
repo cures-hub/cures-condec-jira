@@ -65,7 +65,7 @@
 
 	ConDecReleaseNotesAPI.prototype.getProjectWideSelectedIssueTypes = function() {
 		return new Promise(function(resolve, reject) {
-			var preSelectedIssueUrl = conDecAPI.restPrefix + "/config/releaseNoteMapping?projectKey=" + projectKey;
+			var preSelectedIssueUrl = this.restPrefix + "/releaseNoteMapping?projectKey=" + projectKey;
 			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
 			issuePromise.then(function(result) {
 				if (result) {
@@ -109,15 +109,14 @@
 		})
 	};
 
-	/*
-	 * external references: settingsForSingleProject.vm
-	 * TODO Pass ReleaseNotesConfig
+	/**
+	 * external references: template/settings/releaseNotesSettings.vm
 	 */
-	ConDecReleaseNotesAPI.prototype.setReleaseNoteMapping = function(releaseNoteCategory, projectKey, selectedIssueTypes) {
-		generalApi.postJSON(conDecAPI.restPrefix + "/config/setReleaseNoteMapping?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function(
-			error, response) {
+	ConDecReleaseNotesAPI.prototype.saveReleaseNotesConfiguration = function(projectKey, releaseNotesConfig) {
+		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig, 
+				function(error, response) {
 			if (error === null) {
-				conDecAPI.showFlag("success", "The associated Jira issue types for the category: " + releaseNoteCategory + " were changed for this project.");
+				conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
 			}
 		});
 	};

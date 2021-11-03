@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
@@ -236,15 +233,35 @@ public class ConfigPersistenceManager {
 		saveTextClassificationConfiguration(projectKey, textClassificationConfiguration);
 	}
 
-	public static void setReleaseNoteMapping(String projectKey, ReleaseNotesCategory category,
-			List<String> selectedIssueNames) {
-		String joinedIssueNames = String.join(",", selectedIssueNames);
-		saveValue(projectKey, "releaseNoteMapping" + "." + category, joinedIssueNames);
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @param releaseNotesConfiguration
+	 *            settings for the release notes creation with explicit decision
+	 *            knowledge as a {@link ReleaseNotesConfiguration} object.
+	 */
+	public static void saveReleaseNotesConfiguration(String projectKey,
+			ReleaseNotesConfiguration releaseNotesConfiguration) {
+		Type type = new TypeToken<ReleaseNotesConfiguration>() {
+		}.getType();
+		saveObject(projectKey, "releaseNotesConfiguration", releaseNotesConfiguration, type);
 	}
 
-	public static List<String> getReleaseNoteMapping(String projectKey, ReleaseNotesCategory category) {
-		String joinedIssueNames = getValue(projectKey, "releaseNoteMapping" + "." + category);
-		return Arrays.asList(joinedIssueNames.split(","));
+	/**
+	 * @param projectKey
+	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
+	 * @return settings for the release notes creation with explicit decision
+	 *         knowledge as a {@link ReleaseNotesConfiguration} object.
+	 */
+	public static ReleaseNotesConfiguration getReleaseNotesConfiguration(String projectKey) {
+		Type type = new TypeToken<ReleaseNotesConfiguration>() {
+		}.getType();
+		ReleaseNotesConfiguration releaseNotesConfiguration = (ReleaseNotesConfiguration) getSavedObject(projectKey,
+				"releaseNotesConfiguration", type);
+		if (releaseNotesConfiguration == null) {
+			return new ReleaseNotesConfiguration();
+		}
+		return releaseNotesConfiguration;
 	}
 
 	/**
