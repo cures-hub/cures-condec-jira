@@ -151,31 +151,54 @@ public class ReleaseNotesConfiguration {
 		this.additionalConfiguration = additionalConfiguration;
 	}
 
+	/**
+	 * @return jira issue types for the {@link ReleaseNotesCategory#IMPROVEMENTS}.
+	 */
 	@XmlElement
 	public List<String> getJiraIssueTypesForImprovements() {
 		return jiraIssueTypesForImprovements;
 	}
 
+	/**
+	 * @param jiraIssueTypesForImprovements
+	 *            jira issue types for the
+	 *            {@link ReleaseNotesCategory#IMPROVEMENTS}.
+	 */
 	@JsonProperty
 	public void setJiraIssueTypesForImprovements(List<String> jiraIssueTypesForImprovements) {
 		this.jiraIssueTypesForImprovements = jiraIssueTypesForImprovements;
 	}
 
+	/**
+	 * @return jira issue types for the {@link ReleaseNotesCategory#BUG_FIXES}.
+	 */
 	@XmlElement
 	public List<String> getJiraIssueTypesForBugFixes() {
 		return jiraIssueTypesForBugFixes;
 	}
 
+	/**
+	 * @param jiraIssueTypesForBugFixes
+	 *            jira issue types for the {@link ReleaseNotesCategory#BUG_FIXES}.
+	 */
 	@JsonProperty
 	public void setJiraIssueTypesForBugFixes(List<String> jiraIssueTypesForBugFixes) {
 		this.jiraIssueTypesForBugFixes = jiraIssueTypesForBugFixes;
 	}
 
+	/**
+	 * @return jira issue types for the {@link ReleaseNotesCategory#NEW_FEATURES}.
+	 */
 	@XmlElement
 	public List<String> getJiraIssueTypesForNewFeatures() {
 		return jiraIssueTypesForNewFeatures;
 	}
 
+	/**
+	 * @param jiraIssueTypesForNewFeatures
+	 *            jira issue types for the
+	 *            {@link ReleaseNotesCategory#NEW_FEATURES}.
+	 */
 	@JsonProperty
 	public void setJiraIssueTypesForNewFeatures(List<String> jiraIssueTypesForNewFeatures) {
 		this.jiraIssueTypesForNewFeatures = jiraIssueTypesForNewFeatures;

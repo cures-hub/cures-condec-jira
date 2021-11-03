@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 
 import org.junit.Before;
@@ -11,45 +9,36 @@ import org.junit.Test;
 
 public class TestReleaseNotesConfiguration {
 	private ReleaseNotesConfiguration config;
-	private String startDate;
-	private String endDate;
-	private String sprintId;
-	private TargetGroup targetGroup;
-	private EnumMap<JiraIssueMetric, Double> issueMetric;
-	private List<Integer> bugFixMapping;
-	private List<Integer> featureMapping;
-	private List<Integer> improvementMapping;
 
 	@Before
 	public void setUp() {
 		config = new ReleaseNotesConfiguration();
-		startDate = "2019-01-12";
-		endDate = "2020-01-12";
-		sprintId = "15";
-		targetGroup = TargetGroup.DEVELOPER;
-		issueMetric = JiraIssueMetric.toEnumMap();
-		bugFixMapping = new ArrayList<Integer>();
-		featureMapping = new ArrayList<Integer>();
-		improvementMapping = new ArrayList<Integer>();
-		bugFixMapping.add(1);
-		featureMapping.add(2);
-		improvementMapping.add(3);
+	}
+
+	@Test
+	public void testTitle() {
+		String title = "Awesome release";
+		config.setTitle(title);
+		assertEquals(title, config.getTitle());
 	}
 
 	@Test
 	public void testStartDate() {
+		String startDate = "1970-01-01";
 		config.setStartDate(startDate);
 		assertEquals(startDate, config.getStartDate());
 	}
 
 	@Test
 	public void testEndDate() {
+		String endDate = "2042-04-23";
 		config.setEndDate(endDate);
 		assertEquals(endDate, config.getEndDate());
 	}
 
 	@Test
 	public void testSprintId() {
+		String sprintId = "unicorn sprint";
 		config.setSprintId(sprintId);
 		assertEquals(sprintId, config.getSprintId());
 
@@ -57,32 +46,38 @@ public class TestReleaseNotesConfiguration {
 
 	@Test
 	public void testTargetGroup() {
-		config.setTargetGroup(targetGroup);
-		assertEquals(targetGroup, config.getTargetGroup());
+		config.setTargetGroup(TargetGroup.DEVELOPER);
+		assertEquals(TargetGroup.DEVELOPER, config.getTargetGroup());
 	}
 
 	@Test
-	public void testissueMetric() {
-		config.setJiraIssueMetricWeights(issueMetric);
-		assertEquals(issueMetric, config.getJiraIssueMetricWeights());
+	public void testJiraIssueMetricWeights() {
+		config.setJiraIssueMetricWeights(JiraIssueMetric.toEnumMap());
+		assertEquals(JiraIssueMetric.toEnumMap(), config.getJiraIssueMetricWeights());
 	}
 
 	@Test
-	public void testBugFixMapping() {
+	public void testJiraIssueTypesForBugFixes() {
 		config.setJiraIssueTypesForBugFixes(List.of("Bug"));
 		assertEquals("Bug", config.getJiraIssueTypesForBugFixes().get(0));
 	}
 
 	@Test
-	public void testFeatureMapping() {
+	public void testJiraIssueTypesForNewFeatures() {
 		config.setJiraIssueTypesForNewFeatures(List.of("User Story"));
 		assertEquals("User Story", config.getJiraIssueTypesForNewFeatures().get(0));
 	}
 
 	@Test
-	public void testJiraMapping() {
+	public void testJiraIssueTypesForImprovements() {
 		config.setJiraIssueTypesForImprovements(List.of("Work Item"));
 		assertEquals("Work Item", config.getJiraIssueTypesForImprovements().get(0));
+	}
+
+	@Test
+	public void testAdditionalConfiguration() {
+		config.setAdditionalConfiguration(null);
+		assertEquals(null, config.getAdditionalConfiguration());
 	}
 
 }
