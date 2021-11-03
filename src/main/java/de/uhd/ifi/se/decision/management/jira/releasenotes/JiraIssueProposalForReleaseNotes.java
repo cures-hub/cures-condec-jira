@@ -33,7 +33,7 @@ public class JiraIssueProposalForReleaseNotes {
 	public JiraIssueProposalForReleaseNotes(Issue jiraIssue, ApplicationUser user) {
 		this.jiraIssue = jiraIssue;
 		this.jiraIssueMetrics = JiraIssueMetric.toEnumMap();
-		this.jiraIssueMetrics.put(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE, 0.0);
+		this.jiraIssueMetrics.put(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT, 0.0);
 		getAndSetPriority(jiraIssue);
 		getAndSetCountOfComments(jiraIssue);
 		getAndSetSizeOfSummary();
@@ -122,7 +122,7 @@ public class JiraIssueProposalForReleaseNotes {
 	public void getAndSetCountOfComments(Issue issue) {
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		double countComments = commentManager.getComments(issue).size();
-		this.getMetrics().put(JiraIssueMetric.COUNT_COMMENTS, countComments);
+		this.getMetrics().put(JiraIssueMetric.COMMENT_COUNT, countComments);
 	}
 
 	/**

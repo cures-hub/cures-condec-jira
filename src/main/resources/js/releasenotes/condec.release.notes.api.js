@@ -111,6 +111,7 @@
 
 	/*
 	 * external references: settingsForSingleProject.vm
+	 * TODO Pass ReleaseNotesConfig
 	 */
 	ConDecReleaseNotesAPI.prototype.setReleaseNoteMapping = function(releaseNoteCategory, projectKey, selectedIssueTypes) {
 		generalApi.postJSON(conDecAPI.restPrefix + "/config/setReleaseNoteMapping?projectKey=" + projectKey + "&releaseNoteCategory=" + releaseNoteCategory, selectedIssueTypes, function(
@@ -121,6 +122,9 @@
 		});
 	};
 
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotesById = function(id) {
 		return generalApi.getJSONReturnPromise(this.restPrefix + "/" + id);
 	};
@@ -136,26 +140,38 @@
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
-	ConDecReleaseNotesAPI.prototype.getProposedIssues = function(relaseNotesConfiguration) {
+	ConDecReleaseNotesAPI.prototype.proposeElements = function(relaseNotesConfiguration) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/propose-elements?projectKey="
 			+ projectKey, relaseNotesConfiguration);
 	};
 
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
 	ConDecReleaseNotesAPI.prototype.postProposedKeys = function(proposedKeys) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/postProposedKeys?projectKey="
 			+ projectKey, proposedKeys);
 	};
 
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
 	ConDecReleaseNotesAPI.prototype.createReleaseNotes = function(releaseNotes) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/create",
 			releaseNotes);
 	};
 
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
 	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/update",
 			releaseNotes);
 	};
 
+	/**
+	 * external references: condec.release.notes.dialog
+	 */
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
 		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete?"
 			+ "id=" + id, null);

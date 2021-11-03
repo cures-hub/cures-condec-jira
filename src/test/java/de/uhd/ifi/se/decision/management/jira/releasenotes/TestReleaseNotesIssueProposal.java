@@ -101,7 +101,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	public void testGetAndSetCountOfComments() {
 		proposal.getAndSetCountOfComments(issue);
 		assertEquals(commentManager.getComments(issue).size(),
-				proposal.getMetrics().get(JiraIssueMetric.COUNT_COMMENTS), 0.0);
+				proposal.getMetrics().get(JiraIssueMetric.COMMENT_COUNT), 0.0);
 	}
 
 	@Test

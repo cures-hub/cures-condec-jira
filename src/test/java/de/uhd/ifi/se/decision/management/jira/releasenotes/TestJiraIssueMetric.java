@@ -8,12 +8,12 @@ public class TestJiraIssueMetric {
 
 	@Test
 	public void testToString() {
-		assertEquals("count_decision_knowledge", JiraIssueMetric.COUNT_DECISION_KNOWLEDGE.toString());
+		assertEquals("count_decision_knowledge", JiraIssueMetric.DECISION_KNOWLEDGE_COUNT.toString());
 	}
 
 	@Test
-	public void toDoubleEnumMap() {
+	public void toEnumMap() {
 		assertEquals(8, JiraIssueMetric.toEnumMap().size());
-		assertEquals(1, JiraIssueMetric.toEnumMap().get(JiraIssueMetric.COUNT_DECISION_KNOWLEDGE), 0.0);
+		assertEquals(1, JiraIssueMetric.toEnumMap().get(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT), 0.0);
 	}
 }

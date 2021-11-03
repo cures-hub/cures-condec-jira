@@ -27,9 +27,9 @@
 
 		// add task prioritisation
 		var criteria = [
-			{ title: "#Decision Knowledge", id: "count_decision_knowledge" },
+			{ title: "#Decision Knowledge", id: "decision_knowledge_count" },
 			{ title: "Priority", id: "priority" },
-			{ title: "#Comments", id: "count_comments" },
+			{ title: "#Comments", id: "comment_count" },
 			{ title: "Words Description", id: "size_description" },
 			{ title: "Words Summary", id: "size_summary" },
 			{ title: "Days to completion", id: "days_completion" },
@@ -460,7 +460,7 @@
 				jiraIssueMetric: jiraIssueMetric
 			};
 
-			conDecReleaseNotesAPI.getProposedIssues(configuration).then(function(response) {
+			conDecReleaseNotesAPI.proposeElements(configuration).then(function(response) {
 
 				if (response) {
 					// change tab

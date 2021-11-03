@@ -1,0 +1,7 @@
+<div class="tabs-pane aui-tabs-disabled" id="tab-issues">
+    <h2 id="suggestedIssuesTitle"></h2>
+    <div id="displayIssueTables"></div>
+    <button id="create-release-note-submit-issues-button" class="aui-button aui-button-primary">
+    	Use these Jira issues
+    </button>
+</div>
