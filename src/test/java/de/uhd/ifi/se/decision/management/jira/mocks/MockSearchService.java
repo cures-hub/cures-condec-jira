@@ -49,7 +49,7 @@ public class MockSearchService implements SearchService {
 
 	@Override
 	public long searchCount(ApplicationUser applicationUser, Query query) throws SearchException {
-		return 0;
+		return 1;
 	}
 
 	@Override

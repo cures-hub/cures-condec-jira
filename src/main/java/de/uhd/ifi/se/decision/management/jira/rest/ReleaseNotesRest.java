@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.JiraIssueProposalForReleaseNotes;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesEntry;
 
 /**
  * REST resource for the management of {@link ReleaseNotes} with explicit
@@ -159,7 +159,7 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		Map<String, List<JiraIssueProposalForReleaseNotes>> mappedProposals = releaseNotesCreator.getMappedProposals();
+		Map<String, List<ReleaseNotesEntry>> mappedProposals = releaseNotesCreator.getMappedProposals();
 
 		if (mappedProposals == null) {
 			return Response.status(Status.BAD_REQUEST).entity(

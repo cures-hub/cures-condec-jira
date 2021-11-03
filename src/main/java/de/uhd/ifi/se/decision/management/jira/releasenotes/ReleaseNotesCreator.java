@@ -18,17 +18,17 @@ import com.atlassian.jira.user.ApplicationUser;
  * Class to compute the metrics for the proposals and to compare the ratings.
  */
 public class ReleaseNotesCreator {
-	private List<JiraIssueProposalForReleaseNotes> proposals;
+	private List<ReleaseNotesEntry> proposals;
 	private final ReleaseNotesConfiguration config;
 
 	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNotesConfiguration releaseNoteConfiguration,
 			ApplicationUser user) {
 		this.config = releaseNoteConfiguration;
 		this.proposals = jiraIssuesMatchingQuery.stream()
-				.map(jiraIssue -> new JiraIssueProposalForReleaseNotes(jiraIssue, user)).collect(Collectors.toList());
+				.map(jiraIssue -> new ReleaseNotesEntry(jiraIssue, user)).collect(Collectors.toList());
 	}
 
-	public Map<String, List<JiraIssueProposalForReleaseNotes>> getMappedProposals() {
+	public Map<String, List<ReleaseNotesEntry>> getMappedProposals() {
 		compareProposals(proposals);
 		return mapProposals(proposals);
 	}
@@ -43,7 +43,7 @@ public class ReleaseNotesCreator {
 	 * 
 	 * @param proposals2
 	 */
-	private void compareProposals(List<JiraIssueProposalForReleaseNotes> proposals) {
+	private void compareProposals(List<ReleaseNotesEntry> proposals) {
 		List<JiraIssueMetric> criteriaEnumList = List.of(JiraIssueMetric.values());
 
 		// find median
@@ -113,14 +113,14 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private Map<String, List<JiraIssueProposalForReleaseNotes>> mapProposals(
-			List<JiraIssueProposalForReleaseNotes> proposals) {
+	private Map<String, List<ReleaseNotesEntry>> mapProposals(
+			List<ReleaseNotesEntry> proposals) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 
-		Map<String, List<JiraIssueProposalForReleaseNotes>> resultMap = new HashMap<>();
-		List<JiraIssueProposalForReleaseNotes> bugs = new ArrayList<>();
-		List<JiraIssueProposalForReleaseNotes> features = new ArrayList<>();
-		List<JiraIssueProposalForReleaseNotes> improvements = new ArrayList<>();
+		Map<String, List<ReleaseNotesEntry>> resultMap = new HashMap<>();
+		List<ReleaseNotesEntry> bugs = new ArrayList<>();
+		List<ReleaseNotesEntry> features = new ArrayList<>();
+		List<ReleaseNotesEntry> improvements = new ArrayList<>();
 		var ref = new Object() {
 			Boolean hasResult = false;
 		};
@@ -150,9 +150,9 @@ public class ReleaseNotesCreator {
 		if (!ref.hasResult) {
 			return null;
 		}
-		Comparator<JiraIssueProposalForReleaseNotes> compareByRating = new Comparator<>() {
+		Comparator<ReleaseNotesEntry> compareByRating = new Comparator<>() {
 			@Override
-			public int compare(JiraIssueProposalForReleaseNotes o1, JiraIssueProposalForReleaseNotes o2) {
+			public int compare(ReleaseNotesEntry o1, ReleaseNotesEntry o2) {
 				Double rating1 = o1.getRating();
 				Double rating2 = o2.getRating();
 				return rating2.compareTo(rating1);
