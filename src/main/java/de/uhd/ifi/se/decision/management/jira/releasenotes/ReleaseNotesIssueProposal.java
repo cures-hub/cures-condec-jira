@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import java.util.EnumMap;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -167,30 +166,22 @@ public class ReleaseNotesIssueProposal {
 	 * @param user
 	 *            Application user which makes the request
 	 */
-	public void getAndSetExperienceReporter(Issue issue, Map<String, Integer> existingReporterCount,
-			ApplicationUser user) {
+	public void getAndSetExperienceReporter(Issue issue, ApplicationUser user) {
 		// first check if user was already checked
 		SearchService searchProvider = ComponentAccessor.getComponentOfType(SearchService.class);
 		String reporterId = issue.getReporterId();
 		if (reporterId == null) {
 			reporterId = issue.getReporter().getKey();
 		}
-		Integer reporterExistingCount = existingReporterCount.get(reporterId);
-		Integer countReporter = 0;
-
-		if (reporterExistingCount != null) {
-			countReporter = reporterExistingCount;
-		} else {
-			JqlQueryBuilder builder = JqlQueryBuilder.newBuilder();
-			builder.where().reporterUser(reporterId);
-			try {
-				countReporter = Math.toIntExact(searchProvider.searchCount(user, builder.buildQuery()));
-			} catch (SearchException e) {
-				LOGGER.error(e.getMessage());
-			}
-			existingReporterCount.put(reporterId, countReporter);
+		int countReporter = 0;
+		JqlQueryBuilder builder = JqlQueryBuilder.newBuilder();
+		builder.where().reporterUser(reporterId);
+		try {
+			countReporter = Math.toIntExact(searchProvider.searchCount(user, builder.buildQuery()));
+		} catch (SearchException e) {
+			LOGGER.error(e.getMessage());
 		}
-		this.getMetrics().put(JiraIssueMetric.EXPERIENCE_REPORTER, (int) countReporter);
+		getMetrics().put(JiraIssueMetric.EXPERIENCE_REPORTER, countReporter);
 	}
 
 	/**
@@ -206,8 +197,7 @@ public class ReleaseNotesIssueProposal {
 	 * @param user
 	 *            Application user which makes the request
 	 */
-	public void getAndSetExperienceResolver(Issue issue, Map<String, Integer> existingResolverCount,
-			ApplicationUser user) {
+	public void getAndSetExperienceResolver(Issue issue, ApplicationUser user) {
 		// the resolver is most of the times the last assigned user
 		JqlQueryBuilder builderResolver = JqlQueryBuilder.newBuilder();
 		SearchService searchProvider = ComponentAccessor.getComponentOfType(SearchService.class);
@@ -221,22 +211,14 @@ public class ReleaseNotesIssueProposal {
 			}
 		}
 		// first check if user was already checked
-		Integer resolverExistingCount = existingResolverCount.get(assigneeId);
 		int countResolver = 0;
-
-		if (resolverExistingCount != null) {
-			countResolver = resolverExistingCount;
-		} else {
-			builderResolver.where().status("resolved").and().assigneeUser(assigneeId);
-			try {
-				countResolver = Math.toIntExact(searchProvider.searchCount(user, builderResolver.buildQuery()));
-			} catch (SearchException e) {
-				LOGGER.error(e.getMessage());
-			}
-			existingResolverCount.put(assigneeId, countResolver);
+		builderResolver.where().status("resolved").and().assigneeUser(assigneeId);
+		try {
+			countResolver = Math.toIntExact(searchProvider.searchCount(user, builderResolver.buildQuery()));
+		} catch (SearchException e) {
+			LOGGER.error(e.getMessage());
 		}
-		this.getMetrics().put(JiraIssueMetric.EXPERIENCE_RESOLVER, countResolver);
-
+		getMetrics().put(JiraIssueMetric.EXPERIENCE_RESOLVER, countResolver);
 	}
 
 	/**

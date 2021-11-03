@@ -24,7 +24,7 @@ class RatingCalculator {
 		if (baseMax - baseMin == 0) {
 			return limitMax;
 		}
-		return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
+		return (limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin) + limitMin;
 	}
 
 	/**
@@ -32,10 +32,10 @@ class RatingCalculator {
 	 * @param proposals
 	 * @return
 	 */
-	protected static EnumMap<JiraIssueMetric, ArrayList<Integer>> getFlatListOfValues(
+	protected static EnumMap<JiraIssueMetric, List<Integer>> getFlatListOfValues(
 			List<ReleaseNotesIssueProposal> proposals) {
 
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = new EnumMap<>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, List<Integer>> countValues = new EnumMap<>(JiraIssueMetric.class);
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 
 		proposals.forEach(dkElement -> {
@@ -45,7 +45,7 @@ class RatingCalculator {
 
 				Integer currentValue = existingCriteriaValues.get(criteria);
 
-				ArrayList<Integer> existingValues = countValues.get(criteria);
+				List<Integer> existingValues = countValues.get(criteria);
 
 				if (existingValues == null) {
 					// init new list
@@ -68,16 +68,15 @@ class RatingCalculator {
 	 * @param countValues
 	 * @param medianOfProposals
 	 */
-	protected static void getMinAndMaxValues(EnumMap<JiraIssueMetric, ArrayList<Integer>> minValues,
-			EnumMap<JiraIssueMetric, ArrayList<Integer>> maxValues,
-			EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues,
+	protected static void getMinAndMaxValues(EnumMap<JiraIssueMetric, List<Integer>> minValues,
+			EnumMap<JiraIssueMetric, List<Integer>> maxValues, EnumMap<JiraIssueMetric, List<Integer>> countValues,
 			EnumMap<JiraIssueMetric, Integer> medianOfProposals) {
 		List<JiraIssueMetric> criteriaEnumList = JiraIssueMetric.getOriginalList();
 		criteriaEnumList.forEach(criteria -> {
-			ArrayList<Integer> values = countValues.get(criteria);
-			ArrayList<ArrayList<Integer>> valuesInInterval = new ArrayList<>();
-			ArrayList<Integer> firstInterval = new ArrayList<>();
-			ArrayList<Integer> secondInterval = new ArrayList<>();
+			List<Integer> values = countValues.get(criteria);
+			List<List<Integer>> valuesInInterval = new ArrayList<>();
+			List<Integer> firstInterval = new ArrayList<>();
+			List<Integer> secondInterval = new ArrayList<>();
 			if (values != null && values.size() > 0) {
 				// first interval
 				values.forEach(value -> {

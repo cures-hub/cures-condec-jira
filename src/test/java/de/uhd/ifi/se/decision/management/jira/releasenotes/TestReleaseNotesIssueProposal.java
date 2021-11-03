@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.sql.Timestamp;
 import java.util.EnumMap;
-import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,6 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	private double rating;
 	private Issue issue;
 	private CommentManager commentManager;
-	private HashMap<String, Integer> existingReporterCount;
 	private ApplicationUser user;
 
 	@Before
@@ -41,7 +39,6 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 		proposal = new ReleaseNotesIssueProposal(dkElement, 3);
 		rating = 54.21;
 		proposal.setRating(rating);
-		existingReporterCount = new HashMap<String, Integer>();
 		// get managers
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		// constantsManager = ComponentAccessor.getConstantsManager();
@@ -140,7 +137,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	// @todo fix this test should be 1 as a mockIssue was created
 	@Test
 	public void testGetAndSetExperienceReporter() {
-		proposal.getAndSetExperienceReporter(issue, existingReporterCount, user);
+		proposal.getAndSetExperienceReporter(issue, user);
 		assertEquals(0, proposal.getMetrics().get(JiraIssueMetric.EXPERIENCE_REPORTER), 0.0);
 	}
 
@@ -148,7 +145,7 @@ public class TestReleaseNotesIssueProposal extends TestSetUp {
 	// @todo set mockissue to status resolved
 	@Test
 	public void testGetAndSetExperienceResolver() {
-		proposal.getAndSetExperienceResolver(issue, existingReporterCount, user);
+		proposal.getAndSetExperienceResolver(issue, user);
 		assertEquals(0, proposal.getMetrics().get(JiraIssueMetric.EXPERIENCE_RESOLVER), 0.0);
 	}
 

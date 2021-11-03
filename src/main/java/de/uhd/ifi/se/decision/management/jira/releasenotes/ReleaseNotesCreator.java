@@ -44,8 +44,6 @@ public class ReleaseNotesCreator {
 		List<ReleaseNotesIssueProposal> releaseNoteIssueProposals = new ArrayList<>();
 
 		List<String> usedKeys = new ArrayList<>();
-		Map<String, Integer> reporterIssueCount = new HashMap<>();
-		Map<String, Integer> resolverIssueCount = new HashMap<>();
 		// for each DecisionKnowledgeElement create one ReleaseNoteIssueProposal element
 		// with the data
 		Map<String, Integer> dkLinkedCount = new HashMap<String, Integer>();
@@ -63,8 +61,8 @@ public class ReleaseNotesCreator {
 			proposal.getAndSetSizeOfSummary();
 			proposal.getAndSetSizeOfDescription();
 			proposal.getAndSetDaysToCompletion(jiraIssue);
-			proposal.getAndSetExperienceReporter(jiraIssue, reporterIssueCount, user);
-			proposal.getAndSetExperienceResolver(jiraIssue, resolverIssueCount, user);
+			proposal.getAndSetExperienceReporter(jiraIssue, user);
+			proposal.getAndSetExperienceResolver(jiraIssue, user);
 			releaseNoteIssueProposals.add(proposal);
 		}
 
@@ -99,7 +97,7 @@ public class ReleaseNotesCreator {
 
 		// for each criteria create a list of integers, so we can then compute min, max
 		// values and the scales
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> countValues = RatingCalculator.getFlatListOfValues(proposals);
+		EnumMap<JiraIssueMetric, List<Integer>> countValues = RatingCalculator.getFlatListOfValues(proposals);
 
 		// we later check in which interval the proposal would be and apply the
 		// corresponding lower and higher value
@@ -107,8 +105,8 @@ public class ReleaseNotesCreator {
 		// add min and max to lists
 		// the first value of the ArrayList is for the first interval and the second is
 		// for the second interval
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> minValues = new EnumMap<>(JiraIssueMetric.class);
-		EnumMap<JiraIssueMetric, ArrayList<Integer>> maxValues = new EnumMap<>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, List<Integer>> minValues = new EnumMap<>(JiraIssueMetric.class);
+		EnumMap<JiraIssueMetric, List<Integer>> maxValues = new EnumMap<>(JiraIssueMetric.class);
 		RatingCalculator.getMinAndMaxValues(minValues, maxValues, countValues, medianOfProposals);
 
 		proposals.forEach(dkElement -> {
