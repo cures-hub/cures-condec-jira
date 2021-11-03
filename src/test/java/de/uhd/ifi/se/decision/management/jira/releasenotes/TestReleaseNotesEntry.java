@@ -30,6 +30,11 @@ public class TestReleaseNotesEntry extends TestSetUp {
 	}
 
 	@Test
+	public void testGetJiraIssue() {
+		assertEquals(1, releaseNotesEntry.getJiraIssue().getId().intValue());
+	}
+
+	@Test
 	public void testGetRating() {
 		releaseNotesEntry.setRating(42);
 		assertEquals(42, releaseNotesEntry.getRating(), 0.0);

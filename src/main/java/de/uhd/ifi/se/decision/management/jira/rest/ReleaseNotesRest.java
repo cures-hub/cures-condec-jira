@@ -163,7 +163,7 @@ public class ReleaseNotesRest {
 
 		if (mappedProposals == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "No issues with the mapped types are resolved in this date range!"))
+					ImmutableMap.of("error", "No Jira issues with the mapped types are resolved in this date range!"))
 					.build();
 		}
 		return Response.ok(mappedProposals).build();

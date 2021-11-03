@@ -468,7 +468,7 @@
 					if (response) {
 						showTables(response);
 					}
-					showTitle(configuration.title)
+					showTitle(configuration.title);
 				}
 
 			}).catch(function(err) {

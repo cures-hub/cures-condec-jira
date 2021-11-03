@@ -44,11 +44,19 @@ public class ReleaseNotesEntry {
 	}
 
 	/**
-	 * @return {@link KnowledgeElement} to be included in the {@link ReleaseNotes}.
+	 * @return Jira issue to be included in the {@link ReleaseNotes} as a
+	 *         {@link KnowledgeElement} object.
 	 */
 	@XmlElement
 	public KnowledgeElement getElement() {
 		return new KnowledgeElement(jiraIssue);
+	}
+
+	/**
+	 * @return Jira issue to be included in the {@link ReleaseNotes}.
+	 */
+	public Issue getJiraIssue() {
+		return jiraIssue;
 	}
 
 	/**

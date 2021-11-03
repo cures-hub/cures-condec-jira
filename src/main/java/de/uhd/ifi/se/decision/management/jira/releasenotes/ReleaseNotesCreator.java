@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -114,39 +112,30 @@ public class ReleaseNotesCreator {
 	}
 
 	private Map<String, List<ReleaseNotesEntry>> mapProposals(List<ReleaseNotesEntry> proposals) {
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-
 		Map<String, List<ReleaseNotesEntry>> resultMap = new HashMap<>();
 		List<ReleaseNotesEntry> bugs = new ArrayList<>();
 		List<ReleaseNotesEntry> features = new ArrayList<>();
 		List<ReleaseNotesEntry> improvements = new ArrayList<>();
-		var ref = new Object() {
-			Boolean hasResult = false;
-		};
 		proposals.forEach(proposal -> {
-			Issue issue = issueManager.getIssueByCurrentKey(proposal.getElement().getKey());
+			Issue issue = proposal.getJiraIssue();
 			IssueType issueType = issue.getIssueType();
 			String issueTypeName = issueType.getName();
 			// new features
 			if (config.getJiraIssueTypesForNewFeatures().contains(issueTypeName)) {
 				features.add(proposal);
-				ref.hasResult = true;
 			}
 			// bugs
 			// check if include bugs is false
 			if (config.getJiraIssueTypesForBugFixes().contains(issueTypeName)
 					&& config.getAdditionalConfiguration().get(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
 				bugs.add(proposal);
-				ref.hasResult = true;
 			}
 			// improvements
 			if (config.getJiraIssueTypesForImprovements().contains(issueTypeName)) {
 				improvements.add(proposal);
-				ref.hasResult = true;
 			}
-
 		});
-		if (!ref.hasResult) {
+		if (improvements.isEmpty() && features.isEmpty() && bugs.isEmpty()) {
 			return null;
 		}
 		Comparator<ReleaseNotesEntry> compareByRating = new Comparator<>() {
