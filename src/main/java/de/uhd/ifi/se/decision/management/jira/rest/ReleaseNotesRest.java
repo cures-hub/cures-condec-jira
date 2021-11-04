@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -171,13 +170,9 @@ public class ReleaseNotesRest {
 	@Path("/create-content")
 	@POST
 	public Response createReleaseNotesContent(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		MarkdownCreator markdownCreator = new MarkdownCreator(user, releaseNotes);
-
-		// generate text string
+		MarkdownCreator markdownCreator = new MarkdownCreator(releaseNotes);
 		String markDownString = markdownCreator.getMarkdownString();
-		// return text string
-		return Response.ok(Map.of("markdown", markDownString)).build();
+		return Response.ok(ImmutableMap.of("markdown", markDownString)).build();
 	}
 
 	@Path("/save-configuration")

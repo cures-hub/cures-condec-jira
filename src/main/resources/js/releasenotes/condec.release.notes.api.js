@@ -76,24 +76,21 @@
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.createReleaseNotesContent = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/create-content?projectKey="
-			+ projectKey, proposedKeys);
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/create-content", releaseNotes);
 	};
 
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.createReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/create",
-			releaseNotes);
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/create", releaseNotes);
 	};
 
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/update",
-			releaseNotes);
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/update", releaseNotes);
 	};
 
 	/**

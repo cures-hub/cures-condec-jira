@@ -23,7 +23,6 @@ public class ReleaseNotesConfiguration {
 	private String startDate;
 	private String endDate;
 	private String sprintId;
-	private TargetGroup targetGroup;
 	private List<String> jiraIssueTypesForImprovements;
 	private List<String> jiraIssueTypesForBugFixes;
 	private List<String> jiraIssueTypesForNewFeatures;
@@ -32,7 +31,6 @@ public class ReleaseNotesConfiguration {
 	@JsonCreator
 	public ReleaseNotesConfiguration() {
 		title = "";
-		targetGroup = TargetGroup.getTargetGroup("");
 		jiraIssueMetricWeights = JiraIssueMetric.toEnumMap();
 		jiraIssueTypesForImprovements = new ArrayList<>();
 		jiraIssueTypesForBugFixes = new ArrayList<>();
@@ -101,22 +99,6 @@ public class ReleaseNotesConfiguration {
 	@JsonProperty
 	public void setSprintId(String sprintId) {
 		this.sprintId = sprintId;
-	}
-
-	/**
-	 * @return targetGroup of the release notes.
-	 */
-	public TargetGroup getTargetGroup() {
-		return targetGroup;
-	}
-
-	/**
-	 * @param targetGroup
-	 *            of the release notes.
-	 */
-	@JsonProperty
-	public void setTargetGroup(TargetGroup targetGroup) {
-		this.targetGroup = targetGroup;
 	}
 
 	/**

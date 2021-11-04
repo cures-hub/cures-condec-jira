@@ -1,5 +1,7 @@
 (function(global) {
 	var ConDecReleaseNotesDialog = function() {
+		this.configuration = {};
+		this.releaseNotes = {};
 	};
 
 	ConDecReleaseNotesDialog.prototype.showCreateReleaseNoteDialog = function() {
@@ -20,7 +22,6 @@
 
 		var titleWasChanged = false;
 		var editor;
-		var firstResultObject = {};
 
 		AJS.tabs.setup();
 
@@ -36,28 +37,10 @@
 			{ title: "Experience Reporter", id: "experience_reporter" }
 		];
 
-		var targetGroupMapping = [
-			{ id: "DEVELOPER", title: "Developer", includes: ["include_decision_knowledge", "include_bug_fixes"] },
-			{ id: "TESTER", title: "Tester", includes: ["include_bug_fixes", "include_test_instructions"] },
-			{ id: "ENDUSER", title: "Enduser", includes: [] }
-		];
-
-		var softwareTypeMapping =
-			[
-				{ includes: [], title: "Simple website", id: "simple_website" },
-				{ includes: ["include_breaking_changes", "include_extra_link"], title: "Framework", id: "framework" },
-				{ includes: ["include_upgrade_guide"], title: "Installable software", id: "software" },
-				{ includes: ["include_breaking_changes"], title: "API", id: "api" }
-			];
-
-		var allTargetGroupIncludes = ["include_decision_knowledge", "include_bug_fixes", "include_test_instructions"];
-		var allSoftwareTypeIncludes = ["include_breaking_changes", "include_extra_link", "include_upgrade_guide"];
-
 		addjiraIssueMetric(criteria);
 		removeListItemIssues();
 		AJS.tabs.change(jQuery('a[href="#tab-configuration"]'));
 		makeAsyncCalls();
-		fillSoftwaretypesAndTargetGroups();
 		var sprintsArray;
 		var releasesArray = [];
 		removeEditor();
@@ -83,50 +66,6 @@
 			var twoWeeksAgoString = twoWeeksAgo.getFullYear() + '-' + ('0' + (twoWeeksAgo.getMonth() + 1)).slice(-2) + '-' + ('0' + twoWeeksAgo.getDate()).slice(-2);
 			document.getElementById("start-range").value = twoWeeksAgoString;
 			document.getElementById("final-range").value = todayString;
-		}
-
-		function fillSoftwaretypesAndTargetGroups() {
-			$("#selectSoftwareType").empty();
-			$("#selectTargetGroup").empty();
-			softwareTypeMapping.map(function(type) {
-				$("#selectSoftwareType").append("<option value='" + type.id + "'>" + type.title + "</option>")
-			});
-			targetGroupMapping.map(function(targetGroup) {
-				$("#selectTargetGroup").append("<option value='" + targetGroup.id + "'>" + targetGroup.title + "</option>")
-			});
-			document.getElementById("selectSoftwareType").onchange = onSoftwareTypeChange;
-			document.getElementById("selectTargetGroup").onchange = onTargetGroupChange;
-			onSoftwareTypeChange();
-			onTargetGroupChange();
-		}
-
-		function onTargetGroupChange() {
-			var selectedGroup = $("#selectTargetGroup").val();
-
-			var foundGroup = targetGroupMapping.filter(function(targetGroup) {
-				return targetGroup.id === selectedGroup
-			});
-			allTargetGroupIncludes.map(function(include) {
-				if (foundGroup[0].includes.indexOf(include) > -1) {
-					$("#" + include).prop("checked", true);
-				} else {
-					$("#" + include).prop("checked", false);
-				}
-			})
-		}
-
-		function onSoftwareTypeChange() {
-			var selectedType = $("#selectSoftwareType").val();
-			var foundType = softwareTypeMapping.filter(function(type) {
-				return type.id === selectedType
-			});
-			allSoftwareTypeIncludes.map(function(include) {
-				if (foundType[0].includes.indexOf(include) > -1) {
-					$("#" + include).prop("checked", true);
-				} else {
-					$("#" + include).prop("checked", false);
-				}
-			})
 		}
 
 		function throwAlert(title, message) {
@@ -216,7 +155,6 @@
 			}).catch(function(err) {
 				throwAlert("Loading the Releases went wrong", err)
 			});
-
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise])
 				.finally(function() {
@@ -393,7 +331,6 @@
 					result.startDate = startDate;
 					result.endDate = endDate;
 				} else {
-					// throw exception
 					throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
 					return false;
 				}
@@ -422,54 +359,43 @@
 			if (!timeRange) {
 				return;
 			}
-			// set button busy and disabled
+	
 			setButtonBusyAndDisabled(configurationSubmitButton, true);
 			var jiraIssueMetricWeights = getjiraIssueMetric(criteria);
-			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
 			var improvements = $("#multipleImprovements").val();
 			var title = $("#release-notes-title").val();
-			// submit configuration
-			var configuration = {
+
+			configuration = {
 				title: title,
 				startDate: timeRange.startDate,
 				endDate: timeRange.endDate,
 				sprintId: selectedSprint,
-				targetGroup: targetGroup,
 				jiraIssueTypesForBugFixes: bugFixes,
 				jiraIssueTypesForNewFeatures: features,
 				jiraIssueTypesForImprovements: improvements,
 				jiraIssueMetricWeights: jiraIssueMetricWeights
 			};
 
-			conDecReleaseNotesAPI.proposeElements(configuration).then(function(response) {
-				if (response) {
-					// change tab
-					addTabAndChangeToIt("tab-issues", "Suggested Issues");
-					console.log(response);
-
-					firstResultObject = configuration;
-					// display issues and information
-					if (response) {
-						showTables(response);
-					}
-					showTitle(configuration.title);
-				}
-
+			conDecReleaseNotesAPI.proposeElements(configuration).then(function(releaseNotes) {
+				addTabAndChangeToIt("tab-issues", "Suggested Jira Issues");
+				conDecReleaseNotesDialog.releaseNotes = releaseNotes;
+				console.log(releaseNotes);
+				showTables(releaseNotes);
+				showTitle(configuration.title);
 			}).catch(function(err) {
 				// we handle this exception directly in condec.api
 			}).finally(function() {
-				// set button idle
 				setButtonBusyAndDisabled(configurationSubmitButton, false);
 			});
 
-			function showTables(response) {
+			function showTables(releaseNotes) {
 				// first remove old tables
 				$("#displayIssueTables").empty();
-				showTable("Improvement", response.improvements);
-				showTable("New Features", response.newFeatures);
-				showTable("Bug Fixes", response.bugFixes);
+				showTable("Improvements", releaseNotes.improvements);
+				showTable("NewFeatures", releaseNotes.newFeatures);
+				showTable("BugFixes", releaseNotes.bugFixes);
 			}
 
 			function showTitle(title) {
@@ -521,10 +447,9 @@
 		};
 
 		issueSelectSubmitButton.onclick = function() {
-			// set button busy
 			setButtonBusyAndDisabled(issueSelectSubmitButton, true);
 
-			var checkedItems = { "bug_fixes": [], "new_features": [], "improvements": [] }
+			var checkedItems = { "BugFixes": [], "NewFeatures": [], "Improvements": [] }
 			Object.keys(checkedItems).map(function(cat) {
 				var queryElement = $(".includeInReleaseNote_" + cat);
 				queryElement.each(function(i) {
@@ -535,29 +460,24 @@
 				})
 			});
 
-			var postObject = {
-				selectedKeys: checkedItems,
-				title: { id: [firstResultObject.title] }
-			};
-			conDecReleaseNotesAPI.postProposedKeys(postObject)
-				.then(function(response) {
-					if (response) {
-						// remove editor
-						removeEditor();
-						// change tab
-						addTabAndChangeToIt("tab-editor", "Final edit");
-						if (response.markdown) {
-							// display editor and text
-							editor = new Editor({ element: document.getElementById("create-release-note-textarea") });
-							editor.render();
-							editor.codemirror.setValue(response.markdown);
-						}
-					}
+			var releaseNotes = {
+				title: configuration.title,
+				improvements: checkedItems["Improvements"],
+				bugFixes: checkedItems["BugFixes"],
+				newFeatures: checkedItems["NewFeatures"],
+				projectKey: conDecAPI.projectKey
+			}
 
+			conDecReleaseNotesAPI.createReleaseNotesContent(releaseNotes)
+				.then(function(response) {
+					removeEditor();
+					addTabAndChangeToIt("tab-editor", "Final edit");
+					editor = new Editor({ element: document.getElementById("create-release-note-textarea") });
+					editor.render();
+					editor.codemirror.setValue(response.markdown);
 				}.bind(this)).catch(function(err) {
 					throwAlert("An error occurred", err.toString());
 				}).finally(function() {
-					// set button idle
 					setButtonBusyAndDisabled(issueSelectSubmitButton, false);
 				});
 		};
@@ -567,9 +487,9 @@
 			var content = editor.codemirror.getValue();
 			var releaseNotes = {
 				content: content,
-				title: firstResultObject.title,
-				startDate: firstResultObject.startDate,
-				endDate: firstResultObject.endDate,
+				title: configuration.title,
+				startDate: configuration.startDate,
+				endDate: configuration.endDate,
 				projectKey: conDecAPI.projectKey
 			};
 

@@ -4,138 +4,74 @@
     </li>
 </ul>
 <div class="tabs-pane active-pane" id="tab-configuration">
-    <form class="aui" id="configurationForm">
-        <h1>General</h1>
-        <div class="field-group">
-            <label for="release-notes-title">Title</label>
-            <input class="text" id="release-notes-title"/>
-        </div>
-        <h1>Timerange</h1>
-
-        <fieldset class="group">
-            <div class="radio">
-                <label for="radioButtonOne">Use standard dates</label>
-
-                <input class="radio" type="radio" checked="checked"
+<form class="aui" id="configurationForm">
+    <div class="field-group">
+        <label for="release-notes-title">Title</label>
+        <input class="text long-field" id="release-notes-title"/>
+    </div>
+    <div class="field-group">
+        <label>Time range</label>
+		<div class="radio">
+			<input class="radio" type="radio" checked="checked"
                        name="useWhichDate" id="radioButtonOne">
-                    <label for="start-range">Start date </label>
-                    <input class="aui-date-picker" id="start-range" type="date"/>
-                    <label for="final-range">End date </label>
-                    <input class="aui-date-picker" id="final-range" type="date"/>
-            </div>
-            <div class="radio">
-                <label for="useSprint">Use sprints</label>
-                <input class="radio" type="radio"
-                       name="useWhichDate" id="useSprint">
-                <select class="select" id="selectSprints" name="selectSprints">
-                </select>
-            </div>
-            <div class="radio">
-                <label for="useReleases">Use releases</label>
-                <input class="radio" type="radio"
-                       name="useWhichDate" id="useReleases">
-                <select class="select" id="selectReleases" name="selectReleases">
-                </select>
-            </div>
-        </fieldset>
-        <h1>Targetgroup</h1>
-            <div class="aui-group">
-                <div class="aui-item">
-                    <div class="field-group">
-
-                    <label for="checkBoxOne">Targetgroup</label>
-            <select class="select" id="selectTargetGroup" name="selectTargetGroup">
-            </select>
-                </div>
-                </div>
-                <div class="aui-item">
-                    <div class="field-group">
-                        <input class="checkbox advancedOptionalConfiguration" type="checkbox" name="include_decision_knowledge"
-                               id="include_decision_knowledge">
-                        <label for="include_decision_knowledge">Include Decision Knowledge</label>
-                    </div>
-                    <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
-                                                    name="include_bug_fixes"
-                                                    id="include_bug_fixes">
-                        <label for="include_bug_fixes">Include Bug Fixes</label></div>
-                    <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
-                                                    name="include_test_instructions"
-                                                    id="include_test_instructions">
-                        <label for="include_test_instructions">Include Test Instructions</label></div>
-                </div>
-                </div>
-        <h1>Mapping issue types</h1>
-        <div class="field-group">
-            <label for="multiselect">Bug fixes</label>
-            <select class="multi-select" size="4" multiple="multiple" id="multipleBugs" name="multipleBugs">
-
-            </select>
-        </div>
-        <div class="field-group">
-            <label for="multiselect">New features</label>
-            <select class="multi-select" size="4" multiple="multiple" id="multipleFeatures"
-                    name="multipleFeatures">
-            </select>
-        </div>
-        <div class="field-group">
-            <label for="multiselect">Improvements</label>
-            <select class="multi-select" size="4" multiple="multiple" id="multipleImprovements"
-                    name="multipleImprovements">
-            </select>
-        </div>
-        <h1>Advanced Configuration</h1>
-        <a id="replace-text-trigger" data-replace-text="Hide" class="aui-expander-trigger"
-           aria-controls="expander-with-replace-text-content">Show</a>
-        <div id="expander-with-replace-text-content" class="aui-expander-content">
-            <div class="aui-group">
-                <div class="aui-item">
-                    <div class="field-group">
-                        <label for="checkBoxOne">Softwaretype</label>
-                        <select class="select" id="selectSoftwareType" name="selectSoftwareType">
-                        </select>
-                    </div>
-                </div>
-                <div class="aui-item">
-                    <div class="field-group">
-                        <input class="checkbox advancedOptionalConfiguration" type="checkbox" name="include_breaking_changes"
-                               id="include_breaking_changes">
-                        <label for="include_breaking_changes">Include Breaking Changes</label>
-                    </div>
-                    <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
-                                                    name="include_upgrade_guide"
-                                                    id="include_upgrade_guide">
-                        <label for="include_upgrade_guide">Include installation/ upgrade guide</label></div>
-                    <div class="field-group"><input class="checkbox advancedOptionalConfiguration" type="checkbox"
-                                                    name="include_extra_link"
-                                                    id="include_extra_link">
-                        <label for="include_extra_link">Include extra link to documentation</label></div>
-                </div>
-            </div>
-            <h2>Task criteria metrics weighting factor</h2>
-
-            <button data-aui-trigger class="aui-button" aria-controls="more-details-metrics">
-                <span class="aui-icon aui-icon-small aui-iconfont-question-circle">More Information</span>
-            </button>
-
-            <aui-inline-dialog id="more-details-metrics" alignment="bottom left">
-                <h4>Explanation</h4>
-                <p>Here you can set different weights to different metrics. If you set the weight of
-                    a metric to 0 this metric will not be considered when calculating the rating.<br>
-                    If you set the weight to a number higher than the others, this metric will have a higher
-                    weight when the ratings get sumed up.<br>
-                    The total rating gets computed as follows:
-                </p>
-                <ol>
-                    <li>For each metric sort all available metrics in a list</li>
-                    <li>Find the median of the list and divide list in two parts</li>
-                    <li>Scale the numbers in the first part between 1 and 5 and in the second from 6 to 10</li>
-                    <li>Multiply each number with the weight you selected</li>
-                </ol>
-                As final step the resulting ratings from all metrics of an issue get added to one number.
-            </aui-inline-dialog>
-            <h4>Enter a number from 0 to 10</h4>
-            <div id="metricWeight"></div>
-        </div>
-    </form>
-    <button id="create-release-note-submit-button" class="aui-button aui-button-primary">Save and Next</button>
+			<label for="start-range">Start date </label>
+			<input class="aui-date-picker" id="start-range" type="date"/>
+			<label for="final-range">End date </label>
+			<input class="aui-date-picker" id="final-range" type="date"/>
+		</div>
+		<div class="radio">
+			<label for="useSprint">Use sprints</label>
+			<input class="radio" type="radio" name="useWhichDate" id="useSprint">
+			<select class="select" id="selectSprints" name="selectSprints"></select>
+		</div>
+		<div class="radio">
+			<label for="useReleases">Use releases</label>
+			<input class="radio" type="radio" name="useWhichDate" id="useReleases">
+			<select class="select" id="selectReleases" name="selectReleases"></select>
+		</div>
+	</div>
+    <div class="field-group">
+        <label for="multiselect">Bug fixes</label>
+        <select class="multi-select" size="4" multiple="multiple" id="multipleBugs" name="multipleBugs">
+        </select>
+    </div>
+    <div class="field-group">
+        <label for="multiselect">New features</label>
+        <select class="multi-select" size="4" multiple="multiple" id="multipleFeatures"
+                name="multipleFeatures">
+        </select>
+    </div>
+    <div class="field-group">
+        <label for="multiselect">Improvements</label>
+        <select class="multi-select" size="4" multiple="multiple" id="multipleImprovements"
+                name="multipleImprovements">
+        </select>
+    </div>
+    <div class="field-group">
+		<label>Metrics Weighting Factor</label>
+        <button data-aui-trigger class="aui-button" aria-controls="more-details-metrics">
+            <span class="aui-icon aui-icon-small aui-iconfont-question-circle">More Information</span>
+        </button>
+        <aui-inline-dialog id="more-details-metrics" alignment="bottom left">
+            <p>Here you can set different weights to different metrics. If you set the weight of
+                a metric to 0 this metric will not be considered when calculating the rating.<br>
+                If you set the weight to a number higher than the others, this metric will have a higher
+                weight when the ratings get sumed up.<br>
+                The total rating gets computed as follows:
+            </p>
+            <ol>
+                <li>For each metric sort all available metrics in a list</li>
+                <li>Find the median of the list and divide list in two parts</li>
+                <li>Scale the numbers in the first part between 1 and 5 and in the second from 6 to 10</li>
+                <li>Multiply each number with the weight you selected</li>
+            </ol>
+            As final step the resulting ratings from all metrics of an issue get added to one number.
+        </aui-inline-dialog>
+        <b>Enter a number from 0 to 10</b>
+        <div id="metricWeight"></div>
+    </div>
+</form>
+<button id="create-release-note-submit-button" class="aui-button aui-button-primary">
+	Save and Next
+</button>
 </div>        

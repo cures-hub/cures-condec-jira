@@ -41,13 +41,6 @@ public class TestReleaseNotesConfiguration {
 		String sprintId = "unicorn sprint";
 		config.setSprintId(sprintId);
 		assertEquals(sprintId, config.getSprintId());
-
-	}
-
-	@Test
-	public void testTargetGroup() {
-		config.setTargetGroup(TargetGroup.DEVELOPER);
-		assertEquals(TargetGroup.DEVELOPER, config.getTargetGroup());
 	}
 
 	@Test

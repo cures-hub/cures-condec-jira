@@ -4,6 +4,7 @@ import java.util.EnumMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
  * Models one Jira issue to be included in the {@link ReleaseNotes}. It
@@ -31,6 +33,11 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	private EnumMap<JiraIssueMetric, Double> jiraIssueMetrics;
 	private double rating;
 	private ReleaseNotesCategory category;
+
+	@JsonCreator
+	public ReleaseNotesEntry(@JsonProperty String jiraIssueKey) {
+		this.jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
+	}
 
 	public ReleaseNotesEntry(Issue jiraIssue, ApplicationUser user) {
 		this.jiraIssue = jiraIssue;
