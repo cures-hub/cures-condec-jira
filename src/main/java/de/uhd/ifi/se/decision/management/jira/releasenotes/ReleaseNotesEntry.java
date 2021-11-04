@@ -217,8 +217,7 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 
 	@Override
 	public int compareTo(ReleaseNotesEntry o) {
-		Double rating1 = this.getRating();
 		Double rating2 = o.getRating();
-		return rating2.compareTo(rating1);
+		return rating2.compareTo(getRating());
 	}
 }

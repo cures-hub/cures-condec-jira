@@ -3,9 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.issue.Issue;
@@ -29,9 +27,9 @@ public class ReleaseNotesCreator {
 		}).collect(Collectors.toList());
 	}
 
-	public Map<String, List<ReleaseNotesEntry>> proposeElements() {
+	public ReleaseNotes proposeElements() {
 		compareProposals(proposals);
-		return mapProposals(proposals);
+		return proposeReleaseNotes(proposals);
 	}
 
 	/**
@@ -114,10 +112,9 @@ public class ReleaseNotesCreator {
 		});
 	}
 
-	private Map<String, List<ReleaseNotesEntry>> mapProposals(List<ReleaseNotesEntry> proposals) {
-		Map<String, List<ReleaseNotesEntry>> resultMap = new HashMap<>();
+	private ReleaseNotes proposeReleaseNotes(List<ReleaseNotesEntry> proposals) {
 		List<ReleaseNotesEntry> bugs = new ArrayList<>();
-		if (config.getAdditionalConfiguration().get(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
+		if (config.getAdditionalConfigurations().contains(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
 			bugs = filterEntriesByCategory(proposals, ReleaseNotesCategory.BUG_FIXES);
 		}
 		List<ReleaseNotesEntry> features = filterEntriesByCategory(proposals, ReleaseNotesCategory.NEW_FEATURES);
@@ -126,11 +123,11 @@ public class ReleaseNotesCreator {
 		if (improvements.isEmpty() && features.isEmpty() && bugs.isEmpty()) {
 			return null;
 		}
-
-		resultMap.put(ReleaseNotesCategory.BUG_FIXES.toString(), bugs);
-		resultMap.put(ReleaseNotesCategory.NEW_FEATURES.toString(), features);
-		resultMap.put(ReleaseNotesCategory.IMPROVEMENTS.toString(), improvements);
-		return resultMap;
+		ReleaseNotes releaseNotes = new ReleaseNotes();
+		releaseNotes.setBugFixes(bugs);
+		releaseNotes.setImprovements(improvements);
+		releaseNotes.setNewFeatures(features);
+		return releaseNotes;
 	}
 
 	public List<ReleaseNotesEntry> filterEntriesByCategory(List<ReleaseNotesEntry> entries,

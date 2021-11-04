@@ -29,7 +29,6 @@ import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
-import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesEntry;
 
 /**
  * REST resource for the management of {@link ReleaseNotes} with explicit
@@ -159,14 +158,14 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		Map<String, List<ReleaseNotesEntry>> proposedElements = releaseNotesCreator.proposeElements();
+		ReleaseNotes proposedReleaseNotes = releaseNotesCreator.proposeElements();
 
-		if (proposedElements == null) {
+		if (proposedReleaseNotes == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "No Jira issues with the mapped types are resolved in this date range!"))
 					.build();
 		}
-		return Response.ok(proposedElements).build();
+		return Response.ok(proposedReleaseNotes).build();
 	}
 
 	@Path("/postProposedKeys")

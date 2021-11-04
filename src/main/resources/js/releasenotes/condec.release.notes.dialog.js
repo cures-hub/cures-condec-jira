@@ -481,11 +481,9 @@
 			function showTables(response) {
 				// first remove old tables
 				$("#displayIssueTables").empty();
-				Object.keys(response).map(function(category) {
-					if (response[category] && response[category].length) {
-						showTable(category, response[category]);
-					}
-				})
+				showTable("Improvement", response.improvements);
+				showTable("New Features", response.newFeatures);
+				showTable("Bug Fixes", response.bugFixes);
 			}
 
 			function showTitle(title) {
@@ -493,13 +491,11 @@
 			}
 
 			function showTable(category, issues) {
-				var mapCategoryToTitles = {
-					"bug_fixes": "Bug Fixes",
-					"new_features": "New Features",
-					"improvements": "Improvements"
-				};
+				if (issues.length === 0) {
+					return;
+				}
 				var divToAppend = $("#displayIssueTables");
-				var title = "<h2>" + mapCategoryToTitles[category] + "</h2>";
+				var title = "<h2>" + category + "</h2>";
 				var table = "<table class='aui'><thead><tr>" +
 					"<th>Include</th>" +
 					"<th>Relevance-Rating</th>" +
