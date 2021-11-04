@@ -24,16 +24,17 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * calculates the {@link JiraIssueMetric}s for the Jira issue and saves the
  * final rating.
  */
-public class ReleaseNotesEntry {
+public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesEntry.class);
 
 	private Issue jiraIssue;
 	private EnumMap<JiraIssueMetric, Double> jiraIssueMetrics;
 	private double rating;
+	private ReleaseNotesCategory category;
 
 	public ReleaseNotesEntry(Issue jiraIssue, ApplicationUser user) {
 		this.jiraIssue = jiraIssue;
-		this.jiraIssueMetrics = JiraIssueMetric.toEnumMap();
+		jiraIssueMetrics = JiraIssueMetric.toEnumMap();
 		jiraIssueMetrics.put(JiraIssueMetric.PRIORITY, getPriority(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.COMMENT_COUNT, countComments(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.SIZE_SUMMARY, getNumberOfWordsInSummary(jiraIssue));
@@ -195,5 +196,29 @@ public class ReleaseNotesEntry {
 
 		String[] words = input.split("\\s+");
 		return words.length;
+	}
+
+	/**
+	 * @return determines the category that the type of this element is part of
+	 *         (i.e., new feature, improvement, or bug fix).
+	 */
+	public ReleaseNotesCategory getCategory() {
+		return category;
+	}
+
+	/**
+	 * @param category
+	 *            that the type of this element is part of (i.e., new feature,
+	 *            improvement, or bug fix).
+	 */
+	public void setCategory(ReleaseNotesCategory category) {
+		this.category = category;
+	}
+
+	@Override
+	public int compareTo(ReleaseNotesEntry o) {
+		Double rating1 = this.getRating();
+		Double rating2 = o.getRating();
+		return rating2.compareTo(rating1);
 	}
 }

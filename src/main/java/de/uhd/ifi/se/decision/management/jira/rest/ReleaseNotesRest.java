@@ -159,14 +159,14 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		Map<String, List<ReleaseNotesEntry>> mappedProposals = releaseNotesCreator.getMappedProposals();
+		Map<String, List<ReleaseNotesEntry>> proposedElements = releaseNotesCreator.proposeElements();
 
-		if (mappedProposals == null) {
+		if (proposedElements == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "No Jira issues with the mapped types are resolved in this date range!"))
 					.build();
 		}
-		return Response.ok(mappedProposals).build();
+		return Response.ok(proposedElements).build();
 	}
 
 	@Path("/postProposedKeys")

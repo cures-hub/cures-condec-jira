@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -9,11 +9,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 /**
- * Class to compute the metrics for the proposals and to compare the ratings.
+ * Computes the metrics for the proposals and to compare the ratings.
  */
 public class ReleaseNotesCreator {
 	private List<ReleaseNotesEntry> proposals;
@@ -22,11 +21,15 @@ public class ReleaseNotesCreator {
 	public ReleaseNotesCreator(List<Issue> jiraIssuesMatchingQuery, ReleaseNotesConfiguration releaseNoteConfiguration,
 			ApplicationUser user) {
 		this.config = releaseNoteConfiguration;
-		this.proposals = jiraIssuesMatchingQuery.stream().map(jiraIssue -> new ReleaseNotesEntry(jiraIssue, user))
-				.collect(Collectors.toList());
+		proposals = jiraIssuesMatchingQuery.stream().map(jiraIssue -> {
+			ReleaseNotesEntry entry = new ReleaseNotesEntry(jiraIssue, user);
+			ReleaseNotesCategory category = config.decideCategory(jiraIssue);
+			entry.setCategory(category);
+			return entry;
+		}).collect(Collectors.toList());
 	}
 
-	public Map<String, List<ReleaseNotesEntry>> getMappedProposals() {
+	public Map<String, List<ReleaseNotesEntry>> proposeElements() {
 		compareProposals(proposals);
 		return mapProposals(proposals);
 	}
@@ -114,46 +117,27 @@ public class ReleaseNotesCreator {
 	private Map<String, List<ReleaseNotesEntry>> mapProposals(List<ReleaseNotesEntry> proposals) {
 		Map<String, List<ReleaseNotesEntry>> resultMap = new HashMap<>();
 		List<ReleaseNotesEntry> bugs = new ArrayList<>();
-		List<ReleaseNotesEntry> features = new ArrayList<>();
-		List<ReleaseNotesEntry> improvements = new ArrayList<>();
-		proposals.forEach(proposal -> {
-			Issue issue = proposal.getJiraIssue();
-			IssueType issueType = issue.getIssueType();
-			String issueTypeName = issueType.getName();
-			// new features
-			if (config.getJiraIssueTypesForNewFeatures().contains(issueTypeName)) {
-				features.add(proposal);
-			}
-			// bugs
-			// check if include bugs is false
-			if (config.getJiraIssueTypesForBugFixes().contains(issueTypeName)
-					&& config.getAdditionalConfiguration().get(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
-				bugs.add(proposal);
-			}
-			// improvements
-			if (config.getJiraIssueTypesForImprovements().contains(issueTypeName)) {
-				improvements.add(proposal);
-			}
-		});
+		if (config.getAdditionalConfiguration().get(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
+			bugs = filterEntriesByCategory(proposals, ReleaseNotesCategory.BUG_FIXES);
+		}
+		List<ReleaseNotesEntry> features = filterEntriesByCategory(proposals, ReleaseNotesCategory.NEW_FEATURES);
+		List<ReleaseNotesEntry> improvements = filterEntriesByCategory(proposals, ReleaseNotesCategory.IMPROVEMENTS);
+
 		if (improvements.isEmpty() && features.isEmpty() && bugs.isEmpty()) {
 			return null;
 		}
-		Comparator<ReleaseNotesEntry> compareByRating = new Comparator<>() {
-			@Override
-			public int compare(ReleaseNotesEntry o1, ReleaseNotesEntry o2) {
-				Double rating1 = o1.getRating();
-				Double rating2 = o2.getRating();
-				return rating2.compareTo(rating1);
-			}
-		};
-		bugs.sort(compareByRating);
-		features.sort(compareByRating);
-		improvements.sort(compareByRating);
 
 		resultMap.put(ReleaseNotesCategory.BUG_FIXES.toString(), bugs);
 		resultMap.put(ReleaseNotesCategory.NEW_FEATURES.toString(), features);
 		resultMap.put(ReleaseNotesCategory.IMPROVEMENTS.toString(), improvements);
 		return resultMap;
+	}
+
+	public List<ReleaseNotesEntry> filterEntriesByCategory(List<ReleaseNotesEntry> entries,
+			ReleaseNotesCategory category) {
+		entries = entries.stream().filter(entry -> entry.getCategory() == category).collect(Collectors.toList());
+		Collections.sort(entries);
+		return entries;
 	}
 
 }

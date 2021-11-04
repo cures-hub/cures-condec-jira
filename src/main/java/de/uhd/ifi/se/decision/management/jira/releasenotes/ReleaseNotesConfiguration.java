@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
 /**
@@ -202,5 +204,22 @@ public class ReleaseNotesConfiguration {
 	@JsonProperty
 	public void setJiraIssueTypesForNewFeatures(List<String> jiraIssueTypesForNewFeatures) {
 		this.jiraIssueTypesForNewFeatures = jiraIssueTypesForNewFeatures;
+	}
+
+	public ReleaseNotesCategory decideCategory(Issue jiraIssue) {
+		return decideCategory(jiraIssue.getIssueType().getName());
+	}
+
+	public ReleaseNotesCategory decideCategory(String type) {
+		if (jiraIssueTypesForNewFeatures.contains(type)) {
+			return ReleaseNotesCategory.NEW_FEATURES;
+		}
+		if (jiraIssueTypesForBugFixes.contains(type)) {
+			return ReleaseNotesCategory.BUG_FIXES;
+		}
+		if (jiraIssueTypesForImprovements.contains(type)) {
+			return ReleaseNotesCategory.IMPROVEMENTS;
+		}
+		return null;
 	}
 }
