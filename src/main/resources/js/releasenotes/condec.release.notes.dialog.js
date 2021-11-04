@@ -418,25 +418,12 @@
 				return result;
 			}
 
-			var additionalConfiguration = [];
-
-			function getAdditionalConfiguration() {
-				$(".advancedOptionalConfiguration").each(function(i) {
-					var item = ($(".advancedOptionalConfiguration").get(i));
-					var name = item.name;
-					if (item.checked) {
-						additionalConfiguration.push(name.toUpperCase());
-					}
-				})
-			}
-
 			var timeRange = getStartAndEndDate();
 			if (!timeRange) {
 				return;
 			}
 			// set button busy and disabled
 			setButtonBusyAndDisabled(configurationSubmitButton, true);
-			getAdditionalConfiguration();
 			var jiraIssueMetricWeights = getjiraIssueMetric(criteria);
 			var targetGroup = $("#selectTargetGroup").val();
 			var bugFixes = $("#multipleBugs").val();
@@ -453,7 +440,6 @@
 				jiraIssueTypesForBugFixes: bugFixes,
 				jiraIssueTypesForNewFeatures: features,
 				jiraIssueTypesForImprovements: improvements,
-				additionalConfiguration: additionalConfiguration,
 				jiraIssueMetricWeights: jiraIssueMetricWeights
 			};
 
@@ -548,17 +534,10 @@
 					}
 				})
 			});
-			var additionalConfigurationObjectSelected = [];
-			Object.getOwnPropertyNames(firstResultObject.additionalConfiguration).forEach(function(val, idx, array) {
-				if (firstResultObject.additionalConfiguration[val]) {
-					additionalConfigurationObjectSelected.push(val)
-				}
-			});
 
 			var postObject = {
 				selectedKeys: checkedItems,
-				title: { id: [firstResultObject.title] },
-				additionalConfiguration: { id: additionalConfigurationObjectSelected }
+				title: { id: [firstResultObject.title] }
 			};
 			conDecReleaseNotesAPI.postProposedKeys(postObject)
 				.then(function(response) {

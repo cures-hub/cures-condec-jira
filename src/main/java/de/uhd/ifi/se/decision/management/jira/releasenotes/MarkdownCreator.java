@@ -19,17 +19,23 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 public class MarkdownCreator {
 	private final ApplicationUser user;
 	private final String projectKey;
-	private final List<String> additionalConfiguration;
 	private final Map<String, List<String>> keysForContent;
 	private final String title;
 
 	public MarkdownCreator(ApplicationUser user, String projectKey, Map<String, List<String>> keysForContent2,
-			String title, List<String> additionalConfiguration2) {
+			String title) {
 		this.user = user;
 		this.projectKey = projectKey;
 		this.keysForContent = keysForContent2;
-		this.additionalConfiguration = additionalConfiguration2;
 		this.title = title;
+	}
+
+	public MarkdownCreator(ApplicationUser user2, ReleaseNotes releaseNotes) {
+		this.user = null;
+		this.projectKey = "";
+		this.keysForContent = null;
+		// TODO Auto-generated constructor stub
+		this.title = "";
 	}
 
 	public String getMarkdownString() {
@@ -101,32 +107,28 @@ public class MarkdownCreator {
 					// add issue title and url
 					markdownAddIssue(stringBuilder, issue);
 					// add decision knowledge of the issue
-					if (additionalConfiguration != null && additionalConfiguration
-							.contains(AdditionalConfigurationOptions.INCLUDE_DECISION_KNOWLEDGE.name())) {
-						List<KnowledgeElement> comments = new ArrayList<>();
-						issues.forEach(sameIssue -> {
-							// check if dk knowledge is in issues which contains the issuekey and is one of
-							// types issue or decision
-							String sameIssueKey = sameIssue.getKey();
-							String issueKey = issue.getKey();
-							boolean b1 = sameIssueKey.contains(issueKey);
-							boolean b2 = sameIssueKey.contains(":");
-							boolean b3 = sameIssueKey.equals(issueKey);
-							boolean isIssue = sameIssue.getType() == KnowledgeType.ISSUE;
-							boolean isDecision = sameIssue.getType() == KnowledgeType.DECISION;
-							if ((b1 && b2 && !b3) && (isIssue || isDecision)) {
-								comments.add(sameIssue);
-							}
-						});
-						markdownAddComments(stringBuilder, comments);
-					}
+
+					List<KnowledgeElement> comments = new ArrayList<>();
+					issues.forEach(sameIssue -> {
+						// check if dk knowledge is in issues which contains the issuekey and is one of
+						// types issue or decision
+						String sameIssueKey = sameIssue.getKey();
+						String issueKey = issue.getKey();
+						boolean b1 = sameIssueKey.contains(issueKey);
+						boolean b2 = sameIssueKey.contains(":");
+						boolean b3 = sameIssueKey.equals(issueKey);
+						boolean isIssue = sameIssue.getType() == KnowledgeType.ISSUE;
+						boolean isDecision = sameIssue.getType() == KnowledgeType.DECISION;
+						if ((b1 && b2 && !b3) && (isIssue || isDecision)) {
+							comments.add(sameIssue);
+						}
+					});
+					markdownAddComments(stringBuilder, comments);
 				}
 			});
 			// append new line
 			stringBuilder.append("\n");
 		}
-
-		addAdditionalConfigurationToMarkDownString(stringBuilder, additionalConfiguration);
 
 		return stringBuilder.toString();
 	}
@@ -142,15 +144,5 @@ public class MarkdownCreator {
 	private void markdownAddIssue(StringBuilder stringBuilder, KnowledgeElement issue) {
 		stringBuilder.append("- ").append(issue.getSummary()).append(" ([").append(issue.getKey()).append("](")
 				.append(issue.getUrl()).append(")) \n");
-	}
-
-	private void addAdditionalConfigurationToMarkDownString(StringBuilder stringBuilder,
-			List<String> additionalConfigurations) {
-		if (additionalConfigurations == null) {
-			return;
-		}
-		additionalConfigurations.forEach(configuration -> {
-			stringBuilder.append(AdditionalConfigurationOptions.getMarkdownInstruction(configuration));
-		});
 	}
 }

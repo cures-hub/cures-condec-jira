@@ -73,11 +73,4 @@ public class TestReleaseNotesConfiguration {
 		config.setJiraIssueTypesForImprovements(List.of("Work Item"));
 		assertEquals("Work Item", config.getJiraIssueTypesForImprovements().get(0));
 	}
-
-	@Test
-	public void testAdditionalConfiguration() {
-		config.setAdditionalConfiguration(null);
-		assertEquals(null, config.getAdditionalConfiguration());
-	}
-
 }

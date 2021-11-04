@@ -168,16 +168,11 @@ public class ReleaseNotesRest {
 		return Response.ok(proposedReleaseNotes).build();
 	}
 
-	@Path("/postProposedKeys")
+	@Path("/create-content")
 	@POST
-	public Response postProposedKeys(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			Map<String, Map<String, List<String>>> postObject) {
+	public Response createReleaseNotesContent(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Map<String, List<String>> keysForContent = postObject.get("selectedKeys");
-		String title = postObject.get("title").get("id").get(0);
-		List<String> additionalConfiguration = postObject.get("additionalConfiguration").get("id");
-		MarkdownCreator markdownCreator = new MarkdownCreator(user, projectKey, keysForContent, title,
-				additionalConfiguration);
+		MarkdownCreator markdownCreator = new MarkdownCreator(user, releaseNotes);
 
 		// generate text string
 		String markDownString = markdownCreator.getMarkdownString();

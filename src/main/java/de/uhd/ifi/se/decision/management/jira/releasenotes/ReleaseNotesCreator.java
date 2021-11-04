@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -113,10 +112,7 @@ public class ReleaseNotesCreator {
 	}
 
 	private ReleaseNotes proposeReleaseNotes(List<ReleaseNotesEntry> proposals) {
-		List<ReleaseNotesEntry> bugs = new ArrayList<>();
-		if (config.getAdditionalConfiguration().contains(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
-			bugs = filterEntriesByCategory(proposals, ReleaseNotesCategory.BUG_FIXES);
-		}
+		List<ReleaseNotesEntry> bugs = filterEntriesByCategory(proposals, ReleaseNotesCategory.BUG_FIXES);
 		List<ReleaseNotesEntry> features = filterEntriesByCategory(proposals, ReleaseNotesCategory.NEW_FEATURES);
 		List<ReleaseNotesEntry> improvements = filterEntriesByCategory(proposals, ReleaseNotesCategory.IMPROVEMENTS);
 
