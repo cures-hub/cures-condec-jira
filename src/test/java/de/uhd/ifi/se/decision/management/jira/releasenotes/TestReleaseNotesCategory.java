@@ -14,7 +14,7 @@ public class TestReleaseNotesCategory {
 
 	@Test
 	public void testToReadable() {
-		assertEquals("Bug Fixes", ReleaseNotesCategory.getTargetGroupReadable(BUG_FIXES));
+		assertEquals("Bug Fixes", ReleaseNotesCategory.BUG_FIXES.getName());
 	}
 
 	@Test

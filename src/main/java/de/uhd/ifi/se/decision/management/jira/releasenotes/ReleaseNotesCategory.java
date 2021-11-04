@@ -6,27 +6,23 @@ import java.util.EnumMap;
  * Category for Release Notes
  */
 public enum ReleaseNotesCategory {
-	BUG_FIXES, NEW_FEATURES, IMPROVEMENTS;
+	BUG_FIXES("Bug Fixes"), //
+	NEW_FEATURES("New Features"), //
+	IMPROVEMENTS("Improvements");
+
+	private String name;
+
+	private ReleaseNotesCategory(String name) {
+		this.name = name;
+	}
 
 	@Override
 	public String toString() {
 		return name().toLowerCase();
 	}
 
-	public static String getTargetGroupReadable(ReleaseNotesCategory type) {
-		if (type == null) {
-			return "";
-		}
-		switch (type) {
-		case BUG_FIXES:
-			return "Bug Fixes";
-		case NEW_FEATURES:
-			return "New Features";
-		case IMPROVEMENTS:
-			return "Improvements";
-		default:
-			return "";
-		}
+	public String getName() {
+		return name;
 	}
 
 	/**

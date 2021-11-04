@@ -95,8 +95,7 @@ public class MarkdownCreator {
 				if (keysForContent.get(cat.toString()).contains(issue.getKey())) {
 					// add title once
 					if (!containsTitle.get(cat)) {
-						stringBuilder.append("## ").append(ReleaseNotesCategory.getTargetGroupReadable(cat))
-								.append(" \n");
+						stringBuilder.append("## ").append(cat.getName()).append(" \n");
 						containsTitle.put(cat, true);
 					}
 					// add issue title and url
@@ -110,11 +109,11 @@ public class MarkdownCreator {
 							// types issue or decision
 							String sameIssueKey = sameIssue.getKey();
 							String issueKey = issue.getKey();
-							Boolean b1 = sameIssueKey.contains(issueKey);
-							Boolean b2 = sameIssueKey.contains(":");
-							Boolean b3 = sameIssueKey.equals(issueKey);
-							Boolean isIssue = sameIssue.getType() == KnowledgeType.ISSUE;
-							Boolean isDecision = sameIssue.getType() == KnowledgeType.DECISION;
+							boolean b1 = sameIssueKey.contains(issueKey);
+							boolean b2 = sameIssueKey.contains(":");
+							boolean b3 = sameIssueKey.equals(issueKey);
+							boolean isIssue = sameIssue.getType() == KnowledgeType.ISSUE;
+							boolean isDecision = sameIssue.getType() == KnowledgeType.DECISION;
 							if ((b1 && b2 && !b3) && (isIssue || isDecision)) {
 								comments.add(sameIssue);
 							}
