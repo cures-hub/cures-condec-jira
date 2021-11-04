@@ -113,8 +113,8 @@
 				var releaseNotesConfig = values.releaseNotesConfig;
 				manageIssueTypes(issueTypes, releaseNotesConfig);
 			}).catch(function(err) {
-				conDecAPI.showFlag("error", "No issue-types could be loaded. " 
-						+ "This won't be working without Jira-Issues associated to a project: " + err);
+				conDecAPI.showFlag("error", "No issue-types could be loaded. "
+					+ "This won't be working without Jira-Issues associated to a project: " + err);
 			});
 
 			var releasesPromise = new Promise(function(resolve, reject) {
@@ -140,7 +140,7 @@
 					reject(err);
 				})
 			}).catch(function(err) {
-				conDecAPI.showFlag("error", "Loading the releases went wrong. " + err)
+				conDecAPI.showFlag("error", "Loading the releases went wrong. " + err);
 			});
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise])
@@ -507,7 +507,7 @@
 				fireChangeEvent();
 				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
-				conDecAPI.showFlag("error", "Saving failed. "+ err.toString());
+				conDecAPI.showFlag("error", "Saving failed. " + err.toString());
 			});
 		};
 		cancelButton.onclick = function() {
@@ -539,7 +539,7 @@
 				var wordString = "data:text/html," + htmlContent;
 				downloadFile(wordString, "doc")
 			} else {
-				conDecAPI.showFlag("error", "Please change to the preview view of the editor first, then try again.")
+				conDecAPI.showFlag("error", "Please change to the preview view of the editor first, then try again.");
 			}
 		};
 
