@@ -27,15 +27,15 @@ public class ReleaseNotesConfiguration {
 	private List<String> jiraIssueTypesForImprovements;
 	private List<String> jiraIssueTypesForBugFixes;
 	private List<String> jiraIssueTypesForNewFeatures;
+	private List<AdditionalConfigurationOptions> additionalConfigurationOptions;
 	private transient EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
-	private List<AdditionalConfigurationOptions> additionalConfigurations;
 
 	@JsonCreator
 	public ReleaseNotesConfiguration() {
 		title = "";
 		targetGroup = TargetGroup.getTargetGroup("");
 		jiraIssueMetricWeights = JiraIssueMetric.toEnumMap();
-		additionalConfigurations = new ArrayList<>();
+		additionalConfigurationOptions = new ArrayList<>();
 		jiraIssueTypesForImprovements = new ArrayList<>();
 		jiraIssueTypesForBugFixes = new ArrayList<>();
 		jiraIssueTypesForNewFeatures = new ArrayList<>();
@@ -141,8 +141,8 @@ public class ReleaseNotesConfiguration {
 	/**
 	 * @return additional configuration of the release notes.
 	 */
-	public List<AdditionalConfigurationOptions> getAdditionalConfigurations() {
-		return additionalConfigurations;
+	public List<AdditionalConfigurationOptions> getAdditionalConfiguration() {
+		return additionalConfigurationOptions;
 	}
 
 	/**
@@ -150,8 +150,8 @@ public class ReleaseNotesConfiguration {
 	 *            map with the additional configuration of the release notes.
 	 */
 	@JsonProperty
-	public void setAdditionalConfiguration(List<AdditionalConfigurationOptions> additionalConfigurations) {
-		this.additionalConfigurations = additionalConfigurations;
+	public void setAdditionalConfiguration(List<AdditionalConfigurationOptions> additionalConfigurationOptions) {
+		this.additionalConfigurationOptions = additionalConfigurationOptions;
 	}
 
 	/**

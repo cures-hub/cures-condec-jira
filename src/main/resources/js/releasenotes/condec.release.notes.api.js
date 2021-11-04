@@ -75,8 +75,8 @@
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
-	ConDecReleaseNotesAPI.prototype.postProposedKeys = function(proposedKeys) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/postProposedKeys?projectKey="
+	ConDecReleaseNotesAPI.prototype.createReleaseNotesContent = function(releaseNotes) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/create-content?projectKey="
 			+ projectKey, proposedKeys);
 	};
 

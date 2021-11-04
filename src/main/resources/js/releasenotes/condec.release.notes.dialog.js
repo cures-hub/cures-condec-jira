@@ -418,15 +418,15 @@
 				return result;
 			}
 
-
-			var additionalConfiguration = {};
+			var additionalConfiguration = [];
 
 			function getAdditionalConfiguration() {
 				$(".advancedOptionalConfiguration").each(function(i) {
 					var item = ($(".advancedOptionalConfiguration").get(i));
 					var name = item.name;
-					var isChecked = item.checked;
-					additionalConfiguration[name.toUpperCase()] = isChecked;
+					if (item.checked) {
+						additionalConfiguration.push(name.toUpperCase());
+					}
 				})
 			}
 
@@ -487,7 +487,7 @@
 			}
 
 			function showTitle(title) {
-				$("#suggestedIssuesTitle").text("Suggested Issues for Release Notes: " + title);
+				$("#suggestedIssuesTitle").text("Suggested Elements for Release Notes: " + title);
 			}
 
 			function showTable(category, issues) {

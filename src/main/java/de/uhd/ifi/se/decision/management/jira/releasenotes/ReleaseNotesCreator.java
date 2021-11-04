@@ -62,8 +62,8 @@ public class ReleaseNotesCreator {
 		EnumMap<JiraIssueMetric, List<Integer>> maxValues = new EnumMap<>(JiraIssueMetric.class);
 		RatingCalculator.getMinAndMaxValues(minValues, maxValues, countValues, medianOfProposals);
 
-		proposals.forEach(dkElement -> {
-			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = dkElement.getJiraIssueMetrics();
+		proposals.forEach(element -> {
+			EnumMap<JiraIssueMetric, Double> existingCriteriaValues = element.getJiraIssueMetrics();
 			// use ref object due to atomic problem etc.
 			var totalRef = new Object() {
 				Double total = 0.0;
@@ -108,13 +108,13 @@ public class ReleaseNotesCreator {
 				totalRef.total += scaling;
 			});
 			// set rating
-			dkElement.setRating(Math.round(totalRef.total));
+			element.setRating(Math.round(totalRef.total));
 		});
 	}
 
 	private ReleaseNotes proposeReleaseNotes(List<ReleaseNotesEntry> proposals) {
 		List<ReleaseNotesEntry> bugs = new ArrayList<>();
-		if (config.getAdditionalConfigurations().contains(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
+		if (config.getAdditionalConfiguration().contains(AdditionalConfigurationOptions.INCLUDE_BUG_FIXES)) {
 			bugs = filterEntriesByCategory(proposals, ReleaseNotesCategory.BUG_FIXES);
 		}
 		List<ReleaseNotesEntry> features = filterEntriesByCategory(proposals, ReleaseNotesCategory.NEW_FEATURES);
@@ -132,9 +132,9 @@ public class ReleaseNotesCreator {
 
 	public List<ReleaseNotesEntry> filterEntriesByCategory(List<ReleaseNotesEntry> entries,
 			ReleaseNotesCategory category) {
-		entries = entries.stream().filter(entry -> entry.getCategory() == category).collect(Collectors.toList());
-		Collections.sort(entries);
-		return entries;
+		List<ReleaseNotesEntry> filteredEntries = entries.stream().filter(entry -> entry.getCategory() == category)
+				.collect(Collectors.toList());
+		Collections.sort(filteredEntries);
+		return filteredEntries;
 	}
-
 }

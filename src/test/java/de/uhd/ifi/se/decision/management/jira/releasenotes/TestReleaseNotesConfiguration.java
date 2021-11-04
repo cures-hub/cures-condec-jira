@@ -77,7 +77,7 @@ public class TestReleaseNotesConfiguration {
 	@Test
 	public void testAdditionalConfiguration() {
 		config.setAdditionalConfiguration(null);
-		assertEquals(null, config.getAdditionalConfigurations());
+		assertEquals(null, config.getAdditionalConfiguration());
 	}
 
 }
