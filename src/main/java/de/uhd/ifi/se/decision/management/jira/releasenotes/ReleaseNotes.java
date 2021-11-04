@@ -23,6 +23,7 @@ public class ReleaseNotes {
 	private String endDate;
 
 	public ReleaseNotes() {
+		this("", "", "", "", "");
 	}
 
 	@JsonCreator
