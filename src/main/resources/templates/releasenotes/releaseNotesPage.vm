@@ -17,7 +17,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rele
 	        	</button>
 	        </form>
 	        #parse("templates/releasenotes/releaseNotesTable.vm")
-	        <aui-spinner id="release-note-table-loader" size="large"></aui-spinner>
         </section>
     </div>
 </div>

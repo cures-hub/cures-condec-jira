@@ -4,10 +4,6 @@
 	};
 
 	ConDecReleaseNotesDialog.prototype.showCreateReleaseNoteDialog = function() {
-		// HTML elements
-		// set button busy before we show the dialog
-		var openingButton = document.getElementById("create-release-notes-button");
-		setButtonBusyAndDisabled(openingButton, true);
 		var releaseNoteDialog = document.getElementById("create-release-note-dialog");
 		var cancelButton = document.getElementById("create-release-note-dialog-cancel-button");
 		var configurationSubmitButton = document.getElementById("create-release-note-submit-button");
@@ -24,7 +20,7 @@
 
 		AJS.tabs.setup();
 
-		// add task prioritisation
+		// prioritisation criteria
 		var criteria = [
 			{ title: "#Decision Knowledge", id: "decision_knowledge_count" },
 			{ title: "Priority", id: "priority" },
@@ -65,15 +61,6 @@
 			var twoWeeksAgoString = twoWeeksAgo.getFullYear() + '-' + ('0' + (twoWeeksAgo.getMonth() + 1)).slice(-2) + '-' + ('0' + twoWeeksAgo.getDate()).slice(-2);
 			document.getElementById("start-range").value = twoWeeksAgoString;
 			document.getElementById("final-range").value = todayString;
-		}
-
-		function throwAlert(title, message) {
-			AJS.flag({
-				type: "error",
-				close: "auto",
-				title: title,
-				body: message
-			});
 		}
 
 		function makeAsyncCalls() {
@@ -157,9 +144,6 @@
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise])
 				.finally(function() {
-					// disable busy button
-					setButtonBusyAndDisabled(openingButton, false);
-					// Show dialog
 					AJS.dialog2(releaseNoteDialog).show();
 					prefillDateBox();
 				})
@@ -230,26 +214,13 @@
 
 		function addjiraIssueMetric(listOfCriteria) {
 			var elementToAppend = $("#metricWeight");
-			// first empty list
 			elementToAppend.empty();
-			elementToAppend.append("<form class='aui'>")
 			listOfCriteria.map(function(element) {
 				elementToAppend.append("<div class='field-group'>" +
 					"<label for='" + element.id + "'>" + element.title + "</label>" +
-					"<input class='medium-field' type='number' value='1' max='10' min='0' id='" + element.id + "'>" +
+					"<input class='text short-field' type='number' value='1' max='10' min='0' id='" + element.id + "'>" +
 					"</div>")
 			});
-			elementToAppend.append("</form>")
-		}
-
-		function setButtonBusyAndDisabled(button, busy) {
-			if (busy) {
-				button.busy();
-				button.setAttribute('aria-disabled', 'true');
-			} else {
-				button.idle();
-				button.setAttribute('aria-disabled', 'false');
-			}
 		}
 
 		useSprintSelect.onchange = function() {
@@ -358,8 +329,7 @@
 			if (!timeRange) {
 				return;
 			}
-	
-			setButtonBusyAndDisabled(configurationSubmitButton, true);
+
 			var jiraIssueMetricWeights = getjiraIssueMetric(criteria);
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
@@ -383,10 +353,6 @@
 				console.log(releaseNotes);
 				showTables(releaseNotes);
 				showTitle(configuration.title);
-			}).catch(function(err) {
-				// we handle this exception directly in condec.api
-			}).finally(function() {
-				setButtonBusyAndDisabled(configurationSubmitButton, false);
 			});
 
 			function showTables(releaseNotes) {
@@ -446,8 +412,6 @@
 		};
 
 		issueSelectSubmitButton.onclick = function() {
-			setButtonBusyAndDisabled(issueSelectSubmitButton, true);
-
 			var checkedItems = { "BugFixes": [], "NewFeatures": [], "Improvements": [] };
 			Object.keys(checkedItems).map(function(cat) {
 				var queryElement = $(".includeInReleaseNote_" + cat);
@@ -476,8 +440,6 @@
 					editor.codemirror.setValue(response.markdown);
 				}.bind(this)).catch(function(err) {
 					throwAlert("An error occurred", err.toString());
-				}).finally(function() {
-					setButtonBusyAndDisabled(issueSelectSubmitButton, false);
 				});
 		};
 
@@ -512,13 +474,11 @@
 		var editDialog = document.getElementById("edit-release-note-dialog");
 		var saveButton = document.getElementById("edit-release-note-submit-content");
 		var cancelButton = document.getElementById("edit-release-note-dialog-cancel-button");
-		var openingButton = document.getElementById("openEditReleaseNoteDialogButton_" + id);
 		var deleteButton = document.getElementById("deleteReleaseNote");
 		var titleInput = document.getElementById("edit-release-note-dialog-title");
 		var exportMDButton = document.getElementById("edit-release-note-dialog-export-as-markdown-button");
 		var exportWordButton = document.getElementById("edit-release-note-dialog-export-as-word-button");
 		var editor;
-		setButtonBusyAndDisabled(openingButton, true);
 
 		conDecReleaseNotesAPI.getReleaseNotesById(id).then(function(result) {
 			$(".editor-preview").empty();
@@ -528,11 +488,8 @@
 			editor = new Editor({ element: document.getElementById("edit-release-note-textarea") });
 			editor.render();
 			editor.codemirror.setValue(result.content);
-
 		}).catch(function(error) {
-			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes.")
-		}).finally(function() {
-			setButtonBusyAndDisabled(openingButton, false);
+			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes. " + error)
 		});
 
 		function removeEditor() {
@@ -543,40 +500,24 @@
 				"</div>")
 		}
 
-		function setButtonBusyAndDisabled(button, busy) {
-			if (busy) {
-				button.busy();
-				button.setAttribute('aria-disabled', 'true');
-			} else {
-				button.idle();
-				button.setAttribute('aria-disabled', 'false');
-			}
-		}
-
 		saveButton.onclick = function() {
-			setButtonBusyAndDisabled(saveButton, true);
 			var releaseNote = { id: id, title: titleInput.value, content: editor.codemirror.getValue() };
 			conDecReleaseNotesAPI.updateReleaseNotes(releaseNote).then(function() {
 				fireChangeEvent();
 				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
 				throwAlert("Saving failed", err.toString());
-			}).finally(function() {
-				setButtonBusyAndDisabled(saveButton, false);
 			});
 		};
 		cancelButton.onclick = function() {
 			AJS.dialog2(editDialog).hide();
 		};
 		deleteButton.onclick = function() {
-			setButtonBusyAndDisabled(deleteButton, true);
 			conDecReleaseNotesAPI.deleteReleaseNotes(id).then(function() {
 				fireChangeEvent();
 				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
 				throwAlert("Deleting failed", err.toString());
-			}).finally(function() {
-				setButtonBusyAndDisabled(deleteButton, false);
 			});
 		};
 
@@ -610,17 +551,17 @@
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
-		}
-
-		function throwAlert(title, message) {
-			AJS.flag({
-				type: "error",
-				close: "auto",
-				title: title,
-				body: message
-			});
-		}
+		}		
 	};
+	
+	function throwAlert(title, message) {
+		AJS.flag({
+			type: "error",
+			close: "auto",
+			title: title,
+			body: message
+		});
+	}
 
 	global.conDecReleaseNotesDialog = new ConDecReleaseNotesDialog();
 })(window);

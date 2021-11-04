@@ -53,7 +53,7 @@ public class MarkdownCreator {
 	private void markdownAddComments(StringBuilder stringBuilder, List<KnowledgeElement> dkElements) {
 		dkElements.forEach(element -> {
 			stringBuilder.append("\t- ").append("![").append(element.getTypeAsString()).append("](")
-					.append(element.getType().getIconUrl()).append(")").append(element.getTypeAsString()).append(": ")
+					.append(element.getType().getIconUrl()).append(") ").append(element.getTypeAsString()).append(": ")
 					.append(element.getSummary()).append("\n");
 		});
 	}

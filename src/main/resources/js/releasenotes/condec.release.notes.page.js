@@ -39,14 +39,12 @@
 		conDecReleaseNotesAPI.getReleaseNotes(searchTerm).then(function(response){
 			if(response && response.length){
 				fillTable(response)
-			}else{
+			} else{
 				throwAlert("Info","No Release Notes found!")
 			}
 		}).catch(function (err) {
-			throwAlert("Error","Could not load Release Notes",err.toString())
-		}).finally(function () {
-			showLoadingIndicator(false);
-		})
+			throwAlert("Error","Could not load Release Notes", err.toString())
+		});
 	};
 
 	ConDecReleaseNotePage.prototype.displayReleaseNote = function (id) {
@@ -55,11 +53,10 @@
 
 	function fillTable(response) {
 		var tBody=$("#release-notes-table-body");
-		if(response && response.length){
-		response.map(function(releaseNote){
-			showLoadingIndicator(false);
-			tBody.append(createTableRow(releaseNote));
-		})
+		if (response && response.length) {
+			response.map(function(releaseNote) {
+				tBody.append(createTableRow(releaseNote));
+			});
 		}
 	}
 	
@@ -73,17 +70,8 @@
 	}
 	
 	function emptyTable(){
-		showLoadingIndicator(true);
 		var tBody=$("#release-notes-table-body");
 		tBody.empty();
-	}
-	
-	function showLoadingIndicator(display){
-		if (display) {
-			$("#release-note-table-loader").css("display","block")
-		} else {
-			$("#release-note-table-loader").css("display","none");
-		}
 	}
 	
 	function createTableRow(releaseNote){
@@ -95,7 +83,7 @@
 		tableRow += "<td><button class='aui-button' id='openEditReleaseNoteDialogButton_" + releaseNote.id 
 					+ "' onclick='conDecReleaseNotePage.displayReleaseNote(" + releaseNote.id + ")'>Display</button></td>";
 		tableRow += "</tr>";
-		return tableRow
+		return tableRow;
 	}
 
 	global.conDecReleaseNotePage = new ConDecReleaseNotePage();
