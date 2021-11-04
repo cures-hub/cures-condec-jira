@@ -1,7 +1,6 @@
 (function(global) {
 	var ConDecReleaseNotesDialog = function() {
 		this.configuration = {};
-		this.releaseNotes = {};
 	};
 
 	ConDecReleaseNotesDialog.prototype.showCreateReleaseNoteDialog = function() {
@@ -449,7 +448,7 @@
 		issueSelectSubmitButton.onclick = function() {
 			setButtonBusyAndDisabled(issueSelectSubmitButton, true);
 
-			var checkedItems = { "BugFixes": [], "NewFeatures": [], "Improvements": [] }
+			var checkedItems = { "BugFixes": [], "NewFeatures": [], "Improvements": [] };
 			Object.keys(checkedItems).map(function(cat) {
 				var queryElement = $(".includeInReleaseNote_" + cat);
 				queryElement.each(function(i) {
@@ -466,7 +465,7 @@
 				bugFixes: checkedItems["BugFixes"],
 				newFeatures: checkedItems["NewFeatures"],
 				projectKey: conDecAPI.projectKey
-			}
+			};
 
 			conDecReleaseNotesAPI.createReleaseNotesContent(releaseNotes)
 				.then(function(response) {

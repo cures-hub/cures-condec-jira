@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.ReleaseNotesPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotes;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCategory;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesCreator;
 
@@ -144,6 +145,18 @@ public class ReleaseNotesRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param releaseNoteConfiguration
+	 *            {@link ReleaseNotesConfiguration} that is used to propose Jira
+	 *            issues to be included in the release notes.
+	 * @return {@link ReleaseNotes} with suggested Jira issues for each
+	 *         {@link ReleaseNotesCategory}. The content field is not filled yet.
+	 */
 	@Path("/propose-elements")
 	@POST
 	public Response proposeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -167,6 +180,15 @@ public class ReleaseNotesRest {
 		return Response.ok(proposedReleaseNotes).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param releaseNotes
+	 *            {@link ReleaseNotes} with selected Jira issues for each
+	 *            {@link ReleaseNotesCategory}.
+	 * @return markdown string for the content field of the {@link ReleaseNotes}.
+	 */
 	@Path("/create-content")
 	@POST
 	public Response createReleaseNotesContent(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
@@ -175,6 +197,17 @@ public class ReleaseNotesRest {
 		return Response.ok(ImmutableMap.of("markdown", markDownString)).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param releaseNotesConfiguration
+	 *            {@link ReleaseNotesConfiguration} to be saved as the default when
+	 *            creating new {@link ReleaseNotes}.
+	 * @return ok if saving was successful.
+	 */
 	@Path("/save-configuration")
 	@POST
 	public Response saveReleaseNotesConfiguration(@Context HttpServletRequest request,
@@ -187,6 +220,12 @@ public class ReleaseNotesRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return {@link ReleaseNotesConfiguration} to be used as the default when
+	 *         creating new {@link ReleaseNotes}.
+	 */
 	@Path("/configuration")
 	@GET
 	public Response getReleaseNotesConfiguration(@QueryParam("projectKey") String projectKey) {
