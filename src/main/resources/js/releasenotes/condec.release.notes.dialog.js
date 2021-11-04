@@ -489,7 +489,7 @@
 			editor.render();
 			editor.codemirror.setValue(result.content);
 		}).catch(function(error) {
-			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes. " + error)
+			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes. " + error);
 		});
 
 		function removeEditor() {
@@ -551,9 +551,9 @@
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
-		}		
+		}
 	};
-	
+
 	function throwAlert(title, message) {
 		AJS.flag({
 			type: "error",

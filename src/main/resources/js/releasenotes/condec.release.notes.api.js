@@ -17,7 +17,7 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/releasenotes";
 		projectKey = conDecAPI.getProjectKey();
 	};
-	
+
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
@@ -41,12 +41,12 @@
 	 * external references: template/settings/releaseNotesSettings.vm
 	 */
 	ConDecReleaseNotesAPI.prototype.saveReleaseNotesConfiguration = function(projectKey, releaseNotesConfig) {
-		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig, 
-				function(error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
-			}
-		});
+		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig,
+			function(error, response) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
+				}
+			});
 	};
 
 	/**
@@ -99,7 +99,7 @@
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
 		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete/" + id, null);
 	};
-	
+
 	/**
 	 * external references: condec.release.notes.dialog
 	 * 
@@ -150,7 +150,7 @@
 			})
 		})
 	};
-	
+
 	/**
 	 * external references: condec.release.notes.dialog
 	 * 
