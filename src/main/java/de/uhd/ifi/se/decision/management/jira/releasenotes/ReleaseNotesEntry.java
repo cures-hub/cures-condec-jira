@@ -20,7 +20,7 @@ import com.atlassian.query.Query;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
- * Model class for one Jira issue to be included in the {@link ReleaseNotes}. It
+ * Models one Jira issue to be included in the {@link ReleaseNotes}. It
  * calculates the {@link JiraIssueMetric}s for the Jira issue and saves the
  * final rating.
  */

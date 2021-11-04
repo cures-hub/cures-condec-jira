@@ -52,11 +52,10 @@ public class MarkdownCreator {
 		String result = "";
 		StringBuilder jql = new StringBuilder();
 
-		List<String> categories = ReleaseNotesCategory.toList();
 		// create flat
 		List<String> uniqueList = new ArrayList<>();
-		categories.forEach(category -> {
-			List<String> issueKeys = keysForContent.get(category);
+		for (ReleaseNotesCategory category : ReleaseNotesCategory.values()) {
+			List<String> issueKeys = keysForContent.get(category.toString());
 			if (issueKeys != null && !issueKeys.isEmpty()) {
 				issueKeys.forEach(key -> {
 					if (!uniqueList.contains(key)) {
@@ -64,7 +63,7 @@ public class MarkdownCreator {
 					}
 				});
 			}
-		});
+		}
 		if (!uniqueList.isEmpty()) {
 			uniqueList.forEach(key -> {
 				jql.append(key);
@@ -91,16 +90,14 @@ public class MarkdownCreator {
 		EnumMap<ReleaseNotesCategory, Boolean> containsTitle = ReleaseNotesCategory.toBooleanMap();
 		// iterate for each category and check for each issue if its type corresponds
 		// with the mapping
-		ReleaseNotesCategory.toList().forEach(cat -> {
+		for (ReleaseNotesCategory cat : ReleaseNotesCategory.values()) {
 			issues.forEach(issue -> {
-				if (keysForContent.get(cat).contains(issue.getKey())) {
+				if (keysForContent.get(cat.toString()).contains(issue.getKey())) {
 					// add title once
-					if (!containsTitle.get(ReleaseNotesCategory.getTargetGroup(cat))) {
-						stringBuilder.append("## ")
-								.append(ReleaseNotesCategory
-										.getTargetGroupReadable(ReleaseNotesCategory.getTargetGroup(cat)))
+					if (!containsTitle.get(cat)) {
+						stringBuilder.append("## ").append(ReleaseNotesCategory.getTargetGroupReadable(cat))
 								.append(" \n");
-						containsTitle.put(ReleaseNotesCategory.getTargetGroup(cat), true);
+						containsTitle.put(cat, true);
 					}
 					// add issue title and url
 					markdownAddIssue(stringBuilder, issue);
@@ -128,7 +125,7 @@ public class MarkdownCreator {
 			});
 			// append new line
 			stringBuilder.append("\n");
-		});
+		}
 
 		addAdditionalConfigurationToMarkDownString(stringBuilder, additionalConfiguration);
 

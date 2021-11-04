@@ -18,16 +18,6 @@ public class TestReleaseNotesCategory {
 	}
 
 	@Test
-	public void testToList() {
-		assertEquals(3, ReleaseNotesCategory.toList().size());
-	}
-
-	@Test
-	public void testToOriginalList() {
-		assertEquals(3, ReleaseNotesCategory.toOriginalList().size());
-	}
-
-	@Test
 	public void testToBooleanMap() {
 		assertEquals(3, ReleaseNotesCategory.toBooleanMap().size());
 		assertEquals(false, ReleaseNotesCategory.toBooleanMap().get(BUG_FIXES));
