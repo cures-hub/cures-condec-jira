@@ -143,7 +143,7 @@
 				if (result && result.length) {
 					resolve(result);
 				} else {
-					reject("No releases were found");
+					reject("No releases were found.");
 				}
 			}).catch(function(err) {
 				reject(err);

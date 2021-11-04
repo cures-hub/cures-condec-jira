@@ -93,7 +93,7 @@
 					});
 			}).catch(function(err) {
 				disableSprintBox();
-				throwAlert("No sprints could be loaded", err);
+				conDecAPI.showFlag("error", "No sprints could be loaded. " + err);
 			});
 			// load issue types
 			var issueTypePromise = new Promise(function(resolve, reject) {
@@ -113,7 +113,8 @@
 				var releaseNotesConfig = values.releaseNotesConfig;
 				manageIssueTypes(issueTypes, releaseNotesConfig);
 			}).catch(function(err) {
-				throwAlert("No issue-types could be loaded", "This won't be working without Jira-Issues associated to a project: " + err);
+				conDecAPI.showFlag("error", "No issue-types could be loaded. " 
+						+ "This won't be working without Jira-Issues associated to a project: " + err);
 			});
 
 			var releasesPromise = new Promise(function(resolve, reject) {
@@ -139,7 +140,7 @@
 					reject(err);
 				})
 			}).catch(function(err) {
-				throwAlert("Loading the Releases went wrong", err)
+				conDecAPI.showFlag("error", "Loading the releases went wrong. " + err)
 			});
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise])
@@ -261,8 +262,8 @@
 			// first check : both dates have to be selected or a sprint or
 			// releases and the checkbox
 			if ((!useSprints) && (!useReleases) && (!!startDate === false || !!endDate === false)) {
-				throwAlert("Select Date or Sprint or Release", "The start date and the end date have to be selected, if the sprints or releases are not available or not selected");
-				return
+				conDecAPI.showFlag("error", "The time range has to be selected.");
+				return;
 			}
 
 			function getStartAndEndDate() {
@@ -275,7 +276,7 @@
 						result.startDate = selectedDates[0].startDate.iso;
 						result.endDate = selectedDates[0].releaseDate.iso;
 					} else {
-						throwAlert("An error occured", "Something went wrong with the release selection");
+						conDecAPI.showFlag("error", "Something went wrong with the release selection");
 						return false;
 					}
 				} else if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
@@ -290,18 +291,18 @@
 							result.startDate = formattedStartDate;
 							result.endDate = formattedEndDate;
 						} else {
-							throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
+							conDecAPI.showFlag("error", "Neither a sprint was selected or start dates were filled");
 							return false;
 						}
 					} else {
-						throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
+						conDecAPI.showFlag("error", "Neither a sprint was selected or start dates were filled");
 						return false;
 					}
 				} else if (!!startDate && !!endDate) {
 					result.startDate = startDate;
 					result.endDate = endDate;
 				} else {
-					throwAlert("An error occured", "Neither a sprint was selected or start dates were filled");
+					conDecAPI.showFlag("error", "Neither a sprint was selected or start dates were filled");
 					return false;
 				}
 				return result;
@@ -439,7 +440,7 @@
 					editor.render();
 					editor.codemirror.setValue(response.markdown);
 				}.bind(this)).catch(function(err) {
-					throwAlert("An error occurred", err.toString());
+					conDecAPI.showFlag("error", err.toString());
 				});
 		};
 
@@ -461,7 +462,7 @@
 					AJS.dialog2(releaseNoteDialog).hide();
 				}
 			}).catch(function(err) {
-				throwAlert("An error saving occurred", err.toString());
+				conDecAPI.showFlag("error", err.toString());
 			})
 		};
 
@@ -489,7 +490,7 @@
 			editor.render();
 			editor.codemirror.setValue(result.content);
 		}).catch(function(error) {
-			throwAlert("Retrieving Release notes failed", "Could not retrieve the release notes. " + error);
+			conDecAPI.showFlag("error", "Could not retrieve the release notes. " + error);
 		});
 
 		function removeEditor() {
@@ -506,7 +507,7 @@
 				fireChangeEvent();
 				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
-				throwAlert("Saving failed", err.toString());
+				conDecAPI.showFlag("error", "Saving failed. "+ err.toString());
 			});
 		};
 		cancelButton.onclick = function() {
@@ -517,7 +518,7 @@
 				fireChangeEvent();
 				AJS.dialog2(editDialog).hide();
 			}).catch(function(err) {
-				throwAlert("Deleting failed", err.toString());
+				conDecAPI.showFlag("error", "Deleting failed. " + err.toString());
 			});
 		};
 
@@ -538,7 +539,7 @@
 				var wordString = "data:text/html," + htmlContent;
 				downloadFile(wordString, "doc")
 			} else {
-				throwAlert("Error downloading Word", "Please change to the preview view of the editor first, then try again.")
+				conDecAPI.showFlag("error", "Please change to the preview view of the editor first, then try again.")
 			}
 		};
 
@@ -553,15 +554,6 @@
 			document.body.removeChild(link);
 		}
 	};
-
-	function throwAlert(title, message) {
-		AJS.flag({
-			type: "error",
-			close: "auto",
-			title: title,
-			body: message
-		});
-	}
 
 	global.conDecReleaseNotesDialog = new ConDecReleaseNotesDialog();
 })(window);

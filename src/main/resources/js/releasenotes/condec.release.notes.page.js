@@ -38,12 +38,12 @@
 		emptyTable();
 		conDecReleaseNotesAPI.getReleaseNotes(searchTerm).then(function(response) {
 			if (response && response.length) {
-				fillTable(response)
+				fillTable(response);
 			} else {
-				throwAlert("Info", "No Release Notes found!")
+				conDecAPI.showFlag("info", "No release notes found!");
 			}
 		}).catch(function(err) {
-			throwAlert("Error", "Could not load Release Notes", err.toString())
+			conDecAPI.showFlag("error", "Could not load Release Notes. " + err.toString());
 		});
 	};
 
@@ -58,15 +58,6 @@
 				tBody.append(createTableRow(releaseNote));
 			});
 		}
-	}
-
-	function throwAlert(type, title, message) {
-		AJS.flag({
-			type: type,
-			close: "auto",
-			title: title,
-			body: message
-		});
 	}
 
 	function emptyTable() {
