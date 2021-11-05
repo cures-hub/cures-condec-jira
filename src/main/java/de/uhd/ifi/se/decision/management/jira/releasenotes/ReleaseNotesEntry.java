@@ -158,10 +158,11 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	 * @return number of decision knowledge elements that are reachable from the
 	 *         Jira issue within a link distance of 3.
 	 */
-	public int getNumberOfReachableDecisionKnowledgeElements(Issue jiraIssue) {
+	public static int getNumberOfReachableDecisionKnowledgeElements(Issue jiraIssue) {
 		FilterSettings filterSettings = new FilterSettings(jiraIssue.getProjectObject().getKey(), "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
 		filterSettings.setCreateTransitiveLinks(true);
+		filterSettings.setSelectedElementObject(new KnowledgeElement(jiraIssue));
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		return filteringManager.getElementsMatchingFilterSettings().size() - 1;
 	}

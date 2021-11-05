@@ -318,8 +318,8 @@
 				$("#suggestedIssuesTitle").text("Suggested Elements for Release Notes: " + title);
 			}
 
-			function showTable(category, issues) {
-				if (issues.length === 0) {
+			function showTable(category, proposedReleaseNotesEntries) {
+				if (proposedReleaseNotesEntries.length === 0) {
 					return;
 				}
 				var divToAppend = $("#displayIssueTables");
@@ -332,26 +332,27 @@
 					"<th>Type</th>" +
 					"</tr></thead>";
 				var tableRows = "";
-				issues.map(function(issue) {
-					var expander = "<div id='expanderOfRating_" + category + issue.element.key + "' class='aui-expander-content'>" +
+				proposedReleaseNotesEntries.map(function(entry) {
+					var expander = "<div id='expanderOfRating_" + category + entry.element.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
-						"<li>#Comments: " + issue.jiraIssueMetrics.COMMENT_COUNT + "</li>" +
-						"<li>#Decision Knowledge: " + issue.jiraIssueMetrics.DECISION_KNOWLEDGE_COUNT + "</li>" +
-						"<li>Days Completion: " + issue.jiraIssueMetrics.DAYS_COMPLETION + "</li>" +
-						"<li>Exp. Reporter: " + issue.jiraIssueMetrics.EXPERIENCE_REPORTER + "</li>" +
-						"<li>Exp. Resolver: " + issue.jiraIssueMetrics.EXPERIENCE_RESOLVER + "</li>" +
-						"<li>Priority: " + issue.jiraIssueMetrics.PRIORITY + "</li>" +
-						"<li>Description Size: " + issue.jiraIssueMetrics.SIZE_DESCRIPTION + "</li>" +
-						"<li>Summary Size: " + issue.jiraIssueMetrics.SIZE_SUMMARY + "</li>" +
+						"<li>#Comments: " + entry.jiraIssueMetrics.COMMENT_COUNT + "</li>" +
+						"<li>#Decision Knowledge: " + entry.jiraIssueMetrics.DECISION_KNOWLEDGE_COUNT + "</li>" +
+						"<li>Days Completion: " + entry.jiraIssueMetrics.DAYS_COMPLETION + "</li>" +
+						"<li>Exp. Reporter: " + entry.jiraIssueMetrics.EXPERIENCE_REPORTER + "</li>" +
+						"<li>Exp. Resolver: " + entry.jiraIssueMetrics.EXPERIENCE_RESOLVER + "</li>" +
+						"<li>Priority: " + entry.jiraIssueMetrics.PRIORITY + "</li>" +
+						"<li>Description Size: " + entry.jiraIssueMetrics.SIZE_DESCRIPTION + "</li>" +
+						"<li>Summary Size: " + entry.jiraIssueMetrics.SIZE_SUMMARY + "</li>" +
+						"<li><b>Total Rating: " + entry.rating + "</b></li>" +
 						"</ul>" +
 						"</div>" +
-						"<a data-replace-text='less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + issue.element.key + "'>show details</a>";
+						"<a data-replace-text='less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + entry.element.key + "'>show details</a>";
 					var tableRow = "<tr>" +
-						"<td><input class='checkbox includeInReleaseNote_" + category + "' checked type='checkbox' name='useSprint' id='includeInReleaseNote_" + issue.element.key + "'></td>" +
+						"<td><input class='checkbox includeInReleaseNote_" + category + "' checked type='checkbox' name='useSprint' id='includeInReleaseNote_" + entry.element.key + "'></td>" +
 						"<td>" + expander + "</td>" +
-						"<td><a target='_blank' href='" + issue.element.url + "'>" + issue.element.key + "</a></td>" +
-						"<td>" + issue.element.summary + "</td>" +
-						"<td>" + issue.element.type + "</td>" +
+						"<td><a target='_blank' href='" + entry.element.url + "'>" + entry.element.key + "</a></td>" +
+						"<td>" + entry.element.summary + "</td>" +
+						"<td>" + entry.element.type + "</td>" +
 						"</tr>";
 					tableRows += tableRow;
 				});
@@ -362,7 +363,7 @@
 			}
 		};
 
-		issueSelectSubmitButton.onclick = function() {
+		proposedReleaseNotesEntriesSelectSubmitButton.onclick = function() {
 			var checkedItems = { "BugFixes": [], "NewFeatures": [], "Improvements": [] };
 			Object.keys(checkedItems).map(function(cat) {
 				var queryElement = $(".includeInReleaseNote_" + cat);
