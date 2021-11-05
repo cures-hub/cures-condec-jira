@@ -18,6 +18,8 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.query.Query;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
@@ -42,6 +44,8 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	public ReleaseNotesEntry(Issue jiraIssue, ApplicationUser user) {
 		this.jiraIssue = jiraIssue;
 		jiraIssueMetrics = JiraIssueMetric.toEnumMap();
+		jiraIssueMetrics.put(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT,
+				(double) getNumberOfReachableDecisionKnowledgeElements(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.PRIORITY, getPriority(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.COMMENT_COUNT, countComments(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.SIZE_SUMMARY, getNumberOfWordsInSummary(jiraIssue));
@@ -151,6 +155,20 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	/**
 	 * @param jiraIssue
 	 *            to be included in the {@link ReleaseNotes}.
+	 * @return number of decision knowledge elements that are reachable from the
+	 *         Jira issue within a link distance of 3.
+	 */
+	public int getNumberOfReachableDecisionKnowledgeElements(Issue jiraIssue) {
+		FilterSettings filterSettings = new FilterSettings(jiraIssue.getProjectObject().getKey(), "");
+		filterSettings.setOnlyDecisionKnowledgeShown(true);
+		filterSettings.setCreateTransitiveLinks(true);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		return filteringManager.getElementsMatchingFilterSettings().size() - 1;
+	}
+
+	/**
+	 * @param jiraIssue
+	 *            to be included in the {@link ReleaseNotes}.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser} who makes the request.
 	 * @return total number of created Jira issues by the reporter of this Jira
@@ -223,8 +241,8 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	}
 
 	@Override
-	public int compareTo(ReleaseNotesEntry o) {
-		Double rating2 = o.getRating();
-		return rating2.compareTo(getRating());
+	public int compareTo(ReleaseNotesEntry otherEntry) {
+		Double ratingOfOtherEntry = otherEntry.getRating();
+		return ratingOfOtherEntry.compareTo(getRating());
 	}
 }
