@@ -63,9 +63,12 @@
 			document.getElementById("final-range").value = todayString;
 		}
 
-		function makeAsyncCalls() {			
+		function makeAsyncCalls() {
 			// load sprints
 			var sprintPromise = conDecReleaseNotesAPI.getSprintsByProject().then(function(sprints) {
+				if (!sprints) {
+					return;
+				}
 				sprintsArray = sprints.map(function(sprint) {
 					return sprint.values;
 				});
@@ -79,10 +82,8 @@
 						}
 					});
 				}
-			}).catch(function(err) {
-				conDecAPI.showFlag("info", "No sprints could be loaded. " + err);
 			});
-			
+
 			// load issue types
 			var issueTypePromise = conDecReleaseNotesAPI.getIssueTypes().then(function(issueTypes) {
 				conDecReleaseNotesAPI.getReleaseNotesConfiguration().then(function(releaseNotesConfig) {
@@ -100,8 +101,6 @@
 						releaseSelector.append('<option disabled value="' + release.id + '">' + release.name + '</option>');
 					}
 				});
-			}).catch(function(err) {
-				conDecAPI.showFlag("info", "Releases could not be loaded. " + err);
 			});
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise])

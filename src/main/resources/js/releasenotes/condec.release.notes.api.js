@@ -94,28 +94,22 @@
 	 * @return all Jira issue types for a project.
 	 */
 	ConDecReleaseNotesAPI.prototype.getIssueTypes = function() {
-		return new Promise(function(resolve, reject) {
-			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes&projectKeys=" + projectKey;
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function(result) {
-				if (result && result.projects && result.projects.length) {
-					var correctIssueTypes = result.projects.filter(function(project) {
-						return project.key === projectKey;
-					});
-					correctIssueTypes = correctIssueTypes[0].issuetypes;
-					if (correctIssueTypes && correctIssueTypes.length) {
-						resolve(correctIssueTypes);
-					} else {
-						reject("No Jira issue types could be found for this project");
-					}
+		var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes&projectKeys=" + projectKey;
+		return generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl).then(function(result) {
+			if (result && result.projects && result.projects.length) {
+				var correctIssueTypes = result.projects.filter(function(project) {
+					return project.key === projectKey;
+				});
+				correctIssueTypes = correctIssueTypes[0].issuetypes;
+				if (correctIssueTypes && correctIssueTypes.length) {
+					return correctIssueTypes;
 				} else {
-					reject("No Jira projects were found.");
+					conDecAPI.showFlag("error", "No Jira issue types could be found for this project.");
 				}
-
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
+			} else {
+				conDecAPI.showFlag("error", "No Jira projects were found.");
+			}
+		});
 	};
 
 	/**
@@ -125,7 +119,9 @@
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleases = function() {
 		var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
-		return generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
+		return generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl).catch(function(err) {
+			conDecAPI.showFlag("info", "Releases could not be loaded. " + err);
+		});
 	};
 
 	/**
@@ -134,28 +130,25 @@
 	 * @return sprints for the Jira project. Finds the board(s) first, then the sprints for the board(s).
 	 */
 	ConDecReleaseNotesAPI.prototype.getSprintsByProject = function() {
-		return new Promise(function(resolve, reject) {
-			var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
-			var boardPromise = generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl);
-			boardPromise.then(function(boards) {
-				if (boards && boards.values && boards.values.length) {
-					var sprintPromises = boards.values.map(function(board) {
-						var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
-						return generalApi.getJSONReturnPromise(AJS.contextPath() + sprintUrl);
-					});
-					Promise.all(sprintPromises)
-						.then(function(sprints) {
-							resolve(sprints);
-						}).catch(function(err) {
-							reject(err);
-						})
-				} else {
-					reject("No boards could be found, so the sprints could also not be loaded");
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
+		var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
+		return generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl).then(function(boards) {
+			if (boards && boards.values && boards.values.length) {
+				var sprintPromises = boards.values.map(function(board) {
+					var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
+					return generalApi.getJSONReturnPromise(AJS.contextPath() + sprintUrl);
+				});
+				Promise.all(sprintPromises)
+					.then(function(sprints) {
+						return (sprints);
+					}).catch(function(err) {
+						conDecAPI.showFlag("info", "No sprints could be loaded. " + err);
+					})
+			} else {
+				console.log("No boards could be found, so the sprints could also not be loaded.");
+			}
+		}).catch(function(err) {
+			conDecAPI.showFlag("info", "No boards could be loaded. " + err);
+		});
 	};
 
 	global.conDecReleaseNotesAPI = new ConDecReleaseNotesAPI();
