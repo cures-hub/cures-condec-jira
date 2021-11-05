@@ -9,16 +9,18 @@ import java.util.EnumMap;
  */
 public enum JiraIssueMetric {
 	DECISION_KNOWLEDGE_COUNT, // number of decision knowledge elements linked to the Jira issue
-	PRIORITY, //
+	PRIORITY, // e.g. low, medium, high
 	COMMENT_COUNT, // number of comments of the Jira issue
 	SIZE_SUMMARY, // length of summary text
 	SIZE_DESCRIPTION, // length of description text
 	DAYS_COMPLETION, // number of days that the Jira issue was open
-	EXPERIENCE_RESOLVER, //
-	EXPERIENCE_REPORTER;
+	EXPERIENCE_RESOLVER, // number of resolved Jira issues by the assignee user
+	EXPERIENCE_REPORTER; // number of reported Jira issues by the reporter user
 
 	/**
-	 * @return map of all metrics with default value 1.0.
+	 * @return map of all metrics with default value 1.0. The map is both used to
+	 *         store the metrics values as well as their weights when calculating
+	 *         the rating of a {@link ReleaseNotesEntry}.
 	 */
 	public static EnumMap<JiraIssueMetric, Double> toEnumMap() {
 		EnumMap<JiraIssueMetric, Double> jiraIssueMetrics = new EnumMap<>(JiraIssueMetric.class);

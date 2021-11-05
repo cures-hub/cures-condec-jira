@@ -136,19 +136,8 @@
 	 * @return releases for a Jira project.
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleases = function() {
-		return new Promise(function(resolve, reject) {
-			var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function(result) {
-				if (result && result.length) {
-					resolve(result);
-				} else {
-					reject("No releases were found.");
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
+		var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
+		return generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
 	};
 
 	/**

@@ -93,7 +93,7 @@
 					});
 			}).catch(function(err) {
 				disableSprintBox();
-				conDecAPI.showFlag("error", "No sprints could be loaded. " + err);
+				conDecAPI.showFlag("info", "No sprints could be loaded. " + err);
 			});
 			// load issue types
 			var issueTypePromise = new Promise(function(resolve, reject) {
@@ -140,7 +140,7 @@
 					reject(err);
 				})
 			}).catch(function(err) {
-				conDecAPI.showFlag("error", "Loading the releases went wrong. " + err);
+				conDecAPI.showFlag("info", "Loading the releases went wrong. " + err);
 			});
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise])

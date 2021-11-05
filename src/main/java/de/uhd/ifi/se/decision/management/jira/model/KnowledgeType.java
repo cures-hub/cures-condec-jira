@@ -209,13 +209,17 @@ public enum KnowledgeType {
 	}
 
 	public String getIconUrl() {
+		return ComponentGetter.getUrlOfImageFolder() + getIconFileName();
+	}
+
+	public String getIconFileName() {
 		switch (this) {
 		case PRO:
-			return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+			return "argument_pro.png";
 		case CON:
-			return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+			return "argument_con.png";
 		default:
-			return ComponentGetter.getUrlOfImageFolder() + this.name().toLowerCase(Locale.ENGLISH) + ".png";
+			return name().toLowerCase(Locale.ENGLISH) + ".png";
 		}
 	}
 
