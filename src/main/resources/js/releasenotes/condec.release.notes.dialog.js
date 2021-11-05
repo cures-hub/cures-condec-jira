@@ -373,8 +373,8 @@
 					return;
 				}
 				var divToAppend = $("#displayIssueTables");
-				var title = "<h2>" + category + "</h2>";
-				var table = "<table class='aui'><thead><tr>" +
+				var title = "<h3>" + category + "</h3>";
+				var table = "<table class='aui aui-table-list'><thead><tr>" +
 					"<th>Include</th>" +
 					"<th>Relevance-Rating</th>" +
 					"<th>Key</th>" +
@@ -385,8 +385,8 @@
 				issues.map(function(issue) {
 					var expander = "<div id='expanderOfRating_" + category + issue.element.key + "' class='aui-expander-content'>" +
 						"<ul class='noDots'>" +
-						"<li>#Comments: " + issue.jiraIssueMetrics.element + "</li>" +
-						"<li>#Decision Knowledge: " + issue.jiraIssueMetrics.COUNT_DECISION_KNOWLEDGE + "</li>" +
+						"<li>#Comments: " + issue.jiraIssueMetrics.COMMENT_COUNT + "</li>" +
+						"<li>#Decision Knowledge: " + issue.jiraIssueMetrics.DECISION_KNOWLEDGE_COUNT + "</li>" +
 						"<li>Days Completion: " + issue.jiraIssueMetrics.DAYS_COMPLETION + "</li>" +
 						"<li>Exp. Reporter: " + issue.jiraIssueMetrics.EXPERIENCE_REPORTER + "</li>" +
 						"<li>Exp. Resolver: " + issue.jiraIssueMetrics.EXPERIENCE_RESOLVER + "</li>" +
@@ -395,7 +395,7 @@
 						"<li>Summary Size: " + issue.jiraIssueMetrics.SIZE_SUMMARY + "</li>" +
 						"</ul>" +
 						"</div>" +
-						"<a data-replace-text='" + issue.rating + " less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + issue.element.key + "'>" + issue.rating + " details</a>";
+						"<a data-replace-text='less' class='aui-expander-trigger' aria-controls='expanderOfRating_" + category + issue.element.key + "'>show details</a>";
 					var tableRow = "<tr>" +
 						"<td><input class='checkbox includeInReleaseNote_" + category + "' checked type='checkbox' name='useSprint' id='includeInReleaseNote_" + issue.element.key + "'></td>" +
 						"<td>" + expander + "</td>" +
@@ -435,7 +435,7 @@
 			conDecReleaseNotesAPI.createReleaseNotesContent(releaseNotes)
 				.then(function(response) {
 					removeEditor();
-					addTabAndChangeToIt("tab-editor", "Final edit");
+					addTabAndChangeToIt("tab-editor", "Release Notes Content");
 					editor = new Editor({ element: document.getElementById("create-release-note-textarea") });
 					editor.render();
 					editor.codemirror.setValue(response.markdown);
