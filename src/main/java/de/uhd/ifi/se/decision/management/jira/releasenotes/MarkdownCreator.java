@@ -1,12 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Class to generate the markdown string out of the selected jira-issue-keys
@@ -38,24 +40,35 @@ public class MarkdownCreator {
 
 		FilterSettings filterSettings = new FilterSettings(releaseNotes.getProjectKey(), "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
+		filterSettings.setCreateTransitiveLinks(true);
 
 		for (ReleaseNotesEntry entry : entries) {
-			markdownAddIssue(stringBuilder, entry.getElement());
-			filterSettings.setSelectedElementObject(entry.getElement());
+			KnowledgeElement rootElement = entry.getElement();
+			markdownAddIssue(stringBuilder, rootElement);
+			filterSettings.setSelectedElementObject(rootElement);
 			FilteringManager filteringManager = new FilteringManager(filterSettings);
-			Set<KnowledgeElement> linkedDecisionKnowledge = filteringManager.getElementsMatchingFilterSettings();
-			// linkedDecisionKnowledge.removeIf(element ->
-			// element.equals(entry.getElement()));
-			markdownAddComments(stringBuilder, new ArrayList<>(linkedDecisionKnowledge));
+			KnowledgeGraph filteredGraph = filteringManager.getFilteredGraph();
+			DepthFirstIterator<KnowledgeElement, Link> iterator = new DepthFirstIterator<>(
+					filteredGraph.toUndirectedGraph(), rootElement);
+
+			while (iterator.hasNext()) {
+				KnowledgeElement childElement = iterator.next();
+				if (childElement.equals(rootElement)) {
+					continue;
+				}
+				int currentDepth = rootElement.getLinkDistance(childElement, 3);
+				markdownAddComments(stringBuilder, childElement, currentDepth);
+			}
 		}
 	}
 
-	private void markdownAddComments(StringBuilder stringBuilder, List<KnowledgeElement> dkElements) {
-		dkElements.forEach(element -> {
-			stringBuilder.append("\t- ").append("![").append(element.getTypeAsString()).append("](")
-					.append(element.getType().getIconUrl()).append(") ").append(element.getTypeAsString()).append(": ")
-					.append(element.getSummary()).append("\n");
-		});
+	private void markdownAddComments(StringBuilder stringBuilder, KnowledgeElement element, int depth) {
+		for (int i = 0; i < depth; i++) {
+			stringBuilder.append("\t");
+		}
+		stringBuilder.append("- ").append("![").append(element.getTypeAsString()).append("](")
+				.append(element.getType().getIconUrl()).append(") ").append(element.getTypeAsString()).append(": ")
+				.append(element.getSummary()).append("\n");
 	}
 
 	private void markdownAddIssue(StringBuilder stringBuilder, KnowledgeElement issue) {

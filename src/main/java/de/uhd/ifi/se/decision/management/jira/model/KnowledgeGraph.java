@@ -464,4 +464,11 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(this);
 		return new DijkstraShortestPath<>(undirectedGraph, maxLinkDistance);
 	}
+
+	/**
+	 * @return the knowledge graph as an undirected graph.
+	 */
+	public Graph<KnowledgeElement, Link> toUndirectedGraph() {
+		return new AsUndirectedGraph<KnowledgeElement, Link>(this);
+	}
 }
