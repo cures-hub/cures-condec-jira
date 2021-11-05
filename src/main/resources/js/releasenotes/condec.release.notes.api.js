@@ -130,24 +130,27 @@
 	 * @return sprints for the Jira project. Finds the board(s) first, then the sprints for the board(s).
 	 */
 	ConDecReleaseNotesAPI.prototype.getSprintsByProject = function() {
-		var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
-		return generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl).then(function(boards) {
-			if (boards && boards.values && boards.values.length) {
-				var sprintPromises = boards.values.map(function(board) {
-					var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
-					return generalApi.getJSONReturnPromise(AJS.contextPath() + sprintUrl);
-				});
-				Promise.all(sprintPromises)
-					.then(function(sprints) {
-						return (sprints);
-					}).catch(function(err) {
-						conDecAPI.showFlag("info", "No sprints could be loaded. " + err);
-					})
-			} else {
-				console.log("No boards could be found, so the sprints could also not be loaded.");
-			}
-		}).catch(function(err) {
-			conDecAPI.showFlag("info", "No boards could be loaded. " + err);
+		return new Promise(function(resolve, reject) {
+			var boardUrl = "/rest/agile/latest/board?projectKeyOrId=" + projectKey;
+			var boardPromise = generalApi.getJSONReturnPromise(AJS.contextPath() + boardUrl);
+			boardPromise.then(function(boards) {
+				if (boards && boards.values && boards.values.length) {
+					var sprintPromises = boards.values.map(function(board) {
+						var sprintUrl = "/rest/agile/latest/board/" + board.id + "/sprint";
+						return generalApi.getJSONReturnPromise(AJS.contextPath() + sprintUrl);
+					});
+					Promise.all(sprintPromises)
+						.then(function(sprints) {
+							resolve(sprints);
+						}).catch(function(err) {
+							reject(err);
+						})
+				} else {
+					reject("No boards could be found, so the sprints could also not be loaded");
+				}
+			}).catch(function(err) {
+				reject(err);
+			});
 		});
 	};
 

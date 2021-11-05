@@ -14,17 +14,17 @@
 
 		var titleWasChanged = false;
 		var editor;
-		
+
 		var metricNames = {
-				"decision_knowledge_count": "#Decision Knowledge",
-				"priority": "Priority",
-				"comment_count": "#Comments",
-				"size_description": "#Words Description",
-				"size_summary": "#Words Summary",
-				"days_completion": "#Days to completion",
-				"experience_resolver": "Experience Resolver",
-				"experience_reporter": "Experience Reporter"
-			};
+			"decision_knowledge_count": "#Decision Knowledge",
+			"priority": "Priority",
+			"comment_count": "#Comments",
+			"size_description": "#Words Description",
+			"size_summary": "#Words Summary",
+			"days_completion": "#Days to completion",
+			"experience_resolver": "Experience Resolver",
+			"experience_reporter": "Experience Reporter"
+		};
 
 		AJS.tabs.setup();
 
@@ -61,22 +61,21 @@
 		function makeAsyncCalls() {
 			// load sprints
 			var sprintPromise = conDecReleaseNotesAPI.getSprintsByProject().then(function(sprints) {
-				if (!sprints) {
-					return;
-				}
-				sprintsArray = sprints.map(function(sprint) {
-					return sprint.values;
+				sprints.map(function(sprint) {
+					sprintsArray = sprint.values;
+					if (sprintsArray && sprintsArray.length) {
+						$('#selectSprints').empty();
+						sprintsArray.forEach(function(sprint) {
+							if (sprint && sprint.startDate && sprint.endDate) {
+								$('#selectSprints').append('<option class="sprint-option" value="' + sprint.id + '">' + sprint.name + '</option>');
+							} else {
+								$('#selectSprints').append('<option class="sprint-option" disabled value="' + sprint.id + '">' + sprint.name + '</option>');
+							}
+						});
+					}
 				});
-				if (sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
-					$('#selectSprints').empty();
-					sprintsArray[0].map(function(sprint) {
-						if (sprint && sprint.startDate && sprint.endDate) {
-							$('#selectSprints').append('<option class="sprint-option" value="' + sprint.id + '">' + sprint.name + '</option>');
-						} else {
-							$('#selectSprints').append('<option class="sprint-option" disabled value="' + sprint.id + '">' + sprint.name + '</option>');
-						}
-					});
-				}
+			}).catch(function(err) {
+				conDecAPI.showFlag("info", "No sprints could be loaded. " + err);
 			});
 
 			// load issue types
@@ -229,9 +228,9 @@
 						conDecAPI.showFlag("error", "Something went wrong with the release selection");
 						return false;
 					}
-				} else if (useSprints && sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
-					// get dates of selected sprint
-					var selectedDates = sprintsArray[0].filter(function(sprint) {
+				} else if (useSprints && sprintsArray && sprintsArray.length) {
+					// get dates of selected sprint			
+					var selectedDates = sprintsArray.filter(function(sprint) {
 						return sprint.id === selectedSprint;
 					});
 					if (selectedDates && selectedDates.length && selectedDates[0] && selectedDates[0].startDate && selectedDates[0].endDate) {
