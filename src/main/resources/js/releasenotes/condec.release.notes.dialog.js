@@ -63,91 +63,52 @@
 			document.getElementById("final-range").value = todayString;
 		}
 
-		function makeAsyncCalls() {
+		function makeAsyncCalls() {			
 			// load sprints
-			var sprintPromise = new Promise(function(resolve, reject) {
-				conDecReleaseNotesAPI.getSprintsByProject()
-					.then(function(sprints) {
-						var hasValidSprints = false;
-						sprintsArray = sprints.map(function(sprint) {
-							return sprint.values;
-						});
-						if (sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
-							$('#selectSprints').empty();
-							sprintsArray[0].map(function(sprint) {
-								if (sprint && sprint.startDate && sprint.endDate) {
-									hasValidSprints = true;
-									$('#selectSprints').append('<option class="sprint-option" value="' + sprint.id + '">' + sprint.name + '</option>');
-								} else {
-									$('#selectSprints').append('<option class="sprint-option" disabled value="' + sprint.id + '">' + sprint.name + '</option>');
-								}
-							});
-						}
-						if (hasValidSprints) {
-							resolve();
+			var sprintPromise = conDecReleaseNotesAPI.getSprintsByProject().then(function(sprints) {
+				sprintsArray = sprints.map(function(sprint) {
+					return sprint.values;
+				});
+				if (sprintsArray && sprintsArray.length && sprintsArray[0] && sprintsArray[0].length) {
+					$('#selectSprints').empty();
+					sprintsArray[0].map(function(sprint) {
+						if (sprint && sprint.startDate && sprint.endDate) {
+							$('#selectSprints').append('<option class="sprint-option" value="' + sprint.id + '">' + sprint.name + '</option>');
 						} else {
-							reject("No valid Sprints found");
+							$('#selectSprints').append('<option class="sprint-option" disabled value="' + sprint.id + '">' + sprint.name + '</option>');
 						}
-					}).catch(function(err) {
-						reject(err);
 					});
+				}
 			}).catch(function(err) {
-				disableSprintBox();
 				conDecAPI.showFlag("info", "No sprints could be loaded. " + err);
 			});
+			
 			// load issue types
-			var issueTypePromise = new Promise(function(resolve, reject) {
-				conDecReleaseNotesAPI.getIssueTypes()
-					.then(function(issueTypes) {
-						conDecReleaseNotesAPI.getReleaseNotesConfiguration().then(function(releaseNotesConfig) {
-							resolve({ issueTypes: issueTypes, releaseNotesConfig: releaseNotesConfig });
-						}).catch(function() {
-							resolve({ issueTypes: issueTypes, releaseNotesConfig: null });
-						});
-					}).catch(function(err) {
-						reject(err);
-					});
-			}).then(function(values) {
-				// set issue types
-				var issueTypes = values.issueTypes;
-				var releaseNotesConfig = values.releaseNotesConfig;
-				manageIssueTypes(issueTypes, releaseNotesConfig);
-			}).catch(function(err) {
-				conDecAPI.showFlag("error", "No issue-types could be loaded. "
-					+ "This won't be working without Jira-Issues associated to a project: " + err);
+			var issueTypePromise = conDecReleaseNotesAPI.getIssueTypes().then(function(issueTypes) {
+				conDecReleaseNotesAPI.getReleaseNotesConfiguration().then(function(releaseNotesConfig) {
+					manageIssueTypes(issueTypes, releaseNotesConfig);
+				});
 			});
 
-			var releasesPromise = new Promise(function(resolve, reject) {
-				conDecReleaseNotesAPI.getReleases().then(function(releases) {
-					var hasValidReleases = false;
-					var releaseSelector = $('#selectReleases');
-					releaseSelector.empty();
-					releases.map(function(release) {
-						if (release && release.startDate.iso && release.releaseDate.iso) {
-							hasValidReleases = true;
-							releaseSelector.append('<option value="' + release.id + '">' + release.name + '</option>');
-							releasesArray.push(release);
-						} else {
-							releaseSelector.append('<option disabled value="' + release.id + '">' + release.name + '</option>');
-						}
-					});
-					if (!hasValidReleases) {
-						disableReleaseBox();
+			var releasesPromise = conDecReleaseNotesAPI.getReleases().then(function(releases) {
+				var releaseSelector = $('#selectReleases');
+				releases.map(function(release) {
+					if (release && release.startDate.iso && release.releaseDate.iso) {
+						releaseSelector.append('<option value="' + release.id + '">' + release.name + '</option>');
+						releasesArray.push(release);
+					} else {
+						releaseSelector.append('<option disabled value="' + release.id + '">' + release.name + '</option>');
 					}
-					resolve();
-				}).catch(function(err) {
-					disableReleaseBox();
-					reject(err);
-				})
+				});
 			}).catch(function(err) {
-				conDecAPI.showFlag("info", "Loading the releases went wrong. " + err);
+				conDecAPI.showFlag("info", "Releases could not be loaded. " + err);
 			});
 
 			Promise.all([sprintPromise, issueTypePromise, releasesPromise])
 				.finally(function() {
 					AJS.dialog2(releaseNoteDialog).show();
 					prefillDateBox();
-				})
+				});
 		}
 
 		function manageIssueTypes(issueTypes, releaseNotesConfig) {
@@ -192,16 +153,6 @@
 					improvementSelector.append(improvementString + '>' + issueType.name + '</option>');
 				})
 			}
-		}
-
-		function disableSprintBox() {
-			$("#useSprint").attr("disabled", true);
-			$("#selectSprints").attr("disabled", true);
-		}
-
-		function disableReleaseBox() {
-			$("#useReleases").attr("disabled", true);
-			$("#selectReleases").attr("disabled", true);
 		}
 
 		function addTabAndChangeToIt(tabId, title) {

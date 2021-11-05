@@ -22,19 +22,7 @@
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotesConfiguration = function() {
-		return new Promise(function(resolve, reject) {
-			var preSelectedIssueUrl = conDecReleaseNotesAPI.restPrefix + "/configuration?projectKey=" + projectKey;
-			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
-			issuePromise.then(function(result) {
-				if (result) {
-					resolve(result);
-				} else {
-					reject();
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration?projectKey=" + projectKey);
 	};
 
 	/**
@@ -42,7 +30,7 @@
 	 */
 	ConDecReleaseNotesAPI.prototype.saveReleaseNotesConfiguration = function(projectKey, releaseNotesConfig) {
 		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig,
-			function(error, response) {
+			function(error) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
 				}
@@ -107,7 +95,7 @@
 	 */
 	ConDecReleaseNotesAPI.prototype.getIssueTypes = function() {
 		return new Promise(function(resolve, reject) {
-			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
+			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes&projectKeys=" + projectKey;
 			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
 			issuePromise.then(function(result) {
 				if (result && result.projects && result.projects.length) {
