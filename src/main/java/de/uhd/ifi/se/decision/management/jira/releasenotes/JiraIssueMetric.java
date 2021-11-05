@@ -23,6 +23,10 @@ public enum JiraIssueMetric {
 		this.defaultWeight = defaultWeight;
 	}
 
+	public double getDefaultWeight() {
+		return defaultWeight;
+	}
+
 	/**
 	 * @return map of all metrics with default value 1.0. The map is both used to
 	 *         store the metrics values as well as their weights when calculating

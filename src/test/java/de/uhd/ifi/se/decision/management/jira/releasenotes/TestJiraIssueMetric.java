@@ -14,6 +14,7 @@ public class TestJiraIssueMetric {
 	@Test
 	public void toEnumMap() {
 		assertEquals(8, JiraIssueMetric.toEnumMap().size());
-		assertEquals(1, JiraIssueMetric.toEnumMap().get(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT), 0.0);
+		assertEquals(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT.getDefaultWeight(),
+				JiraIssueMetric.toEnumMap().get(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT), 0.0);
 	}
 }
