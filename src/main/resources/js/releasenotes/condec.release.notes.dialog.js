@@ -5,10 +5,7 @@
 
 	ConDecReleaseNotesDialog.prototype.showCreateReleaseNoteDialog = function() {
 		var releaseNoteDialog = document.getElementById("create-release-note-dialog");
-		var cancelButton = document.getElementById("create-release-note-dialog-cancel-button");
 		var configurationSubmitButton = document.getElementById("create-release-note-submit-button");
-		var issueSelectSubmitButton = document.getElementById("create-release-note-submit-issues-button");
-		var saveContentButton = document.getElementById("create-release-note-submit-content");
 		var useSprintSelect = document.getElementById("useSprint");
 		var titleInput = document.getElementById("title");
 		var sprintOptions = document.getElementById("selectSprints");
@@ -326,7 +323,7 @@
 				var title = "<h3>" + category + "</h3>";
 				var table = "<table class='aui aui-table-list'><thead><tr>" +
 					"<th>Include</th>" +
-					"<th>Relevance-Rating</th>" +
+					"<th>Relevance Rating</th>" +
 					"<th>Key</th>" +
 					"<th>Summary</th>" +
 					"<th>Type</th>" +
@@ -363,7 +360,7 @@
 			}
 		};
 
-		proposedReleaseNotesEntriesSelectSubmitButton.onclick = function() {
+		document.getElementById("create-release-note-submit-issues-button").onclick = function() {
 			var checkedItems = { "BugFixes": [], "NewFeatures": [], "Improvements": [] };
 			Object.keys(checkedItems).map(function(cat) {
 				var queryElement = $(".includeInReleaseNote_" + cat);
@@ -395,7 +392,7 @@
 				});
 		};
 
-		saveContentButton.onclick = function() {
+		document.getElementById("create-release-note-submit-content").onclick = function() {
 			console.log("editor", editor.codemirror.getValue());
 			var content = editor.codemirror.getValue();
 			var releaseNotes = {
@@ -417,7 +414,7 @@
 			})
 		};
 
-		cancelButton.onclick = function() {
+		document.getElementById("create-release-note-dialog-cancel-button").onclick = function() {
 			AJS.dialog2(releaseNoteDialog).hide();
 		};
 	};

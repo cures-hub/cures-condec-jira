@@ -7,7 +7,7 @@
     <form class="aui">
         <div class="field-group">
             <label for="edit-release-note-dialog-title">Title</label>
-            <input class="text" type="text" id="edit-release-note-dialog-title" 
+            <input class="text long-field" type="text" id="edit-release-note-dialog-title" 
             	name="edit-release-note-dialog-title" title="Title">
         </div>
     </form>

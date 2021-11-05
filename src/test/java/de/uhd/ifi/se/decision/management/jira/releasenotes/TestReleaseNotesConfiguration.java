@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -65,5 +66,16 @@ public class TestReleaseNotesConfiguration {
 	public void testJiraIssueTypesForImprovements() {
 		config.setJiraIssueTypesForImprovements(List.of("Work Item"));
 		assertEquals("Work Item", config.getJiraIssueTypesForImprovements().get(0));
+	}
+
+	@Test
+	public void testDecideCategory() {
+		config.setJiraIssueTypesForNewFeatures(List.of("User Story"));
+		config.setJiraIssueTypesForImprovements(List.of("Work Item"));
+		config.setJiraIssueTypesForBugFixes(List.of("Bug"));
+		assertEquals(ReleaseNotesCategory.BUG_FIXES, config.decideCategory("Bug"));
+		assertEquals(ReleaseNotesCategory.IMPROVEMENTS, config.decideCategory("Work Item"));
+		assertEquals(ReleaseNotesCategory.NEW_FEATURES, config.decideCategory("User Story"));
+		assertNull(config.decideCategory("Unknown type"));
 	}
 }

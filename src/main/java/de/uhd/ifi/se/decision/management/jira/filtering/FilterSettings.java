@@ -417,7 +417,7 @@ public class FilterSettings {
 	/**
 	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root
 	 *         element in the knowlegde tree view). For example, this can be a Jira
-	 *         issue such as a work item, bug report or requirement.
+	 *         issue such as a work item, bug report, or requirement.
 	 */
 	@JsonFilter(value = "selectedElementFilter")
 	public KnowledgeElement getSelectedElement() {
@@ -428,7 +428,7 @@ public class FilterSettings {
 	 * @param selectedElement
 	 *            {@link KnowledgeElement} that is currently selected (e.g. as root
 	 *            element in the knowlegde tree view). For example, this can be a
-	 *            Jira issue such as a work item, bug report or requirement.
+	 *            Jira issue such as a work item, bug report, or requirement.
 	 */
 	@JsonProperty
 	public void setSelectedElementObject(KnowledgeElement selectedElement) {
@@ -440,7 +440,7 @@ public class FilterSettings {
 	 *            key of the {@link KnowledgeElement} that is currently selected
 	 *            (e.g. as root element in the knowlegde tree view). For example,
 	 *            this can be the key of a Jira issue such as a work item, bug
-	 *            report or requirement, e.g. CONDEC-123.
+	 *            report, or requirement, e.g. CONDEC-123.
 	 *
 	 * @issue How can we identify knowledge elements from different documentation
 	 *        locations?
