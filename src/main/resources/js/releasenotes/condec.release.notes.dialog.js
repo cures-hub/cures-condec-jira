@@ -14,22 +14,20 @@
 
 		var titleWasChanged = false;
 		var editor;
+		
+		var metricNames = {
+				"decision_knowledge_count": "#Decision Knowledge",
+				"priority": "Priority",
+				"comment_count": "#Comments",
+				"size_description": "#Words Description",
+				"size_summary": "#Words Summary",
+				"days_completion": "#Days to completion",
+				"experience_resolver": "Experience Resolver",
+				"experience_reporter": "Experience Reporter"
+			};
 
 		AJS.tabs.setup();
 
-		// prioritisation criteria
-		var criteria = [
-			{ title: "#Decision Knowledge", id: "decision_knowledge_count" },
-			{ title: "Priority", id: "priority" },
-			{ title: "#Comments", id: "comment_count" },
-			{ title: "Words Description", id: "size_description" },
-			{ title: "Words Summary", id: "size_summary" },
-			{ title: "Days to completion", id: "days_completion" },
-			{ title: "Experience Resolver", id: "experience_resolver" },
-			{ title: "Experience Reporter", id: "experience_reporter" }
-		];
-
-		addjiraIssueMetric(criteria);
 		removeListItemIssues();
 		AJS.tabs.change(jQuery('a[href="#tab-configuration"]'));
 		makeAsyncCalls();
@@ -85,6 +83,7 @@
 			var issueTypePromise = conDecReleaseNotesAPI.getIssueTypes().then(function(issueTypes) {
 				conDecReleaseNotesAPI.getReleaseNotesConfiguration().then(function(releaseNotesConfig) {
 					manageIssueTypes(issueTypes, releaseNotesConfig);
+					addJiraIssueMetrics(releaseNotesConfig.jiraIssueMetricWeights);
 				});
 			});
 
@@ -160,15 +159,19 @@
 			AJS.tabs.change(jQuery('a[href="#' + tabId + '"]'));
 		}
 
-		function addjiraIssueMetric(listOfCriteria) {
+		function addJiraIssueMetrics(listOfCriteria) {
+			var keys = Object.keys(listOfCriteria);
 			var elementToAppend = $("#metricWeight");
 			elementToAppend.empty();
-			listOfCriteria.map(function(element) {
+			for (i = 0; i < keys.length; i++) {
+				currentKey = keys[i];
+				currentMetricName = metricNames[currentKey.toLowerCase()];
 				elementToAppend.append("<div class='field-group'>" +
-					"<label for='" + element.id + "'>" + element.title + "</label>" +
-					"<input class='text short-field' type='number' value='1' max='10' min='0' id='" + element.id + "'>" +
-					"</div>")
-			});
+					"<label>" + currentMetricName + "</label>" +
+					"<input class='text short-field' type='number' value='" + listOfCriteria[keys[i]] +
+					"' max='10' min='0' id='" + currentKey.toLowerCase() + "'>" +
+					"</div>");
+			}
 		}
 
 		useSprintSelect.onchange = function() {
@@ -263,13 +266,14 @@
 				}
 			}
 
-			function getjiraIssueMetric(listOfCriteria) {
+			function getJiraIssueMetric(metricNames) {
+				var keys = Object.keys(metricNames);
 				var result = {};
-				listOfCriteria.map(function(element) {
-					var value = $("#" + element.id).val();
-					var key = element.id.toUpperCase();
+				for (i = 0; i < keys.length; i++) {
+					var value = $("#" + keys[i]).val();
+					var key = keys[i].toUpperCase();
 					result[key] = value;
-				});
+				}
 				return result;
 			}
 
@@ -278,7 +282,7 @@
 				return;
 			}
 
-			var jiraIssueMetricWeights = getjiraIssueMetric(criteria);
+			var jiraIssueMetricWeights = getJiraIssueMetric(metricNames);
 			var bugFixes = $("#multipleBugs").val();
 			var features = $("#multipleFeatures").val();
 			var improvements = $("#multipleImprovements").val();

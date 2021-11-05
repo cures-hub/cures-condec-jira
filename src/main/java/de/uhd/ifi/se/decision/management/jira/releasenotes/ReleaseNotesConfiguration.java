@@ -105,6 +105,7 @@ public class ReleaseNotesConfiguration {
 	 * @return weights of {@link JiraIssueMetric}s used for Jira issue rating in
 	 *         release notes.
 	 */
+	@XmlElement
 	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeights() {
 		return jiraIssueMetricWeights;
 	}
