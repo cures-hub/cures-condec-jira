@@ -43,7 +43,6 @@ public class MarkdownCreator {
 
 		FilterSettings filterSettings = new FilterSettings(releaseNotes.getProjectKey(), "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
-		filterSettings.setCreateTransitiveLinks(true);
 
 		for (ReleaseNotesEntry entry : entries) {
 			KnowledgeElement rootElement = entry.getElement();

@@ -114,7 +114,6 @@
 				bugSelector.empty();
 				featureSelector.empty();
 				improvementSelector.empty();
-				console.log(releaseNotesConfig);
 				issueTypes.map(function(issueType) {
 					var bugSelected = false;
 					var bugString = '<option value="' + issueType.name + '"';
@@ -218,24 +217,24 @@
 			function getStartAndEndDate() {
 				var result = { startDate: "", endDate: "" };
 				if (useReleases && releasesArray && releasesArray.length) {
-					var selectedDates = releasesArray.filter(function(release) {
+					var selectedReleaseWithDates = releasesArray.filter(function(release) {
 						return release.id = selectedRelease;
 					});
-					if (selectedDates && selectedDates.length) {
-						result.startDate = selectedDates[0].startDate.iso;
-						result.endDate = selectedDates[0].releaseDate.iso;
+					if (selectedReleaseWithDates && selectedReleaseWithDates.length) {
+						result.startDate = selectedReleaseWithDates[0].startDate.iso;
+						result.endDate = selectedReleaseWithDates[0].releaseDate.iso;
 					} else {
 						conDecAPI.showFlag("error", "Something went wrong with the release selection");
 						return false;
 					}
 				} else if (useSprints && sprintsArray && sprintsArray.length) {
 					// get dates of selected sprint			
-					var selectedDates = sprintsArray.filter(function(sprint) {
+					var selectedSprintWithDates = sprintsArray.filter(function(sprint) {
 						return sprint.id === selectedSprint;
 					});
-					if (selectedDates && selectedDates.length && selectedDates[0] && selectedDates[0].startDate && selectedDates[0].endDate) {
-						var formattedStartDate = formatSprintDate(selectedDates[0].startDate);
-						var formattedEndDate = formatSprintDate(selectedDates[0].endDate);
+					if (selectedSprintWithDates && selectedSprintWithDates.length) {
+						var formattedStartDate = formatSprintDate(selectedSprintWithDates[0].startDate);
+						var formattedEndDate = formatSprintDate(selectedSprintWithDates[0].endDate);
 						if (formattedStartDate && formattedEndDate) {
 							result.startDate = formattedStartDate;
 							result.endDate = formattedEndDate;
@@ -396,7 +395,6 @@
 		};
 
 		document.getElementById("create-release-note-submit-content").onclick = function() {
-			console.log("editor", editor.codemirror.getValue());
 			var content = editor.codemirror.getValue();
 			var releaseNotes = {
 				content: content,
