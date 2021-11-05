@@ -1,9 +1,10 @@
 <div class="tabs-pane aui-tabs-disabled" id="tab-editor">
-    <h2>Editor</h2>
     <div id="create-release-note-dialog-contain-editor-content">
         <div id="create-release-note-dialog-contain-editor">
             <textarea id="create-release-note-textarea"></textarea>
         </div>
     </div>
-    <button id="create-release-note-submit-content" class="aui-button aui-button-primary">Save</button>
+    <button id="create-release-note-submit-content" class="aui-button aui-button-primary">
+    	$i18n.getText("condec.project.button.save")
+    </button>
 </div>

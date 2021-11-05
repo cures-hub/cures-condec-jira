@@ -6,7 +6,10 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
@@ -15,23 +18,20 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
  * Jira project (see {@link DecisionKnowledgeProject}).
  */
 public class ReleaseNotesConfiguration {
+
 	private String title;
 	private String startDate;
 	private String endDate;
 	private String sprintId;
-	private TargetGroup targetGroup;
-	private transient EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
-	private List<Integer> bugFixMapping;
-	private List<Integer> featureMapping;
-	private List<Integer> improvementMapping;
-	private transient EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration;
 	private List<String> jiraIssueTypesForImprovements;
 	private List<String> jiraIssueTypesForBugFixes;
 	private List<String> jiraIssueTypesForNewFeatures;
+	private transient EnumMap<JiraIssueMetric, Double> jiraIssueMetricWeights;
 
+	@JsonCreator
 	public ReleaseNotesConfiguration() {
-		this.targetGroup = TargetGroup.getTargetGroup("");
-		this.jiraIssueMetricWeights = JiraIssueMetric.toEnumMap();
+		title = "";
+		jiraIssueMetricWeights = JiraIssueMetric.toEnumMap();
 		jiraIssueTypesForImprovements = new ArrayList<>();
 		jiraIssueTypesForBugFixes = new ArrayList<>();
 		jiraIssueTypesForNewFeatures = new ArrayList<>();
@@ -48,6 +48,7 @@ public class ReleaseNotesConfiguration {
 	 * @param title
 	 *            of the release notes.
 	 */
+	@JsonProperty
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -101,25 +102,10 @@ public class ReleaseNotesConfiguration {
 	}
 
 	/**
-	 * @return targetGroup of the release notes.
-	 */
-	public TargetGroup getTargetGroup() {
-		return targetGroup;
-	}
-
-	/**
-	 * @param targetGroup
-	 *            of the release notes.
-	 */
-	@JsonProperty
-	public void setTargetGroup(TargetGroup targetGroup) {
-		this.targetGroup = targetGroup;
-	}
-
-	/**
 	 * @return weights of {@link JiraIssueMetric}s used for Jira issue rating in
 	 *         release notes.
 	 */
+	@XmlElement
 	public EnumMap<JiraIssueMetric, Double> getJiraIssueMetricWeights() {
 		return jiraIssueMetricWeights;
 	}
@@ -134,97 +120,72 @@ public class ReleaseNotesConfiguration {
 	}
 
 	/**
-	 * @return list with mapped bug fix issues.
+	 * @return jira issue types for the {@link ReleaseNotesCategory#IMPROVEMENTS}.
 	 */
-	public List<Integer> getBugFixMapping() {
-		return bugFixMapping;
-	}
-
-	/**
-	 * @param bugFixMapping
-	 *            list with mapped bug fix issues of the release notes.
-	 */
-	@JsonProperty
-	public void setBugFixMapping(List<Integer> bugFixMapping) {
-		this.bugFixMapping = bugFixMapping;
-	}
-
-	/**
-	 * @return list with mapped bug fix issues.
-	 */
-	public List<Integer> getFeatureMapping() {
-		return this.featureMapping;
-	}
-
-	/**
-	 * @param featureMapping
-	 *            list with mapped bug fix issues of the release note.
-	 */
-	@JsonProperty
-	public void setFeatureMapping(List<Integer> featureMapping) {
-		this.featureMapping = featureMapping;
-	}
-
-	/**
-	 * @return list with mapped bug fix issues.
-	 */
-	public List<Integer> getImprovementMapping() {
-		return this.improvementMapping;
-	}
-
-	/**
-	 * @param improvementMapping
-	 *            list with mapped bug fix issues of the release notes.
-	 */
-	@JsonProperty
-	public void setImprovementMapping(List<Integer> improvementMapping) {
-		this.improvementMapping = improvementMapping;
-	}
-
-	/**
-	 * @return map with the additional configuration of the release notes.
-	 */
-	public EnumMap<AdditionalConfigurationOptions, Boolean> getAdditionalConfiguration() {
-		return additionalConfiguration;
-	}
-
-	/**
-	 * @param additionalConfiguration
-	 *            map with the additional configuration of the release notes.
-	 */
-	@JsonProperty
-	public void setAdditionalConfiguration(EnumMap<AdditionalConfigurationOptions, Boolean> additionalConfiguration) {
-		this.additionalConfiguration = additionalConfiguration;
-	}
-
 	@XmlElement
 	public List<String> getJiraIssueTypesForImprovements() {
 		return jiraIssueTypesForImprovements;
 	}
 
-	@XmlElement
-	public List<String> getJiraIssueTypesForBugFixes() {
-		return jiraIssueTypesForBugFixes;
-	}
-
-	@XmlElement
-	public List<String> getJiraIssueTypesForNewFeatures() {
-		return jiraIssueTypesForNewFeatures;
-	}
-
+	/**
+	 * @param jiraIssueTypesForImprovements
+	 *            jira issue types for the
+	 *            {@link ReleaseNotesCategory#IMPROVEMENTS}.
+	 */
 	@JsonProperty
 	public void setJiraIssueTypesForImprovements(List<String> jiraIssueTypesForImprovements) {
 		this.jiraIssueTypesForImprovements = jiraIssueTypesForImprovements;
 	}
 
+	/**
+	 * @return jira issue types for the {@link ReleaseNotesCategory#BUG_FIXES}.
+	 */
+	@XmlElement
+	public List<String> getJiraIssueTypesForBugFixes() {
+		return jiraIssueTypesForBugFixes;
+	}
+
+	/**
+	 * @param jiraIssueTypesForBugFixes
+	 *            jira issue types for the {@link ReleaseNotesCategory#BUG_FIXES}.
+	 */
 	@JsonProperty
 	public void setJiraIssueTypesForBugFixes(List<String> jiraIssueTypesForBugFixes) {
 		this.jiraIssueTypesForBugFixes = jiraIssueTypesForBugFixes;
 	}
 
+	/**
+	 * @return jira issue types for the {@link ReleaseNotesCategory#NEW_FEATURES}.
+	 */
+	@XmlElement
+	public List<String> getJiraIssueTypesForNewFeatures() {
+		return jiraIssueTypesForNewFeatures;
+	}
+
+	/**
+	 * @param jiraIssueTypesForNewFeatures
+	 *            jira issue types for the
+	 *            {@link ReleaseNotesCategory#NEW_FEATURES}.
+	 */
 	@JsonProperty
 	public void setJiraIssueTypesForNewFeatures(List<String> jiraIssueTypesForNewFeatures) {
 		this.jiraIssueTypesForNewFeatures = jiraIssueTypesForNewFeatures;
 	}
 
+	public ReleaseNotesCategory decideCategory(Issue jiraIssue) {
+		return decideCategory(jiraIssue.getIssueType().getName());
+	}
+
+	public ReleaseNotesCategory decideCategory(String type) {
+		if (jiraIssueTypesForNewFeatures.contains(type)) {
+			return ReleaseNotesCategory.NEW_FEATURES;
+		}
+		if (jiraIssueTypesForBugFixes.contains(type)) {
+			return ReleaseNotesCategory.BUG_FIXES;
+		}
+		if (jiraIssueTypesForImprovements.contains(type)) {
+			return ReleaseNotesCategory.IMPROVEMENTS;
+		}
+		return null;
+	}
 }

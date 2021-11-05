@@ -13,7 +13,9 @@
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
-            <button id="create-release-note-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
+            <button id="create-release-note-dialog-cancel-button" class="aui-button aui-button-link">
+            	$i18n.getText("condec.button.cancel")
+            </button>
         </div>
     </footer>
 </section>

@@ -14,17 +14,7 @@ public class TestReleaseNotesCategory {
 
 	@Test
 	public void testToReadable() {
-		assertEquals("Bug Fixes", ReleaseNotesCategory.getTargetGroupReadable(BUG_FIXES));
-	}
-
-	@Test
-	public void testToList() {
-		assertEquals(3, ReleaseNotesCategory.toList().size());
-	}
-
-	@Test
-	public void testToOriginalList() {
-		assertEquals(3, ReleaseNotesCategory.toOriginalList().size());
+		assertEquals("Bug Fixes", ReleaseNotesCategory.BUG_FIXES.getName());
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,11 @@ public class TestReleaseNotesEntry extends TestSetUp {
 	}
 
 	@Test
+	public void testGetJiraIssue() {
+		assertEquals(1, releaseNotesEntry.getJiraIssue().getId().intValue());
+	}
+
+	@Test
 	public void testGetRating() {
 		releaseNotesEntry.setRating(42);
 		assertEquals(42, releaseNotesEntry.getRating(), 0.0);
@@ -38,6 +44,11 @@ public class TestReleaseNotesEntry extends TestSetUp {
 	@Test
 	public void testGetJiraIssueMetrics() {
 		assertEquals(8, releaseNotesEntry.getJiraIssueMetrics().size());
+	}
+
+	@Test
+	public void testNumberOfDecisionKnowledgeElementsMetric() {
+		assertTrue(releaseNotesEntry.getJiraIssueMetrics().get(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT) > 5);
 	}
 
 	@Test

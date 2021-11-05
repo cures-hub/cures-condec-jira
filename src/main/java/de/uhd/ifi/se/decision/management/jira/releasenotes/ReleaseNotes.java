@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
@@ -21,8 +24,12 @@ public class ReleaseNotes {
 	private String projectKey;
 	private String startDate;
 	private String endDate;
+	private List<ReleaseNotesEntry> improvements;
+	private List<ReleaseNotesEntry> bugFixes;
+	private List<ReleaseNotesEntry> newFeatures;
 
 	public ReleaseNotes() {
+		this("", "", "", "", "");
 	}
 
 	@JsonCreator
@@ -34,6 +41,9 @@ public class ReleaseNotes {
 		this.projectKey = projectKey;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		setImprovements(new ArrayList<>());
+		setBugFixes(new ArrayList<>());
+		setNewFeatures(new ArrayList<>());
 	}
 
 	public ReleaseNotes(ReleaseNotesInDatabase databaseEntry) {
@@ -146,5 +156,35 @@ public class ReleaseNotes {
 	@JsonProperty
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	@XmlElement
+	public List<ReleaseNotesEntry> getImprovements() {
+		return improvements;
+	}
+
+	@JsonProperty
+	public void setImprovements(List<ReleaseNotesEntry> improvements) {
+		this.improvements = improvements;
+	}
+
+	@XmlElement
+	public List<ReleaseNotesEntry> getBugFixes() {
+		return bugFixes;
+	}
+
+	@JsonProperty
+	public void setBugFixes(List<ReleaseNotesEntry> bugFixes) {
+		this.bugFixes = bugFixes;
+	}
+
+	@XmlElement
+	public List<ReleaseNotesEntry> getNewFeatures() {
+		return newFeatures;
+	}
+
+	@JsonProperty
+	public void setNewFeatures(List<ReleaseNotesEntry> newFeatures) {
+		this.newFeatures = newFeatures;
 	}
 }

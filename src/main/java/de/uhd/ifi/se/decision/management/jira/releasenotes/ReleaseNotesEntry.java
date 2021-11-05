@@ -4,6 +4,7 @@ import java.util.EnumMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,23 +18,34 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.query.Query;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssuePersistenceManager;
 
 /**
- * Model class for one Jira issue to be included in the {@link ReleaseNotes}. It
+ * Models one Jira issue to be included in the {@link ReleaseNotes}. It
  * calculates the {@link JiraIssueMetric}s for the Jira issue and saves the
  * final rating.
  */
-public class ReleaseNotesEntry {
+public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesEntry.class);
 
 	private Issue jiraIssue;
 	private EnumMap<JiraIssueMetric, Double> jiraIssueMetrics;
 	private double rating;
+	private ReleaseNotesCategory category;
+
+	@JsonCreator
+	public ReleaseNotesEntry(@JsonProperty String jiraIssueKey) {
+		this.jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
+	}
 
 	public ReleaseNotesEntry(Issue jiraIssue, ApplicationUser user) {
 		this.jiraIssue = jiraIssue;
-		this.jiraIssueMetrics = JiraIssueMetric.toEnumMap();
+		jiraIssueMetrics = JiraIssueMetric.toEnumMap();
+		jiraIssueMetrics.put(JiraIssueMetric.DECISION_KNOWLEDGE_COUNT,
+				(double) getNumberOfReachableDecisionKnowledgeElements(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.PRIORITY, getPriority(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.COMMENT_COUNT, countComments(jiraIssue));
 		jiraIssueMetrics.put(JiraIssueMetric.SIZE_SUMMARY, getNumberOfWordsInSummary(jiraIssue));
@@ -44,11 +56,19 @@ public class ReleaseNotesEntry {
 	}
 
 	/**
-	 * @return {@link KnowledgeElement} to be included in the {@link ReleaseNotes}.
+	 * @return Jira issue to be included in the {@link ReleaseNotes} as a
+	 *         {@link KnowledgeElement} object.
 	 */
 	@XmlElement
 	public KnowledgeElement getElement() {
 		return new KnowledgeElement(jiraIssue);
+	}
+
+	/**
+	 * @return Jira issue to be included in the {@link ReleaseNotes}.
+	 */
+	public Issue getJiraIssue() {
+		return jiraIssue;
 	}
 
 	/**
@@ -135,6 +155,21 @@ public class ReleaseNotesEntry {
 	/**
 	 * @param jiraIssue
 	 *            to be included in the {@link ReleaseNotes}.
+	 * @return number of decision knowledge elements that are reachable from the
+	 *         Jira issue within a link distance of 3.
+	 */
+	public static int getNumberOfReachableDecisionKnowledgeElements(Issue jiraIssue) {
+		FilterSettings filterSettings = new FilterSettings(jiraIssue.getProjectObject().getKey(), "");
+		filterSettings.setOnlyDecisionKnowledgeShown(true);
+		filterSettings.setCreateTransitiveLinks(true);
+		filterSettings.setSelectedElementObject(new KnowledgeElement(jiraIssue));
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		return filteringManager.getElementsMatchingFilterSettings().size() - 1;
+	}
+
+	/**
+	 * @param jiraIssue
+	 *            to be included in the {@link ReleaseNotes}.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser} who makes the request.
 	 * @return total number of created Jira issues by the reporter of this Jira
@@ -187,5 +222,28 @@ public class ReleaseNotesEntry {
 
 		String[] words = input.split("\\s+");
 		return words.length;
+	}
+
+	/**
+	 * @return determines the category that the type of this element is part of
+	 *         (i.e., new feature, improvement, or bug fix).
+	 */
+	public ReleaseNotesCategory getCategory() {
+		return category;
+	}
+
+	/**
+	 * @param category
+	 *            that the type of this element is part of (i.e., new feature,
+	 *            improvement, or bug fix).
+	 */
+	public void setCategory(ReleaseNotesCategory category) {
+		this.category = category;
+	}
+
+	@Override
+	public int compareTo(ReleaseNotesEntry otherEntry) {
+		Double ratingOfOtherEntry = otherEntry.getRating();
+		return ratingOfOtherEntry.compareTo(getRating());
 	}
 }

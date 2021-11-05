@@ -17,36 +17,24 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/releasenotes";
 		projectKey = conDecAPI.getProjectKey();
 	};
-	
+
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotesConfiguration = function() {
-		return new Promise(function(resolve, reject) {
-			var preSelectedIssueUrl = conDecReleaseNotesAPI.restPrefix + "/configuration?projectKey=" + projectKey;
-			var issuePromise = generalApi.getJSONReturnPromise(preSelectedIssueUrl);
-			issuePromise.then(function(result) {
-				if (result) {
-					resolve(result);
-				} else {
-					reject();
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration?projectKey=" + projectKey);
 	};
 
 	/**
 	 * external references: template/settings/releaseNotesSettings.vm
 	 */
 	ConDecReleaseNotesAPI.prototype.saveReleaseNotesConfiguration = function(projectKey, releaseNotesConfig) {
-		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig, 
-				function(error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
-			}
-		});
+		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig,
+			function(error) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
+				}
+			});
 	};
 
 	/**
@@ -75,25 +63,22 @@
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
-	ConDecReleaseNotesAPI.prototype.postProposedKeys = function(proposedKeys) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/postProposedKeys?projectKey="
-			+ projectKey, proposedKeys);
+	ConDecReleaseNotesAPI.prototype.createReleaseNotesContent = function(releaseNotes) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/create-content", releaseNotes);
 	};
 
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.createReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/create",
-			releaseNotes);
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/create", releaseNotes);
 	};
 
 	/**
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.updateReleaseNotes = function(releaseNotes) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/update",
-			releaseNotes);
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/update", releaseNotes);
 	};
 
 	/**
@@ -102,35 +87,29 @@
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
 		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete/" + id, null);
 	};
-	
+
 	/**
 	 * external references: condec.release.notes.dialog
 	 * 
 	 * @return all Jira issue types for a project.
 	 */
 	ConDecReleaseNotesAPI.prototype.getIssueTypes = function() {
-		return new Promise(function(resolve, reject) {
-			var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes";
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function(result) {
-				if (result && result.projects && result.projects.length) {
-					var correctIssueTypes = result.projects.filter(function(project) {
-						return project.key === projectKey;
-					});
-					correctIssueTypes = correctIssueTypes[0].issuetypes;
-					if (correctIssueTypes && correctIssueTypes.length) {
-						resolve(correctIssueTypes);
-					} else {
-						reject("No Jira issue types could be found for this project");
-					}
+		var issueTypeUrl = "/rest/api/2/issue/createmeta?expand=projects.issuetypes&projectKeys=" + projectKey;
+		return generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl).then(function(result) {
+			if (result && result.projects && result.projects.length) {
+				var correctIssueTypes = result.projects.filter(function(project) {
+					return project.key === projectKey;
+				});
+				correctIssueTypes = correctIssueTypes[0].issuetypes;
+				if (correctIssueTypes && correctIssueTypes.length) {
+					return correctIssueTypes;
 				} else {
-					reject("No Jira projects were found.");
+					conDecAPI.showFlag("error", "No Jira issue types could be found for this project.");
 				}
-
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
+			} else {
+				conDecAPI.showFlag("error", "No Jira projects were found.");
+			}
+		});
 	};
 
 	/**
@@ -139,21 +118,12 @@
 	 * @return releases for a Jira project.
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleases = function() {
-		return new Promise(function(resolve, reject) {
-			var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
-			var issuePromise = generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl);
-			issuePromise.then(function(result) {
-				if (result && result.length) {
-					resolve(result);
-				} else {
-					reject("No releases were found");
-				}
-			}).catch(function(err) {
-				reject(err);
-			})
-		})
+		var issueTypeUrl = "/rest/projects/latest/project/" + projectKey + "/release/allversions";
+		return generalApi.getJSONReturnPromise(AJS.contextPath() + issueTypeUrl).catch(function(err) {
+			conDecAPI.showFlag("info", "Releases could not be loaded. " + err);
+		});
 	};
-	
+
 	/**
 	 * external references: condec.release.notes.dialog
 	 * 
@@ -180,8 +150,8 @@
 				}
 			}).catch(function(err) {
 				reject(err);
-			})
-		})
+			});
+		});
 	};
 
 	global.conDecReleaseNotesAPI = new ConDecReleaseNotesAPI();

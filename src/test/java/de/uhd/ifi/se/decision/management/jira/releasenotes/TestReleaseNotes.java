@@ -6,46 +6,53 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestReleaseNotes {
-	private ReleaseNotes note;
-	private long id;
-	private String title;
-	private String projectKey;
-	private String content;
+
+	private ReleaseNotes releaseNotes;
 
 	@Before
 	public void setUp() {
-		note = new ReleaseNotes(null, null, null, null, null);
-		id = 312;
-		title = "version 1.0 Great title";
-		projectKey = "TEST";
-		content = "<h1>verision</h2>&/=)(09(=)(=)&%kjhkjhaksdjlklöajlaksdfalsdj";
+		releaseNotes = new ReleaseNotes();
 	}
 
 	@Test
 	public void testId() {
-		note.setId(id);
-		assertEquals(id, note.getId());
+		long id = 42;
+		releaseNotes.setId(id);
+		assertEquals(id, releaseNotes.getId());
 	}
 
 	@Test
 	public void testTitle() {
-		note.setTitle(title);
-		assertEquals(title, note.getTitle());
+		String title = "version 0.42 Awesome release!";
+		releaseNotes.setTitle(title);
+		assertEquals(title, releaseNotes.getTitle());
 	}
 
 	@Test
 	public void testProject() {
-		note.setProjectKey(projectKey);
-		assertEquals(projectKey, note.getProjectKey());
-		String projectKey2 = "test2";
-		note.setProjectKey(projectKey2);
-		assertEquals(projectKey2, note.getProjectKey());
+		String projectKey = "TEST";
+		releaseNotes.setProjectKey(projectKey);
+		assertEquals(projectKey, releaseNotes.getProjectKey());
 	}
 
 	@Test
 	public void testContent() {
-		note.setContent(content);
-		assertEquals(content, note.getContent());
+		String content = "<h1>verision</h2>&/=)(09(=)(=)&%kjhkjhaksdjlklöajlaksdfalsdj";
+		releaseNotes.setContent(content);
+		assertEquals(content, releaseNotes.getContent());
 	}
 
+	@Test
+	public void testEndDate() {
+		String endDate = "2042-01-23";
+		releaseNotes.setEndDate(endDate);
+		assertEquals(endDate, releaseNotes.getEndDate());
+	}
+
+	@Test
+	public void testStartDate() {
+		String startDate = "1970-01-01";
+		releaseNotes.setStartDate(startDate);
+		assertEquals(startDate, releaseNotes.getStartDate());
+	}
 }
