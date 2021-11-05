@@ -20,7 +20,7 @@ public class MarkdownCreator {
 
 	public String getMarkdownString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("# ").append(releaseNotes.getTitle()).append(" \n");
+		stringBuilder.append("# ").append(releaseNotes.getTitle()).append("\n");
 
 		markdownAddCategory(stringBuilder, ReleaseNotesCategory.NEW_FEATURES, releaseNotes.getNewFeatures());
 		markdownAddCategory(stringBuilder, ReleaseNotesCategory.IMPROVEMENTS, releaseNotes.getImprovements());

@@ -1,5 +1,5 @@
 <table id="release-notes-table" class="aui aui-table-list">
-	<col style="visibility:none"/><col/><col/><col/><col/>    
+	<col style="visibility:collapse"/><col/><col/><col/><col/>    
 	<thead>		
 	    <tr>		    		
 	        <th class="aui-table-column-issue-key" id="id">ID</th>
