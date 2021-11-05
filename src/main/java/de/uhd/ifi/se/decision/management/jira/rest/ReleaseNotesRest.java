@@ -170,7 +170,7 @@ public class ReleaseNotesRest {
 		}
 		ReleaseNotesCreator releaseNotesCreator = new ReleaseNotesCreator(jiraIssuesMatchingQuery,
 				releaseNoteConfiguration, user);
-		ReleaseNotes proposedReleaseNotes = releaseNotesCreator.proposeElements();
+		ReleaseNotes proposedReleaseNotes = releaseNotesCreator.proposeReleaseNotes();
 
 		if (proposedReleaseNotes == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
