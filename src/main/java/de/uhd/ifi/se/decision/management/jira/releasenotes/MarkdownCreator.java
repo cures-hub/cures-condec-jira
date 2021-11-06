@@ -25,7 +25,7 @@ public class MarkdownCreator {
 
 	public String getMarkdownString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("# ").append(releaseNotes.getTitle()).append("\n\n");
+		stringBuilder.append("# ").append(releaseNotes.getTitle()).append("\n");
 
 		addCategory(stringBuilder, ReleaseNotesCategory.NEW_FEATURES, releaseNotes.getNewFeatures());
 		addCategory(stringBuilder, ReleaseNotesCategory.IMPROVEMENTS, releaseNotes.getImprovements());
@@ -39,7 +39,7 @@ public class MarkdownCreator {
 		if (entries.isEmpty()) {
 			return;
 		}
-		stringBuilder.append("## ").append(category.getName()).append(" \n");
+		stringBuilder.append("\n## ").append(category.getName()).append("\n");
 
 		FilterSettings filterSettings = new FilterSettings(releaseNotes.getProjectKey(), "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
@@ -62,8 +62,6 @@ public class MarkdownCreator {
 				addElement(stringBuilder, childElement, currentDepth);
 			}
 		}
-
-		stringBuilder.append("\n");
 	}
 
 	private void addJiraIssue(StringBuilder stringBuilder, KnowledgeElement issue) {
