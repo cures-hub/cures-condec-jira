@@ -77,7 +77,7 @@ public class MarkdownCreator {
 		stringBuilder.append("- ").append("![").append(element.getTypeAsString()).append("](")
 				.append(getIconUrl(element)).append(") ");
 		KnowledgeStatus status = element.getStatus();
-		if (!status.getColor().isEmpty()) {
+		if (!status.getColor().isBlank()) {
 			stringBuilder.append(status.toString()).append(": ");
 		}
 		stringBuilder.append(element.getSummary()).append("\n");
