@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -74,7 +75,12 @@ public class MarkdownCreator {
 			stringBuilder.append("\t");
 		}
 		stringBuilder.append("- ").append("![").append(element.getTypeAsString()).append("](")
-				.append(getIconUrl(element)).append(") ").append(element.getSummary()).append("\n");
+				.append(getIconUrl(element)).append(") ");
+		KnowledgeStatus status = element.getStatus();
+		if (!status.getColor().isEmpty()) {
+			stringBuilder.append(status.toString()).append(": ");
+		}
+		stringBuilder.append(element.getSummary()).append("\n");
 	}
 
 	/**
