@@ -22,5 +22,5 @@ The rating is calculated as the sum of all metrics.
 
 ## Design Details
 
-![Overview class diagram](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/diagrams/class_diagram_release_notes.png)
+![Overview class diagram](././diagrams/class_diagram_release_notes.png)
 *Overview class diagram for the release notes creation feature*
