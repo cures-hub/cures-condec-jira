@@ -110,7 +110,7 @@ public class FilteringManager {
 			KnowledgeElement lastValidElementOnPath = filterSettings.getSelectedElement();
 			for (KnowledgeElement elementOnPath : path.getVertexList()) {
 				if (elementOnPath.equals(lastValidElementOnPath)) {
-					// the selected element should not be linked to itself (loops are forbidden)
+					// the element should not be linked to itself (loops are forbidden)
 					continue;
 				}
 				if (!filteredGraph.vertexSet().contains(elementOnPath)) {

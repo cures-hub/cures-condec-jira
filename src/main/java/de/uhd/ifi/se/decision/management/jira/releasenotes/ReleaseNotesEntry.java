@@ -182,7 +182,7 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 			Query query = JqlQueryBuilder.newBuilder().where().reporterUser(jiraIssue.getReporterId()).buildQuery();
 			numberOfReportedJiraIssues = (int) searchService.searchCount(user, query);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.debug(e.getMessage());
 		}
 		return numberOfReportedJiraIssues;
 	}
