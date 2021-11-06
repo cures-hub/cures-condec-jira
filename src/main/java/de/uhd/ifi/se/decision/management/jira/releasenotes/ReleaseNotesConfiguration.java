@@ -11,11 +11,12 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-
 /**
- * Contains the configuration details for the release notes creation for one
- * Jira project (see {@link DecisionKnowledgeProject}).
+ * Contains the configuration details for the release notes creation. Is both
+ * used to persist the default configuration settings and also during the
+ * creation of a single relase notes. For example, the {@link JiraIssueMetric}
+ * weights and the mapping from Jira issue types to a
+ * {@link ReleaseNotesCategory} is handled here.
  */
 public class ReleaseNotesConfiguration {
 

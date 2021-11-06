@@ -1,9 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
-import java.util.EnumMap;
-
 /**
- * Category for Release Notes
+ * Category for {@link ReleaseNotesEntry release notes entries}. The Jira issues
+ * are classified either as new feature, improvement, or bug fix.
  */
 public enum ReleaseNotesCategory {
 	BUG_FIXES("Bug Fixes"), //
@@ -23,16 +22,5 @@ public enum ReleaseNotesCategory {
 
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * @return EnumMap with Categories and false
-	 */
-	public static EnumMap<ReleaseNotesCategory, Boolean> toBooleanMap() {
-		EnumMap<ReleaseNotesCategory, Boolean> releaseNoteCategoryTypes = new EnumMap<>(ReleaseNotesCategory.class);
-		for (ReleaseNotesCategory releaseNoteCategory : ReleaseNotesCategory.values()) {
-			releaseNoteCategoryTypes.put(releaseNoteCategory, false);
-		}
-		return releaseNoteCategoryTypes;
 	}
 }

@@ -103,7 +103,7 @@ This plug-in provides a [representational state transfer (REST) application prog
 e.g., to retrieve, insert, update, and delete decision knowledge in Jira.
 These services can be accessed via the following link:
 
-**Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|dodchecking|git|decisionguidance|linkrecommendation|nudging|classification|webhook**/**REST service**
+**Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decisionguidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
 The Jira ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/condec.api.js) from the user interface.
 
