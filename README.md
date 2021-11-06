@@ -75,6 +75,7 @@ ConDec offers the following features:
 - [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic-text-classification.md)
 - [Recommendation of solution options from external knowledge sources](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/decision-guidance.md)
 - [Link suggestion and duplicate recognition](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/link-suggestion.md)
+- [Creation of release notes with explicit decision knowledge](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/release-notes-creation.md)
 
 ## Implementation Details
 

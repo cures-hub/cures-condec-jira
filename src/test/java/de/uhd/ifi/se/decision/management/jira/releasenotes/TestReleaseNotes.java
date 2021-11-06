@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,5 +55,14 @@ public class TestReleaseNotes {
 		String startDate = "1970-01-01";
 		releaseNotes.setStartDate(startDate);
 		assertEquals(startDate, releaseNotes.getStartDate());
+	}
+
+	@Test
+	public void testCompareTo() {
+		String startDate = "1970-01-01";
+		releaseNotes.setStartDate(startDate);
+		ReleaseNotes otherReleaseNotes = new ReleaseNotes();
+		otherReleaseNotes.setStartDate("1970-01-02");
+		assertTrue(releaseNotes.compareTo(otherReleaseNotes) > 0);
 	}
 }

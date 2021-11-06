@@ -280,10 +280,18 @@
 				return;
 			}
 
+			function getSelectedTypes(selectFieldId) {
+				var selectedTypes = $("#" + selectFieldId).val();
+				if (selectedTypes !== null) {
+					return selectedTypes;
+				}
+				return [];
+			}
+
 			var jiraIssueMetricWeights = getJiraIssueMetric(metricNames);
-			var bugFixes = $("#multipleBugs").val();
-			var features = $("#multipleFeatures").val();
-			var improvements = $("#multipleImprovements").val();
+			var bugFixes = getSelectedTypes("multipleBugs");
+			var features = getSelectedTypes("multipleFeatures");
+			var improvements = getSelectedTypes("multipleImprovements");
 			var title = $("#release-notes-title").val();
 
 			configuration = {

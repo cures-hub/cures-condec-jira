@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInD
  * The content contains explicit decision knowledge (i.e. decision problems and
  * decisions relevant for the release).
  */
-public class ReleaseNotes {
+public class ReleaseNotes implements Comparable<ReleaseNotes> {
 
 	private long id;
 	private String title;
@@ -186,5 +186,10 @@ public class ReleaseNotes {
 	@JsonProperty
 	public void setNewFeatures(List<ReleaseNotesEntry> newFeatures) {
 		this.newFeatures = newFeatures;
+	}
+
+	@Override
+	public int compareTo(ReleaseNotes otherReleaseNotes) {
+		return otherReleaseNotes.getStartDate().compareTo(getStartDate());
 	}
 }

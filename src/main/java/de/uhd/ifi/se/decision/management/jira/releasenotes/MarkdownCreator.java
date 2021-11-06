@@ -25,7 +25,7 @@ public class MarkdownCreator {
 
 	public String getMarkdownString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("# ").append(releaseNotes.getTitle()).append("\n");
+		stringBuilder.append("# ").append(releaseNotes.getTitle()).append("\n\n");
 
 		addCategory(stringBuilder, ReleaseNotesCategory.NEW_FEATURES, releaseNotes.getNewFeatures());
 		addCategory(stringBuilder, ReleaseNotesCategory.IMPROVEMENTS, releaseNotes.getImprovements());
@@ -62,6 +62,8 @@ public class MarkdownCreator {
 				addElement(stringBuilder, childElement, currentDepth);
 			}
 		}
+
+		stringBuilder.append("\n");
 	}
 
 	private void addJiraIssue(StringBuilder stringBuilder, KnowledgeElement issue) {
