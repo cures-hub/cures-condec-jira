@@ -26,7 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 /**
  * Models one Jira issue to be included in the {@link ReleaseNotes}. It
  * calculates the {@link JiraIssueMetric}s for the Jira issue and saves the
- * final rating.
+ * final rating that is used to sort the release notes entries. Entries with a
+ * high rating (e.g. with many linked decision knowledge elements) are placed at
+ * the top.
  */
 public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReleaseNotesEntry.class);
@@ -182,7 +184,7 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 			Query query = JqlQueryBuilder.newBuilder().where().reporterUser(jiraIssue.getReporterId()).buildQuery();
 			numberOfReportedJiraIssues = (int) searchService.searchCount(user, query);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.debug(e.getMessage());
 		}
 		return numberOfReportedJiraIssues;
 	}
@@ -241,6 +243,10 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 		this.category = category;
 	}
 
+	/**
+	 * Sorts the release notes entries according their rating. Entries with highest
+	 * rating come first.
+	 */
 	@Override
 	public int compareTo(ReleaseNotesEntry otherEntry) {
 		Double ratingOfOtherEntry = otherEntry.getRating();

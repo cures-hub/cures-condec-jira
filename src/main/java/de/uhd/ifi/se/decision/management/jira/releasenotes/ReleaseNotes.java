@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.ReleaseNotesInD
  * The content contains explicit decision knowledge (i.e. decision problems and
  * decisions relevant for the release).
  */
-public class ReleaseNotes {
+public class ReleaseNotes implements Comparable<ReleaseNotes> {
 
 	private long id;
 	private String title;
@@ -158,33 +158,69 @@ public class ReleaseNotes {
 		this.content = content;
 	}
 
+	/**
+	 * @return {@link ReleaseNotesEntry release notes entries} of the
+	 *         {@link ReleaseNotesCategory#IMPROVEMENTS}.
+	 */
 	@XmlElement
 	public List<ReleaseNotesEntry> getImprovements() {
 		return improvements;
 	}
 
+	/**
+	 * @param improvements
+	 *            {@link ReleaseNotesEntry release notes entries} of the
+	 *            {@link ReleaseNotesCategory#IMPROVEMENTS}.
+	 */
 	@JsonProperty
 	public void setImprovements(List<ReleaseNotesEntry> improvements) {
 		this.improvements = improvements;
 	}
 
+	/**
+	 * @return {@link ReleaseNotesEntry release notes entries} of the
+	 *         {@link ReleaseNotesCategory#BUG_FIXES}.
+	 */
 	@XmlElement
 	public List<ReleaseNotesEntry> getBugFixes() {
 		return bugFixes;
 	}
 
+	/**
+	 * @param bugFixes
+	 *            {@link ReleaseNotesEntry release notes entries} of the
+	 *            {@link ReleaseNotesCategory#BUG_FIXES}.
+	 */
 	@JsonProperty
 	public void setBugFixes(List<ReleaseNotesEntry> bugFixes) {
 		this.bugFixes = bugFixes;
 	}
 
+	/**
+	 * @return {@link ReleaseNotesEntry release notes entries} of the
+	 *         {@link ReleaseNotesCategory#NEW_FEATURES}.
+	 */
 	@XmlElement
 	public List<ReleaseNotesEntry> getNewFeatures() {
 		return newFeatures;
 	}
 
+	/**
+	 * @param newFeatures
+	 *            {@link ReleaseNotesEntry release notes entries} of the
+	 *            {@link ReleaseNotesCategory#NEW_FEATURES}.
+	 */
 	@JsonProperty
 	public void setNewFeatures(List<ReleaseNotesEntry> newFeatures) {
 		this.newFeatures = newFeatures;
+	}
+
+	/**
+	 * Sorts the release notes according to their start date. Release notes with
+	 * more recent start date (i.e. younger releases) come first.
+	 */
+	@Override
+	public int compareTo(ReleaseNotes otherReleaseNotes) {
+		return otherReleaseNotes.getStartDate().compareTo(getStartDate());
 	}
 }

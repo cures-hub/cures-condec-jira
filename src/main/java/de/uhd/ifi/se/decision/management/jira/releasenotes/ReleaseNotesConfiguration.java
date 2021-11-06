@@ -11,11 +11,12 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-
 /**
- * Contains the configuration details for the release notes creation for one
- * Jira project (see {@link DecisionKnowledgeProject}).
+ * Contains the configuration details for the release notes creation. Is both
+ * used to persist the default configuration settings and also during the
+ * creation of a single relase notes. For example, the {@link JiraIssueMetric}
+ * weights and the mapping from Jira issue types to a
+ * {@link ReleaseNotesCategory} is handled here.
  */
 public class ReleaseNotesConfiguration {
 
@@ -172,10 +173,24 @@ public class ReleaseNotesConfiguration {
 		this.jiraIssueTypesForNewFeatures = jiraIssueTypesForNewFeatures;
 	}
 
+	/**
+	 * @param jiraIssue
+	 *            {@link Issue Jira issue} to be potentially included into
+	 *            {@link ReleaseNotes} if it matches a {@link ReleaseNotesCategory}.
+	 * @return {@link ReleaseNotesCategory} that the Jira issue falls into. Null if
+	 *         the Jira issue does not fall into any {@link ReleaseNotesCategory}.
+	 */
 	public ReleaseNotesCategory decideCategory(Issue jiraIssue) {
 		return decideCategory(jiraIssue.getIssueType().getName());
 	}
 
+	/**
+	 * @param type
+	 *            of a {@link Issue Jira issue} to be potentially included into
+	 *            {@link ReleaseNotes} if it matches a {@link ReleaseNotesCategory}.
+	 * @return {@link ReleaseNotesCategory} that the type falls into. Null if the
+	 *         type does not fall into any {@link ReleaseNotesCategory}.
+	 */
 	public ReleaseNotesCategory decideCategory(String type) {
 		if (jiraIssueTypesForNewFeatures.contains(type)) {
 			return ReleaseNotesCategory.NEW_FEATURES;

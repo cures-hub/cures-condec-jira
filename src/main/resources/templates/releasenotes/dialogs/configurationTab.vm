@@ -52,22 +52,13 @@
         <button data-aui-trigger class="aui-button" aria-controls="more-details-metrics">
             <span class="aui-icon aui-icon-small aui-iconfont-question-circle">More Information</span>
         </button>
-        <aui-inline-dialog id="more-details-metrics" alignment="bottom left">
-            <p>Here you can set different weights to different metrics. If you set the weight of
-                a metric to 0 this metric will not be considered when calculating the rating.<br>
-                If you set the weight to a number higher than the others, this metric will have a higher
-                weight when the ratings get sumed up.<br>
-                The total rating gets computed as follows:
-            </p>
-            <ol>
-                <li>For each metric sort all available metrics in a list</li>
-                <li>Find the median of the list and divide list in two parts</li>
-                <li>Scale the numbers in the first part between 1 and 5 and in the second from 6 to 10</li>
-                <li>Multiply each number with the weight you selected</li>
-            </ol>
-            As final step the resulting ratings from all metrics of an issue get added to one number.
+		<aui-inline-dialog id="more-details-metrics" alignment="bottom left">
+			For every Jira issue, a rating is calculated from the metrics shown below.	
+            The rating is used to sort the release notes entries: entries with the highest rating are placed at the top.
+            Here you can set weights for the metrics.
+            For every metric, the metric value (e.g. number of comments) is multipled with the weight.
+            The rating is calculated as the sum of all metrics.
         </aui-inline-dialog>
-        <b>Enter a number between 0 to 10</b>
         <div id="metricWeight"></div>
     </div>
 </form>

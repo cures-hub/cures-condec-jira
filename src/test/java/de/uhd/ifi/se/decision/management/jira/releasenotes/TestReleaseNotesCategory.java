@@ -16,10 +16,4 @@ public class TestReleaseNotesCategory {
 	public void testToReadable() {
 		assertEquals("Bug Fixes", ReleaseNotesCategory.BUG_FIXES.getName());
 	}
-
-	@Test
-	public void testToBooleanMap() {
-		assertEquals(3, ReleaseNotesCategory.toBooleanMap().size());
-		assertEquals(false, ReleaseNotesCategory.toBooleanMap().get(BUG_FIXES));
-	}
 }

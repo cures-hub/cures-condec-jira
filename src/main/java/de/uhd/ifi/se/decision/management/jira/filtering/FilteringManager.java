@@ -109,6 +109,10 @@ public class FilteringManager {
 			GraphPath<KnowledgeElement, Link> path = paths.getPath(element);
 			KnowledgeElement lastValidElementOnPath = filterSettings.getSelectedElement();
 			for (KnowledgeElement elementOnPath : path.getVertexList()) {
+				if (elementOnPath.equals(lastValidElementOnPath)) {
+					// the element should not be linked to itself (loops are forbidden)
+					continue;
+				}
 				if (!filteredGraph.vertexSet().contains(elementOnPath)) {
 					// the element on the former path is filtered out
 					continue;

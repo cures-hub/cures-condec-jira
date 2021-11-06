@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
@@ -124,6 +125,7 @@ public class ReleaseNotesPersistenceManager {
 				Query.select().where("PROJECT_KEY = ? AND CONTENT LIKE ?", projectKey, "%" + searchTerm + "%"))) {
 			releaseNotes.add(new ReleaseNotes(databaseEntry));
 		}
+		Collections.sort(releaseNotes);
 		return releaseNotes;
 	}
 }

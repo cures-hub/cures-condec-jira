@@ -75,6 +75,7 @@ ConDec offers the following features:
 - [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic-text-classification.md)
 - [Recommendation of solution options from external knowledge sources](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/decision-guidance.md)
 - [Link suggestion and duplicate recognition](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/link-suggestion.md)
+- [Creation of release notes with explicit decision knowledge](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/release-notes-creation.md)
 
 ## Implementation Details
 
@@ -102,7 +103,7 @@ This plug-in provides a [representational state transfer (REST) application prog
 e.g., to retrieve, insert, update, and delete decision knowledge in Jira.
 These services can be accessed via the following link:
 
-**Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|dodchecking|git|decisionguidance|linkrecommendation|nudging|classification|webhook**/**REST service**
+**Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decisionguidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
 The Jira ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/condec.api.js) from the user interface.
 
