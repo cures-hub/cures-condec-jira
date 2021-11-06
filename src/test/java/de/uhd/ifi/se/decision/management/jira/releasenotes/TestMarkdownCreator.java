@@ -9,12 +9,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.status.MockStatus;
-
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestMarkdownCreator extends TestSetUp {
 
@@ -24,9 +20,6 @@ public class TestMarkdownCreator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		MutableIssue issue = ((MutableIssue) JiraIssues.getJiraIssueByKey("TEST-2"));
-		issue.setStatus(new MockStatus("2", "resolved"));
-
 		releaseNotes = new ReleaseNotes();
 		releaseNotes.setTitle("Great release");
 		releaseNotes.setProjectKey("TEST");
@@ -45,7 +38,6 @@ public class TestMarkdownCreator extends TestSetUp {
 		assertTrue(entry.getElement().hasNeighborOfType(KnowledgeType.ISSUE));
 
 		releaseNotes.setNewFeatures(List.of(entry));
-
 		assertTrue(markdownCreator.getMarkdownString().contains("## New Features"));
 	}
 }
