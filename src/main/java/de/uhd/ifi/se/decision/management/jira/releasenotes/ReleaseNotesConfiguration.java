@@ -172,10 +172,24 @@ public class ReleaseNotesConfiguration {
 		this.jiraIssueTypesForNewFeatures = jiraIssueTypesForNewFeatures;
 	}
 
+	/**
+	 * @param jiraIssue
+	 *            {@link Issue Jira issue} to be potentially included into
+	 *            {@link ReleaseNotes} if it matches a {@link ReleaseNotesCategory}.
+	 * @return {@link ReleaseNotesCategory} that the Jira issue falls into. Null if
+	 *         the Jira issue does not fall into any {@link ReleaseNotesCategory}.
+	 */
 	public ReleaseNotesCategory decideCategory(Issue jiraIssue) {
 		return decideCategory(jiraIssue.getIssueType().getName());
 	}
 
+	/**
+	 * @param type
+	 *            of a {@link Issue Jira issue} to be potentially included into
+	 *            {@link ReleaseNotes} if it matches a {@link ReleaseNotesCategory}.
+	 * @return {@link ReleaseNotesCategory} that the type falls into. Null if the
+	 *         type does not fall into any {@link ReleaseNotesCategory}.
+	 */
 	public ReleaseNotesCategory decideCategory(String type) {
 		if (jiraIssueTypesForNewFeatures.contains(type)) {
 			return ReleaseNotesCategory.NEW_FEATURES;

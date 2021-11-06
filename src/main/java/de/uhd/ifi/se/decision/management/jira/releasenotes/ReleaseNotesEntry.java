@@ -241,6 +241,10 @@ public class ReleaseNotesEntry implements Comparable<ReleaseNotesEntry> {
 		this.category = category;
 	}
 
+	/**
+	 * Sorts the release notes entries according their rating. Entries with highest
+	 * rating come first.
+	 */
 	@Override
 	public int compareTo(ReleaseNotesEntry otherEntry) {
 		Double ratingOfOtherEntry = otherEntry.getRating();
