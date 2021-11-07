@@ -22,7 +22,7 @@
 			"documentationLocation": documentationLocation,
 			"projectKey": conDecAPI.projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/assignDecisionGroup.json?level=" + level
+		generalApi.postJSON(this.restPrefix + "/assign?level=" + level
 			+ "&existingGroups=" + existingGroups
 			+ "&addGroup=" + groupName, element, function(error) {
 				if (error === null) {
@@ -41,7 +41,7 @@
 		}
 		if (this.decisionGroups === undefined || this.decisionGroups.length === 0) {
 			this.decisionGroups = generalApi.getResponseAsReturnValue(conDecGroupingAPI.restPrefix
-				+ "/getAllDecisionGroups.json?projectKey=" + conDecAPI.projectKey);
+				+ "/all-groups.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.decisionGroups;
 	};
@@ -55,7 +55,7 @@
 			"documentationLocation": documentationLocation,
 			"projectKey": conDecAPI.projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/getDecisionGroupsForElement.json", element,
+		generalApi.postJSON(this.restPrefix + "/groups", element,
 			function(error, decisionGroups) {
 				if (error === null) {
 					callback(decisionGroups);
@@ -68,7 +68,7 @@
 	 */
 	ConDecGroupingAPI.prototype.renameDecisionGroup = function(oldName, newName, callback) {
 		generalApi.getJSON(this.restPrefix
-			+ "/renameDecisionGroup.json?projectKey=" + conDecAPI.projectKey
+			+ "/rename?projectKey=" + conDecAPI.projectKey
 			+ "&oldName=" + oldName + "&newName=" + newName, function() {
 				var index = conDecGroupingAPI.decisionGroups.indexOf(oldName);
 				conDecGroupingAPI.decisionGroups[index] = newName;
@@ -81,7 +81,7 @@
 	 */
 	ConDecGroupingAPI.prototype.deleteDecisionGroup = function(groupName, callback) {
 		generalApi.getJSON(this.restPrefix
-			+ "/deleteDecisionGroup.json?projectKey=" + conDecAPI.projectKey
+			+ "/delete?projectKey=" + conDecAPI.projectKey
 			+ "&groupName=" + groupName, function() {
 				var index = conDecGroupingAPI.decisionGroups.indexOf(groupName);
 				conDecGroupingAPI.decisionGroups.splice(index, 1);

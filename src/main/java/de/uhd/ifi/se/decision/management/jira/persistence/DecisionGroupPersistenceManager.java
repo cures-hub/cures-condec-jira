@@ -37,7 +37,7 @@ public class DecisionGroupPersistenceManager {
 	 *            level") cannot be deleted.
 	 * @param projectKey
 	 *            of a Jira project.
-	 * @return true if the decision group/level was successfully deleted.
+	 * @return true if the decision group was successfully deleted.
 	 */
 	public static boolean deleteGroup(String groupName, String projectKey) {
 		if (groupName == null) {
@@ -59,8 +59,8 @@ public class DecisionGroupPersistenceManager {
 	 *            {@link KnowledgeElement} that the decision group/level should be
 	 *            assigned to.
 	 * @return true if all current existing decision group/level assignments for
-	 *         that element and for neighbor elements in a link distance of 3 were
-	 *         replaced with new decision groups and a level.
+	 *         that element <b>and for neighbor elements in a link distance of 3</b>
+	 *         were replaced with new decision groups and a level.
 	 */
 	public static boolean setGroupAssignment(Set<String> groupNames, KnowledgeElement element) {
 		if (groupNames == null || element == null) {
