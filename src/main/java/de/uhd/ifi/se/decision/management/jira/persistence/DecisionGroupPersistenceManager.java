@@ -12,6 +12,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import net.java.ao.Query;
@@ -19,8 +20,10 @@ import net.java.ao.Query;
 /**
  * Responsible to persist levels ("high level", "medium level", "realization
  * level") and groups (e.g. "process", "UI") of decisions from all documentation
- * locations. Groups/levels are stored in the internal database of Jira via
- * object relational mapping (active objects framework).
+ * locations. Decision <b>group/level assignments are inherited to neighbor
+ * {@link KnowledgeElement}s within a link distance of 3 in the
+ * {@link KnowledgeGraph}</b>. Groups/levels are stored in the internal database
+ * of Jira via object relational mapping (active objects framework).
  *
  * @see DecisionGroupInDatabase
  * @see KnowledgeElement#getDecisionGroups()
