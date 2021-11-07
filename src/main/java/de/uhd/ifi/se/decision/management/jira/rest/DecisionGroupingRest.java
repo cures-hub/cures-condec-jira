@@ -15,6 +15,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -31,10 +35,29 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupIn
  */
 @Path("/grouping")
 public class DecisionGroupingRest {
-	// private static final Logger LOGGER =
-	// LoggerFactory.getLogger(DecisionGroupingRest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionGroupingRest.class);
 
-	@Path("/assignDecisionGroup")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param level
+	 *            name of the decision level ("high level", "medium level", or
+	 *            "realization level").
+	 * @param existingGroups
+	 *            names of groups already assigned to the element (e.g. "process",
+	 *            "UI").
+	 * @param groupsToAdd
+	 *            names of groups to be newly assigned to the element (e.g.
+	 *            "process", "UI").
+	 * @param element
+	 *            {@link KnowledgeElement} that the decision group/level should be
+	 *            assigned to.
+	 * @return ok if all current existing decision group/level assignments for that
+	 *         element <b>and for neighbor elements in a link distance of 3</b> were
+	 *         replaced with the provided decision groups and a level.
+	 */
+	@Path("/assign")
 	@POST
 	public Response assignDecisionGroup(@Context HttpServletRequest request, @QueryParam("level") String level,
 			@QueryParam("existingGroups") String existingGroups, @QueryParam("addGroup") String groupsToAdd,
@@ -51,6 +74,7 @@ public class DecisionGroupingRest {
 		}
 		groupsToAssign.removeIf(groupName -> groupName.isBlank());
 		if (DecisionGroupPersistenceManager.setGroupAssignment(groupsToAssign, element)) {
+			LOGGER.info("The groups " + groupsToAssign + " were assigned to " + element);
 			return Response.ok().build();
 		}
 		return Response.status(Status.BAD_REQUEST)
@@ -74,7 +98,7 @@ public class DecisionGroupingRest {
 	 *            requirement.
 	 * @return all decision groups/levels for one {@link KnowledgeElement}.
 	 */
-	@Path("/getDecisionGroupsForElement")
+	@Path("/groups")
 	@POST
 	public Response getDecisionGroupsForElement(KnowledgeElement element) {
 		if (element == null) {
@@ -83,22 +107,44 @@ public class DecisionGroupingRest {
 		return Response.ok(new TreeSet<>(element.getDecisionGroups())).build();
 	}
 
-	@Path("/renameDecisionGroup")
+	/**
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param oldGroupName
+	 *            name of the decision group to be renamed, e.g. "UI" or "process".
+	 *            Decision levels ("high level", "medium level", "realization
+	 *            level") cannot be renamed.
+	 * @param newGroupName
+	 *            new name of the decision group.
+	 * @return ok if renaming was successful.
+	 */
+	@Path("/rename")
 	@GET
 	public Response renameDecisionGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("oldName") String oldGroupName, @QueryParam("newName") String newGroupName) {
 		if (DecisionGroupPersistenceManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
+			LOGGER.info("The group " + oldGroupName + " was renamed to " + newGroupName + ".");
 			return Response.ok().build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to rename found."))
 				.build();
 	}
 
-	@Path("/deleteDecisionGroup")
+	/**
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param groupName
+	 *            name of the decision group (e.g. "process", "UI") to be deleted.
+	 *            Decision levels ("high level", "medium level", "realization
+	 *            level") cannot be deleted.
+	 * @return ok if the decision group was successfully deleted.
+	 */
+	@Path("/delete")
 	@GET
 	public Response deleteDecisionGroup(@QueryParam("projectKey") String projectKey,
 			@QueryParam("groupName") String groupName) {
 		if (DecisionGroupPersistenceManager.deleteGroup(groupName, projectKey)) {
+			LOGGER.info("The group " + groupName + " was deleted.");
 			return Response.ok().build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No group to delete found."))
@@ -118,7 +164,7 @@ public class DecisionGroupingRest {
 	 * @return all decision groups/levels for one project sorted so that levels
 	 *         (high level, medium level, realization level) come first.
 	 */
-	@Path("/getAllDecisionGroups")
+	@Path("/all-groups")
 	@GET
 	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
 		List<String> allGroupNames = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);

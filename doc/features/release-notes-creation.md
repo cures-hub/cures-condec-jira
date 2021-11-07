@@ -20,7 +20,7 @@ The Jira issues that were resolved during the time range are classified into thr
 - Improvements
 - Bug fixes
 
-The release notes creator can set the mapping during the creation of a single release notes.
+The release notes creator can set the mapping between Jira issue type and release notes category during the creation of a single release notes.
 ![Dialog to create new release notes](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/release_notes_create_config.png)
 
 *Dialog to create new release notes*

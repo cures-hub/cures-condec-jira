@@ -12,6 +12,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 import net.java.ao.Query;
@@ -19,8 +20,10 @@ import net.java.ao.Query;
 /**
  * Responsible to persist levels ("high level", "medium level", "realization
  * level") and groups (e.g. "process", "UI") of decisions from all documentation
- * locations. Groups/levels are stored in the internal database of Jira via
- * object relational mapping (active objects framework).
+ * locations. Decision <b>group/level assignments are inherited to neighbor
+ * {@link KnowledgeElement}s within a link distance of 3 in the
+ * {@link KnowledgeGraph}</b>. Groups/levels are stored in the internal database
+ * of Jira via object relational mapping (active objects framework).
  *
  * @see DecisionGroupInDatabase
  * @see KnowledgeElement#getDecisionGroups()
@@ -37,7 +40,7 @@ public class DecisionGroupPersistenceManager {
 	 *            level") cannot be deleted.
 	 * @param projectKey
 	 *            of a Jira project.
-	 * @return true if the decision group/level was successfully deleted.
+	 * @return true if the decision group was successfully deleted.
 	 */
 	public static boolean deleteGroup(String groupName, String projectKey) {
 		if (groupName == null) {
@@ -59,8 +62,8 @@ public class DecisionGroupPersistenceManager {
 	 *            {@link KnowledgeElement} that the decision group/level should be
 	 *            assigned to.
 	 * @return true if all current existing decision group/level assignments for
-	 *         that element and for neighbor elements in a link distance of 3 were
-	 *         replaced with new decision groups and a level.
+	 *         that element <b>and for neighbor elements in a link distance of 3</b>
+	 *         were replaced with new decision groups and a level.
 	 */
 	public static boolean setGroupAssignment(Set<String> groupNames, KnowledgeElement element) {
 		if (groupNames == null || element == null) {
