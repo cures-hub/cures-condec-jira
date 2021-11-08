@@ -1,7 +1,7 @@
 <div id="decision-guidance-prompt" class="condec-prompt">
-    <h3>Decision Guidance</h3>
+    <h3>$i18n.getText("condec.decision.guidance")</h3>
     <p>This Jira issue is linked to <strong id="num-decision-problems"></strong> decision problems, which altogether have <strong id="num-recommendations">...</strong> recommendations.
-    The recommendations are listed below.</p>
+    The number of recommendations per decision problem is listed below.</p>
     <div id="decision-problems-overview">
         <table id="decision-problems-table" class="aui aui-table-list">
             <thead>
@@ -16,8 +16,8 @@
     </div>
     <aui-spinner id="decision-guidance-spinner"></aui-spinner>
     <div class="right-aligned">
-    	<button id="go-to-decision-guidance-tab" class="aui-button aui-button-link" style="text-align: right;">
-        	<span class="aui-icon aui-icon-small aui-iconfont-shortcut"></span>Go to decision guidance tab
+    	<button id="go-to-decision-guidance-tab" class="aui-button aui-button-link">
+        	<span class="aui-icon aui-icon-small aui-iconfont-shortcut"></span> Go to decision guidance details
     	</button>    
     </div>    
 </div>
