@@ -1,17 +1,19 @@
-<div id="link-recommendation-prompt">
+<div id="link-recommendation-prompt" class="condec-prompt">
     <h3>Related elements</h3>
     ## <strong id="link-recommendation-prompt-jira-issue-key"></strong> seems to be incompletely linked. <br/>
+    <p>
     <ul>
         <li><strong id="link-recommendation-prompt-num-link-recommendations">0</strong> possibly related knowledge
             elements
         </li>
         <li><strong id="link-recommendation-prompt-num-duplicate-recommendations">0</strong> possible duplicates</li>
     </ul>
-    Please check that the links of this knowledge element are complete and that there are no duplicates.<br/>
-
-    <button id="go-to-link-recomendation-tab" class="aui-button aui-button-link">
-        <span class="aui-icon aui-icon-small aui-iconfont-link">Go to link recommendation tab</span>
-        Go to link recommendation tab
-    </button>
-
+    Please check that the links of this knowledge element are complete and that there are no duplicates.
+    </p>
+    <aui-spinner id="link-recommendation-spinner"></aui-spinner>
+	<div class="right-aligned">  
+    	<button id="go-to-link-recomendation-tab" class="aui-button aui-button-link" style="text-align: right;">
+        	<span class="aui-icon aui-icon-small aui-iconfont-shortcut"></span>Go to link recommendation tab
+    	</button>
+    </div>	
 </div>

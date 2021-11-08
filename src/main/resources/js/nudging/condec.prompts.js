@@ -1,20 +1,16 @@
-(function (global) {
+(function(global) {
 
-	const ConDecPrompt = function () {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
-		jQuery(document).ajaxComplete(function (event, request, settings) {
+	const ConDecPrompt = function() {
+		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
-				AJS.tabs.setup();
 				const issueKey = conDecAPI.getIssueKey();
-				// Create unified prompt
-				document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey + "...";
+				document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey;
 
-				const unifiedPromptElement = document.getElementById("unified-prompt");
+				const promptDialog = document.getElementById("unified-prompt");
 
-				document.getElementById("warning-dialog-continue").onclick = function () {
-					AJS.dialog2(unifiedPromptElement).hide();
+				document.getElementById("warning-dialog-continue").onclick = function() {
+					AJS.dialog2(promptDialog).hide();
 				}
-
 
 				// just-in-time prompts when status changes
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
@@ -37,11 +33,11 @@
 							|| isLinkRecommendationActivated
 							|| isTextClassificationActivated
 							|| isDecisionGuidanceActivated) {
-							AJS.dialog2(unifiedPromptElement).show()
+							AJS.dialog2(promptDialog).show()
 						}
 						if (isDoDCheckActivated) {
 							conDecPrompt.promptDefinitionOfDoneChecking();
-							document.getElementById("definition-of-done-prompt").style.display = "block";
+							document.getElementById("definition-of-done-checking-prompt").style.display = "block";
 							document.getElementById("go-to-quality-check-tab").onclick = () => {
 								AJS.tabs.change(jQuery('a[href="#quality-check-tab"]'));
 								window.open("#quality-check-tab", "blank");
@@ -80,7 +76,7 @@
 		});
 	};
 
-	ConDecPrompt.prototype.promptLinkSuggestion = function () {
+	ConDecPrompt.prototype.promptLinkSuggestion = function() {
 		const issueId = JIRA.Issue.getIssueId();
 		const projectKey = conDecAPI.projectKey;
 		if (issueId === null || issueId === undefined) {
@@ -88,7 +84,7 @@
 		}
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
+		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
 			.then((recommendations) => {
 				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
 				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
@@ -101,7 +97,7 @@
 			});
 	}
 
-	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function () {
+	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
 		const projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
@@ -130,7 +126,7 @@
 		document.getElementById("definition-of-done-checking-prompt-jira-project-key").innerHTML = projectKey;
 	}
 
-	ConDecPrompt.prototype.promptNonValidatedElements = function () {
+	ConDecPrompt.prototype.promptNonValidatedElements = function() {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -159,7 +155,7 @@
 			})
 	};
 
-	ConDecPrompt.prototype.promptDecisionGuidance = function () {
+	ConDecPrompt.prototype.promptDecisionGuidance = function() {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -201,7 +197,6 @@
 		document.getElementById("decision-guidance-spinner").style.display = "none";
 	}
 
-
 	global.conDecPrompt = new ConDecPrompt();
 })
-(window);
+	(window);

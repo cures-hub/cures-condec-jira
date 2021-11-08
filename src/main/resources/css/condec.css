@@ -125,3 +125,8 @@ a:focus a:hover {
 .discarded {
 	color: gray;
 }
+
+.right-aligned {
+  display: flex; 
+  justify-content: flex-end;
+}
