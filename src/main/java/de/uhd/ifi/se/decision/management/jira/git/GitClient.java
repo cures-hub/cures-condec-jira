@@ -85,6 +85,7 @@ public class GitClient {
 			extractAllCodeKnowledge = true;
 		}
 		if (!gitClient.fetchOrCloneRepositories()) {
+			LOGGER.error("GitClient could not clone or fetch repo(s) for project: " + projectKey);
 			return null;
 		}
 		if (extractAllCodeKnowledge) {
@@ -114,6 +115,38 @@ public class GitClient {
 	}
 
 	/**
+	 * @return {@link Diff} object for all commits on the default branch(es)
+	 *         containing the {@link ChangedFile}s. Each {@link ChangedFile} is
+	 *         created from a diff entry and contains the respective edit list.
+	 */
+	public Diff getDiffOfEntireDefaultBranch() {
+		Diff diff = new Diff();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			List<RevCommit> commits = gitClientForSingleRepo.getDefaultBranchCommits();
+
+			if (commits.isEmpty()) {
+				return new Diff();
+			}
+			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+			// because first commit does not have a parent commit
+			commits.remove(0);
+			diff.add(getDiff(commits));
+
+			for (RevCommit commit : commits) {
+				List<DiffEntry> diffEntriesInCommit = gitClientForSingleRepo.getDiffEntries(commit);
+				for (DiffEntry diffEntry : diffEntriesInCommit) {
+					for (ChangedFile file : diff.getChangedFiles()) {
+						if (diffEntry.getNewPath().contains(file.getName())) {
+							file.addCommit(commit);
+						}
+					}
+				}
+			}
+		}
+		return diff;
+	}
+
+	/**
 	 * @param commits
 	 *            commits as a list of RevCommit objects.
 	 * @return {@link Diff} object for a list of commits containing the
@@ -129,43 +162,6 @@ public class GitClient {
 		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
 				.orElse(commits.get(commits.size() - 1));
 		return getDiff(firstCommit, lastCommit);
-	}
-
-	/**
-	 * @return {@link Diff} object for all commits on the default branch(es)
-	 *         containing the {@link ChangedFile}s. Each {@link ChangedFile} is
-	 *         created from a diff entry and contains the respective edit list.
-	 */
-	public Diff getDiffOfEntireDefaultBranch() {
-		List<RevCommit> allCommits = getDefaultBranchCommits();
-		if (allCommits.isEmpty()) {
-			return new Diff();
-		}
-
-		Diff diff = new Diff();
-		// because first commit does not have a parent commit
-		allCommits.remove(0);
-		diff = getDiff(allCommits);
-
-		for (RevCommit commit : allCommits) {
-			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
-			for (DiffEntry diffEntry : diffEntriesInCommit) {
-				for (ChangedFile file : diff.getChangedFiles()) {
-					if (diffEntry.getNewPath().contains(file.getName())) {
-						file.addCommit(commit);
-					}
-				}
-			}
-		}
-		return diff;
-	}
-
-	public List<DiffEntry> getDiffEntries(RevCommit commit) {
-		List<DiffEntry> diffEntries = new ArrayList<>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diffEntries.addAll(gitClientForSingleRepo.getDiffEntries(commit));
-		}
-		return diffEntries;
 	}
 
 	/**
@@ -355,6 +351,7 @@ public class GitClient {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getDefaultBranchCommits());
+			System.out.println("Num Commits " + commits.size());
 		}
 		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
