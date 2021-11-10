@@ -55,6 +55,12 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
+	public void testListOfRevCommitsEmpty() {
+		Diff diff = gitClient.getDiff(List.of());
+		assertTrue(diff.getChangedFiles().isEmpty());
+	}
+
+	@Test
 	public void testJiraIssueNull() {
 		Diff diff = gitClient.getDiff((Issue) null);
 		assertTrue(diff.getChangedFiles().isEmpty());

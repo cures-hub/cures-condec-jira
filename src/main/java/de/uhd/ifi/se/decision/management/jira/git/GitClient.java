@@ -339,10 +339,6 @@ public class GitClient {
 		return commits.size();
 	}
 
-	public String getProjectKey() {
-		return projectKey;
-	}
-
 	/**
 	 * @return all commits on the default branch(es) as a list of
 	 *         {@link RevCommit}s.
