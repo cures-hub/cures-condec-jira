@@ -1,41 +1,14 @@
-<section id="unified-prompt"
-         class="aui-dialog2 aui-dialog2-large aui-dialog2-warning aui-layer"
-         role="dialog"
-         tabindex="-1"
-         data-aui-modal="true"
-         data-aui-remove-on-hide="true"
-         aria-hidden="true"
-         hidden
->
+<section id="unified-prompt" class="aui-dialog2 aui-dialog2-large aui-layer aui-dialog2-warning" role="dialog" 
+	data-aui-remove-on-hide="true" aria-hidden="true">
     <header class="aui-dialog2-header">
-        <h1 class="aui-dialog2-header-main" id="unified-prompt-header"></h1>
+        <h2 class="aui-dialog2-header-main" id="unified-prompt-header"></h2>
         <button class="aui-close-button" type="button" aria-label="close"></button>
     </header>
     <div class="aui-dialog2-content">
-        <p>Overview of the decision knowledge documentation of this issue.</p>
-        <br/>
-        <div id="non-validated-elements-prompt" class="condec-prompt">
-            #parse("templates/prompts/nonValidatedElementsPrompt.vm")
-            <aui-spinner id="non-validated-spinner"></aui-spinner>
-
-        </div>
-        <br/>
-        <div id="link-recommendation-prompt" class="condec-prompt">
-            #parse("templates/prompts/linkRecommendationPrompt.vm")
-            <aui-spinner id="link-recommendation-spinner"></aui-spinner>
-        </div>
-        <br/>
-        <div id="definition-of-done-prompt" class="condec-prompt">
-            #parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")
-            <aui-spinner id="dod-spinner"></aui-spinner>
-
-        </div>
-        <br/>
-        <div id="decision-guidance-prompt" class="condec-prompt">
-            #parse("templates/prompts/decisionGuidancePrompt.vm")
-            <aui-spinner id="decision-guidance-spinner"></aui-spinner>
-
-        </div>
+        #parse("templates/prompts/definitionOfDoneCheckingPrompt.vm")       
+        #parse("templates/prompts/linkRecommendationPrompt.vm")
+        #parse("templates/prompts/decisionGuidancePrompt.vm")
+        #parse("templates/prompts/nonValidatedElementsPrompt.vm")
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">

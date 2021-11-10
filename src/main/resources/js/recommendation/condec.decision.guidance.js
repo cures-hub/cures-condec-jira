@@ -10,7 +10,7 @@
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
-		
+
 		// get all the decision problems for the dropdown and fill the dropdown
 		conDecAPI.getDecisionProblems({}, fillDecisionProblemDropDown);
 
@@ -30,24 +30,18 @@
 			event.preventDefault();
 			let dropDownElement = document.getElementById("decision-guidance-dropdown-items");
 			let selectedElement = {
-				id: dropDownElement.value.split(":")[0],
+				id: Number(dropDownElement.value.split(":")[0]),
 				documentationLocation: dropDownElement.value.split(":")[1],
-				projectKey: conDecAPI.getProjectKey() 
+				projectKey: conDecAPI.getProjectKey()
 			};
 			tableBody.innerHTML = "";
 			const spinner = $("#loading-spinner-recommendation");
 			const keywords = document.getElementById("recommendation-keywords").value;
-			console.log(keywords);
 			spinner.show();
-			var filterSettings = {
-				projectKey: conDecAPI.getProjectKey(),
-				selectedElementObject: selectedElement,
-				searchTerm: keywords
-			}
-			conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
+			Promise.resolve(conDecDecisionGuidanceAPI.getRecommendations(selectedElement, keywords))
 				.then((recommendations) => {
 					if (recommendations.length > 0) {
-						var recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
+						recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
 						buildRecommendationTable(recommendations, selectedElement);
 					} else {
 						tableBody.innerHTML = "<i>No recommendations found!</i>";

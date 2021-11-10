@@ -1,9 +1,9 @@
-<div id="non-validated-elements-prompt">
-    <h3>Non-validated elements</h3>
-    This issue contains <strong
-    id="num-non-validated-elements"></strong> knowledge elements that have not been manually validated. <br/>
-    Please validate the knowledge elements if you approve their classifications.<br/>
-
+<div id="non-validated-elements-prompt" class="condec-prompt">
+    <h3>$i18n.getText("condec.label.text.classification")</h3>
+    <p>This Jira issue contains 
+    <strong id="num-non-validated-elements"></strong> 
+    knowledge elements that have not been manually validated.
+    Please validate the knowledge elements if you approve their classifications.</p>
     <table id="non-validated-container-short" class="aui aui-table-list">
         <thead>
         <tr>
@@ -14,8 +14,10 @@
         <tbody id="non-validated-table-body">
         </tbody>
     </table>
-    <button id="go-to-classification-tab" class="aui-button aui-button-link">
-        <span class="aui-icon aui-icon-small aui-iconfont-link">Go to text classification tab</span>
-        Go to text classification tab
-    </button>
+    <div class="right-aligned">    
+    	<button id="go-to-classification-tab" class="aui-button aui-button-link">
+        	<span class="aui-icon aui-icon-small aui-iconfont-shortcut"></span> Go to text classification details
+    	</button>
+    </div>
+    <aui-spinner id="non-validated-spinner"></aui-spinner>
 </div>

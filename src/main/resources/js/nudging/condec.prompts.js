@@ -1,86 +1,88 @@
-(function (global) {
+(function(global) {
 
-	const ConDecPrompt = function () {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/nudging";
-		jQuery(document).ajaxComplete(function (event, request, settings) {
+	const ConDecPrompt = function() {
+		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
-				AJS.tabs.setup();
-				const issueKey = conDecAPI.getIssueKey();
-				// Create unified prompt
-				document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey + "...";
-
-				const unifiedPromptElement = document.getElementById("unified-prompt");
-
-				document.getElementById("warning-dialog-continue").onclick = function () {
-					AJS.dialog2(unifiedPromptElement).hide();
-				}
-
-
-				// just-in-time prompts when status changes
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
 				const id = params.get("id");
 				const actionId = params.get("action");
-				Promise.all([
-					conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId),
-					conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId),
-					conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId),
-					conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
-				])
-					.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
-						/**
-						 * @issue The page is reloaded and the ambient feedback is removed again on the
-						 * link recommendation menu item. How can we prevent this?
-						 * @alternative Use jQuery(document).ready to wait for the page to be loaded.
-						 * @con Does not work, the link recommendation menu item coloring is removed.
-						 */
-						if (isDoDCheckActivated
-							|| isLinkRecommendationActivated
-							|| isTextClassificationActivated
-							|| isDecisionGuidanceActivated) {
-							AJS.dialog2(unifiedPromptElement).show()
-						}
-						if (isDoDCheckActivated) {
-							conDecPrompt.promptDefinitionOfDoneChecking();
-							document.getElementById("definition-of-done-prompt").style.display = "block";
-							document.getElementById("go-to-quality-check-tab").onclick = () => {
-								AJS.tabs.change(jQuery('a[href="#quality-check-tab"]'));
-								window.open("#quality-check-tab", "blank");
-							}
-						}
-						if (isLinkRecommendationActivated) {
-							conDecPrompt.promptLinkSuggestion();
-							document.getElementById("link-recommendation-prompt").style.display = "block";
 
-							document.getElementById("go-to-link-recomendation-tab").onclick = () => {
-								AJS.tabs.change(jQuery('a[href="#link-recommendation-tab"]'));
-								window.open("#link-recommendation-tab", "blank");
-							}
-						}
-						if (isTextClassificationActivated) {
-							conDecPrompt.promptNonValidatedElements();
-							document.getElementById("non-validated-elements-prompt").style.display = "block";
-							document.getElementById("go-to-classification-tab").onclick =
-								() => {
-									AJS.tabs.change(jQuery('a[href="#text-classification-tab"]'));
-									window.open("#text-classification-tab", "blank");
+				jQuery(document).ajaxComplete(function(event, request, settings) {
+					if (settings.url.includes("AjaxIssueEditAction")) {
 
-								}
+						const issueKey = conDecAPI.getIssueKey();
+						document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey;
+
+						const promptDialog = document.getElementById("unified-prompt");
+
+						document.getElementById("warning-dialog-continue").onclick = function() {
+							AJS.dialog2(promptDialog).hide();
 						}
-						if (isDecisionGuidanceActivated) {
-							conDecPrompt.promptDecisionGuidance();
-							document.getElementById("decision-guidance-prompt").style.display = "block";
-							document.getElementById("go-to-decision-guidance-tab").onclick =
-								() => {
-									AJS.tabs.change(jQuery('a[href="#decision-guidance-tab"]'));
-									window.open("#decision-guidance-tab", "blank");
+
+						// just-in-time prompts when status changes
+						Promise.all([
+							conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId),
+							conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId),
+							conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId),
+							conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
+						])
+							.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
+								/**
+								 * @issue The page is reloaded and the ambient feedback is removed again on the
+								 * link recommendation menu item. How can we prevent this?
+								 * @alternative Use jQuery(document).ready to wait for the page to be loaded.
+								 * @con Does not work, the link recommendation menu item coloring is removed.
+								 */
+								if (isDoDCheckActivated
+									|| isLinkRecommendationActivated
+									|| isTextClassificationActivated
+									|| isDecisionGuidanceActivated) {
+									AJS.dialog2(promptDialog).show()
 								}
-						}
-					});
+								if (isDoDCheckActivated) {
+									conDecPrompt.promptDefinitionOfDoneChecking();
+									document.getElementById("definition-of-done-checking-prompt").style.display = "block";
+									document.getElementById("go-to-quality-check-tab").onclick = () => {
+										AJS.tabs.change(jQuery('a[href="#quality-check-tab"]'));
+										window.open("#quality-check-tab", "blank");
+									}
+								}
+								if (isLinkRecommendationActivated) {
+									conDecPrompt.promptLinkSuggestion();
+									document.getElementById("link-recommendation-prompt").style.display = "block";
+
+									document.getElementById("go-to-link-recomendation-tab").onclick = () => {
+										AJS.tabs.change(jQuery('a[href="#link-recommendation-tab"]'));
+										window.open("#link-recommendation-tab", "blank");
+									}
+								}
+								if (isTextClassificationActivated) {
+									conDecPrompt.promptNonValidatedElements();
+									document.getElementById("non-validated-elements-prompt").style.display = "block";
+									document.getElementById("go-to-classification-tab").onclick =
+										() => {
+											AJS.tabs.change(jQuery('a[href="#text-classification-tab"]'));
+											window.open("#text-classification-tab", "blank");
+
+										}
+								}
+								if (isDecisionGuidanceActivated) {
+									conDecPrompt.promptDecisionGuidance();
+									document.getElementById("decision-guidance-prompt").style.display = "block";
+									document.getElementById("go-to-decision-guidance-tab").onclick =
+										() => {
+											AJS.tabs.change(jQuery('a[href="#decision-guidance-tab"]'));
+											window.open("#decision-guidance-tab", "blank");
+										}
+								}
+							});
+					}
+				});
 			}
 		});
 	};
 
-	ConDecPrompt.prototype.promptLinkSuggestion = function () {
+	ConDecPrompt.prototype.promptLinkSuggestion = function() {
 		const issueId = JIRA.Issue.getIssueId();
 		const projectKey = conDecAPI.projectKey;
 		if (issueId === null || issueId === undefined) {
@@ -88,7 +90,7 @@
 		}
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-			conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
+		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
 			.then((recommendations) => {
 				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
 				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
@@ -101,7 +103,7 @@
 			});
 	}
 
-	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function () {
+	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
 		const projectKey = conDecAPI.getProjectKey();
 		if (projectKey === null || projectKey === undefined) {
 			return;
@@ -130,7 +132,7 @@
 		document.getElementById("definition-of-done-checking-prompt-jira-project-key").innerHTML = projectKey;
 	}
 
-	ConDecPrompt.prototype.promptNonValidatedElements = function () {
+	ConDecPrompt.prototype.promptNonValidatedElements = function() {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
@@ -159,49 +161,40 @@
 			})
 	};
 
-	ConDecPrompt.prototype.promptDecisionGuidance = function () {
+	ConDecPrompt.prototype.promptDecisionGuidance = function() {
 		const issueKey = conDecAPI.getIssueKey();
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-		const projectKey = conDecAPI.getProjectKey();
-
+        const projectKey = conDecAPI.getProjectKey();
 		conDecAPI.getDecisionProblems({}, decisionProblems => {
-			// Get an array containing promises that resolve to the numbers of elements in each decision problem.
-			const recommendationsNumsPromises = decisionProblems.map(decisionProblem => {
-				const filterSettings = {
-					"projectKey": projectKey,
-					"selectedElementObject": decisionProblem
-				};
-				return conDecDecisionGuidanceAPI.getRecommendations(filterSettings)
-					.then(res => res.length)
-					.catch(error => {
-						console.log("Error in making decision guidance prompt table was: ", error)
-						document.getElementById("decision-problems-table-body").innerHTML = "<i>An error occurred!</i>"
-					});
-			});
-			// Wait for all promises to resolve, then continue adding the numbers of recommendations to the table
-			Promise.all(recommendationsNumsPromises)
-				.then(numbersOfRecommendations => {
+			var recommendationPromises = [];
+			for (decisionProblem of decisionProblems) {
+				decisionProblem.projectKey = projectKey;			
+				recommendationPromises.push(conDecDecisionGuidanceAPI.getRecommendations(decisionProblem, ""));
+			}
+			Promise.all(recommendationPromises)
+				.then(recommendationsForAllProblems => {
 					var totalNumberOfRecommendations = 0;
-					decisionProblems.forEach((decisionProblem, index) => {
+					document.getElementById("decision-problems-table-body").innerHTML = "";
+					for (i = 0; i < decisionProblems.length; i++) {
+						var numberOfRecommendations = recommendationsForAllProblems[i].length;
 						let tableRow = "<tr>";
-						tableRow += "<td>" + decisionProblem.summary + "</td>";
-						tableRow += "<td>" + numbersOfRecommendations[index] + "</td>";
+						tableRow += "<td>" + decisionProblems[i].summary + "</td>";
+						tableRow += "<td>" + numberOfRecommendations + "</td>";
 						tableRow += "</tr>";
 						document.getElementById("decision-problems-table-body").innerHTML += tableRow;
-						totalNumberOfRecommendations += numbersOfRecommendations[index];
-					});
+						totalNumberOfRecommendations += numberOfRecommendations;
+					}
 
 					document.getElementById("num-decision-problems").innerHTML = decisionProblems.length;
 					document.getElementById("num-recommendations").innerHTML = totalNumberOfRecommendations;
 					conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
+					document.getElementById("decision-guidance-spinner").style.display = "none";
 				});
 		});
-		document.getElementById("decision-guidance-spinner").style.display = "none";
 	}
-
 
 	global.conDecPrompt = new ConDecPrompt();
 })
-(window);
+	(window);

@@ -8,25 +8,39 @@
  * tabs/decisiontable/*
  * jiraIssueModule.vm
  */
-(function (global) {
+(function(global) {
 
-	var ConDecDecisionGuidanceAPI = function () {
+	var ConDecDecisionGuidanceAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/decisionguidance";
+		this.recommendationsPerProblem = new Map();
 	};
 
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function (filterSettings) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations.json", filterSettings);
+	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(decisionProblem, keywords) {
+		var filterSettings = {
+			projectKey: conDecAPI.getProjectKey(),
+			selectedElementObject: decisionProblem,
+			searchTerm: keywords
+		}
+		if (this.recommendationsPerProblem.has(decisionProblem.id)) {
+			return this.recommendationsPerProblem.get(decisionProblem.id);
+		}
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations.json", filterSettings)
+			.then(recommendations => {
+				recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
+				conDecDecisionGuidanceAPI.recommendationsPerProblem.set(filterSettings.selectedElementObject.id, recommendations);
+				return recommendations;
+			});
 	};
 
 	/*
 	 * external references: condec.decision.guidance
 	 */
-	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function (projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
+	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function(projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
 		generalApi.getJSON(this.restPrefix + "/recommendationEvaluation.json?projectKey=" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
-			function (error, results) {
+			function(error, results) {
 				callback(results, error);
 			});
 	};
@@ -34,8 +48,8 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function (projectKey, maxNumberOfRecommendations) {
-		generalApi.postJSON(this.restPrefix + "/setMaxNumberOfRecommendations.json?projectKey=" + projectKey + "&maxNumberOfRecommendations=" + maxNumberOfRecommendations, null, function (
+	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function(projectKey, maxNumberOfRecommendations) {
+		generalApi.postJSON(this.restPrefix + "/setMaxNumberOfRecommendations.json?projectKey=" + projectKey + "&maxNumberOfRecommendations=" + maxNumberOfRecommendations, null, function(
 			error, response) {
 			if (error === null) {
 				conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberOfRecommendations);
