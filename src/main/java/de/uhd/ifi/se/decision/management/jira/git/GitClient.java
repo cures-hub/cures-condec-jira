@@ -123,25 +123,25 @@ public class GitClient {
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			List<RevCommit> commits = gitClientForSingleRepo.getDefaultBranchCommits();
-
-			if (commits.isEmpty()) {
-				return new Diff();
-			}
 			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+			if (commits.isEmpty()) {
+				continue;
+			}
 			// because first commit does not have a parent commit
 			commits.remove(0);
-			diff.add(getDiff(commits));
-
+			Diff diffOfDefaultBranchOfSingleRepo = gitClientForSingleRepo.getDiff(commits.get(0),
+					commits.get(commits.size() - 1));
 			for (RevCommit commit : commits) {
 				List<DiffEntry> diffEntriesInCommit = gitClientForSingleRepo.getDiffEntries(commit);
 				for (DiffEntry diffEntry : diffEntriesInCommit) {
-					for (ChangedFile file : diff.getChangedFiles()) {
+					for (ChangedFile file : diffOfDefaultBranchOfSingleRepo.getChangedFiles()) {
 						if (diffEntry.getNewPath().contains(file.getName())) {
 							file.addCommit(commit);
 						}
 					}
 				}
 			}
+			diff.add(diffOfDefaultBranchOfSingleRepo);
 		}
 		return diff;
 	}
@@ -351,7 +351,6 @@ public class GitClient {
 		List<RevCommit> commits = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			commits.addAll(gitClientForSingleRepo.getDefaultBranchCommits());
-			System.out.println("Num Commits " + commits.size());
 		}
 		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;

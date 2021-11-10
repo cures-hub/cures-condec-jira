@@ -76,7 +76,9 @@ public class TestGetDiff extends TestSetUpGit {
 	public void testDefaultBranchCommits() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		assertEquals(5, diff.getChangedFiles().size());
-		assertEquals(1, diff.getChangedFiles().get(2).getCommits().size());
-		assertEquals("TEST-30", diff.getChangedFiles().get(2).getJiraIssueKeys().iterator().next());
+		ChangedFile extractedClass = diff.getChangedFiles().get(2);
+		assertEquals("Tangled2.java", extractedClass.getName());
+		assertEquals(1, extractedClass.getCommits().size());
+		assertEquals("TEST-30", extractedClass.getJiraIssueKeys().iterator().next());
 	}
 }

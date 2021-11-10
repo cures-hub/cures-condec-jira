@@ -49,7 +49,7 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		persistenceManager.insertKnowledgeElement(classElement, JiraUsers.SYS_ADMIN.getApplicationUser());
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		new CodeFileExtractorAndMaintainer("TEST").maintainChangedFilesInDatabase(diff);
-		assertEquals(6, persistenceManager.getKnowledgeElements().size());
+		assertEquals(5, persistenceManager.getKnowledgeElements().size());
 	}
 
 	@Test
@@ -64,6 +64,7 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	@NonTransactional
 	public void testExtractAllChangedFilesTwice() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+		assertEquals(5, diff.getChangedFiles().size());
 		CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer("TEST");
 		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
 		assertEquals(5, new CodeClassPersistenceManager("TEST").getKnowledgeElements().size());
