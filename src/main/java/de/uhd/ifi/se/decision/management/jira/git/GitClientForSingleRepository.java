@@ -60,6 +60,7 @@ public class GitClientForSingleRepository {
 		this.projectKey = projectKey;
 		this.gitRepositoryConfiguration = gitRepositoryConfiguration;
 		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitRepositoryConfiguration.getRepoUri());
+		fetchOrClone();
 	}
 
 	/**
