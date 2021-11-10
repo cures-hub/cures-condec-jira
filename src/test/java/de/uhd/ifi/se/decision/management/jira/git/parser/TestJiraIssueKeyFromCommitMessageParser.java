@@ -58,4 +58,14 @@ public class TestJiraIssueKeyFromCommitMessageParser {
 		assertEquals("ISE2020-1", jiraIssueKey);
 	}
 
+	@Test
+	public void testParseFirstJiraIssueKeyWithNumbers() {
+		String commitMessage = "Merge branch 'ISE2021-126-Create-team'" + "* ISE2021-126-Create-team:"
+				+ "ISE2021-141 edit-team function is working (includind add and delete players to team)"
+				+ "ISE2021-126 adjust create team in relation to playerpool"
+				+ "ISE2021-126 create-team-dialog with adding players to team is working";
+		String jiraIssueKey = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(commitMessage);
+		assertEquals("ISE2021-126", jiraIssueKey);
+	}
+
 }

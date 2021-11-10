@@ -136,6 +136,14 @@ public class KnowledgePersistenceManager {
 	}
 
 	/**
+	 * @return persistence manager for a the code documentation location.
+	 * @see AbstractPersistenceManagerForSingleLocation
+	 */
+	public CodeClassPersistenceManager getCodeClassPersistenceTextManager() {
+		return codeClassPersistenceManager;
+	}
+
+	/**
 	 * @param element
 	 *            {@link KnowledgeElement} with project and documentation location
 	 *            set.
