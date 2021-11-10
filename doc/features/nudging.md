@@ -22,12 +22,12 @@ The events are activated per default for **opt-out nudging**.
 *Configuration view for the events that trigger a just-in-time prompt*
 
 ## Ambient feedback and friction nudges
-ConDec offers **ambient feedback nudging mechanisms** to indicate that their are recommendations regarding rationale management.
+ConDec offers **ambient feedback nudging mechanisms** to indicate that there are recommendations regarding rationale management.
 
 ConDec colors menu items according to the number of recommendations that have not been accepted or discarded by the developers:
 If there are many recommendations, menu items are colored in red (i.e. action is needed by the developers, this can also be seen as a way to **create friction**).
 If there are a few recommendations, menu items are colored in orange.
-If there are no recommendations, e.g. if the [definition of done]((https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/quality-checking.md) is fulfilled 
+If there are no recommendations, e.g. if the [definition of done](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/quality-checking.md) is fulfilled 
 or all recommendations were accepted or discarded by the developers, menu items are colored in green.
 
 ![Coloring of menu items to indicate whether action is needed](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/nudging_ambient_feedback_menu.png)
@@ -37,8 +37,8 @@ or all recommendations were accepted or discarded by the developers, menu items 
 Besides, the knowledge elements that violate the definition of done are highlighted with a red text color within
 the knowledge graph views to indicate quality problems. 
 Tooltips explain which definition of done criteria are violated.
-This should nudge the developers to improve the DoD.
+This should nudge the developers to improve the quality.
 
-![Overview of decision problems with quality hightlighting](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/knowledge_overview_quality_highlighting.png)
+![Overview of decision problems with quality highlighting](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/knowledge_overview_quality_highlighting.png)
 
-*Overview of decision problems with quality hightlighting*
+*Overview of decision problems with quality highlighting*

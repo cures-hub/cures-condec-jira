@@ -166,16 +166,12 @@
 		if (issueKey === null || issueKey === undefined) {
 			return;
 		}
-		const projectKey = conDecAPI.getProjectKey();
-
+        const projectKey = conDecAPI.getProjectKey();
 		conDecAPI.getDecisionProblems({}, decisionProblems => {
 			var recommendationPromises = [];
 			for (decisionProblem of decisionProblems) {
-				const filterSettings = {
-					"projectKey": projectKey,
-					"selectedElement": decisionProblem.key
-				};
-				recommendationPromises.push(conDecDecisionGuidanceAPI.getRecommendations(filterSettings));
+				decisionProblem.projectKey = projectKey;			
+				recommendationPromises.push(conDecDecisionGuidanceAPI.getRecommendations(decisionProblem, ""));
 			}
 			Promise.all(recommendationPromises)
 				.then(recommendationsForAllProblems => {
@@ -183,8 +179,6 @@
 					document.getElementById("decision-problems-table-body").innerHTML = "";
 					for (i = 0; i < decisionProblems.length; i++) {
 						var numberOfRecommendations = recommendationsForAllProblems[i].length;
-						console.log(numberOfRecommendations);
-						console.log(decisionProblems[i].summary);
 						let tableRow = "<tr>";
 						tableRow += "<td>" + decisionProblems[i].summary + "</td>";
 						tableRow += "<td>" + numberOfRecommendations + "</td>";
