@@ -50,7 +50,7 @@ import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitM
 public class GitClientForSingleRepository {
 
 	private Git git;
-	private List<RevCommit> defaultBranchCommits;
+	// private List<RevCommit> defaultBranchCommits;
 	private String projectKey;
 	private GitRepositoryConfiguration gitRepositoryConfiguration;
 	private GitRepositoryFileSystemManager fileSystemManager;
@@ -61,8 +61,8 @@ public class GitClientForSingleRepository {
 		this.projectKey = projectKey;
 		this.gitRepositoryConfiguration = gitRepositoryConfiguration;
 		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitRepositoryConfiguration.getRepoUri());
-		fetchOrClone();
-		defaultBranchCommits = getDefaultBranchCommits();
+		// fetchOrClone();
+		// defaultBranchCommits = getDefaultBranchCommits();
 	}
 
 	/**
@@ -446,11 +446,13 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getDefaultBranchCommits() {
-		if (defaultBranchCommits == null || defaultBranchCommits.isEmpty()) {
-			Ref defaultBranch = getDefaultBranch();
-			defaultBranchCommits = getCommits(defaultBranch);
-		}
-		return defaultBranchCommits;
+		// if (defaultBranchCommits == null || defaultBranchCommits.isEmpty()) {
+		// Ref defaultBranch = getDefaultBranch();
+		// defaultBranchCommits = getCommits(defaultBranch);
+		// }
+		// return defaultBranchCommits;
+		Ref defaultBranch = getDefaultBranch();
+		return getCommits(defaultBranch);
 	}
 
 	public List<RevCommit> getCommits(Ref branch) {

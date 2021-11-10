@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -33,7 +34,8 @@ public class CodeFileExtractorAndMaintainer {
 
 	public CodeFileExtractorAndMaintainer(String projectKey) {
 		this.projectKey = projectKey;
-		this.codeFilePersistenceManager = new CodeClassPersistenceManager(projectKey);
+		this.codeFilePersistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
+				.getCodeClassPersistenceTextManager();
 	}
 
 	/**
