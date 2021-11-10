@@ -73,11 +73,15 @@ The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/ma
 ### Features
 ConDec offers the following features:
 - Decision knowledge documentation in various documentation locations
-- Knowledge visualization
-- [Decision grouping](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/decision-grouping.md)
+- Knowledge graph creation comprising requirements, decision knowledge, code files, and other software artifacts
+- Interactive knowledge visualization
+- Change impact analysis
+- [Definition of done checking to support high quality of the knowledge documentation](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/quality-checking.md)
 - [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic-text-classification.md)
 - [Recommendation of solution options from external knowledge sources](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/decision-guidance.md)
 - [Link suggestion and duplicate recognition](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/link-suggestion.md)
+- [Nudges for decision knowledge documentation and exploitation](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/nudging.md)
+- [Decision grouping](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/decision-grouping.md)
 - [Creation of release notes with explicit decision knowledge](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/release-notes-creation.md)
 
 ## Implementation Details
