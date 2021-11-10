@@ -40,6 +40,12 @@ public class Diff {
 		changedFiles.add(changedFile);
 	}
 
+	public void add(Diff diff) {
+		for (ChangedFile changedFile : diff.getChangedFiles()) {
+			addChangedFile(changedFile);
+		}
+	}
+
 	/**
 	 * @return decision knowledge elements documented of the {@link ChangedFile}s
 	 *         that are part of this diff.
