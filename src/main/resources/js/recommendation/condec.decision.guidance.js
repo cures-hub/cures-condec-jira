@@ -41,7 +41,6 @@
 			Promise.resolve(conDecDecisionGuidanceAPI.getRecommendations(selectedElement, keywords))
 				.then((recommendations) => {
 					if (recommendations.length > 0) {
-						recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
 						buildRecommendationTable(recommendations, selectedElement);
 					} else {
 						tableBody.innerHTML = "<i>No recommendations found!</i>";

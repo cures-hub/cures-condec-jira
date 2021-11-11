@@ -95,7 +95,7 @@
 	ConDecTextClassification.prototype.loadData = function () {
 		startLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement);
 		conDecTextClassificationAPI.getNonValidatedElements(this.projectKey, this.issueKey)
-			.then((result) => this.displayNonValidatedElements(result["nonValidatedElements"]))
+			.then((nonValidatedElements) => this.displayNonValidatedElements(nonValidatedElements))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement)
 			);
@@ -117,7 +117,6 @@
 	function stopLoadingVisualization(table, spinner) {
 		spinner.style.display = "none";
 		table.style.visibility = "visible";
-
 	}
 
 	global.conDecTextClassification = new ConDecTextClassification();

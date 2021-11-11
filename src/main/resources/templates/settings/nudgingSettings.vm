@@ -3,6 +3,7 @@ This page gathers settings and explanations for nudging mechanisms used in ConDe
 to document decision knowledge and to use the documentation.
 
 <h2>Just-in-time prompts</h2>
+ConDec shows a <b>just-in-time prompt</b> to the developers when they change the state of a Jira issue, e.g., when they start or finish a requirement. 
 Here, you can activate or deactivate the events for that just-in-time prompts are shown to support 
 the usage of the following features. The events are activated per default for opt-out nudging.
 
@@ -63,6 +64,15 @@ the usage of the following features. The events are activated per default for op
     </tbody>
 </table>
 
-<h2>Ambient feedback</h2>
-The quality of the documentation is indicated by the color of menu items.
-If the color of menu items is red, action is needed by the developers or the rationale manager.
+<h2>Ambient feedback and friction nudges</h2>
+ConDec offers <b>ambient feedback nudging mechanisms</b> to indicate that there are recommendations regarding rationale management.
+ConDec colors menu items according to the number of recommendations that have not been accepted or discarded by the developers: 
+If there are many recommendations, menu items are colored in red (i.e. action is needed by the developers, 
+this can also be seen as a way to <b>create friction</b>). 
+If there are a few recommendations, menu items are colored in orange. 
+If there are no recommendations, e.g. if the definition of done is fulfilled or all recommendations 
+were accepted or discarded by the developers, menu items are colored in green.
+
+Besides, the knowledge elements that violate the definition of done are highlighted with a red text color within the knowledge graph views to indicate quality problems. 
+Tooltips explain which definition of done criteria are violated. 
+This should nudge the developers to improve the quality.

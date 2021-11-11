@@ -1,5 +1,9 @@
 <div id="definition-of-done-checking-prompt" class="condec-prompt">
-    <h3>$i18n.getText("condec.label.quality")</h3>
+    <h3>
+    	$i18n.getText("condec.label.quality") 
+    	<span id="definition-of-done-check-icon" class="aui-icon aui-icon-large aui-iconfont-check-circle" 
+    		style="visibility:hidden" title="Great work!"></span>
+    </h3>
     <p>
         The definition of done for the project <strong id="definition-of-done-checking-prompt-jira-project-key"></strong> requires a minimum coverage of <strong id="condec-prompt-minimum-coverage"></strong> within
         a link distance of <strong id="condec-prompt-link-distance"></strong>.

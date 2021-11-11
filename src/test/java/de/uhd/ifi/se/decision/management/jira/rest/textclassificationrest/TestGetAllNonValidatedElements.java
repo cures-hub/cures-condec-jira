@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -45,18 +44,13 @@ public class TestGetAllNonValidatedElements extends TestSetUp {
 	public void testValidRequestNullProjectKeyNullIssueKey() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.getAllNonValidatedElements(request, null).getStatus());
-
 	}
 
 	@Test
 	public void testValidWithNoNonValidatedElements() {
 		Response response = classificationRest.getAllNonValidatedElements(request,
 				jiraIssues.get(0).getProjectObject().getKey());
-
-		ImmutableMap<String, List<KnowledgeElement>> expected = ImmutableMap.of("nonValidatedElements",
-				new ArrayList<>());
-
-		assertEquals(expected, response.getEntity());
+		assertEquals(new ArrayList<>(), response.getEntity());
 	}
 
 	@Test
@@ -80,11 +74,6 @@ public class TestGetAllNonValidatedElements extends TestSetUp {
 		List<KnowledgeElement> expectedElements = Arrays.asList(nonValidatedElement1, nonValidatedElement2);
 
 		Response response = classificationRest.getAllNonValidatedElements(request, "TEST");
-		ImmutableMap<String, List<KnowledgeElement>> expected = ImmutableMap.of("nonValidatedElements",
-				expectedElements);
-
-		assertEquals(expected, response.getEntity());
-
+		assertEquals(expectedElements, response.getEntity());
 	}
-
 }

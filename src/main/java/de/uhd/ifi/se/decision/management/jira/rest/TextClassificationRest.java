@@ -226,7 +226,7 @@ public class TextClassificationRest {
 				nonValidatedElements.add(issueTextPart);
 			}
 		}
-		return Response.ok().entity(ImmutableMap.of("nonValidatedElements", nonValidatedElements)).build();
+		return Response.ok().entity(nonValidatedElements).build();
 	}
 
 	/**
@@ -260,7 +260,7 @@ public class TextClassificationRest {
 				}
 			}
 		}
-		return Response.ok().entity(ImmutableMap.of("nonValidatedElements", nonValidatedElements)).build();
+		return Response.ok().entity(nonValidatedElements).build();
 	}
 
 	@Path("/validateAllElements")
