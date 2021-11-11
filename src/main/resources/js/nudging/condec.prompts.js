@@ -1,6 +1,12 @@
 (function(global) {
 
 	const ConDecPrompt = function() {
+		/**
+		 * @issue The page is reloaded and the ambient feedback is removed again on the
+		 * link recommendation menu item. How can we prevent this?
+		 * @alternative Use jQuery(document).ready to wait for the page to be loaded.
+		 * @con Does not work, the link recommendation menu item coloring is removed.
+		 */
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
@@ -10,8 +16,9 @@
 				jQuery(document).ajaxComplete(function(event, request, settings) {
 					if (settings.url.includes("AjaxIssueEditAction")) {
 
-						const issueKey = conDecAPI.getIssueKey();
-						document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + issueKey;
+						const jiraIssueKey = conDecAPI.getIssueKey();
+						const projectKey = conDecAPI.getProjectKey();
+						document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + jiraIssueKey;
 
 						const promptDialog = document.getElementById("unified-prompt");
 
@@ -26,54 +33,36 @@
 							conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId),
 							conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
 						])
-							.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
-								/**
-								 * @issue The page is reloaded and the ambient feedback is removed again on the
-								 * link recommendation menu item. How can we prevent this?
-								 * @alternative Use jQuery(document).ready to wait for the page to be loaded.
-								 * @con Does not work, the link recommendation menu item coloring is removed.
-								 */
+							.then(([isDoDCheckActivated, isLinkRecommendationActivated,	isTextClassificationActivated, isDecisionGuidanceActivated]) => {
 								if (isDoDCheckActivated
 									|| isLinkRecommendationActivated
 									|| isTextClassificationActivated
 									|| isDecisionGuidanceActivated) {
-									AJS.dialog2(promptDialog).show()
+									AJS.dialog2(promptDialog).show();
 								}
 								if (isDoDCheckActivated) {
-									conDecPrompt.promptDefinitionOfDoneChecking();
+									conDecPrompt.promptDefinitionOfDoneChecking(projectKey, jiraIssueKey);
 									document.getElementById("definition-of-done-checking-prompt").style.display = "block";
-									document.getElementById("go-to-quality-check-tab").onclick = () => {
-										AJS.tabs.change(jQuery('a[href="#quality-check-tab"]'));
-										window.open("#quality-check-tab", "blank");
-									}
+									document.getElementById("go-to-quality-check-tab").onclick = 
+											() => openDetailView("quality-check-tab", promptDialog);
 								}
 								if (isLinkRecommendationActivated) {
-									conDecPrompt.promptLinkSuggestion();
+									conDecPrompt.promptLinkSuggestion(projectKey);
 									document.getElementById("link-recommendation-prompt").style.display = "block";
-
-									document.getElementById("go-to-link-recomendation-tab").onclick = () => {
-										AJS.tabs.change(jQuery('a[href="#link-recommendation-tab"]'));
-										window.open("#link-recommendation-tab", "blank");
-									}
+									document.getElementById("go-to-link-recomendation-tab").onclick = 
+											() => openDetailView("link-recommendation-tab", promptDialog);
 								}
 								if (isTextClassificationActivated) {
-									conDecPrompt.promptNonValidatedElements();
+									conDecPrompt.promptNonValidatedElements(projectKey, jiraIssueKey);
 									document.getElementById("non-validated-elements-prompt").style.display = "block";
-									document.getElementById("go-to-classification-tab").onclick =
-										() => {
-											AJS.tabs.change(jQuery('a[href="#text-classification-tab"]'));
-											window.open("#text-classification-tab", "blank");
-
-										}
+									document.getElementById("go-to-classification-tab").onclick = 
+											() => openDetailView("text-classification-tab", promptDialog);
 								}
 								if (isDecisionGuidanceActivated) {
-									conDecPrompt.promptDecisionGuidance();
+									conDecPrompt.promptDecisionGuidance(projectKey);
 									document.getElementById("decision-guidance-prompt").style.display = "block";
-									document.getElementById("go-to-decision-guidance-tab").onclick =
-										() => {
-											AJS.tabs.change(jQuery('a[href="#decision-guidance-tab"]'));
-											window.open("#decision-guidance-tab", "blank");
-										}
+									document.getElementById("go-to-decision-guidance-tab").onclick = 
+											() => openDetailView("decision-guidance-tab", promptDialog);
 								}
 							});
 					}
@@ -82,12 +71,13 @@
 		});
 	};
 
-	ConDecPrompt.prototype.promptLinkSuggestion = function() {
+	function openDetailView(tabId, promptDialog) {
+		AJS.tabs.change(jQuery("a[href='#" + tabId + "']"));
+		AJS.dialog2(promptDialog).hide();
+	}
+
+	ConDecPrompt.prototype.promptLinkSuggestion = function(projectKey) {
 		const issueId = JIRA.Issue.getIssueId();
-		const projectKey = conDecAPI.projectKey;
-		if (issueId === null || issueId === undefined) {
-			return;
-		}
 
 		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
 		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
@@ -103,20 +93,10 @@
 			});
 	}
 
-	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function() {
-		const projectKey = conDecAPI.getProjectKey();
-		if (projectKey === null || projectKey === undefined) {
-			return;
-		}
-
-		const issueKey = conDecAPI.getIssueKey();
-		if (issueKey === null || issueKey === undefined) {
-			return;
-		}
-
+	ConDecPrompt.prototype.promptDefinitionOfDoneChecking = function(projectKey, jiraIssueKey) {
 		var filterSettings = {
 			"projectKey": projectKey,
-			"selectedElement": issueKey,
+			"selectedElement": jiraIssueKey,
 		};
 
 		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
@@ -132,14 +112,10 @@
 		document.getElementById("definition-of-done-checking-prompt-jira-project-key").innerHTML = projectKey;
 	}
 
-	ConDecPrompt.prototype.promptNonValidatedElements = function() {
-		const issueKey = conDecAPI.getIssueKey();
-		if (issueKey === null || issueKey === undefined) {
-			return;
-		}
-		conDecTextClassificationAPI.getNonValidatedElements(conDecAPI.projectKey, issueKey)
+	ConDecPrompt.prototype.promptNonValidatedElements = function(projectKey, jiraIssueKey) {
+		conDecTextClassificationAPI.getNonValidatedElements(projectKey, jiraIssueKey)
 			.then(response => {
-				const nonValidatedElements = response["nonValidatedElements"]
+				const nonValidatedElements = response["nonValidatedElements"];
 				document.getElementById("num-non-validated-elements").innerHTML = nonValidatedElements.length;
 				conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElements.length, "text-classification-tab");
 
@@ -153,7 +129,6 @@
 						tableRow += "<td>" + recommendation.type + "</td>";
 						tableRow += "</tr>";
 						tableContents += tableRow;
-
 					});
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
 				}
@@ -161,16 +136,11 @@
 			})
 	};
 
-	ConDecPrompt.prototype.promptDecisionGuidance = function() {
-		const issueKey = conDecAPI.getIssueKey();
-		if (issueKey === null || issueKey === undefined) {
-			return;
-		}
-        const projectKey = conDecAPI.getProjectKey();
+	ConDecPrompt.prototype.promptDecisionGuidance = function(projectKey) {
 		conDecAPI.getDecisionProblems({}, decisionProblems => {
 			var recommendationPromises = [];
 			for (decisionProblem of decisionProblems) {
-				decisionProblem.projectKey = projectKey;			
+				decisionProblem.projectKey = projectKey;
 				recommendationPromises.push(conDecDecisionGuidanceAPI.getRecommendations(decisionProblem, ""));
 			}
 			Promise.all(recommendationPromises)
@@ -196,5 +166,4 @@
 	}
 
 	global.conDecPrompt = new ConDecPrompt();
-})
-	(window);
+})(window);
