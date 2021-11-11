@@ -28,6 +28,7 @@
 				&elementId=${elementId}
 				&elementLocation=${elementLocation}`)
 			.then(recommendations => {
+				recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
 				conDecLinkRecommendationAPI.currentLinkRecommendations.set(elementId, recommendations);
 				return recommendations;
 			});
@@ -50,16 +51,17 @@
 
 	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
 		recommendation["@type"] = recommendation.recommendationType;
+		recommendation.isDiscarded = true;
 		return generalApi.postJSONReturnPromise(this.restPrefix + `/discardRecommendation.json
 				?projectKey=${projectKey}`, recommendation);
 	};
 
 	ConDecLinkRecommendationAPI.prototype.undoDiscardRecommendation = function(projectKey, recommendation) {
 		recommendation["@type"] = recommendation.recommendationType;
+		recommendation.isDiscarded = false;
 		return generalApi.postJSONReturnPromise(this.restPrefix + `/undoDiscardRecommendation.json
 				?projectKey=${projectKey}`, recommendation);
 	};
 
 	global.conDecLinkRecommendationAPI = new ConDecLinkRecommendationAPI();
-}
-)(window);
+})(window);
