@@ -114,8 +114,7 @@
 
 	ConDecPrompt.prototype.promptNonValidatedElements = function(projectKey, jiraIssueKey) {
 		conDecTextClassificationAPI.getNonValidatedElements(projectKey, jiraIssueKey)
-			.then(response => {
-				const nonValidatedElements = response["nonValidatedElements"];
+			.then(nonValidatedElements => {
 				document.getElementById("num-non-validated-elements").innerHTML = nonValidatedElements.length;
 				conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElements.length, "text-classification-tab");
 
