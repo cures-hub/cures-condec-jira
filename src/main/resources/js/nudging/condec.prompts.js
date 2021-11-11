@@ -84,11 +84,13 @@
 			.then((recommendations) => {
 				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
 				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
-				if (numDuplicates + numLinkRecommendations > 0) {
+				let numRecommendations = numDuplicates + numLinkRecommendations;
+				if (numRecommendations > 0) {
 					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerText = numLinkRecommendations;
 					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerText = numDuplicates;
-					conDecNudgingAPI.decideAmbientFeedbackForTab(numDuplicates + numLinkRecommendations, "menu-item-link-recommendation");
 				}
+				conDecNudgingAPI.decideAmbientFeedbackForTab(numRecommendations, "menu-item-link-recommendation");
+				conDecNudgingAPI.decideCheckIcon(numRecommendations, "link-recommendation-check-icon");
 				document.getElementById("link-recommendation-spinner").style.display = "none";
 			});
 	}
@@ -107,6 +109,10 @@
 		conDecDoDCheckingAPI.getCoverageOfJiraIssue(filterSettings, (coverage) => {
 			document.getElementById("condec-prompt-decision-coverage").innerHTML = coverage;
 			document.getElementById("dod-spinner").style.display = "none";
+		});
+		
+		conDecDoDCheckingAPI.getQualityProblems(filterSettings, (qualityProblems) => {
+			conDecNudgingAPI.decideCheckIcon(qualityProblems.length, "definition-of-done-check-icon");
 		});
 
 		document.getElementById("definition-of-done-checking-prompt-jira-project-key").innerHTML = projectKey;
@@ -130,6 +136,7 @@
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
 				}
 				conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElements.length, "menu-item-text-classification");
+				conDecNudgingAPI.decideCheckIcon(nonValidatedElements.length, "text-classification-check-icon");
 				document.getElementById("non-validated-spinner").style.display = "none";
 			});
 	};
@@ -158,6 +165,7 @@
 					document.getElementById("num-decision-problems").innerHTML = decisionProblems.length;
 					document.getElementById("num-recommendations").innerHTML = totalNumberOfRecommendations;
 					conDecNudgingAPI.decideAmbientFeedbackForTab(totalNumberOfRecommendations, "menu-item-decision-guidance");
+					conDecNudgingAPI.decideCheckIcon(totalNumberOfRecommendations, "decision-guidance-check-icon");
 					document.getElementById("decision-guidance-spinner").style.display = "none";
 				});
 		});

@@ -39,6 +39,17 @@
 			this.setAmbientFeedback(element, "condec-error");
 		}
 	};
+	
+	ConDecNudgingAPI.prototype.decideCheckIcon = function(numberOfSmartFeatureTodos, elementId) {
+		var element = document.getElementById(elementId);
+		if (numberOfSmartFeatureTodos <= 0) {
+			element.style.visibility = "visible";
+			element.style.color = "green";
+			AJS.$(element).tooltip({gravity: 'w'});
+		} else {
+			element.style.visibility = "hidden";
+		}
+	};
 
 	/**
 	 * Sets the CSS class on a HTML element (e.g. menu item).

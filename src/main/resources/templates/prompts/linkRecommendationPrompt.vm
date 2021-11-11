@@ -1,5 +1,9 @@
 <div id="link-recommendation-prompt" class="condec-prompt">
-    <h3>$i18n.getText("condec.link.recommendation")</h3>
+    <h3>
+    	$i18n.getText("condec.link.recommendation") 
+    	<span id="link-recommendation-check-icon" class="aui-icon aui-icon-large aui-iconfont-check-circle" 
+    		style="visibility:hidden" title="Great work!"></span>
+    </h3>
     <p>The Jira issue might be incompletely linked:</p>
     <ul>
         <li><strong id="link-recommendation-prompt-num-link-recommendations">0</strong> possibly related knowledge
