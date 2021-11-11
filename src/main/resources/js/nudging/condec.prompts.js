@@ -1,12 +1,18 @@
+/**
+ * This module is responsible to show a just-in-time prompt when a developer changes the status of a Jira issue.
+ * The just-in-time prompt covers recommendations regarding "smart features" for rationale management. 
+ */
 (function(global) {
 
-	const ConDecPrompt = function() {
-		/**
-		 * @issue The page is reloaded and the ambient feedback is removed again on the
-		 * link recommendation menu item. How can we prevent this?
-		 * @alternative Use jQuery(document).ready to wait for the page to be loaded.
-		 * @con Does not work, the link recommendation menu item coloring is removed.
-		 */
+	/**
+	 * @issue How can we trigger a just-in-time prompt when the developer changes the status of a Jira issue?
+	 * @decision We listen for two events (WorkflowUIDispatcher and AjaxIssueEditAction) using jQuery(document).ajaxComplete!
+	 * @pro These events somehow reload the HTML elements. After these events have finished, the HTML elements can be found 
+	 * even if REST calls for the recommendation generation take quite long.
+	 * @alternative Use only the WorkflowUIDispatcher event and jQuery(document).ready to wait for the page to be loaded.
+	 * @con Does not work: When the REST calls finish, the HTML elements cannot be found.
+	 */
+	const ConDecPrompt = function() {		
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
@@ -15,18 +21,15 @@
 
 				jQuery(document).ajaxComplete(function(event, request, settings) {
 					if (settings.url.includes("AjaxIssueEditAction")) {
-
+						
 						const jiraIssueKey = conDecAPI.getIssueKey();
 						const projectKey = conDecAPI.getProjectKey();
 						document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + jiraIssueKey;
-
 						const promptDialog = document.getElementById("unified-prompt");
-
 						document.getElementById("warning-dialog-continue").onclick = function() {
 							AJS.dialog2(promptDialog).hide();
 						}
 
-						// just-in-time prompts when status changes
 						Promise.all([
 							conDecNudgingAPI.isPromptEventActivated("DOD_CHECKING", id, actionId),
 							conDecNudgingAPI.isPromptEventActivated("LINK_RECOMMENDATION", id, actionId),
