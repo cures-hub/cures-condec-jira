@@ -2,6 +2,8 @@
 
 	const ConDecLinkRecommendationAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/linkrecommendation";
+		this.currentLinkRecommendations = new Map();
+		this.currentLinkDuplicates = new Map();
 	};
 
 	ConDecLinkRecommendationAPI.prototype.setMinimumDuplicateLength = function(projectKey, fragmentLength) {
@@ -17,21 +19,34 @@
 	}
 
 	ConDecLinkRecommendationAPI.prototype.getRelatedKnowledgeElements = function(projectKey, elementId, elementLocation) {
+		if (this.currentLinkRecommendations.has(elementId)) {
+			return this.currentLinkRecommendations.get(elementId);
+		}
 		return generalApi.getJSONReturnPromise(
 			`${this.restPrefix}/getRelatedKnowledgeElements.json
 				?projectKey=${projectKey}
 				&elementId=${elementId}
-				&elementLocation=${elementLocation}`);
+				&elementLocation=${elementLocation}`)
+			.then(recommendations => {
+				conDecLinkRecommendationAPI.currentLinkRecommendations.set(elementId, recommendations);
+				return recommendations;
+			});
 	};
 
 	ConDecLinkRecommendationAPI.prototype.getDuplicateKnowledgeElement = function(projectKey, elementId, location) {
+		if (this.currentLinkDuplicates.has(elementId)) {
+			return this.currentLinkDuplicates.get(elementId);
+		}
 		return generalApi.getJSONReturnPromise(
 			`${this.restPrefix}/getDuplicateKnowledgeElement.json
 				?projectKey=${projectKey}
 				&elementId=${elementId}
-				&location=${location}`
-		);
-	};	
+				&location=${location}`)
+			.then(recommendations => {
+				conDecLinkRecommendationAPI.currentLinkDuplicates.set(elementId, recommendations);
+				return recommendations;
+			});
+	};
 
 	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
 		recommendation["@type"] = recommendation.recommendationType;
