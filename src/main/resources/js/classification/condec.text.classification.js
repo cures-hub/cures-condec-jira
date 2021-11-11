@@ -117,7 +117,6 @@
 	function stopLoadingVisualization(table, spinner) {
 		spinner.style.display = "none";
 		table.style.visibility = "visible";
-
 	}
 
 	global.conDecTextClassification = new ConDecTextClassification();

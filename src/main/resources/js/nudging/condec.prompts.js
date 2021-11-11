@@ -33,7 +33,7 @@
 							conDecNudgingAPI.isPromptEventActivated("TEXT_CLASSIFICATION", id, actionId),
 							conDecNudgingAPI.isPromptEventActivated("DECISION_GUIDANCE", id, actionId)
 						])
-							.then(([isDoDCheckActivated, isLinkRecommendationActivated,	isTextClassificationActivated, isDecisionGuidanceActivated]) => {
+							.then(([isDoDCheckActivated, isLinkRecommendationActivated, isTextClassificationActivated, isDecisionGuidanceActivated]) => {
 								if (isDoDCheckActivated
 									|| isLinkRecommendationActivated
 									|| isTextClassificationActivated
@@ -43,26 +43,26 @@
 								if (isDoDCheckActivated) {
 									conDecPrompt.promptDefinitionOfDoneChecking(projectKey, jiraIssueKey);
 									document.getElementById("definition-of-done-checking-prompt").style.display = "block";
-									document.getElementById("go-to-quality-check-tab").onclick = 
-											() => openDetailView("quality-check-tab", promptDialog);
+									document.getElementById("go-to-quality-check-tab").onclick =
+										() => openDetailView("quality-check-tab", promptDialog);
 								}
 								if (isLinkRecommendationActivated) {
 									conDecPrompt.promptLinkSuggestion(projectKey);
 									document.getElementById("link-recommendation-prompt").style.display = "block";
-									document.getElementById("go-to-link-recomendation-tab").onclick = 
-											() => openDetailView("link-recommendation-tab", promptDialog);
+									document.getElementById("go-to-link-recomendation-tab").onclick =
+										() => openDetailView("link-recommendation-tab", promptDialog);
 								}
 								if (isTextClassificationActivated) {
 									conDecPrompt.promptNonValidatedElements(projectKey, jiraIssueKey);
 									document.getElementById("non-validated-elements-prompt").style.display = "block";
-									document.getElementById("go-to-classification-tab").onclick = 
-											() => openDetailView("text-classification-tab", promptDialog);
+									document.getElementById("go-to-classification-tab").onclick =
+										() => openDetailView("text-classification-tab", promptDialog);
 								}
 								if (isDecisionGuidanceActivated) {
 									conDecPrompt.promptDecisionGuidance(projectKey);
 									document.getElementById("decision-guidance-prompt").style.display = "block";
-									document.getElementById("go-to-decision-guidance-tab").onclick = 
-											() => openDetailView("decision-guidance-tab", promptDialog);
+									document.getElementById("go-to-decision-guidance-tab").onclick =
+										() => openDetailView("decision-guidance-tab", promptDialog);
 								}
 							});
 					}
@@ -116,8 +116,6 @@
 		conDecTextClassificationAPI.getNonValidatedElements(projectKey, jiraIssueKey)
 			.then(nonValidatedElements => {
 				document.getElementById("num-non-validated-elements").innerHTML = nonValidatedElements.length;
-				conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElements.length, "text-classification-tab");
-
 				if (nonValidatedElements.length === 0) {
 					document.getElementById("non-validated-table-body").innerHTML = "<i>All elements have been validated!</i>";
 				} else {
@@ -131,8 +129,9 @@
 					});
 					document.getElementById("non-validated-table-body").innerHTML = tableContents;
 				}
+				conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElements.length, "menu-item-text-classification");
 				document.getElementById("non-validated-spinner").style.display = "none";
-			})
+			});
 	};
 
 	ConDecPrompt.prototype.promptDecisionGuidance = function(projectKey) {
