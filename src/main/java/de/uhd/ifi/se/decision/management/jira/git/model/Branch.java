@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
+package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * Represents a branch in git with commits, changed code files, and decision
  * knowledge in code comments and commit messages.
  */
-public class BranchDiff {
+public class Branch {
 
 	@XmlElement
 	private String branchName;
@@ -21,7 +21,7 @@ public class BranchDiff {
 	@XmlElement
 	private List<RationaleData> commitElements;
 
-	public BranchDiff(String branchName, List<KnowledgeElement> codeCommentElements,
+	public Branch(String branchName, List<KnowledgeElement> codeCommentElements,
 			List<KnowledgeElement> commitMessageElements) {
 		this.branchName = branchName;
 		this.commitElements = new ArrayList<>();

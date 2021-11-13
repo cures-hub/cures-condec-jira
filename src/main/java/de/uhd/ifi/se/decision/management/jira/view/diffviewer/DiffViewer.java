@@ -10,14 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 
 /**
  * Creates diff viewer content for a list of git repository branches
  */
 public class DiffViewer {
 
-	@XmlElement(name = "branches")
-	private List<BranchDiff> branchDiffs;
+	@XmlElement
+	private List<Branch> branches;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DiffViewer.class);
 
@@ -30,17 +31,17 @@ public class DiffViewer {
 		LOGGER.info("projectKey:" + projectKey + ",jiraIssueKey:" + jiraIssueKey);
 	}
 
-	public DiffViewer(String projectKey, List<Ref> branches) {
-		branchDiffs = new ArrayList<>();
+	public DiffViewer(String projectKey, List<Ref> refBranches) {
+		branches = new ArrayList<>();
 
 		GitClient extractor = GitClient.getInstance(projectKey);
-		for (Ref branch : branches) {
-			branchDiffs.add(new BranchDiff(branch.getName(), extractor.getRationaleElementsFromCodeComments(branch),
+		for (Ref branch : refBranches) {
+			branches.add(new Branch(branch.getName(), extractor.getRationaleElementsFromCodeComments(branch),
 					extractor.getRationaleElementsFromCommitMessages(branch)));
 		}
 	}
 
-	public List<BranchDiff> getBranches() {
-		return branchDiffs;
+	public List<Branch> getBranches() {
+		return branches;
 	}
 }
