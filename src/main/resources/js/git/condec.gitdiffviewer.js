@@ -34,8 +34,7 @@ var BRANCHES_XHR_ERROR_MSG = "An unspecified error occurred while fetching REST 
 var url;
 var branches = [];
 
-function getBranchesDiff(forceRest) {
-
+function getBranchesDiff() {
 	contentHtml = document.getElementById("featureBranches-container");
 	contentHtml.innerText = "Loading ...";
 
@@ -143,15 +142,11 @@ function getFileLocationShort(fileDecKnowKey) {
 	return shortNameArr.join("/");
 }
 
-function getEmptyElementAsHTML(forNewerFile) {
+function getEmptyElementAsHTML() {
 	console.debug("getEmptyElementAsHTML");
 	var emptyE = document.createElement("p");
 	emptyE.className = "empty";
-	if (forNewerFile) {
-		emptyE.innerText = RATIONALE_IN_NEWER_FILE_NOT_EXIST;
-	} else {
-		emptyE.innerText = RATIONALE_IN_OLDER_FILE_NOT_EXIST;
-	}
+	emptyE.innerText = RATIONALE_IN_OLDER_FILE_NOT_EXIST;
 	return emptyE;
 }
 
@@ -163,23 +158,11 @@ function removeTildeFromAFilename(lastBranchElementsFromFileslements) {
 	});
 }
 
-function getCodeElementsFromSide(blockData, newerSide) {
+function getCodeElementsFromSide(blockData) {
 	console.debug("getCodeElementsFromSide");
 	var codeElements = document.createElement("p");
-	var rationaleElements;
-
-	if (newerSide) {
-		codeElements.className = "fileB";
-		rationaleElements = blockData.B;
-	} else {
-		codeElements.className = "fileA";
-		rationaleElements = blockData.A;
-	}
-	/*
-	 * var fileName = document.createElement("p") fileName.className =
-	 * "filename" fileName.innerText = blockData.filename;
-	 * codeElements.appendChild(fileName)
-	 */
+	var rationaleElements = blockData.elements;
+	codeElements.className = "fileA";
 
 	if (rationaleElements.length > 0) {
 		for (var r = 0; r < rationaleElements.length; r++) {
@@ -187,7 +170,7 @@ function getCodeElementsFromSide(blockData, newerSide) {
 			codeElements.appendChild(codeElement);
 		}
 	} else {
-		codeElement = getEmptyElementAsHTML(newerSide);
+		codeElement = getEmptyElementAsHTML();
 		codeElements.appendChild(codeElement);
 	}
 	return codeElements;
@@ -220,23 +203,20 @@ function appendCodeElements(brNode) {
 		/* rationale changed? */
 		if (blockIsDiffType) {
 			/* get A side rationale elements */
-			var codeElements = getCodeElementsFromSide(blockData, false);
+			var codeElements = getCodeElementsFromSide(blockData);
 			fileRatElement.appendChild(codeElements);
 
 			/* add diff edit label */
 			fileRatBlockLabel.innerText = blockData.filename + " - " + blockEntry;
-			fileRatBlockLabel.className = "fileDiffBlockLabel";
-
-			fileRatElement.className = "fileDiffBlock";
 		} else {
 			fileRatBlockLabel.innerText = RATIONALE_NO_CHANGES_TEXT.replace("{file}", blockData.filename);
-			fileRatBlockLabel.className = "fileNonDiffBlockLabel";
-
-			fileRatElement.className = "fileNonDiffBlock";
 		}
+		
+		fileRatBlockLabel.className = "fileNonDiffBlockLabel";
+		fileRatElement.className = "fileNonDiffBlock";
 
 		/* get B side rationale elements */
-		codeElements = getCodeElementsFromSide(blockData, true);
+		codeElements = getCodeElementsFromSide(blockData);
 		fileRatElement.appendChild(codeElements);
 
 		brNode.appendChild(fileRatBlockLabel);
@@ -317,8 +297,7 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 
 		if (!lastBranchBlocks.has(blockKey)) {
 			blockData = {
-				A: [],
-				B: [],
+				elements: [],
 				filename: "",
 				sequence: blockCounter
 			};
@@ -326,13 +305,8 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 		}
 
 		var blockData = lastBranchBlocks.get(blockKey);
-		if (elementsFromCode[c].key.codeFileA) {
-			blockData.filename = elementsFromCode[c].key.source;
-			blockData.A.push(codeElementHtml);
-		} else if (elementsFromCode[c].key.codeFileB) {
-			blockData.filename = elementsFromCode[c].key.source;
-			blockData.B.push(codeElementHtml);
-		}
+		blockData.filename = elementsFromCode[c].key.source;
+		blockData.elements.push(codeElementHtml);
 		lastBranchBlocks.set(blockKey, blockData);
 	}
 	appendCodeElements(parentNode);
@@ -458,7 +432,6 @@ function showBranchesDiff(data) {
 		var branchLabels = contentHtml.getElementsByClassName("branchLabel");
 		var messageLabels = contentHtml.getElementsByClassName("commitMessageLabel");
 		var blockForNonDiffElements = contentHtml.getElementsByClassName("fileNonDiffBlockLabel");
-		var blockForDiffElements = contentHtml.getElementsByClassName("fileDiffBlockLabel");
 		var elementNodes = contentHtml.getElementsByClassName("rationale");
 
 		addSelectionHelperForContainer(branchLabels);
@@ -468,7 +441,6 @@ function showBranchesDiff(data) {
 		attachClickEventsOnCommitMessageLabels(messageLabels);
 
 		attachClickEventsOnBlockLabels(blockForNonDiffElements);
-		attachClickEventsOnBlockLabels(blockForDiffElements);
 
 		addInvisibleButCopyableElementTypeTags(elementNodes, null); /*
 																	 * 2nd
@@ -479,6 +451,7 @@ function showBranchesDiff(data) {
 															 * 2nd argument
 															 * "messageBox"
 															 */
+
 	} else {
 		contentHtml.innerText = "No feature branches found for this issue.";
 	}
@@ -513,13 +486,6 @@ function attachClickEventsOnBlockLabels(labels) {
 		if (!content && !content.classList) {
 			console.error("no sibling found for " + event.target.id);
 			return;
-		}
-		if (content.classList.contains("hidden")) {
-			content.classList.remove("hidden");
-			event.target.classList.remove("inactive");
-		} else {
-			content.classList.add("hidden");
-			event.target.classList.add("inactive");
 		}
 	};
 	attachClickEvents(labels, hider, "click to hide/show");
@@ -628,18 +594,6 @@ function addSelectionHelperForContainer(labels) {
 			container.appendChild(selectorNode);
 		}
 	}
-}
-
-function showRatType(type) {
-	Array.from(document.getElementsByClassName(type)).map(function(e) {
-		e.classList.remove("hidden");
-	})
-}
-
-function hideRatType(type) {
-	Array.from(document.getElementsByClassName(type)).map(function(e) {
-		e.classList.add("hidden");
-	})
 }
 
 function listRatClasses() {
