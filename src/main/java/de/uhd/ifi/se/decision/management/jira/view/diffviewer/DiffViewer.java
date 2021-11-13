@@ -3,10 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.jgit.lib.Ref;
 import org.slf4j.Logger;
@@ -17,8 +14,6 @@ import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 /**
  * Creates diff viewer content for a list of git repository branches
  */
-@XmlRootElement(name = "DiffViewer")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class DiffViewer {
 
 	@XmlElement(name = "branches")

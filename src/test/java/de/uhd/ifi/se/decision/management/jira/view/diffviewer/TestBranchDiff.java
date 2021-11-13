@@ -72,7 +72,6 @@ public class TestBranchDiff {
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef01", key.rationaleHash);
 		assertEquals(false, key.codeFileA);
-		assertEquals(true, key.codeFileB);
 		assertEquals(true, key.sourceTypeCodeFile);
 		assertEquals(false, key.sourceTypeCommitMessage);
 

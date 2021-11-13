@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
- * Model class for DiffViewer's branches node
+ * Represents a branch in git with commits, changed code files, and decision
+ * knowledge in code comments and commit messages.
  */
 public class BranchDiff {
 
@@ -53,7 +54,6 @@ public class BranchDiff {
 			if (key.source.isBlank()) {
 				key.source = rationale.getDescription().split(":")[0];
 			}
-			key.codeFileB = true;
 			key.sourceTypeCodeFile = !key.sourceTypeCommitMessage;
 			type = rationale.getType().toString();
 		}
@@ -109,8 +109,6 @@ public class BranchDiff {
 			@XmlElement
 			public boolean codeFileA = false;
 			@XmlElement
-			public boolean codeFileB = false;
-			@XmlElement
 			public String diffEntrySequence = "";
 			@XmlElement
 			public String diffEntry = "";
@@ -150,7 +148,6 @@ public class BranchDiff {
 					if (source.startsWith("~")) {
 						codeFileA = true;
 					}
-					codeFileB = !codeFileA;
 				}
 			}
 		}
