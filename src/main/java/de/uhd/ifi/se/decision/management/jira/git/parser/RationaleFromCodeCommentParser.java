@@ -123,7 +123,6 @@ public class RationaleFromCodeCommentParser {
 		DecisionKnowledgeElementInCodeComment elementInCodeComment = new DecisionKnowledgeElementInCodeComment();
 		elementInCodeComment.setSummary(rationaleTextSanitized);
 		elementInCodeComment.setType(rationaleType);
-		elementInCodeComment.setDocumentationLocation(DocumentationLocation.CODE);
 		elementInCodeComment.setKey(calculateStartLineInSourceFile(comment, tagMatcher.end()) + "");
 
 		return elementInCodeComment;

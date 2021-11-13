@@ -509,31 +509,7 @@ linkBranchCandidates
         }
     };
 
-    /*
-        decodes received position "x:y[:z]" into
-            .positionStartLine = x
-            .positionCursor = y
-            and optionally
-            .positionEndLine = z
-    */
     ConDecLinkBranchCandidates.prototype.extractPositions= function extractPositions(branchData) {
-      codeElements = branchData.codeElements.map(function(e) {
-        positionComponents = e.keyData.position.split(":");
-        positionComponentsNumber = positionComponents.length;
-        if (positionComponentsNumber === 2 || positionComponentsNumber === 3) {
-          e.keyData.positionStartLine = parseInt(positionComponents[0]);
-          e.keyData.positionCursor = parseInt(
-            positionComponents[positionComponentsNumber - 1]
-          );
-        }
-        if (positionComponentsNumber === 3) {
-          e.keyData.positionEndLine = parseInt(
-            positionComponents[positionComponentsNumber - 2]
-          );
-        }
-        return e;
-      });
-      branchData.codeElements = codeElements;
       return branchData;
     };
 

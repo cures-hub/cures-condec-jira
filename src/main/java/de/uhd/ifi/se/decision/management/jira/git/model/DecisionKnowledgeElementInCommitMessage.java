@@ -5,11 +5,17 @@ import java.util.Arrays;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Origin;
 
+/**
+ * Represents a decision knowledge element documented in a commit message.
+ * Commit messages are transcribed into Jira issue comments so that they can be
+ * annotated and improved there. However, this class models a decision knowledge
+ * element in its original form captured in a commit message.
+ * 
+ * @see Origin#COMMIT
+ */
 public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
-
-	@XmlElement
-	public String image;
 
 	@XmlElement
 	public KeyData keyData;
@@ -23,11 +29,15 @@ public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
 			keyData.source = rationale.getDescription().split(":")[0];
 		}
 		setType(rationale.getType());
-		this.image = rationale.getType().getIconUrl();
 	}
 
 	public KeyData getKeyData() {
 		return keyData;
+	}
+
+	@XmlElement
+	public String getImage() {
+		return getType().getIconUrl();
 	}
 
 	public class KeyData {

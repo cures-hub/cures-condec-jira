@@ -76,8 +76,6 @@ public class TestBranch extends TestSetUpGit {
 		DecisionKnowledgeElementInCodeComment.KeyData key = firstElement.getKeyData();
 		assertEquals(rat1.getKey(), key.value);
 		assertEquals("file.java 1", key.source);
-		assertEquals("1:2:3", key.position);
-		assertEquals("abcdef01", key.rationaleHash);
 
 		// second element: fileB
 		DecisionKnowledgeElementInCodeComment secondElement = elements.get(1);
@@ -88,8 +86,6 @@ public class TestBranch extends TestSetUpGit {
 		key = secondElement.getKeyData();
 		assertEquals(rat2.getKey(), key.value);
 		assertEquals("commit", key.source);
-		assertEquals("1:1", key.position);
-		assertEquals("abcdef23", key.rationaleHash);
 		// assertEquals(false, key.codeFileB);
 
 		// third element: fileA
@@ -101,8 +97,6 @@ public class TestBranch extends TestSetUpGit {
 		key = thirdtElement.getKeyData();
 		assertEquals(rat3.getKey(), key.value);
 		assertEquals("~file.java 1", key.source);
-		assertEquals("1:2:3", key.position);
-		assertEquals("abcdef45", key.rationaleHash);
 		// assertEquals(false, key.codeFileB);
 	}
 }
