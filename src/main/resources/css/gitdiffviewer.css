@@ -41,7 +41,6 @@
 	border: 1px solid black;
 }
 
-.branchGroup .fileDiffBlockLabel,
 .branchGroup .fileNonDiffBlockLabel {
 	color: white;
 	background:black;
@@ -55,25 +54,12 @@
 	max-height: 0em;*/
 }
 
-/* not using this presentation variant yet.
-.branchGroup .fileDiffBlockLabel:hover,
-.branchGroup .fileNonDiffBlockLabel:hover {
-	max-height: 100%;
-	padding: 0.7em;
-}
-*/
-.branchGroup .fileDiffBlockLabel.inactive,
 .branchGroup .fileNonDiffBlockLabel.inactive {
 	background:grey;
 }
 
 .branchGroup .fileNonDiffBlock {
 	margin-top: 0;
-}
-.branchGroup .fileDiffBlock {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: space-between;
 }
 .branchGroup .fileA,
 .branchGroup .fileB {
@@ -98,11 +84,7 @@
 }
 
 .branchGroup .fileNonDiffBlock p.detailed > .content,
-.branchGroup .fileDiffBlock p.detailed > .content,
-.branchGroup .messageBox p.detailed > .content /*,
-.branchGroup .fileNonDiffBlock p:hover > .content,
-.branchGroup .fileDiffBlock p:hover > .content,
-.branchGroup .messageBox p:hover > .content,*/
+.branchGroup .messageBox p.detailed > .content
 {
     font-size: 1.3em;
 }

@@ -71,7 +71,6 @@ public class TestBranchDiff {
 		assertEquals("file.java", key.source);
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef01", key.rationaleHash);
-		assertEquals(false, key.codeFileA);
 		assertEquals(true, key.sourceTypeCodeFile);
 		assertEquals(false, key.sourceTypeCommitMessage);
 
@@ -88,7 +87,6 @@ public class TestBranchDiff {
 		assertEquals("commit", key.source);
 		assertEquals("1:1", key.position);
 		assertEquals("abcdef23", key.rationaleHash);
-		assertEquals(false, key.codeFileA);
 		// assertEquals(false, key.codeFileB);
 		assertEquals(false, key.sourceTypeCodeFile);
 		assertEquals(true, key.sourceTypeCommitMessage);
@@ -106,7 +104,6 @@ public class TestBranchDiff {
 		assertEquals("~file.java", key.source);
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef45", key.rationaleHash);
-		assertEquals(true, key.codeFileA);
 		// assertEquals(false, key.codeFileB);
 		assertEquals(true, key.sourceTypeCodeFile);
 		assertEquals(false, key.sourceTypeCommitMessage);

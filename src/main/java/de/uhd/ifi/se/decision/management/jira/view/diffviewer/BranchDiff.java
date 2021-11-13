@@ -107,8 +107,6 @@ public class BranchDiff {
 			@XmlElement
 			public boolean sourceTypeCodeFile = false;
 			@XmlElement
-			public boolean codeFileA = false;
-			@XmlElement
 			public String diffEntrySequence = "";
 			@XmlElement
 			public String diffEntry = "";
@@ -143,10 +141,6 @@ public class BranchDiff {
 							diffEntrySequence = source.substring(1 + lastSpaceOccurrencePosition);
 							source = source.substring(0, lastSpaceOccurrencePosition);
 						}
-					}
-					codeFileA = false;
-					if (source.startsWith("~")) {
-						codeFileA = true;
 					}
 				}
 			}

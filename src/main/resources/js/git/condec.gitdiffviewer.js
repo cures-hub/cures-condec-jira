@@ -119,11 +119,9 @@ function getElementAsHTML(element, isFromMessage) {
 	root.title = locationText;
 	root.dataset.ratType = element.type.toLowerCase();
 
-	/* do not set ID for A file-rationale */
-	if (!element.key.codeFileA) {
-		root.setAttribute("id",
-			btoa(element.key.rationaleHash + "-" + lastBranch.branchName + "-" + element.key.source));
-	}
+	root.setAttribute("id",
+		btoa(element.key.rationaleHash + "-" + lastBranch.branchName + "-" + element.key.source));
+
 	root.appendChild(getIcon(element.type.toLowerCase()));
 	root.appendChild(desc);
 	root.appendChild(loc);
@@ -211,7 +209,7 @@ function appendCodeElements(brNode) {
 		} else {
 			fileRatBlockLabel.innerText = RATIONALE_NO_CHANGES_TEXT.replace("{file}", blockData.filename);
 		}
-		
+
 		fileRatBlockLabel.className = "fileNonDiffBlockLabel";
 		fileRatElement.className = "fileNonDiffBlock";
 
