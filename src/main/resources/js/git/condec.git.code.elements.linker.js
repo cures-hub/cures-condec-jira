@@ -518,7 +518,7 @@ linkBranchCandidates
             .positionEndLine = z
     */
     ConDecLinkBranchCandidates.prototype.extractPositions= function extractPositions(branchData) {
-      elements = branchData.elements.map(function(e) {
+      codeElements = branchData.codeElements.map(function(e) {
         positionComponents = e.keyData.position.split(":");
         positionComponentsNumber = positionComponents.length;
         if (positionComponentsNumber === 2 || positionComponentsNumber === 3) {
@@ -534,41 +534,8 @@ linkBranchCandidates
         }
         return e;
       });
-      branchData.elements = elements;
+      branchData.codeElements = codeElements;
       return branchData;
-    };
-
-    ConDecLinkBranchCandidates.prototype.sortRationaleDiffOfFiles =
-     function sortRationaleDiffOfFiles(rationale) {
-      /* rationale should appear in the order it was found in code */
-      rationale.sort(function(a, b) {
-        /*  different files */
-        if (a.keyData.source < b.keyData.source) {
-          return -1;
-        }
-        if (a.keyData.source > b.keyData.source) {
-          return 1;
-        }
-        /*  same file different lines */
-        if (a.keyData.positionStartLine < b.keyData.positionStartLine) {
-          return -1;
-        }
-        if (a.keyData.positionStartLine > b.keyData.positionStartLine) {
-          return 1;
-        }
-
-        /*  same file same line different position on line */
-        if (a.keyData.positionCursor < b.keyData.positionCursor) {
-          return -1;
-        }
-        if (a.keyData.positionCursor < b.keyData.positionCursor) {
-          return 1;
-        }
-
-        /*  same file same line same position on line */
-        return 0;
-      });
-      return rationale;
     };
 
     ConDecLinkBranchCandidates.prototype.getBranchStatus = function getBranchStatus() {

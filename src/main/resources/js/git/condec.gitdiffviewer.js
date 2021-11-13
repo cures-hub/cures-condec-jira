@@ -134,18 +134,10 @@ function getEmptyElementAsHTML() {
 	return emptyE;
 }
 
-/* version A (old) files have "~" character prepended to actual file name */
-function removeTildeFromAFilename(lastBranchElementsFromFileslements) {
-	return lastBranchElementsFromFiles.map(function(e) {
-		e.keyData.source = e.keyData.source.replace("~", "");
-		return e;
-	});
-}
-
 function getCodeElementsFromSide(blockData) {
 	console.debug("getCodeElementsFromSide");
 	var codeElements = document.createElement("p");
-	var rationaleElements = blockData.elements;
+	var rationaleElements = blockData.codeElements;
 	codeElements.className = "fileA";
 
 	if (rationaleElements.length > 0) {
@@ -271,7 +263,7 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 
 		if (!lastBranchBlocks.has(blockKey)) {
 			blockData = {
-				elements: [],
+				codeElements: [],
 				filename: "",
 				sequence: blockCounter
 			};
@@ -280,27 +272,10 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 
 		var blockData = lastBranchBlocks.get(blockKey);
 		blockData.filename = elementsFromCode[c].keyData.source;
-		blockData.elements.push(codeElementHtml);
+		blockData.codeElements.push(codeElementHtml);
 		lastBranchBlocks.set(blockKey, blockData);
 	}
 	appendCodeElements(parentNode);
-}
-/*
- * appends message and code located rationale elements as HTML
- * 
- * branchNode - parent html node elements - sorted(path,line, column) list of
- * rationale elements
- */
-function appendBranchAllElements(branchNode, elements) {
-	console.debug("appendBranchElements");
-
-	appendBranchMessageElementsHtml(lastBranchElementsFromMessages, branchNode);
-
-	if (lastBranchElementsFromFiles !== null && lastBranchElementsFromFiles.length > 0) {
-		lastBranchElementsFromFiles = removeTildeFromAFilename(lastBranchElementsFromFiles);
-		lastBranchElementsFromFiles = conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFiles);
-		appendBranchCodeElementsHtml(lastBranchElementsFromFiles, branchNode);
-	}
 }
 
 function appendBranchLabel(parentNode, data) {
@@ -342,8 +317,9 @@ function showBranchDiff(data, index) {
 	appendBranchLabel(branchContainer, data);
 	/* show user the quality assessment for rationale observed in modified files */
 	appendBranchQualityAssessment(branchContainer, index);
-	/* show user the rationale observed in modified files */
-	appendBranchAllElements(branchContainer, data.elements);
+	/* show user the rationale observed in modified files */	
+	appendBranchMessageElementsHtml(data.commitElements, branchContainer);
+	appendBranchCodeElementsHtml(data.codeElements, branchContainer);
 
 	/* append branch HTMl to parent HTML container */
 	contentHtml.appendChild(branchContainer);
@@ -386,9 +362,9 @@ function showBranchesDiff(data) {
 			lastBranchBlocks = new Map();
 
 			/* these elements are sorted by commit age and occurrence in message */
-			lastBranchElementsFromMessages = getMessageElements(elements);
+			lastBranchElementsFromMessages = getMessageElements(lastBranch.codeElements);
 			/* these elements are not sorted */
-			lastBranchElementsFromFiles = getCodeElements(elements);
+			lastBranchElementsFromFiles = getCodeElements(lastBranch.codeElements);
 
 			showBranchDiff(lastBranch, branchIdx);
 

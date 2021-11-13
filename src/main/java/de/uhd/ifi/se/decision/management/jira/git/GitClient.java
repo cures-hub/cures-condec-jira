@@ -443,15 +443,25 @@ public class GitClient {
 	}
 
 	public List<KnowledgeElement> getRationaleElements(Ref branch) {
+		List<KnowledgeElement> elements = getRationaleElementsFromCodeComments(branch);
+		elements.addAll(getRationaleElementsFromCommitMessages(branch));
+		return elements;
+	}
+
+	public List<KnowledgeElement> getRationaleElementsFromCommitMessages(Ref branch) {
+		List<KnowledgeElement> elements = new ArrayList<>();
+		for (RevCommit commit : getFeatureBranchCommits(branch)) {
+			elements.addAll(getRationaleElementsFromCommitMessage(commit));
+		}
+		return elements;
+	}
+
+	public List<KnowledgeElement> getRationaleElementsFromCodeComments(Ref branch) {
 		List<KnowledgeElement> elements = new ArrayList<>();
 		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
 		if (featureBranchCommits.isEmpty()) {
 			return elements;
 		}
-		for (RevCommit commit : featureBranchCommits) {
-			elements.addAll(getRationaleElementsFromCommitMessage(commit));
-		}
-
 		RevCommit baseCommit = featureBranchCommits.get(0);
 		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
 		elements.addAll(getRationaleElementsFromCode(baseCommit, lastFeatureBranchCommit));

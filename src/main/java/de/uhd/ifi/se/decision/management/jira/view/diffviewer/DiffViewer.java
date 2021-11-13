@@ -35,7 +35,8 @@ public class DiffViewer {
 
 		GitClient extractor = GitClient.getInstance(projectKey);
 		for (Ref branch : branches) {
-			branchDiffs.add(new BranchDiff(branch.getName(), extractor.getRationaleElements(branch)));
+			branchDiffs.add(new BranchDiff(branch.getName(), extractor.getRationaleElementsFromCodeComments(branch),
+					extractor.getRationaleElementsFromCommitMessages(branch)));
 		}
 	}
 

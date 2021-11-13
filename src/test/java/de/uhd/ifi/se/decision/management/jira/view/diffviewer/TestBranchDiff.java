@@ -42,26 +42,26 @@ public class TestBranchDiff extends TestSetUp {
 
 	@Test
 	public void testConstructor() {
-		branchDiff = new BranchDiff("abc", rationaleInBranch);
+		branchDiff = new BranchDiff("abc", rationaleInBranch, new ArrayList<>());
 		Assert.assertNotNull(branchDiff);
-		branchDiff = new BranchDiff("abc", new ArrayList<>());
+		branchDiff = new BranchDiff("abc", new ArrayList<>(), new ArrayList<>());
 		Assert.assertNotNull(branchDiff);
-		branchDiff = new BranchDiff(null, rationaleInBranch);
+		branchDiff = new BranchDiff(null, rationaleInBranch, new ArrayList<>());
 		Assert.assertNotNull(branchDiff);
 	}
 
 	@Test
 	public void testGetBranchName() {
-		branchDiff = new BranchDiff("abc", rationaleInBranch);
+		branchDiff = new BranchDiff("abc", rationaleInBranch, new ArrayList<>());
 		assertEquals("abc", branchDiff.getBranchName());
-		branchDiff = new BranchDiff(null, rationaleInBranch);
+		branchDiff = new BranchDiff(null, rationaleInBranch, new ArrayList<>());
 		Assert.assertNull(branchDiff.getBranchName());
 	}
 
 	@Test
 	public void testGetElements() {
-		branchDiff = new BranchDiff("abc", rationaleInBranch);
-		List<BranchDiff.RationaleData> elements = branchDiff.getElements();
+		branchDiff = new BranchDiff("abc", rationaleInBranch, new ArrayList<>());
+		List<BranchDiff.RationaleData> elements = branchDiff.getCodeElements();
 		assertEquals(3, elements.size());
 
 		// first element: fileB

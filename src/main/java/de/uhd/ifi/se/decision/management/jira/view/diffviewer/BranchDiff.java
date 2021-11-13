@@ -16,15 +16,21 @@ public class BranchDiff {
 
 	@XmlElement
 	private String branchName;
-
 	@XmlElement
-	private List<RationaleData> elements;
+	private List<RationaleData> codeElements;
+	@XmlElement
+	private List<RationaleData> commitElements;
 
-	public BranchDiff(String branchName, List<KnowledgeElement> decisionKnowledgeElements) {
+	public BranchDiff(String branchName, List<KnowledgeElement> codeCommentElements,
+			List<KnowledgeElement> commitMessageElements) {
 		this.branchName = branchName;
-		this.elements = new ArrayList<>();
-		for (KnowledgeElement rationale : decisionKnowledgeElements) {
-			elements.add(new RationaleData(rationale));
+		this.commitElements = new ArrayList<>();
+		for (KnowledgeElement rationale : commitMessageElements) {
+			commitElements.add(new RationaleData(rationale));
+		}
+		this.codeElements = new ArrayList<>();
+		for (KnowledgeElement rationale : codeCommentElements) {
+			codeElements.add(new RationaleData(rationale));
 		}
 	}
 
@@ -32,8 +38,12 @@ public class BranchDiff {
 		return branchName;
 	}
 
-	public List<RationaleData> getElements() {
-		return elements;
+	public List<RationaleData> getCodeElements() {
+		return codeElements;
+	}
+
+	public List<RationaleData> getCommitElements() {
+		return commitElements;
 	}
 
 	/* Class mapping DecisionKnowledgeElement to xml */
