@@ -258,7 +258,7 @@ public class GitClient {
 			return new ArrayList<RevCommit>();
 		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		List<Ref> branches = getBranches(jiraIssue.getKey());
+		List<Ref> branches = getRefs(jiraIssue.getKey());
 		for (Ref featureBranch : branches) {
 			commits.addAll(getFeatureBranchCommits(featureBranch));
 		}
@@ -420,22 +420,28 @@ public class GitClient {
 	/**
 	 * @param branchName
 	 *            e.g. "master" or Jira issue key
-	 * @return all branches matching the name as a list of {@link Ref} objects.
+	 * @return all {@link Ref} objects matching the name.
 	 */
-	public List<Ref> getBranches(String branchName) {
+	public List<Ref> getRefs(String branchName) {
 		if (branchName == null || branchName.isBlank()) {
 			return new ArrayList<>();
 		}
-		List<Ref> remoteBranches = getBranches();
+		List<Ref> remoteBranches = getRefs();
 		List<Ref> branchCandidates = remoteBranches.stream()
 				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 				.collect(Collectors.toList());
 		return branchCandidates;
 	}
 
-	public List<Branch> getBranchesWithKnowledge(String branchName) {
+	/**
+	 * @param branchName
+	 *            e.g. "master" or Jira issue key
+	 * @return all {@link Branch}es including decision knowledge from commit
+	 *         messages and code comments.
+	 */
+	public List<Branch> getBranches(String branchName) {
 		List<Branch> branches = new ArrayList<>();
-		for (Ref ref : getBranches(branchName)) {
+		for (Ref ref : getRefs(branchName)) {
 			branches.add(new Branch(ref, getRationaleElementsFromCodeComments(ref),
 					getRationaleElementsFromCommitMessages(ref)));
 		}
@@ -443,13 +449,13 @@ public class GitClient {
 	}
 
 	/**
-	 * @return all branches as a list of {@link Ref} objects.
+	 * @return all {@link Ref} objects.
 	 */
-	public List<Ref> getBranches() {
-		List<Ref> allRemoteBranches = new ArrayList<>();
+	public List<Ref> getRefs() {
+		List<Ref> allRemoteRefs = new ArrayList<>();
 		getGitClientsForSingleRepos()
-				.forEach(gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getBranches()));
-		return allRemoteBranches;
+				.forEach(gitClientForSingleRepo -> allRemoteRefs.addAll(gitClientForSingleRepo.getRefs()));
+		return allRemoteRefs;
 	}
 
 	public List<KnowledgeElement> getRationaleElements(Ref branch) {

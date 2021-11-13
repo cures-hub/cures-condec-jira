@@ -92,6 +92,16 @@
 		return generalApi.getJSONReturnPromise(
 			`${this.restPrefix}/elementsFromBranchesOfJiraIssue?issueKey=${jiraIssueKey}`);
 	};
+	
+	/*
+	 * external references: dashboard/condec.git.branches.dashboard.js
+	 */
+	ConDecGitAPI.prototype.getElementsFromBranchesOfProject = function(projectKey, callback) {
+		generalApi.getJSON(conDecGitAPI.restPrefix + "/elementsFromBranchesOfProject?projectKey=" + projectKey,
+			function(error, result) {
+				callback(error, result);
+			});
+	};
 
 	global.conDecGitAPI = new ConDecGitAPI();
 })(window);

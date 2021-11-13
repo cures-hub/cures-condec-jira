@@ -163,7 +163,7 @@ public class GitClientForSingleRepository {
 	private ObjectId getDefaultBranchPosition() {
 		ObjectId objectId = null;
 		try {
-			objectId = getRepository().resolve(getDefaultBranch().getName());
+			objectId = getRepository().resolve(getDefaultRef().getName());
 		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
 		}
 		return objectId;
@@ -389,7 +389,7 @@ public class GitClientForSingleRepository {
 		if (isDefaultBranch) {
 			commits = getDefaultBranchCommits();
 		} else {
-			Ref branch = getBranch(jiraIssueKey);
+			Ref branch = getRef(jiraIssueKey);
 			commits = getCommits(branch);
 		}
 		for (RevCommit commit : commits) {
@@ -404,22 +404,18 @@ public class GitClientForSingleRepository {
 		return commitsForJiraIssue;
 	}
 
-	/*
-	 * TODO: This method and getCommits(Issue jiraIssue) need refactoring and deeper
-	 * discussions!
-	 */
-	private Ref getBranch(String branchName) {
-		List<Ref> refs = getBranches();
+	private Ref getRef(String branchName) {
+		List<Ref> refs = getRefs();
 		for (Ref ref : refs) {
 			if (ref.getName().contains(branchName)) {
 				return ref;
 			}
 		}
-		return getDefaultBranch();
+		return getDefaultRef();
 	}
 
-	public Ref getDefaultBranch() {
-		List<Ref> refs = getBranches();
+	public Ref getDefaultRef() {
+		List<Ref> refs = getRefs();
 		for (Ref ref : refs) {
 			if (ref.getName().contains(gitRepositoryConfiguration.getDefaultBranch())) {
 				return ref;
@@ -429,9 +425,9 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return remote branches in repository as a list of {@link Ref} objects.
+	 * @return remote {@link Ref} objects in the repository.
 	 */
-	public List<Ref> getBranches() {
+	public List<Ref> getRefs() {
 		List<Ref> refs = new ArrayList<Ref>();
 		openRepository();
 		try {
@@ -444,7 +440,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getDefaultBranchCommits() {
-		Ref defaultBranch = getDefaultBranch();
+		Ref defaultBranch = getDefaultRef();
 		return getCommits(defaultBranch);
 	}
 

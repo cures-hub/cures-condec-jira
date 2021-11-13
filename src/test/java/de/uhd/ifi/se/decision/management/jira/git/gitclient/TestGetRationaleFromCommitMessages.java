@@ -26,7 +26,7 @@ public class TestGetRationaleFromCommitMessages extends TestSetUpGit {
 	public void fromFeatureBranchCommits() {
 		int numberExpectedElements = 11;
 
-		Ref featureBranch = gitClient.getBranches("TEST-4.feature.branch").get(0);
+		Ref featureBranch = gitClient.getRefs("TEST-4.feature.branch").get(0);
 		List<KnowledgeElement> gotElements = gitClient.getRationaleElements(featureBranch);
 		assertEquals(numberExpectedElements, gotElements.size());
 	}

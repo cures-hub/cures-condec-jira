@@ -7,7 +7,6 @@
  Is referenced in HTML by
  * dashboard/featureBranches.vm
  */
-
 (function (global) {
 	var issueBranchKeyRx = null;
 	var branchesQuality = [];
@@ -25,8 +24,8 @@
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
 	ConDecBranchesDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
-		conDecDashboardAPI.getElementsFromBranchesOfJiraIssue(filterSettings.projectKey, function (error, result) {
-			conDecDashboard.processData(error, result, conDecBranchesDashboard, "branch",
+		conDecGitAPI.getElementsFromBranchesOfProject(filterSettings.projectKey, function (error, branches) {
+			conDecDashboard.processData(error, branches, conDecBranchesDashboard, "branch",
 				dashboardAPI, filterSettings);
 		});
 	};

@@ -176,7 +176,7 @@ public class GitRest {
 		}
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
-		List<Branch> branchesForProject = GitClient.getInstance(projectKey).getBranchesWithKnowledge(projectKey);
+		List<Branch> branchesForProject = GitClient.getInstance(projectKey).getBranches(projectKey);
 		return Response.ok(branchesForProject).build();
 	}
 
@@ -200,7 +200,7 @@ public class GitRest {
 		new CommitMessageToCommentTranscriber(jiraIssue).postCommitsIntoJiraIssueComments();
 
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
-		List<Branch> branchesForJiraIssue = GitClient.getInstance(projectKey).getBranchesWithKnowledge(jiraIssueKey);
+		List<Branch> branchesForJiraIssue = GitClient.getInstance(projectKey).getBranches(jiraIssueKey);
 
 		return Response.ok(branchesForJiraIssue).build();
 	}

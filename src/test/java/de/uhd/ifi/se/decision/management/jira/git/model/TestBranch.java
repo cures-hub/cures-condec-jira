@@ -40,7 +40,7 @@ public class TestBranch extends TestSetUpGit {
 		rationaleInBranch.add(rat1);
 		rationaleInBranch.add(rat2);
 		rationaleInBranch.add(rat3);
-		ref = gitClient.getBranches().get(0);
+		ref = gitClient.getRefs().get(0);
 	}
 
 	@Test

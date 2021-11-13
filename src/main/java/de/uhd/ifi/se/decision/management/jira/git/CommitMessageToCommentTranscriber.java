@@ -68,7 +68,7 @@ public class CommitMessageToCommentTranscriber {
 
 	public List<Comment> postFeatureBranchCommits() {
 		List<Comment> newComments = new ArrayList<>();
-		for (Ref featureBranch : gitClient.getBranches(jiraIssue.getKey())) {
+		for (Ref featureBranch : gitClient.getRefs(jiraIssue.getKey())) {
 			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
 			String uri = gitClient.getRepoUriFromBranch(featureBranch);
 			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch, uri));
@@ -79,7 +79,7 @@ public class CommitMessageToCommentTranscriber {
 	public List<Comment> postDefaultBranchCommits() {
 		List<Comment> newComments = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepository : gitClient.getGitClientsForSingleRepos()) {
-			Ref branch = gitClientForSingleRepository.getDefaultBranch();
+			Ref branch = gitClientForSingleRepository.getDefaultRef();
 			List<RevCommit> defaultBranchCommits = gitClientForSingleRepository.getCommits(jiraIssue, true);
 			String uri = gitClientForSingleRepository.getRemoteUri();
 			newComments.addAll(postCommitsIntoJiraIssueComments(defaultBranchCommits, branch, uri));
