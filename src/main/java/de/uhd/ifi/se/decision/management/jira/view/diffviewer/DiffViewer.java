@@ -31,13 +31,13 @@ public class DiffViewer {
 		LOGGER.info("projectKey:" + projectKey + ",jiraIssueKey:" + jiraIssueKey);
 	}
 
-	public DiffViewer(String projectKey, List<Ref> refBranches) {
+	public DiffViewer(String projectKey, List<Ref> refs) {
 		branches = new ArrayList<>();
 
 		GitClient extractor = GitClient.getInstance(projectKey);
-		for (Ref branch : refBranches) {
-			branches.add(new Branch(branch.getName(), extractor.getRationaleElementsFromCodeComments(branch),
-					extractor.getRationaleElementsFromCommitMessages(branch)));
+		for (Ref ref : refs) {
+			branches.add(new Branch(ref, extractor.getRationaleElementsFromCodeComments(ref),
+					extractor.getRationaleElementsFromCommitMessages(ref)));
 		}
 	}
 

@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.eclipse.jgit.lib.Ref;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
@@ -14,16 +16,14 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class Branch {
 
-	@XmlElement
-	private String branchName;
+	private Ref ref;
 	@XmlElement
 	private List<RationaleData> codeElements;
 	@XmlElement
 	private List<RationaleData> commitElements;
 
-	public Branch(String branchName, List<KnowledgeElement> codeCommentElements,
-			List<KnowledgeElement> commitMessageElements) {
-		this.branchName = branchName;
+	public Branch(Ref ref, List<KnowledgeElement> codeCommentElements, List<KnowledgeElement> commitMessageElements) {
+		this.ref = ref;
 		this.commitElements = new ArrayList<>();
 		for (KnowledgeElement rationale : commitMessageElements) {
 			commitElements.add(new RationaleData(rationale));
@@ -34,8 +34,9 @@ public class Branch {
 		}
 	}
 
+	@XmlElement
 	public String getBranchName() {
-		return branchName;
+		return ref != null ? ref.getName() : null;
 	}
 
 	public List<RationaleData> getCodeElements() {

@@ -1,25 +1,26 @@
-package de.uhd.ifi.se.decision.management.jira.view.diffviewer;
+package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
+import org.eclipse.jgit.lib.Ref;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
+import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class TestBranchDiff extends TestSetUp {
+public class TestBranch extends TestSetUpGit {
 
 	private Branch branchDiff;
-
+	private Ref ref;
 	private List<KnowledgeElement> rationaleInBranch;
 	private KnowledgeElement rat1;
 	private KnowledgeElement rat2;
@@ -27,7 +28,7 @@ public class TestBranchDiff extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		init();
+		super.setUp();
 		rat1 = new KnowledgeElement(0, "I am an issue", "", KnowledgeType.ISSUE, "TEST",
 				"file.java 1 INSERT(0-0,0-10) 1:2:3 abcdef01", DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
 		rat2 = new KnowledgeElement(0, "I am an issue too", "", KnowledgeType.ISSUE, "TEST", "commit 1:1 abcdef23",
@@ -39,29 +40,30 @@ public class TestBranchDiff extends TestSetUp {
 		rationaleInBranch.add(rat1);
 		rationaleInBranch.add(rat2);
 		rationaleInBranch.add(rat3);
+		ref = gitClient.getBranches().get(0);
 	}
 
 	@Test
 	public void testConstructor() {
-		branchDiff = new Branch("abc", rationaleInBranch, new ArrayList<>());
-		Assert.assertNotNull(branchDiff);
-		branchDiff = new Branch("abc", new ArrayList<>(), new ArrayList<>());
-		Assert.assertNotNull(branchDiff);
+		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
+		assertNotNull(branchDiff);
+		branchDiff = new Branch(ref, new ArrayList<>(), new ArrayList<>());
+		assertNotNull(branchDiff);
 		branchDiff = new Branch(null, rationaleInBranch, new ArrayList<>());
-		Assert.assertNotNull(branchDiff);
+		assertNotNull(branchDiff);
 	}
 
 	@Test
 	public void testGetBranchName() {
-		branchDiff = new Branch("abc", rationaleInBranch, new ArrayList<>());
-		assertEquals("abc", branchDiff.getBranchName());
+		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
+		assertEquals("refs/remotes/origin/TEST-4.feature.branch", branchDiff.getBranchName());
 		branchDiff = new Branch(null, rationaleInBranch, new ArrayList<>());
-		Assert.assertNull(branchDiff.getBranchName());
+		assertNull(branchDiff.getBranchName());
 	}
 
 	@Test
 	public void testGetElements() {
-		branchDiff = new Branch("abc", rationaleInBranch, new ArrayList<>());
+		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
 		List<Branch.RationaleData> elements = branchDiff.getCodeElements();
 		assertEquals(3, elements.size());
 
