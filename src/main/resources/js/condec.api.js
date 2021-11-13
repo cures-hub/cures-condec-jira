@@ -98,7 +98,7 @@
 	 * condec.export, condec.decision.guidance
 	 */
 	ConDecAPI.prototype.getKnowledgeElement = function(id, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/knowledge/knowledgeElement.json?projectKey="
+		generalApi.getJSON(this.restPrefix + "/knowledge/knowledgeElement?projectKey="
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
 				knowledgeElement) {
 			if (error === null) {
@@ -111,7 +111,7 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function(id, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/knowledge/getUnlinkedElements.json?projectKey="
+		generalApi.getJSON(this.restPrefix + "/knowledge/getUnlinkedElements?projectKey="
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, unlinkedElements) {
 				if (error === null) {
 					callback(unlinkedElements);
@@ -134,7 +134,7 @@
 			"description": description,
 			"documentationLocation": documentationLocation
 		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement.json?idOfExistingElement="
+		generalApi.postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement?idOfExistingElement="
 			+ idOfExistingElement + "&documentationLocationOfExistingElement="
 			+ documentationLocationOfExistingElement, newElement, function(error, newElement) {
 				if (error === null) {
@@ -158,7 +158,7 @@
 			"status": status
 		};
 		var parentElement = conDecTreant.findParentElement(id);
-		generalApi.postJSON(this.restPrefix + "/knowledge/updateDecisionKnowledgeElement.json?idOfParentElement="
+		generalApi.postJSON(this.restPrefix + "/knowledge/updateDecisionKnowledgeElement?idOfParentElement="
 			+ parentElement["id"] + "&documentationLocationOfParentElement="
 			+ parentElement["documentationLocation"], element, function(error, response) {
 				if (error === null) {
@@ -174,7 +174,7 @@
 			"documentationLocation": "s",
 			"projectKey": projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceValidated.json", jsonData, function(
+		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceValidated", jsonData, function(
 			error) {
 			if (error === null) {
 				showFlag("success", "Decision knowledge element has been updated.");
@@ -204,7 +204,7 @@
 			"projectKey": projectKey,
 			"documentationLocation": documentationLocation
 		};
-		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteDecisionKnowledgeElement.json", element,
+		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteDecisionKnowledgeElement", element,
 			function(error, isDeleted) {
 				if (error === null) {
 					showFlag("success", "Decision knowledge element has been deleted.");
@@ -217,7 +217,7 @@
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer, condec.decision.table
 	 */
 	ConDecAPI.prototype.createLink = function(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/createLink.json?projectKey=" + projectKey
+		generalApi.postJSON(this.restPrefix + "/knowledge/createLink?projectKey=" + projectKey
 			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function(error, link) {
 				if (error === null) {
@@ -239,7 +239,7 @@
 			"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement,
 			"projectKey": projectKey
 		};
-		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteLink.json?projectKey=" + projectKey,
+		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteLink?projectKey=" + projectKey,
 			link, function(error, link) {
 				if (error === null) {
 					showFlag("success", "Link has been deleted.");
@@ -263,7 +263,7 @@
 	 */
 	ConDecAPI.prototype.getKnowledgeElements = function(filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/knowledge/knowledgeElements.json", filterSettings, function(error, elements) {
+		generalApi.postJSON(this.restPrefix + "/knowledge/knowledgeElements", filterSettings, function(error, elements) {
 			if (error === null) {
 				callback(elements, filterSettings);
 			}
@@ -297,7 +297,7 @@
 			"documentationLocation": "s",
 			"projectKey": projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant.json", jsondata, function(
+		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant", jsondata, function(
 			error) {
 			if (error === null) {
 				showFlag("success", "Decision knowledge element has been updated.");
@@ -315,7 +315,7 @@
 			"projectKey": projectKey,
 			"documentationLocation": "s"
 		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/createJiraIssueFromSentence.json", jsondata,
+		generalApi.postJSON(this.restPrefix + "/knowledge/createJiraIssueFromSentence", jsondata,
 			function(error, jiraIssue) {
 				if (error === null) {
 					showFlag("success", "Jira issue with key " + jiraIssue.key + " has been created.");
@@ -328,7 +328,7 @@
 	 * external references: jiraIssueModule.vm
 	 */
 	ConDecAPI.prototype.resetDecisionKnowledgeFromText = function(jiraIssueId, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/resetDecisionKnowledgeFromText.json", jiraIssueId,
+		generalApi.postJSON(this.restPrefix + "/knowledge/resetDecisionKnowledgeFromText", jiraIssueId,
 			function(error, numberOfElements) {
 				if (error === null) {
 					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
@@ -342,7 +342,7 @@
 	 */
 	ConDecAPI.prototype.getTreeViewer = function(filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer.json", filterSettings, function(error, core) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer", filterSettings, function(error, core) {
 			if (error === null) {
 				callback(core);
 			}
@@ -354,7 +354,7 @@
 	 */
 	ConDecAPI.prototype.getTreant = function(filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getTreant.json", filterSettings, function(error, treant) {
+		generalApi.postJSON(this.restPrefix + "/view/getTreant", filterSettings, function(error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
@@ -366,7 +366,7 @@
 	 */
 	ConDecAPI.prototype.getVis = function(filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getVis.json", filterSettings, function(error, vis) {
+		generalApi.postJSON(this.restPrefix + "/view/getVis", filterSettings, function(error, vis) {
 			if (error === null) {
 				callback(vis);
 			}
@@ -383,7 +383,7 @@
 	 * Jira issue view to fill the HTML filter elements
 	 */
 	ConDecAPI.prototype.getFilterSettings = function(projectKey, searchTerm, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings.json?projectKey=" + projectKey
+		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings?projectKey=" + projectKey
 			+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
 				if (error === null) {
 					callback(filterSettings);
@@ -402,7 +402,7 @@
 	 */
 	ConDecAPI.prototype.getEvolutionData = function(filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData.json?isPlacedAtCreationDate=" + isPlacedAtCreationDate
+		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData?isPlacedAtCreationDate=" + isPlacedAtCreationDate
 			+ "&isPlacedAtUpdatingDate=" + isPlacedAtUpdatingDate, filterSettings, function(
 				error, evolutionData) {
 			if (error === null) {
@@ -416,7 +416,7 @@
 	 */
 	ConDecAPI.prototype.getMatrix = function(filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getMatrix.json", filterSettings, function(error, matrix) {
+		generalApi.postJSON(this.restPrefix + "/view/getMatrix", filterSettings, function(error, matrix) {
 			if (error == null) {
 				callback(matrix);
 			}
@@ -428,7 +428,7 @@
 	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setActivated = function(isActivated, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setActivated.json?projectKey=" + projectKey
+		generalApi.postJSON(this.restPrefix + "/config/setActivated?projectKey=" + projectKey
 			+ "&isActivated=" + isActivated, null, function(error, response) {
 				if (error === null) {
 					showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
@@ -440,7 +440,7 @@
 	 * external references: condec.text.editor.extension
 	 */
 	ConDecAPI.prototype.isActivated = function(callback) {
-		generalApi.getJSON(this.restPrefix + "/config/isActivated.json?projectKey=" + projectKey,
+		generalApi.getJSON(this.restPrefix + "/config/isActivated?projectKey=" + projectKey,
 			function(error, isActivatedBoolean) {
 				if (error === null) {
 					callback(isActivatedBoolean);
@@ -452,7 +452,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setJiraIssueDocumentationLocationActivated = function(isActivated, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setJiraIssueDocumentationLocationActivated.json?projectKey=" + projectKey
+		generalApi.postJSON(this.restPrefix + "/config/setJiraIssueDocumentationLocationActivated?projectKey=" + projectKey
 			+ "&isActivated=" + isActivated, null, function(error, response) {
 				if (error === null) {
 					showFlag("success", "Documentation of rationale in entire Jira has been set to " + isActivated);
@@ -464,7 +464,7 @@
 	 * external references: condec.dialog, condec.context.menu
 	 */
 	ConDecAPI.prototype.isJiraIssueDocumentationLocationActivated = function(callback) {
-		generalApi.getJSON(this.restPrefix + "/config/isJiraIssueDocumentationLocationActivated.json?projectKey=" + projectKey,
+		generalApi.getJSON(this.restPrefix + "/config/isJiraIssueDocumentationLocationActivated?projectKey=" + projectKey,
 			function(error, isActivated) {
 				if (error === null) {
 					callback(isActivated);
@@ -476,7 +476,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeTypeEnabled = function(isKnowledgeTypeEnabled, knowledgeType, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeTypeEnabled.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/config/setKnowledgeTypeEnabled?projectKey="
 			+ projectKey + "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled,
 			null, function(error, response) {
 				if (error === null) {
@@ -490,7 +490,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.isKnowledgeTypeEnabled = function(knowledgeType, projectKey, toggle, callback) {
-		generalApi.getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled.json?knowledgeType="
+		generalApi.getJSON(this.restPrefix + "/config/isKnowledgeTypeEnabled?knowledgeType="
 			+ knowledgeType + "&projectKey=" + projectKey, function(error, isKnowledgeTypeEnabled) {
 				if (error === null) {
 					callback(isKnowledgeTypeEnabled, toggle);
@@ -502,7 +502,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setLinkTypeEnabled = function(isLinkTypeEnabled, linkType, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setLinkTypeEnabled.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/config/setLinkTypeEnabled?projectKey="
 			+ projectKey + "&linkType=" + linkType + "&isLinkTypeEnabled=" + isLinkTypeEnabled,
 			null, function(error, response) {
 				if (error === null) {
@@ -516,7 +516,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.isLinkTypeEnabled = function(linkType, projectKey, toggle, callback) {
-		generalApi.getJSON(this.restPrefix + "/config/isLinkTypeEnabled.json?linkType="
+		generalApi.getJSON(this.restPrefix + "/config/isLinkTypeEnabled?linkType="
 			+ linkType + "&projectKey=" + projectKey, function(error, isLinkTypeEnabled) {
 				if (error === null) {
 					callback(isLinkTypeEnabled, toggle);
@@ -570,7 +570,7 @@
 	 */
 	ConDecAPI.prototype.getDecisionTable = function(filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/decisionTable.json", filterSettings,
+		generalApi.postJSON(this.restPrefix + "/view/decisionTable", filterSettings,
 			function(error, issues) {
 				if (error === null) {
 					callback(issues);
@@ -582,7 +582,7 @@
 	 * external references: condec.decision.table
 	 */
 	ConDecAPI.prototype.getDecisionTableCriteria = function(callback) {
-		generalApi.getJSON(this.restPrefix + `/view/decisionTableCriteria.json?projectKey=${projectKey}`,
+		generalApi.getJSON(this.restPrefix + `/view/decisionTableCriteria?projectKey=${projectKey}`,
 			function(error, query) {
 				if (error === null) {
 					callback(query);
@@ -597,7 +597,7 @@
 		if (query.length === 0) {
 			return showFlag("error", "Query length must not be empty.");
 		}
-		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery.json?projectKey=${projectKey}&query=${query}`,
+		generalApi.postJSON(this.restPrefix + `/config/setDecisionTableCriteriaQuery?projectKey=${projectKey}&query=${query}`,
 			null, function(error, numberOfCriteria) {
 				if (error === null) {
 					var message = "Query was saved. ";
@@ -615,7 +615,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.cleanDatabases = function(projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/cleanDatabases.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/config/cleanDatabases?projectKey="
 			+ projectKey, null, function(error, response) {
 				if (error === null) {
 					showFlag("success", "The databases have been cleaned.");
@@ -627,7 +627,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setChangeImpactAnalysisConfiguration = function(projectKey, ciaConfig) {
-		generalApi.postJSON(this.restPrefix + "/config/setChangeImpactAnalysisConfiguration.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/config/setChangeImpactAnalysisConfiguration?projectKey="
 			+ projectKey, ciaConfig, function(error, response) {
 				if (error === null) {
 					showFlag("success", "The change impact analysis configuration is updated.");
@@ -639,7 +639,7 @@
 	 * external references: condec.filtering
 	 */
 	ConDecAPI.prototype.getChangeImpactAnalysisConfiguration = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/config/getChangeImpactAnalysisConfiguration.json?projectKey="
+		generalApi.getJSON(this.restPrefix + "/config/getChangeImpactAnalysisConfiguration?projectKey="
 			+ projectKey, callback);
 	};
 

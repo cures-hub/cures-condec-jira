@@ -13,7 +13,7 @@
 	};
 
 	ConDecGitAPI.prototype.setKnowledgeExtractedFromGit = function(isKnowledgeExtractedFromGit, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/setKnowledgeExtractedFromGit.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/setKnowledgeExtractedFromGit?projectKey="
 			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null, function(error,
 				response) {
 			if (error === null) {
@@ -27,7 +27,7 @@
 	};
 
 	ConDecGitAPI.prototype.setPostFeatureBranchCommits = function(checked, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/setPostFeatureBranchCommits.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/setPostFeatureBranchCommits?projectKey="
 			+ projectKey + "&isPostFeatureBranchCommits=" + checked, null, function(error,
 				response) {
 			if (error === null) {
@@ -38,7 +38,7 @@
 	};
 
 	ConDecGitAPI.prototype.setPostDefaultBranchCommits = function(checked, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/setPostDefaultBranchCommits.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/setPostDefaultBranchCommits?projectKey="
 			+ projectKey + "&isPostDefaultBranchCommits=" + checked, null, function(error,
 				response) {
 			if (error === null) {
@@ -49,7 +49,7 @@
 	};
 
 	ConDecGitAPI.prototype.setGitRepositoryConfigurations = function(projectKey, gitRepositoryConfigurations) {
-		generalApi.postJSON(this.restPrefix + "/setGitRepositoryConfigurations.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/setGitRepositoryConfigurations?projectKey="
 			+ projectKey, gitRepositoryConfigurations, function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The git URIs and credentials for this project have been set.");
@@ -58,7 +58,7 @@
 	};
 
 	ConDecGitAPI.prototype.setCodeFileEndings = function(projectKey, codeFileEndings) {
-		generalApi.postJSON(this.restPrefix + "/setCodeFileEndings.json?projectKey="
+		generalApi.postJSON(this.restPrefix + "/setCodeFileEndings?projectKey="
 			+ projectKey, codeFileEndings, function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The code file endings for this project have been set.");
@@ -67,7 +67,7 @@
 	};
 
 	ConDecGitAPI.prototype.deleteGitRepos = function(projectKey) {
-		generalApi.postJSON(this.restPrefix + "/deleteGitRepos.json?projectKey=" + projectKey, null,
+		generalApi.postJSON(this.restPrefix + "/deleteGitRepos?projectKey=" + projectKey, null,
 			function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The git repos for this project were deleted.");
@@ -90,10 +90,8 @@
 	
 	ConDecGitAPI.prototype.getElementsFromBranchesOfJiraIssue = function(jiraIssueKey) {
 		return generalApi.getJSONReturnPromise(
-			`${this.restPrefix}/elementsFromBranchesOfJiraIssue.json
-				?issueKey=${jiraIssueKey}`);
+			`${this.restPrefix}/elementsFromBranchesOfJiraIssue?issueKey=${jiraIssueKey}`);
 	};
 
-	// export ConDecGitAPI
 	global.conDecGitAPI = new ConDecGitAPI();
 })(window);
