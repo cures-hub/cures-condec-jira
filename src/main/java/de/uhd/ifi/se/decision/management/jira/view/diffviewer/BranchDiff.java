@@ -107,10 +107,6 @@ public class BranchDiff {
 			@XmlElement
 			public boolean sourceTypeCodeFile = false;
 			@XmlElement
-			public String diffEntrySequence = "";
-			@XmlElement
-			public String diffEntry = "";
-			@XmlElement
 			public String position = "";
 			@XmlElement
 			public String rationaleHash = "";
@@ -134,13 +130,8 @@ public class BranchDiff {
 				if (sourceTypeCodeFile) {
 					int lastSpaceOccurrencePosition = source.lastIndexOf(" ");
 					if (lastSpaceOccurrencePosition > -1) {
-						diffEntry = source.substring(1 + lastSpaceOccurrencePosition);
 						source = source.substring(0, lastSpaceOccurrencePosition);
 						lastSpaceOccurrencePosition = source.lastIndexOf(" ");
-						if (lastSpaceOccurrencePosition > -1) {
-							diffEntrySequence = source.substring(1 + lastSpaceOccurrencePosition);
-							source = source.substring(0, lastSpaceOccurrencePosition);
-						}
 					}
 				}
 			}

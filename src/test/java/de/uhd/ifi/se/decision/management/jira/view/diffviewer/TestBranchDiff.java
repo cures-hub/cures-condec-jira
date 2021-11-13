@@ -66,8 +66,6 @@ public class TestBranchDiff {
 
 		BranchDiff.RationaleData.KeyData key = firstElement.getKey();
 		assertEquals(rat1.getKey(), key.value);
-		assertEquals("1", key.diffEntrySequence);
-		assertEquals("INSERT(0-0,0-10)", key.diffEntry);
 		assertEquals("file.java", key.source);
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef01", key.rationaleHash);
@@ -82,8 +80,6 @@ public class TestBranchDiff {
 
 		key = secondElement.getKey();
 		assertEquals(rat2.getKey(), key.value);
-		assertEquals("", key.diffEntrySequence);
-		assertEquals("", key.diffEntry);
 		assertEquals("commit", key.source);
 		assertEquals("1:1", key.position);
 		assertEquals("abcdef23", key.rationaleHash);
@@ -99,8 +95,6 @@ public class TestBranchDiff {
 
 		key = thirdtElement.getKey();
 		assertEquals(rat3.getKey(), key.value);
-		assertEquals("1", key.diffEntrySequence);
-		assertEquals("REPLACE(1-4,1-2)", key.diffEntry);
 		assertEquals("~file.java", key.source);
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef45", key.rationaleHash);

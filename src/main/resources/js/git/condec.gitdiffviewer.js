@@ -224,21 +224,11 @@ function appendCodeElements(brNode) {
 
 function getBlock(element, counter) {
 	var block = {};
-	if (element.key.diffEntry !== "-") {
-		block.diffType = true;
-		block.entry = element.key.diffEntry + " " + element.key.source;
-	} else {
-		/* rat. elements outside diff */
-		block.diffType = false;
-		block.sequence = counter;
-		block.entry = element.key.source;
-	}
+	block.diffType = true;
+	block.entry = " " + element.key.source;
 
 	block.toString = function() {
-		if (this.diffType) {
-			return "1 - " + block.entry;
-		}
-		return "0" + " " + this.sequence + " " + this.entry;
+		return "1 - " + block.entry;
 	};
 	return block;
 }
