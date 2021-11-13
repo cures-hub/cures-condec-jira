@@ -423,7 +423,7 @@ public class ChangedFile extends KnowledgeElement {
 	 * @return all decision knowledge elements within the comments of this code
 	 *         file.
 	 */
-	public List<KnowledgeElement> getRationaleElementsFromCodeComments() {
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments() {
 		return new RationaleFromCodeCommentParser().getRationaleElementsFromCode(this);
 	}
 

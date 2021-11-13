@@ -3,8 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-
 /**
  * Models a list of {@link ChangedFile}s. The scope for the diff might be a
  * single git commit, a whole feature branch (with many commits), or all commits
@@ -51,8 +49,8 @@ public class Diff {
 	 *         that are part of this diff.
 	 * @see ChangedFile#getRationaleElementsFromCodeComments()
 	 */
-	public List<KnowledgeElement> getRationaleElementsFromCodeComments() {
-		List<KnowledgeElement> elementsFromCode = new ArrayList<>();
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments() {
+		List<DecisionKnowledgeElementInCodeComment> elementsFromCode = new ArrayList<>();
 		for (ChangedFile codeFile : getChangedFiles()) {
 			elementsFromCode.addAll(codeFile.getRationaleElementsFromCodeComments());
 		}

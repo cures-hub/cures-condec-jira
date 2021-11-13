@@ -21,6 +21,8 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCommitMessage;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -459,21 +461,22 @@ public class GitClient {
 	}
 
 	public List<KnowledgeElement> getRationaleElements(Ref branch) {
-		List<KnowledgeElement> elements = getRationaleElementsFromCodeComments(branch);
+		List<KnowledgeElement> elements = new ArrayList<>();
+		elements.addAll(getRationaleElementsFromCodeComments(branch));
 		elements.addAll(getRationaleElementsFromCommitMessages(branch));
 		return elements;
 	}
 
-	public List<KnowledgeElement> getRationaleElementsFromCommitMessages(Ref branch) {
-		List<KnowledgeElement> elements = new ArrayList<>();
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(Ref branch) {
+		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
 		for (RevCommit commit : getFeatureBranchCommits(branch)) {
 			elements.addAll(getRationaleElementsFromCommitMessage(commit));
 		}
 		return elements;
 	}
 
-	public List<KnowledgeElement> getRationaleElementsFromCodeComments(Ref branch) {
-		List<KnowledgeElement> elements = new ArrayList<>();
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(Ref branch) {
+		List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
 		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
 		if (featureBranchCommits.isEmpty()) {
 			return elements;
@@ -484,18 +487,20 @@ public class GitClient {
 		return elements;
 	}
 
-	public List<KnowledgeElement> getRationaleElementsFromCommitMessage(RevCommit commit) {
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessage(RevCommit commit) {
 		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
 				commit.getFullMessage());
-		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
-			element.setProject(projectKey);
-			element.setKey(commit.getId() + element.getKey() + "commit");
-			return element;
-		}).collect(Collectors.toList());
+		List<DecisionKnowledgeElementInCommitMessage> elementsFromMessage = extractorFromMessage.getElements().stream()
+				.map(element -> {
+					element.setProject(projectKey);
+					element.setKey(commit.getId() + element.getKey() + "commit");
+					return new DecisionKnowledgeElementInCommitMessage(element);
+				}).collect(Collectors.toList());
 		return elementsFromMessage;
 	}
 
-	public List<KnowledgeElement> getRationaleElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCode(RevCommit revCommitStart,
+			RevCommit revCommitEnd) {
 		Diff diff = getDiff(revCommitStart, revCommitEnd);
 		return diff.getRationaleElementsFromCodeComments();
 	}

@@ -21,7 +21,7 @@ public class TestBranch extends TestSetUpGit {
 
 	private Branch branchDiff;
 	private Ref ref;
-	private List<KnowledgeElement> rationaleInBranch;
+	private List<DecisionKnowledgeElementInCodeComment> rationaleInBranch;
 	private KnowledgeElement rat1;
 	private KnowledgeElement rat2;
 	private KnowledgeElement rat3;
@@ -37,9 +37,9 @@ public class TestBranch extends TestSetUpGit {
 				"~file.java 1 REPLACE(1-4,1-2) 1:2:3 abcdef45", DocumentationLocation.CODE, KnowledgeStatus.UNRESOLVED);
 
 		rationaleInBranch = new ArrayList<>();
-		rationaleInBranch.add(rat1);
-		rationaleInBranch.add(rat2);
-		rationaleInBranch.add(rat3);
+		rationaleInBranch.add(new DecisionKnowledgeElementInCodeComment(rat1));
+		rationaleInBranch.add(new DecisionKnowledgeElementInCodeComment(rat2));
+		rationaleInBranch.add(new DecisionKnowledgeElementInCodeComment(rat3));
 		ref = gitClient.getRefs().get(0);
 	}
 
@@ -64,23 +64,23 @@ public class TestBranch extends TestSetUpGit {
 	@Test
 	public void testGetElements() {
 		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
-		List<Branch.RationaleData> elements = branchDiff.getCodeElements();
+		List<DecisionKnowledgeElementInCodeComment> elements = branchDiff.getCodeElements();
 		assertEquals(3, elements.size());
 
 		// first element: fileB
-		Branch.RationaleData firstElement = elements.get(0);
+		DecisionKnowledgeElementInCodeComment firstElement = elements.get(0);
 		assertEquals(rat1.getDescription(), firstElement.getDescription());
 		assertEquals(rat1.getType(), firstElement.getType());
 		assertEquals(rat1.getSummary(), firstElement.getSummary());
 
-		Branch.RationaleData.KeyData key = firstElement.getKeyData();
+		DecisionKnowledgeElementInCodeComment.KeyData key = firstElement.getKeyData();
 		assertEquals(rat1.getKey(), key.value);
 		assertEquals("file.java 1", key.source);
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef01", key.rationaleHash);
 
 		// second element: fileB
-		Branch.RationaleData secondElement = elements.get(1);
+		DecisionKnowledgeElementInCodeComment secondElement = elements.get(1);
 		assertEquals(rat2.getDescription(), secondElement.getDescription());
 		assertEquals(rat2.getType(), secondElement.getType());
 		assertEquals(rat2.getSummary(), secondElement.getSummary());
@@ -93,7 +93,7 @@ public class TestBranch extends TestSetUpGit {
 		// assertEquals(false, key.codeFileB);
 
 		// third element: fileA
-		Branch.RationaleData thirdtElement = elements.get(2);
+		DecisionKnowledgeElementInCodeComment thirdtElement = elements.get(2);
 		assertEquals(rat3.getDescription(), thirdtElement.getDescription());
 		assertEquals(rat3.getType(), thirdtElement.getType());
 		assertEquals(rat3.getSummary(), thirdtElement.getSummary());

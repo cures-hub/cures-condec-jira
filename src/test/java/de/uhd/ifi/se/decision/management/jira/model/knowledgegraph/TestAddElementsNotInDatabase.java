@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -47,7 +48,7 @@ public class TestAddElementsNotInDatabase extends TestSetUp {
 				"* @decision Use menu items in context menu to trigger decision exploration and\n" + //
 				"*           change impact analysis!\n" + //
 				"*/");
-		List<KnowledgeElement> elementsFound = new RationaleFromCodeCommentParser()
+		List<DecisionKnowledgeElementInCodeComment> elementsFound = new RationaleFromCodeCommentParser()
 				.getRationaleElementsFromCodeComment(codeComment);
 		assertEquals(8, elementsFound.size());
 		assertEquals("Use menu items in context menu to trigger decision exploration and change impact analysis!",
