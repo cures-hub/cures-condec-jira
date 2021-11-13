@@ -54,20 +54,8 @@
 			var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
 			/* these elements are sorted by commit age and occurrence in message */
-			var lastBranchElementsFromMessages =
-				lastBranch.elements.filter(function (e) {
-					return e.key.sourceTypeCommitMessage;
-				});
-
-			/* these elements are not sorted, we want only B(final) files. */
-			var lastBranchElementsFromFilesButNotSorted =
-				lastBranch.elements.filter(function (e) {
-					return e.key.codeFileB;
-				});
-
-			/* sort file elements */
-			var lastBranchElementsFromFiles =
-				conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFilesButNotSorted);
+			var lastBranchElementsFromMessages = lastBranch.commitElements;
+			var lastBranchElementsFromFiles = lastBranch.codeElements;
 
 			var lastBranchRelevantElementsSortedWithPosition =
 				lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
@@ -144,6 +132,7 @@
 
 		function problemsWithBranchesReducer(accumulator, currentBranch) {
 			var problems = currentBranch.problems;
+			console.log(problems);
 			var nameOfBranch = currentBranch.name;
 
 			var it = problems.keys();
@@ -275,10 +264,11 @@
 	}
 
 	function countElementType(targetType, branch) {
-		if (!targetType || !branch || !branch.elements || !branch.elements.length) {
+		if (!targetType || !branch) {
 			return 0;
 		}
-		var filtered = branch.elements.filter(function (e) {
+		var allElements = branch.codeElements.concat(branch.commitElements);
+		var filtered = allElements.filter(function (e) {
 			return e.type.toLowerCase() === targetType.toLowerCase();
 		});
 		return filtered.length;

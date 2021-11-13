@@ -96,6 +96,7 @@ linkBranchCandidates
 
   function runCodeLinker() {
     console.log("runCodelinker");
+    console.log(rationale);
     /*  map sorted rationale elements to simpler structure */
     linkCandidates = rationale.map(function(el, idx) {
       candidate = {};
