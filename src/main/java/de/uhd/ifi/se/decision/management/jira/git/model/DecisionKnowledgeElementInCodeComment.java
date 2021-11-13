@@ -7,8 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
-	private ChangedFile codeFile;
-	private String hash;
+	public ChangedFile codeFile;
 	private KeyData keyData;
 
 	public DecisionKnowledgeElementInCodeComment(KnowledgeElement rationale) {
@@ -25,10 +24,7 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
 	@XmlElement
 	public KeyData getKeyData() {
-		keyData = new KeyData(getKey());
-		if (keyData.source.isBlank()) {
-			keyData.source = getDescription().split(":")[0];
-		}
+		keyData = new KeyData(codeFile);
 		return keyData;
 	}
 
@@ -39,12 +35,10 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
 	public class KeyData {
 		@XmlElement
-		public String value = "";
-		@XmlElement
 		public String source = "";
 
-		public KeyData(String key) {
-			this.value = key;
+		public KeyData(ChangedFile file) {
+			source = file != null ? file.getName() : null;
 		}
 	}
 }

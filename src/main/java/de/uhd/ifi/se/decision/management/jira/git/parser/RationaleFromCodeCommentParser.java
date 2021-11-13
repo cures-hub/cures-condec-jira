@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -68,9 +67,9 @@ public class RationaleFromCodeCommentParser {
 		List<DecisionKnowledgeElementInCodeComment> elementsFromCode = getRationaleElementsFromCodeComments(
 				codeFile.getCodeComments());
 		List<DecisionKnowledgeElementInCodeComment> knowledgeElements = elementsFromCode.stream().map(element -> {
+			element.codeFile = codeFile;
 			element.setProject(codeFile.getProject());
 			element.setDescription(codeFile.getName() + ":" + element.getKey());
-			element.setDocumentationLocation(DocumentationLocation.CODE);
 			element.setCreationDate(codeFile.getCreationDate());
 			element.setUpdatingDate(codeFile.getUpdatingDate());
 			element.setCreator(codeFile.getCreatorName());
