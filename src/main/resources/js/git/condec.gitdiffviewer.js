@@ -39,8 +39,8 @@ function getBranchesDiff() {
 	contentHtml.innerText = "Loading ...";
 
 	conDecGitAPI.getElementsFromBranchesOfJiraIssue(conDecAPI.getIssueKey())
-		.then((data) => {
-			showBranchesDiff(data);
+		.then((branches) => {
+			showBranchesDiff(branches);
 		})
 		.catch((error) => showError(error));
 }
@@ -278,10 +278,10 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 	appendCodeElements(parentNode);
 }
 
-function appendBranchLabel(parentNode, data) {
+function appendBranchLabel(parentNode, branch) {
 	branchLabel = document.createElement("p");
 	branchLabel.className = "branchLabel";
-	branchLabel.innerText = data.branchName;
+	branchLabel.innerText = branch.branchName;
 	parentNode.appendChild(branchLabel);
 }
 
@@ -335,20 +335,20 @@ function appendForceRestFetch(parentNode) {
 	parentNode.appendChild(forceRestNode);
 }
 
-function showBranchesDiff(data) {
+function showBranchesDiff(branches) {
 	console.debug("showBranchesDiff");
-	if (data === null || data === undefined) {
+	if (branches === null || branches === undefined) {
 		contentHtml.innerText = "Git extraction is disabled.";
 		return;
 	}
-	data.timestamp = Date.now();
-	localStorage.setItem(url, JSON.stringify(data, null, 1));
+	branches.timestamp = Date.now();
+	localStorage.setItem(url, JSON.stringify(branches, null, 1));
 	contentHtml = document.getElementById("featureBranches-container");
 	contentHtml.innerText = "";
 
-	if (data.branches.length > 0) {
+	if (branches.length > 0) {
 		/* branches come not sorted from rest */
-		branches = data.branches.sort(function(a, b) {
+		branches = branches.sort(function(a, b) {
 			if (a.branchName < b.branchName) {
 				return -1;
 			} else {
