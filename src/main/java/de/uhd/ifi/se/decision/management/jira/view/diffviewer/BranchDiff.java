@@ -39,6 +39,9 @@ public class BranchDiff {
 	/* Class mapping DecisionKnowledgeElement to xml */
 	class RationaleData extends KnowledgeElement {
 		@XmlElement
+		public String image;
+
+		@XmlElement
 		public KeyData keyData;
 
 		public RationaleData(KnowledgeElement rationale) {
@@ -51,6 +54,7 @@ public class BranchDiff {
 			}
 			keyData.sourceTypeCodeFile = !keyData.sourceTypeCommitMessage;
 			setType(rationale.getType());
+			this.image = rationale.getType().getIconUrl();
 		}
 
 		public KeyData getKeyData() {

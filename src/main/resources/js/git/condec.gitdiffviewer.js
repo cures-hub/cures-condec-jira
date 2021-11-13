@@ -76,22 +76,6 @@ function getCodeElements(elements) {
 	return filteredList;
 }
 
-function getJiraBaseUri() {
-	return AJS.contextPath();
-}
-
-function getIcon(type) {
-	console.debug("getIcon");
-	if (type === "pro" || type === "con") {
-		type = "argument_" + type;
-	}
-	img = document.createElement("img");
-	path = getJiraBaseUri()
-		+ "/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/";
-	img.src = path + type + ".png";
-	return img;
-}
-
 function getElementAsHTML(element, isFromMessage) {
 	console.debug("getElementAsHTML");
 	root = document.createElement("p");
@@ -122,7 +106,9 @@ function getElementAsHTML(element, isFromMessage) {
 	root.setAttribute("id",
 		btoa(element.keyData.rationaleHash + "-" + lastBranch.branchName + "-" + element.keyData.source));
 
-	root.appendChild(getIcon(element.type.toLowerCase()));
+    img = document.createElement("img");
+    img.src = element.image;
+	root.appendChild(img);
 	root.appendChild(desc);
 	root.appendChild(loc);
 
