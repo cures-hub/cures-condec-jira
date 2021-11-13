@@ -105,9 +105,7 @@ linkBranchCandidates
       candidate.rationaleType = el.type;
       candidate.source = el.keyData.source;
       candidate.positionCursor = el.keyData.positionCursor;
-      if (!el.keyData.sourceTypeCommitMessage) {
-        candidate.positionEndLine = el.keyData.positionEndLine;
-      }
+      candidate.positionEndLine = el.keyData.positionEndLine;
       candidate.positionStartLine = el.keyData.positionStartLine;
       return candidate;
     });

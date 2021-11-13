@@ -2,7 +2,7 @@
  * This module implements the communication with the ConDec Java REST API for git configuration and conntection.
  *
  * Requires: conDecAPI
- * Required by: conDecDialog
+ * Required by: conDecDialog, dashboard/condec.git.branches.dashboard.js
  *
  * Is referenced in HTML by settings/git/...
  */

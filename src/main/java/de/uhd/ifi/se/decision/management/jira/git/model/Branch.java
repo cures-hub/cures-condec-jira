@@ -63,7 +63,6 @@ public class Branch {
 			if (keyData.source.isBlank()) {
 				keyData.source = rationale.getDescription().split(":")[0];
 			}
-			keyData.sourceTypeCodeFile = !keyData.sourceTypeCommitMessage;
 			setType(rationale.getType());
 			this.image = rationale.getType().getIconUrl();
 		}
@@ -101,10 +100,6 @@ public class Branch {
 			@XmlElement
 			public String source = "";
 			@XmlElement
-			public boolean sourceTypeCommitMessage = false;
-			@XmlElement
-			public boolean sourceTypeCodeFile = false;
-			@XmlElement
 			public String position = "";
 			@XmlElement
 			public String rationaleHash = "";
@@ -121,11 +116,9 @@ public class Branch {
 
 				String[] sourceComp = Arrays.copyOfRange(keyComponents, 0, len - 2);
 				source = String.join(" ", sourceComp);
-				sourceTypeCommitMessage = source.contains("commit");
-				sourceTypeCodeFile = !sourceTypeCommitMessage;
 
 				// source still includes filename, diff sequence number and diff entry
-				if (sourceTypeCodeFile) {
+				if (!source.contains("commit")) {
 					int lastSpaceOccurrencePosition = source.lastIndexOf(" ");
 					if (lastSpaceOccurrencePosition > -1) {
 						source = source.substring(0, lastSpaceOccurrencePosition);

@@ -78,8 +78,6 @@ public class TestBranch extends TestSetUpGit {
 		assertEquals("file.java 1", key.source);
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef01", key.rationaleHash);
-		assertEquals(true, key.sourceTypeCodeFile);
-		assertEquals(false, key.sourceTypeCommitMessage);
 
 		// second element: fileB
 		Branch.RationaleData secondElement = elements.get(1);
@@ -93,8 +91,6 @@ public class TestBranch extends TestSetUpGit {
 		assertEquals("1:1", key.position);
 		assertEquals("abcdef23", key.rationaleHash);
 		// assertEquals(false, key.codeFileB);
-		assertEquals(false, key.sourceTypeCodeFile);
-		assertEquals(true, key.sourceTypeCommitMessage);
 
 		// third element: fileA
 		Branch.RationaleData thirdtElement = elements.get(2);
@@ -108,8 +104,5 @@ public class TestBranch extends TestSetUpGit {
 		assertEquals("1:2:3", key.position);
 		assertEquals("abcdef45", key.rationaleHash);
 		// assertEquals(false, key.codeFileB);
-		assertEquals(true, key.sourceTypeCodeFile);
-		assertEquals(false, key.sourceTypeCommitMessage);
-
 	}
 }
