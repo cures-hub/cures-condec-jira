@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
@@ -430,6 +431,15 @@ public class GitClient {
 				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 				.collect(Collectors.toList());
 		return branchCandidates;
+	}
+
+	public List<Branch> getBranchesWithKnowledge(String branchName) {
+		List<Branch> branches = new ArrayList<>();
+		for (Ref ref : getBranches(branchName)) {
+			branches.add(new Branch(ref, getRationaleElementsFromCodeComments(ref),
+					getRationaleElementsFromCommitMessages(ref)));
+		}
+		return branches;
 	}
 
 	/**

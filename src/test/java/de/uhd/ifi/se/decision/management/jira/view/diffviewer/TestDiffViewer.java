@@ -14,12 +14,6 @@ public class TestDiffViewer extends TestSetUpGit {
 	private DiffViewer viewer;
 
 	@Test
-	public void testDiffViewerConstructorEntireProject() {
-		viewer = new DiffViewer("TEST");
-		assertNotNull(viewer);
-	}
-
-	@Test
 	public void testDiffViewerConstructorJiraIssue() {
 		viewer = new DiffViewer("TEST", "TEST-4");
 		assertNotNull(viewer);

@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscri
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -176,7 +177,8 @@ public class GitRest {
 		}
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
-		return Response.ok(new DiffViewer(projectKey)).build();
+		List<Branch> branches = GitClient.getInstance(projectKey).getBranchesWithKnowledge(projectKey);
+		return Response.ok(branches).build();
 	}
 
 	@Path("/elementsFromBranchesOfJiraIssue")

@@ -39,7 +39,7 @@
 	 * @param data the data returned from the API-call
 	 * @param filterSettings the filterSettings used in the API-call
 	 */
-	ConDecBranchesDashboard.prototype.renderData = function (data, filterSettings) {
+	ConDecBranchesDashboard.prototype.renderData = function (branches, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
@@ -49,7 +49,7 @@
 
 		branchesQuality = [];
 
-		var branches = data.branches;
+		var branches = branches;
 		for (var branchIdx = 0; branchIdx < branches.length; branchIdx++) {
 			var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
