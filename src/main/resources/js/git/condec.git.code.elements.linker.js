@@ -100,16 +100,14 @@ linkBranchCandidates
     linkCandidates = rationale.map(function(el, idx) {
       candidate = {};
       candidate.id = idx;
-      candidate.rationaleHash = el.key.rationaleHash;
+      candidate.rationaleHash = el.keyData.rationaleHash;
       candidate.rationaleType = el.type;
-      candidate.source = el.key.source;
-      candidate.positionCursor = el.key.positionCursor;
-      if (!el.key.sourceTypeCommitMessage) {
-        candidate.positionEndLine = el.key.positionEndLine;
+      candidate.source = el.keyData.source;
+      candidate.positionCursor = el.keyData.positionCursor;
+      if (!el.keyData.sourceTypeCommitMessage) {
+        candidate.positionEndLine = el.keyData.positionEndLine;
       }
-      candidate.positionStartLine = el.key.positionStartLine;
-      /*  we are interested only in final code elements */
-      candidate.skip = el.key.codeFileA;
+      candidate.positionStartLine = el.keyData.positionStartLine;
       return candidate;
     });
 
@@ -521,16 +519,16 @@ linkBranchCandidates
     */
     ConDecLinkBranchCandidates.prototype.extractPositions= function extractPositions(branchData) {
       elements = branchData.elements.map(function(e) {
-        positionComponents = e.key.position.split(":");
+        positionComponents = e.keyData.position.split(":");
         positionComponentsNumber = positionComponents.length;
         if (positionComponentsNumber === 2 || positionComponentsNumber === 3) {
-          e.key.positionStartLine = parseInt(positionComponents[0]);
-          e.key.positionCursor = parseInt(
+          e.keyData.positionStartLine = parseInt(positionComponents[0]);
+          e.keyData.positionCursor = parseInt(
             positionComponents[positionComponentsNumber - 1]
           );
         }
         if (positionComponentsNumber === 3) {
-          e.key.positionEndLine = parseInt(
+          e.keyData.positionEndLine = parseInt(
             positionComponents[positionComponentsNumber - 2]
           );
         }
@@ -545,25 +543,25 @@ linkBranchCandidates
       /* rationale should appear in the order it was found in code */
       rationale.sort(function(a, b) {
         /*  different files */
-        if (a.key.source < b.key.source) {
+        if (a.keyData.source < b.keyData.source) {
           return -1;
         }
-        if (a.key.source > b.key.source) {
+        if (a.keyData.source > b.keyData.source) {
           return 1;
         }
         /*  same file different lines */
-        if (a.key.positionStartLine < b.key.positionStartLine) {
+        if (a.keyData.positionStartLine < b.keyData.positionStartLine) {
           return -1;
         }
-        if (a.key.positionStartLine > b.key.positionStartLine) {
+        if (a.keyData.positionStartLine > b.keyData.positionStartLine) {
           return 1;
         }
 
         /*  same file same line different position on line */
-        if (a.key.positionCursor < b.key.positionCursor) {
+        if (a.keyData.positionCursor < b.keyData.positionCursor) {
           return -1;
         }
-        if (a.key.positionCursor < b.key.positionCursor) {
+        if (a.keyData.positionCursor < b.keyData.positionCursor) {
           return 1;
         }
 

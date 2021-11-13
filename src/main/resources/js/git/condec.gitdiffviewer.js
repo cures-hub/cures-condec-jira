@@ -55,14 +55,14 @@ function showError(error) {
 function getMessageElements(elements) {
 	console.debug("getMessageElements");
 	return elements.filter(function(e) {
-		return e.key.sourceTypeCommitMessage;
+		return e.keyData.sourceTypeCommitMessage;
 	});
 }
 
 function getCodeElements(elements) {
 	console.debug("getCodeElements");
 	filteredList = elements.filter(function(el) {
-		return el.key.sourceTypeCodeFile;
+		return el.keyData.sourceTypeCodeFile;
 	});
 
 	if (FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS) {
@@ -100,10 +100,10 @@ function getElementAsHTML(element, isFromMessage) {
 
 	var locationText = "";
 
-	locationTextShort = element.key.position;
+	locationTextShort = element.keyData.position;
 	if (isFromMessage) {
 		root.className = "messageBox rationale " + element.type.toLowerCase();
-		locationText = "Commit message " + element.key.source + " at position (sequence # in text, rationale length) "
+		locationText = "Commit message " + element.keyData.source + " at position (sequence # in text, rationale length) "
 			+ locationTextShort;
 	} else {
 		root.className = "rationale " + element.type.toLowerCase();
@@ -120,7 +120,7 @@ function getElementAsHTML(element, isFromMessage) {
 	root.dataset.ratType = element.type.toLowerCase();
 
 	root.setAttribute("id",
-		btoa(element.key.rationaleHash + "-" + lastBranch.branchName + "-" + element.key.source));
+		btoa(element.keyData.rationaleHash + "-" + lastBranch.branchName + "-" + element.keyData.source));
 
 	root.appendChild(getIcon(element.type.toLowerCase()));
 	root.appendChild(desc);
@@ -151,7 +151,7 @@ function getEmptyElementAsHTML() {
 /* version A (old) files have "~" character prepended to actual file name */
 function removeTildeFromAFilename(lastBranchElementsFromFileslements) {
 	return lastBranchElementsFromFiles.map(function(e) {
-		e.key.source = e.key.source.replace("~", "");
+		e.keyData.source = e.keyData.source.replace("~", "");
 		return e;
 	});
 }
@@ -225,7 +225,7 @@ function appendCodeElements(brNode) {
 function getBlock(element, counter) {
 	var block = {};
 	block.diffType = true;
-	block.entry = " " + element.key.source;
+	block.entry = " " + element.keyData.source;
 
 	block.toString = function() {
 		return "1 - " + block.entry;
@@ -239,8 +239,8 @@ function appendBranchMessageElementsHtml(elementsFromMessage, parentNode) {
 		var msgCommitIsh = "";
 		var messageBlockHtml = null;
 		for (m = 0; m < elementsFromMessage.length; m++) {
-			if (msgCommitIsh !== elementsFromMessage[m].key.source) {
-				msgCommitIsh = elementsFromMessage[m].key.source;
+			if (msgCommitIsh !== elementsFromMessage[m].keyData.source) {
+				msgCommitIsh = elementsFromMessage[m].keyData.source;
 				if (messageBlockHtml) {
 					/* add previous message */
 					parentNode.appendChild(messageBlockHtml);
@@ -293,7 +293,7 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 		}
 
 		var blockData = lastBranchBlocks.get(blockKey);
-		blockData.filename = elementsFromCode[c].key.source;
+		blockData.filename = elementsFromCode[c].keyData.source;
 		blockData.elements.push(codeElementHtml);
 		lastBranchBlocks.set(blockKey, blockData);
 	}

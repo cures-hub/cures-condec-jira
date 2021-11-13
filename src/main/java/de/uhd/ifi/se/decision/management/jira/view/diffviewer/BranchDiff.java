@@ -37,41 +37,24 @@ public class BranchDiff {
 	}
 
 	/* Class mapping DecisionKnowledgeElement to xml */
-	class RationaleData {
+	class RationaleData extends KnowledgeElement {
 		@XmlElement
-		private String summary;
-		@XmlElement
-		private String description;
-		@XmlElement
-		public KeyData key;
-		@XmlElement
-		private String type;
+		public KeyData keyData;
 
 		public RationaleData(KnowledgeElement rationale) {
-			summary = rationale.getSummary();
-			description = rationale.getDescription();
-			key = new KeyData(rationale.getKey());
-			if (key.source.isBlank()) {
-				key.source = rationale.getDescription().split(":")[0];
+			setProject(rationale.getProject());
+			setSummary(rationale.getSummary());
+			setDescription(rationale.getDescription());
+			keyData = new KeyData(rationale.getKey());
+			if (keyData.source.isBlank()) {
+				keyData.source = rationale.getDescription().split(":")[0];
 			}
-			key.sourceTypeCodeFile = !key.sourceTypeCommitMessage;
-			type = rationale.getType().toString();
+			keyData.sourceTypeCodeFile = !keyData.sourceTypeCommitMessage;
+			setType(rationale.getType());
 		}
 
-		public String getDescription() {
-			return description;
-		}
-
-		public KeyData getKey() {
-			return key;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public String getSummary() {
-			return summary;
+		public KeyData getKeyData() {
+			return keyData;
 		}
 
 		class KeyData {
