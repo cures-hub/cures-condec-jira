@@ -47,7 +47,7 @@ public class Branch {
 	}
 
 	/* Class mapping DecisionKnowledgeElement to xml */
-	class RationaleData extends KnowledgeElement {
+	public class RationaleData extends KnowledgeElement {
 		@XmlElement
 		public String image;
 
@@ -71,7 +71,7 @@ public class Branch {
 			return keyData;
 		}
 
-		class KeyData {
+		public class KeyData {
 			/*
 			 * commit typed dec. elements have keys in this form:
 			 * SOURCE+SPACECHAR+POSITION+SPACECHAR+RATIONALEHASHCODE where : SOURCE is
