@@ -1,10 +1,3 @@
-<div class="branchRationaleFilterPanel hidden">
-	<label>Issues: <input type="checkbox" checked=true class="branchRationaleFilter" value="issue"/></label>
-	<label>Decisions: <input type="checkbox" checked=true class="branchRationaleFilter" value="decision"/></label>
-	<label>Alternative: <input type="checkbox" checked=true class="branchRationaleFilter" value="alternative"/></label>
-	<label>Pro: <input type="checkbox" checked=true class="branchRationaleFilter" value="pro"/></label>
-	<label>Con: <input type="checkbox" checked=true class="branchRationaleFilter" value="con"/></label>
-</div>
 <div id="featureBranches-container"></div>
 <script>
 /* Adds the on click listener on tab opening */

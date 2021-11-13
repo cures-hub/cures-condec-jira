@@ -479,9 +479,6 @@ function showBranchesDiff(data) {
 															 * 2nd argument
 															 * "messageBox"
 															 */
-
-		attachClickEventsOnRationaleTypesFilter("branchRationaleFilter");
-
 	} else {
 		contentHtml.innerText = "No feature branches found for this issue.";
 	}
@@ -508,27 +505,6 @@ function attachClickEventsOnRationale(elements) {
 		}
 	};
 	attachClickEvents(elements, expander, "click to hide/show details");
-}
-
-function attachClickEventsOnRationaleTypesFilter(filterControlsClass) {
-	var elements = document.getElementsByClassName(filterControlsClass);
-
-	var handler = function(event) {
-		if (event.target.checked) {
-			console.log("checked");
-			showRatType(event.target.value);
-		} else {
-			hideRatType(event.target.value);
-		}
-	}
-
-	if (elements && elements.length > 0) {
-		for (var i = 0; i < elements.length; i++) {
-			var element = elements[i];
-			element.addEventListener("click", handler);
-		}
-	}
-
 }
 
 function attachClickEventsOnBlockLabels(labels) {
