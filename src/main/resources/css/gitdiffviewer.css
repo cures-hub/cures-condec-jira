@@ -1,22 +1,6 @@
-/* some basic looks for rationale from the commit messages and files */
+/* styles for rationale from the commit messages and code comments */
 
-#featureBranchesTab .branchRationaleFilterPanel {
-    margin: 1em;
-    display: flex;
-    justify-content: space-between;
-}
-
-.branchGroup {
-	position: relative;
-	font-size: 0.8rem;
-	margin: 1em 0;
-	padding:1em .2em;
-
-	border: 1px solid grey;
-	border-radius:1em;
-}
-
-.branchGroup .messageBox {
+.messageBox {
 	margin-top: 0.3em;
 	margin-bottom: 0.3em;
 	border-radius: 0.8em;
@@ -31,8 +15,6 @@
 	background: rgb(222, 250, 222);
 	border:1px grey solid;
 	border-radius: 0.1em;
-	font-weight: 800;
-	font-size: 1.2em;
 }
 
 .branchGroup .qualitySummary.noRationale{
@@ -55,10 +37,6 @@
 		yellow 10px,
 		yellow 20px
     );
-}
-
-.branchGroup p.detailed > .loc {
-	display: block;
 }
 
 .branchGroup .decision, .alternative {
@@ -88,46 +66,8 @@
     cursor: help;
 }
 
-/* text mode */
-/*.branchGroup p:hover >.rat-link-problem {*/
-.branchGroup p.detailed >.rat-link-problem {
-	position: relative ;
-	right: 0;
-	top: 0;
-	width: auto;
-	height: auto;
-	background: pink;
-	animation: unset;
-
-	padding: 0.3em;
-	margin: 0.3em;
-	color: black;
-}
-
 @keyframes rat-link-blinking {
   0%   { opacity: 0; }
   85% { opacity: 1; }
   100% { opacity: 0; }
-}
-
-.branchGroup .selector {
-	cursor: pointer;
-	position: absolute;
-	top: .5em;
-	right: 0.5em;
-	color: white;
-	background: blue;
-	border: 1px black solid;
-	border-top-color: grey;
-	border-left-color: grey;
-	border-radius: 0.8em;
-	min-width: 2em;
-	min-height: 0.8em;
-	text-align: center;
-	box-shadow: 2px 2px 2px grey;
-}
-.branchGroup .selector:hover {
-	box-shadow: unset;
-	border-top-color: black;
-	border-left-color: black;
 }

@@ -1,16 +1,3 @@
-/*
-TODO: do not pollute global javascript scope!
-
-Known issues:
-	branch sorting is random
-	msg.key.positin contains bad data, it is cursor:length
- */
-
-/*
- api data transform examples:
- branches[0].elements.map(function(e) {var n = {}; n.s = e.summary.substr(0,10); n.t = e.type; n.src = e.key.source; return n})
- */
-
 var contentHtml;
 var lastBranch, lastBranchIdx;
 var lastBranchElementsFromMessages, lastBranchElementsFromFiles;
@@ -19,7 +6,6 @@ var lastBranchBlocks = new Map();
 var NEWER_FILE_NOT_EXIST = "-";
 var OLDER_FILE_NOT_EXIST = "File did not exist";
 var RATIONALE_IN_OLDER_FILE_NOT_EXIST = "No rationale did exist before";
-var RATIONALE_NO_CHANGES_TEXT = "{file} - no rationale changed in below section:";
 var NO_QUALITY_PROBLEMS_IN_BRANCH = "No quality problems found in this branch.";
 var NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH = "No rationale found in messages and changed files!";
 
@@ -95,7 +81,6 @@ function getCodeElementsFromSide(blockData) {
 	console.debug("getCodeElementsFromSide");
 	var codeElements = document.createElement("p");
 	var rationaleElements = blockData.codeElements;
-	codeElements.className = "fileA";
 
 	if (rationaleElements.length > 0) {
 		for (var r = 0; r < rationaleElements.length; r++) {
@@ -112,43 +97,22 @@ function getCodeElementsFromSide(blockData) {
 function appendCodeElements(brNode) {
 	console.debug("appendCodeElements");
 	blockLinesIterator = lastBranchBlocks.entries();
-	while ((blockEntry = blockLinesIterator.next())) {
+	while (blockEntry = blockLinesIterator.next()) {
 		if (blockEntry.done) {
 			break;
 		}
-		var blockKey = blockEntry.value[0];
 		var blockData = blockEntry.value[1];
 
 		var fileRatElement = document.createElement("p");
 
-		/* Start: decode blockKey */
-		var block = blockKey.split(" ");
-		var blockIsDiffType = false;
-		var blockEntry = "";
-		if (block.length >= 3) {
-			blockIsDiffType = block[0].indexOf("1") === 0;
-			blockEntry = block[2];
-		}
-		/* End: decode blockKey */
-
-		var fileRatBlockLabel = document.createElement("p");
+		var fileRatBlockLabel = document.createElement("h4");
+		fileRatBlockLabel.innerText = blockData.filename;
+		
 		fileRatBlockLabel.dataset.blockSequence = blockData.sequence;
-		/* rationale changed? */
-		if (blockIsDiffType) {
-			/* get A side rationale elements */
-			var codeElements = getCodeElementsFromSide(blockData);
-			fileRatElement.appendChild(codeElements);
 
-			/* add diff edit label */
-			fileRatBlockLabel.innerText = blockData.filename + " - " + blockEntry;
-		} else {
-			fileRatBlockLabel.innerText = RATIONALE_NO_CHANGES_TEXT.replace("{file}", blockData.filename);
-		}
+		var codeElements = getCodeElementsFromSide(blockData);
+		fileRatElement.appendChild(codeElements);
 
-		fileRatBlockLabel.className = "fileNonDiffBlockLabel";
-		fileRatElement.className = "fileNonDiffBlock";
-
-		/* get B side rationale elements */
 		codeElements = getCodeElementsFromSide(blockData);
 		fileRatElement.appendChild(codeElements);
 
@@ -235,16 +199,8 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 	appendCodeElements(parentNode);
 }
 
-function appendBranchLabel(parentNode, branch) {
-	branchLabel = document.createElement("p");
-	branchLabel.className = "branchLabel";
-	branchLabel.innerText = branch.branchName;
-	parentNode.appendChild(branchLabel);
-}
-
-function appendBranchQualityAssessment(parentNode, index) {
+function appendBranchQualityAssessment(parentNode) {
 	qualitySummary = document.createElement("p");
-	qualitySummary.id = "branchGroup-" + index + "-qualitySummary";
 	qualitySummary.className = "qualitySummary";
 	if ((lastBranchElementsFromMessages && lastBranchElementsFromMessages.length > 0)
 		|| (lastBranchElementsFromFiles && lastBranchElementsFromFiles.length > 0)) {
@@ -260,23 +216,22 @@ function appendBranchQualityAssessment(parentNode, index) {
 /*
  * render feature branch in HTML
  */
-function showBranchDiff(data, index) {
+function showBranchDiff(branch) {
 	console.debug("showBranchDiff");
-	if (!data) {
-		return alert("received empty invalid data");
-	}
 
-	branchContainer = document.createElement("p");
-	branchContainer.id = "branchGroup-" + index;
+	branchContainer = document.createElement("div");
 	branchContainer.className = "branchGroup";
 
-	/* show user the branch name */
-	appendBranchLabel(branchContainer, data);
+	/* branch name */
+	branchLabel = document.createElement("h3");
+	branchLabel.innerText = branch.branchName;
+	branchContainer.appendChild(branchLabel);
+	
 	/* show user the quality assessment for rationale observed in modified files */
-	appendBranchQualityAssessment(branchContainer, index);
+	appendBranchQualityAssessment(branchContainer);
 	/* show user the rationale observed in modified files */	
-	appendBranchMessageElementsHtml(data.commitElements, branchContainer);
-	appendBranchCodeElementsHtml(data.codeElements, branchContainer);
+	appendBranchMessageElementsHtml(branch.commitElements, branchContainer);
+	appendBranchCodeElementsHtml(branch.codeElements, branchContainer);
 
 	/* append branch HTMl to parent HTML container */
 	contentHtml.appendChild(branchContainer);
@@ -284,7 +239,6 @@ function showBranchDiff(data, index) {
 
 function appendForceRestFetch(parentNode) {
 	forceRestNode = document.createElement("p");
-	forceRestNode.className = "condec-rest-force";
 	forceRestNode.innerText = "Suspecting branch list is not up-to date? Click here to try again.";
 	forceRestNode.addEventListener("click", function(e) {
 		getBranchesDiff(true);
