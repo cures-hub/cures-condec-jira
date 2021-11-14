@@ -58,7 +58,7 @@ function getElementAsHTML(element, isFromMessage) {
 	locationTextShort = element.startLine;
 	if (isFromMessage) {
 		root.className = "messageBox rationale " + element.type.toLowerCase();
-		locationText = "Commit message " + element.keyData.source + " at position (sequence # in text, rationale length) "
+		locationText = "Commit message " + element.source + " at position (sequence # in text, rationale length) "
 			+ locationTextShort;
 	} else {
 		root.className = "rationale " + element.type.toLowerCase();
@@ -188,8 +188,8 @@ function appendBranchMessageElementsHtml(elementsFromMessage, parentNode) {
 		var msgCommitIsh = "";
 		var messageBlockHtml = null;
 		for (m = 0; m < elementsFromMessage.length; m++) {
-			if (msgCommitIsh !== elementsFromMessage[m].keyData.source) {
-				msgCommitIsh = elementsFromMessage[m].keyData.source;
+			if (msgCommitIsh !== elementsFromMessage[m].source) {
+				msgCommitIsh = elementsFromMessage[m].source;
 				if (messageBlockHtml) {
 					/* add previous message */
 					parentNode.appendChild(messageBlockHtml);

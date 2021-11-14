@@ -493,8 +493,8 @@ public class GitClient {
 		List<DecisionKnowledgeElementInCommitMessage> elementsFromMessage = extractorFromMessage.getElements().stream()
 				.map(element -> {
 					element.setProject(projectKey);
-					element.setKey(commit.getId() + element.getKey() + "commit");
-					return new DecisionKnowledgeElementInCommitMessage(element);
+					element.setCommit(commit);
+					return element;
 				}).collect(Collectors.toList());
 		return elementsFromMessage;
 	}
