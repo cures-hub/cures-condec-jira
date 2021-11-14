@@ -3,14 +3,6 @@ var lastBranch, lastBranchIdx;
 var lastBranchElementsFromMessages, lastBranchElementsFromFiles;
 var lastBranchBlocks = new Map();
 
-var NEWER_FILE_NOT_EXIST = "-";
-var OLDER_FILE_NOT_EXIST = "File did not exist";
-var RATIONALE_IN_OLDER_FILE_NOT_EXIST = "No rationale did exist before";
-var NO_QUALITY_PROBLEMS_IN_BRANCH = "No quality problems found in this branch.";
-var NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH = "No rationale found in messages and changed files!";
-
-var BRANCHES_XHR_ERROR_MSG = "An unspecified error occurred while fetching REST data, please try again.";
-
 function getBranchesDiff() {
 	contentHtml = document.getElementById("featureBranches-container");
 	contentHtml.innerText = "Loading ...";
@@ -65,7 +57,7 @@ function createForceRestFetch() {
 
 function showError(error) {
 	console.debug("showError");
-	contentHtml.innerText = BRANCHES_XHR_ERROR_MSG;
+	contentHtml.innerText = "An unspecified error occurred while fetching REST data, please try again.";
 	console.log(error);
 	contentHtml.appendChild(createForceRestFetch());
 }
@@ -87,39 +79,16 @@ function getElementAsHTML(element) {
 	return root;
 }
 
-function getFileLocationShort(fileDecKnowKey) {
-	console.debug("getFileLocationShort");
-	var PATH_DEPTH = 2;
-	shortNameArr = [];
-	longNameArr = fileDecKnowKey.split("/");
-	while (shortNameArr.unshift(longNameArr.pop()) && shortNameArr.length < PATH_DEPTH) {
-		/* NOP: unshifting of array ellemts is done in while construct */
-	}
-	return shortNameArr.join("/");
-}
-
-function getEmptyElementAsHTML() {
-	console.debug("getEmptyElementAsHTML");
-	var emptyE = document.createElement("p");
-	emptyE.className = "empty";
-	emptyE.innerText = RATIONALE_IN_OLDER_FILE_NOT_EXIST;
-	return emptyE;
-}
-
 function getCodeElementsFromSide(blockData) {
 	console.debug("getCodeElementsFromSide");
 	var codeElements = document.createElement("p");
 	var rationaleElements = blockData.codeElements;
 
-	if (rationaleElements.length > 0) {
-		for (var r = 0; r < rationaleElements.length; r++) {
-			codeElement = rationaleElements[r];
-			codeElements.appendChild(codeElement);
-		}
-	} else {
-		codeElement = getEmptyElementAsHTML();
+	for (var r = 0; r < rationaleElements.length; r++) {
+		codeElement = rationaleElements[r];
 		codeElements.appendChild(codeElement);
 	}
+
 	return codeElements;
 }
 
@@ -152,7 +121,7 @@ function appendCodeElements() {
 	return allCodeElementsHTML;
 }
 
-function getBlock(element, counter) {
+function getBlock(element) {
 	var block = {};
 	block.diffType = true;
 	block.entry = " " + element.source;
@@ -195,21 +164,19 @@ function createBranchMessageElementsHtml(elementsFromMessage) {
 }
 
 function createBranchCodeElementsHtml(elementsFromCode) {
-	var blockCounter = 0;
 
 	for (c = 0; c < elementsFromCode.length; c++) {
 		codeElementHtml = getElementAsHTML(elementsFromCode[c]);
 		codeElementHtml.title = "Line in file: " + elementsFromCode[c].startLine;
 
-		var block = getBlock(elementsFromCode[c], blockCounter);
+		var block = getBlock(elementsFromCode[c]);
 
 		var blockKey = block.toString();
 
 		if (!lastBranchBlocks.has(blockKey)) {
 			blockData = {
 				codeElements: [],
-				filename: "",
-				sequence: blockCounter
+				filename: ""
 			};
 			lastBranchBlocks.set(blockKey, blockData);
 		}
@@ -227,10 +194,10 @@ function createBranchQualityAssessment() {
 	qualitySummary.className = "qualitySummary";
 	if ((lastBranchElementsFromMessages && lastBranchElementsFromMessages.length > 0)
 		|| (lastBranchElementsFromFiles && lastBranchElementsFromFiles.length > 0)) {
-		qualitySummary.innerText = NO_QUALITY_PROBLEMS_IN_BRANCH;
+		qualitySummary.innerText = "No quality problems found in this branch.";
 		qualitySummary.classList.add("noProblems");
 	} else {
-		qualitySummary.innerText = NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH;
+		qualitySummary.innerText = "No rationale found in messages and changed files!";
 		qualitySummary.classList.add("noRationale");
 	}
 	return qualitySummary;
