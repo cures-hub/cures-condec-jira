@@ -24,11 +24,6 @@ var RATIONALE_NO_CHANGES_TEXT = "{file} - no rationale changed in below section:
 var NO_QUALITY_PROBLEMS_IN_BRANCH = "No quality problems found in this branch.";
 var NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH = "No rationale found in messages and changed files!";
 
-var FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS = false; /*
-														 * do not use it, may
-														 * cause confusions
-														 */
-
 var BRANCHES_XHR_ERROR_MSG = "An unspecified error occurred while fetching REST data, please try again.";
 
 var url;
@@ -52,30 +47,6 @@ function showError(error) {
 	appendForceRestFetch(contentHtml);
 }
 
-function getMessageElements(elements) {
-	console.debug("getMessageElements");
-	return elements.filter(function(e) {
-		return e.keyData.sourceTypeCommitMessage;
-	});
-}
-
-function getCodeElements(elements) {
-	console.debug("getCodeElements");
-	filteredList = elements.filter(function(el) {
-		return el.keyData.sourceTypeCodeFile;
-	});
-
-	if (FILTER_CODE_RATIONALE_TEXT_COMMENT_DOTS) {
-		return filteredList.map(function(el) {
-			n = el;
-			n.description = el.description.replace(/\n\s*\*\s*/gi, "\n ");
-			n.summary = el.summary.replace(/\n\s*\*\s*/gi, "\n ");
-			return n;
-		});
-	}
-	return filteredList;
-}
-
 function getElementAsHTML(element, isFromMessage) {
 	console.debug("getElementAsHTML");
 	root = document.createElement("p");
@@ -84,7 +55,7 @@ function getElementAsHTML(element, isFromMessage) {
 
 	var locationText = "";
 
-	locationTextShort = element.keyData.position;
+	locationTextShort = element.startLine;
 	if (isFromMessage) {
 		root.className = "messageBox rationale " + element.type.toLowerCase();
 		locationText = "Commit message " + element.keyData.source + " at position (sequence # in text, rationale length) "
@@ -104,7 +75,7 @@ function getElementAsHTML(element, isFromMessage) {
 	root.dataset.ratType = element.type.toLowerCase();
 
 	root.setAttribute("id",
-		btoa(element.keyData.rationaleHash + "-" + lastBranch.branchName + "-" + element.keyData.source));
+		btoa(lastBranch.branchName + "-" + element.source));
 
     img = document.createElement("img");
     img.src = element.image;
@@ -203,7 +174,7 @@ function appendCodeElements(brNode) {
 function getBlock(element, counter) {
 	var block = {};
 	block.diffType = true;
-	block.entry = " " + element.keyData.source;
+	block.entry = " " + element.source;
 
 	block.toString = function() {
 		return "1 - " + block.entry;
@@ -271,7 +242,7 @@ function appendBranchCodeElementsHtml(elementsFromCode, parentNode) {
 		}
 
 		var blockData = lastBranchBlocks.get(blockKey);
-		blockData.filename = elementsFromCode[c].keyData.source;
+		blockData.filename = elementsFromCode[c].source;
 		blockData.codeElements.push(codeElementHtml);
 		lastBranchBlocks.set(blockKey, blockData);
 	}
@@ -362,9 +333,9 @@ function showBranchesDiff(branches) {
 			lastBranchBlocks = new Map();
 
 			/* these elements are sorted by commit age and occurrence in message */
-			lastBranchElementsFromMessages = getMessageElements(lastBranch.codeElements);
+			lastBranchElementsFromMessages = lastBranch.commitElements;
 			/* these elements are not sorted */
-			lastBranchElementsFromFiles = getCodeElements(lastBranch.codeElements);
+			lastBranchElementsFromFiles = lastBranch.codeElements;
 
 			showBranchDiff(lastBranch, branchIdx);
 

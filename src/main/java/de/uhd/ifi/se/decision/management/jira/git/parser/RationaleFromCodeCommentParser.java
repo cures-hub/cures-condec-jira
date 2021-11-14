@@ -67,12 +67,7 @@ public class RationaleFromCodeCommentParser {
 		List<DecisionKnowledgeElementInCodeComment> elementsFromCode = getRationaleElementsFromCodeComments(
 				codeFile.getCodeComments());
 		List<DecisionKnowledgeElementInCodeComment> knowledgeElements = elementsFromCode.stream().map(element -> {
-			element.codeFile = codeFile;
-			element.setProject(codeFile.getProject());
-			element.setDescription(codeFile.getName() + ":" + element.getKey());
-			element.setCreationDate(codeFile.getCreationDate());
-			element.setUpdatingDate(codeFile.getUpdatingDate());
-			element.setCreator(codeFile.getCreatorName());
+			element.setCodeFile(codeFile);
 			return element;
 		}).collect(Collectors.toList());
 		return knowledgeElements;
@@ -122,7 +117,7 @@ public class RationaleFromCodeCommentParser {
 		DecisionKnowledgeElementInCodeComment elementInCodeComment = new DecisionKnowledgeElementInCodeComment();
 		elementInCodeComment.setSummary(rationaleTextSanitized);
 		elementInCodeComment.setType(rationaleType);
-		elementInCodeComment.setKey(calculateStartLineInSourceFile(comment, tagMatcher.end()) + "");
+		elementInCodeComment.setStartLine(calculateStartLineInSourceFile(comment, tagMatcher.end()));
 
 		return elementInCodeComment;
 	}

@@ -101,12 +101,9 @@ linkBranchCandidates
     linkCandidates = rationale.map(function(el, idx) {
       candidate = {};
       candidate.id = idx;
-      candidate.rationaleHash = el.keyData.rationaleHash;
       candidate.rationaleType = el.type;
-      candidate.source = el.keyData.source;
-      candidate.positionCursor = el.keyData.positionCursor;
-      candidate.positionEndLine = el.keyData.positionEndLine;
-      candidate.positionStartLine = el.keyData.positionStartLine;
+      candidate.source = el.source;
+      candidate.positionStartLine = el.startLine;
       return candidate;
     });
 

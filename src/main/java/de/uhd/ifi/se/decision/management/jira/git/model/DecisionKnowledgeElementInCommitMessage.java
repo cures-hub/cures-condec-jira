@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 
@@ -14,6 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Origin;
  * element in its original form captured in a commit message.
  * 
  * @see Origin#COMMIT
+ * @see RationaleFromCommitMessageParser
+ * @see GitClient#getRationaleElementsFromCommitMessages(org.eclipse.jgit.lib.Ref)
  */
 public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
 

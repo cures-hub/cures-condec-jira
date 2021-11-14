@@ -2,30 +2,27 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.parser.CodeCommentParser;
+import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
+/**
+ * Represents a decision knowledge element documented in a {@link CodeComment}.
+ * 
+ * @see DocumentationLocation#CODE
+ * @see CodeCommentParser
+ * @see RationaleFromCodeCommentParser
+ * @see GitClient#getRationaleElementsFromCodeComments(org.eclipse.jgit.lib.Ref)
+ */
 public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
-	public ChangedFile codeFile;
-	private KeyData keyData;
-
-	public DecisionKnowledgeElementInCodeComment(KnowledgeElement rationale) {
-		setProject(rationale.getProject());
-		setSummary(rationale.getSummary());
-		setDescription(rationale.getDescription());
-		setKey(rationale.getKey());
-		setType(rationale.getType());
-	}
+	private ChangedFile codeFile;
+	private int startLine;
 
 	public DecisionKnowledgeElementInCodeComment() {
 		this.documentationLocation = DocumentationLocation.CODE;
-	}
-
-	@XmlElement
-	public KeyData getKeyData() {
-		keyData = new KeyData(codeFile);
-		return keyData;
 	}
 
 	@XmlElement
@@ -33,12 +30,25 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 		return getType().getIconUrl();
 	}
 
-	public class KeyData {
-		@XmlElement
-		public String source = "";
+	@XmlElement
+	public int getStartLine() {
+		return startLine;
+	}
 
-		public KeyData(ChangedFile file) {
-			source = file != null ? file.getName() : null;
-		}
+	public void setStartLine(int startLine) {
+		this.startLine = startLine;
+	}
+
+	public void setCodeFile(ChangedFile codeFile) {
+		this.codeFile = codeFile;
+		setProject(codeFile.getProject());
+		setCreationDate(codeFile.getCreationDate());
+		setUpdatingDate(codeFile.getUpdatingDate());
+		setCreator(codeFile.getCreatorName());
+	}
+
+	@XmlElement(name = "source")
+	public String getCodeFileName() {
+		return codeFile.getName();
 	}
 }
