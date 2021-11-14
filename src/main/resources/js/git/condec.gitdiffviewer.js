@@ -48,39 +48,27 @@ function showError(error) {
 function getElementAsHTML(element, isFromMessage) {
 	console.debug("getElementAsHTML");
 	root = document.createElement("p");
-	desc = document.createElement("p");
-	loc = document.createElement("p");
+	root.className = "messageBox " + element.type.toLowerCase();
 
 	var locationText = "";
-
-	locationTextShort = element.startLine;
-	if (isFromMessage) {
-		root.className = "messageBox rationale " + element.type.toLowerCase();
-		locationText = "Commit message " + element.source + " at position (sequence # in text, rationale length) "
-			+ locationTextShort;
+	if (isFromMessage) {		
+		locationText = "Commit message " + element.source;
 	} else {
-		root.className = "rationale " + element.type.toLowerCase();
-		locationText = "Code comment section at position (start line, end line, sequence # in comment) "
-			+ locationTextShort;
+		locationText = "Line in file: " + element.startLine;
 	}
-
-	desc.className = "content";
-	desc.innerText = element.summary + element.description;
-	loc.className = "loc";
-	loc.innerText = locationText;
+	
+	root.style = "padding:5px;";
 
 	root.title = locationText;
 	root.dataset.ratType = element.type.toLowerCase();
 
-	root.setAttribute("id",
-		btoa(lastBranch.branchName + "-" + element.source));
-
     img = document.createElement("img");
     img.src = element.image;
+    img.align ='absmiddle';
+    img.className = "emoticon";
+    
 	root.appendChild(img);
-	root.appendChild(desc);
-	root.appendChild(loc);
-
+	root.insertAdjacentText("beforeend", element.summary);
 	return root;
 }
 
@@ -346,176 +334,8 @@ function showBranchesDiff(branches) {
 			/* render results in HTML */
 			conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 		}
-
-		var branchLabels = contentHtml.getElementsByClassName("branchLabel");
-		var messageLabels = contentHtml.getElementsByClassName("commitMessageLabel");
-		var blockForNonDiffElements = contentHtml.getElementsByClassName("fileNonDiffBlockLabel");
-		var elementNodes = contentHtml.getElementsByClassName("rationale");
-
-		addSelectionHelperForContainer(branchLabels);
-		attachClickEventsOnBranchLabels(branchLabels);
-
-		addSelectionHelperForContainer(messageLabels);
-		attachClickEventsOnCommitMessageLabels(messageLabels);
-
-		attachClickEventsOnBlockLabels(blockForNonDiffElements);
-
-		addInvisibleButCopyableElementTypeTags(elementNodes, null); /*
-																	 * 2nd
-																	 * argument
-																	 * "messageBox"
-																	 */
-		attachClickEventsOnRationale(elementNodes, null); /*
-															 * 2nd argument
-															 * "messageBox"
-															 */
-
 	} else {
 		contentHtml.innerText = "No feature branches found for this issue.";
 	}
 	appendForceRestFetch(contentHtml);
-}
-
-/* BEGIN: UI decoration section */
-/*
- * could be done with 2 times fewer lines with jQuery, but if possible lets stay
- * away from jQuery for such simple things.
- */
-
-function attachClickEventsOnRationale(elements) {
-	var expander = function(event) {
-		var content = event.target.parentElement;
-		if (!content && !content.classList) {
-			console.error("Problem in attachClickEventsOnRationale");
-			return;
-		}
-		if (content.classList.contains("detailed")) {
-			content.classList.remove("detailed");
-		} else {
-			content.classList.add("detailed");
-		}
-	};
-	attachClickEvents(elements, expander, "click to hide/show details");
-}
-
-function attachClickEventsOnBlockLabels(labels) {
-	var hider = function(event) {
-		var content = event.target.nextElementSibling;
-		if (!content && !content.classList) {
-			console.error("no sibling found for " + event.target.id);
-			return;
-		}
-	};
-	attachClickEvents(labels, hider, "click to hide/show");
-}
-
-function attachClickEvents(elements, handler, hoverTitle) {
-	if (elements && elements.length > 0) {
-		for (var i = 0; i < elements.length; i++) {
-			var element = elements[i];
-			element.addEventListener("click", handler);
-			element.title = hoverTitle;
-		}
-	}
-}
-
-function attachClickEventsOnCommitMessageLabels(labels) {
-	attachClickEventsRollingUpParents(labels);
-}
-
-function attachClickEventsOnBranchLabels(labels) {
-	attachClickEventsRollingUpParents(labels);
-}
-
-function attachClickEventsRollingUpParents(labels) {
-	var hider = function(event) {
-		var parentContainer = event.target.parentElement;
-		if (!parentContainer && !parentContainer.classList) {
-			console.error("Parent not found for " + event.target.id);
-			return;
-		}
-		if (parentContainer.classList.contains("rolledUp")) {
-			parentContainer.classList.remove("rolledUp");
-		} else {
-			parentContainer.classList.add("rolledUp");
-		}
-	};
-
-	if (labels && labels.length > 0) {
-		for (var i = 0; i < labels.length; i++) {
-			var label = labels[i];
-			label.addEventListener("click", hider);
-			label.title = "click to roll up/show";
-		}
-	}
-}
-function addInvisibleButCopyableElementTypeTags(elementNodes, classFilter) {
-	if (elementNodes && elementNodes.length > 0) {
-		for (var i = 0; i < elementNodes.length; i++) {
-			var rationaleNode = elementNodes[i];
-			if (!classFilter || rationaleNode.classList.contains(classFilter)) {
-				contentList = rationaleNode.getElementsByClassName("content");
-				/* read type from html */
-				rationaleType = rationaleNode.dataset.ratType;
-				if (contentList && rationaleType) {
-					rationaleTextParagraphNode = contentList[0];
-					if (rationaleTextParagraphNode) {
-						/* render tags */
-						var startTag = document.createElement("span");
-						var endTag = document.createElement("span");
-
-						startTag.innerText = "[" + rationaleType + "]";
-						endTag.innerText = "[/" + rationaleType + "]";
-						rationaleTextParagraphNode.prepend(startTag); /*
-																		 * not
-																		 * supported
-																		 * by
-																		 * IE,
-																		 * EdgeMobile
-																		 */
-						rationaleTextParagraphNode.appendChild(endTag);
-					}
-				}
-			}
-		}
-	}
-}
-
-/*
- * for each label element adds a sibling node with onclick function for
- * selecting contents of parent container
- */
-function addSelectionHelperForContainer(labels) {
-	var contentSelector = function(event) {
-		console.log("contentSelector");
-		var parentContainer = event.target.parentElement;
-		if (!parentContainer) {
-			console.error("Parent not found for " + event.target.id);
-			return;
-		}
-		var selObj = window.getSelection();
-		selObj.removeAllRanges();
-		var range = document.createRange();
-		range.selectNode(parentContainer);
-		selObj.addRange(range);
-	};
-
-	if (labels && labels.length > 0) {
-		for (var i = 0; i < labels.length; i++) {
-			var label = labels[i];
-			var container = label.parentElement;
-
-			var selectorNode = document.createElement("div");
-			selectorNode.className = "selector";
-			selectorNode.title = "Select container contents";
-			selectorNode.addEventListener("click", contentSelector);
-			container.appendChild(selectorNode);
-		}
-	}
-}
-
-function listRatClasses() {
-	Array.from(document.getElementsByClassName("rationale")).map(function(e) {
-		console.log(e.className);
-	})
 }

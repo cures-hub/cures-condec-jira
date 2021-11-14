@@ -1,18 +1,9 @@
 /* some basic looks for rationale from the commit messages and files */
 
-#featureBranchesTab .condec-rest-force {
-    cursor:pointer;
-    font-size: 0.6em;
-}
 #featureBranchesTab .branchRationaleFilterPanel {
     margin: 1em;
     display: flex;
     justify-content: space-between;
-}
-
-#featureBranchesTab .branchRationaleFilterPanel label {
-    cursor: pointer;
-    border: 1px solid grey;
 }
 
 .branchGroup {
@@ -25,13 +16,6 @@
 	border-radius:1em;
 }
 
-.branchGroup.rolledUp {
-	overflow: hidden;
-	max-height: 0;
-}
-
-.branchGroup .fileA>p,
-.branchGroup .fileB>p,
 .branchGroup .messageBox {
 	margin-top: 0.3em;
 	margin-bottom: 0.3em;
@@ -39,67 +23,6 @@
 	padding: 0.3em;
 	position: relative;
 	border: 1px solid black;
-}
-
-.branchGroup .fileNonDiffBlockLabel {
-	color: white;
-	background:black;
-	cursor: pointer;
-	text-decoration: underline;
-	padding: 0.5em;
-	overflow: hidden;
-
-	/* not using this presentation variant yet.
-	padding: 1em 0 0 0;
-	max-height: 0em;*/
-}
-
-.branchGroup .fileNonDiffBlockLabel.inactive {
-	background:grey;
-}
-
-.branchGroup .fileNonDiffBlock {
-	margin-top: 0;
-}
-.branchGroup .fileA,
-.branchGroup .fileB {
-	margin: 0;
-	flex-grow: 0;
-	flex-shrink: 0;
-	flex-basis: 50%;
-}
-
-.branchGroup .messageBox {
-	background: rgba(9,30,66,.08);
-}
-
-.branchGroup .messageBox.rolledUp {
-    max-height: 1em;
-    overflow: hidden;
-}
-.branchGroup .messageBox .commitMessageLabel {
-	cursor: pointer;
-	text-decoration: underline;
-
-}
-
-.branchGroup .fileNonDiffBlock p.detailed > .content,
-.branchGroup .messageBox p.detailed > .content
-{
-    font-size: 1.3em;
-}
-
-.branchGroup .branchLabel {
-	position: absolute;
-	left:2em;
-	top:-0.5em;
-	background: white;
-	cursor: pointer;
-	text-decoration: underline;
-}
-
-.branchGroup.rolledUp .branchLabel {
-	top: 0;
 }
 
 .branchGroup .qualitySummary {
@@ -134,33 +57,6 @@
     );
 }
 
-.branchGroup .content {
-	/* background: white; */
-	margin: 0 0 0 1em;
-	width: auto;
-	transition: font-size 0.05s;
-	cursor: pointer;
-}
-
-/* in browser invisible rationale text tags,
-will be copied if .content is marked and copied */
-.branchGroup .content > span {
-	overflow: hidden;
-	max-width: 1px; /* some browsers will not copy this span's text if 0 value is used here.*/
-	display: inline-block;
-}
-
-.branchGroup img {
-	position: absolute;
-    top: 0.5em;
-	left: 0px;
-}
-
-.branchGroup .loc {
-	display: none; /* make this element obsolete ? */
-}
-
-/*.branchGroup p:hover > .loc {*/
 .branchGroup p.detailed > .loc {
 	display: block;
 }
@@ -168,6 +64,7 @@ will be copied if .content is marked and copied */
 .branchGroup .decision, .alternative {
 	margin-left: 0.5em;
 }
+
 .branchGroup .pro, .con {
 	margin-left: 1em;
 }
