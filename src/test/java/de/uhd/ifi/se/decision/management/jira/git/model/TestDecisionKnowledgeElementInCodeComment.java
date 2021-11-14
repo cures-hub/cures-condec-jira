@@ -33,6 +33,15 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 	}
 
 	@Test
+	public void testUrl() {
+		ChangedFile file = new ChangedFile();
+		file.setProject("TEST");
+		file.setRepoUri("https://github.com/cures-hub/cures-condec-jira");
+		codeCommentElement.setCodeFile(file);
+		assertEquals("https://github.com/cures-hub/cures-condec-jira", codeCommentElement.getUrl());
+	}
+
+	@Test
 	public void testStartLine() {
 		assertEquals(42, codeCommentElement.getStartLine());
 	}

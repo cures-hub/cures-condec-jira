@@ -35,6 +35,11 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 		return startLine;
 	}
 
+	@XmlElement
+	public String getUrl() {
+		return codeFile.getRepoUri();
+	}
+
 	public void setStartLine(int startLine) {
 		this.startLine = startLine;
 		setKey(startLine + "");

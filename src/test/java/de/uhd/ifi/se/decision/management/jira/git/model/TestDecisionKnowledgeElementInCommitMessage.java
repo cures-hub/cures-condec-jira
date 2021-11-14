@@ -12,26 +12,32 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestDecisionKnowledgeElementInCommitMessage extends TestSetUpGit {
 
-	private DecisionKnowledgeElementInCommitMessage codeCommentElement;
+	private DecisionKnowledgeElementInCommitMessage commitMessageElement;
 
 	@Before
 	public void setUp() {
 		super.setUp();
-		codeCommentElement = new DecisionKnowledgeElementInCommitMessage();
-		codeCommentElement.setSummary("I am an issue");
-		codeCommentElement.setType(KnowledgeType.ISSUE);
-		codeCommentElement.setProject("TEST");
+		commitMessageElement = new DecisionKnowledgeElementInCommitMessage();
+		commitMessageElement.setSummary("I am an issue");
+		commitMessageElement.setType(KnowledgeType.ISSUE);
+		commitMessageElement.setProject("TEST");
 	}
 
 	@Test
 	public void testCommit() {
 		RevCommit commit = gitClient.getDefaultBranchCommits().get(0);
-		codeCommentElement.setCommit(commit);
-		assertEquals(commit.getName(), codeCommentElement.getCommitName());
+		commitMessageElement.setCommit(commit);
+		assertEquals(commit.getName(), commitMessageElement.getCommitName());
+	}
+
+	@Test
+	public void testUrl() {
+		commitMessageElement.setRepoUri(GIT_URI);
+		assertEquals(GIT_URI, commitMessageElement.getUrl());
 	}
 
 	@Test
 	public void testImage() {
-		assertTrue(codeCommentElement.getImage().contains("issue.png"));
+		assertTrue(commitMessageElement.getImage().contains("issue.png"));
 	}
 }

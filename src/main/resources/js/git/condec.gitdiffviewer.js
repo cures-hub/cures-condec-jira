@@ -64,18 +64,23 @@ function showError(error) {
 
 function getElementAsHTML(element) {
 	console.debug("getElementAsHTML");
-	root = document.createElement("p");
+	var root = document.createElement("p");
 	root.className = "messageBox " + element.type.toLowerCase();
 	root.style = "padding:5px;";
 	root.dataset.ratType = element.type.toLowerCase();
+	
+	var link = document.createElement("a");
+	link.style = "text-decoration: none; color: black;";
+	link.href = element.url;
 
-	img = document.createElement("img");
+	var img = document.createElement("img");
 	img.src = element.image;
-	img.align = "absmiddle";
 	img.className = "emoticon";
 
-	root.appendChild(img);
-	root.insertAdjacentText("beforeend", element.summary);
+	link.appendChild(img);
+	link.insertAdjacentText("beforeend", element.summary);
+	
+	root.appendChild(link);	
 	return root;
 }
 
@@ -106,6 +111,7 @@ function appendCodeElements() {
 
 		var fileRatBlockLabel = document.createElement("h4");
 		fileRatBlockLabel.innerText = blockData.filename;
+		
 
 		fileRatBlockLabel.dataset.blockSequence = blockData.sequence;
 
@@ -164,7 +170,6 @@ function createBranchMessageElementsHtml(elementsFromMessage) {
 }
 
 function createBranchCodeElementsHtml(elementsFromCode) {
-
 	for (c = 0; c < elementsFromCode.length; c++) {
 		codeElementHtml = getElementAsHTML(elementsFromCode[c]);
 		codeElementHtml.title = "Line in file: " + elementsFromCode[c].startLine;

@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Origin;
 public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
 
 	private RevCommit commit;
+	private String repoUri;
 
 	public DecisionKnowledgeElementInCommitMessage() {
 		this.origin = Origin.COMMIT;
@@ -40,5 +41,14 @@ public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
 	@XmlElement(name = "source")
 	public String getCommitName() {
 		return commit.getName();
+	}
+
+	@XmlElement
+	public String getUrl() {
+		return repoUri;
+	}
+
+	public void setRepoUri(String repoUri) {
+		this.repoUri = repoUri;
 	}
 }

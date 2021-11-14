@@ -470,7 +470,10 @@ public class GitClient {
 	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(Ref branch) {
 		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
 		for (RevCommit commit : getFeatureBranchCommits(branch)) {
-			elements.addAll(getRationaleElementsFromCommitMessage(commit));
+			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
+				element.setRepoUri(getRepoUriFromBranch(branch));
+				elements.add(element);
+			}
 		}
 		return elements;
 	}
