@@ -9,7 +9,7 @@
 	border: 1px solid black;
 }
 
-.branchGroup .qualitySummary {
+.qualitySummary {
 	margin:1em;
 	padding:1em;
 	background: rgb(222, 250, 222);
@@ -17,7 +17,7 @@
 	border-radius: 0.1em;
 }
 
-.branchGroup .qualitySummary.noRationale{
+.qualitySummary.noRationale{
 	background: repeating-linear-gradient(
 		-45deg,
 		rgb(222, 250, 222),
@@ -27,8 +27,8 @@
     );
 }
 
-.branchGroup .qualitySummary.hasErrors,
-.branchGroup .qualitySummary.hasWarnings {
+.qualitySummary.hasErrors,
+.qualitySummary.hasWarnings {
 	background: yellow;
 	background: repeating-linear-gradient(
 		-45deg,
@@ -39,16 +39,15 @@
     );
 }
 
-.branchGroup .decision, .alternative {
+.decision, .alternative {
 	margin-left: 0.5em;
 }
 
-.branchGroup .pro, .con {
+.pro, .con {
 	margin-left: 1em;
 }
 
- /* just graphics, no text mode*/
-.branchGroup .rat-link-problem {
+.rat-link-problem {
     position: absolute;
     top: 0.5em;
     right: 0.3em;
