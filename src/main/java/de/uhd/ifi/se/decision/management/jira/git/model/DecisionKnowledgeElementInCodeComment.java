@@ -37,6 +37,7 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
 	public void setStartLine(int startLine) {
 		this.startLine = startLine;
+		setKey(startLine + "");
 	}
 
 	public void setCodeFile(ChangedFile codeFile) {
