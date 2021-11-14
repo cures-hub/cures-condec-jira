@@ -18,7 +18,6 @@ var lastBranchBlocks = new Map();
 
 var NEWER_FILE_NOT_EXIST = "-";
 var OLDER_FILE_NOT_EXIST = "File did not exist";
-var RATIONALE_IN_NEWER_FILE_NOT_EXIST = "Rationale got removed";
 var RATIONALE_IN_OLDER_FILE_NOT_EXIST = "No rationale did exist before";
 var RATIONALE_NO_CHANGES_TEXT = "{file} - no rationale changed in below section:";
 var NO_QUALITY_PROBLEMS_IN_BRANCH = "No quality problems found in this branch.";
@@ -26,7 +25,6 @@ var NO_QUALITY_PROBLEMS_FOR_NO_RATIONALE_IN_BRANCH = "No rationale found in mess
 
 var BRANCHES_XHR_ERROR_MSG = "An unspecified error occurred while fetching REST data, please try again.";
 
-var url;
 var branches = [];
 
 function getBranchesDiff() {
@@ -313,7 +311,6 @@ function showBranchesDiff(branches) {
 		return;
 	}
 	branches.timestamp = Date.now();
-	localStorage.setItem(url, JSON.stringify(branches, null, 1));
 	contentHtml = document.getElementById("featureBranches-container");
 	contentHtml.innerText = "";
 

@@ -27,7 +27,7 @@ public class TestDecisionKnowledgeElementInCommitMessage extends TestSetUpGit {
 	public void testCommit() {
 		RevCommit commit = gitClient.getDefaultBranchCommits().get(0);
 		codeCommentElement.setCommit(commit);
-		assertEquals("8964cc213466ec1f3224785cb7ee1a279070080e", codeCommentElement.getCommitName());
+		assertEquals(commit.getName(), codeCommentElement.getCommitName());
 	}
 
 	@Test
