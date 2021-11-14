@@ -62,12 +62,12 @@
 			/* assess relations between rationale and their problems */
 			conDecLinkBranchCandidates.init(
 				lastBranchRelevantElementsSortedWithPosition,
-				lastBranch.branchName,
+				lastBranch.name,
 				branchIdx,
 				'');
 
 			var branchQuality = {};
-			branchQuality.name = lastBranch.branchName;
+			branchQuality.name = lastBranch.name;
 			branchQuality.status = conDecLinkBranchCandidates.getBranchStatus();
 			branchQuality.problems = conDecLinkBranchCandidates.getProblemNamesObserved();
 			branchQuality.numIssues = countElementType("Issue", lastBranch);

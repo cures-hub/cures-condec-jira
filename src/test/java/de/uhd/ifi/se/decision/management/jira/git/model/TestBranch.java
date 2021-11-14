@@ -47,9 +47,9 @@ public class TestBranch extends TestSetUpGit {
 	@Test
 	public void testGetBranchName() {
 		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
-		assertEquals("refs/remotes/origin/TEST-4.feature.branch", branchDiff.getBranchName());
+		assertEquals("refs/remotes/origin/TEST-4.feature.branch", branchDiff.getName());
 		branchDiff = new Branch(null, rationaleInBranch, new ArrayList<>());
-		assertNull(branchDiff.getBranchName());
+		assertNull(branchDiff.getName());
 	}
 
 	@Test

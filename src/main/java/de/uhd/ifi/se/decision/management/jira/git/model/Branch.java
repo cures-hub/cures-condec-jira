@@ -26,8 +26,13 @@ public class Branch {
 	}
 
 	@XmlElement
-	public String getBranchName() {
+	public String getName() {
 		return ref != null ? ref.getName() : null;
+	}
+
+	@XmlElement
+	public String getId() {
+		return ref != null ? ref.getObjectId().getName() : null;
 	}
 
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {

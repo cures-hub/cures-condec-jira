@@ -37,12 +37,12 @@ function showBranchesDiff(branches) {
 		showBranchDiff(lastBranch, branchIdx);
 
 		/* assess relations between rationale and their problems */
-		conDecLinkBranchCandidates.init(lastBranchElementsFromMessages, lastBranch.branchName, branchIdx,
+		conDecLinkBranchCandidates.init(lastBranchElementsFromMessages, lastBranch.name, branchIdx,
 			"messages");
 		/* render results in HTML */
 		conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 
-		conDecLinkBranchCandidates.init(lastBranchElementsFromFiles, lastBranch.branchName, branchIdx, "files");
+		conDecLinkBranchCandidates.init(lastBranchElementsFromFiles, lastBranch.name, branchIdx, "files");
 		/* render results in HTML */
 		conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 	}
@@ -68,7 +68,7 @@ function getElementAsHTML(element) {
 	root.className = "messageBox " + element.type.toLowerCase();
 	root.style = "padding:5px;";
 	root.dataset.ratType = element.type.toLowerCase();
-	
+
 	var link = document.createElement("a");
 	link.style = "text-decoration: none; color: black;";
 	link.href = element.url;
@@ -79,8 +79,8 @@ function getElementAsHTML(element) {
 
 	link.appendChild(img);
 	link.insertAdjacentText("beforeend", element.summary);
-	
-	root.appendChild(link);	
+
+	root.appendChild(link);
 	return root;
 }
 
@@ -111,7 +111,7 @@ function appendCodeElements() {
 
 		var fileRatBlockLabel = document.createElement("h4");
 		fileRatBlockLabel.innerText = blockData.filename;
-		
+
 
 		fileRatBlockLabel.dataset.blockSequence = blockData.sequence;
 
@@ -163,9 +163,9 @@ function createBranchMessageElementsHtml(elementsFromMessage) {
 			var messageElementHtml = getElementAsHTML(elementsFromMessage[m]);
 			messageElementHtml.title = "Commit " + elementsFromMessage[m].source;
 			messageBlockHtml.appendChild(messageElementHtml);
+			allMessageBlockHtml.appendChild(messageBlockHtml);
 		}
 	}
-	allMessageBlockHtml.appendChild(messageBlockHtml);
 	return allMessageBlockHtml;
 }
 
@@ -216,12 +216,20 @@ function showBranchDiff(branch) {
 
 	branchContainer = document.createElement("div");
 	branchLabel = document.createElement("h3");
-	branchLabel.innerText = branch.branchName;
+	branchLabel.innerText = branch.name;
+	branchLabel.setAttribute("data-replace-text", "Show details for branch " + branch.name);
+	branchLabel.className = "aui-expander-trigger";
+	branchLabel.setAttribute("aria-controls", branch.id);
 	branchContainer.appendChild(branchLabel);
 
-	branchContainer.appendChild(createBranchQualityAssessment());
-	branchContainer.appendChild(createBranchMessageElementsHtml(branch.commitElements));
-	branchContainer.appendChild(createBranchCodeElementsHtml(branch.codeElements));
+	branchCollapsableContainer = document.createElement("div");
+	branchCollapsableContainer.className = "aui-expander-content";
+	branchCollapsableContainer.setAttribute("aria-expanded", true);
+	branchCollapsableContainer.id = branch.id;
+	branchCollapsableContainer.appendChild(createBranchQualityAssessment());
+	branchCollapsableContainer.appendChild(createBranchMessageElementsHtml(branch.commitElements));
+	branchCollapsableContainer.appendChild(createBranchCodeElementsHtml(branch.codeElements));
+	branchContainer.appendChild(branchCollapsableContainer);
 
 	contentHtml.appendChild(branchContainer);
 }
