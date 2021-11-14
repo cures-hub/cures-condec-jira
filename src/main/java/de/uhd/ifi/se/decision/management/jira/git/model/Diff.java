@@ -52,6 +52,7 @@ public class Diff {
 	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments() {
 		List<DecisionKnowledgeElementInCodeComment> elementsFromCode = new ArrayList<>();
 		for (ChangedFile codeFile : getChangedFiles()) {
+			System.out.println(codeFile.getName());
 			elementsFromCode.addAll(codeFile.getRationaleElementsFromCodeComments());
 		}
 		return elementsFromCode;

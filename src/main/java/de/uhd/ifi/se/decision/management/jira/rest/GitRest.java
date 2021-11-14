@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
-import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
@@ -204,10 +203,8 @@ public class GitRest {
 
 		GitClient gitClient = GitClient.getInstance(projectKey);
 		List<Branch> branchesForJiraIssue = gitClient.getBranches(jiraIssueKey);
-		for (GitClientForSingleRepository gc : gitClient.getGitClientsForSingleRepos()) {
-			String defaultBranchName = gc.getDefaultBranchName();
-			branchesForJiraIssue.addAll(gitClient.getBranches(defaultBranchName));
-		}
+		branchesForJiraIssue.addAll(gitClient.getDefaultBranchChangedForJiraIssue(jiraIssue));
+
 		return Response.ok(branchesForJiraIssue).build();
 	}
 

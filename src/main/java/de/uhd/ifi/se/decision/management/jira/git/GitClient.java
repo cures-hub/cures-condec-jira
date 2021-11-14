@@ -450,6 +450,19 @@ public class GitClient {
 		return branches;
 	}
 
+	public List<Branch> getDefaultBranchChangedForJiraIssue(Issue jiraIssue) {
+		List<Branch> branches = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			List<RevCommit> commits = gitClientForSingleRepo.getCommits(jiraIssue, true);
+			for (RevCommit commit : commits) {
+				System.out.println(commit.getFullMessage());
+			}
+			branches.add(new Branch(gitClientForSingleRepo.getDefaultRef(),
+					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits)));
+		}
+		return branches;
+	}
+
 	/**
 	 * @return all {@link Ref} objects.
 	 */
@@ -478,14 +491,29 @@ public class GitClient {
 		return elements;
 	}
 
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(
+			List<RevCommit> commits) {
+		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
+		for (RevCommit commit : commits) {
+			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
+				elements.add(element);
+			}
+		}
+		return elements;
+	}
+
 	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(Ref branch) {
-		List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
 		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
-		if (featureBranchCommits.isEmpty()) {
+		return getRationaleElementsFromCodeComments(featureBranchCommits);
+	}
+
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(List<RevCommit> commits) {
+		List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
+		if (commits.isEmpty()) {
 			return elements;
 		}
-		RevCommit baseCommit = featureBranchCommits.get(0);
-		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
+		RevCommit baseCommit = commits.get(0);
+		RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
 		elements.addAll(getRationaleElementsFromCode(baseCommit, lastFeatureBranchCommit));
 		return elements;
 	}
