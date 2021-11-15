@@ -216,7 +216,7 @@ function showBranchDiff(branch) {
 
 	branchContainer = document.createElement("div");
 	branchLabel = document.createElement("h3");
-	branchLabel.innerText = branch.name;
+	branchLabel.innerText = branch.name + " (" + branch.repoUri + ")";
 	branchLabel.setAttribute("data-replace-text", "Show details for branch " + branch.name);
 	branchLabel.className = "aui-expander-trigger";
 	branchLabel.setAttribute("aria-controls", branch.id);

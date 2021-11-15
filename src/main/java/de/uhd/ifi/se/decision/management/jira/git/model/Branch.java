@@ -13,10 +13,9 @@ import org.eclipse.jgit.lib.Ref;
 public class Branch {
 
 	private Ref ref;
-	@XmlElement
 	private List<DecisionKnowledgeElementInCodeComment> codeElements;
-	@XmlElement
 	private List<DecisionKnowledgeElementInCommitMessage> commitElements;
+	private String repoUri;
 
 	public Branch(Ref ref, List<DecisionKnowledgeElementInCodeComment> codeCommentElements,
 			List<DecisionKnowledgeElementInCommitMessage> commitMessageElements) {
@@ -35,11 +34,22 @@ public class Branch {
 		return ref != null ? ref.getObjectId().getName() : null;
 	}
 
+	@XmlElement
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
 		return codeElements;
 	}
 
+	@XmlElement
 	public List<DecisionKnowledgeElementInCommitMessage> getCommitElements() {
 		return commitElements;
+	}
+
+	@XmlElement
+	public String getRepoUri() {
+		return repoUri;
+	}
+
+	public void setRepoUri(String repoUri) {
+		this.repoUri = repoUri;
 	}
 }

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
@@ -16,56 +15,60 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestBranch extends TestSetUpGit {
 
-	private Branch branchDiff;
+	private Branch branch;
 	private Ref ref;
-	private List<DecisionKnowledgeElementInCodeComment> rationaleInBranch;
-	private DecisionKnowledgeElementInCodeComment rat1;
+	private List<DecisionKnowledgeElementInCodeComment> codeElements;
+	private List<DecisionKnowledgeElementInCommitMessage> commitMessageElements;
 
 	@Before
 	public void setUp() {
 		super.setUp();
-		rat1 = new DecisionKnowledgeElementInCodeComment();
-		rat1.setSummary("I am an issue");
-		rat1.setType(KnowledgeType.ISSUE);
-		rat1.setProject("TEST");
+		DecisionKnowledgeElementInCodeComment codeElement = new DecisionKnowledgeElementInCodeComment();
+		codeElement.setSummary("I am an issue captured in a code comment.");
+		codeElement.setType(KnowledgeType.ISSUE);
+		codeElement.setProject("TEST");
+		codeElements = List.of(codeElement);
 
-		rationaleInBranch = new ArrayList<>();
-		rationaleInBranch.add(rat1);
+		DecisionKnowledgeElementInCommitMessage commitMessageElement = new DecisionKnowledgeElementInCommitMessage();
+		commitMessageElement.setSummary("I am an issue");
+		commitMessageElement.setType(KnowledgeType.ISSUE);
+		commitMessageElement.setProject("TEST");
+		commitMessageElements = List.of(commitMessageElement);
+
 		ref = gitClient.getRefs().get(0);
-	}
 
-	@Test
-	public void testConstructor() {
-		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
-		assertNotNull(branchDiff);
-		branchDiff = new Branch(ref, new ArrayList<>(), new ArrayList<>());
-		assertNotNull(branchDiff);
-		branchDiff = new Branch(null, rationaleInBranch, new ArrayList<>());
-		assertNotNull(branchDiff);
+		branch = new Branch(ref, codeElements, commitMessageElements);
 	}
 
 	@Test
 	public void testGetBranchName() {
-		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
-		assertEquals("refs/remotes/origin/TEST-4.feature.branch", branchDiff.getName());
-		branchDiff = new Branch(null, rationaleInBranch, new ArrayList<>());
-		assertNull(branchDiff.getName());
+		assertEquals("refs/remotes/origin/TEST-4.feature.branch", branch.getName());
+
+		branch = new Branch(null, codeElements, new ArrayList<>());
+		assertNull(branch.getName());
 	}
 
 	@Test
-	public void testGetElements() {
-		branchDiff = new Branch(ref, rationaleInBranch, new ArrayList<>());
-		List<DecisionKnowledgeElementInCodeComment> elements = branchDiff.getCodeElements();
-		assertEquals(1, elements.size());
+	public void testGetId() {
+		assertEquals(ref.getObjectId().getName(), branch.getId());
 
-		// first element: fileB
-		DecisionKnowledgeElementInCodeComment firstElement = elements.get(0);
-		assertEquals(rat1.getDescription(), firstElement.getDescription());
-		assertEquals(rat1.getType(), firstElement.getType());
-		assertEquals(rat1.getSummary(), firstElement.getSummary());
+		branch = new Branch(null, codeElements, new ArrayList<>());
+		assertNull(branch.getId());
+	}
 
-		// DecisionKnowledgeElementInCodeComment.KeyData key =
-		// firstElement.getKeyData();
-		// assertEquals("file.java 1", key.source);
+	@Test
+	public void testRepoUri() {
+		branch.setRepoUri(GIT_URI);
+		assertEquals(GIT_URI, branch.getRepoUri());
+	}
+
+	@Test
+	public void testGetCodeElements() {
+		assertEquals(1, branch.getCodeElements().size());
+	}
+
+	@Test
+	public void testGetCommitMessageElements() {
+		assertEquals(1, branch.getCommitElements().size());
 	}
 }

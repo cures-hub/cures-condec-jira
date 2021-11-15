@@ -444,8 +444,10 @@ public class GitClient {
 	public List<Branch> getBranches(String branchName) {
 		List<Branch> branches = new ArrayList<>();
 		for (Ref ref : getRefs(branchName)) {
-			branches.add(new Branch(ref, getRationaleElementsFromCodeComments(ref),
-					getRationaleElementsFromCommitMessages(ref)));
+			Branch branch = new Branch(ref, getRationaleElementsFromCodeComments(ref),
+					getRationaleElementsFromCommitMessages(ref));
+			branch.setRepoUri(getRepoUriFromBranch(ref));
+			branches.add(branch);
 		}
 		return branches;
 	}
@@ -455,8 +457,10 @@ public class GitClient {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			List<RevCommit> commits = gitClientForSingleRepo.getCommits(jiraIssue, true);
 			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			branches.add(new Branch(gitClientForSingleRepo.getDefaultRef(),
-					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits)));
+			Branch branch = new Branch(gitClientForSingleRepo.getDefaultRef(),
+					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits));
+			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
+			branches.add(branch);
 		}
 		return branches;
 	}
