@@ -443,11 +443,14 @@ public class GitClient {
 	 */
 	public List<Branch> getBranches(String branchName) {
 		List<Branch> branches = new ArrayList<>();
-		for (Ref ref : getRefs(branchName)) {
-			Branch branch = new Branch(ref, getRationaleElementsFromCodeComments(ref),
-					getRationaleElementsFromCommitMessages(ref));
-			branch.setRepoUri(getRepoUriFromBranch(ref));
-			branches.add(branch);
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			List<Ref> refsOfRepo = gitClientForSingleRepo.getRefs();
+			for (Ref ref : refsOfRepo) {
+				Branch branch = new Branch(ref, getRationaleElementsFromCodeComments(ref),
+						getRationaleElementsFromCommitMessages(ref));
+				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
+				branches.add(branch);
+			}
 		}
 		return branches;
 	}
