@@ -444,8 +444,10 @@ public class GitClient {
 	public List<Branch> getBranches(String branchName) {
 		List<Branch> branches = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			List<Ref> refsOfRepo = gitClientForSingleRepo.getRefs();
-			for (Ref ref : refsOfRepo) {
+			List<Ref> refsWithName = gitClientForSingleRepo.getRefs().stream()
+					.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
+					.collect(Collectors.toList());
+			for (Ref ref : refsWithName) {
 				Branch branch = new Branch(ref, getRationaleElementsFromCodeComments(ref),
 						getRationaleElementsFromCommitMessages(ref));
 				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());

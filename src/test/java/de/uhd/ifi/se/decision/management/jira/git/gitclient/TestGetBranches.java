@@ -7,8 +7,8 @@ import org.junit.Test;
 public class TestGetBranches extends TestSetUpGit {
 
 	@Test
-	public void testDiffViewerConstructorBranches() {
-		assertEquals(1, gitClient.getBranches("TEST").size());
+	public void testOneFeatureBranch() {
+		assertEquals(1, gitClient.getBranches("TEST-4").size());
 	}
 
 }
