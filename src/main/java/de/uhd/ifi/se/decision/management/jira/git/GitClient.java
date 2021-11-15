@@ -454,9 +454,7 @@ public class GitClient {
 		List<Branch> branches = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			List<RevCommit> commits = gitClientForSingleRepo.getCommits(jiraIssue, true);
-			for (RevCommit commit : commits) {
-				System.out.println(commit.getFullMessage());
-			}
+			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 			branches.add(new Branch(gitClientForSingleRepo.getDefaultRef(),
 					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits)));
 		}

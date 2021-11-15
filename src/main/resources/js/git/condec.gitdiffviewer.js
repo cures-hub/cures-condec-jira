@@ -78,7 +78,7 @@ function getElementAsHTML(element) {
 	img.className = "emoticon";
 
 	link.appendChild(img);
-	link.insertAdjacentText("beforeend", element.summary);
+	link.insertAdjacentText("beforeend", " " + element.summary);
 
 	root.appendChild(link);
 	return root;
