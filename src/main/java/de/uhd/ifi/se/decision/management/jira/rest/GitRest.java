@@ -26,12 +26,12 @@ import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscri
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeClassPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.diffviewer.DiffViewer;
 
 /**
  * REST resource for configuration and usage of the git connection.
@@ -176,30 +176,36 @@ public class GitRest {
 		}
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
-		return Response.ok(new DiffViewer(projectKey)).build();
+		List<Branch> branchesForProject = GitClient.getInstance(projectKey).getBranches(projectKey);
+		return Response.ok(branchesForProject).build();
 	}
 
 	@Path("/elementsFromBranchesOfJiraIssue")
 	@GET
 	public Response getElementsOfFeatureBranchForJiraIssue(@Context HttpServletRequest request,
-			@QueryParam("issueKey") String issueKey) {
-		if (request == null || issueKey == null || issueKey.isBlank()) {
+			@QueryParam("issueKey") String jiraIssueKey) {
+		if (request == null || jiraIssueKey == null || jiraIssueKey.isBlank()) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
 		}
-		String projectKey = getProjectKey(issueKey);
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		if (issue == null) {
+		String projectKey = getProjectKey(jiraIssueKey);
+		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
+		if (jiraIssue == null) {
 			return jiraIssueKeyIsInvalid();
 		}
 		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
 		}
-		new CommitMessageToCommentTranscriber(issue).postCommitsIntoJiraIssueComments();
+		new CommitMessageToCommentTranscriber(jiraIssue).postCommitsIntoJiraIssueComments();
 
-		LOGGER.info("Feature branch dashboard opened for Jira issue:" + issueKey);
-		return Response.ok(new DiffViewer(projectKey, issueKey)).build();
+		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
+
+		GitClient gitClient = GitClient.getInstance(projectKey);
+		List<Branch> branchesForJiraIssue = gitClient.getBranches(jiraIssueKey);
+		branchesForJiraIssue.addAll(gitClient.getDefaultBranchChangedForJiraIssue(jiraIssue));
+
+		return Response.ok(branchesForJiraIssue).build();
 	}
 
 	// TODO Change to POST and pass FilterSettings object

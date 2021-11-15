@@ -9,7 +9,7 @@ public class TestGetRepoUriFromBranch extends TestSetUpGit {
 
 	@Test
 	public void testBranchExisting() {
-		Ref featureBranch = gitClient.getBranches("TEST-4.feature.branch").get(0);
+		Ref featureBranch = gitClient.getRefs("TEST-4.feature.branch").get(0);
 		assertEquals(GIT_URI, gitClient.getRepoUriFromBranch(featureBranch));
 	}
 

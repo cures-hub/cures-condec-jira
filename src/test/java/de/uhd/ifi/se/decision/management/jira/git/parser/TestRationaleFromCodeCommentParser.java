@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -17,7 +18,7 @@ public class TestRationaleFromCodeCommentParser {
 	private RationaleFromCodeCommentParser rationaleFromCodeCommentExtractor;
 	private CodeComment codeComment;
 	private int codeCommentBeginLine = 10;
-	private List<KnowledgeElement> elementsFound;
+	private List<DecisionKnowledgeElementInCodeComment> elementsFound;
 
 	@Before
 	public void setUp() {

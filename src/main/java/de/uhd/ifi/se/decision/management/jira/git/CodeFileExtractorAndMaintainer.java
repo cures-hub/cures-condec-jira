@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -56,7 +57,8 @@ public class CodeFileExtractorAndMaintainer {
 			if (!changedFile.isCodeFileToExtract()) {
 				continue;
 			}
-			List<KnowledgeElement> decisionKnowledgeInCodeComments = changedFile.getRationaleElementsFromCodeComments();
+			List<DecisionKnowledgeElementInCodeComment> decisionKnowledgeInCodeComments = changedFile
+					.getRationaleElementsFromCodeComments();
 			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
 			graph.updateElement(source);
 			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);

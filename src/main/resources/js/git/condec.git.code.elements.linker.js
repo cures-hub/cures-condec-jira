@@ -96,20 +96,14 @@ linkBranchCandidates
 
   function runCodeLinker() {
     console.log("runCodelinker");
+    console.log(rationale);
     /*  map sorted rationale elements to simpler structure */
     linkCandidates = rationale.map(function(el, idx) {
       candidate = {};
       candidate.id = idx;
-      candidate.rationaleHash = el.key.rationaleHash;
       candidate.rationaleType = el.type;
-      candidate.source = el.key.source;
-      candidate.positionCursor = el.key.positionCursor;
-      if (!el.key.sourceTypeCommitMessage) {
-        candidate.positionEndLine = el.key.positionEndLine;
-      }
-      candidate.positionStartLine = el.key.positionStartLine;
-      /*  we are interested only in final code elements */
-      candidate.skip = el.key.codeFileA;
+      candidate.source = el.source;
+      candidate.positionStartLine = el.startLine;
       return candidate;
     });
 
@@ -512,65 +506,8 @@ linkBranchCandidates
         }
     };
 
-    /*
-        decodes received position "x:y[:z]" into
-            .positionStartLine = x
-            .positionCursor = y
-            and optionally
-            .positionEndLine = z
-    */
     ConDecLinkBranchCandidates.prototype.extractPositions= function extractPositions(branchData) {
-      elements = branchData.elements.map(function(e) {
-        positionComponents = e.key.position.split(":");
-        positionComponentsNumber = positionComponents.length;
-        if (positionComponentsNumber === 2 || positionComponentsNumber === 3) {
-          e.key.positionStartLine = parseInt(positionComponents[0]);
-          e.key.positionCursor = parseInt(
-            positionComponents[positionComponentsNumber - 1]
-          );
-        }
-        if (positionComponentsNumber === 3) {
-          e.key.positionEndLine = parseInt(
-            positionComponents[positionComponentsNumber - 2]
-          );
-        }
-        return e;
-      });
-      branchData.elements = elements;
       return branchData;
-    };
-
-    ConDecLinkBranchCandidates.prototype.sortRationaleDiffOfFiles =
-     function sortRationaleDiffOfFiles(rationale) {
-      /* rationale should appear in the order it was found in code */
-      rationale.sort(function(a, b) {
-        /*  different files */
-        if (a.key.source < b.key.source) {
-          return -1;
-        }
-        if (a.key.source > b.key.source) {
-          return 1;
-        }
-        /*  same file different lines */
-        if (a.key.positionStartLine < b.key.positionStartLine) {
-          return -1;
-        }
-        if (a.key.positionStartLine > b.key.positionStartLine) {
-          return 1;
-        }
-
-        /*  same file same line different position on line */
-        if (a.key.positionCursor < b.key.positionCursor) {
-          return -1;
-        }
-        if (a.key.positionCursor < b.key.positionCursor) {
-          return 1;
-        }
-
-        /*  same file same line same position on line */
-        return 0;
-      });
-      return rationale;
     };
 
     ConDecLinkBranchCandidates.prototype.getBranchStatus = function getBranchStatus() {

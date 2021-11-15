@@ -7,7 +7,6 @@
  Is referenced in HTML by
  * dashboard/featureBranches.vm
  */
-
 (function (global) {
 	var issueBranchKeyRx = null;
 	var branchesQuality = [];
@@ -25,8 +24,8 @@
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
 	ConDecBranchesDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
-		conDecDashboardAPI.getElementsFromBranchesOfJiraIssue(filterSettings.projectKey, function (error, result) {
-			conDecDashboard.processData(error, result, conDecBranchesDashboard, "branch",
+		conDecGitAPI.getElementsFromBranchesOfProject(filterSettings.projectKey, function (error, branches) {
+			conDecDashboard.processData(error, branches, conDecBranchesDashboard, "branch",
 				dashboardAPI, filterSettings);
 		});
 	};
@@ -39,7 +38,7 @@
 	 * @param data the data returned from the API-call
 	 * @param filterSettings the filterSettings used in the API-call
 	 */
-	ConDecBranchesDashboard.prototype.renderData = function (data, filterSettings) {
+	ConDecBranchesDashboard.prototype.renderData = function (branches, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
@@ -49,25 +48,13 @@
 
 		branchesQuality = [];
 
-		var branches = data.branches;
+		var branches = branches;
 		for (var branchIdx = 0; branchIdx < branches.length; branchIdx++) {
 			var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
 
 			/* these elements are sorted by commit age and occurrence in message */
-			var lastBranchElementsFromMessages =
-				lastBranch.elements.filter(function (e) {
-					return e.key.sourceTypeCommitMessage;
-				});
-
-			/* these elements are not sorted, we want only B(final) files. */
-			var lastBranchElementsFromFilesButNotSorted =
-				lastBranch.elements.filter(function (e) {
-					return e.key.codeFileB;
-				});
-
-			/* sort file elements */
-			var lastBranchElementsFromFiles =
-				conDecLinkBranchCandidates.sortRationaleDiffOfFiles(lastBranchElementsFromFilesButNotSorted);
+			var lastBranchElementsFromMessages = lastBranch.commitElements;
+			var lastBranchElementsFromFiles = lastBranch.codeElements;
 
 			var lastBranchRelevantElementsSortedWithPosition =
 				lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
@@ -75,12 +62,12 @@
 			/* assess relations between rationale and their problems */
 			conDecLinkBranchCandidates.init(
 				lastBranchRelevantElementsSortedWithPosition,
-				lastBranch.branchName,
+				lastBranch.name,
 				branchIdx,
 				'');
 
 			var branchQuality = {};
-			branchQuality.name = lastBranch.branchName;
+			branchQuality.name = lastBranch.name;
 			branchQuality.status = conDecLinkBranchCandidates.getBranchStatus();
 			branchQuality.problems = conDecLinkBranchCandidates.getProblemNamesObserved();
 			branchQuality.numIssues = countElementType("Issue", lastBranch);
@@ -144,6 +131,7 @@
 
 		function problemsWithBranchesReducer(accumulator, currentBranch) {
 			var problems = currentBranch.problems;
+			console.log(problems);
 			var nameOfBranch = currentBranch.name;
 
 			var it = problems.keys();
@@ -275,10 +263,11 @@
 	}
 
 	function countElementType(targetType, branch) {
-		if (!targetType || !branch || !branch.elements || !branch.elements.length) {
+		if (!targetType || !branch) {
 			return 0;
 		}
-		var filtered = branch.elements.filter(function (e) {
+		var allElements = branch.codeElements.concat(branch.commitElements);
+		var filtered = allElements.filter(function (e) {
 			return e.type.toLowerCase() === targetType.toLowerCase();
 		});
 		return filtered.length;

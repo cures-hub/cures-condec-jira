@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -64,15 +63,11 @@ public class RationaleFromCodeCommentParser {
 	 * @return all decision knowledge elements within the comments of the given code
 	 *         file.
 	 */
-	public List<KnowledgeElement> getRationaleElementsFromCode(ChangedFile codeFile) {
-		List<KnowledgeElement> elementsFromCode = getRationaleElementsFromCodeComments(codeFile.getCodeComments());
-		List<KnowledgeElement> knowledgeElements = elementsFromCode.stream().map(element -> {
-			element.setProject(codeFile.getProject());
-			element.setDescription(codeFile.getName() + ":" + element.getKey());
-			element.setDocumentationLocation(DocumentationLocation.CODE);
-			element.setCreationDate(codeFile.getCreationDate());
-			element.setUpdatingDate(codeFile.getUpdatingDate());
-			element.setCreator(codeFile.getCreatorName());
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCode(ChangedFile codeFile) {
+		List<DecisionKnowledgeElementInCodeComment> elementsFromCode = getRationaleElementsFromCodeComments(
+				codeFile.getCodeComments());
+		List<DecisionKnowledgeElementInCodeComment> knowledgeElements = elementsFromCode.stream().map(element -> {
+			element.setCodeFile(codeFile);
 			return element;
 		}).collect(Collectors.toList());
 		return knowledgeElements;
@@ -84,8 +79,9 @@ public class RationaleFromCodeCommentParser {
 	 *            elements.
 	 * @return all decision knowledge elements within the comments.
 	 */
-	public List<KnowledgeElement> getRationaleElementsFromCodeComments(List<CodeComment> codeComments) {
-		List<KnowledgeElement> elements = new ArrayList<>();
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(
+			List<CodeComment> codeComments) {
+		List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
 		for (CodeComment codeComment : codeComments) {
 			elements.addAll(getRationaleElementsFromCodeComment(codeComment));
 		}
@@ -97,8 +93,8 @@ public class RationaleFromCodeCommentParser {
 	 *            {@link CodeComment} which contains decision knowledge elements.
 	 * @return all decision knowledge elements within the comment.
 	 */
-	public List<KnowledgeElement> getRationaleElementsFromCodeComment(CodeComment comment) {
-		List<KnowledgeElement> elements = new ArrayList<>();
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComment(CodeComment comment) {
+		List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
 		Matcher tagMatcher = TAGS_SEARCH_PATTERN.matcher(comment.getCommentContent());
 
 		while (tagMatcher.find()) {
@@ -107,7 +103,7 @@ public class RationaleFromCodeCommentParser {
 		return elements;
 	}
 
-	private KnowledgeElement parseNextElement(CodeComment comment, Matcher tagMatcher) {
+	private DecisionKnowledgeElementInCodeComment parseNextElement(CodeComment comment, Matcher tagMatcher) {
 		String rationaleTypeTag = tagMatcher.group();
 		KnowledgeType rationaleType = getRationaleTypeFromTag(rationaleTypeTag);
 		String rationaleText = comment.getCommentContent().substring(tagMatcher.end());
@@ -118,11 +114,10 @@ public class RationaleFromCodeCommentParser {
 		}
 
 		String rationaleTextSanitized = sanitize(rationaleText);
-		KnowledgeElement elementInCodeComment = new KnowledgeElement();
+		DecisionKnowledgeElementInCodeComment elementInCodeComment = new DecisionKnowledgeElementInCodeComment();
 		elementInCodeComment.setSummary(rationaleTextSanitized);
 		elementInCodeComment.setType(rationaleType);
-		elementInCodeComment.setDocumentationLocation(DocumentationLocation.CODE);
-		elementInCodeComment.setKey(calculateStartLineInSourceFile(comment, tagMatcher.end()) + "");
+		elementInCodeComment.setStartLine(calculateStartLineInSourceFile(comment, tagMatcher.end()));
 
 		return elementInCodeComment;
 	}

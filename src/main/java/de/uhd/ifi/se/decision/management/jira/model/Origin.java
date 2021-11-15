@@ -6,9 +6,10 @@ import com.atlassian.jira.issue.comments.Comment;
  * The {@link Origin} indicates the source of a knowledge element and might be
  * different from the current {@link DocumentationLocation}.
  * 
- * Commit messages are transcribed into Jira issue comments. Thus, their
- * documentation location is {@link DocumentationLocation#JIRAISSUETEXT} but
- * their origin is {@link Origin#COMMIT}.
+ * Commit messages are transcribed into Jira issue comments so that they can be
+ * annotated and improved there. Thus, their documentation location is
+ * {@link DocumentationLocation#JIRAISSUETEXT} but their origin is
+ * {@link Origin#COMMIT}.
  */
 public enum Origin {
 	COMMIT, DOCUMENTATION_LOCATION;

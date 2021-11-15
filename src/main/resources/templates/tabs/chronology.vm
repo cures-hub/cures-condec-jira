@@ -1,8 +1,6 @@
 #set ($viewIdentifier = "chronology")
 #parse("templates/filter/allCriteria.vm")
-<div class="aui-group">
-    <div id="evolution-timeline"></div>
-</div>
+<div id="evolution-timeline"></div>
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {

@@ -6,8 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCommitMessage;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -29,7 +28,7 @@ public class RationaleFromCommitMessageParser {
 	 */
 	private final Pattern START_TAGS_SEARCH_PATTERN;
 	private final Pattern END_TAGS_SEARCH_PATTERN;
-	private List<KnowledgeElement> extractedElements;
+	private List<DecisionKnowledgeElementInCommitMessage> extractedElements;
 	private String parseError;
 	private List<String> parseWarnings;
 	private String fullMessage;
@@ -56,7 +55,7 @@ public class RationaleFromCommitMessageParser {
 	 * Extracts decision knowledge elements one by one in their order of appearance.
 	 */
 	private void extract() {
-		if (fullMessage == null || fullMessage.trim().equals("")) {
+		if (fullMessage == null || fullMessage.isBlank()) {
 			return;
 		}
 		if (!hasNoDecisionKnowledgeStartTags()) {
@@ -91,7 +90,8 @@ public class RationaleFromCommitMessageParser {
 
 			cursorPosition += textEnd + getEndingTagForStartTag(rationaleTypeStartTag).length();
 			// Create new DecisionKnowledgeElement of extracted string
-			KnowledgeElement element = createElement(textStart, rationaleType, rationaleText, textEnd);
+			DecisionKnowledgeElementInCommitMessage element = createElement(textStart, rationaleType, rationaleText,
+					textEnd);
 			// add it to the extracted elements
 			extractedElements.add(element);
 		} else {
@@ -105,10 +105,14 @@ public class RationaleFromCommitMessageParser {
 		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 1);
 	}
 
-	private KnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
-		return new KnowledgeElement(0, getSummary(rationaleText), getDescription(rationaleText),
-				rationaleType.toUpperCase(), "" // unknown, not needed at the moment
-				, start + ":" + end, DocumentationLocation.CODE, "");
+	private DecisionKnowledgeElementInCommitMessage createElement(int start, String rationaleType, String rationaleText,
+			int end) {
+		DecisionKnowledgeElementInCommitMessage element = new DecisionKnowledgeElementInCommitMessage();
+		element.setSummary(getSummary(rationaleText));
+		element.setDescription(getDescription(rationaleText));
+		element.setType(rationaleType);
+		element.setKey(start + ":" + end);
+		return element;
 	}
 
 	private String getDescription(String rationaleText) {
@@ -158,7 +162,7 @@ public class RationaleFromCommitMessageParser {
 		return parseWarnings;
 	}
 
-	public List<KnowledgeElement> getElements() {
+	public List<DecisionKnowledgeElementInCommitMessage> getElements() {
 		return extractedElements;
 	}
 

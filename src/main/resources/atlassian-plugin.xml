@@ -123,16 +123,16 @@
 		<!-- ConDec JavaScript files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
-		<resource type="download" name="condec.git.api.js" location="/js/condec.git.api.js" />
+		<resource type="download" name="condec.git.api.js" location="/js/git/condec.git.api.js" />
 		<resource type="download" name="condec.webhook.api.js" location="/js/condec.webhook.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js" location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
 		<resource type="download" name="condec.knowledge.page.js" location="/js/condec.knowledge.page.js" />
-		<resource type="download" name="condec.gitdiffviewer.js" location="/js/condec.gitdiffviewer.js" />
+		<resource type="download" name="condec.gitdiffviewer.js" location="/js/git/condec.gitdiffviewer.js" />
 		<resource type="download" name="condec.git.code.elements.linker.js"
-			location="/js/condec.git.code.elements.linker.js" />
+			location="/js/git/condec.git.code.elements.linker.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js" location="/js/condec.tree.viewer.js" />
 		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />

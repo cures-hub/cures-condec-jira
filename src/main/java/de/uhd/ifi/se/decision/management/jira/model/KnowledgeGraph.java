@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.AutomaticLinkCreator;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 
@@ -415,7 +416,8 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		return null;
 	}
 
-	public void addElementsNotInDatabase(KnowledgeElement root, List<KnowledgeElement> otherElements) {
+	public void addElementsNotInDatabase(KnowledgeElement root,
+			List<DecisionKnowledgeElementInCodeComment> otherElements) {
 		List<KnowledgeElement> otherElementsAddedToGraph = new ArrayList<>();
 		for (KnowledgeElement element : otherElements) {
 			otherElementsAddedToGraph.add(addVertexNotBeingInDatabase(element));

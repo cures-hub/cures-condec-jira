@@ -19,7 +19,10 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCommitMessage;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -257,7 +260,7 @@ public class GitClient {
 			return new ArrayList<RevCommit>();
 		}
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		List<Ref> branches = getBranches(jiraIssue.getKey());
+		List<Ref> branches = getRefs(jiraIssue.getKey());
 		for (Ref featureBranch : branches) {
 			commits.addAll(getFeatureBranchCommits(featureBranch));
 		}
@@ -419,13 +422,13 @@ public class GitClient {
 	/**
 	 * @param branchName
 	 *            e.g. "master" or Jira issue key
-	 * @return all branches matching the name as a list of {@link Ref} objects.
+	 * @return all {@link Ref} objects matching the name.
 	 */
-	public List<Ref> getBranches(String branchName) {
+	public List<Ref> getRefs(String branchName) {
 		if (branchName == null || branchName.isBlank()) {
 			return new ArrayList<>();
 		}
-		List<Ref> remoteBranches = getBranches();
+		List<Ref> remoteBranches = getRefs();
 		List<Ref> branchCandidates = remoteBranches.stream()
 				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 				.collect(Collectors.toList());
@@ -433,43 +436,109 @@ public class GitClient {
 	}
 
 	/**
-	 * @return all branches as a list of {@link Ref} objects.
+	 * @param branchName
+	 *            e.g. "master" or Jira issue key
+	 * @return all {@link Branch}es including decision knowledge from commit
+	 *         messages and code comments.
 	 */
-	public List<Ref> getBranches() {
-		List<Ref> allRemoteBranches = new ArrayList<>();
+	public List<Branch> getBranches(String branchName) {
+		List<Branch> branches = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			List<Ref> refsWithName = gitClientForSingleRepo.getRefs().stream()
+					.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
+					.collect(Collectors.toList());
+			for (Ref ref : refsWithName) {
+				Branch branch = new Branch(ref, getRationaleElementsFromCodeComments(ref),
+						getRationaleElementsFromCommitMessages(ref));
+				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
+				branches.add(branch);
+			}
+		}
+		return branches;
+	}
+
+	public List<Branch> getDefaultBranchChangedForJiraIssue(Issue jiraIssue) {
+		List<Branch> branches = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			List<RevCommit> commits = gitClientForSingleRepo.getCommits(jiraIssue, true);
+			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+			Branch branch = new Branch(gitClientForSingleRepo.getDefaultRef(),
+					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits));
+			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
+			branches.add(branch);
+		}
+		return branches;
+	}
+
+	/**
+	 * @return all {@link Ref} objects.
+	 */
+	public List<Ref> getRefs() {
+		List<Ref> allRemoteRefs = new ArrayList<>();
 		getGitClientsForSingleRepos()
-				.forEach(gitClientForSingleRepo -> allRemoteBranches.addAll(gitClientForSingleRepo.getBranches()));
-		return allRemoteBranches;
+				.forEach(gitClientForSingleRepo -> allRemoteRefs.addAll(gitClientForSingleRepo.getRefs()));
+		return allRemoteRefs;
 	}
 
 	public List<KnowledgeElement> getRationaleElements(Ref branch) {
 		List<KnowledgeElement> elements = new ArrayList<>();
+		elements.addAll(getRationaleElementsFromCodeComments(branch));
+		elements.addAll(getRationaleElementsFromCommitMessages(branch));
+		return elements;
+	}
+
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(Ref branch) {
+		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
+		for (RevCommit commit : getFeatureBranchCommits(branch)) {
+			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
+				element.setRepoUri(getRepoUriFromBranch(branch));
+				elements.add(element);
+			}
+		}
+		return elements;
+	}
+
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(
+			List<RevCommit> commits) {
+		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
+		for (RevCommit commit : commits) {
+			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
+				elements.add(element);
+			}
+		}
+		return elements;
+	}
+
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(Ref branch) {
 		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
-		if (featureBranchCommits.isEmpty()) {
+		return getRationaleElementsFromCodeComments(featureBranchCommits);
+	}
+
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(List<RevCommit> commits) {
+		List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
+		if (commits.isEmpty()) {
 			return elements;
 		}
-		for (RevCommit commit : featureBranchCommits) {
-			elements.addAll(getRationaleElementsFromCommitMessage(commit));
-		}
-
-		RevCommit baseCommit = featureBranchCommits.get(0);
-		RevCommit lastFeatureBranchCommit = featureBranchCommits.get(featureBranchCommits.size() - 1);
+		RevCommit baseCommit = commits.get(0);
+		RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
 		elements.addAll(getRationaleElementsFromCode(baseCommit, lastFeatureBranchCommit));
 		return elements;
 	}
 
-	public List<KnowledgeElement> getRationaleElementsFromCommitMessage(RevCommit commit) {
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessage(RevCommit commit) {
 		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
 				commit.getFullMessage());
-		List<KnowledgeElement> elementsFromMessage = extractorFromMessage.getElements().stream().map(element -> {
-			element.setProject(projectKey);
-			element.setKey(commit.getId() + element.getKey() + "commit");
-			return element;
-		}).collect(Collectors.toList());
+		List<DecisionKnowledgeElementInCommitMessage> elementsFromMessage = extractorFromMessage.getElements().stream()
+				.map(element -> {
+					element.setProject(projectKey);
+					element.setCommit(commit);
+					return element;
+				}).collect(Collectors.toList());
 		return elementsFromMessage;
 	}
 
-	public List<KnowledgeElement> getRationaleElementsFromCode(RevCommit revCommitStart, RevCommit revCommitEnd) {
+	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCode(RevCommit revCommitStart,
+			RevCommit revCommitEnd) {
 		Diff diff = getDiff(revCommitStart, revCommitEnd);
 		return diff.getRationaleElementsFromCodeComments();
 	}
