@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Ref;
@@ -17,8 +16,6 @@ public class TestBranch extends TestSetUpGit {
 
 	private Branch branch;
 	private Ref ref;
-	private List<DecisionKnowledgeElementInCodeComment> codeElements;
-	private List<DecisionKnowledgeElementInCommitMessage> commitMessageElements;
 
 	@Before
 	public void setUp() {
@@ -27,13 +24,13 @@ public class TestBranch extends TestSetUpGit {
 		codeElement.setSummary("I am an issue captured in a code comment.");
 		codeElement.setType(KnowledgeType.ISSUE);
 		codeElement.setProject("TEST");
-		codeElements = List.of(codeElement);
+		List<DecisionKnowledgeElementInCodeComment> codeElements = List.of(codeElement);
 
 		DecisionKnowledgeElementInCommitMessage commitMessageElement = new DecisionKnowledgeElementInCommitMessage();
 		commitMessageElement.setSummary("I am an issue");
 		commitMessageElement.setType(KnowledgeType.ISSUE);
 		commitMessageElement.setProject("TEST");
-		commitMessageElements = List.of(commitMessageElement);
+		List<DecisionKnowledgeElementInCommitMessage> commitMessageElements = List.of(commitMessageElement);
 
 		ref = gitClient.getRefs().get(0);
 
@@ -44,7 +41,7 @@ public class TestBranch extends TestSetUpGit {
 	public void testGetBranchName() {
 		assertEquals("refs/remotes/origin/TEST-4.feature.branch", branch.getName());
 
-		branch = new Branch(null, codeElements, new ArrayList<>());
+		branch.setRef(null);
 		assertNull(branch.getName());
 	}
 
@@ -52,7 +49,7 @@ public class TestBranch extends TestSetUpGit {
 	public void testGetId() {
 		assertEquals(ref.getObjectId().getName(), branch.getId());
 
-		branch = new Branch(null, codeElements, new ArrayList<>());
+		branch.setRef(null);
 		assertNull(branch.getId());
 	}
 

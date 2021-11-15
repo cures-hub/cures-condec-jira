@@ -34,6 +34,10 @@ public class Branch {
 		return ref != null ? ref.getObjectId().getName() : null;
 	}
 
+	public void setRef(Ref ref) {
+		this.ref = ref;
+	}
+
 	@XmlElement
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
 		return codeElements;
