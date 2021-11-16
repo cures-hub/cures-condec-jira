@@ -170,10 +170,10 @@
 			}
 			var branchNameParts = branchName.split(".");
 			issueKey = branchNameParts[0];
-			var newWindow = window.open(targetBaseUrl + '/browse/' + issueKey + '#menu-item-feature-branches', '_blank');
+			var newWindow = window.open(targetBaseUrl + '/browse/' + issueKey + '#menu-item-git', '_blank');
 			var script = document.createElement('script');
 			function openTab() {
-				AJS.tabs.change(AJS.$("a[href=#feature-branches-tab]"));
+				AJS.tabs.change(AJS.$("a[href=#git-tab]"));
 			}
 			script.innerHTML = '(' + openTab.toString() + '());';
 			newWindow.onload = function() {
