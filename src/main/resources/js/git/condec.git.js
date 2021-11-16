@@ -14,7 +14,7 @@
 
 	ConDecGit.prototype.getBranchesDiff = function() {
 		contentHtml = document.getElementById("featureBranches-container");
-		contentHtml.innerHTML = "<aui-spinner id='decision-guidance-spinner'></aui-spinner>";
+		contentHtml.innerHTML = "<aui-spinner></aui-spinner>";
 
 		conDecGitAPI.getElementsFromBranchesOfJiraIssue(conDecAPI.getIssueKey())
 			.then((branches) => {
@@ -28,11 +28,9 @@
 					contentHtml.innerText = "";
 					showBranchesDiff(branches);
 				}
-				contentHtml.appendChild(createForceRestFetch());
 			})
 			.catch((error) => {
 				contentHtml.innerText = "An error occurred while fetching REST data: " + error;
-				contentHtml.appendChild(createForceRestFetch());
 			});
 	};
 
@@ -96,13 +94,6 @@
 		contentHtml.appendChild(branchContainer);
 	}
 
-	function createForceRestFetch() {
-		forceRestNode = document.createElement("div");
-		forceRestNode.innerText = "Suspecting branch list is not up-to date? Click here to try again.";
-		forceRestNode.addEventListener("click", () => conDecGit.getBranchesDiff());
-		return forceRestNode;
-	}
-
 	function getElementAsHTML(element) {
 		var root = document.createElement("div");
 		root.className = "condec-box " + element.type.toLowerCase();
@@ -123,7 +114,7 @@
 		var commitMessagesHeader = document.createElement("h4");
 		commitMessagesHeader.innerText = "Decision Knowledge Captured in Code Comments";
 		codeFilesHtml.appendChild(commitMessagesHeader);
-		
+
 		var codeFileName = "";
 		var codeFileHtml = null; // for single code file
 		for (element of elementsFromCode) {
@@ -135,7 +126,7 @@
 				codeFileLabel = document.createElement("i");
 				codeFileLabel.innerText = codeFileName + " --- ";
 				codeFileHtml.appendChild(codeFileLabel);
-				
+
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Code File in Git";
 				link.href = element.url;
@@ -161,7 +152,7 @@
 		var commitMessagesHeader = document.createElement("h4");
 		commitMessagesHeader.innerText = "Decision Knowledge Captured in Commit Messages";
 		commitsHtml.appendChild(commitMessagesHeader);
-		
+
 		var commitId = ""; // commit hash
 		var commitHtml = null; // for single commit
 		for (element of elementsFromCommitMessages) {
@@ -174,7 +165,7 @@
 				commitLabel = document.createElement("i");
 				commitLabel.innerText = "Commit " + commitId + " --- ";
 				commitHtml.appendChild(commitLabel);
-				
+
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Commit in Git";
 				link.href = element.url;
