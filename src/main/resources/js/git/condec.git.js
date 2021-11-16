@@ -105,8 +105,7 @@
 
 	function getElementAsHTML(element) {
 		var root = document.createElement("div");
-		root.className = "messageBox " + element.type.toLowerCase();
-		root.style = "padding:5px;";
+		root.className = "condec-box " + element.type.toLowerCase();
 
 		var img = document.createElement("img");
 		img.src = element.image;
@@ -133,12 +132,12 @@
 				codeFileHtml = document.createElement("div");
 
 				codeFileLabel = document.createElement("i");
-				codeFileLabel.innerText = codeFileName + " ";
+				codeFileLabel.innerText = codeFileName + " --- ";
 				codeFileHtml.appendChild(codeFileLabel);
 				
 				var link = document.createElement("a");
-				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span>";
-				link.title = "Navigate to Commit in Git";
+				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Code File in Git";
+				link.title = "Navigate to Code File in Git";
 				link.href = element.url;
 				link.target = "_blank";
 				AJS.$(link).tooltip({gravity: 'w'});
@@ -173,11 +172,11 @@
 				commitHtml.id = commitId;
 
 				commitLabel = document.createElement("i");
-				commitLabel.innerText = "Commit " + commitId + " ";
+				commitLabel.innerText = "Commit " + commitId + " --- ";
 				commitHtml.appendChild(commitLabel);
 				
 				var link = document.createElement("a");
-				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span>";
+				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Commit in Git";
 				link.title = "Navigate to Commit in Git";
 				link.href = element.url;
 				link.target = "_blank";

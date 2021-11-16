@@ -1,13 +1,5 @@
 /* styles for rationale from the commit messages and code comments */
 
-.messageBox {
-	margin-top: 0.3em;
-	margin-bottom: 0.3em;
-	border-radius: 0.8em;
-	padding: 0.3em;
-	border: 1px solid black;
-}
-
 .qualitySummary {
 	border-radius: 0.8em;
 	border: 1px solid black;
