@@ -1,6 +1,4 @@
 var contentHtml;
-var lastBranch, lastBranchIdx;
-var lastBranchElementsFromMessages, lastBranchElementsFromFiles;
 
 function getBranchesDiff() {
 	contentHtml = document.getElementById("featureBranches-container");
@@ -66,7 +64,7 @@ function showBranchDiff(branch) {
 	branchCollapsableContainer.setAttribute("aria-expanded", true);
 	branchCollapsableContainer.id = branch.id;
 
-	branchCollapsableContainer.appendChild(createBranchQualityAssessment());
+	branchCollapsableContainer.appendChild(createBranchQualityAssessment(branch));
 	branchCollapsableContainer.appendChild(createBranchMessageElementsHtml(branch.commitElements));
 	branchCollapsableContainer.appendChild(createBranchCodeElementsHtml(branch.codeElements));
 	branchContainer.appendChild(branchCollapsableContainer);
@@ -188,11 +186,10 @@ function createBranchCodeElementsHtml(elementsFromCode) {
 	return appendCodeElements(lastBranchBlocks);
 }
 
-function createBranchQualityAssessment() {
+function createBranchQualityAssessment(branch) {
 	qualitySummary = document.createElement("div");
 	qualitySummary.className = "qualitySummary";
-	if ((lastBranchElementsFromMessages && lastBranchElementsFromMessages.length > 0)
-		|| (lastBranchElementsFromFiles && lastBranchElementsFromFiles.length > 0)) {
+	if (branch.commitElements.length > 0 && branch.codeElements.length > 0) {
 		qualitySummary.innerText = "No quality problems found in this branch.";
 		qualitySummary.classList.add("noProblems");
 	} else {
