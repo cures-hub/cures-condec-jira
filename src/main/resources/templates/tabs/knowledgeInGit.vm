@@ -8,7 +8,7 @@ $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#git-tab")) {
-    		getBranchesDiff();
+    		conDecGit.getBranchesDiff();
 			isOnceClicked = true;
 		}
 	});
