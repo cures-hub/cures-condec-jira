@@ -1,7 +1,7 @@
 /**
  * Responsible to show the decision knowledge from commit messages and code comments.
  *
- * Requires: conDecAPI
+ * Requires: conDecGitAPI
  * Required by: 
  *
  * Is referenced in HTML by tabs/knowledgeInGit.vm
@@ -14,7 +14,7 @@
 
 	ConDecGit.prototype.getBranchesDiff = function() {
 		contentHtml = document.getElementById("featureBranches-container");
-		contentHtml.innerText = "Loading ...";
+		contentHtml.innerHTML = "<aui-spinner id='decision-guidance-spinner'></aui-spinner>";
 
 		conDecGitAPI.getElementsFromBranchesOfJiraIssue(conDecAPI.getIssueKey())
 			.then((branches) => {
@@ -121,7 +121,7 @@
 			return codeFilesHtml;
 		}
 		var commitMessagesHeader = document.createElement("h4");
-		commitMessagesHeader.innerText = "Decision knowledge elements in code comments";
+		commitMessagesHeader.innerText = "Decision Knowledge Captured in Code Comments";
 		codeFilesHtml.appendChild(commitMessagesHeader);
 		
 		var codeFileName = "";
@@ -130,6 +130,7 @@
 			if (codeFileName !== element.source) {
 				codeFileName = element.source;
 				codeFileHtml = document.createElement("div");
+				codeFileHtml.className = "condec-box";
 
 				codeFileLabel = document.createElement("i");
 				codeFileLabel.innerText = codeFileName + " --- ";
@@ -137,10 +138,8 @@
 				
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Code File in Git";
-				link.title = "Navigate to Code File in Git";
 				link.href = element.url;
 				link.target = "_blank";
-				AJS.$(link).tooltip({gravity: 'w'});
 				codeFileHtml.appendChild(link);
 			}
 			var codeElementHtml = getElementAsHTML(element);
@@ -160,7 +159,7 @@
 			return commitsHtml;
 		}
 		var commitMessagesHeader = document.createElement("h4");
-		commitMessagesHeader.innerText = "Decision knowledge elements in commit messages";
+		commitMessagesHeader.innerText = "Decision Knowledge Captured in Commit Messages";
 		commitsHtml.appendChild(commitMessagesHeader);
 		
 		var commitId = ""; // commit hash
@@ -169,6 +168,7 @@
 			if (commitId !== element.source) {
 				commitId = element.source;
 				commitHtml = document.createElement("div");
+				commitHtml.className = "condec-box";
 				commitHtml.id = commitId;
 
 				commitLabel = document.createElement("i");
@@ -177,10 +177,8 @@
 				
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Commit in Git";
-				link.title = "Navigate to Commit in Git";
 				link.href = element.url;
 				link.target = "_blank";
-				AJS.$(link).tooltip({gravity: 'w'});
 				commitHtml.appendChild(link);
 			}
 			var messageElementHtml = getElementAsHTML(element);
