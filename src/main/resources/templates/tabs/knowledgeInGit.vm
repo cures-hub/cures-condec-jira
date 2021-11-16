@@ -1,3 +1,6 @@
+<div>
+	<p>$i18n.getText('condec.knowledge.in.git.explanation')</p>
+</div>
 <div id="featureBranches-container"></div>
 <script>
 /* Adds the on click listener on tab opening */

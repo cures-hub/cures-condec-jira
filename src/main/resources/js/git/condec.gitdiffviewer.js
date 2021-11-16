@@ -26,23 +26,19 @@ function showBranchesDiff(branches) {
 	console.debug("showBranchesDiff");
 	contentHtml.innerText = "";
 
-	for (branchIdx = 0; branchIdx < branches.length; branchIdx++) {
-		lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
-		lastBranchIdx = branchIdx;
+	for (var branch of branches) {
 		lastBranchBlocks = new Map();
-
-		lastBranchElementsFromMessages = lastBranch.commitElements;
-		lastBranchElementsFromFiles = lastBranch.codeElements;
-
-		showBranchDiff(lastBranch, branchIdx);
+		showBranchDiff(branch);
+		
+		console.log(branch);
 
 		/* assess relations between rationale and their problems */
-		conDecLinkBranchCandidates.init(lastBranchElementsFromMessages, lastBranch.name, branchIdx,
+		conDecLinkBranchCandidates.init(branch.commitElements, branch.name, branch.id,
 			"messages");
 		/* render results in HTML */
 		conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 
-		conDecLinkBranchCandidates.init(lastBranchElementsFromFiles, lastBranch.name, branchIdx, "files");
+		conDecLinkBranchCandidates.init(branch.codeElements, branch.name, branch.id, "files");
 		/* render results in HTML */
 		conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 	}

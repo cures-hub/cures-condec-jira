@@ -5,19 +5,16 @@
 	margin-bottom: 0.3em;
 	border-radius: 0.8em;
 	padding: 0.3em;
-	position: relative;
 	border: 1px solid black;
 }
 
 .qualitySummary {
-	margin:1em;
-	padding:1em;
+	border-radius: 0.8em;
+	border: 1px solid black;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	padding: 1em;
 	background: rgb(222, 250, 222);
-	border:1px grey solid;
-	border-radius: 0.1em;
-}
-
-.qualitySummary.noRationale{
 	background: repeating-linear-gradient(
 		-45deg,
 		rgb(222, 250, 222),
