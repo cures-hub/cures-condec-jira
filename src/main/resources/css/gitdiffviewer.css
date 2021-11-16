@@ -11,8 +11,6 @@
 .qualitySummary {
 	border-radius: 0.8em;
 	border: 1px solid black;
-	margin-top: 0.3em;
-	margin-bottom: 0.3em;
 	padding: 1em;
 	background: rgb(222, 250, 222);
 	background: repeating-linear-gradient(

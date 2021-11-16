@@ -1,7 +1,6 @@
 var contentHtml;
 var lastBranch, lastBranchIdx;
 var lastBranchElementsFromMessages, lastBranchElementsFromFiles;
-var lastBranchBlocks = new Map();
 
 function getBranchesDiff() {
 	contentHtml = document.getElementById("featureBranches-container");
@@ -22,15 +21,15 @@ function getBranchesDiff() {
 		.catch((error) => showError(error));
 }
 
+/**
+ * Renders all git branches in HTML.
+ */
 function showBranchesDiff(branches) {
 	console.debug("showBranchesDiff");
 	contentHtml.innerText = "";
 
 	for (var branch of branches) {
-		lastBranchBlocks = new Map();
 		showBranchDiff(branch);
-		
-		console.log(branch);
 
 		/* assess relations between rationale and their problems */
 		conDecLinkBranchCandidates.init(branch.commitElements, branch.name, branch.id,
@@ -42,6 +41,37 @@ function showBranchesDiff(branches) {
 		/* render results in HTML */
 		conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
 	}
+}
+
+/**
+ * Renders one git branch in HTML.
+ */
+function showBranchDiff(branch) {
+	console.debug("showBranchDiff");
+
+	branchContainer = document.createElement("div");
+	var branchLabel = document.createElement("h3");
+	branchLabel.innerText = "Branch " + branch.name + " (" + branch.repoUri + ")";
+	branchContainer.appendChild(branchLabel);
+	
+	var branchExpander = document.createElement("a");
+	branchExpander.innerText = "Hide details for branch";
+	branchExpander.setAttribute("data-replace-text", "Show details for branch");
+	branchExpander.className = "aui-expander-trigger right-aligned";
+	branchExpander.setAttribute("aria-controls", branch.id);
+	branchContainer.appendChild(branchExpander);
+
+	branchCollapsableContainer = document.createElement("div");
+	branchCollapsableContainer.className = "aui-expander-content";
+	branchCollapsableContainer.setAttribute("aria-expanded", true);
+	branchCollapsableContainer.id = branch.id;
+
+	branchCollapsableContainer.appendChild(createBranchQualityAssessment());
+	branchCollapsableContainer.appendChild(createBranchMessageElementsHtml(branch.commitElements));
+	branchCollapsableContainer.appendChild(createBranchCodeElementsHtml(branch.codeElements));
+	branchContainer.appendChild(branchCollapsableContainer);
+
+	contentHtml.appendChild(branchContainer);
 }
 
 function createForceRestFetch() {
@@ -80,42 +110,30 @@ function getElementAsHTML(element) {
 	return root;
 }
 
-function getCodeElementsFromSide(blockData) {
-	console.debug("getCodeElementsFromSide");
-	var codeElements = document.createElement("p");
-	var rationaleElements = blockData.codeElements;
-
-	for (var r = 0; r < rationaleElements.length; r++) {
-		codeElement = rationaleElements[r];
-		codeElements.appendChild(codeElement);
-	}
-
-	return codeElements;
-}
-
-function appendCodeElements() {
+function appendCodeElements(lastBranchBlocks) {
 	console.debug("appendCodeElements");
 	blockLinesIterator = lastBranchBlocks.entries();
 	var allCodeElementsHTML = document.createElement("div");
+	var codeFilesHeader = document.createElement("h4");
+	codeFilesHeader.innerText = "Decision knowledge elements in code comments";
+	allCodeElementsHTML.appendChild(codeFilesHeader);
 	while (blockEntry = blockLinesIterator.next()) {
 		if (blockEntry.done) {
 			break;
 		}
-		var blockData = blockEntry.value[1];
+		var codeElements = blockEntry.value[1];
 
 		var fileRatElement = document.createElement("p");
 
-		var fileRatBlockLabel = document.createElement("h4");
-		fileRatBlockLabel.innerText = blockData.filename;
+		var fileRatBlockLabel = document.createElement("i");
+		fileRatBlockLabel.innerText = blockEntry.value[0];
 
+		var codeElementsHtml = document.createElement("p");
 
-		fileRatBlockLabel.dataset.blockSequence = blockData.sequence;
-
-		var codeElements = getCodeElementsFromSide(blockData);
-		fileRatElement.appendChild(codeElements);
-
-		codeElements = getCodeElementsFromSide(blockData);
-		fileRatElement.appendChild(codeElements);
+		for (element of codeElements) {
+			codeElementsHtml.appendChild(element);
+		}
+		fileRatElement.appendChild(codeElementsHtml);
 
 		allCodeElementsHTML.appendChild(fileRatBlockLabel);
 		allCodeElementsHTML.appendChild(fileRatElement);
@@ -123,75 +141,55 @@ function appendCodeElements() {
 	return allCodeElementsHTML;
 }
 
-function getBlock(element) {
-	var block = {};
-	block.diffType = true;
-	block.entry = " " + element.source;
-
-	block.toString = function() {
-		return "1 - " + block.entry;
-	};
-	return block;
-}
-
 function createBranchMessageElementsHtml(elementsFromMessage) {
 	/* group rationale in messages by commit hash */
-	var msgCommitIsh = "";
+	var commit = "";
 	var messageBlockHtml = null;
 	var allMessageBlockHtml = document.createElement("div");
-	for (m = 0; m < elementsFromMessage.length; m++) {
-		if (msgCommitIsh !== elementsFromMessage[m].source) {
-			msgCommitIsh = elementsFromMessage[m].source;
-			if (messageBlockHtml) {
-				/* add previous message */
-				allMessageBlockHtml.appendChild(messageBlockHtml);
-			}
-			messageBlockHtml = document.createElement("p");
-			messageBlockHtml.id = "branchGroup-" + lastBranchIdx + "-message-" + msgCommitIsh;
-			messageBlockHtml.className = "messageBox";
+	if (elementsFromMessage.length === 0) {
+		return allMessageBlockHtml;
+	}
+	var commitMessagesHeader = document.createElement("h4");
+	commitMessagesHeader.innerText = "Decision knowledge elements in commit messages";
+	allMessageBlockHtml.appendChild(commitMessagesHeader);
+	for (element of elementsFromMessage) {
+		if (commit !== element.source) {
+			commit = element.source;
+			messageBlockHtml = document.createElement("div");
+			messageBlockHtml.id = commit;
 
-			messageBlockLabelHtml = document.createElement("div");
-			messageBlockLabelHtml.innerText = "Commit message " + msgCommitIsh;
-			messageBlockLabelHtml.className = "commitMessageLabel";
+			messageBlockLabelHtml = document.createElement("i");
+			messageBlockLabelHtml.innerText = "Commit message " + commit;
 			messageBlockHtml.appendChild(messageBlockLabelHtml);
 		}
-		if (messageBlockHtml) {
-			var messageElementHtml = getElementAsHTML(elementsFromMessage[m]);
-			messageElementHtml.title = "Commit " + elementsFromMessage[m].source;
-			messageBlockHtml.appendChild(messageElementHtml);
-			allMessageBlockHtml.appendChild(messageBlockHtml);
-		}
+		var messageElementHtml = getElementAsHTML(element);
+		messageElementHtml.title = "Commit " + element.source;
+		messageBlockHtml.appendChild(messageElementHtml);
+		allMessageBlockHtml.appendChild(messageBlockHtml);
 	}
 	return allMessageBlockHtml;
 }
 
 function createBranchCodeElementsHtml(elementsFromCode) {
-	for (c = 0; c < elementsFromCode.length; c++) {
-		codeElementHtml = getElementAsHTML(elementsFromCode[c]);
-		codeElementHtml.title = "Line in file: " + elementsFromCode[c].startLine;
+	lastBranchBlocks = new Map();
+	for (element of elementsFromCode) {
+		codeElementHtml = getElementAsHTML(element);
+		codeElementHtml.title = "Line in file: " + element.startLine;
 
-		var block = getBlock(elementsFromCode[c]);
-
-		var blockKey = block.toString();
-
-		if (!lastBranchBlocks.has(blockKey)) {
-			blockData = {
-				codeElements: [],
-				filename: ""
-			};
-			lastBranchBlocks.set(blockKey, blockData);
+		if (!lastBranchBlocks.has(element.source)) {
+			lastBranchBlocks.set(element.source, []);
 		}
 
-		var blockData = lastBranchBlocks.get(blockKey);
-		blockData.filename = elementsFromCode[c].source;
-		blockData.codeElements.push(codeElementHtml);
-		lastBranchBlocks.set(blockKey, blockData);
+		var codeElements = lastBranchBlocks.get(element.source);
+		codeElements.push(codeElementHtml);
+		lastBranchBlocks.set(element.source, codeElements);
 	}
-	return appendCodeElements();
+	
+	return appendCodeElements(lastBranchBlocks);
 }
 
 function createBranchQualityAssessment() {
-	qualitySummary = document.createElement("p");
+	qualitySummary = document.createElement("div");
 	qualitySummary.className = "qualitySummary";
 	if ((lastBranchElementsFromMessages && lastBranchElementsFromMessages.length > 0)
 		|| (lastBranchElementsFromFiles && lastBranchElementsFromFiles.length > 0)) {
@@ -202,30 +200,4 @@ function createBranchQualityAssessment() {
 		qualitySummary.classList.add("noRationale");
 	}
 	return qualitySummary;
-}
-
-/**
- * Renders one git branch in HTML.
- */
-function showBranchDiff(branch) {
-	console.debug("showBranchDiff");
-
-	branchContainer = document.createElement("div");
-	branchLabel = document.createElement("h3");
-	branchLabel.innerText = branch.name + " (" + branch.repoUri + ")";
-	branchLabel.setAttribute("data-replace-text", "Show details for branch " + branch.name);
-	branchLabel.className = "aui-expander-trigger";
-	branchLabel.setAttribute("aria-controls", branch.id);
-	branchContainer.appendChild(branchLabel);
-
-	branchCollapsableContainer = document.createElement("div");
-	branchCollapsableContainer.className = "aui-expander-content";
-	branchCollapsableContainer.setAttribute("aria-expanded", true);
-	branchCollapsableContainer.id = branch.id;
-	branchCollapsableContainer.appendChild(createBranchQualityAssessment());
-	branchCollapsableContainer.appendChild(createBranchMessageElementsHtml(branch.commitElements));
-	branchCollapsableContainer.appendChild(createBranchCodeElementsHtml(branch.codeElements));
-	branchContainer.appendChild(branchCollapsableContainer);
-
-	contentHtml.appendChild(branchContainer);
 }
