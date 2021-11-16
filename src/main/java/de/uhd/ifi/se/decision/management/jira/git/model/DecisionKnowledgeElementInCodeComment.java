@@ -37,7 +37,7 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
 	@XmlElement
 	public String getUrl() {
-		return codeFile.getRepoUri();
+		return codeFile.getRepoUri().replace(".git", "") + "/search?q=filename:" + getCodeFileName();
 	}
 
 	public void setStartLine(int startLine) {

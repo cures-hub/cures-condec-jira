@@ -26,19 +26,21 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 	@Test
 	public void testCodeFile() {
 		ChangedFile file = new ChangedFile();
-		file.setSummary("File1.java");
+		file.setSummary("File.java");
 		file.setProject("TEST");
 		codeCommentElement.setCodeFile(file);
-		assertEquals("File1.java", codeCommentElement.getCodeFileName());
+		assertEquals("File.java", codeCommentElement.getCodeFileName());
 	}
 
 	@Test
 	public void testUrl() {
 		ChangedFile file = new ChangedFile();
 		file.setProject("TEST");
+		file.setSummary("File.java");
 		file.setRepoUri("https://github.com/cures-hub/cures-condec-jira");
 		codeCommentElement.setCodeFile(file);
-		assertEquals("https://github.com/cures-hub/cures-condec-jira", codeCommentElement.getUrl());
+		assertEquals("https://github.com/cures-hub/cures-condec-jira/search?q=filename:File.java",
+				codeCommentElement.getUrl());
 	}
 
 	@Test

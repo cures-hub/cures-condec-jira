@@ -99,7 +99,7 @@
 	function createForceRestFetch() {
 		forceRestNode = document.createElement("div");
 		forceRestNode.innerText = "Suspecting branch list is not up-to date? Click here to try again.";
-		forceRestNode.addEventListener("click", () => getBranchesDiff());
+		forceRestNode.addEventListener("click", () => conDecGit.getBranchesDiff());
 		return forceRestNode;
 	}
 
@@ -122,13 +122,13 @@
 			codeElementHtml = getElementAsHTML(element);
 			codeElementHtml.title = "Line in file: " + element.startLine;
 
-			if (!lastBranchBlocks.has(element.source)) {
-				lastBranchBlocks.set(element.source, []);
+			if (!lastBranchBlocks.has(element)) {
+				lastBranchBlocks.set(element, []);
 			}
 
-			var codeElements = lastBranchBlocks.get(element.source);
+			var codeElements = lastBranchBlocks.get(element);
 			codeElements.push(codeElementHtml);
-			lastBranchBlocks.set(element.source, codeElements);
+			lastBranchBlocks.set(element, codeElements);
 		}
 
 		return appendCodeElements(lastBranchBlocks);
@@ -150,7 +150,9 @@
 			var fileRatElement = document.createElement("p");
 
 			var fileRatBlockLabel = document.createElement("i");
-			fileRatBlockLabel.innerText = blockEntry.value[0];
+			fileRatBlockLabel.innerText = blockEntry.value[0].source;
+			
+			
 
 			var codeElementsHtml = document.createElement("p");
 
@@ -160,6 +162,15 @@
 			fileRatElement.appendChild(codeElementsHtml);
 
 			allCodeElementsHTML.appendChild(fileRatBlockLabel);
+			
+			var link = document.createElement("a");
+			link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span>";
+			link.title = "Navigate to Code File in Git";
+			link.href = blockEntry.value[0].url;
+			link.target = "_blank";
+			AJS.$(link).tooltip({gravity: 'w'});
+			allCodeElementsHTML.appendChild(link);
+			
 			allCodeElementsHTML.appendChild(fileRatElement);
 		}
 		return allCodeElementsHTML;
