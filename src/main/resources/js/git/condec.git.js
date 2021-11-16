@@ -7,7 +7,7 @@
  * Is referenced in HTML by tabs/knowledgeInGit.vm
  */
 (function(global) {
-	
+
 	var ConDecGit = function() {
 		this.contentHtml = "";
 	};
@@ -24,8 +24,10 @@
 				}
 				if (branches.length === 0) {
 					contentHtml.innerText = "No feature branches found for this Jira issue.";
+				} else {
+					contentHtml.innerText = "";
+					showBranchesDiff(branches);
 				}
-				showBranchesDiff(branches);
 				contentHtml.appendChild(createForceRestFetch());
 			})
 			.catch((error) => {
@@ -63,7 +65,8 @@
 
 		branchContainer = document.createElement("div");
 		var branchLabel = document.createElement("h3");
-		branchLabel.innerText = "Branch " + branch.name + " (" + branch.repoUri + ")";
+		branchLabel.style = "float:left;";
+		branchLabel.innerText = "Branch " + branch.name;
 		branchContainer.appendChild(branchLabel);
 
 		var branchExpander = document.createElement("a");
@@ -77,6 +80,13 @@
 		branchCollapsableContainer.className = "aui-expander-content";
 		branchCollapsableContainer.setAttribute("aria-expanded", true);
 		branchCollapsableContainer.id = branch.id;
+
+		branchRepoLink = document.createElement("a");
+		branchRepoLink.href = branch.repoUri;
+		branchRepoLink.target = "_blank";
+		branchRepoLink.innerText = branch.repoUri;
+		branchRepoLink.className = "right-aligned";
+		branchCollapsableContainer.appendChild(branchRepoLink);
 
 		branchCollapsableContainer.appendChild(createBranchQualityAssessment(branch));
 		branchCollapsableContainer.appendChild(createBranchMessageElementsHtml(branch.commitElements));
@@ -94,25 +104,34 @@
 	}
 
 	function getElementAsHTML(element) {
-		console.debug("getElementAsHTML");
-		var root = document.createElement("p");
+		var root = document.createElement("div");
 		root.className = "messageBox " + element.type.toLowerCase();
 		root.style = "padding:5px;";
-		root.dataset.ratType = element.type.toLowerCase();
-
-		var link = document.createElement("a");
-		link.style = "text-decoration: none; color: black;";
-		link.href = element.url;
 
 		var img = document.createElement("img");
 		img.src = element.image;
 		img.className = "emoticon";
-
-		link.appendChild(img);
-		link.insertAdjacentText("beforeend", " " + element.summary);
-
-		root.appendChild(link);
+		root.appendChild(img);
+		root.insertAdjacentText("beforeend", " " + element.summary);
 		return root;
+	}
+
+	function createBranchCodeElementsHtml(elementsFromCode) {
+		lastBranchBlocks = new Map();
+		for (element of elementsFromCode) {
+			codeElementHtml = getElementAsHTML(element);
+			codeElementHtml.title = "Line in file: " + element.startLine;
+
+			if (!lastBranchBlocks.has(element.source)) {
+				lastBranchBlocks.set(element.source, []);
+			}
+
+			var codeElements = lastBranchBlocks.get(element.source);
+			codeElements.push(codeElementHtml);
+			lastBranchBlocks.set(element.source, codeElements);
+		}
+
+		return appendCodeElements(lastBranchBlocks);
 	}
 
 	function appendCodeElements(lastBranchBlocks) {
@@ -146,51 +165,44 @@
 		return allCodeElementsHTML;
 	}
 
-	function createBranchMessageElementsHtml(elementsFromMessage) {
-		/* group rationale in messages by commit hash */
-		var commit = "";
-		var messageBlockHtml = null;
-		var allMessageBlockHtml = document.createElement("div");
-		if (elementsFromMessage.length === 0) {
-			return allMessageBlockHtml;
+	/**
+	 * Group rationale in commit messages by commit hash (id).
+	 */
+	function createBranchMessageElementsHtml(elementsFromCommitMessages) {
+		var commitsHtml = document.createElement("div"); // for all commits of branch
+		if (elementsFromCommitMessages.length === 0) {
+			return commitsHtml;
 		}
 		var commitMessagesHeader = document.createElement("h4");
 		commitMessagesHeader.innerText = "Decision knowledge elements in commit messages";
-		allMessageBlockHtml.appendChild(commitMessagesHeader);
-		for (element of elementsFromMessage) {
-			if (commit !== element.source) {
-				commit = element.source;
-				messageBlockHtml = document.createElement("div");
-				messageBlockHtml.id = commit;
+		commitsHtml.appendChild(commitMessagesHeader);
+		
+		var commitId = ""; // commit hash
+		var commitHtml = null; // for single commit
+		for (element of elementsFromCommitMessages) {
+			if (commitId !== element.source) {
+				commitId = element.source;
+				commitHtml = document.createElement("div");
+				commitHtml.id = commitId;
 
 				messageBlockLabelHtml = document.createElement("i");
-				messageBlockLabelHtml.innerText = "Commit message " + commit;
-				messageBlockHtml.appendChild(messageBlockLabelHtml);
+				messageBlockLabelHtml.innerText = "Commit " + commitId + " ";
+				commitHtml.appendChild(messageBlockLabelHtml);
+				
+				var link = document.createElement("a");
+				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span>";
+				link.title = "Navigate to Commit in Git";
+				link.href = element.url;
+				link.target = "_blank";
+				AJS.$(link).tooltip({gravity: 'w'});
+				commitHtml.appendChild(link);
 			}
 			var messageElementHtml = getElementAsHTML(element);
-			messageElementHtml.title = "Commit " + element.source;
-			messageBlockHtml.appendChild(messageElementHtml);
-			allMessageBlockHtml.appendChild(messageBlockHtml);
+			messageElementHtml.title = "Commit " + commitId;
+			commitHtml.appendChild(messageElementHtml);
+			commitsHtml.appendChild(commitHtml);
 		}
-		return allMessageBlockHtml;
-	}
-
-	function createBranchCodeElementsHtml(elementsFromCode) {
-		lastBranchBlocks = new Map();
-		for (element of elementsFromCode) {
-			codeElementHtml = getElementAsHTML(element);
-			codeElementHtml.title = "Line in file: " + element.startLine;
-
-			if (!lastBranchBlocks.has(element.source)) {
-				lastBranchBlocks.set(element.source, []);
-			}
-
-			var codeElements = lastBranchBlocks.get(element.source);
-			codeElements.push(codeElementHtml);
-			lastBranchBlocks.set(element.source, codeElements);
-		}
-
-		return appendCodeElements(lastBranchBlocks);
+		return commitsHtml;
 	}
 
 	function createBranchQualityAssessment(branch) {
