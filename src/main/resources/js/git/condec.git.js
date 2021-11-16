@@ -117,63 +117,39 @@
 	}
 
 	function createBranchCodeElementsHtml(elementsFromCode) {
-		lastBranchBlocks = new Map();
+		var codeFilesHtml = document.createElement("div");
+		if (elementsFromCode.length === 0) {
+			return codeFilesHtml;
+		}
+		var commitMessagesHeader = document.createElement("h4");
+		commitMessagesHeader.innerText = "Decision knowledge elements in code comments";
+		codeFilesHtml.appendChild(commitMessagesHeader);
+		
+		var codeFileName = "";
+		var codeFileHtml = null; // for single code file
 		for (element of elementsFromCode) {
-			codeElementHtml = getElementAsHTML(element);
+			if (codeFileName !== element.source) {
+				codeFileName = element.source;
+				codeFileHtml = document.createElement("div");
+
+				codeFileLabel = document.createElement("i");
+				codeFileLabel.innerText = codeFileName + " ";
+				codeFileHtml.appendChild(codeFileLabel);
+				
+				var link = document.createElement("a");
+				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span>";
+				link.title = "Navigate to Commit in Git";
+				link.href = element.url;
+				link.target = "_blank";
+				AJS.$(link).tooltip({gravity: 'w'});
+				codeFileHtml.appendChild(link);
+			}
+			var codeElementHtml = getElementAsHTML(element);
 			codeElementHtml.title = "Line in file: " + element.startLine;
-
-			if (!lastBranchBlocks.has(element)) {
-				lastBranchBlocks.set(element, []);
-			}
-
-			var codeElements = lastBranchBlocks.get(element);
-			codeElements.push(codeElementHtml);
-			lastBranchBlocks.set(element, codeElements);
+			codeFileHtml.appendChild(codeElementHtml);
+			codeFilesHtml.appendChild(codeFileHtml);
 		}
-
-		return appendCodeElements(lastBranchBlocks);
-	}
-
-	function appendCodeElements(lastBranchBlocks) {
-		console.debug("appendCodeElements");
-		blockLinesIterator = lastBranchBlocks.entries();
-		var allCodeElementsHTML = document.createElement("div");
-		var codeFilesHeader = document.createElement("h4");
-		codeFilesHeader.innerText = "Decision knowledge elements in code comments";
-		allCodeElementsHTML.appendChild(codeFilesHeader);
-		while (blockEntry = blockLinesIterator.next()) {
-			if (blockEntry.done) {
-				break;
-			}
-			var codeElements = blockEntry.value[1];
-
-			var fileRatElement = document.createElement("p");
-
-			var fileRatBlockLabel = document.createElement("i");
-			fileRatBlockLabel.innerText = blockEntry.value[0].source;
-			
-			
-
-			var codeElementsHtml = document.createElement("p");
-
-			for (element of codeElements) {
-				codeElementsHtml.appendChild(element);
-			}
-			fileRatElement.appendChild(codeElementsHtml);
-
-			allCodeElementsHTML.appendChild(fileRatBlockLabel);
-			
-			var link = document.createElement("a");
-			link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span>";
-			link.title = "Navigate to Code File in Git";
-			link.href = blockEntry.value[0].url;
-			link.target = "_blank";
-			AJS.$(link).tooltip({gravity: 'w'});
-			allCodeElementsHTML.appendChild(link);
-			
-			allCodeElementsHTML.appendChild(fileRatElement);
-		}
-		return allCodeElementsHTML;
+		return codeFilesHtml;
 	}
 
 	/**
@@ -196,9 +172,9 @@
 				commitHtml = document.createElement("div");
 				commitHtml.id = commitId;
 
-				messageBlockLabelHtml = document.createElement("i");
-				messageBlockLabelHtml.innerText = "Commit " + commitId + " ";
-				commitHtml.appendChild(messageBlockLabelHtml);
+				commitLabel = document.createElement("i");
+				commitLabel.innerText = "Commit " + commitId + " ";
+				commitHtml.appendChild(commitLabel);
 				
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span>";
