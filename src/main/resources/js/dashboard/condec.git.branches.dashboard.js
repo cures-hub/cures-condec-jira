@@ -23,7 +23,7 @@
 		"Alternative does not have any arguments";
 	var DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE =
 		"Decision's arguments seem weaker than in one of sibling alternatives";
-	var ISSUE_WITHOUT_DECISIONS = "Issue does not have a decision yet";
+	var ISSUE_WITHOUT_DECISIONS = "Issue doesn't have a valid decision!";
 	var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
 	var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
@@ -137,10 +137,10 @@
 			var nameOfBranch = currentBranch.name;
 
 			for (problem of problems) {
-				var newValue = accumulator.get(problem.name)
+				var newValue = accumulator.get(problem.explanation)
 					+ BRANCHES_SEPARATOR_TOKEN
 					+ nameOfBranch;
-				accumulator.set(problem.name, newValue);
+				accumulator.set(problem.explanation, newValue);
 			}
 			return accumulator;
 		}

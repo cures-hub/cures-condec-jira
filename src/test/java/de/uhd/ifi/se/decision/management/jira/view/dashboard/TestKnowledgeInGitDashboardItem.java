@@ -12,14 +12,14 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestFeatureBranchQualityDashboardItem extends TestSetUp {
+public class TestKnowledgeInGitDashboardItem extends TestSetUp {
 
 	private ConDecDashboardItem dashboardItem;
 
 	@Before
 	public void setUp() {
 		init();
-		dashboardItem = new FeatureBranchQualityDashboardItem();
+		dashboardItem = new KnowledgeInGitDashboardItem();
 		dashboardItem.user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
