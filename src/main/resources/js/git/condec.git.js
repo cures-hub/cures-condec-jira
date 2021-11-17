@@ -52,7 +52,7 @@
 
 		var branchExpander = document.createElement("a");
 		branchExpander.innerText = "Hide details for branch";
-		branchExpander.setAttribute("data-replace-text", "Show details for branch");
+		branchExpander.setAttribute("data-replace-text", "Show details for branch " + branch.name);
 		branchExpander.className = "aui-expander-trigger right-aligned";
 		branchExpander.setAttribute("aria-controls", branch.id + hash(branch.name));
 		branchContainer.appendChild(branchExpander);
