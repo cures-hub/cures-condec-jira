@@ -119,10 +119,10 @@
 		qualityProblems.forEach(function(problem) {
 			if (problem.name === "NO_DECISION_COVERAGE" || problem.name === "DECISION_COVERAGE_TOO_LOW" ||
 				problem.name === "INCOMPLETE_KNOWLEDGE_LINKED") {
-				text += problem.description;
+				text += problem.explanation;
 				text += "\n\n";
 			} else {
-				text += problem.description;
+				text += problem.explanation;
 				text += "\n";
 			}
 		})

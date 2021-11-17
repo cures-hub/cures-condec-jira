@@ -62,7 +62,7 @@ public interface KnowledgeElementCheck {
 	 *            {@link Recommendation}.
 	 * @param definitionOfDone
 	 *            instance of {@link DefinitionOfDone}.
-	 * @return a set of {@link QualityProblem} according to the default and
+	 * @return a set of {@link QualityProblemType} according to the default and
 	 *         configured rules of the {@link DefinitionOfDone}.
 	 */
 	List<QualityProblem> getQualityProblems(KnowledgeElement knowledgeElement, DefinitionOfDone definitionOfDone);

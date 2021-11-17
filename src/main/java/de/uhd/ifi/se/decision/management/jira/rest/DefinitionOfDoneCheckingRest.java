@@ -10,7 +10,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -19,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblemType;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 
 /**
@@ -47,12 +46,12 @@ public class DefinitionOfDoneCheckingRest {
 	}
 
 	/**
-	 * Get a list of the {@link QualityProblem} of the {@link KnowledgeElement}
+	 * Get a list of the {@link QualityProblemType} of the {@link KnowledgeElement}
 	 * selected in the {@link FilterSettings}.
 	 *
 	 * @param request
 	 * @param filterSettings
-	 * @return List<QualityProblem> A list containing the {@link QualityProblem}.
+	 * @return List<QualityProblem> A list containing the {@link QualityProblemType}.
 	 */
 	@Path("/getQualityProblems")
 	@POST
@@ -69,20 +68,8 @@ public class DefinitionOfDoneCheckingRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Quality check could not be performed because the element could not be found.")).build();
 		}
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		try {
-			return Response.ok()
-					.entity(mapper.writeValueAsString(
-							DefinitionOfDoneChecker.getQualityProblemsAsJson(knowledgeElement, filterSettings)))
-					.build();
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Quality check could not be performed because the result could not be converted to json."))
-					.build();
-		}
+		return Response.ok().entity(DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings))
+				.build();
 	}
 
 	/**

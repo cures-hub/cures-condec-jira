@@ -33,7 +33,7 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!hasDecisionOrAlternative()) {
-			qualityProblems.add(QualityProblem.ARGUMENT_DOESNT_HAVE_DECISION_OR_ALTERNATIVE);
+			qualityProblems.add(new QualityProblem(QualityProblemType.ARGUMENT_DOESNT_HAVE_DECISION_OR_ALTERNATIVE));
 		}
 
 		return qualityProblems;
@@ -41,7 +41,7 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 
 	private boolean hasDecisionOrAlternative() {
 		return argument.hasNeighborOfType(KnowledgeType.DECISION)
-			|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 	}
 
 }

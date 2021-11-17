@@ -1,49 +1,29 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import javax.xml.bind.annotation.XmlElement;
 
-/**
- * Models the possible quality problems of knowledge elements. Quality problems
- * are checked for issues, decisions, alternatives, arguments and code files.
- *
- * Used in {@link KnowledgeElementCheck}.
- */
-public enum QualityProblem {
-	NO_DECISION_COVERAGE("There are no decisions documented."), //
-	DECISION_COVERAGE_TOO_LOW("Minimum decision coverage is not reached."), //
-	INCOMPLETE_KNOWLEDGE_LINKED("Linked decision knowledge is incomplete."), //
-	ISSUE_DOESNT_HAVE_DECISION("Issue doesn't have a valid decision!"), //
-	ISSUE_DOESNT_HAVE_ALTERNATIVE("Issue doesn't have an alternative!"), //
-	ISSUE_IS_UNRESOLVED("Issue is unresolved!"), //
-	DECISION_DOESNT_HAVE_ISSUE("Decision doesn't have an issue!"), //
-	DECISION_DOESNT_HAVE_PRO("Decision doesn't have a pro-argument!"), //
-	DECISION_IS_CHALLENGED("Decision is challenged, i.e., it needs more discussion and might be rejected!"), //
-	ALTERNATIVE_DOESNT_HAVE_ISSUE("Alternative doesn't have an issue!"), //
-	ALTERNATIVE_DOESNT_HAVE_ARGUMENT("Alternative doesn't have an argument!"), //
-	ARGUMENT_DOESNT_HAVE_DECISION_OR_ALTERNATIVE("Argument doesn't have a decision or an alternative!");
+public class QualityProblem {
 
-	private final String description;
+	private String name;
+	private String explanation;
 
-	private QualityProblem(String description) {
-		this.description = description;
+	public QualityProblem(QualityProblemType qualityProblemType) {
+		this.name = qualityProblemType.name();
+		this.setExplanation(qualityProblemType.getDescription());
 	}
 
-	public String getDescription() {
-		return description;
+	@XmlElement
+	public String getName() {
+		return name;
 	}
 
-	/**
-	 * Creates a json object out of this object.
-	 *
-	 * @return an ObjectNode containing the id as key and the description as value.
-	 */
-	public ObjectNode getJson() {
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode node = mapper.createObjectNode();
-		node.put("name", this.name());
-		node.put("description", this.getDescription());
-		return node;
+	@XmlElement
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
 	}
 
 }
