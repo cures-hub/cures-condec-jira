@@ -103,6 +103,7 @@
 		img.className = "emoticon";
 		root.appendChild(img);
 		root.insertAdjacentText("beforeend", " " + element.summary);
+
 		return root;
 	}
 
@@ -135,6 +136,16 @@
 			}
 			var codeElementHtml = getElementAsHTML(element);
 			codeElementHtml.title = "Line in file: " + element.startLine;
+
+			if (element.qualityProblems.length > 0) {
+				var problemElement = document.createElement("p");
+				problemElement.className = "quality-problem";
+				for (problem of element.qualityProblems) {
+					problemElement.title += problem.explanation + "\n";
+				}
+				codeElementHtml.appendChild(problemElement);
+			}
+
 			codeFileHtml.appendChild(codeElementHtml);
 			codeFilesHtml.appendChild(codeFileHtml);
 		}
@@ -187,7 +198,7 @@
 			qualitySummary.innerText = "No quality problems found in this branch.";
 			qualitySummary.classList.add("noProblems");
 		} else {
-			qualitySummary.innerText = "No rationale found in messages and changed files!";
+			qualitySummary.innerText = "No (new) decision knowledge found in commit messages and comments of changed files!";
 			qualitySummary.classList.add("noRationale");
 		}
 		return qualitySummary;

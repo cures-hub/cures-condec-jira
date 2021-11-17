@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
@@ -7,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.git.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
 
 /**
  * Represents a decision knowledge element documented in a {@link CodeComment}.
@@ -20,9 +24,11 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
 	private ChangedFile codeFile;
 	private int startLine;
+	private List<QualityProblem> qualityProblems;
 
 	public DecisionKnowledgeElementInCodeComment() {
 		this.documentationLocation = DocumentationLocation.CODE;
+		this.qualityProblems = new ArrayList<>();
 	}
 
 	@XmlElement
@@ -56,5 +62,14 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 	@XmlElement(name = "source")
 	public String getCodeFileName() {
 		return codeFile.getName();
+	}
+
+	@XmlElement
+	public List<QualityProblem> getQualityProblems() {
+		return qualityProblems;
+	}
+
+	public void setQualityProblems(List<QualityProblem> qualityProblems) {
+		this.qualityProblems = qualityProblems;
 	}
 }
