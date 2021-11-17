@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -47,10 +46,9 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDefinitionOfDoneCheck() {
-		List<QualityProblem> list = new ArrayList<>();
-		list.add(QualityProblem.DECISION_COVERAGE_TOO_LOW);
-		list.add(QualityProblem.INCOMPLETE_KNOWLEDGE_LINKED);
-		assertEquals(DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings), list);
+		List<QualityProblem> problems = DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings);
+		assertEquals(QualityProblemType.DECISION_COVERAGE_TOO_LOW, problems.get(0).getType());
+		assertEquals(QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED, problems.get(1).getType());
 	}
 
 	@Test

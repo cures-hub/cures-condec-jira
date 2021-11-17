@@ -33,8 +33,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		<li class="menu-item" id="menu-item-chronology">
 			<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
 		</li>
-		<li class="menu-item" id="menu-item-feature-branches" data-condec="feature-branches-item">
-			<a href="#feature-branches-tab">Feature Branch(es)</a>
+		<li class="menu-item" id="menu-item-git">
+			<a href="#git-tab">$i18n.getText('condec.knowledge.in.git')</a>
 		</li>
         <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">
             <a href="#quality-check-tab">$i18n.getText('condec.label.quality')</a>
@@ -61,8 +61,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 	<div class="tabs-pane" id="criteria-matrix-tab">
 		#parse("templates/tabs/decisiontable/view.vm")
 	</div>
-	<div class="tabs-pane" id="feature-branches-tab">
-        #parse("templates/tabs/featureBranches.vm")
+	<div class="tabs-pane" id="git-tab">
+        #parse("templates/tabs/knowledgeInGit.vm")
     </div>
     <div class="tabs-pane" id="adjacency-matrix-tab">
         #parse("templates/tabs/matrix/view.vm")

@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -49,7 +49,7 @@ public class Matrix {
 	public Matrix(FilterSettings filterSettings) {
 		LOGGER.info(filterSettings.toString());
 		filteredGraph = new FilteringManager(filterSettings).getFilteredGraph();
-		headerElementsWithHighlighting = new HashSet<>();
+		headerElementsWithHighlighting = new LinkedHashSet<>();
 		filteredGraph.vertexSet().forEach(element -> {
 			ElementWithHighlighting elementWithColors = new ElementWithHighlighting(element);
 			if (filterSettings.areQualityProblemHighlighted()) {

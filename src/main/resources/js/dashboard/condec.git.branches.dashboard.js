@@ -7,9 +7,24 @@
  Is referenced in HTML by
  * dashboard/featureBranches.vm
  */
-(function (global) {
+(function(global) {
 	var issueBranchKeyRx = null;
 	var branchesQuality = [];
+
+	/*  bad problem explanations */
+	var ARGUMENT_WITHOUT_PARENT_ELEMENT = "Argument without parent alternative";
+	var ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT =
+		"Alternative without parent problem";
+	var ISSUE_WITH_MANY_DECISIONS = "Issue has too many decisions";
+	var DECISION_WITHOUT_PRO_ARGUMENTS = "Decision does not have a pro argument";
+
+	/*  not that bad problem explanations */
+	var ALTERNATIVE_DECISION_WITHOUT_ARGUMENTS =
+		"Alternative does not have any arguments";
+	var DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE =
+		"Decision's arguments seem weaker than in one of sibling alternatives";
+	var ISSUE_WITHOUT_DECISIONS = "Issue doesn't have a valid decision!";
+	var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
 	var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
 		console.log("ConDecBranchesDashboard constructor");
@@ -23,11 +38,15 @@
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
-	ConDecBranchesDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
-		conDecGitAPI.getElementsFromBranchesOfProject(filterSettings.projectKey, function (error, branches) {
-			conDecDashboard.processData(error, branches, conDecBranchesDashboard, "branch",
-				dashboardAPI, filterSettings);
-		});
+	ConDecBranchesDashboard.prototype.getData = function(dashboardAPI, filterSettings) {
+		conDecGitAPI.getElementsFromBranchesOfProject(filterSettings.projectKey)
+			.then(branches => {
+				conDecDashboard.processData(null, branches, conDecBranchesDashboard, "branch",
+					dashboardAPI, filterSettings);
+			}).catch(error => {
+				conDecDashboard.processData(error, null, conDecBranchesDashboard, "branch",
+					dashboardAPI, filterSettings);
+			});
 	};
 
 	/**
@@ -38,7 +57,7 @@
 	 * @param data the data returned from the API-call
 	 * @param filterSettings the filterSettings used in the API-call
 	 */
-	ConDecBranchesDashboard.prototype.renderData = function (branches, filterSettings) {
+	ConDecBranchesDashboard.prototype.renderData = function(branches, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
@@ -48,40 +67,23 @@
 
 		branchesQuality = [];
 
-		var branches = branches;
-		for (var branchIdx = 0; branchIdx < branches.length; branchIdx++) {
-			var lastBranch = conDecLinkBranchCandidates.extractPositions(branches[branchIdx]);
-
-			/* these elements are sorted by commit age and occurrence in message */
-			var lastBranchElementsFromMessages = lastBranch.commitElements;
-			var lastBranchElementsFromFiles = lastBranch.codeElements;
-
-			var lastBranchRelevantElementsSortedWithPosition =
-				lastBranchElementsFromMessages.concat(lastBranchElementsFromFiles);
-
-			/* assess relations between rationale and their problems */
-			conDecLinkBranchCandidates.init(
-				lastBranchRelevantElementsSortedWithPosition,
-				lastBranch.name,
-				branchIdx,
-				'');
-
+		for (branch of branches) {
 			var branchQuality = {};
-			branchQuality.name = lastBranch.name;
-			branchQuality.status = conDecLinkBranchCandidates.getBranchStatus();
-			branchQuality.problems = conDecLinkBranchCandidates.getProblemNamesObserved();
-			branchQuality.numIssues = countElementType("Issue", lastBranch);
-			branchQuality.numDecisions = countElementType("Decision", lastBranch);
-			branchQuality.numAlternatives = countElementType("Alternative", lastBranch);
-			branchQuality.numPros = countElementType("Pro", lastBranch);
-			branchQuality.numCons = countElementType("Con", lastBranch);
+			branchQuality.name = branch.name;
+			branchQuality.status = getBranchStatus(branch);
+			branchQuality.problems = branch.qualityProblems;
+			branchQuality.numIssues = countElementType("Issue", branch);
+			branchQuality.numDecisions = countElementType("Decision", branch);
+			branchQuality.numAlternatives = countElementType("Alternative", branch);
+			branchQuality.numPros = countElementType("Pro", branch);
+			branchQuality.numCons = countElementType("Con", branch);
 			branchesQuality.push(branchQuality);
 		}
 		/* sort lexicographically */
 		branchesQuality = sortBranches(branchesQuality);
 		/* render charts and plots */
 		renderChartsAndPlots();
-	}
+	};
 
 	function renderChartsAndPlots() {
 		const BRANCHES_SEPARATOR_TOKEN = " ";
@@ -134,23 +136,11 @@
 			console.log(problems);
 			var nameOfBranch = currentBranch.name;
 
-			var it = problems.keys();
-			var result = it.next();
-
-			while (!result.done) {
-				var key = result.value;
-				if (problems.get(key) > 0) {
-					/* already has a branch name */
-					if (accumulator.get(key).length > 1) {
-						var newValue = accumulator.get(key)
-							+ BRANCHES_SEPARATOR_TOKEN
-							+ nameOfBranch;
-						accumulator.set(key, newValue);
-					} else {
-						accumulator.set(key, nameOfBranch);
-					}
-				}
-				result = it.next();
+			for (problem of problems) {
+				var newValue = accumulator.get(problem.explanation)
+					+ BRANCHES_SEPARATOR_TOKEN
+					+ nameOfBranch;
+				accumulator.set(problem.explanation, newValue);
 			}
 			return accumulator;
 		}
@@ -196,7 +186,7 @@
 				}
 				keyVal.push([keys[i], count]);
 			}
-			var sortedKeyByVal = keyVal.sort(function (a, b) {
+			var sortedKeyByVal = keyVal.sort(function(a, b) {
 				return b[1] - a[1];
 			});
 			var sortedMap = new Map();
@@ -205,12 +195,14 @@
 				sortedMap.set(mapKey, unsortedMap.get(mapKey));
 			}
 			return sortedMap;
-
 		}
 
 		/*  init data for charts */
-		var statusesForBranchesData = conDecLinkBranchCandidates.getEmptyMapForStatuses("");
-		var problemTypesOccurrence = conDecLinkBranchCandidates.getEmptyMapForProblemTypes("");
+		var statusesForBranchesData = new Map();
+		statusesForBranchesData.set("Incorrect", "");
+		statusesForBranchesData.set("Good", "");
+		statusesForBranchesData.set("No rationale", "");
+		var problemTypesOccurrence = getEmptyMapForProblemTypes("");
 
 		var branchesPerIssue = new Map();
 		var issuesInBranches = new Map();
@@ -267,7 +259,7 @@
 			return 0;
 		}
 		var allElements = branch.codeElements.concat(branch.commitElements);
-		var filtered = allElements.filter(function (e) {
+		var filtered = allElements.filter(function(e) {
 			return e.type.toLowerCase() === targetType.toLowerCase();
 		});
 		return filtered.length;
@@ -275,9 +267,33 @@
 
 	/* lex sorting */
 	function sortBranches(branches) {
-		return branches.sort(function (a, b) {
+		return branches.sort(function(a, b) {
 			return a.name.localeCompare(b.name);
 		});
+	}
+
+	function getEmptyMapForProblemTypes(initValue) {
+		var allProblems = new Map();
+
+		allProblems.set(ARGUMENT_WITHOUT_PARENT_ELEMENT, initValue);
+		allProblems.set(ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT, initValue);
+		allProblems.set(ISSUE_WITH_MANY_DECISIONS, initValue);
+		allProblems.set(DECISION_WITHOUT_PRO_ARGUMENTS, initValue);
+		allProblems.set(ALTERNATIVE_DECISION_WITHOUT_ARGUMENTS, initValue);
+		allProblems.set(DECISION_ARGUMENTS_MAYBE_WORSE_THAN_ALTERNATIVE, initValue);
+		allProblems.set(ISSUE_WITHOUT_DECISIONS, initValue);
+		allProblems.set(ISSUE_WITHOUT_ALTERNATIVES, initValue);
+
+		return allProblems;
+	}
+
+	function getBranchStatus(branch) {
+		if (branch.commitElements.length + branch.codeElements.length === 0) {
+			return "No rationale";
+		} else if (branch.qualityProblems.length === 0) {
+			return "Good";
+		}
+		return "Incorrect";
 	}
 
 	global.conDecBranchesDashboard = new ConDecBranchesDashboard();

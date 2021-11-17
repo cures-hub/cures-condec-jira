@@ -35,6 +35,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         <li class="menu-item" id="menu-item-text-classification">
             <a href="#text-classification-tab">$i18n.getText('condec.project.settings.menu.item.classification')</a>
         </li>
+        <li class="menu-item" id="menu-item-git">
+            <a href="#git-tab">$i18n.getText('condec.knowledge.in.git')</a>
+        </li>
 	</ul>
 	<div #if(!$codeFileName && !$knowledgeType) class="tabs-pane active-pane" #else class="tabs-pane" #end id="rationale-backlog-tab">
     	#parse("templates/tabs/rationaleBacklog.vm")
@@ -66,6 +69,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div class="tabs-pane" id="text-classification-tab">
         #set ($viewIdentifier = "decision-knowledge-page")
         #parse("templates/tabs/textClassification.vm")
+    </div>
+    <div class="tabs-pane" id="git-tab">
+        #parse("templates/tabs/knowledgeInGit.vm")
     </div>
 </div>
 #parse("templates/contextMenu.vm")

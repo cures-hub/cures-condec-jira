@@ -36,11 +36,11 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!hasDecisionProblem()) {
-			qualityProblems.add(QualityProblem.ALTERNATIVE_DOESNT_HAVE_ISSUE);
+			qualityProblems.add(new QualityProblem(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ISSUE));
 		}
 
 		if (!hasArgument(definitionOfDone)) {
-			qualityProblems.add(QualityProblem.ALTERNATIVE_DOESNT_HAVE_ARGUMENT);
+			qualityProblems.add(new QualityProblem(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
 		}
 
 		return qualityProblems;

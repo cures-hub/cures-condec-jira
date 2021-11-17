@@ -176,7 +176,9 @@ public class GitRest {
 		}
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
-		List<Branch> branchesForProject = GitClient.getInstance(projectKey).getBranches(projectKey);
+		GitClient gitClient = GitClient.getInstance(projectKey);
+		List<Branch> branchesForProject = gitClient.getBranches(projectKey);
+		branchesForProject.addAll(gitClient.getDefaultBranchForProject());
 		return Response.ok(branchesForProject).build();
 	}
 

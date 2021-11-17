@@ -74,8 +74,8 @@
 				}
 			});
 	};
-	
-	/*
+
+	/**
 	 * external references: condec.dialog
 	 */
 	ConDecGitAPI.prototype.getSummarizedCode = function(id, documentationLocation, probability, callback) {
@@ -87,20 +87,31 @@
 				}
 			});
 	};
+
+	/**
+	 * external references: dashboard/condec.git.branches.dashboard.js
+	 */
+	ConDecGitAPI.prototype.getElementsFromBranchesOfProject = function(projectKey) {
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/elementsFromBranchesOfProject?projectKey=" + projectKey);
+	};
+
+	/**
+	 * external references: condec.git.js
+	 */
+	ConDecGitAPI.prototype.getBranches = function() {
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		if (jiraIssueKey !== undefined && jiraIssueKey !== null) {
+			return this.getElementsFromBranchesOfJiraIssue(jiraIssueKey);
+		}
+		return this.getElementsFromBranchesOfProject(conDecAPI.projectKey);
+	};
 	
+	/**
+	 * external references: none, only local usage in getBranches
+	 */
 	ConDecGitAPI.prototype.getElementsFromBranchesOfJiraIssue = function(jiraIssueKey) {
 		return generalApi.getJSONReturnPromise(
 			`${this.restPrefix}/elementsFromBranchesOfJiraIssue?issueKey=${jiraIssueKey}`);
-	};
-	
-	/*
-	 * external references: dashboard/condec.git.branches.dashboard.js
-	 */
-	ConDecGitAPI.prototype.getElementsFromBranchesOfProject = function(projectKey, callback) {
-		generalApi.getJSON(conDecGitAPI.restPrefix + "/elementsFromBranchesOfProject?projectKey=" + projectKey,
-			function(error, result) {
-				callback(error, result);
-			});
 	};
 
 	global.conDecGitAPI = new ConDecGitAPI();

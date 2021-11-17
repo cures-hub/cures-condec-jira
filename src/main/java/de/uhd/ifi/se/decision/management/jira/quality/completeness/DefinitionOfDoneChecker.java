@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -183,17 +180,18 @@ public class DefinitionOfDoneChecker {
 		}
 
 		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
-			return QualityProblem.DECISION_COVERAGE_TOO_LOW;
+			return new QualityProblem(QualityProblemType.DECISION_COVERAGE_TOO_LOW);
 		} else {
-			return QualityProblem.NO_DECISION_COVERAGE;
+			return new QualityProblem(QualityProblemType.NO_DECISION_COVERAGE);
 		}
 	}
 
 	/**
-	 * @return a list of {@link QualityProblem} of the {@link KnowledgeElement}.
+	 * @return a list of {@link QualityProblemType} of the {@link KnowledgeElement}.
 	 */
 	public static List<QualityProblem> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
+
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		QualityProblem coverageProblem = getCoverageQuality(knowledgeElement, KnowledgeType.DECISION, filterSettings);
@@ -202,7 +200,7 @@ public class DefinitionOfDoneChecker {
 		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			qualityProblems.add(QualityProblem.INCOMPLETE_KNOWLEDGE_LINKED);
+			qualityProblems.add(new QualityProblem(QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED));
 		}
 
 		if (knowledgeElementCheckMap.containsKey(knowledgeElement.getType())) {
@@ -216,7 +214,7 @@ public class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * @return a string detailing all {@link QualityProblem} of the
+	 * @return a string detailing all {@link QualityProblemType} of the
 	 *         {@link KnowledgeElement}.
 	 */
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
@@ -227,31 +225,16 @@ public class DefinitionOfDoneChecker {
 		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityProblem problem : qualityProblems) {
-			if (problem.equals(QualityProblem.NO_DECISION_COVERAGE)) {
-				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.equals(QualityProblem.DECISION_COVERAGE_TOO_LOW)) {
-				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.equals(QualityProblem.INCOMPLETE_KNOWLEDGE_LINKED)) {
-				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
+			if (problem.getType() == QualityProblemType.NO_DECISION_COVERAGE) {
+				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
+			} else if (problem.getType() == QualityProblemType.DECISION_COVERAGE_TOO_LOW) {
+				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
+			} else if (problem.getType() == QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED) {
+				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
 			} else {
-				text.append(problem.getDescription()).append(System.lineSeparator());
+				text.append(problem.getExplanation()).append(System.lineSeparator());
 			}
 		}
 		return text.toString().strip();
-	}
-
-	/**
-	 * @return an ArrayNode of ObjectNodes detailing all {@link QualityProblem} of
-	 *         the {@link KnowledgeElement}.
-	 */
-	public static ArrayNode getQualityProblemsAsJson(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
-		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
-		ObjectMapper mapper = new ObjectMapper();
-		ArrayNode qualityProblemsJson = mapper.createArrayNode();
-		for (QualityProblem problem : qualityProblems) {
-			qualityProblemsJson.add(problem.getJson());
-		}
-
-		return qualityProblemsJson;
 	}
 }

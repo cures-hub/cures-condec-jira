@@ -13,6 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblemType;
 
 /**
  * Extracts decision knowledge elements from {@link CodeComment}s of a
@@ -100,6 +102,19 @@ public class RationaleFromCodeCommentParser {
 		while (tagMatcher.find()) {
 			elements.add(parseNextElement(comment, tagMatcher));
 		}
+
+		if (elements.stream().noneMatch(element -> element.getType().getSuperType() == KnowledgeType.PROBLEM)) {
+			elements.forEach(element -> {
+				element.getQualityProblems().add(new QualityProblem(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ISSUE));
+			});
+		}
+
+		if (elements.stream().noneMatch(element -> element.getType() == KnowledgeType.DECISION)) {
+			elements.forEach(element -> {
+				element.getQualityProblems().add(new QualityProblem(QualityProblemType.ISSUE_DOESNT_HAVE_DECISION));
+			});
+		}
+
 		return elements;
 	}
 

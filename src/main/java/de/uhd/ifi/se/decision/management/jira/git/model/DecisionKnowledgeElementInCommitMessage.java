@@ -45,7 +45,7 @@ public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
 
 	@XmlElement
 	public String getUrl() {
-		return repoUri;
+		return repoUri.replace(".git", "") + "/commit/" + getCommitName();
 	}
 
 	public void setRepoUri(String repoUri) {

@@ -37,15 +37,15 @@ public class DecisionCheck implements KnowledgeElementCheck {
 		List<QualityProblem> qualityProblems = new ArrayList<>();
 
 		if (!hasDecisionProblem()) {
-			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_ISSUE);
+			qualityProblems.add(new QualityProblem(QualityProblemType.DECISION_DOESNT_HAVE_ISSUE));
 		}
 
 		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
-			qualityProblems.add(QualityProblem.DECISION_IS_CHALLENGED);
+			qualityProblems.add(new QualityProblem(QualityProblemType.DECISION_IS_CHALLENGED));
 		}
 
 		if (!hasPro(definitionOfDone)) {
-			qualityProblems.add(QualityProblem.DECISION_DOESNT_HAVE_PRO);
+			qualityProblems.add(new QualityProblem(QualityProblemType.DECISION_DOESNT_HAVE_PRO));
 		}
 
 		return qualityProblems;

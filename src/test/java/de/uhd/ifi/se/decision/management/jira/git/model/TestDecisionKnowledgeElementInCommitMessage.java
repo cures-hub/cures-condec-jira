@@ -33,7 +33,9 @@ public class TestDecisionKnowledgeElementInCommitMessage extends TestSetUpGit {
 	@Test
 	public void testUrl() {
 		commitMessageElement.setRepoUri(GIT_URI);
-		assertEquals(GIT_URI, commitMessageElement.getUrl());
+		RevCommit commit = gitClient.getDefaultBranchCommits().get(0);
+		commitMessageElement.setCommit(commit);
+		assertEquals(GIT_URI + "/commit/" + commitMessageElement.getCommitName(), commitMessageElement.getUrl());
 	}
 
 	@Test

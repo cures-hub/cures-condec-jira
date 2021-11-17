@@ -64,13 +64,11 @@
 		<!-- dashboard item thumbnail -->
 		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<!-- style sheets -->
-		<resource type="download" name="condec.tab.css" location="/css/condec.tab.css" />
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 		<resource type="download" name="visTimeLine.css" location="/css/visTimeLine.css" />
 		<resource type="download" name="matrix.css" location="/css/matrix.css" />
-		<resource type="download" name="gitdiffviewer.css" location="/css/gitdiffviewer.css" />
 		<resource type="download" name="vis-network.css" location="/js/lib/vis-network/dist/dist/vis-network.css" />
 		<resource type="download" name="vis-timeline-graph2d.min.css"
 			location="/js/lib/vis-timeline/styles/vis-timeline-graph2d.min.css" />
@@ -130,9 +128,7 @@
 		<resource type="download" name="condec.context.menu.js" location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
 		<resource type="download" name="condec.knowledge.page.js" location="/js/condec.knowledge.page.js" />
-		<resource type="download" name="condec.gitdiffviewer.js" location="/js/git/condec.gitdiffviewer.js" />
-		<resource type="download" name="condec.git.code.elements.linker.js"
-			location="/js/git/condec.git.code.elements.linker.js" />
+		<resource type="download" name="condec.git.js" location="/js/git/condec.git.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js" location="/js/condec.tree.viewer.js" />
 		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
@@ -559,8 +555,6 @@
 			location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
-		<resource type="download" name="condec.git.code.elements.linker.js"
-			location="/js/condec.git.code.elements.linker.js" />
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
@@ -572,10 +566,10 @@
 	<!-- ConDec dashboard items -->
 	<!-- https://developer.atlassian.com/server/jira/platform/building-a-dashboard-item/ https://developer.atlassian.com/server/jira/platform/writing-a-dashboard-item-app/ 
 		Dashboard item will eventually replace gadgets: https://developer.atlassian.com/server/jira/platform/dashboard-item-module/ -->
-	<dashboard-item key="condec-feature-branch-dashboard-item"
-		name="ConDec Dashboard for Feature Task Branches" configurable="true">
+	<dashboard-item key="condec-knowledge-in-git-dashboard-item"
+		name="ConDec Dashboard for Knowledge in Git" configurable="true">
 		<definition>
-			<title key="condec.dashboard.featurebranch.title" />
+			<title key="condec.dashboard.knowledge.in.git.title" />
 			<categories>
 				<category>Jira</category>
 			</categories>
@@ -585,10 +579,10 @@
 			<thumbnail
 				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
 		</definition>
-		<description key="condec.dashboard.featurebranch.description" />
+		<description key="condec.dashboard.knowledge.in.git.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/featureBranches.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.FeatureBranchQualityDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.KnowledgeInGitDashboardItem" />
 		<amd-module>dashboard/branches</amd-module>
 	</dashboard-item>
 

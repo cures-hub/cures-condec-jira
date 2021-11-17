@@ -130,3 +130,69 @@ a:focus a:hover {
   display: flex; 
   justify-content: flex-end;
 }
+
+.condec-box {
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	border-radius: 0.8em;
+	padding: 0.3em;
+	border: 1px solid black;
+	position: relative;
+}
+
+.decision, .alternative {
+	margin-left: 0.5em;
+}
+
+.pro, .con {
+	margin-left: 1em;
+}
+
+.quality-problem {
+    position: absolute;
+    top: 0.5em;
+    right: 0.3em;
+
+	overflow: hidden;
+	color: red;
+    width: 0.6em;
+    height: 0.6em;
+    background: red;
+    border-radius: 1em;
+    border: 0.3em red solid;
+	animation: rat-link-blinking 2s infinite;
+
+    margin: 0;
+    cursor: help;
+}
+
+@keyframes rat-link-blinking {
+  0%	{ opacity: 0; }
+  85%	{ opacity: 1; }
+  100%	{ opacity: 0; }
+}
+
+.menu-item.condec-default {
+    background: white;
+}
+.menu-item.condec-error {
+    background: crimson;
+}
+.menu-item.condec-warning {
+    background: orange;
+}
+.menu-item.condec-fine {
+    background: limegreen;
+}
+.text-field.condec-default {
+    color: black;
+}
+.text-field.condec-error {
+    color: crimson;
+}
+.condec-warning, .text-field.condec-warning {
+    color: orange;
+}
+.condec-fine, .text-field.condec-fine {
+    color: forestgreen;
+}
