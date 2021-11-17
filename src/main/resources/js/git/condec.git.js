@@ -193,13 +193,19 @@
 
 	function createBranchQualityAssessment(branch) {
 		qualitySummary = document.createElement("div");
-		qualitySummary.className = "qualitySummary";
-		if (branch.commitElements.length > 0 && branch.codeElements.length > 0) {
-			qualitySummary.innerText = "No quality problems found in this branch.";
-			qualitySummary.classList.add("noProblems");
-		} else {
+		qualitySummary.className = "condec-box";
+		if (branch.commitElements.length + branch.codeElements.length === 0) {
 			qualitySummary.innerText = "No (new) decision knowledge found in commit messages and comments of changed files!";
-			qualitySummary.classList.add("noRationale");
+			qualitySummary.classList.add("condec-warning");
+		} else if (branch.qualityProblems.length === 0) {
+			qualitySummary.innerText = "No quality problems found in this branch.";
+			qualitySummary.classList.add("condec-fine");
+		} else {
+			qualitySummary.innerHTML = "Quality problems found in this branch! Please improve the decision knowledge documentation in code comments.<br\>";
+			for (problem of branch.qualityProblems) {
+				qualitySummary.innerHTML += problem.explanation + "<br\>";
+			}
+			qualitySummary.classList.add("condec-error");
 		}
 		return qualitySummary;
 	}

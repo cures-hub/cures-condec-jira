@@ -68,8 +68,4 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 	public List<QualityProblem> getQualityProblems() {
 		return qualityProblems;
 	}
-
-	public void setQualityProblems(List<QualityProblem> qualityProblems) {
-		this.qualityProblems = qualityProblems;
-	}
 }

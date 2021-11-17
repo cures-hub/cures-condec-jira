@@ -1,10 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
 import org.eclipse.jgit.lib.Ref;
+
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
 
 /**
  * Represents a branch in git with commits, changed code files, and decision
@@ -55,5 +59,11 @@ public class Branch {
 
 	public void setRepoUri(String repoUri) {
 		this.repoUri = repoUri;
+	}
+
+	@XmlElement
+	public Set<QualityProblem> getQualityProblems() {
+		return codeElements.stream().flatMap(element -> element.getQualityProblems().stream())
+				.collect(Collectors.toSet());
 	}
 }

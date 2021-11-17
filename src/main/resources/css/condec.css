@@ -140,32 +140,6 @@ a:focus a:hover {
 	position: relative;
 }
 
-.qualitySummary {
-	border-radius: 0.8em;
-	border: 1px solid black;
-	padding: 1em;
-	background: rgb(222, 250, 222);
-	background: repeating-linear-gradient(
-		-45deg,
-		rgb(222, 250, 222),
-		rgb(222, 250, 222) 16px,
-		yellow 10px,
-		yellow 20px
-    );
-}
-
-.qualitySummary.hasErrors,
-.qualitySummary.hasWarnings {
-	background: yellow;
-	background: repeating-linear-gradient(
-		-45deg,
-		orange,
-		orange 16px,
-		yellow 10px,
-		yellow 20px
-    );
-}
-
 .decision, .alternative {
 	margin-left: 0.5em;
 }
@@ -193,7 +167,32 @@ a:focus a:hover {
 }
 
 @keyframes rat-link-blinking {
-  0%   { opacity: 0; }
-  85% { opacity: 1; }
-  100% { opacity: 0; }
+  0%	{ opacity: 0; }
+  85%	{ opacity: 1; }
+  100%	{ opacity: 0; }
+}
+
+.menu-item.condec-default {
+    background: white;
+}
+.menu-item.condec-error {
+    background: crimson;
+}
+.menu-item.condec-warning {
+    background: orange;
+}
+.menu-item.condec-fine {
+    background: limegreen;
+}
+.text-field.condec-default {
+    color: black;
+}
+.condec-error, .text-field.condec-error {
+    color: crimson;
+}
+.condec-warning, .text-field.condec-warning {
+    color: orange;
+}
+.condec-fine, .text-field.condec-fine {
+    color: forestgreen;
 }
