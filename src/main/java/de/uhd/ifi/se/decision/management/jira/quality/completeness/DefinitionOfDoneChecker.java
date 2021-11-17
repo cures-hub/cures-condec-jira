@@ -225,14 +225,14 @@ public class DefinitionOfDoneChecker {
 		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityProblem problem : qualityProblems) {
-			if (problem.equals(QualityProblemType.NO_DECISION_COVERAGE)) {
-				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.equals(QualityProblemType.DECISION_COVERAGE_TOO_LOW)) {
-				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.equals(QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED)) {
-				text.append(problem.getDescription()).append(System.lineSeparator()).append(System.lineSeparator());
+			if (problem.getType() == QualityProblemType.NO_DECISION_COVERAGE) {
+				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
+			} else if (problem.getType() == QualityProblemType.DECISION_COVERAGE_TOO_LOW) {
+				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
+			} else if (problem.getType() == QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED) {
+				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
 			} else {
-				text.append(problem.getDescription()).append(System.lineSeparator());
+				text.append(problem.getExplanation()).append(System.lineSeparator());
 			}
 		}
 		return text.toString().strip();

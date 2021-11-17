@@ -4,17 +4,17 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class QualityProblem {
 
-	private String name;
+	private QualityProblemType type;
 	private String explanation;
 
 	public QualityProblem(QualityProblemType qualityProblemType) {
-		this.name = qualityProblemType.name();
+		this.type = qualityProblemType;
 		this.setExplanation(qualityProblemType.getDescription());
 	}
 
 	@XmlElement
 	public String getName() {
-		return name;
+		return type.name();
 	}
 
 	@XmlElement
@@ -24,6 +24,10 @@ public class QualityProblem {
 
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
+	}
+
+	public QualityProblemType getType() {
+		return type;
 	}
 
 }
