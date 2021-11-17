@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +38,8 @@ public class TestDecisionKnowledgeElementInCommitMessage extends TestSetUpGit {
 		commitMessageElement.setRepoUri(GIT_URI);
 		RevCommit commit = gitClient.getDefaultBranchCommits().get(0);
 		commitMessageElement.setCommit(commit);
-		assertEquals(GIT_URI + "/commit/" + commitMessageElement.getCommitName(), commitMessageElement.getUrl());
+		assertEquals(URLEncoder.encode(GIT_URI + "/commit/" + commitMessageElement.getCommitName(),
+				Charset.defaultCharset()), commitMessageElement.getUrl());
 	}
 
 	@Test

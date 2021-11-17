@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,7 +56,7 @@ public class Branch {
 
 	@XmlElement
 	public String getRepoUri() {
-		return repoUri;
+		return URLEncoder.encode(repoUri, Charset.defaultCharset());
 	}
 
 	public void setRepoUri(String repoUri) {

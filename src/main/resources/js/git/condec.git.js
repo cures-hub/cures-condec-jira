@@ -63,9 +63,9 @@
 		branchCollapsableContainer.id = branch.id + hash(branch.name);
 
 		branchRepoLink = document.createElement("a");
-		branchRepoLink.href = branch.repoUri;
+		branchRepoLink.href = decodeURIComponent(branch.repoUri);
 		branchRepoLink.target = "_blank";
-		branchRepoLink.innerText = branch.repoUri;
+		branchRepoLink.innerText = decodeURIComponent(branch.repoUri);
 		branchRepoLink.className = "right-aligned";
 		branchCollapsableContainer.appendChild(branchRepoLink);
 
@@ -82,7 +82,7 @@
 		root.className = "condec-box " + element.type.toLowerCase();
 
 		var img = document.createElement("img");
-		img.src = element.image;
+		img.src = decodeURIComponent(element.image);
 		img.className = "emoticon";
 		root.appendChild(img);
 		root.insertAdjacentText("beforeend", " " + element.summary);
@@ -113,7 +113,7 @@
 
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Code File in Git";
-				link.href = element.url;
+				link.href = decodeURIComponent(element.url);
 				link.target = "_blank";
 				codeFileHtml.appendChild(link);
 			}
@@ -162,7 +162,7 @@
 
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Commit in Git";
-				link.href = element.url;
+				link.href = decodeURIComponent(element.url);
 				link.target = "_blank";
 				commitHtml.appendChild(link);
 			}

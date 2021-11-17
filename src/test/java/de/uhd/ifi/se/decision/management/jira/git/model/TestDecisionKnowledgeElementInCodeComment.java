@@ -39,7 +39,7 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 		file.setSummary("File.java");
 		file.setRepoUri("https://github.com/cures-hub/cures-condec-jira");
 		codeCommentElement.setCodeFile(file);
-		assertEquals("https://github.com/cures-hub/cures-condec-jira/search?q=filename:File.java",
+		assertEquals("https%3A%2F%2Fgithub.com%2Fcures-hub%2Fcures-condec-jira%2Fsearch%3Fq%3Dfilename%3AFile.java",
 				codeCommentElement.getUrl());
 	}
 

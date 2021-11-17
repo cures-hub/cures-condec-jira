@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.eclipse.jgit.lib.Ref;
@@ -56,7 +58,7 @@ public class TestBranch extends TestSetUpGit {
 	@Test
 	public void testRepoUri() {
 		branch.setRepoUri(GIT_URI);
-		assertEquals(GIT_URI, branch.getRepoUri());
+		assertEquals(URLEncoder.encode(GIT_URI, Charset.defaultCharset()), branch.getRepoUri());
 	}
 
 	@Test

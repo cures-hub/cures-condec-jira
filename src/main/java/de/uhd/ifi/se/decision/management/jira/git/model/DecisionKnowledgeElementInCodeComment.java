@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,15 +27,16 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 	private ChangedFile codeFile;
 	private int startLine;
 	private List<QualityProblem> qualityProblems;
+	private boolean isOnDefaultBranch;
 
 	public DecisionKnowledgeElementInCodeComment() {
-		this.documentationLocation = DocumentationLocation.CODE;
-		this.qualityProblems = new ArrayList<>();
+		documentationLocation = DocumentationLocation.CODE;
+		qualityProblems = new ArrayList<>();
 	}
 
 	@XmlElement
 	public String getImage() {
-		return getType().getIconUrl();
+		return URLEncoder.encode(getType().getIconUrl(), Charset.defaultCharset());
 	}
 
 	@XmlElement
@@ -43,7 +46,12 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
 	@XmlElement
 	public String getUrl() {
-		return codeFile.getRepoUri().replace(".git", "") + "/search?q=filename:" + getCodeFileName();
+		String urlAsString = codeFile.getRepoUri().replace(".git", "") + "/search?q=filename:" + getCodeFileName();
+		return URLEncoder.encode(urlAsString, Charset.defaultCharset());
+	}
+
+	public String getRepoUri() {
+		return codeFile.getRepoUri();
 	}
 
 	public void setStartLine(int startLine) {
@@ -67,5 +75,13 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 	@XmlElement
 	public List<QualityProblem> getQualityProblems() {
 		return qualityProblems;
+	}
+
+	public boolean isOnDefaultBranch() {
+		return isOnDefaultBranch;
+	}
+
+	public void setOnDefaultBranch(boolean isOnDefaultBranch) {
+		this.isOnDefaultBranch = isOnDefaultBranch;
 	}
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
@@ -472,16 +475,25 @@ public class GitClient {
 
 	public List<Branch> getDefaultBranchForProject() {
 		List<Branch> branches = new ArrayList<>();
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
+		filterSettings.setOnlyDecisionKnowledgeShown(true);
+		filterSettings.setDocumentationLocations(List.of("Code"));
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		Set<KnowledgeElement> codeElements = filteringManager.getElementsMatchingFilterSettings();
+
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			List<RevCommit> commits = gitClientForSingleRepo.getDefaultBranchCommits();
-			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			if (commits.isEmpty()) {
-				continue;
+			String repoUri = gitClientForSingleRepo.getRemoteUri();
+			List<DecisionKnowledgeElementInCodeComment> elementsFromRepo = new ArrayList<>();
+			for (KnowledgeElement element : codeElements) {
+				if (!(element instanceof DecisionKnowledgeElementInCodeComment)) {
+					continue;
+				}
+				if (((DecisionKnowledgeElementInCodeComment) element).getRepoUri().equals(repoUri)) {
+					elementsFromRepo.add((DecisionKnowledgeElementInCodeComment) element);
+				}
 			}
-			// because first commit does not have a parent commit
-			commits.remove(0);
-			Branch branch = new Branch(gitClientForSingleRepo.getDefaultRef(),
-					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits));
+
+			Branch branch = new Branch(gitClientForSingleRepo.getDefaultRef(), elementsFromRepo, new ArrayList<>());
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			branches.add(branch);
 		}
