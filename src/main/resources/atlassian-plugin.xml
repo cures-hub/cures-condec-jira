@@ -129,8 +129,6 @@
 		<resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
 		<resource type="download" name="condec.knowledge.page.js" location="/js/condec.knowledge.page.js" />
 		<resource type="download" name="condec.git.js" location="/js/git/condec.git.js" />
-		<resource type="download" name="condec.git.code.elements.linker.js"
-			location="/js/git/condec.git.code.elements.linker.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js" location="/js/condec.tree.viewer.js" />
 		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
@@ -557,8 +555,6 @@
 			location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
-		<resource type="download" name="condec.git.code.elements.linker.js"
-			location="/js/condec.git.code.elements.linker.js" />
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />

@@ -124,6 +124,7 @@
 		dashboardAPI.hideLoadingBar();
 		if (error) {
 			showDashboardSection("condec-dashboard-contents-data-error-", viewIdentifier);
+			console.log(error);
 		} else {
 			showDashboardSection("condec-dashboard-contents-container-", viewIdentifier);
 			dashboard.renderData(result, filterSettings);
@@ -133,8 +134,7 @@
 	};
 
 	/**
-	 * Sets up the dashboard configuration screen and fills it 
-	 * from the preferences.
+	 * Sets up the dashboard configuration screen and fills it from the preferences.
 	 *
 	 * @param viewIdentifier identifies the html elements of the dashboard
 	 * @param dashboardAPI used to call methods of the Jira dashboard api

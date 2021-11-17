@@ -470,6 +470,24 @@ public class GitClient {
 		return branches;
 	}
 
+	public List<Branch> getDefaultBranchForProject() {
+		List<Branch> branches = new ArrayList<>();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			List<RevCommit> commits = gitClientForSingleRepo.getDefaultBranchCommits();
+			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+			if (commits.isEmpty()) {
+				continue;
+			}
+			// because first commit does not have a parent commit
+			commits.remove(0);
+			Branch branch = new Branch(gitClientForSingleRepo.getDefaultRef(),
+					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits));
+			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
+			branches.add(branch);
+		}
+		return branches;
+	}
+
 	/**
 	 * @return all {@link Ref} objects.
 	 */

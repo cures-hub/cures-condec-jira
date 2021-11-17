@@ -9,11 +9,13 @@
 (function(global) {
 
 	var ConDecGit = function() {
-		this.contentHtml = "";
 	};
 
+	/**
+	 * Renders git branches in HTML.
+	 */
 	ConDecGit.prototype.getBranchesDiff = function() {
-		contentHtml = document.getElementById("featureBranches-container");
+		var contentHtml = document.getElementById("featureBranches-container");
 		contentHtml.innerHTML = "<aui-spinner></aui-spinner>";
 
 		conDecGitAPI.getBranches()
@@ -26,7 +28,9 @@
 					contentHtml.innerText = "No feature branches found for this Jira issue.";
 				} else {
 					contentHtml.innerText = "";
-					showBranchesDiff(branches);
+					for (branch of branches) {
+						contentHtml.appendChild(createBranchHTML(branch));
+					}
 				}
 			})
 			.catch(error => {
@@ -35,31 +39,10 @@
 	};
 
 	/**
-	 * Renders all git branches in HTML.
-	 */
-	function showBranchesDiff(branches) {
-		console.debug("showBranchesDiff");
-
-		for (var branch of branches) {
-			showBranchDiff(branch);
-
-			/* assess relations between rationale and their problems */
-			conDecLinkBranchCandidates.init(branch.commitElements, branch.name, branch.id,
-				"messages");
-			/* render results in HTML */
-			conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
-
-			conDecLinkBranchCandidates.init(branch.codeElements, branch.name, branch.id, "files");
-			/* render results in HTML */
-			conDecLinkBranchCandidates.attachProblemsToElementsInHTML();
-		}
-	}
-
-	/**
 	 * Renders one git branch in HTML.
 	 */
-	function showBranchDiff(branch) {
-		console.debug("showBranchDiff");
+	function createBranchHTML(branch) {
+		console.debug("createBranchHTML");
 
 		branchContainer = document.createElement("div");
 		var branchLabel = document.createElement("h3");
@@ -91,7 +74,7 @@
 		branchCollapsableContainer.appendChild(createBranchCodeElementsHtml(branch.codeElements));
 		branchContainer.appendChild(branchCollapsableContainer);
 
-		contentHtml.appendChild(branchContainer);
+		return branchContainer;
 	}
 
 	function getElementAsHTML(element) {
@@ -198,14 +181,15 @@
 			qualitySummary.innerText = "No (new) decision knowledge found in commit messages and comments of changed files!";
 			qualitySummary.classList.add("condec-warning");
 		} else if (branch.qualityProblems.length === 0) {
-			qualitySummary.innerText = "No quality problems found in this branch.";
+			qualitySummary.innerText = "No quality problems found in this branch. Great work!";
 			qualitySummary.classList.add("condec-fine");
 		} else {
-			qualitySummary.innerHTML = "Quality problems found in this branch! Please improve the decision knowledge documentation in code comments.<br\>";
+			qualitySummary.innerHTML = "The decision knowledge documentation in this branch has the following quality problems: <ul>";
 			for (problem of branch.qualityProblems) {
-				qualitySummary.innerHTML += problem.explanation + "<br\>";
+				qualitySummary.innerHTML += "<li>" + problem.explanation + "</li>";
 			}
-			qualitySummary.classList.add("condec-error");
+			qualitySummary.innerHTML += "</ul>Please improve the decision knowledge documentation in code comments in git.";
+			qualitySummary.classList.add("dodViolation");
 		}
 		return qualitySummary;
 	}
