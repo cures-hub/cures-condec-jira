@@ -12,7 +12,6 @@ linkBranchCandidates
   - label for the origin of the rationale, either messages or files
 */
 
-
 (function(global) {
   var ConDecLinkBranchCandidates = function ConDecLinkBranchCandidates() {};
 
@@ -20,19 +19,7 @@ linkBranchCandidates
   var BRANCH_STATUS_UNSET = "No rationale";
   var BRANCH_STATUS_FINE =  "Good";
   var BRANCH_STATUS_BAD =  "Incorrect";
-  /* @issue What status description should be used for charts?
-	 @decision use short adjectives!
-	 @pro takes just little space.
-	 @con might be ambiguous for not experienced plug-in users.
-	 @alternative use explicit sentences!
-	 @con takes too much space
-	 @con does not insert more information.
-	 @pro it is absolutely clear what the status means.
-  var BRANCH_STATUS_UNSET = "No rationale was observed in this branch.";
-  var BRANCH_STATUS_FINE =  "All rationale elements are properly linked in this branch."
-  var BRANCH_STATUS_BAD =  "Some rationale elements should be corrected in this branch."
-  */
-
+  
   /*  bad problem explanations */
   var ARGUMENT_WITHOUT_PARENT_ELEMENT = "Argument without parent alternative";
   var ALTERNATIVE_DECISION_WITHOUT_PARENT_ELEMENT =
@@ -56,7 +43,6 @@ linkBranchCandidates
   /*  parser helpers */
   var currentIssueId = null;
   var currentAlternativeId = null;
-  var currentArgumentId = null; /*  will not be used at all? */
   var currentSource = null;
   var nextRationaleExpectedOnLine = null;
 

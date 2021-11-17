@@ -33,7 +33,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		<li class="menu-item" id="menu-item-chronology">
 			<a href="#chronology-tab">$i18n.getText('condec.label.evolution')</a>
 		</li>
-		<li class="menu-item" id="menu-item-git" data-condec="git-item">
+		<li class="menu-item" id="menu-item-git">
 			<a href="#git-tab">$i18n.getText('condec.knowledge.in.git')</a>
 		</li>
         <li class="menu-item" id="menu-item-quality-check-$viewIdentifier">

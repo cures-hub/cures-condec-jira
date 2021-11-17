@@ -16,8 +16,8 @@
 		contentHtml = document.getElementById("featureBranches-container");
 		contentHtml.innerHTML = "<aui-spinner></aui-spinner>";
 
-		conDecGitAPI.getElementsFromBranchesOfJiraIssue(conDecAPI.getIssueKey())
-			.then((branches) => {
+		conDecGitAPI.getBranches()
+			.then(branches => {
 				if (branches === null || branches === undefined) {
 					contentHtml.innerText = "Git extraction is disabled.";
 					return;
@@ -29,7 +29,7 @@
 					showBranchesDiff(branches);
 				}
 			})
-			.catch((error) => {
+			.catch(error => {
 				contentHtml.innerText = "An error occurred while fetching REST data: " + error;
 			});
 	};
@@ -71,13 +71,13 @@
 		branchExpander.innerText = "Hide details for branch";
 		branchExpander.setAttribute("data-replace-text", "Show details for branch");
 		branchExpander.className = "aui-expander-trigger right-aligned";
-		branchExpander.setAttribute("aria-controls", branch.id);
+		branchExpander.setAttribute("aria-controls", branch.id + hash(branch.name));
 		branchContainer.appendChild(branchExpander);
 
 		branchCollapsableContainer = document.createElement("div");
 		branchCollapsableContainer.className = "aui-expander-content";
 		branchCollapsableContainer.setAttribute("aria-expanded", true);
-		branchCollapsableContainer.id = branch.id;
+		branchCollapsableContainer.id = branch.id + hash(branch.name);
 
 		branchRepoLink = document.createElement("a");
 		branchRepoLink.href = branch.repoUri;
@@ -191,6 +191,16 @@
 			qualitySummary.classList.add("noRationale");
 		}
 		return qualitySummary;
+	}
+
+	function hash(string) {
+		var hash = 0;
+		for (i = 0; i < string.length; i++) {
+			ch = string.charCodeAt(i);
+			hash = ((hash << 5) - hash) + ch;
+			hash = hash & hash;
+		}
+		return hash;
 	}
 
 	global.conDecGit = new ConDecGit();

@@ -15,5 +15,11 @@ $(document).ready(function () {
 			isOnceClicked = true;
 		}
 	});
+	AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+		if (!isOnceClicked && event.target.href.includes("#git-tab")) {
+			conDecGit.getBranchesDiff();
+			isOnceClicked = true;
+		}
+   });
 });
 </script>

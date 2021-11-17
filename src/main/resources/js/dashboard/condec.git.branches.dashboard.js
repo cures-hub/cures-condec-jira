@@ -24,9 +24,13 @@
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
 	ConDecBranchesDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
-		conDecGitAPI.getElementsFromBranchesOfProject(filterSettings.projectKey, function (error, branches) {
-			conDecDashboard.processData(error, branches, conDecBranchesDashboard, "branch",
+		conDecGitAPI.getElementsFromBranchesOfProject(filterSettings.projectKey)
+		.then(branches => {
+			conDecDashboard.processData("", branches, conDecBranchesDashboard, "branch",
 				dashboardAPI, filterSettings);
+		}).catch(error => {
+			conDecDashboard.processData(error, null, conDecBranchesDashboard, "branch",
+					dashboardAPI, filterSettings);
 		});
 	};
 
