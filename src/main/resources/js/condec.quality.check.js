@@ -117,12 +117,11 @@
 		var text = "";
 
 		qualityProblems.forEach(function(problem) {
+			text += problem.explanation;
 			if (problem.name === "NO_DECISION_COVERAGE" || problem.name === "DECISION_COVERAGE_TOO_LOW" ||
-				problem.name === "INCOMPLETE_KNOWLEDGE_LINKED") {
-				text += problem.explanation;
+				problem.name === "INCOMPLETE_KNOWLEDGE_LINKED") {				
 				text += "\n\n";
 			} else {
-				text += problem.explanation;
 				text += "\n";
 			}
 		})
