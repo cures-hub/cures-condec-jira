@@ -29,5 +29,4 @@ public class QualityProblem {
 	public QualityProblemType getType() {
 		return type;
 	}
-
 }
