@@ -163,39 +163,9 @@ public class Diff {
 				.map(element -> {
 					element.setProject(projectKey);
 					element.setCommit(commit);
+					element.setRepoUri(repoUri);
 					return element;
 				}).collect(Collectors.toList());
 		return elementsFromMessage;
 	}
-
-	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(Ref branch) {
-		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
-		for (RevCommit commit : commits) {
-			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
-				element.setRepoUri(repoUri);
-				elements.add(element);
-			}
-		}
-		return elements;
-	}
-
-	// public List<DecisionKnowledgeElementInCodeComment>
-	// getRationaleElementsFromCodeComments() {
-	// List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
-	// if (commits.isEmpty()) {
-	// return elements;
-	// }
-	// RevCommit baseCommit = commits.get(0);
-	// RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
-	// elements.addAll(getRationaleElementsFromCode(baseCommit,
-	// lastFeatureBranchCommit));
-	// return elements;
-	// }
-	//
-	// public List<DecisionKnowledgeElementInCodeComment>
-	// getRationaleElementsFromCode(RevCommit revCommitStart,
-	// RevCommit revCommitEnd) {
-	// Diff diff = getDiff(revCommitStart, revCommitEnd);
-	// return diff.getRationaleElementsFromCodeComments();
-	// }
 }

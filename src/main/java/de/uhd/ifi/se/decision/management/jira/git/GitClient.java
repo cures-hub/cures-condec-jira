@@ -23,9 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
-import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCommitMessage;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
-import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -463,8 +461,15 @@ public class GitClient {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			List<RevCommit> commits = gitClientForSingleRepo.getCommits(jiraIssue, true);
 			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			Diff branch = new Diff(gitClientForSingleRepo.getDefaultRef(),
-					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits));
+			Diff branch = new Diff();
+			branch.setRef(gitClientForSingleRepo.getDefaultRef());
+			branch.setCommits(commits);
+			if (!commits.isEmpty()) {
+				RevCommit baseCommit = commits.get(0);
+				RevCommit lastCommit = commits.get(commits.size() - 1);
+
+				branch.add(gitClientForSingleRepo.getDiff(baseCommit, lastCommit));
+			}
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			branches.add(branch);
 		}
@@ -506,56 +511,5 @@ public class GitClient {
 		getGitClientsForSingleRepos()
 				.forEach(gitClientForSingleRepo -> allRemoteRefs.addAll(gitClientForSingleRepo.getRefs()));
 		return allRemoteRefs;
-	}
-
-	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(Ref branch) {
-		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
-		for (RevCommit commit : getFeatureBranchCommits(branch)) {
-			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
-				element.setRepoUri(getRepoUriFromBranch(branch));
-				elements.add(element);
-			}
-		}
-		return elements;
-	}
-
-	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(
-			List<RevCommit> commits) {
-		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
-		for (RevCommit commit : commits) {
-			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
-				elements.add(element);
-			}
-		}
-		return elements;
-	}
-
-	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(List<RevCommit> commits) {
-		List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
-		if (commits.isEmpty()) {
-			return elements;
-		}
-		RevCommit baseCommit = commits.get(0);
-		RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
-		elements.addAll(getRationaleElementsFromCode(baseCommit, lastFeatureBranchCommit));
-		return elements;
-	}
-
-	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessage(RevCommit commit) {
-		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
-				commit.getFullMessage());
-		List<DecisionKnowledgeElementInCommitMessage> elementsFromMessage = extractorFromMessage.getElements().stream()
-				.map(element -> {
-					element.setProject(projectKey);
-					element.setCommit(commit);
-					return element;
-				}).collect(Collectors.toList());
-		return elementsFromMessage;
-	}
-
-	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCode(RevCommit revCommitStart,
-			RevCommit revCommitEnd) {
-		Diff diff = getDiff(revCommitStart, revCommitEnd);
-		return diff.getRationaleElementsFromCodeComments();
 	}
 }
