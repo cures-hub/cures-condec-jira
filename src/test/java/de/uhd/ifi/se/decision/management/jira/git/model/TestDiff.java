@@ -4,11 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 
@@ -21,13 +18,8 @@ public class TestDiff extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		diffForCommit = createDiff(mockJiraIssueForGitTestsTangledSingleCommit);
-		diffForJiraIssue = createDiff(mockJiraIssueForGitTestsTangled);
-	}
-
-	public static Diff createDiff(Issue jiraIssue) {
-		List<RevCommit> commits = gitClient.getCommits(jiraIssue);
-		return gitClient.getDiff(commits);
+		diffForCommit = gitClient.getDiff(mockJiraIssueForGitTestsTangledSingleCommit);
+		diffForJiraIssue = gitClient.getDiff(mockJiraIssueForGitTestsTangled);
 	}
 
 	@Test
