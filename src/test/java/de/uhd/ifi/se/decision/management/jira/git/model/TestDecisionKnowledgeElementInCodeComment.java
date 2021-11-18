@@ -21,6 +21,7 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 		codeCommentElement.setType(KnowledgeType.ISSUE);
 		codeCommentElement.setProject("TEST");
 		codeCommentElement.setStartLine(42);
+		codeCommentElement.setId(-23);
 	}
 
 	@Test
@@ -51,5 +52,10 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 	@Test
 	public void testImage() {
 		assertTrue(codeCommentElement.getImage().contains("issue.png"));
+	}
+
+	@Test
+	public void testCompareTo() {
+		assertEquals(23, codeCommentElement.compareTo(new DecisionKnowledgeElementInCodeComment()));
 	}
 }

@@ -22,7 +22,8 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProble
  * @see RationaleFromCodeCommentParser
  * @see GitClient#getRationaleElementsFromCodeComments(org.eclipse.jgit.lib.Ref)
  */
-public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
+public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement
+		implements Comparable<DecisionKnowledgeElementInCodeComment> {
 
 	private ChangedFile codeFile;
 	private int startLine;
@@ -74,5 +75,10 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 	@XmlElement
 	public List<QualityProblem> getQualityProblems() {
 		return qualityProblems;
+	}
+
+	@Override
+	public int compareTo(DecisionKnowledgeElementInCodeComment otherElement) {
+		return (int) (otherElement.getId() - id);
 	}
 }

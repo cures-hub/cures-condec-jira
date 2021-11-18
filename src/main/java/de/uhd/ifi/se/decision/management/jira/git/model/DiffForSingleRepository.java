@@ -112,7 +112,7 @@ public class DiffForSingleRepository {
 	@XmlElement
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
 		if (codeElements == null || codeElements.isEmpty()) {
-			return getRationaleElementsFromCodeComments();
+			codeElements = getRationaleElementsFromCodeComments();
 		}
 		return codeElements;
 	}
@@ -120,7 +120,7 @@ public class DiffForSingleRepository {
 	@XmlElement
 	public List<DecisionKnowledgeElementInCommitMessage> getCommitElements() {
 		if (commitElements == null || commitElements.isEmpty()) {
-			return getRationaleElementsFromCommitMessages();
+			commitElements = getRationaleElementsFromCommitMessages();
 		}
 		return commitElements;
 	}

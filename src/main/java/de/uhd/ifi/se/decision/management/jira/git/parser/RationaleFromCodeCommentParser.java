@@ -68,11 +68,10 @@ public class RationaleFromCodeCommentParser {
 	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCode(ChangedFile codeFile) {
 		List<DecisionKnowledgeElementInCodeComment> elementsFromCode = getRationaleElementsFromCodeComments(
 				codeFile.getCodeComments());
-		List<DecisionKnowledgeElementInCodeComment> knowledgeElements = elementsFromCode.stream().map(element -> {
+		for (DecisionKnowledgeElementInCodeComment element : elementsFromCode) {
 			element.setCodeFile(codeFile);
-			return element;
-		}).collect(Collectors.toList());
-		return knowledgeElements;
+		}
+		return elementsFromCode;
 	}
 
 	/**

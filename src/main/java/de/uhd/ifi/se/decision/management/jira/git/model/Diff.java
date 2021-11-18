@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Diff extends ArrayList<DiffForSingleRepository> {
 
@@ -20,10 +21,7 @@ public class Diff extends ArrayList<DiffForSingleRepository> {
 	 * @return files changed in the diff as a list of {@link ChangedFile} objects.
 	 */
 	public List<ChangedFile> getChangedFiles() {
-		List<ChangedFile> allFiles = new ArrayList<>();
-		for (DiffForSingleRepository diffForSingleRepository : this) {
-			allFiles.addAll(diffForSingleRepository.getChangedFiles());
-		}
-		return allFiles;
+		return stream().flatMap(diffForSingleRepo -> diffForSingleRepo.getChangedFiles().stream())
+				.collect(Collectors.toList());
 	}
 }

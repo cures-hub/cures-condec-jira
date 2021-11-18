@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.git;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -496,6 +497,8 @@ public class GitClient {
 					elementsFromRepo.add((DecisionKnowledgeElementInCodeComment) element);
 				}
 			}
+
+			Collections.sort(elementsFromRepo);
 
 			DiffForSingleRepository branch = new DiffForSingleRepository(gitClientForSingleRepo.getDefaultRef(),
 					elementsFromRepo, new ArrayList<>());
