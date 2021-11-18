@@ -23,12 +23,12 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProble
  */
 public class DiffForSingleRepository {
 
+	private Ref ref;
+	private String repoUri;
 	private List<ChangedFile> changedFiles;
 	private List<RevCommit> commits;
-	private Ref ref;
 	private List<DecisionKnowledgeElementInCodeComment> codeElements;
 	private List<DecisionKnowledgeElementInCommitMessage> commitElements;
-	private String repoUri;
 	private String projectKey;
 
 	public DiffForSingleRepository() {
