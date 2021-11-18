@@ -45,7 +45,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.CodeClassInDatabase;
 
 /**
- * Models a changed file as part of a {@link Diff}.
+ * Models a changed file as part of a {@link DiffForSingleRepository}.
  * 
  * @issue How to access the file content of a git file?
  * @decision Retrieve the file content from the git blob object and store it as
@@ -262,7 +262,7 @@ public class ChangedFile extends KnowledgeElement {
 	/**
 	 * @return the probability that the link between a {@link ChangedFile} and a
 	 *         requirement/work item is correct. If the link is wrong, the
-	 *         {@link Diff} is tangled.
+	 *         {@link DiffForSingleRepository} is tangled.
 	 */
 	public float getProbabilityOfCorrectness() {
 		return probabilityOfCorrectness;

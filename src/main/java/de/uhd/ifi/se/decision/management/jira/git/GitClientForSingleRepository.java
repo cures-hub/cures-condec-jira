@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
 
 /**
@@ -149,8 +150,9 @@ public class GitClientForSingleRepository {
 				}
 				fetchCommand.call();
 				ObjectId newId = getDefaultBranchPosition();
-				Diff diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
-				new CodeFileExtractorAndMaintainer(projectKey).maintainChangedFilesInDatabase(diffSinceLastFetch);
+				DiffForSingleRepository diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
+				new CodeFileExtractorAndMaintainer(projectKey)
+						.maintainChangedFilesInDatabase(new Diff(diffSinceLastFetch));
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
 			}
 		} catch (GitAPIException e) {
@@ -170,17 +172,17 @@ public class GitClientForSingleRepository {
 		return objectId;
 	}
 
-	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
+	public DiffForSingleRepository getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
 		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
 		getDefaultBranchCommits().addAll(newCommits);
 		if (newCommits.isEmpty()) {
-			return new Diff();
+			return new DiffForSingleRepository();
 		}
-		Diff diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size() - 1));
+		DiffForSingleRepository diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size() - 1));
 		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
 	}
 
-	public Diff addCommitsToChangedFiles(Diff diff, List<RevCommit> commits) {
+	public DiffForSingleRepository addCommitsToChangedFiles(DiffForSingleRepository diff, List<RevCommit> commits) {
 		for (RevCommit commit : commits) {
 			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
 			for (DiffEntry diffEntry : diffEntriesInCommit) {
@@ -261,16 +263,16 @@ public class GitClientForSingleRepository {
 	 *            first commit on a branch as a RevCommit object.
 	 * @param lastCommit
 	 *            last commit on a branch as a RevCommit object.
-	 * @return {@link Diff} object for a branch of commits indicated by the first
-	 *         and last commit on the branch containing the {@link ChangedFile}s.
-	 *         Each {@link ChangedFile} is created from a diff entry and contains
-	 *         the respective edit list.
+	 * @return {@link DiffForSingleRepository} object for a branch of commits
+	 *         indicated by the first and last commit on the branch containing the
+	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
+	 *         entry and contains the respective edit list.
 	 */
-	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
+	public DiffForSingleRepository getDiff(RevCommit firstCommit, RevCommit lastCommit) {
 		DiffFormatter diffFormatter = getDiffFormater();
 		List<DiffEntry> diffEntries = getDiffEntries(firstCommit, lastCommit, diffFormatter);
 		ObjectId treeId = lastCommit.getTree().getId();
-		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
+		DiffForSingleRepository diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
 		diffFormatter.close();
 		return diff;
 	}
@@ -306,8 +308,9 @@ public class GitClientForSingleRepository {
 		return diffEntries;
 	}
 
-	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, ObjectId treeId) {
-		Diff diff = new Diff();
+	private DiffForSingleRepository getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter,
+			ObjectId treeId) {
+		DiffForSingleRepository diff = new DiffForSingleRepository();
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();

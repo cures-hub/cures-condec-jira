@@ -24,7 +24,7 @@ public class TestDiff extends TestSetUpGit {
 
 	@Test
 	public void createDiff() {
-		Diff diff = new Diff();
+		DiffForSingleRepository diff = new DiffForSingleRepository();
 		assertEquals(0, diff.getChangedFiles().size());
 	}
 
@@ -44,7 +44,7 @@ public class TestDiff extends TestSetUpGit {
 
 	@Test
 	public void testAddChangedFile() {
-		diffForCommit.addChangedFile(null);
+		diffForCommit.get(0).addChangedFile(null);
 		assertEquals(2, diffForCommit.getChangedFiles().size());
 	}
 }

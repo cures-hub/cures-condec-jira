@@ -110,9 +110,9 @@ public class CodeSummarizer {
 	private String generateSummaryForHtmlDialog(Diff diff) {
 		String rows = "";
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
-				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
-						this.summarizeMethods(changedFile),
+			if (changedFile.getProbabilityOfCorrectness() >= minProbabilityOfCorrectness) {
+				rows += addRow(addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
+						summarizeMethods(changedFile),
 						String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}
 		}

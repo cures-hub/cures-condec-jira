@@ -4,20 +4,21 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRepository;
 
 /**
- * Estimates whether a {@link Diff} of {@ChangedFile}s contains wrong links,
- * i.e., is tangled.
+ * Estimates whether a {@link DiffForSingleRepository} of {@ChangedFile}s
+ * contains wrong links, i.e., is tangled.
  */
 public class TangledChangeDetector {
 
 	/**
-	 * Currently, this function calls {@link #calculatePackageDistances(Diff)}.
-	 * After the package distances are set, the {@link ChangedFile}s will be sorted
-	 * by their package distances. Subsequently, the package distance will be
-	 * normalized and represented as a probability of correctness. This function can
-	 * be updated later if we decided to use more than one metric for our
-	 * prediction.
+	 * Currently, this function calls
+	 * {@link #calculatePackageDistances(DiffForSingleRepository)}. After the
+	 * package distances are set, the {@link ChangedFile}s will be sorted by their
+	 * package distances. Subsequently, the package distance will be normalized and
+	 * represented as a probability of correctness. This function can be updated
+	 * later if we decided to use more than one metric for our prediction.
 	 *
 	 * @param diff
 	 *            The {@link Diff} might be a single git commit, a whole feature
@@ -105,10 +106,11 @@ public class TangledChangeDetector {
 	}
 
 	/**
-	 * Normalizes the result of {@link #calculatePackageDistances(Diff)}, from
-	 * integer package distances into a percentage value. The changed file(s) with
-	 * the lowest package distance is/are are estimated as correctly linked, i.e.
-	 * set to 100%.
+	 * Normalizes the result of
+	 * {@link #calculatePackageDistances(DiffForSingleRepository)}, from integer
+	 * package distances into a percentage value. The changed file(s) with the
+	 * lowest package distance is/are are estimated as correctly linked, i.e. set to
+	 * 100%.
 	 *
 	 * @param diff
 	 *            The {@link Diff} might be a single git commit, a whole feature
