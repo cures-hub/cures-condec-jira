@@ -39,7 +39,7 @@ public class TestQualityProblem {
 	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
-		assertFalse(qualityProblem.equals(null));
+		assertFalse(qualityProblem.equals((Object) null));
 		assertFalse(qualityProblem.equals(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
 		assertTrue(qualityProblem.equals(qualityProblem));
 		assertTrue(qualityProblem.equals(new QualityProblem(QualityProblemType.DECISION_COVERAGE_TOO_LOW)));
