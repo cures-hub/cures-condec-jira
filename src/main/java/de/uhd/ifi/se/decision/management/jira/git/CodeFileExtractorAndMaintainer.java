@@ -51,7 +51,6 @@ public class CodeFileExtractorAndMaintainer {
 	 *           the respective Jira issues (e.g., work items or requirements)!
 	 */
 	public void extractAllChangedFiles(Diff diff) {
-		// Extracts Decision Knowledge from Code Comments
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (!changedFile.isCodeFileToExtract()) {

@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscri
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -177,7 +177,7 @@ public class GitRest {
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
 		GitClient gitClient = GitClient.getInstance(projectKey);
-		List<Branch> branchesForProject = gitClient.getBranches(projectKey);
+		List<Diff> branchesForProject = gitClient.getBranches(projectKey);
 		branchesForProject.addAll(gitClient.getDefaultBranchForProject());
 		return Response.ok(branchesForProject).build();
 	}
@@ -204,7 +204,7 @@ public class GitRest {
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
 
 		GitClient gitClient = GitClient.getInstance(projectKey);
-		List<Branch> branchesForJiraIssue = gitClient.getBranches(jiraIssueKey);
+		List<Diff> branchesForJiraIssue = gitClient.getBranches(jiraIssueKey);
 		branchesForJiraIssue.addAll(gitClient.getDefaultBranchChangedForJiraIssue(jiraIssue));
 
 		return Response.ok(branchesForJiraIssue).build();

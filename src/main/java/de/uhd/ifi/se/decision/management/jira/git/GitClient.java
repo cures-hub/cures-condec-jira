@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.git.model.Branch;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCommitMessage;
@@ -137,16 +135,7 @@ public class GitClient {
 			commits.remove(0);
 			Diff diffOfDefaultBranchOfSingleRepo = gitClientForSingleRepo.getDiff(commits.get(0),
 					commits.get(commits.size() - 1));
-			for (RevCommit commit : commits) {
-				List<DiffEntry> diffEntriesInCommit = gitClientForSingleRepo.getDiffEntries(commit);
-				for (DiffEntry diffEntry : diffEntriesInCommit) {
-					for (ChangedFile file : diffOfDefaultBranchOfSingleRepo.getChangedFiles()) {
-						if (diffEntry.getNewPath().contains(file.getName())) {
-							file.addCommit(commit);
-						}
-					}
-				}
-			}
+			gitClientForSingleRepo.addCommitsToChangedFiles(diffOfDefaultBranchOfSingleRepo, commits);
 			diff.add(diffOfDefaultBranchOfSingleRepo);
 		}
 		return diff;
@@ -207,9 +196,9 @@ public class GitClient {
 		if (firstCommit == null || lastCommit == null) {
 			return new Diff();
 		}
-		Diff diff = new Diff();
+		Diff diff = new Diff(List.of(firstCommit, lastCommit));
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.getChangedFiles().addAll(gitClientForSingleRepo.getDiff(firstCommit, lastCommit).getChangedFiles());
+			diff.add(gitClientForSingleRepo.getDiff(firstCommit, lastCommit));
 		}
 		return diff;
 	}
@@ -444,14 +433,14 @@ public class GitClient {
 	 * @return all {@link Branch}es including decision knowledge from commit
 	 *         messages and code comments.
 	 */
-	public List<Branch> getBranches(String branchName) {
-		List<Branch> branches = new ArrayList<>();
+	public List<Diff> getBranches(String branchName) {
+		List<Diff> branches = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			List<Ref> refsWithName = gitClientForSingleRepo.getRefs().stream()
 					.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 					.collect(Collectors.toList());
 			for (Ref ref : refsWithName) {
-				Branch branch = new Branch(ref, getRationaleElementsFromCodeComments(ref),
+				Diff branch = new Diff(ref, getRationaleElementsFromCodeComments(ref),
 						getRationaleElementsFromCommitMessages(ref));
 				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 				branches.add(branch);
@@ -460,12 +449,12 @@ public class GitClient {
 		return branches;
 	}
 
-	public List<Branch> getDefaultBranchChangedForJiraIssue(Issue jiraIssue) {
-		List<Branch> branches = new ArrayList<>();
+	public List<Diff> getDefaultBranchChangedForJiraIssue(Issue jiraIssue) {
+		List<Diff> branches = new ArrayList<>();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			List<RevCommit> commits = gitClientForSingleRepo.getCommits(jiraIssue, true);
 			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			Branch branch = new Branch(gitClientForSingleRepo.getDefaultRef(),
+			Diff branch = new Diff(gitClientForSingleRepo.getDefaultRef(),
 					getRationaleElementsFromCodeComments(commits), getRationaleElementsFromCommitMessages(commits));
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			branches.add(branch);
@@ -473,8 +462,8 @@ public class GitClient {
 		return branches;
 	}
 
-	public List<Branch> getDefaultBranchForProject() {
-		List<Branch> branches = new ArrayList<>();
+	public List<Diff> getDefaultBranchForProject() {
+		List<Diff> branches = new ArrayList<>();
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
 		filterSettings.setDocumentationLocations(List.of("Code"));
@@ -493,7 +482,7 @@ public class GitClient {
 				}
 			}
 
-			Branch branch = new Branch(gitClientForSingleRepo.getDefaultRef(), elementsFromRepo, new ArrayList<>());
+			Diff branch = new Diff(gitClientForSingleRepo.getDefaultRef(), elementsFromRepo, new ArrayList<>());
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			branches.add(branch);
 		}

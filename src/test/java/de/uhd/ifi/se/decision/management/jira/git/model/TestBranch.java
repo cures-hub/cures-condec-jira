@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestBranch extends TestSetUpGit {
 
-	private Branch branch;
+	private Diff branch;
 	private Ref ref;
 
 	@Before
@@ -37,7 +37,7 @@ public class TestBranch extends TestSetUpGit {
 
 		ref = gitClient.getRefs().get(0);
 
-		branch = new Branch(ref, codeElements, commitMessageElements);
+		branch = new Diff(ref, codeElements, commitMessageElements);
 	}
 
 	@Test
