@@ -16,11 +16,6 @@ public class Diff {
 		changedFiles = new ArrayList<ChangedFile>();
 	}
 
-	public Diff(ChangedFile codeFile) {
-		this();
-		addChangedFile(codeFile);
-	}
-
 	/**
 	 * @return files changed in the diff as a list of {@link ChangedFile} objects.
 	 */

@@ -73,6 +73,11 @@ public class TestBranch extends TestSetUpGit {
 	}
 
 	@Test
+	public void testGetQualityProblems() {
+		assertEquals(0, branch.getQualityProblems().size());
+	}
+
+	@Test
 	public void testHashCode() {
 		assertEquals(Objects.hash(branch.getName(), branch.getId()), branch.hashCode());
 	}
