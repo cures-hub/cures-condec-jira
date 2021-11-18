@@ -70,7 +70,7 @@ public class DiffForSingleRepository {
 
 	public void add(DiffForSingleRepository diff) {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			addChangedFile(changedFile);
+			this.addChangedFile(changedFile);
 		}
 	}
 

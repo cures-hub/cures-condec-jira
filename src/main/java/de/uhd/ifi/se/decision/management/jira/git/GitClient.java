@@ -443,7 +443,6 @@ public class GitClient {
 				branch.setProjectKey(projectKey);
 				branch.setRef(ref);
 				List<RevCommit> commits = gitClientForSingleRepo.getFeatureBranchCommits(ref);
-
 				branch.setCommits(commits);
 				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 

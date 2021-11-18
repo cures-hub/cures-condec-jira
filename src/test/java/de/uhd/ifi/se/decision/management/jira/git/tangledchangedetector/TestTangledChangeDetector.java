@@ -32,6 +32,12 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	}
 
 	@Test
+	public void testDiff() {
+		assertEquals(1, diffForCommit.size());
+		assertEquals(1, diffForJiraIssue.size());
+	}
+
+	@Test
 	public void testCalculatePackageDistances() {
 		Diff diffForJiraIssue = gitClient.getDiff(mockJiraIssueForGitTestsTangled);
 
@@ -74,16 +80,16 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	public void testStandardizationWithMoreThanOneCommits() {
 		tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
 		tangledCommitDetection.standardization(diffForJiraIssue);
-		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0);
+		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0);
+		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0);
 	}
 
 	@Test
 	public void testStandardizationWithOneCommit() {
 		tangledCommitDetection.calculatePackageDistances(diffForCommit);
 		tangledCommitDetection.standardization(diffForCommit);
-		assertEquals(100.0, diffForCommit.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(100.0, diffForCommit.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0);
 	}
 
 	@Test
@@ -109,9 +115,9 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 		List<ChangedFile> changedFiles = diffForJiraIssue.getChangedFiles();
 
 		assertEquals(100.0, changedFiles.get(0).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(0.0, changedFiles.get(1).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(100.0, changedFiles.get(1).getProbabilityOfCorrectness(), 0.0000);
 		assertEquals(0.0, changedFiles.get(2).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals("Untangled2.java", changedFiles.get(2).getName());
+		assertEquals("Tangled1.java", changedFiles.get(2).getName());
 	}
 
 }

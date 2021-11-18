@@ -31,7 +31,7 @@ public class TestDiff extends TestSetUpGit {
 	@Test
 	public void testGetChangedFilesWithMoreThanOneCommit() {
 		List<ChangedFile> changedFiles = diffForJiraIssue.getChangedFiles();
-		assertEquals(3, diffForJiraIssue.getChangedFiles().size());
+		assertEquals(3, changedFiles.size());
 		assertEquals("Tangled1.java", changedFiles.get(0).getName());
 		assertEquals("Untangled.java", changedFiles.get(1).getName());
 		assertEquals("Untangled2.java", changedFiles.get(2).getName());

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Diff extends ArrayList<DiffForSingleRepository> {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8514671139662593928L;
 
 	public Diff() {
 		super();
@@ -25,8 +25,5 @@ public class Diff extends ArrayList<DiffForSingleRepository> {
 			allFiles.addAll(diffForSingleRepository.getChangedFiles());
 		}
 		return allFiles;
-		// return stream().flatMap(diffForSingleRepo ->
-		// diffForSingleRepo.getChangedFiles().stream())
-		// .collect(Collectors.toList());
 	}
 }

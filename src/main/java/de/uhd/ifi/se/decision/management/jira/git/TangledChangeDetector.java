@@ -118,17 +118,19 @@ public class TangledChangeDetector {
 	 *            issue.
 	 */
 	public void standardization(Diff diff) {
-		diff.getChangedFiles()
-				.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
-		if (diff.getChangedFiles().size() > 1) {
-			float max = diff.getChangedFiles().get(diff.getChangedFiles().size() - 1).getPackageDistance();
-			float min = diff.getChangedFiles().get(0).getPackageDistance();
-			for (ChangedFile changedFile : diff.getChangedFiles()) {
-				changedFile.setProbabilityOfCorrectness(((max - changedFile.getPackageDistance()) / (max - min)) * 100);
+		for (DiffForSingleRepository diffForSingleRepo : diff) {
+			List<ChangedFile> changedFiles = diffForSingleRepo.getChangedFiles();
+			changedFiles.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
+			if (changedFiles.size() > 1) {
+				float max = changedFiles.get(changedFiles.size() - 1).getPackageDistance();
+				float min = changedFiles.get(0).getPackageDistance();
+				for (ChangedFile changedFile : changedFiles) {
+					changedFile.setProbabilityOfCorrectness(
+							((max - changedFile.getPackageDistance()) / (max - min)) * 100);
+				}
+			} else if (!changedFiles.isEmpty()) {
+				changedFiles.get(0).setProbabilityOfCorrectness(100);
 			}
-		} else if (!diff.getChangedFiles().isEmpty()) {
-			diff.getChangedFiles().get(0).setProbabilityOfCorrectness(100);
 		}
 	}
-
 }
