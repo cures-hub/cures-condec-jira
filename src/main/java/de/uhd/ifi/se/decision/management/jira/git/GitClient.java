@@ -439,6 +439,7 @@ public class GitClient {
 					.collect(Collectors.toList());
 			for (Ref ref : refsWithName) {
 				Diff branch = new Diff();
+				branch.setProjectKey(projectKey);
 				branch.setRef(ref);
 				List<RevCommit> commits = gitClientForSingleRepo.getFeatureBranchCommits(ref);
 
@@ -465,6 +466,7 @@ public class GitClient {
 			branch.setRef(gitClientForSingleRepo.getDefaultRef());
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			branch.setCommits(commits);
+			branch.setProjectKey(projectKey);
 			if (!commits.isEmpty()) {
 				RevCommit baseCommit = commits.get(0);
 				RevCommit lastCommit = commits.get(commits.size() - 1);

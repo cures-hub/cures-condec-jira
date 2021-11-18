@@ -45,6 +45,7 @@ public class Diff {
 
 	public Diff(Ref ref, List<DecisionKnowledgeElementInCodeComment> codeCommentElements,
 			List<DecisionKnowledgeElementInCommitMessage> commitMessageElements) {
+		this();
 		this.ref = ref;
 		this.commitElements = commitMessageElements;
 		this.codeElements = codeCommentElements;
@@ -110,17 +111,17 @@ public class Diff {
 
 	@XmlElement
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
-		// if (codeElements == null || codeElements.isEmpty()) {
-		// return getRationaleElementsFromCodeComments();
-		// }
+		if (codeElements == null || codeElements.isEmpty()) {
+			return getRationaleElementsFromCodeComments();
+		}
 		return codeElements;
 	}
 
 	@XmlElement
 	public List<DecisionKnowledgeElementInCommitMessage> getCommitElements() {
-		// if (commitElements == null || commitElements.isEmpty()) {
-		// return getRationaleElementsFromCommitMessages();
-		// }
+		if (commitElements == null || commitElements.isEmpty()) {
+			return getRationaleElementsFromCommitMessages();
+		}
 		return commitElements;
 	}
 
