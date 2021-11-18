@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jgit.lib.Ref;
 import org.junit.Before;
@@ -69,5 +70,10 @@ public class TestBranch extends TestSetUpGit {
 	@Test
 	public void testGetCommitMessageElements() {
 		assertEquals(1, branch.getCommitElements().size());
+	}
+
+	@Test
+	public void testHashCode() {
+		assertEquals(Objects.hash(branch.getName(), branch.getId()), branch.hashCode());
 	}
 }

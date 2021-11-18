@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,5 +68,11 @@ public class Branch {
 	public Set<QualityProblem> getQualityProblems() {
 		return codeElements.stream().flatMap(element -> element.getQualityProblems().stream())
 				.collect(Collectors.toSet());
+	}
+
+	@XmlElement(name = "hash")
+	@Override
+	public int hashCode() {
+		return Objects.hash(getName(), getId());
 	}
 }

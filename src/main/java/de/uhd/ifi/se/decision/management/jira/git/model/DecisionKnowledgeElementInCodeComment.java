@@ -27,7 +27,6 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 	private ChangedFile codeFile;
 	private int startLine;
 	private List<QualityProblem> qualityProblems;
-	private boolean isOnDefaultBranch;
 
 	public DecisionKnowledgeElementInCodeComment() {
 		documentationLocation = DocumentationLocation.CODE;
@@ -75,13 +74,5 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 	@XmlElement
 	public List<QualityProblem> getQualityProblems() {
 		return qualityProblems;
-	}
-
-	public boolean isOnDefaultBranch() {
-		return isOnDefaultBranch;
-	}
-
-	public void setOnDefaultBranch(boolean isOnDefaultBranch) {
-		this.isOnDefaultBranch = isOnDefaultBranch;
 	}
 }
