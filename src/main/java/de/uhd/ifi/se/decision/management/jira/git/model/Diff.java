@@ -34,7 +34,8 @@ public class Diff {
 	public Diff() {
 		changedFiles = new ArrayList<>();
 		commits = new ArrayList<>();
-		codeElements = getRationaleElementsFromCodeComments();
+		codeElements = new ArrayList<>();
+		commitElements = new ArrayList<>();
 	}
 
 	public Diff(List<RevCommit> commits) {
@@ -91,7 +92,6 @@ public class Diff {
 
 	public void setCommits(List<RevCommit> commits) {
 		this.commits = commits;
-		this.commitElements = getRationaleElementsFromCommitMessages();
 	}
 
 	@XmlElement
@@ -110,14 +110,17 @@ public class Diff {
 
 	@XmlElement
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
-		if (codeElements == null || codeElements.isEmpty()) {
-			return getRationaleElementsFromCodeComments();
-		}
+		// if (codeElements == null || codeElements.isEmpty()) {
+		// return getRationaleElementsFromCodeComments();
+		// }
 		return codeElements;
 	}
 
 	@XmlElement
 	public List<DecisionKnowledgeElementInCommitMessage> getCommitElements() {
+		// if (commitElements == null || commitElements.isEmpty()) {
+		// return getRationaleElementsFromCommitMessages();
+		// }
 		return commitElements;
 	}
 
@@ -156,7 +159,7 @@ public class Diff {
 		return elements;
 	}
 
-	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessage(RevCommit commit) {
+	private List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessage(RevCommit commit) {
 		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
 				commit.getFullMessage());
 		List<DecisionKnowledgeElementInCommitMessage> elementsFromMessage = extractorFromMessage.getElements().stream()

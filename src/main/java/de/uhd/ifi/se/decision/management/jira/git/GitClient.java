@@ -441,13 +441,13 @@ public class GitClient {
 				Diff branch = new Diff();
 				branch.setRef(ref);
 				List<RevCommit> commits = gitClientForSingleRepo.getFeatureBranchCommits(ref);
+
 				branch.setCommits(commits);
 				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 
 				if (!commits.isEmpty()) {
 					RevCommit baseCommit = commits.get(0);
 					RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
-
 					branch.add(gitClientForSingleRepo.getDiff(baseCommit, lastFeatureBranchCommit));
 				}
 				branches.add(branch);
@@ -463,14 +463,13 @@ public class GitClient {
 			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 			Diff branch = new Diff();
 			branch.setRef(gitClientForSingleRepo.getDefaultRef());
+			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			branch.setCommits(commits);
 			if (!commits.isEmpty()) {
 				RevCommit baseCommit = commits.get(0);
 				RevCommit lastCommit = commits.get(commits.size() - 1);
-
 				branch.add(gitClientForSingleRepo.getDiff(baseCommit, lastCommit));
 			}
-			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			branches.add(branch);
 		}
 		return branches;
