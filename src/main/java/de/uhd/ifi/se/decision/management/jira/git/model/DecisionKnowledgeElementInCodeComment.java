@@ -45,7 +45,7 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement {
 
 	@XmlElement
 	public String getUrl() {
-		String urlAsString = codeFile.getRepoUri().replace(".git", "") + "/search?q=filename:" + getCodeFileName();
+		String urlAsString = getRepoUri().replace(".git", "") + "/search?q=filename:" + getCodeFileName();
 		return URLEncoder.encode(urlAsString, Charset.defaultCharset());
 	}
 
