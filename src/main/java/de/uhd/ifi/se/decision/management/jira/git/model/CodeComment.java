@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
 /**
- * Model class for comment text and the area it occupies in a source code file.
+ * Represents a comment text and the area it occupies in a source code file.
  *
  * @issue How should this class be called?
  * @decision Simply call this model class "CodeComment"!
