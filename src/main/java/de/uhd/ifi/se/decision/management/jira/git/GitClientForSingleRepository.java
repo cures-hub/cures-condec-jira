@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.git;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -442,6 +443,26 @@ public class GitClientForSingleRepository {
 	public List<RevCommit> getDefaultBranchCommits() {
 		Ref defaultBranch = getDefaultRef();
 		return getCommits(defaultBranch);
+	}
+
+	/**
+	 * @param featureBranch
+	 *            as a {@link Ref} object.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are not sorted.
+	 */
+	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+		List<RevCommit> branchCommits = getCommits(featureBranch);
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
+		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
+
+		for (RevCommit commit : branchCommits) {
+			if (!defaultBranchCommits.contains(commit)) {
+				branchUniqueCommits.add(commit);
+			}
+		}
+		branchUniqueCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		return branchUniqueCommits;
 	}
 
 	public List<RevCommit> getCommits(Ref branch) {

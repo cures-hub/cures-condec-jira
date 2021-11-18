@@ -440,9 +440,18 @@ public class GitClient {
 					.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 					.collect(Collectors.toList());
 			for (Ref ref : refsWithName) {
-				Diff branch = new Diff(ref, getRationaleElementsFromCodeComments(ref),
-						getRationaleElementsFromCommitMessages(ref));
+				Diff branch = new Diff();
+				branch.setRef(ref);
+				List<RevCommit> commits = gitClientForSingleRepo.getFeatureBranchCommits(ref);
+				branch.setCommits(commits);
 				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
+
+				if (!commits.isEmpty()) {
+					RevCommit baseCommit = commits.get(0);
+					RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
+
+					branch.add(gitClientForSingleRepo.getDiff(baseCommit, lastFeatureBranchCommit));
+				}
 				branches.add(branch);
 			}
 		}
@@ -499,13 +508,6 @@ public class GitClient {
 		return allRemoteRefs;
 	}
 
-	public List<KnowledgeElement> getRationaleElements(Ref branch) {
-		List<KnowledgeElement> elements = new ArrayList<>();
-		elements.addAll(getRationaleElementsFromCodeComments(branch));
-		elements.addAll(getRationaleElementsFromCommitMessages(branch));
-		return elements;
-	}
-
 	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(Ref branch) {
 		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
 		for (RevCommit commit : getFeatureBranchCommits(branch)) {
@@ -526,11 +528,6 @@ public class GitClient {
 			}
 		}
 		return elements;
-	}
-
-	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(Ref branch) {
-		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(branch);
-		return getRationaleElementsFromCodeComments(featureBranchCommits);
 	}
 
 	public List<DecisionKnowledgeElementInCodeComment> getRationaleElementsFromCodeComments(List<RevCommit> commits) {

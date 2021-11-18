@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
 
 /**
@@ -28,10 +29,12 @@ public class Diff {
 	private List<DecisionKnowledgeElementInCodeComment> codeElements;
 	private List<DecisionKnowledgeElementInCommitMessage> commitElements;
 	private String repoUri;
+	private String projectKey;
 
 	public Diff() {
 		changedFiles = new ArrayList<>();
 		commits = new ArrayList<>();
+		codeElements = getRationaleElementsFromCodeComments();
 	}
 
 	public Diff(List<RevCommit> commits) {
@@ -88,6 +91,7 @@ public class Diff {
 
 	public void setCommits(List<RevCommit> commits) {
 		this.commits = commits;
+		this.commitElements = getRationaleElementsFromCommitMessages();
 	}
 
 	@XmlElement
@@ -106,6 +110,9 @@ public class Diff {
 
 	@XmlElement
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
+		if (codeElements == null || codeElements.isEmpty()) {
+			return getRationaleElementsFromCodeComments();
+		}
 		return codeElements;
 	}
 
@@ -134,4 +141,61 @@ public class Diff {
 	public int hashCode() {
 		return Objects.hash(getName(), getId());
 	}
+
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
+
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages() {
+		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
+		for (RevCommit commit : commits) {
+			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
+				elements.add(element);
+			}
+		}
+		return elements;
+	}
+
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessage(RevCommit commit) {
+		RationaleFromCommitMessageParser extractorFromMessage = new RationaleFromCommitMessageParser(
+				commit.getFullMessage());
+		List<DecisionKnowledgeElementInCommitMessage> elementsFromMessage = extractorFromMessage.getElements().stream()
+				.map(element -> {
+					element.setProject(projectKey);
+					element.setCommit(commit);
+					return element;
+				}).collect(Collectors.toList());
+		return elementsFromMessage;
+	}
+
+	public List<DecisionKnowledgeElementInCommitMessage> getRationaleElementsFromCommitMessages(Ref branch) {
+		List<DecisionKnowledgeElementInCommitMessage> elements = new ArrayList<>();
+		for (RevCommit commit : commits) {
+			for (DecisionKnowledgeElementInCommitMessage element : getRationaleElementsFromCommitMessage(commit)) {
+				element.setRepoUri(repoUri);
+				elements.add(element);
+			}
+		}
+		return elements;
+	}
+
+	// public List<DecisionKnowledgeElementInCodeComment>
+	// getRationaleElementsFromCodeComments() {
+	// List<DecisionKnowledgeElementInCodeComment> elements = new ArrayList<>();
+	// if (commits.isEmpty()) {
+	// return elements;
+	// }
+	// RevCommit baseCommit = commits.get(0);
+	// RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
+	// elements.addAll(getRationaleElementsFromCode(baseCommit,
+	// lastFeatureBranchCommit));
+	// return elements;
+	// }
+	//
+	// public List<DecisionKnowledgeElementInCodeComment>
+	// getRationaleElementsFromCode(RevCommit revCommitStart,
+	// RevCommit revCommitEnd) {
+	// Diff diff = getDiff(revCommitStart, revCommitEnd);
+	// return diff.getRationaleElementsFromCodeComments();
+	// }
 }
