@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,30 +134,6 @@ public class GitClient {
 			diff.add(diffOfDefaultBranchOfSingleRepo);
 		}
 		return diff;
-	}
-
-	/**
-	 * @param featureBranch
-	 *            as a {@link Ref} object.
-	 * @return String of remote repository URI containing the given branch. Returns
-	 *         null if branch is not contained in any repo.
-	 */
-	public String getRepoUriFromBranch(Ref featureBranch) {
-		if (featureBranch == null) {
-			return "";
-		}
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			Git git = gitClientForSingleRepo.getGit();
-			try {
-				if (git != null && git.getRepository() != null
-						&& git.getRepository().exactRef(featureBranch.getName()) != null) {
-					return gitClientForSingleRepo.getRemoteUri();
-				}
-			} catch (IOException e) {
-				LOGGER.error("URI could not be retrieved from branch name. " + e.getMessage());
-			}
-		}
-		return "";
 	}
 
 	/**
