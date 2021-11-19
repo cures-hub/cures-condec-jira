@@ -371,7 +371,7 @@ public class GitClientForSingleRepository {
 	 * @return commits with the Jira issue key in their commit message as a list of
 	 *         {@link RevCommits}.
 	 */
-	public List<RevCommit> getCommits(Issue jiraIssue, boolean isDefaultBranch) {
+	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
 		if (git == null || jiraIssue == null || jiraIssue.getKey() == null) {
 			return new ArrayList<RevCommit>();
 		}
@@ -390,13 +390,7 @@ public class GitClientForSingleRepository {
 		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
 		 *      CONDEC-1000) will not be confused.
 		 */
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		if (isDefaultBranch) {
-			commits = getDefaultBranchCommits();
-		} else {
-			Ref branch = getRef(jiraIssueKey);
-			commits = getCommits(branch);
-		}
+		List<RevCommit> commits = getDefaultBranchCommits();
 		for (RevCommit commit : commits) {
 			String jiraIssueKeyInCommitMessage = JiraIssueKeyFromCommitMessageParser
 					.getFirstJiraIssueKey(commit.getFullMessage());
@@ -407,16 +401,6 @@ public class GitClientForSingleRepository {
 		}
 
 		return commitsForJiraIssue;
-	}
-
-	private Ref getRef(String branchName) {
-		List<Ref> refs = getRefs();
-		for (Ref ref : refs) {
-			if (ref.getName().contains(branchName)) {
-				return ref;
-			}
-		}
-		return getDefaultRef();
 	}
 
 	public Ref getDefaultRef() {
@@ -446,7 +430,7 @@ public class GitClientForSingleRepository {
 
 	public List<RevCommit> getDefaultBranchCommits() {
 		Ref defaultBranch = getDefaultRef();
-		return getCommits(defaultBranch);
+		return getCommitsForBranch(defaultBranch);
 	}
 
 	/**
@@ -456,7 +440,7 @@ public class GitClientForSingleRepository {
 	 *         default branch. Commits are not sorted.
 	 */
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
-		List<RevCommit> branchCommits = getCommits(featureBranch);
+		List<RevCommit> branchCommits = getCommitsForBranch(featureBranch);
 		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
 		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
 
@@ -469,7 +453,7 @@ public class GitClientForSingleRepository {
 		return branchUniqueCommits;
 	}
 
-	public List<RevCommit> getCommits(Ref branch) {
+	public List<RevCommit> getCommitsForBranch(Ref branch) {
 		if (branch == null || fileSystemManager == null) {
 			return new ArrayList<RevCommit>();
 		}
@@ -559,7 +543,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public DiffForSingleRef getDiffOnDefaultBranch(Issue jiraIssue) {
-		List<RevCommit> commits = getCommits(jiraIssue, true);
+		List<RevCommit> commits = getDefaultBranchCommits(jiraIssue);
 		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		DiffForSingleRef branch = new DiffForSingleRef();
 		branch.setRef(getDefaultRef());
