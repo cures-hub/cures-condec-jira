@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
@@ -14,15 +13,8 @@ import com.atlassian.jira.issue.Issue;
 public class TestGetCommits extends TestSetUpGit {
 
 	@Test
-	public void testBranch() {
-		Ref featureBranch = gitClient.getRefs("TEST-4.feature.branch").get(0);
-		List<RevCommit> commits = gitClient.getCommits(featureBranch);
-		assertEquals(11, commits.size());
-	}
-
-	@Test
 	public void testJiraIssue() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
+		List<RevCommit> commits = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTests).getCommits();
 		assertEquals(1, commits.size()); // should be 3: two commits are on the default branch, one commit is on the
 											// feature branch
 		assertTrue(commits.get(0).getShortMessage().startsWith("TEST-12: Develop great software"));
@@ -30,7 +22,7 @@ public class TestGetCommits extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueNull() {
-		List<RevCommit> commits = gitClient.getCommits((Issue) null);
+		List<RevCommit> commits = gitClient.getDiffForJiraIssue((Issue) null).getCommits();
 		assertEquals(0, commits.size());
 	}
 }

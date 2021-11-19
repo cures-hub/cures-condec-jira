@@ -21,6 +21,7 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 		codeCommentElement.setType(KnowledgeType.ISSUE);
 		codeCommentElement.setProject("TEST");
 		codeCommentElement.setStartLine(42);
+		codeCommentElement.setId(-23);
 	}
 
 	@Test
@@ -39,7 +40,7 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 		file.setSummary("File.java");
 		file.setRepoUri("https://github.com/cures-hub/cures-condec-jira");
 		codeCommentElement.setCodeFile(file);
-		assertEquals("https://github.com/cures-hub/cures-condec-jira/search?q=filename:File.java",
+		assertEquals("https%3A%2F%2Fgithub.com%2Fcures-hub%2Fcures-condec-jira%2Fsearch%3Fq%3Dfilename%3AFile.java",
 				codeCommentElement.getUrl());
 	}
 
@@ -51,5 +52,10 @@ public class TestDecisionKnowledgeElementInCodeComment extends TestSetUp {
 	@Test
 	public void testImage() {
 		assertTrue(codeCommentElement.getImage().contains("issue.png"));
+	}
+
+	@Test
+	public void testCompareTo() {
+		assertEquals(23, codeCommentElement.compareTo(new DecisionKnowledgeElementInCodeComment()));
 	}
 }

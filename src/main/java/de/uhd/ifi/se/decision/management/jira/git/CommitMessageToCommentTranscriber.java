@@ -16,6 +16,8 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -67,30 +69,27 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		List<Comment> newComments = new ArrayList<>();
-		for (Ref featureBranch : gitClient.getRefs(jiraIssue.getKey())) {
-			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
-			String uri = gitClient.getRepoUriFromBranch(featureBranch);
-			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch, uri));
-		}
-		return newComments;
+		Diff diffFromFeatureBranches = gitClient.getDiff(jiraIssue.getKey());
+		return postCommitsIntoJiraIssueComments(diffFromFeatureBranches);
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
+		Diff diffOnDefaultBranchesForJiraIssue = gitClient.getDiffForJiraIssueOnDefaultBranches(jiraIssue);
+		return postCommitsIntoJiraIssueComments(diffOnDefaultBranchesForJiraIssue);
+	}
+
+	private List<Comment> postCommitsIntoJiraIssueComments(Diff diff) {
 		List<Comment> newComments = new ArrayList<>();
-		for (GitClientForSingleRepository gitClientForSingleRepository : gitClient.getGitClientsForSingleRepos()) {
-			Ref branch = gitClientForSingleRepository.getDefaultRef();
-			List<RevCommit> defaultBranchCommits = gitClientForSingleRepository.getCommits(jiraIssue, true);
-			String uri = gitClientForSingleRepository.getRemoteUri();
-			newComments.addAll(postCommitsIntoJiraIssueComments(defaultBranchCommits, branch, uri));
+		for (DiffForSingleRef featureBranch : diff) {
+			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranch));
 		}
 		return newComments;
 	}
 
-	private List<Comment> postCommitsIntoJiraIssueComments(List<RevCommit> commits, Ref branch, String uri) {
+	private List<Comment> postCommitsIntoJiraIssueComments(DiffForSingleRef diff) {
 		List<Comment> newComments = new ArrayList<>();
-		for (RevCommit commit : commits) {
-			Comment comment = postCommitIntoJiraIssueComment(commit, branch, uri);
+		for (RevCommit commit : diff.getCommits()) {
+			Comment comment = postCommitIntoJiraIssueComment(commit, diff.getRef(), diff.getRepoUri());
 			if (comment != null) {
 				newComments.add(comment);
 			}

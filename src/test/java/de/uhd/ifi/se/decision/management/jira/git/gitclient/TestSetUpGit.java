@@ -74,7 +74,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", ""));
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		gitClient = GitClient.getInstance("TEST");
-		if (!gitClient.getDefaultBranchCommits().isEmpty()) {
+		if (!gitClient.getDiffOfEntireDefaultBranch().getCommits().isEmpty()) {
 			return;
 		}
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");

@@ -4,20 +4,21 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 
 /**
- * Estimates whether a {@link Diff} of {@ChangedFile}s contains wrong links,
- * i.e., is tangled.
+ * Estimates whether a {@link DiffForSingleRef} of {@ChangedFile}s
+ * contains wrong links, i.e., is tangled.
  */
 public class TangledChangeDetector {
 
 	/**
-	 * Currently, this function calls {@link #calculatePackageDistances(Diff)}.
-	 * After the package distances are set, the {@link ChangedFile}s will be sorted
-	 * by their package distances. Subsequently, the package distance will be
-	 * normalized and represented as a probability of correctness. This function can
-	 * be updated later if we decided to use more than one metric for our
-	 * prediction.
+	 * Currently, this function calls
+	 * {@link #calculatePackageDistances(DiffForSingleRef)}. After the
+	 * package distances are set, the {@link ChangedFile}s will be sorted by their
+	 * package distances. Subsequently, the package distance will be normalized and
+	 * represented as a probability of correctness. This function can be updated
+	 * later if we decided to use more than one metric for our prediction.
 	 *
 	 * @param diff
 	 *            The {@link Diff} might be a single git commit, a whole feature
@@ -105,10 +106,11 @@ public class TangledChangeDetector {
 	}
 
 	/**
-	 * Normalizes the result of {@link #calculatePackageDistances(Diff)}, from
-	 * integer package distances into a percentage value. The changed file(s) with
-	 * the lowest package distance is/are are estimated as correctly linked, i.e.
-	 * set to 100%.
+	 * Normalizes the result of
+	 * {@link #calculatePackageDistances(DiffForSingleRef)}, from integer
+	 * package distances into a percentage value. The changed file(s) with the
+	 * lowest package distance is/are are estimated as correctly linked, i.e. set to
+	 * 100%.
 	 *
 	 * @param diff
 	 *            The {@link Diff} might be a single git commit, a whole feature
@@ -116,17 +118,19 @@ public class TangledChangeDetector {
 	 *            issue.
 	 */
 	public void standardization(Diff diff) {
-		diff.getChangedFiles()
-				.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
-		if (diff.getChangedFiles().size() > 1) {
-			float max = diff.getChangedFiles().get(diff.getChangedFiles().size() - 1).getPackageDistance();
-			float min = diff.getChangedFiles().get(0).getPackageDistance();
-			for (ChangedFile changedFile : diff.getChangedFiles()) {
-				changedFile.setProbabilityOfCorrectness(((max - changedFile.getPackageDistance()) / (max - min)) * 100);
+		for (DiffForSingleRef diffForSingleRepo : diff) {
+			List<ChangedFile> changedFiles = diffForSingleRepo.getChangedFiles();
+			changedFiles.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
+			if (changedFiles.size() > 1) {
+				float max = changedFiles.get(changedFiles.size() - 1).getPackageDistance();
+				float min = changedFiles.get(0).getPackageDistance();
+				for (ChangedFile changedFile : changedFiles) {
+					changedFile.setProbabilityOfCorrectness(
+							((max - changedFile.getPackageDistance()) / (max - min)) * 100);
+				}
+			} else if (!changedFiles.isEmpty()) {
+				changedFiles.get(0).setProbabilityOfCorrectness(100);
 			}
-		} else if (!diff.getChangedFiles().isEmpty()) {
-			diff.getChangedFiles().get(0).setProbabilityOfCorrectness(100);
 		}
 	}
-
 }

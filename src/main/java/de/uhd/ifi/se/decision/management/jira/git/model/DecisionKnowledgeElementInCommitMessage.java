@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+
 import javax.xml.bind.annotation.XmlElement;
 
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -30,7 +33,7 @@ public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
 
 	@XmlElement
 	public String getImage() {
-		return getType().getIconUrl();
+		return URLEncoder.encode(getType().getIconUrl(), Charset.defaultCharset());
 	}
 
 	public void setCommit(RevCommit commit) {
@@ -45,7 +48,8 @@ public class DecisionKnowledgeElementInCommitMessage extends KnowledgeElement {
 
 	@XmlElement
 	public String getUrl() {
-		return repoUri.replace(".git", "") + "/commit/" + getCommitName();
+		String urlAsString = repoUri.replace(".git", "") + "/commit/" + getCommitName();
+		return URLEncoder.encode(urlAsString, Charset.defaultCharset());
 	}
 
 	public void setRepoUri(String repoUri) {

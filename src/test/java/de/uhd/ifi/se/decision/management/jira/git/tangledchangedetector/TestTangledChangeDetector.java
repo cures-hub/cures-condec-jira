@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.git.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
-import de.uhd.ifi.se.decision.management.jira.git.model.TestDiff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 
 public class TestTangledChangeDetector extends TestSetUpGit {
 
@@ -27,13 +27,19 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		tangledCommitDetection = new TangledChangeDetector();
-		diffForCommit = TestDiff.createDiff(mockJiraIssueForGitTestsTangledSingleCommit);
-		diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
+		diffForCommit = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangledSingleCommit);
+		diffForJiraIssue = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangled);
+	}
+
+	@Test
+	public void testDiff() {
+		assertEquals(1, diffForCommit.size());
+		assertEquals(1, diffForJiraIssue.size());
 	}
 
 	@Test
 	public void testCalculatePackageDistances() {
-		Diff diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
+		Diff diffForJiraIssue = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangled);
 
 		int[][] matrix = tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
 		int[][] expectedMatrix = new int[3][3];
@@ -73,28 +79,28 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	@Test
 	public void testStandardizationWithMoreThanOneCommits() {
 		tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
-		diffForJiraIssue.getChangedFiles();
 		tangledCommitDetection.standardization(diffForJiraIssue);
-		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0.0000);
-		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0);
+		assertEquals(100.0, diffForJiraIssue.getChangedFiles().get(1).getProbabilityOfCorrectness(), 0);
+		assertEquals(0.0, diffForJiraIssue.getChangedFiles().get(2).getProbabilityOfCorrectness(), 0);
 	}
 
 	@Test
 	public void testStandardizationWithOneCommit() {
 		tangledCommitDetection.calculatePackageDistances(diffForCommit);
 		tangledCommitDetection.standardization(diffForCommit);
-		assertEquals(100.0, diffForCommit.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0.0000);
+		assertEquals(100.0, diffForCommit.getChangedFiles().get(0).getProbabilityOfCorrectness(), 0);
 	}
 
 	@Test
 	public void testCalculatePackageDistanceRightBiggerLeft() {
-		Diff diffForJiraIssue = TestDiff.createDiff(mockJiraIssueForGitTestsTangled);
+		Diff diffForJiraIssue = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangled);
 		Diff diff = new Diff();
+		diff.add(new DiffForSingleRef());
 
-		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(2));
-		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(1));
-		diff.addChangedFile(diffForJiraIssue.getChangedFiles().get(0));
+		diff.get(0).addChangedFile(diffForJiraIssue.getChangedFiles().get(2));
+		diff.get(0).addChangedFile(diffForJiraIssue.getChangedFiles().get(1));
+		diff.get(0).addChangedFile(diffForJiraIssue.getChangedFiles().get(0));
 
 		tangledCommitDetection.calculatePackageDistances(diff);
 		assertEquals(2, diff.getChangedFiles().get(0).getPackageDistance());

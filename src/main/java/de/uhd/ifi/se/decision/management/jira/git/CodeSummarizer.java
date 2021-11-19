@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.atlassian.jira.issue.Issue;
 
@@ -58,22 +57,7 @@ public class CodeSummarizer {
 		if (gitClient == null) {
 			return "";
 		}
-		Diff diff = gitClient.getDiff(jiraIssue);
-		return createSummary(diff);
-	}
-
-	/**
-	 * Creates a summary of code changes for a commit.
-	 * 
-	 * @param commit
-	 *            commit with code changes as a RevCommit object.
-	 * @return summary as a String.
-	 */
-	public String createSummary(RevCommit commit) {
-		if (commit == null) {
-			return "";
-		}
-		Diff diff = gitClient.getDiff(commit);
+		Diff diff = gitClient.getDiffForJiraIssue(jiraIssue);
 		return createSummary(diff);
 	}
 
@@ -110,9 +94,9 @@ public class CodeSummarizer {
 	private String generateSummaryForHtmlDialog(Diff diff) {
 		String rows = "";
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (changedFile.getProbabilityOfCorrectness() >= this.minProbabilityOfCorrectness) {
-				rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
-						this.summarizeMethods(changedFile),
+			if (changedFile.getProbabilityOfCorrectness() >= minProbabilityOfCorrectness) {
+				rows += addRow(addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
+						summarizeMethods(changedFile),
 						String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}
 		}

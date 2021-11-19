@@ -7,6 +7,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -41,17 +42,17 @@ public class CodeFileExtractorAndMaintainer {
 
 	/**
 	 * Extracts all code files and the decision knowledge from code comments within
-	 * the {@link Diff}. Links the files to the respective Jira Jira issues (e.g.,
-	 * work items or requirements). Extracting means: 1) Adding code files to the
-	 * {@link CodeClassInDatabase}, 2) adding links to the {@link LinkInDatabase},
-	 * 3) adding code files and links to the {@link KnowledgeGraph}.
+	 * the {@link DiffForSingleRef}. Links the files to the respective Jira
+	 * Jira issues (e.g., work items or requirements). Extracting means: 1) Adding
+	 * code files to the {@link CodeClassInDatabase}, 2) adding links to the
+	 * {@link LinkInDatabase}, 3) adding code files and links to the
+	 * {@link KnowledgeGraph}.
 	 * 
 	 * @issue Which files should be integrated into the knowledge graph?
 	 * @decision Integrate all Java files into the knowledge graph and link them to
 	 *           the respective Jira issues (e.g., work items or requirements)!
 	 */
 	public void extractAllChangedFiles(Diff diff) {
-		// Extracts Decision Knowledge from Code Comments
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (!changedFile.isCodeFileToExtract()) {

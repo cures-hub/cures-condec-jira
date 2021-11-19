@@ -3,7 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.git;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.FetchCommand;
@@ -34,10 +36,12 @@ import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
 
 /**
- * Retrieves commits and code changes (diffs) from one git repository.
+ * Retrieves commits and code changes ({@link ChangedFile}s) from one git
+ * repository.
  * 
  * @issue How can we assign more than one git repository to a Jira project?
  * @decision Implement class GitClientForSingleRepository with separate git
@@ -148,8 +152,9 @@ public class GitClientForSingleRepository {
 				}
 				fetchCommand.call();
 				ObjectId newId = getDefaultBranchPosition();
-				Diff diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
-				new CodeFileExtractorAndMaintainer(projectKey).maintainChangedFilesInDatabase(diffSinceLastFetch);
+				DiffForSingleRef diffSinceLastFetch = getDiffSinceLastFetch(oldId, newId);
+				new CodeFileExtractorAndMaintainer(projectKey)
+						.maintainChangedFilesInDatabase(new Diff(diffSinceLastFetch));
 				LOGGER.info("Fetched branches in " + git.getRepository().getDirectory());
 			}
 		} catch (GitAPIException e) {
@@ -163,23 +168,23 @@ public class GitClientForSingleRepository {
 	private ObjectId getDefaultBranchPosition() {
 		ObjectId objectId = null;
 		try {
-			objectId = getRepository().resolve(getDefaultRef().getName());
+			objectId = git.getRepository().resolve(getDefaultRef().getName());
 		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
 		}
 		return objectId;
 	}
 
-	public Diff getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
+	public DiffForSingleRef getDiffSinceLastFetch(ObjectId oldObjectId, ObjectId newObjectId) {
 		List<RevCommit> newCommits = getCommitsSinceLastFetch(oldObjectId, newObjectId);
 		getDefaultBranchCommits().addAll(newCommits);
 		if (newCommits.isEmpty()) {
-			return new Diff();
+			return new DiffForSingleRef();
 		}
-		Diff diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size() - 1));
+		DiffForSingleRef diffSinceLastFetch = getDiff(newCommits.get(0), newCommits.get(newCommits.size() - 1));
 		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
 	}
 
-	public Diff addCommitsToChangedFiles(Diff diff, List<RevCommit> commits) {
+	public DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
 		for (RevCommit commit : commits) {
 			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
 			for (DiffEntry diffEntry : diffEntriesInCommit) {
@@ -233,7 +238,7 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean setConfig() {
-		Repository repository = getRepository();
+		Repository repository = git.getRepository();
 		StoredConfig config = repository.getConfig();
 		/**
 		 * @issue The internal representation of a file might add system dependent new
@@ -260,16 +265,16 @@ public class GitClientForSingleRepository {
 	 *            first commit on a branch as a RevCommit object.
 	 * @param lastCommit
 	 *            last commit on a branch as a RevCommit object.
-	 * @return {@link Diff} object for a branch of commits indicated by the first
-	 *         and last commit on the branch containing the {@link ChangedFile}s.
-	 *         Each {@link ChangedFile} is created from a diff entry and contains
-	 *         the respective edit list.
+	 * @return {@link DiffForSingleRef} object for a branch of commits indicated by
+	 *         the first and last commit on the branch containing the
+	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
+	 *         entry and contains the respective edit list.
 	 */
-	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
+	public DiffForSingleRef getDiff(RevCommit firstCommit, RevCommit lastCommit) {
 		DiffFormatter diffFormatter = getDiffFormater();
 		List<DiffEntry> diffEntries = getDiffEntries(firstCommit, lastCommit, diffFormatter);
 		ObjectId treeId = lastCommit.getTree().getId();
-		Diff diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
+		DiffForSingleRef diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
 		diffFormatter.close();
 		return diff;
 	}
@@ -289,7 +294,7 @@ public class GitClientForSingleRepository {
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 		try {
 			if (firstCommit.getParentCount() > 0) {
-				RevCommit parentCommit = getParent(firstCommit);
+				RevCommit parentCommit = firstCommit.getParent(0);
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
@@ -305,12 +310,13 @@ public class GitClientForSingleRepository {
 		return diffEntries;
 	}
 
-	private Diff getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter, ObjectId treeId) {
-		Diff diff = new Diff();
+	private DiffForSingleRef getDiffWithChangedFiles(List<DiffEntry> diffEntries, DiffFormatter diffFormatter,
+			ObjectId treeId) {
+		DiffForSingleRef diff = new DiffForSingleRef();
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, getRepository());
+				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, git.getRepository());
 				changedFile.setProject(projectKey);
 				changedFile.setRepoUri(gitRepositoryConfiguration.getRepoUri());
 				diff.addChangedFile(changedFile);
@@ -324,7 +330,7 @@ public class GitClientForSingleRepository {
 
 	private DiffFormatter getDiffFormater() {
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-		Repository repository = getRepository();
+		Repository repository = git.getRepository();
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
@@ -332,32 +338,10 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return jgit repository object.
-	 */
-	public Repository getRepository() {
-		if (git == null) {
-			// TODO Avoid returning null. Use Optional<> instead
-			return null;
-		}
-		return git.getRepository();
-	}
-
-	/**
 	 * @return path to the .git folder as a File object.
 	 */
 	public File getGitDirectory() {
-		Repository repository = getRepository();
-		if (repository == null) {
-			return null;
-		}
-		return repository.getDirectory();
-	}
-
-	private RevCommit getParent(RevCommit revCommit) {
-		if (revCommit.getParentCount() > 0) {
-			return revCommit.getParent(0);
-		}
-		return null;
+		return git.getRepository().getDirectory();
 	}
 
 	/**
@@ -366,10 +350,7 @@ public class GitClientForSingleRepository {
 	 * @return commits with the Jira issue key in their commit message as a list of
 	 *         {@link RevCommits}.
 	 */
-	public List<RevCommit> getCommits(Issue jiraIssue, boolean isDefaultBranch) {
-		if (git == null || jiraIssue == null || jiraIssue.getKey() == null) {
-			return new ArrayList<RevCommit>();
-		}
+	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
 		String jiraIssueKey = jiraIssue.getKey();
 		List<RevCommit> commitsForJiraIssue = new ArrayList<RevCommit>();
 		/**
@@ -385,13 +366,7 @@ public class GitClientForSingleRepository {
 		 * @pro issues with low key number (ex. CONDEC-1) and higher key numbers (ex.
 		 *      CONDEC-1000) will not be confused.
 		 */
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		if (isDefaultBranch) {
-			commits = getDefaultBranchCommits();
-		} else {
-			Ref branch = getRef(jiraIssueKey);
-			commits = getCommits(branch);
-		}
+		List<RevCommit> commits = getDefaultBranchCommits();
 		for (RevCommit commit : commits) {
 			String jiraIssueKeyInCommitMessage = JiraIssueKeyFromCommitMessageParser
 					.getFirstJiraIssueKey(commit.getFullMessage());
@@ -402,16 +377,6 @@ public class GitClientForSingleRepository {
 		}
 
 		return commitsForJiraIssue;
-	}
-
-	private Ref getRef(String branchName) {
-		List<Ref> refs = getRefs();
-		for (Ref ref : refs) {
-			if (ref.getName().contains(branchName)) {
-				return ref;
-			}
-		}
-		return getDefaultRef();
 	}
 
 	public Ref getDefaultRef() {
@@ -441,25 +406,75 @@ public class GitClientForSingleRepository {
 
 	public List<RevCommit> getDefaultBranchCommits() {
 		Ref defaultBranch = getDefaultRef();
-		return getCommits(defaultBranch);
+		return getCommitsForBranch(defaultBranch);
 	}
 
-	public List<RevCommit> getCommits(Ref branch) {
-		if (branch == null || fileSystemManager == null) {
-			return new ArrayList<RevCommit>();
+	/**
+	 * @param featureBranch
+	 *            as a {@link Ref} object.
+	 * @return list of unique commits of a feature branch, which do not exist in the
+	 *         default branch. Commits are not sorted.
+	 */
+	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+		List<RevCommit> branchCommits = getCommitsForBranch(featureBranch);
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
+		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
+
+		for (RevCommit commit : branchCommits) {
+			if (!defaultBranchCommits.contains(commit)) {
+				branchUniqueCommits.add(commit);
+			}
 		}
+		branchUniqueCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		return branchUniqueCommits;
+	}
 
+	public List<RevCommit> getCommitsForBranch(Ref branch) {
+		if (branch == null) {
+			return new ArrayList<>();
+		}
 		List<RevCommit> commits = new ArrayList<>();
-
 		try {
 			openRepository();
-			ObjectId commitId = getRepository().resolve(branch.getName());
+			ObjectId commitId = git.getRepository().resolve(branch.getName());
 			Iterable<RevCommit> iterable = git.log().add(commitId).call();
 			commits = Lists.newArrayList(iterable.iterator());
-		} catch (RevisionSyntaxException | IOException | GitAPIException | NullPointerException e) {
-
+		} catch (Exception e) {
+			LOGGER.error("Getting commits for branch failed. " + e.getMessage());
 		}
 		return commits;
+	}
+
+	/**
+	 * @param branchName
+	 *            e.g. "master", Jira issue key, or Jira project key.
+	 * @return all changes on branches that contain the name.
+	 */
+	public Diff getDiffOnBranchWithName(String branchName) {
+		Diff diff = new Diff();
+		List<Ref> refsWithName = getRefs().stream()
+				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
+				.collect(Collectors.toList());
+		for (Ref ref : refsWithName) {
+			DiffForSingleRef diffForSingleRef = getDiff(ref);
+			diff.add(diffForSingleRef);
+		}
+		return diff;
+	}
+
+	public DiffForSingleRef getDiff(Ref ref) {
+		DiffForSingleRef diffForRef = new DiffForSingleRef(getRemoteUri());
+		diffForRef.setProjectKey(projectKey);
+		diffForRef.setRef(ref);
+		List<RevCommit> commits = getFeatureBranchCommits(ref);
+		diffForRef.setCommits(commits);
+
+		if (!commits.isEmpty()) {
+			RevCommit baseCommit = commits.get(0);
+			RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
+			diffForRef.add(getDiff(baseCommit, lastFeatureBranchCommit));
+		}
+		return diffForRef;
 	}
 
 	/**
@@ -490,5 +505,30 @@ public class GitClientForSingleRepository {
 	 */
 	public GitRepositoryFileSystemManager getFileSystemManager() {
 		return fileSystemManager;
+	}
+
+	public Diff getDiffForJiraIssue(Issue jiraIssue) {
+		Diff diffOnFeatureBranches = getDiffOnBranchWithName(jiraIssue.getKey());
+		DiffForSingleRef branch = getDiffOnDefaultBranch(jiraIssue);
+		if (!branch.getCommits().isEmpty()) {
+			diffOnFeatureBranches.add(branch);
+		}
+		return diffOnFeatureBranches;
+	}
+
+	public DiffForSingleRef getDiffOnDefaultBranch(Issue jiraIssue) {
+		List<RevCommit> commits = getDefaultBranchCommits(jiraIssue);
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		DiffForSingleRef branch = new DiffForSingleRef();
+		branch.setRef(getDefaultRef());
+		branch.setRepoUri(getRemoteUri());
+		branch.setCommits(commits);
+		branch.setProjectKey(projectKey);
+		if (!commits.isEmpty()) {
+			RevCommit baseCommit = commits.get(0);
+			RevCommit lastCommit = commits.get(commits.size() - 1);
+			branch.add(getDiff(baseCommit, lastCommit));
+		}
+		return branch;
 	}
 }

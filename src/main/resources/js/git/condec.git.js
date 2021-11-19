@@ -54,18 +54,18 @@
 		branchExpander.innerText = "Hide details for branch";
 		branchExpander.setAttribute("data-replace-text", "Show details for branch " + branch.name);
 		branchExpander.className = "aui-expander-trigger right-aligned";
-		branchExpander.setAttribute("aria-controls", branch.id + hash(branch.name));
+		branchExpander.setAttribute("aria-controls", branch.hash);
 		branchContainer.appendChild(branchExpander);
 
 		branchCollapsableContainer = document.createElement("div");
 		branchCollapsableContainer.className = "aui-expander-content";
 		branchCollapsableContainer.setAttribute("aria-expanded", true);
-		branchCollapsableContainer.id = branch.id + hash(branch.name);
+		branchCollapsableContainer.id = branch.hash;
 
 		branchRepoLink = document.createElement("a");
-		branchRepoLink.href = branch.repoUri;
+		branchRepoLink.href = decodeURIComponent(branch.repoUri);
 		branchRepoLink.target = "_blank";
-		branchRepoLink.innerText = branch.repoUri;
+		branchRepoLink.innerText = decodeURIComponent(branch.repoUri);
 		branchRepoLink.className = "right-aligned";
 		branchCollapsableContainer.appendChild(branchRepoLink);
 
@@ -82,7 +82,7 @@
 		root.className = "condec-box " + element.type.toLowerCase();
 
 		var img = document.createElement("img");
-		img.src = element.image;
+		img.src = decodeURIComponent(element.image);
 		img.className = "emoticon";
 		root.appendChild(img);
 		root.insertAdjacentText("beforeend", " " + element.summary);
@@ -113,7 +113,7 @@
 
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Code File in Git";
-				link.href = element.url;
+				link.href = decodeURIComponent(element.url);
 				link.target = "_blank";
 				codeFileHtml.appendChild(link);
 			}
@@ -162,7 +162,7 @@
 
 				var link = document.createElement("a");
 				link.innerHTML = "<span class='aui-icon aui-icon-small aui-iconfont-shortcut'></span> Navigate to Commit in Git";
-				link.href = element.url;
+				link.href = decodeURIComponent(element.url);
 				link.target = "_blank";
 				commitHtml.appendChild(link);
 			}
@@ -193,16 +193,6 @@
 		}
 		return qualitySummary;
 	}
-
-	function hash(string) {
-		var hash = 0;
-		for (i = 0; i < string.length; i++) {
-			ch = string.charCodeAt(i);
-			hash = ((hash << 5) - hash) + ch;
-			hash = hash & hash;
-		}
-		return hash;
-	}
-
+	
 	global.conDecGit = new ConDecGit();
 })(window);

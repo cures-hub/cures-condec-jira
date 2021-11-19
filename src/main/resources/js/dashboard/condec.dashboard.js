@@ -330,7 +330,7 @@
 		setPreference("knowledgeStatus", "list", preferences, conDecAPI.knowledgeStatus, "status-dropdown-" + viewIdentifier);
 		setPreference("documentationLocations", "list", preferences, conDecAPI.documentationLocations, "documentation-location-dropdown-" + viewIdentifier);
 		setPreference("linkTypes", "list", preferences, conDecAPI.getLinkTypes(), "link-type-dropdown-" + viewIdentifier);
-		setPreference("decisionGroups", "list", preferences, conDecAPI.getAllDecisionGroups(), "decision-group-dropdown-" + viewIdentifier);
+		setPreference("decisionGroups", "list", preferences, conDecGroupingAPI.getAllDecisionGroups(), "decision-group-dropdown-" + viewIdentifier);
 		setPreference("linkDistance", null, preferences, null, "link-distance-input-" + viewIdentifier);
 		setPreference("minDegree", null, preferences, null, "min-degree-input-" + viewIdentifier);
 		setPreference("maxDegree", null, preferences, null, "max-degree-input-" + viewIdentifier);

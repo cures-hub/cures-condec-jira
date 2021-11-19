@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
@@ -16,8 +15,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
 	@Test
 	public void testGetFeatureBranchCommitsByRef() {
-		Ref featureBranch = gitClient.getRefs("TEST-4.feature.branch").get(0);
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
+		List<RevCommit> commits = gitClient.getDiff("TEST-4.feature.branch").getCommits();
 		assertEquals(5, commits.size());
 
 		// oldest commits come first
@@ -25,22 +23,10 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	}
 
 	@Test
-	public void testGetFeatureBranchCommitsByRefNull() {
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits((Ref) null);
-		assertEquals(0, commits.size());
-	}
-
-	@Test
 	public void testGetFeatureBranchCommitsByJiraIssue() {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		assertEquals("TEST-4", issue.getKey());
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits(issue);
+		List<RevCommit> commits = gitClient.getDiffForJiraIssue(issue).get(0).getCommits();
 		assertEquals(5, commits.size());
-	}
-
-	@Test
-	public void testGetFeatureBranchCommitsByJiraIssueNull() {
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits((Issue) null);
-		assertEquals(0, commits.size());
 	}
 }

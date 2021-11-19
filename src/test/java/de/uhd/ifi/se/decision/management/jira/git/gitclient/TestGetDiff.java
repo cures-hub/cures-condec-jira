@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.git.gitclient;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
@@ -20,55 +18,31 @@ import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 public class TestGetDiff extends TestSetUpGit {
 
 	@Test
-	public void testRevCommitNull() {
-		Diff diff = gitClient.getDiff((RevCommit) null);
-		assertEquals(0, diff.getChangedFiles().size());
-	}
-
-	@Test
-	public void testRevLastCommitNull() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
-		assertFalse(commits.isEmpty());
-		Diff diff = gitClient.getDiff(commits.get(0), (RevCommit) null);
-		assertEquals(0, diff.getChangedFiles().size());
-	}
-
-	@Test
 	public void testRevCommitExisting() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
-		assertFalse(commits.isEmpty());
-		Diff diff = gitClient.getDiff(commits.get(0));
-		assertEquals(1, diff.getChangedFiles().size());
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			DiffEntry diffEntry = changedFile.getDiffEntry();
-			assertEquals(ChangeType.ADD, diffEntry.getChangeType());
+		Diff diff = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTests);
+		ChangedFile changedFile = diff.getChangedFiles().get(0);
+		DiffEntry diffEntry = changedFile.getDiffEntry();
+		assertEquals(ChangeType.ADD, diffEntry.getChangeType());
 
-			EditList editList = changedFile.getEditList();
-			assertEquals("EditList[INSERT(0-0,0-25)]", editList.toString());
-		}
+		EditList editList = changedFile.getEditList();
+		assertEquals("EditList[INSERT(0-0,0-25)]", editList.toString());
 	}
 
 	@Test
-	public void testListOfRevCommitsNull() {
-		Diff diff = gitClient.getDiff((List<RevCommit>) null);
-		assertTrue(diff.getChangedFiles().isEmpty());
-	}
-
-	@Test
-	public void testListOfRevCommitsEmpty() {
-		Diff diff = gitClient.getDiff(List.of());
+	public void testNameNull() {
+		Diff diff = gitClient.getDiff((String) null);
 		assertTrue(diff.getChangedFiles().isEmpty());
 	}
 
 	@Test
 	public void testJiraIssueNull() {
-		Diff diff = gitClient.getDiff((Issue) null);
+		Diff diff = gitClient.getDiffForJiraIssue((Issue) null);
 		assertTrue(diff.getChangedFiles().isEmpty());
 	}
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
+		Diff diff = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTests);
 		assertEquals(1, diff.getChangedFiles().size());
 
 		List<ChangedFile> changedFiles = diff.getChangedFiles();

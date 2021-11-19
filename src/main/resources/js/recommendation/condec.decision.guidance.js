@@ -85,7 +85,7 @@
 	}
 
 	function onAcceptClicked(recommendation, parentElement) {
-		conDecAPI.getDecisionKnowledgeElement(parentElement.id, parentElement.documentationLocation, (currentIssue) => {
+		conDecAPI.getKnowledgeElement(parentElement.id, parentElement.documentationLocation, (currentIssue) => {
 			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function(id, documentationLocation) {
 				recommendation.arguments.forEach(argument => {
 					conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {

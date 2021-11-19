@@ -16,44 +16,38 @@ import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
-import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
+public class TestGetDiffForProject extends TestSetUpGit {
 	private GitRest gitRest;
 	protected HttpServletRequest request;
 
 	@Override
 	@Before
 	public void setUp() {
-		super.setUp();
 		gitRest = new GitRest();
+		super.setUp();
 		ApplicationUser user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", user);
 	}
 
 	@Test
-	public void testRequestNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				gitRest.getElementsOfFeatureBranchForJiraIssue(null, null).getStatus());
-	}
-
-	@Test
-	public void testIssueKeyNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				gitRest.getElementsOfFeatureBranchForJiraIssue(request, null).getStatus());
-	}
-
-	@Test
 	public void testEmptyIssueKey() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), gitRest.getDiffForProject("").getStatus());
 	}
 
 	@Test
-	public void testUnknownIssueKey() {
+	public void testUnknownProjectKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "HOUDINI-1").getStatus());
+				gitRest.getDiffForProject("HOUDINI").getStatus());
+	}
+
+	@Test
+	public void testExistingProjectKey() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		assertEquals(Status.OK.getStatusCode(), gitRest.getDiffForProject("TEST").getStatus());
 	}
 
 	@Test
@@ -62,16 +56,6 @@ public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
 		gitConfig.setActivated(false);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
-				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
-	}
-
-	@Test
-	@NonTransactional
-	public void testExistingIssueKey() {
-		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
-		gitConfig.setActivated(true);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-		assertEquals(Status.OK.getStatusCode(),
-				gitRest.getElementsOfFeatureBranchForJiraIssue(request, "TEST-2").getStatus());
+				gitRest.getDiffForProject("TEST").getStatus());
 	}
 }
