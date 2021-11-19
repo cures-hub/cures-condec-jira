@@ -218,41 +218,6 @@ public class GitClient {
 	}
 
 	/**
-	 * @param featureBranch
-	 *            as a {@link Ref} object.
-	 * @return list of unique commits of a feature branch, which do not exist in the
-	 *         default branch. Commits are not sorted.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
-		List<RevCommit> branchCommits = getCommits(featureBranch);
-		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits();
-		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
-
-		for (RevCommit commit : branchCommits) {
-			if (!defaultBranchCommits.contains(commit)) {
-				branchUniqueCommits.add(commit);
-			}
-		}
-		branchUniqueCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-		return branchUniqueCommits;
-	}
-
-	/**
-	 * @param branch
-	 *            as a {@link Ref} object.
-	 * @return list of commits of a branch, which might also exist in the default
-	 *         branch.
-	 */
-	public List<RevCommit> getCommits(Ref branch) {
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits(branch));
-		}
-		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-		return commits;
-	}
-
-	/**
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @return commits with the Jira issue key in their commit message as a list of
@@ -276,20 +241,6 @@ public class GitClient {
 			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, false));
 		}
 		return commits;
-	}
-
-	/**
-	 * @param jiraIssue
-	 *            Jira issue. Its key is searched for in commit messages.
-	 * @return number of commits with the Jira issue key in their commit message on
-	 *         the default branch.
-	 */
-	public int getNumberOfCommitsOnDefaultBranches(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return 0;
-		}
-		List<RevCommit> commits = getDefaultBranchCommits(jiraIssue, false);
-		return commits.size();
 	}
 
 	/**

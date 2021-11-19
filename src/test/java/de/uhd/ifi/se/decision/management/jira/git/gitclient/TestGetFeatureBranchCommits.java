@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
@@ -16,18 +15,11 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 
 	@Test
 	public void testGetFeatureBranchCommitsByRef() {
-		Ref featureBranch = gitClient.getRefs("TEST-4.feature.branch").get(0);
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits(featureBranch);
+		List<RevCommit> commits = gitClient.getDiff("TEST-4.feature.branch").getCommits();
 		assertEquals(5, commits.size());
 
 		// oldest commits come first
 		assertTrue(commits.get(0).getCommitTime() < commits.get(1).getCommitTime());
-	}
-
-	@Test
-	public void testGetFeatureBranchCommitsByRefNull() {
-		List<RevCommit> commits = gitClient.getFeatureBranchCommits((Ref) null);
-		assertEquals(0, commits.size());
 	}
 
 	@Test

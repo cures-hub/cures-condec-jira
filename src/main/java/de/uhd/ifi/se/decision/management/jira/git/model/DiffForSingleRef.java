@@ -179,4 +179,8 @@ public class DiffForSingleRef {
 				}).collect(Collectors.toList());
 		return elementsFromMessage;
 	}
+
+	public Ref getRef() {
+		return ref;
+	}
 }

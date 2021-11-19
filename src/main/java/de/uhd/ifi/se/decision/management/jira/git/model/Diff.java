@@ -1,8 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.git.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.eclipse.jgit.revwalk.RevCommit;
 
 /**
  * Represents a list of changes, which can be made on various git branches from
@@ -44,6 +47,13 @@ public class Diff extends ArrayList<DiffForSingleRef> {
 	public List<ChangedFile> getChangedFiles() {
 		return stream().flatMap(diffForSingleRepo -> diffForSingleRepo.getChangedFiles().stream())
 				.collect(Collectors.toList());
+	}
+
+	public List<RevCommit> getCommits() {
+		List<RevCommit> commits = stream().flatMap(diffForSingleRepo -> diffForSingleRepo.getCommits().stream())
+				.collect(Collectors.toList());
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		return commits;
 	}
 
 }

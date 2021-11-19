@@ -16,6 +16,8 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -68,10 +70,11 @@ public class CommitMessageToCommentTranscriber {
 
 	public List<Comment> postFeatureBranchCommits() {
 		List<Comment> newComments = new ArrayList<>();
-		for (Ref featureBranch : gitClient.getRefs(jiraIssue.getKey())) {
-			List<RevCommit> featureBranchCommits = gitClient.getFeatureBranchCommits(featureBranch);
-			String uri = gitClient.getRepoUriFromBranch(featureBranch);
-			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch, uri));
+		Diff diffFromFeatureBranches = gitClient.getDiff(jiraIssue.getKey());
+		for (DiffForSingleRef featureBranch : diffFromFeatureBranches) {
+			List<RevCommit> featureBranchCommits = diffFromFeatureBranches.getCommits();
+			String uri = featureBranch.getRepoUri();
+			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch.getRef(), uri));
 		}
 		return newComments;
 	}

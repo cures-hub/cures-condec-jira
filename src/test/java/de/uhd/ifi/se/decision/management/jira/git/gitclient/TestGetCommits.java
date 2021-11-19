@@ -5,20 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 import com.atlassian.jira.issue.Issue;
 
 public class TestGetCommits extends TestSetUpGit {
-
-	@Test
-	public void testBranch() {
-		Ref featureBranch = gitClient.getRefs("TEST-4.feature.branch").get(0);
-		List<RevCommit> commits = gitClient.getCommits(featureBranch);
-		assertEquals(11, commits.size());
-	}
 
 	@Test
 	public void testJiraIssue() {
