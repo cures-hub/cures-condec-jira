@@ -45,6 +45,11 @@ public class DiffForSingleRef {
 		commitElements = new ArrayList<>();
 	}
 
+	public DiffForSingleRef(String repoUri) {
+		this();
+		this.repoUri = repoUri;
+	}
+
 	public DiffForSingleRef(Ref ref, List<DecisionKnowledgeElementInCodeComment> codeCommentElements,
 			List<DecisionKnowledgeElementInCommitMessage> commitMessageElements) {
 		this();
@@ -72,7 +77,7 @@ public class DiffForSingleRef {
 
 	public void add(DiffForSingleRef diff) {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			this.addChangedFile(changedFile);
+			addChangedFile(changedFile);
 		}
 	}
 

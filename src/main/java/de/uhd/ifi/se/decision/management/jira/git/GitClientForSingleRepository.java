@@ -489,6 +489,7 @@ public class GitClientForSingleRepository {
 
 	/**
 	 * @param branchName
+	 *            e.g. "master", Jira issue key, or Jira project key.
 	 * @return all changes on branches that contain the name.
 	 */
 	public Diff getDiff(String branchName) {
@@ -504,19 +505,18 @@ public class GitClientForSingleRepository {
 	}
 
 	public DiffForSingleRef getDiff(Ref ref) {
-		DiffForSingleRef branch = new DiffForSingleRef();
-		branch.setProjectKey(projectKey);
-		branch.setRef(ref);
+		DiffForSingleRef diffForRef = new DiffForSingleRef(getRemoteUri());
+		diffForRef.setProjectKey(projectKey);
+		diffForRef.setRef(ref);
 		List<RevCommit> commits = getFeatureBranchCommits(ref);
-		branch.setCommits(commits);
-		branch.setRepoUri(getRemoteUri());
+		diffForRef.setCommits(commits);
 
 		if (!commits.isEmpty()) {
 			RevCommit baseCommit = commits.get(0);
 			RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
-			branch.add(getDiff(baseCommit, lastFeatureBranchCommit));
+			diffForRef.add(getDiff(baseCommit, lastFeatureBranchCommit));
 		}
-		return branch;
+		return diffForRef;
 	}
 
 	/**
@@ -547,5 +547,24 @@ public class GitClientForSingleRepository {
 	 */
 	public GitRepositoryFileSystemManager getFileSystemManager() {
 		return fileSystemManager;
+	}
+
+	public Diff getDiff(Issue jiraIssue) {
+		Diff diffOnFeatureBranches = getDiff(jiraIssue.getKey());
+
+		List<RevCommit> commits = getCommits(jiraIssue, true);
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		DiffForSingleRef branch = new DiffForSingleRef();
+		branch.setRef(getDefaultRef());
+		branch.setRepoUri(getRemoteUri());
+		branch.setCommits(commits);
+		branch.setProjectKey(projectKey);
+		if (!commits.isEmpty()) {
+			RevCommit baseCommit = commits.get(0);
+			RevCommit lastCommit = commits.get(commits.size() - 1);
+			branch.add(getDiff(baseCommit, lastCommit));
+		}
+		diffOnFeatureBranches.add(branch);
+		return diffOnFeatureBranches;
 	}
 }

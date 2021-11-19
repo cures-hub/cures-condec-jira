@@ -45,4 +45,5 @@ public class Diff extends ArrayList<DiffForSingleRef> {
 		return stream().flatMap(diffForSingleRepo -> diffForSingleRepo.getChangedFiles().stream())
 				.collect(Collectors.toList());
 	}
+
 }

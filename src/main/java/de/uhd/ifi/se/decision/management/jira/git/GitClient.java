@@ -420,7 +420,7 @@ public class GitClient {
 	/**
 	 * @param jiraIssue
 	 *            a Jira issue object.
-	 * @return {@link DiffForSingleRef} object for a Jira issue containing the
+	 * @return {@link Diff} object for a Jira issue containing the
 	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
 	 *         entry and contains the respective edit list.
 	 */
@@ -428,34 +428,10 @@ public class GitClient {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
-		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits(jiraIssue);
-		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(jiraIssue);
-		List<RevCommit> allCommits = defaultBranchCommits;
-		for (RevCommit featureBranchCommit : featureBranchCommits) {
-			if (!allCommits.contains(featureBranchCommit)) {
-				allCommits.add(featureBranchCommit);
-			}
-		}
-		allCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-		return getDiff(allCommits);
-	}
 
-	public Diff getDefaultBranchChangedForJiraIssue(Issue jiraIssue) {
 		Diff diffForJiraIssue = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			List<RevCommit> commits = gitClientForSingleRepo.getCommits(jiraIssue, true);
-			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			DiffForSingleRef branch = new DiffForSingleRef();
-			branch.setRef(gitClientForSingleRepo.getDefaultRef());
-			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
-			branch.setCommits(commits);
-			branch.setProjectKey(projectKey);
-			if (!commits.isEmpty()) {
-				RevCommit baseCommit = commits.get(0);
-				RevCommit lastCommit = commits.get(commits.size() - 1);
-				branch.add(gitClientForSingleRepo.getDiff(baseCommit, lastCommit));
-			}
-			diffForJiraIssue.add(branch);
+			diffForJiraIssue.addAll(gitClientForSingleRepo.getDiff(jiraIssue));
 		}
 		return diffForJiraIssue;
 	}

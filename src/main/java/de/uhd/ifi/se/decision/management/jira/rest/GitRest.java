@@ -204,8 +204,7 @@ public class GitRest {
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
 
 		GitClient gitClient = GitClient.getInstance(projectKey);
-		List<DiffForSingleRef> branchesForJiraIssue = gitClient.getDiff(jiraIssueKey);
-		branchesForJiraIssue.addAll(gitClient.getDefaultBranchChangedForJiraIssue(jiraIssue));
+		List<DiffForSingleRef> branchesForJiraIssue = gitClient.getDiff(jiraIssue);
 
 		return Response.ok(branchesForJiraIssue).build();
 	}
