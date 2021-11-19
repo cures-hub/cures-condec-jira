@@ -372,9 +372,6 @@ public class GitClientForSingleRepository {
 	 *         {@link RevCommits}.
 	 */
 	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
-		if (git == null || jiraIssue == null || jiraIssue.getKey() == null) {
-			return new ArrayList<RevCommit>();
-		}
 		String jiraIssueKey = jiraIssue.getKey();
 		List<RevCommit> commitsForJiraIssue = new ArrayList<RevCommit>();
 		/**
