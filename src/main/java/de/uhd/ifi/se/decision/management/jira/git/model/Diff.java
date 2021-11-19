@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 /**
@@ -54,6 +55,10 @@ public class Diff extends ArrayList<DiffForSingleRef> {
 				.collect(Collectors.toList());
 		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		return commits;
+	}
+
+	public List<Ref> getRefs() {
+		return stream().map(diffForSingleRepo -> diffForSingleRepo.getRef()).collect(Collectors.toList());
 	}
 
 }

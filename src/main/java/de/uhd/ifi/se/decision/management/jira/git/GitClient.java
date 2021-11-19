@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -179,7 +178,7 @@ public class GitClient {
 
 	/**
 	 * @param jiraIssue
-	 *            such as work item/development task/requirements that key was
+	 *            such as work item/development task/requirement that key was
 	 *            mentioned in the commit messages.
 	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
 	 *         list is sorted by committing time: oldest commits come first.
@@ -243,26 +242,13 @@ public class GitClient {
 
 	/**
 	 * @param branchName
-	 *            e.g. "master" or Jira issue key
-	 * @return all {@link Ref} objects matching the name.
-	 */
-	public List<Ref> getRefs(String branchName) {
-		if (branchName == null || branchName.isBlank()) {
-			return new ArrayList<>();
-		}
-		List<Ref> remoteBranches = getRefs();
-		List<Ref> branchCandidates = remoteBranches.stream()
-				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
-				.collect(Collectors.toList());
-		return branchCandidates;
-	}
-
-	/**
-	 * @param branchName
 	 *            e.g. "master", Jira issue key, or Jira project key.
 	 * @return all changes on branches that contain the name.
 	 */
 	public Diff getDiff(String branchName) {
+		if (branchName == null || branchName.isBlank()) {
+			return new Diff();
+		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			diff.addAll(gitClientForSingleRepo.getDiff(branchName));
