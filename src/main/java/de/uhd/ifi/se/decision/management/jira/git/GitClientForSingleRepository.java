@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.FetchCommand;
@@ -263,8 +264,8 @@ public class GitClientForSingleRepository {
 	 *            first commit on a branch as a RevCommit object.
 	 * @param lastCommit
 	 *            last commit on a branch as a RevCommit object.
-	 * @return {@link DiffForSingleRef} object for a branch of commits
-	 *         indicated by the first and last commit on the branch containing the
+	 * @return {@link DiffForSingleRef} object for a branch of commits indicated by
+	 *         the first and last commit on the branch containing the
 	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
 	 *         entry and contains the respective edit list.
 	 */
@@ -484,6 +485,38 @@ public class GitClientForSingleRepository {
 
 		}
 		return commits;
+	}
+
+	/**
+	 * @param branchName
+	 * @return all changes on branches that contain the name.
+	 */
+	public Diff getDiff(String branchName) {
+		Diff diff = new Diff();
+		List<Ref> refsWithName = getRefs().stream()
+				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
+				.collect(Collectors.toList());
+		for (Ref ref : refsWithName) {
+			DiffForSingleRef diffForSingleRef = getDiff(ref);
+			diff.add(diffForSingleRef);
+		}
+		return diff;
+	}
+
+	public DiffForSingleRef getDiff(Ref ref) {
+		DiffForSingleRef branch = new DiffForSingleRef();
+		branch.setProjectKey(projectKey);
+		branch.setRef(ref);
+		List<RevCommit> commits = getFeatureBranchCommits(ref);
+		branch.setCommits(commits);
+		branch.setRepoUri(getRemoteUri());
+
+		if (!commits.isEmpty()) {
+			RevCommit baseCommit = commits.get(0);
+			RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
+			branch.add(getDiff(baseCommit, lastFeatureBranchCommit));
+		}
+		return branch;
 	}
 
 	/**

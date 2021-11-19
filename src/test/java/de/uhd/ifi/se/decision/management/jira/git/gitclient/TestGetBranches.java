@@ -8,7 +8,7 @@ public class TestGetBranches extends TestSetUpGit {
 
 	@Test
 	public void testOneFeatureBranch() {
-		assertEquals(1, gitClient.getBranches("TEST-4").size());
+		assertEquals(1, gitClient.getDiff("TEST-4").size());
 	}
 
 }

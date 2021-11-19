@@ -406,31 +406,13 @@ public class GitClient {
 
 	/**
 	 * @param branchName
-	 *            e.g. "master" or Jira issue key
-	 * @return all {@link Branch}es including decision knowledge from commit
-	 *         messages and code comments.
+	 *            e.g. "master", Jira issue key, or Jira project key.
+	 * @return all changes on branches that contain the name.
 	 */
-	public Diff getBranches(String branchName) {
+	public Diff getDiff(String branchName) {
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			List<Ref> refsWithName = gitClientForSingleRepo.getRefs().stream()
-					.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
-					.collect(Collectors.toList());
-			for (Ref ref : refsWithName) {
-				DiffForSingleRef branch = new DiffForSingleRef();
-				branch.setProjectKey(projectKey);
-				branch.setRef(ref);
-				List<RevCommit> commits = gitClientForSingleRepo.getFeatureBranchCommits(ref);
-				branch.setCommits(commits);
-				branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
-
-				if (!commits.isEmpty()) {
-					RevCommit baseCommit = commits.get(0);
-					RevCommit lastFeatureBranchCommit = commits.get(commits.size() - 1);
-					branch.add(gitClientForSingleRepo.getDiff(baseCommit, lastFeatureBranchCommit));
-				}
-				diff.add(branch);
-			}
+			diff.addAll(gitClientForSingleRepo.getDiff(branchName));
 		}
 		return diff;
 	}

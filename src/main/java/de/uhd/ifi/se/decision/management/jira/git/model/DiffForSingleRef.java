@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProble
  * @see GitClientForSingleRepository
  * @see GitClient GitClient for all git repositories for a Jira project (since
  *      there can be different repos for e.g. frontend and backend development).
+ * @see Diff
  */
 public class DiffForSingleRef {
 
