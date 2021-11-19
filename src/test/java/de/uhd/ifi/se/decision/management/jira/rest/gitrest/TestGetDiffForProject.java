@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
+public class TestGetDiffForProject extends TestSetUpGit {
 	private GitRest gitRest;
 	protected HttpServletRequest request;
 

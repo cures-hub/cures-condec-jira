@@ -163,6 +163,11 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * 
+	 * @param projectKey
+	 * @return
+	 */
 	@Path("/diff/project")
 	@GET
 	public Response getDiffForProject(@QueryParam("projectKey") String projectKey) {
@@ -182,6 +187,12 @@ public class GitRest {
 		return Response.ok(branchesForProject).build();
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param jiraIssueKey
+	 * @return
+	 */
 	@Path("/diff/jira-issue")
 	@GET
 	public Response getDiffForJiraIssue(@Context HttpServletRequest request,

@@ -218,25 +218,6 @@ public class GitClient {
 	}
 
 	/**
-	 * @param jiraIssue
-	 *            such as work item/development task/requirements that key was
-	 *            mentioned in the commit messages.
-	 * @return list of unique commits of a feature branch, which do not exist in the
-	 *         default branch. Commits are not sorted.
-	 */
-	public List<RevCommit> getFeatureBranchCommits(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return new ArrayList<RevCommit>();
-		}
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		List<Ref> branches = getRefs(jiraIssue.getKey());
-		for (Ref featureBranch : branches) {
-			commits.addAll(getFeatureBranchCommits(featureBranch));
-		}
-		return commits;
-	}
-
-	/**
 	 * @param featureBranch
 	 *            as a {@link Ref} object.
 	 * @return list of unique commits of a feature branch, which do not exist in the
@@ -419,7 +400,9 @@ public class GitClient {
 
 	/**
 	 * @param jiraIssue
-	 *            a Jira issue object.
+	 *            a Jira issue such as work item/development task/requirement. The
+	 *            feature branch name or commit message on default branch needs to
+	 *            have the key in it.
 	 * @return {@link Diff} object for a Jira issue containing the
 	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
 	 *         entry and contains the respective edit list.

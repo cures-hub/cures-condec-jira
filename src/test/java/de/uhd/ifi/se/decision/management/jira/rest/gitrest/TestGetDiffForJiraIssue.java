@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestElementsFromBranchesOfJiraIssue extends TestSetUpGit {
+public class TestGetDiffForJiraIssue extends TestSetUpGit {
 	private GitRest gitRest;
 	protected HttpServletRequest request;
 
