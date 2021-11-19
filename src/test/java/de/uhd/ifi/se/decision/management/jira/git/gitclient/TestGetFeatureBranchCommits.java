@@ -26,7 +26,7 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	public void testGetFeatureBranchCommitsByJiraIssue() {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		assertEquals("TEST-4", issue.getKey());
-		List<RevCommit> commits = gitClient.getDiff(issue).get(0).getCommits();
+		List<RevCommit> commits = gitClient.getDiffForJiraIssue(issue).get(0).getCommits();
 		assertEquals(5, commits.size());
 	}
 }

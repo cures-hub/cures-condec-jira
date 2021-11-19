@@ -19,7 +19,7 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitExisting() {
-		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
+		Diff diff = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTests);
 		ChangedFile changedFile = diff.getChangedFiles().get(0);
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		assertEquals(ChangeType.ADD, diffEntry.getChangeType());
@@ -36,13 +36,13 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueNull() {
-		Diff diff = gitClient.getDiff((Issue) null);
+		Diff diff = gitClient.getDiffForJiraIssue((Issue) null);
 		assertTrue(diff.getChangedFiles().isEmpty());
 	}
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
+		Diff diff = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTests);
 		assertEquals(1, diff.getChangedFiles().size());
 
 		List<ChangedFile> changedFiles = diff.getChangedFiles();

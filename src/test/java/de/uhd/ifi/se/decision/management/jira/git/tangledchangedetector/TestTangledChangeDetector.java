@@ -27,8 +27,8 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		tangledCommitDetection = new TangledChangeDetector();
-		diffForCommit = gitClient.getDiff(mockJiraIssueForGitTestsTangledSingleCommit);
-		diffForJiraIssue = gitClient.getDiff(mockJiraIssueForGitTestsTangled);
+		diffForCommit = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangledSingleCommit);
+		diffForJiraIssue = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangled);
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 
 	@Test
 	public void testCalculatePackageDistances() {
-		Diff diffForJiraIssue = gitClient.getDiff(mockJiraIssueForGitTestsTangled);
+		Diff diffForJiraIssue = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangled);
 
 		int[][] matrix = tangledCommitDetection.calculatePackageDistances(diffForJiraIssue);
 		int[][] expectedMatrix = new int[3][3];
@@ -94,7 +94,7 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 
 	@Test
 	public void testCalculatePackageDistanceRightBiggerLeft() {
-		Diff diffForJiraIssue = gitClient.getDiff(mockJiraIssueForGitTestsTangled);
+		Diff diffForJiraIssue = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangled);
 		Diff diff = new Diff();
 		diff.add(new DiffForSingleRef());
 

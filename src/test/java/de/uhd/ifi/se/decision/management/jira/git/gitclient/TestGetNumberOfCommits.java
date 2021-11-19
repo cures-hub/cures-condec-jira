@@ -12,11 +12,11 @@ public class TestGetNumberOfCommits extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueKeyEmptyString() {
-		assertEquals(0, gitClient.getDiff((Issue) null).getCommits().size());
+		assertEquals(0, gitClient.getDiffForJiraIssue((Issue) null).getCommits().size());
 	}
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		assertEquals(1, gitClient.getDiff(JiraIssues.getJiraIssueByKey("TEST-12")).getCommits().size());
+		assertEquals(1, gitClient.getDiffForJiraIssue(JiraIssues.getJiraIssueByKey("TEST-12")).getCommits().size());
 	}
 }

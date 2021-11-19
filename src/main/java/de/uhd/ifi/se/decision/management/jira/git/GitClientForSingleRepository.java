@@ -549,7 +549,7 @@ public class GitClientForSingleRepository {
 		return fileSystemManager;
 	}
 
-	public Diff getDiff(Issue jiraIssue) {
+	public Diff getDiffForJiraIssue(Issue jiraIssue) {
 		Diff diffOnFeatureBranches = getDiffOnBranchWithName(jiraIssue.getKey());
 		DiffForSingleRef branch = getDiffOnDefaultBranch(jiraIssue);
 		if (!branch.getCommits().isEmpty()) {

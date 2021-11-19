@@ -151,17 +151,6 @@ public class GitClient {
 
 	/**
 	 * @param jiraIssue
-	 *            such as work item/development task/requirement that key was
-	 *            mentioned in the commit messages.
-	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
-	 *         list is sorted by committing time: oldest commits come first.
-	 */
-	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue) {
-		return getDefaultBranchCommits(jiraIssue, true);
-	}
-
-	/**
-	 * @param jiraIssue
 	 *            such as work item/development task/requirements that key was
 	 *            mentioned in the commit messages.
 	 * @param areCommitsSortedByTime
@@ -235,22 +224,23 @@ public class GitClient {
 	 *            feature branch name or commit message on default branch needs to
 	 *            have the key in it.
 	 * @return {@link Diff} object for a Jira issue containing the
-	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
-	 *         entry and contains the respective edit list.
+	 *         {@link ChangedFile}s from both the default branch(es) and the feature
+	 *         branches. Each {@link ChangedFile} is created from a diff entry and
+	 *         contains the respective edit list.
 	 */
-	public Diff getDiff(Issue jiraIssue) {
+	public Diff getDiffForJiraIssue(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
 
 		Diff diffForJiraIssue = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diffForJiraIssue.addAll(gitClientForSingleRepo.getDiff(jiraIssue));
+			diffForJiraIssue.addAll(gitClientForSingleRepo.getDiffForJiraIssue(jiraIssue));
 		}
 		return diffForJiraIssue;
 	}
 
-	public Diff getDiffOnDefaultBranches(Issue jiraIssue) {
+	public Diff getDiffForJiraIssueOnDefaultBranches(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
@@ -262,7 +252,7 @@ public class GitClient {
 		return diffForJiraIssueOnDefaultBranches;
 	}
 
-	public Diff getDefaultBranchForProject() {
+	public Diff getDiffForDefaultBranches() {
 		Diff diffForDefaultBranches = new Diff();
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
