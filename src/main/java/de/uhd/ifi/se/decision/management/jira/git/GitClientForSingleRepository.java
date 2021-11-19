@@ -493,6 +493,9 @@ public class GitClientForSingleRepository {
 	 * @return all changes on branches that contain the name.
 	 */
 	public Diff getDiff(String branchName) {
+		if (branchName.isBlank()) {
+			return new Diff();
+		}
 		Diff diff = new Diff();
 		List<Ref> refsWithName = getRefs().stream()
 				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))

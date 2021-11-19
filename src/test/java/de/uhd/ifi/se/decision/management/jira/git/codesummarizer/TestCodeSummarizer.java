@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,17 +49,6 @@ public class TestCodeSummarizer extends TestSetUpGit {
 		summarizer.setFormatForComments(true);
 		assertTrue(summarizer.createSummary(mockJiraIssueForGitTestsTangled, 0)
 				.startsWith("The following classes were changed:"));
-	}
-
-	@Test
-	public void testRevCommitNull() {
-		assertEquals("", summarizer.createSummary((RevCommit) null));
-	}
-
-	@Test
-	public void testRevCommitExisting() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
-		assertNotNull(summarizer.createSummary(commits.get(0)));
 	}
 
 	@Test

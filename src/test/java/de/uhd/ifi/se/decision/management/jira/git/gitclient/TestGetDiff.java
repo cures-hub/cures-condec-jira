@@ -20,14 +20,8 @@ import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 public class TestGetDiff extends TestSetUpGit {
 
 	@Test
-	public void testRevCommitNull() {
-		Diff diff = gitClient.getDiff((RevCommit) null);
-		assertEquals(0, diff.getChangedFiles().size());
-	}
-
-	@Test
 	public void testRevLastCommitNull() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
+		List<RevCommit> commits = gitClient.getDiff(mockJiraIssueForGitTests).getCommits();
 		assertFalse(commits.isEmpty());
 		Diff diff = gitClient.getDiff(commits.get(0), (RevCommit) null);
 		assertEquals(0, diff.getChangedFiles().size());
@@ -35,28 +29,18 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitExisting() {
-		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
-		assertFalse(commits.isEmpty());
-		Diff diff = gitClient.getDiff(commits.get(0));
-		assertEquals(1, diff.getChangedFiles().size());
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			DiffEntry diffEntry = changedFile.getDiffEntry();
-			assertEquals(ChangeType.ADD, diffEntry.getChangeType());
+		Diff diff = gitClient.getDiff(mockJiraIssueForGitTests);
+		ChangedFile changedFile = diff.getChangedFiles().get(0);
+		DiffEntry diffEntry = changedFile.getDiffEntry();
+		assertEquals(ChangeType.ADD, diffEntry.getChangeType());
 
-			EditList editList = changedFile.getEditList();
-			assertEquals("EditList[INSERT(0-0,0-25)]", editList.toString());
-		}
+		EditList editList = changedFile.getEditList();
+		assertEquals("EditList[INSERT(0-0,0-25)]", editList.toString());
 	}
 
 	@Test
-	public void testListOfRevCommitsNull() {
-		Diff diff = gitClient.getDiff((List<RevCommit>) null);
-		assertTrue(diff.getChangedFiles().isEmpty());
-	}
-
-	@Test
-	public void testListOfRevCommitsEmpty() {
-		Diff diff = gitClient.getDiff(List.of());
+	public void testNameEmpty() {
+		Diff diff = gitClient.getDiff("");
 		assertTrue(diff.getChangedFiles().isEmpty());
 	}
 

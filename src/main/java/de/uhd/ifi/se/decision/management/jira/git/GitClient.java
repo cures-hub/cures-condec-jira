@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -142,58 +141,6 @@ public class GitClient {
 	}
 
 	/**
-	 * @param commits
-	 *            commits as a list of RevCommit objects.
-	 * @return {@link Diff} object for a list of commits containing the
-	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
-	 *         entry and contains the respective edit list.
-	 */
-	public Diff getDiff(List<RevCommit> commits) {
-		if (commits == null || commits.isEmpty()) {
-			return new Diff();
-		}
-		RevCommit firstCommit = commits.stream().min(Comparator.comparing(RevCommit::getCommitTime))
-				.orElse(commits.get(0));
-		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
-				.orElse(commits.get(commits.size() - 1));
-		return getDiff(firstCommit, lastCommit);
-	}
-
-	/**
-	 * @param firstCommit
-	 *            first commit on a branch as a RevCommit object.
-	 * @param lastCommit
-	 *            last commit on a branch as a RevCommit object.
-	 * @return {@link Diff} object for a branch of commits indicated by the first
-	 *         and last commit on the branch containing the {@link ChangedFile}s.
-	 *         Each {@link ChangedFile} is created from a diff entry and contains
-	 *         the respective edit list.
-	 */
-	public Diff getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		if (firstCommit == null || lastCommit == null) {
-			return new Diff();
-		}
-		Diff diff = new Diff();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.add(gitClientForSingleRepo.getDiff(firstCommit, lastCommit));
-		}
-		return diff;
-	}
-
-	/**
-	 * @param revCommit
-	 *            commit as a {@link RevCommit} object.
-	 * @return {@link Diff} object containing the {@link ChangedFile}s. Each
-	 *         {@link ChangedFile} is created from a diff entry and contains the
-	 *         respective edit list.
-	 */
-	public Diff getDiff(RevCommit revCommit) {
-		Diff diffForCommit = getDiff(revCommit, revCommit);
-		diffForCommit.getChangedFiles().forEach(file -> file.addCommit(revCommit));
-		return diffForCommit;
-	}
-
-	/**
 	 * @param featureBranch
 	 *            as a {@link Ref} object.
 	 * @return String of remote repository URI containing the given branch. Returns
@@ -215,32 +162,6 @@ public class GitClient {
 			}
 		}
 		return "";
-	}
-
-	/**
-	 * @param jiraIssue
-	 *            Jira issue. Its key is searched for in commit messages.
-	 * @return commits with the Jira issue key in their commit message as a list of
-	 *         {@link RevCommits}.
-	 * 
-	 * @issue What is the return value of methods that would normally return a
-	 *        collection (e.g. list) with an invalid input parameter?
-	 * @decision Methods with an invalid input parameter return an empty list!
-	 * @pro Would prevent a null pointer exception.
-	 * @con Is misleading since it is not clear whether the list is empty but has a
-	 *      valid input parameter or because of an invalid parameter.
-	 * @alternative Methods with an invalid input parameter return null!
-	 * @con null values might cause a null pointer exception.
-	 */
-	public List<RevCommit> getCommits(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return new LinkedList<RevCommit>();
-		}
-		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, false));
-		}
-		return commits;
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.atlassian.jira.issue.Issue;
 
@@ -59,21 +58,6 @@ public class CodeSummarizer {
 			return "";
 		}
 		Diff diff = gitClient.getDiff(jiraIssue);
-		return createSummary(diff);
-	}
-
-	/**
-	 * Creates a summary of code changes for a commit.
-	 * 
-	 * @param commit
-	 *            commit with code changes as a RevCommit object.
-	 * @return summary as a String.
-	 */
-	public String createSummary(RevCommit commit) {
-		if (commit == null) {
-			return "";
-		}
-		Diff diff = gitClient.getDiff(commit);
 		return createSummary(diff);
 	}
 
