@@ -29,8 +29,8 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
-	public void testNameEmpty() {
-		Diff diff = gitClient.getDiff("");
+	public void testNameNull() {
+		Diff diff = gitClient.getDiff((String) null);
 		assertTrue(diff.getChangedFiles().isEmpty());
 	}
 

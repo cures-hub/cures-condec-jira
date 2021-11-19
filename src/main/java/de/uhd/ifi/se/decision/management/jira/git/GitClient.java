@@ -246,12 +246,12 @@ public class GitClient {
 	 * @return all changes on branches that contain the name.
 	 */
 	public Diff getDiff(String branchName) {
-		if (branchName == null || branchName.isBlank()) {
+		if (branchName == null) {
 			return new Diff();
 		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.addAll(gitClientForSingleRepo.getDiff(branchName));
+			diff.addAll(gitClientForSingleRepo.getDiffOnBranchWithName(branchName));
 		}
 		return diff;
 	}
@@ -275,6 +275,18 @@ public class GitClient {
 			diffForJiraIssue.addAll(gitClientForSingleRepo.getDiff(jiraIssue));
 		}
 		return diffForJiraIssue;
+	}
+
+	public Diff getDiffOnDefaultBranches(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return new Diff();
+		}
+
+		Diff diffForJiraIssueOnDefaultBranches = new Diff();
+		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
+			diffForJiraIssueOnDefaultBranches.add(gitClientForSingleRepo.getDiffOnDefaultBranch(jiraIssue));
+		}
+		return diffForJiraIssueOnDefaultBranches;
 	}
 
 	public Diff getDefaultBranchForProject() {
@@ -305,15 +317,5 @@ public class GitClient {
 			diffForDefaultBranches.add(branch);
 		}
 		return diffForDefaultBranches;
-	}
-
-	/**
-	 * @return all {@link Ref} objects.
-	 */
-	public List<Ref> getRefs() {
-		List<Ref> allRemoteRefs = new ArrayList<>();
-		getGitClientsForSingleRepos()
-				.forEach(gitClientForSingleRepo -> allRemoteRefs.addAll(gitClientForSingleRepo.getRefs()));
-		return allRemoteRefs;
 	}
 }

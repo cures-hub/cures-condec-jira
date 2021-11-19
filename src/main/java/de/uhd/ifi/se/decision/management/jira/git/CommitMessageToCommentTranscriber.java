@@ -69,31 +69,27 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		List<Comment> newComments = new ArrayList<>();
 		Diff diffFromFeatureBranches = gitClient.getDiff(jiraIssue.getKey());
-		for (DiffForSingleRef featureBranch : diffFromFeatureBranches) {
-			List<RevCommit> featureBranchCommits = diffFromFeatureBranches.getCommits();
-			String uri = featureBranch.getRepoUri();
-			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranchCommits, featureBranch.getRef(), uri));
-		}
-		return newComments;
+		return postCommitsIntoJiraIssueComments(diffFromFeatureBranches);
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
+		Diff diffOnDefaultBranchesForJiraIssue = gitClient.getDiffOnDefaultBranches(jiraIssue);
+		return postCommitsIntoJiraIssueComments(diffOnDefaultBranchesForJiraIssue);
+	}
+
+	private List<Comment> postCommitsIntoJiraIssueComments(Diff diff) {
 		List<Comment> newComments = new ArrayList<>();
-		for (GitClientForSingleRepository gitClientForSingleRepository : gitClient.getGitClientsForSingleRepos()) {
-			Ref branch = gitClientForSingleRepository.getDefaultRef();
-			List<RevCommit> defaultBranchCommits = gitClientForSingleRepository.getCommits(jiraIssue, true);
-			String uri = gitClientForSingleRepository.getRemoteUri();
-			newComments.addAll(postCommitsIntoJiraIssueComments(defaultBranchCommits, branch, uri));
+		for (DiffForSingleRef featureBranch : diff) {
+			newComments.addAll(postCommitsIntoJiraIssueComments(featureBranch));
 		}
 		return newComments;
 	}
 
-	private List<Comment> postCommitsIntoJiraIssueComments(List<RevCommit> commits, Ref branch, String uri) {
+	private List<Comment> postCommitsIntoJiraIssueComments(DiffForSingleRef diff) {
 		List<Comment> newComments = new ArrayList<>();
-		for (RevCommit commit : commits) {
-			Comment comment = postCommitIntoJiraIssueComment(commit, branch, uri);
+		for (RevCommit commit : diff.getCommits()) {
+			Comment comment = postCommitIntoJiraIssueComment(commit, diff.getRef(), diff.getRepoUri());
 			if (comment != null) {
 				newComments.add(comment);
 			}

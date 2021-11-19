@@ -12,7 +12,7 @@ public class TestGetRefs extends TestSetUpGit {
 
 	@Test
 	public void testGetAllBranches() {
-		List<Ref> remoteBranches = gitClient.getRefs();
+		List<Ref> remoteBranches = gitClient.getDiff("").getRefs();
 		assertEquals(2, remoteBranches.size());
 
 		remoteBranches = gitClient.getGitClientsForSingleRepos().get(0).getRefs();
@@ -36,7 +36,6 @@ public class TestGetRefs extends TestSetUpGit {
 
 	@Test
 	public void testBranchNameInvalid() {
-		assertEquals(0, gitClient.getDiff("").size());
 		assertEquals(0, gitClient.getDiff((String) null).size());
 	}
 

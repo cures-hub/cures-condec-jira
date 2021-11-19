@@ -492,7 +492,7 @@ public class GitClientForSingleRepository {
 	 *            e.g. "master", Jira issue key, or Jira project key.
 	 * @return all changes on branches that contain the name.
 	 */
-	public Diff getDiff(String branchName) {
+	public Diff getDiffOnBranchWithName(String branchName) {
 		Diff diff = new Diff();
 		List<Ref> refsWithName = getRefs().stream()
 				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
@@ -550,8 +550,15 @@ public class GitClientForSingleRepository {
 	}
 
 	public Diff getDiff(Issue jiraIssue) {
-		Diff diffOnFeatureBranches = getDiff(jiraIssue.getKey());
+		Diff diffOnFeatureBranches = getDiffOnBranchWithName(jiraIssue.getKey());
+		DiffForSingleRef branch = getDiffOnDefaultBranch(jiraIssue);
+		if (!branch.getCommits().isEmpty()) {
+			diffOnFeatureBranches.add(branch);
+		}
+		return diffOnFeatureBranches;
+	}
 
+	public DiffForSingleRef getDiffOnDefaultBranch(Issue jiraIssue) {
 		List<RevCommit> commits = getCommits(jiraIssue, true);
 		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
 		DiffForSingleRef branch = new DiffForSingleRef();
@@ -564,7 +571,6 @@ public class GitClientForSingleRepository {
 			RevCommit lastCommit = commits.get(commits.size() - 1);
 			branch.add(getDiff(baseCommit, lastCommit));
 		}
-		diffOnFeatureBranches.add(branch);
-		return diffOnFeatureBranches;
+		return branch;
 	}
 }
