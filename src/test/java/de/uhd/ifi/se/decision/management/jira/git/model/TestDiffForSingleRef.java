@@ -15,9 +15,9 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class TestDiffForSingleRepository extends TestSetUpGit {
+public class TestDiffForSingleRef extends TestSetUpGit {
 
-	private DiffForSingleRef diffForSingleRepo;
+	private DiffForSingleRef diffForSingleRef;
 	private Ref ref;
 
 	@Before
@@ -37,48 +37,48 @@ public class TestDiffForSingleRepository extends TestSetUpGit {
 
 		ref = gitClient.getRefs().get(0);
 
-		diffForSingleRepo = new DiffForSingleRef(ref, codeElements, commitMessageElements);
+		diffForSingleRef = new DiffForSingleRef(ref, codeElements, commitMessageElements);
 	}
 
 	@Test
 	public void testGetBranchName() {
-		assertEquals("refs/remotes/origin/TEST-4.feature.branch", diffForSingleRepo.getName());
+		assertEquals("refs/remotes/origin/TEST-4.feature.branch", diffForSingleRef.getName());
 
-		diffForSingleRepo.setRef(null);
-		assertNull(diffForSingleRepo.getName());
+		diffForSingleRef.setRef(null);
+		assertNull(diffForSingleRef.getName());
 	}
 
 	@Test
 	public void testGetId() {
-		assertEquals(ref.getObjectId().getName(), diffForSingleRepo.getId());
+		assertEquals(ref.getObjectId().getName(), diffForSingleRef.getId());
 
-		diffForSingleRepo.setRef(null);
-		assertNull(diffForSingleRepo.getId());
+		diffForSingleRef.setRef(null);
+		assertNull(diffForSingleRef.getId());
 	}
 
 	@Test
 	public void testRepoUri() {
-		diffForSingleRepo.setRepoUri(GIT_URI);
-		assertEquals(URLEncoder.encode(GIT_URI, Charset.defaultCharset()), diffForSingleRepo.getRepoUri());
+		diffForSingleRef.setRepoUri(GIT_URI);
+		assertEquals(URLEncoder.encode(GIT_URI, Charset.defaultCharset()), diffForSingleRef.getRepoUri());
 	}
 
 	@Test
 	public void testGetCodeElements() {
-		assertEquals(1, diffForSingleRepo.getCodeElements().size());
+		assertEquals(1, diffForSingleRef.getCodeElements().size());
 	}
 
 	@Test
 	public void testGetCommitMessageElements() {
-		assertEquals(1, diffForSingleRepo.getCommitElements().size());
+		assertEquals(1, diffForSingleRef.getCommitElements().size());
 	}
 
 	@Test
 	public void testGetQualityProblems() {
-		assertEquals(0, diffForSingleRepo.getQualityProblems().size());
+		assertEquals(0, diffForSingleRef.getQualityProblems().size());
 	}
 
 	@Test
 	public void testHashCode() {
-		assertEquals(Objects.hash(diffForSingleRepo.getName(), diffForSingleRepo.getId()), diffForSingleRepo.hashCode());
+		assertEquals(Objects.hash(diffForSingleRef.getName(), diffForSingleRef.getId()), diffForSingleRef.hashCode());
 	}
 }

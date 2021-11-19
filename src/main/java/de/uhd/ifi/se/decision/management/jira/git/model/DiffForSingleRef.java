@@ -44,11 +44,6 @@ public class DiffForSingleRef {
 		commitElements = new ArrayList<>();
 	}
 
-	public DiffForSingleRef(List<RevCommit> commits) {
-		this();
-		this.commits = commits;
-	}
-
 	public DiffForSingleRef(Ref ref, List<DecisionKnowledgeElementInCodeComment> codeCommentElements,
 			List<DecisionKnowledgeElementInCommitMessage> commitMessageElements) {
 		this();
@@ -117,7 +112,7 @@ public class DiffForSingleRef {
 
 	@XmlElement
 	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
-		if (codeElements == null || codeElements.isEmpty()) {
+		if (codeElements.isEmpty()) {
 			codeElements = getRationaleElementsFromCodeComments();
 		}
 		return codeElements;
@@ -125,7 +120,7 @@ public class DiffForSingleRef {
 
 	@XmlElement
 	public List<DecisionKnowledgeElementInCommitMessage> getCommitElements() {
-		if (commitElements == null || commitElements.isEmpty()) {
+		if (commitElements.isEmpty()) {
 			commitElements = getRationaleElementsFromCommitMessages();
 		}
 		return commitElements;

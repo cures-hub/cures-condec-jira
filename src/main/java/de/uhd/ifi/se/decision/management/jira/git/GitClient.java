@@ -30,8 +30,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Retrieves commits and code changes ({@link DiffForSingleRef}s) from
- * one or more git repositories. Modifying files is not supported.
+ * Retrieves commits and code changes ({@link DiffForSingleRef}s) from one or
+ * more git repositories. Modifying files is not supported.
  *
  * @issue How to access commits related to a Jira issue?
  * @decision Use the jGit library to access the git repositories for a Jira
@@ -157,29 +157,6 @@ public class GitClient {
 		RevCommit lastCommit = commits.stream().max(Comparator.comparing(RevCommit::getCommitTime))
 				.orElse(commits.get(commits.size() - 1));
 		return getDiff(firstCommit, lastCommit);
-	}
-
-	/**
-	 * @param jiraIssue
-	 *            a Jira issue object.
-	 * @return {@link DiffForSingleRef} object for a Jira issue containing
-	 *         the {@link ChangedFile}s. Each {@link ChangedFile} is created from a
-	 *         diff entry and contains the respective edit list.
-	 */
-	public Diff getDiff(Issue jiraIssue) {
-		if (jiraIssue == null) {
-			return new Diff();
-		}
-		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits(jiraIssue);
-		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(jiraIssue);
-		List<RevCommit> allCommits = defaultBranchCommits;
-		for (RevCommit featureBranchCommit : featureBranchCommits) {
-			if (!allCommits.contains(featureBranchCommit)) {
-				allCommits.add(featureBranchCommit);
-			}
-		}
-		allCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-		return getDiff(allCommits);
 	}
 
 	/**
@@ -458,6 +435,29 @@ public class GitClient {
 		return diff;
 	}
 
+	/**
+	 * @param jiraIssue
+	 *            a Jira issue object.
+	 * @return {@link DiffForSingleRef} object for a Jira issue containing the
+	 *         {@link ChangedFile}s. Each {@link ChangedFile} is created from a diff
+	 *         entry and contains the respective edit list.
+	 */
+	public Diff getDiff(Issue jiraIssue) {
+		if (jiraIssue == null) {
+			return new Diff();
+		}
+		List<RevCommit> defaultBranchCommits = getDefaultBranchCommits(jiraIssue);
+		List<RevCommit> featureBranchCommits = getFeatureBranchCommits(jiraIssue);
+		List<RevCommit> allCommits = defaultBranchCommits;
+		for (RevCommit featureBranchCommit : featureBranchCommits) {
+			if (!allCommits.contains(featureBranchCommit)) {
+				allCommits.add(featureBranchCommit);
+			}
+		}
+		allCommits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		return getDiff(allCommits);
+	}
+
 	public Diff getDefaultBranchChangedForJiraIssue(Issue jiraIssue) {
 		Diff diffForJiraIssue = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
@@ -500,8 +500,8 @@ public class GitClient {
 
 			Collections.sort(elementsFromRepo);
 
-			DiffForSingleRef branch = new DiffForSingleRef(gitClientForSingleRepo.getDefaultRef(),
-					elementsFromRepo, new ArrayList<>());
+			DiffForSingleRef branch = new DiffForSingleRef(gitClientForSingleRepo.getDefaultRef(), elementsFromRepo,
+					new ArrayList<>());
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
 			diffForDefaultBranches.add(branch);
 		}
