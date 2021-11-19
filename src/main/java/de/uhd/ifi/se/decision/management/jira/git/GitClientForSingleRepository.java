@@ -40,7 +40,8 @@ import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
 
 /**
- * Retrieves commits and code changes (diffs) from one git repository.
+ * Retrieves commits and code changes ({@link ChangedFile}s) from one git
+ * repository.
  * 
  * @issue How can we assign more than one git repository to a Jira project?
  * @decision Implement class GitClientForSingleRepository with separate git
@@ -167,7 +168,7 @@ public class GitClientForSingleRepository {
 	private ObjectId getDefaultBranchPosition() {
 		ObjectId objectId = null;
 		try {
-			objectId = getRepository().resolve(getDefaultRef().getName());
+			objectId = git.getRepository().resolve(getDefaultRef().getName());
 		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
 		}
 		return objectId;
@@ -237,7 +238,7 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean setConfig() {
-		Repository repository = getRepository();
+		Repository repository = git.getRepository();
 		StoredConfig config = repository.getConfig();
 		/**
 		 * @issue The internal representation of a file might add system dependent new
@@ -293,7 +294,7 @@ public class GitClientForSingleRepository {
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 		try {
 			if (firstCommit.getParentCount() > 0) {
-				RevCommit parentCommit = getParent(firstCommit);
+				RevCommit parentCommit = firstCommit.getParent(0);
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
@@ -315,7 +316,7 @@ public class GitClientForSingleRepository {
 		for (DiffEntry diffEntry : diffEntries) {
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, getRepository());
+				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, git.getRepository());
 				changedFile.setProject(projectKey);
 				changedFile.setRepoUri(gitRepositoryConfiguration.getRepoUri());
 				diff.addChangedFile(changedFile);
@@ -329,7 +330,7 @@ public class GitClientForSingleRepository {
 
 	private DiffFormatter getDiffFormater() {
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-		Repository repository = getRepository();
+		Repository repository = git.getRepository();
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
@@ -337,32 +338,10 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return jgit repository object.
-	 */
-	public Repository getRepository() {
-		if (git == null) {
-			// TODO Avoid returning null. Use Optional<> instead
-			return null;
-		}
-		return git.getRepository();
-	}
-
-	/**
 	 * @return path to the .git folder as a File object.
 	 */
 	public File getGitDirectory() {
-		Repository repository = getRepository();
-		if (repository == null) {
-			return null;
-		}
-		return repository.getDirectory();
-	}
-
-	private RevCommit getParent(RevCommit revCommit) {
-		if (revCommit.getParentCount() > 0) {
-			return revCommit.getParent(0);
-		}
-		return null;
+		return git.getRepository().getDirectory();
 	}
 
 	/**
@@ -451,19 +430,17 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<RevCommit> getCommitsForBranch(Ref branch) {
-		if (branch == null || fileSystemManager == null) {
-			return new ArrayList<RevCommit>();
+		if (branch == null) {
+			return new ArrayList<>();
 		}
-
 		List<RevCommit> commits = new ArrayList<>();
-
 		try {
 			openRepository();
-			ObjectId commitId = getRepository().resolve(branch.getName());
+			ObjectId commitId = git.getRepository().resolve(branch.getName());
 			Iterable<RevCommit> iterable = git.log().add(commitId).call();
 			commits = Lists.newArrayList(iterable.iterator());
-		} catch (RevisionSyntaxException | IOException | GitAPIException | NullPointerException e) {
-
+		} catch (Exception e) {
+			LOGGER.error("Getting commits for branch failed. " + e.getMessage());
 		}
 		return commits;
 	}
