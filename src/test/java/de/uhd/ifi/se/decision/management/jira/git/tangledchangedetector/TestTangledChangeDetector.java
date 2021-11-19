@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.git.TangledChangeDetector;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
-import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 
 public class TestTangledChangeDetector extends TestSetUpGit {
 
@@ -96,7 +96,7 @@ public class TestTangledChangeDetector extends TestSetUpGit {
 	public void testCalculatePackageDistanceRightBiggerLeft() {
 		Diff diffForJiraIssue = gitClient.getDiff(mockJiraIssueForGitTestsTangled);
 		Diff diff = new Diff();
-		diff.add(new DiffForSingleRepository());
+		diff.add(new DiffForSingleRef());
 
 		diff.get(0).addChangedFile(diffForJiraIssue.getChangedFiles().get(2));
 		diff.get(0).addChangedFile(diffForJiraIssue.getChangedFiles().get(1));

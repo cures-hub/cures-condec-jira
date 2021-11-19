@@ -4,17 +4,17 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
-import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 
 /**
- * Estimates whether a {@link DiffForSingleRepository} of {@ChangedFile}s
+ * Estimates whether a {@link DiffForSingleRef} of {@ChangedFile}s
  * contains wrong links, i.e., is tangled.
  */
 public class TangledChangeDetector {
 
 	/**
 	 * Currently, this function calls
-	 * {@link #calculatePackageDistances(DiffForSingleRepository)}. After the
+	 * {@link #calculatePackageDistances(DiffForSingleRef)}. After the
 	 * package distances are set, the {@link ChangedFile}s will be sorted by their
 	 * package distances. Subsequently, the package distance will be normalized and
 	 * represented as a probability of correctness. This function can be updated
@@ -107,7 +107,7 @@ public class TangledChangeDetector {
 
 	/**
 	 * Normalizes the result of
-	 * {@link #calculatePackageDistances(DiffForSingleRepository)}, from integer
+	 * {@link #calculatePackageDistances(DiffForSingleRef)}, from integer
 	 * package distances into a percentage value. The changed file(s) with the
 	 * lowest package distance is/are are estimated as correctly linked, i.e. set to
 	 * 100%.
@@ -118,7 +118,7 @@ public class TangledChangeDetector {
 	 *            issue.
 	 */
 	public void standardization(Diff diff) {
-		for (DiffForSingleRepository diffForSingleRepo : diff) {
+		for (DiffForSingleRef diffForSingleRepo : diff) {
 			List<ChangedFile> changedFiles = diffForSingleRepo.getChangedFiles();
 			changedFiles.sort((ChangedFile c1, ChangedFile c2) -> c1.getPackageDistance() - c2.getPackageDistance());
 			if (changedFiles.size() > 1) {

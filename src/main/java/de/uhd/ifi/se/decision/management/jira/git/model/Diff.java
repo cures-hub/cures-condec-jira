@@ -4,17 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Diff extends ArrayList<DiffForSingleRepository> {
+/**
+ * Represents a list of changes, which can be made on various git branches from
+ * various git repositories (e.g. separate repository for frontend and backend
+ * development). Extends {@link ArrayList}, thus, it provides common list
+ * methods such as {@link List#add(Object)}.
+ * 
+ * @see DiffForSingleRef Representation of the changes made on a single branch
+ *      of a specific git repo
+ * @see ChangedFile
+ */
+public class Diff extends ArrayList<DiffForSingleRef> {
 
 	private static final long serialVersionUID = -8514671139662593928L;
 
+	/**
+	 * Creates an empty {@link Diff} object.
+	 */
 	public Diff() {
 		super();
 	}
 
-	public Diff(DiffForSingleRepository diffForSingleRepository) {
+	/**
+	 * Creates a {@link Diff} object that already contains the changes made on a
+	 * specific branch.
+	 * 
+	 * @param diffForSingleRef
+	 *            {@link DiffForSingleRef} with e.g. commits and
+	 *            {@link ChangedFile}s of a specific branch.
+	 */
+	public Diff(DiffForSingleRef diffForSingleRef) {
 		this();
-		add(diffForSingleRepository);
+		add(diffForSingleRef);
 	}
 
 	/**

@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestDiffForSingleRepository extends TestSetUpGit {
 
-	private DiffForSingleRepository diffForSingleRepo;
+	private DiffForSingleRef diffForSingleRepo;
 	private Ref ref;
 
 	@Before
@@ -37,7 +37,7 @@ public class TestDiffForSingleRepository extends TestSetUpGit {
 
 		ref = gitClient.getRefs().get(0);
 
-		diffForSingleRepo = new DiffForSingleRepository(ref, codeElements, commitMessageElements);
+		diffForSingleRepo = new DiffForSingleRef(ref, codeElements, commitMessageElements);
 	}
 
 	@Test

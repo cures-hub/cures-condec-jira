@@ -13,15 +13,21 @@ import javax.xml.bind.annotation.XmlElement;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
 
 /**
- * Models a list of {@link ChangedFile}s. The scope for the diff might be a
- * single git commit, a whole feature branch (with many commits), or all commits
- * belonging to a Jira issue.
+ * Represents changes made in a specific git repository. For example, the diff
+ * can contain a single commit, a whole feature branch (with many commits), or
+ * all commits belonging to a Jira issue from the specific git repo.
+ * 
+ * @see GitClientForSingleRepository
+ * @see GitClient GitClient for all git repositories for a Jira project (since
+ *      there can be different repos for e.g. frontend and backend development).
  */
-public class DiffForSingleRepository {
+public class DiffForSingleRef {
 
 	private Ref ref;
 	private String repoUri;
@@ -31,19 +37,19 @@ public class DiffForSingleRepository {
 	private List<DecisionKnowledgeElementInCommitMessage> commitElements;
 	private String projectKey;
 
-	public DiffForSingleRepository() {
+	public DiffForSingleRef() {
 		changedFiles = new ArrayList<>();
 		commits = new ArrayList<>();
 		codeElements = new ArrayList<>();
 		commitElements = new ArrayList<>();
 	}
 
-	public DiffForSingleRepository(List<RevCommit> commits) {
+	public DiffForSingleRef(List<RevCommit> commits) {
 		this();
 		this.commits = commits;
 	}
 
-	public DiffForSingleRepository(Ref ref, List<DecisionKnowledgeElementInCodeComment> codeCommentElements,
+	public DiffForSingleRef(Ref ref, List<DecisionKnowledgeElementInCodeComment> codeCommentElements,
 			List<DecisionKnowledgeElementInCommitMessage> commitMessageElements) {
 		this();
 		this.ref = ref;
@@ -68,7 +74,7 @@ public class DiffForSingleRepository {
 		changedFiles.add(changedFile);
 	}
 
-	public void add(DiffForSingleRepository diff) {
+	public void add(DiffForSingleRef diff) {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			this.addChangedFile(changedFile);
 		}

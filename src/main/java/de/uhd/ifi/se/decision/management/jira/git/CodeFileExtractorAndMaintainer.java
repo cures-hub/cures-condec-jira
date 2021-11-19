@@ -7,7 +7,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
-import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -42,7 +42,7 @@ public class CodeFileExtractorAndMaintainer {
 
 	/**
 	 * Extracts all code files and the decision knowledge from code comments within
-	 * the {@link DiffForSingleRepository}. Links the files to the respective Jira
+	 * the {@link DiffForSingleRef}. Links the files to the respective Jira
 	 * Jira issues (e.g., work items or requirements). Extracting means: 1) Adding
 	 * code files to the {@link CodeClassInDatabase}, 2) adding links to the
 	 * {@link LinkInDatabase}, 3) adding code files and links to the
