@@ -91,8 +91,8 @@
 	/**
 	 * external references: dashboard/condec.git.branches.dashboard.js
 	 */
-	ConDecGitAPI.prototype.getElementsFromBranchesOfProject = function(projectKey) {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/elementsFromBranchesOfProject?projectKey=" + projectKey);
+	ConDecGitAPI.prototype.getDiffForProject = function(projectKey) {
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/diff/project?projectKey=" + projectKey);
 	};
 
 	/**
@@ -101,17 +101,17 @@
 	ConDecGitAPI.prototype.getBranches = function() {
 		var jiraIssueKey = conDecAPI.getIssueKey();
 		if (jiraIssueKey !== undefined && jiraIssueKey !== null) {
-			return this.getElementsFromBranchesOfJiraIssue(jiraIssueKey);
+			return this.getDiffForJiraIssue(jiraIssueKey);
 		}
-		return this.getElementsFromBranchesOfProject(conDecAPI.projectKey);
+		return this.getDiffForProject(conDecAPI.projectKey);
 	};
 	
 	/**
 	 * external references: none, only local usage in getBranches
 	 */
-	ConDecGitAPI.prototype.getElementsFromBranchesOfJiraIssue = function(jiraIssueKey) {
+	ConDecGitAPI.prototype.getDiffForJiraIssue = function(jiraIssueKey) {
 		return generalApi.getJSONReturnPromise(
-			`${this.restPrefix}/elementsFromBranchesOfJiraIssue?issueKey=${jiraIssueKey}`);
+			`${this.restPrefix}/diff/jira-issue?jiraIssueKey=${jiraIssueKey}`);
 	};
 
 	global.conDecGitAPI = new ConDecGitAPI();

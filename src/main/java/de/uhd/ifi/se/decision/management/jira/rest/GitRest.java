@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscri
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
+import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -163,9 +163,9 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/elementsFromBranchesOfProject")
+	@Path("/diff/project")
 	@GET
-	public Response getElementsFromAllBranchesOfProject(@QueryParam("projectKey") String projectKey) {
+	public Response getDiffForProject(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -177,15 +177,15 @@ public class GitRest {
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
 		GitClient gitClient = GitClient.getInstance(projectKey);
-		List<DiffForSingleRef> branchesForProject = gitClient.getDiff(projectKey);
+		Diff branchesForProject = gitClient.getDiff(projectKey);
 		branchesForProject.addAll(gitClient.getDefaultBranchForProject());
 		return Response.ok(branchesForProject).build();
 	}
 
-	@Path("/elementsFromBranchesOfJiraIssue")
+	@Path("/diff/jira-issue")
 	@GET
-	public Response getElementsOfFeatureBranchForJiraIssue(@Context HttpServletRequest request,
-			@QueryParam("issueKey") String jiraIssueKey) {
+	public Response getDiffForJiraIssue(@Context HttpServletRequest request,
+			@QueryParam("jiraIssueKey") String jiraIssueKey) {
 		if (request == null || jiraIssueKey == null || jiraIssueKey.isBlank()) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
@@ -202,11 +202,8 @@ public class GitRest {
 		new CommitMessageToCommentTranscriber(jiraIssue).postCommitsIntoJiraIssueComments();
 
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
-
-		GitClient gitClient = GitClient.getInstance(projectKey);
-		List<DiffForSingleRef> branchesForJiraIssue = gitClient.getDiff(jiraIssue);
-
-		return Response.ok(branchesForJiraIssue).build();
+		Diff diffForJiraIssue = GitClient.getInstance(projectKey).getDiff(jiraIssue);
+		return Response.ok(diffForJiraIssue).build();
 	}
 
 	// TODO Change to POST and pass FilterSettings object

@@ -39,7 +39,7 @@
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
 	ConDecBranchesDashboard.prototype.getData = function(dashboardAPI, filterSettings) {
-		conDecGitAPI.getElementsFromBranchesOfProject(filterSettings.projectKey)
+		conDecGitAPI.getDiffForProject(filterSettings.projectKey)
 			.then(branches => {
 				conDecDashboard.processData(null, branches, conDecBranchesDashboard, "branch",
 					dashboardAPI, filterSettings);

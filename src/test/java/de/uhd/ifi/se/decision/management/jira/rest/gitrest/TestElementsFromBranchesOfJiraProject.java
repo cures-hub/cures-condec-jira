@@ -33,13 +33,13 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 
 	@Test
 	public void testEmptyIssueKey() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), gitRest.getElementsFromAllBranchesOfProject("").getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), gitRest.getDiffForProject("").getStatus());
 	}
 
 	@Test
 	public void testUnknownProjectKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				gitRest.getElementsFromAllBranchesOfProject("HOUDINI").getStatus());
+				gitRest.getDiffForProject("HOUDINI").getStatus());
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-		assertEquals(Status.OK.getStatusCode(), gitRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), gitRest.getDiffForProject("TEST").getStatus());
 	}
 
 	@Test
@@ -56,6 +56,6 @@ public class TestElementsFromBranchesOfJiraProject extends TestSetUpGit {
 		gitConfig.setActivated(false);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
-				gitRest.getElementsFromAllBranchesOfProject("TEST").getStatus());
+				gitRest.getDiffForProject("TEST").getStatus());
 	}
 }
