@@ -28,7 +28,7 @@ public class TestDecisionKnowledgeElementInCommitMessage extends TestSetUpGit {
 
 	@Test
 	public void testCommit() {
-		RevCommit commit = gitClient.getDefaultBranchCommits().get(0);
+		RevCommit commit = gitClient.getDiffOfEntireDefaultBranch().getCommits().get(0);
 		commitMessageElement.setCommit(commit);
 		assertEquals(commit.getName(), commitMessageElement.getCommitName());
 	}
@@ -36,7 +36,7 @@ public class TestDecisionKnowledgeElementInCommitMessage extends TestSetUpGit {
 	@Test
 	public void testUrl() {
 		commitMessageElement.setRepoUri(GIT_URI);
-		RevCommit commit = gitClient.getDefaultBranchCommits().get(0);
+		RevCommit commit = gitClient.getDiff("").getCommits().get(0);
 		commitMessageElement.setCommit(commit);
 		assertEquals(URLEncoder.encode(GIT_URI + "/commit/" + commitMessageElement.getCommitName(),
 				Charset.defaultCharset()), commitMessageElement.getUrl());

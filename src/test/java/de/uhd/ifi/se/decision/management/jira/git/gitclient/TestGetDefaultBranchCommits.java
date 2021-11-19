@@ -11,10 +11,8 @@ public class TestGetDefaultBranchCommits extends TestSetUpGit {
 
 	@Test
 	public void testAllDefaultBranchCommits() {
-		List<RevCommit> allCommits = gitClient.getDiffForDefaultBranches().getCommits();
-		// TODO Decide whether to include commits
-		// assertEquals(6, allCommits.size());
-		assertEquals(0, allCommits.size());
+		List<RevCommit> allCommits = gitClient.getDiffOfEntireDefaultBranch().getCommits();
+		assertEquals(6, allCommits.size());
 	}
 
 	@Test

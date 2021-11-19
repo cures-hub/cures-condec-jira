@@ -123,51 +123,17 @@ public class GitClient {
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
 			List<RevCommit> commits = gitClientForSingleRepo.getDefaultBranchCommits();
 			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			if (commits.isEmpty()) {
+			if (commits.size() < 2) {
+				// because first commit does not have a parent commit
 				continue;
 			}
-			// because first commit does not have a parent commit
-			commits.remove(0);
-			DiffForSingleRef diffOfDefaultBranchOfSingleRepo = gitClientForSingleRepo.getDiff(commits.get(0),
+			DiffForSingleRef diffOfDefaultBranchOfSingleRepo = gitClientForSingleRepo.getDiff(commits.get(1),
 					commits.get(commits.size() - 1));
+			diffOfDefaultBranchOfSingleRepo.setCommits(commits);
 			gitClientForSingleRepo.addCommitsToChangedFiles(diffOfDefaultBranchOfSingleRepo, commits);
 			diff.add(diffOfDefaultBranchOfSingleRepo);
 		}
 		return diff;
-	}
-
-	/**
-	 * @return all commits on the default branch(es) as a list of
-	 *         {@link RevCommit}s.
-	 */
-	public List<RevCommit> getDefaultBranchCommits() {
-		List<RevCommit> commits = new ArrayList<>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getDefaultBranchCommits());
-		}
-		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-		return commits;
-	}
-
-	/**
-	 * @param jiraIssue
-	 *            such as work item/development task/requirements that key was
-	 *            mentioned in the commit messages.
-	 * @param areCommitsSortedByTime
-	 *            true if commits should be sorted by time (oldest commits come
-	 *            first!)
-	 * @return all commits on the branch(es) as a list of {@link RevCommit}s. The
-	 *         list is sorted by committing time: oldest commits come first.
-	 */
-	public List<RevCommit> getDefaultBranchCommits(Issue jiraIssue, boolean areCommitsSortedByTime) {
-		List<RevCommit> commits = new ArrayList<>();
-		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			commits.addAll(gitClientForSingleRepo.getCommits(jiraIssue, true));
-		}
-		if (areCommitsSortedByTime) {
-			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-		}
-		return commits;
 	}
 
 	/**
