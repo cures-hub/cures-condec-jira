@@ -54,9 +54,6 @@ public class CodeSummarizer {
 			return "";
 		}
 		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
-		if (gitClient == null) {
-			return "";
-		}
 		Diff diff = gitClient.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue);
 		return createSummary(diff);
 	}
@@ -100,7 +97,7 @@ public class CodeSummarizer {
 						String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}
 		}
-		return this.generateTable(rows);
+		return generateTable(rows);
 	}
 
 	private String summarizeMethods(ChangedFile changedFile) {

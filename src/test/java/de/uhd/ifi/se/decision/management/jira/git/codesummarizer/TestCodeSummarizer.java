@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git.codesummarizer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -10,6 +11,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
 public class TestCodeSummarizer extends TestSetUpGit {
 
@@ -59,5 +61,10 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	@Test
 	public void testDiffEmpty() {
 		assertEquals("", summarizer.createSummary(new Diff()));
+	}
+
+	@Test
+	public void testMinProbabilityOfCorrectnessZero() {
+		assertFalse(summarizer.createSummary(JiraIssues.getJiraIssueByKey("TEST-4"), 0).contains("<td>"));
 	}
 }
