@@ -18,18 +18,6 @@
 		return JSON.parse(xhr.response);
 	};
 
-	GeneralAPI.prototype.postTextReturnPromise = function(url, data) {
-		return new Promise(function(resolve, reject) {
-			generalApi.postJSONReturnText(url, data, function(err, result) {
-				if (err === null) {
-					resolve(result);
-				} else {
-					reject(err);
-				}
-			})
-		})
-	};
-
 	GeneralAPI.prototype.postJSONReturnText = function(url, data, callback) {
 		xhr = createRequest("POST", url, data, callback);
 		xhr.responseType = "text";
@@ -78,6 +66,18 @@
 					resolve(result);
 				} else {
 					reject(error);
+				}
+			})
+		})
+	};
+	
+	GeneralAPI.prototype.postJSONReturnTextPromise = function(url, data) {
+		return new Promise(function(resolve, reject) {
+			generalApi.postJSONReturnText(url, data, function(err, result) {
+				if (err === null) {
+					resolve(result);
+				} else {
+					reject(err);
 				}
 			})
 		})

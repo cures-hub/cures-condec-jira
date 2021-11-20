@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -41,11 +43,17 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 public class GitRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRest.class);
 
-	@Path("/setKnowledgeExtractedFromGit")
+	/**
+	 * 
+	 * @param request
+	 * @param projectKey
+	 * @param isKnowledgeExtractedFromGit
+	 * @return
+	 */
+	@Path("/activate/{projectKey}")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") boolean isKnowledgeExtractedFromGit) {
+			@PathParam("projectKey") String projectKey, boolean isKnowledgeExtractedFromGit) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -73,11 +81,10 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setPostFeatureBranchCommits")
+	@Path("/configuration/{projectKey}/post-feature-branch-commits")
 	@POST
 	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isPostFeatureBranchCommits") boolean isPostFeatureBranchCommits) {
+			@PathParam("projectKey") String projectKey, boolean isPostFeatureBranchCommits) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -88,11 +95,10 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setPostDefaultBranchCommits")
+	@Path("/configuration/{projectKey}/post-default-branch-commits")
 	@POST
 	public Response setPostDefaultBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isPostDefaultBranchCommits") boolean isPostDefaultBranchCommits) {
+			@PathParam("projectKey") String projectKey, boolean isPostDefaultBranchCommits) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -109,10 +115,10 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/configuration")
+	@Path("/configuration/{projectKey}/repositories")
 	@POST
 	public Response setGitRepositoryConfigurations(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
+			@PathParam("projectKey") String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -129,9 +135,9 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setCodeFileEndings")
+	@Path("/configuration/{projectKey}/file-endings")
 	@POST
-	public Response setCodeFileEndings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response setCodeFileEndings(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			Map<String, String> codeFileEndings) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -157,9 +163,9 @@ public class GitRest {
 	 * @return true if all git repositories that were associated to the Jira project
 	 *         and also all database entries were successfully deleted.
 	 */
-	@Path("/delete")
-	@POST
-	public Response deleteGitRepos(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	@Path("/{projectKey}")
+	@DELETE
+	public Response deleteGitRepos(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
