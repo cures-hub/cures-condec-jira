@@ -110,9 +110,6 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean openRepository(File directory) {
-		if (directory == null) {
-			return false;
-		}
 		try {
 			git = Git.open(directory);
 		} catch (Exception e) {
@@ -491,13 +488,6 @@ public class GitClientForSingleRepository {
 	 */
 	public String getRemoteUri() {
 		return gitRepositoryConfiguration.getRepoUri();
-	}
-
-	/**
-	 * @return name of the default branch (e.g. master).
-	 */
-	public String getDefaultBranchName() {
-		return gitRepositoryConfiguration.getDefaultBranch();
 	}
 
 	/**

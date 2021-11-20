@@ -230,16 +230,11 @@ public class GitClient {
 			String repoUri = gitClientForSingleRepo.getRemoteUri();
 			List<DecisionKnowledgeElementInCodeComment> elementsFromRepo = new ArrayList<>();
 			for (KnowledgeElement element : codeElements) {
-				if (!(element instanceof DecisionKnowledgeElementInCodeComment)) {
-					continue;
-				}
 				if (((DecisionKnowledgeElementInCodeComment) element).getRepoUri().equals(repoUri)) {
 					elementsFromRepo.add((DecisionKnowledgeElementInCodeComment) element);
 				}
 			}
-
 			Collections.sort(elementsFromRepo);
-
 			DiffForSingleRef branch = new DiffForSingleRef(gitClientForSingleRepo.getDefaultRef(), elementsFromRepo,
 					new ArrayList<>());
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
