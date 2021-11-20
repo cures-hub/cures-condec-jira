@@ -183,7 +183,7 @@ public class GitRest {
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
 		GitClient gitClient = GitClient.getInstance(projectKey);
 		Diff branchesForProject = gitClient.getDiffForBranchWithName(projectKey);
-		branchesForProject.addAll(gitClient.getDiffForDefaultBranches());
+		branchesForProject.addAll(gitClient.getDiffOfEntireDefaultBranchFromKnowledgeGraph());
 		return Response.ok(branchesForProject).build();
 	}
 
@@ -213,7 +213,7 @@ public class GitRest {
 		new CommitMessageToCommentTranscriber(jiraIssue).postCommitsIntoJiraIssueComments();
 
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
-		Diff diffForJiraIssue = GitClient.getInstance(projectKey).getDiffForJiraIssueOnDefaultBranchesAndFeatureBranches(jiraIssue);
+		Diff diffForJiraIssue = GitClient.getInstance(projectKey).getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue);
 		return Response.ok(diffForJiraIssue).build();
 	}
 

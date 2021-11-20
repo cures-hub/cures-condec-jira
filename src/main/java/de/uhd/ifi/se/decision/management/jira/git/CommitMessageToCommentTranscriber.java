@@ -74,7 +74,7 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
-		Diff diffOnDefaultBranchesForJiraIssue = gitClient.getDiffForJiraIssueOnDefaultBranches(jiraIssue);
+		Diff diffOnDefaultBranchesForJiraIssue = gitClient.getDiffForJiraIssueOnDefaultBranch(jiraIssue);
 		return postCommitsIntoJiraIssueComments(diffOnDefaultBranchesForJiraIssue);
 	}
 

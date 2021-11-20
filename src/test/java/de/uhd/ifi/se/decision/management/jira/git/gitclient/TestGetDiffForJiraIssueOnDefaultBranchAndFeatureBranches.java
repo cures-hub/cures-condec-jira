@@ -12,12 +12,12 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
-public class TestGetDiffForJiraIssueOnAllBranches extends TestSetUpGit {
+public class TestGetDiffForJiraIssueOnDefaultBranchAndFeatureBranches extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueWithCommits() {
 		Issue issue = JiraIssues.getJiraIssueByKey("TEST-4");
-		Diff diff = gitClient.getDiffForJiraIssueOnDefaultBranchesAndFeatureBranches(issue);
+		Diff diff = gitClient.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(issue);
 
 		assertEquals(1, diff.getRefs().size());
 		assertEquals("refs/remotes/origin/TEST-4.feature.branch", diff.getRefs().get(0).getName());
@@ -28,7 +28,7 @@ public class TestGetDiffForJiraIssueOnAllBranches extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueNull() {
-		List<RevCommit> commits = gitClient.getDiffForJiraIssueOnDefaultBranchesAndFeatureBranches(null).getCommits();
+		List<RevCommit> commits = gitClient.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(null).getCommits();
 		assertEquals(0, commits.size());
 	}
 }

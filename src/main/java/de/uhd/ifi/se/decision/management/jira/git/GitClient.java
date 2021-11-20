@@ -184,7 +184,7 @@ public class GitClient {
 	 *         {@link ChangedFile} is created from a diff entry and contains the
 	 *         respective edit list.
 	 */
-	public Diff getDiffForJiraIssueOnDefaultBranchesAndFeatureBranches(Issue jiraIssue) {
+	public Diff getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
@@ -206,7 +206,7 @@ public class GitClient {
 	 *         {@link ChangedFile} is created from a diff entry and contains the
 	 *         respective edit list.
 	 */
-	public Diff getDiffForJiraIssueOnDefaultBranches(Issue jiraIssue) {
+	public Diff getDiffForJiraIssueOnDefaultBranch(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
@@ -218,7 +218,7 @@ public class GitClient {
 		return diffForJiraIssueOnDefaultBranches;
 	}
 
-	public Diff getDiffForDefaultBranches() {
+	public Diff getDiffOfEntireDefaultBranchFromKnowledgeGraph() {
 		Diff diffForDefaultBranches = new Diff();
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
