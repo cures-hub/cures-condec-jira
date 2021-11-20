@@ -79,13 +79,15 @@
 	 * external references: condec.dialog
 	 */
 	ConDecGitAPI.prototype.getSummarizedCode = function(id, documentationLocation, probability, callback) {
-		generalApi.getText(this.restPrefix + "/getSummarizedCode?projectKey=" + conDecAPI.projectKey
-			+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability,
-			function(error, summary) {
-				if (error === null) {
-					callback(summary);
-				}
-			});
+		var filterSettings = {
+			"projectKey": conDecAPI.projectKey,
+			"selectedElementObject": {
+				"id": id,
+				"documentationLocation": documentationLocation
+			}
+		};
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/summarization&probability=" + probability,
+			filterSettings);
 	};
 
 	/**
@@ -105,7 +107,7 @@
 		}
 		return this.getDiffForProject(conDecAPI.projectKey);
 	};
-	
+
 	/**
 	 * external references: none, only local usage in getBranches
 	 */

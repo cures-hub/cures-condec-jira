@@ -439,11 +439,12 @@
 		var content = document.getElementById("summarization-dialog-content");
 		var probabilityOfCorrectness = document.getElementById("summarization-probabilityOfCorrectness").valueAsNumber;
 
-		conDecGitAPI.getSummarizedCode(id, documentationLocation, probabilityOfCorrectness, function(text) {
-			document.getElementById("id").value = id;
-			document.getElementById("documentationLocation").value = documentationLocation;
-			content.innerHTML = text;
-		});
+		conDecGitAPI.getSummarizedCode(id, documentationLocation, probabilityOfCorrectness)
+			.then(summary => {
+				document.getElementById("id").value = id;
+				document.getElementById("documentationLocation").value = documentationLocation;
+				content.innerHTML = summary;
+			});
 
 		cancelButton.onclick = function() {
 			AJS.dialog2(summarizedDialog).hide();
