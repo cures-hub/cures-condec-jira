@@ -2,13 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.git;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,22 +114,13 @@ public class GitClient {
 	/**
 	 * @return {@link Diff} object for all commits on the default branch(es)
 	 *         containing the {@link ChangedFile}s. Each {@link ChangedFile} is
-	 *         created from a diff entry and contains the respective edit list.
+	 *         created from a diff entry and contains the respective edit list and a
+	 *         reference to all commits that changed the file.
 	 */
 	public Diff getDiffOfEntireDefaultBranch() {
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			List<RevCommit> commits = gitClientForSingleRepo.getDefaultBranchCommits();
-			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			if (commits.size() < 2) {
-				// because first commit does not have a parent commit
-				continue;
-			}
-			DiffForSingleRef diffOfDefaultBranchOfSingleRepo = gitClientForSingleRepo.getDiff(commits.get(1),
-					commits.get(commits.size() - 1));
-			diffOfDefaultBranchOfSingleRepo.setCommits(commits);
-			gitClientForSingleRepo.addCommitsToChangedFiles(diffOfDefaultBranchOfSingleRepo, commits);
-			diff.add(diffOfDefaultBranchOfSingleRepo);
+			diff.add(gitClientForSingleRepo.getDiffOfEntireDefaultBranch());
 		}
 		return diff;
 	}

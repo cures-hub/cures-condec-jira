@@ -170,6 +170,7 @@ public class GitClientForSingleRepository {
 		try {
 			objectId = git.getRepository().resolve(getDefaultRef().getName());
 		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
+			LOGGER.error("Position of git default branch is unknown. " + e.getMessage());
 		}
 		return objectId;
 	}
@@ -184,7 +185,7 @@ public class GitClientForSingleRepository {
 		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
 	}
 
-	public DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
+	private DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
 		for (RevCommit commit : commits) {
 			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
 			for (DiffEntry diffEntry : diffEntriesInCommit) {
@@ -530,5 +531,18 @@ public class GitClientForSingleRepository {
 			branch.add(getDiff(baseCommit, lastCommit));
 		}
 		return branch;
+	}
+
+	public DiffForSingleRef getDiffOfEntireDefaultBranch() {
+		List<RevCommit> commits = getDefaultBranchCommits();
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		if (commits.size() < 2) {
+			// because first commit does not have a parent commit
+			return new DiffForSingleRef();
+		}
+		DiffForSingleRef diff = getDiff(commits.get(1), commits.get(commits.size() - 1));
+		diff.setCommits(commits);
+		addCommitsToChangedFiles(diff, commits);
+		return diff;
 	}
 }
