@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,7 +109,7 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setGitRepositoryConfigurations")
+	@Path("/configuration")
 	@POST
 	public Response setGitRepositoryConfigurations(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
@@ -212,11 +211,13 @@ public class GitRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
 		}
-		String projectKey = getProjectKey(jiraIssueKey);
 		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
 		if (jiraIssue == null) {
-			return jiraIssueKeyIsInvalid();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Summary cannot be shown since the Jira issue key is invalid."))
+					.build();
 		}
+		String projectKey = jiraIssue.getProjectObject().getKey();
 		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
@@ -229,7 +230,7 @@ public class GitRest {
 		return Response.ok(diffForJiraIssue).build();
 	}
 
-	@Path("summarization")
+	@Path("summary")
 	@POST
 	public Response getSummarizedCode(FilterSettings filterSettings, @QueryParam("probability") int probability) {
 		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
@@ -249,20 +250,9 @@ public class GitRest {
 		Issue jiraIssue = element.getJiraIssue();
 
 		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
-		if (summary == null || summary.isEmpty()) {
+		if (summary.isBlank()) {
 			summary = "This Jira issue does not have any code committed.";
 		}
 		return Response.ok(summary).build();
 	}
-
-	private String getProjectKey(String elementKey) {
-		return elementKey.split("-")[0].toUpperCase(Locale.ENGLISH);
-	}
-
-	private Response jiraIssueKeyIsInvalid() {
-		String message = "Decision knowledge elements cannot be shown since the Jira issue key is invalid.";
-		LOGGER.error(message);
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
-	}
-
 }

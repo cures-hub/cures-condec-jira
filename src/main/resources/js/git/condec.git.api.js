@@ -78,7 +78,7 @@
 	/**
 	 * external references: condec.dialog
 	 */
-	ConDecGitAPI.prototype.getSummarizedCode = function(id, documentationLocation, probability, callback) {
+	ConDecGitAPI.prototype.getSummarizedCode = function(id, documentationLocation, probability) {
 		var filterSettings = {
 			"projectKey": conDecAPI.projectKey,
 			"selectedElementObject": {
@@ -86,8 +86,8 @@
 				"documentationLocation": documentationLocation
 			}
 		};
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/summarization&probability=" + probability,
-			filterSettings);
+		return generalApi.postTextReturnPromise(this.restPrefix
+			+ "/summary?probability=" + probability, filterSettings);
 	};
 
 	/**
