@@ -21,7 +21,7 @@ public class TestGenerateCommentString extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		branch = gitClient.getDiff("TEST-4.feature.branch");
+		branch = gitClient.getDiffForBranchWithName("TEST-4.feature.branch");
 		transcriber = new CommitMessageToCommentTranscriber(
 				ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4"));
 	}

@@ -18,8 +18,8 @@ public class TestDiff extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		diffForCommit = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangledSingleCommit);
-		diffForJiraIssue = gitClient.getDiffForJiraIssue(mockJiraIssueForGitTestsTangled);
+		diffForCommit = gitClient.getDiffForJiraIssueOnAllBranches(mockJiraIssueForGitTestsTangledSingleCommit);
+		diffForJiraIssue = gitClient.getDiffForJiraIssueOnAllBranches(mockJiraIssueForGitTestsTangled);
 	}
 
 	@Test

@@ -13,7 +13,7 @@ public class TestGetRepoUriFromBranch extends TestSetUpGit {
 
 	@Test
 	public void testBranchExisting() {
-		Diff featureBranch = gitClient.getDiff("TEST-4.feature.branch");
+		Diff featureBranch = gitClient.getDiffForBranchWithName("TEST-4.feature.branch");
 		assertEquals(URLEncoder.encode(GIT_URI, Charset.defaultCharset()), featureBranch.get(0).getRepoUri());
 	}
 }

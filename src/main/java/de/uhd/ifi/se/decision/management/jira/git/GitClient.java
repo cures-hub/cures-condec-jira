@@ -162,7 +162,7 @@ public class GitClient {
 	 *            e.g. "master", Jira issue key, or Jira project key.
 	 * @return all changes on branches that contain the name.
 	 */
-	public Diff getDiff(String branchName) {
+	public Diff getDiffForBranchWithName(String branchName) {
 		if (branchName == null) {
 			return new Diff();
 		}
@@ -183,7 +183,7 @@ public class GitClient {
 	 *         branches. Each {@link ChangedFile} is created from a diff entry and
 	 *         contains the respective edit list.
 	 */
-	public Diff getDiffForJiraIssue(Issue jiraIssue) {
+	public Diff getDiffForJiraIssueOnAllBranches(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}

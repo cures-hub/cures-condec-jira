@@ -35,7 +35,7 @@ public class TestDiffForSingleRef extends TestSetUpGit {
 		commitMessageElement.setProject("TEST");
 		List<DecisionKnowledgeElementInCommitMessage> commitMessageElements = List.of(commitMessageElement);
 
-		ref = gitClient.getDiff("").getRefs().get(0);
+		ref = gitClient.getDiffForBranchWithName("").getRefs().get(0);
 
 		diffForSingleRef = new DiffForSingleRef(ref, codeElements, commitMessageElements);
 	}

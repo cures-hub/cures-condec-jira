@@ -170,7 +170,7 @@ public class GitClientForSingleRepository {
 		try {
 			objectId = git.getRepository().resolve(getDefaultRef().getName());
 		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
-			LOGGER.error("Position of git default branch is unknown. " + e.getMessage());
+			LOGGER.debug("Position of git default branch is unknown. " + e.getMessage());
 		}
 		return objectId;
 	}
