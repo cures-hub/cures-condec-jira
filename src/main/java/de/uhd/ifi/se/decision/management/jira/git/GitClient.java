@@ -183,7 +183,7 @@ public class GitClient {
 	 *         branches. Each {@link ChangedFile} is created from a diff entry and
 	 *         contains the respective edit list.
 	 */
-	public Diff getDiffForJiraIssueOnAllBranches(Issue jiraIssue) {
+	public Diff getDiffForJiraIssueOnDefaultBranchesAndBranchesWithName(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}

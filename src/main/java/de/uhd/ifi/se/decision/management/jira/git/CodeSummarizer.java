@@ -57,7 +57,7 @@ public class CodeSummarizer {
 		if (gitClient == null) {
 			return "";
 		}
-		Diff diff = gitClient.getDiffForJiraIssueOnAllBranches(jiraIssue);
+		Diff diff = gitClient.getDiffForJiraIssueOnDefaultBranchesAndBranchesWithName(jiraIssue);
 		return createSummary(diff);
 	}
 

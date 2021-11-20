@@ -26,7 +26,7 @@ public class TestChangedFile extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		changedFile = gitClient.getDiffForJiraIssueOnAllBranches(mockJiraIssueForGitTestsTangledSingleCommit).getChangedFiles().get(0);
+		changedFile = gitClient.getDiffForJiraIssueOnDefaultBranchesAndBranchesWithName(mockJiraIssueForGitTestsTangledSingleCommit).getChangedFiles().get(0);
 	}
 
 	@Test

@@ -213,7 +213,7 @@ public class GitRest {
 		new CommitMessageToCommentTranscriber(jiraIssue).postCommitsIntoJiraIssueComments();
 
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
-		Diff diffForJiraIssue = GitClient.getInstance(projectKey).getDiffForJiraIssueOnAllBranches(jiraIssue);
+		Diff diffForJiraIssue = GitClient.getInstance(projectKey).getDiffForJiraIssueOnDefaultBranchesAndBranchesWithName(jiraIssue);
 		return Response.ok(diffForJiraIssue).build();
 	}
 
