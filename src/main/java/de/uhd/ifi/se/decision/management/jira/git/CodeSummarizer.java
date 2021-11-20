@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.io.FilenameUtils;
 
 import com.atlassian.jira.issue.Issue;
@@ -70,27 +73,28 @@ public class CodeSummarizer {
 			return "";
 		}
 
-		diff.getChangedFiles().removeIf(changedFile -> !changedFile.isExistingJavaFile());
 		TangledChangeDetector tangledCommitDetection = new TangledChangeDetector();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
+		List<ChangedFile> changedFiles = new ArrayList<>(diff.getChangedFiles());
+		changedFiles.removeIf(changedFile -> !changedFile.isCodeFileToExtract());
 
 		if (formatForComments) {
-			return generateSummaryForJiraIssueComment(diff);
+			return generateSummaryForJiraIssueComment(changedFiles);
 		}
-		return generateSummaryForHtmlDialog(diff);
+		return generateSummaryForHtmlDialog(changedFiles);
 	}
 
-	private static String generateSummaryForJiraIssueComment(Diff diff) {
+	private static String generateSummaryForJiraIssueComment(List<ChangedFile> changedFiles) {
 		String summary = "The following classes were changed: ";
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
+		for (ChangedFile changedFile : changedFiles) {
 			summary += changedFile.getName() + "; ";
 		}
 		return summary;
 	}
 
-	private String generateSummaryForHtmlDialog(Diff diff) {
+	private String generateSummaryForHtmlDialog(List<ChangedFile> changedFiles) {
 		String rows = "";
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
+		for (ChangedFile changedFile : changedFiles) {
 			if (changedFile.getProbabilityOfCorrectness() >= minProbabilityOfCorrectness) {
 				rows += addRow(addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
 						summarizeMethods(changedFile),

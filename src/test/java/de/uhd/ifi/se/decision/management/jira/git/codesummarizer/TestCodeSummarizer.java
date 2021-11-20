@@ -42,8 +42,9 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueExisting() {
-		summarizer.setFormatForComments(false);
-		assertTrue(summarizer.createSummary(mockJiraIssueForGitTestsTangled, 0).startsWith("<table"));
+		String summary = summarizer.createSummary(JiraIssues.getJiraIssueByKey("TEST-4"), 0);
+		assertTrue(summary.startsWith("<table"));
+		assertFalse(summary.contains("readMe"));
 	}
 
 	@Test
