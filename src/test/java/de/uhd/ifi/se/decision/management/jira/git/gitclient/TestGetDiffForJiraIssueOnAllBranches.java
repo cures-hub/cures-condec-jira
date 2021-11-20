@@ -17,7 +17,7 @@ public class TestGetDiffForJiraIssueOnAllBranches extends TestSetUpGit {
 	@Test
 	public void testJiraIssueWithCommits() {
 		Issue issue = JiraIssues.getJiraIssueByKey("TEST-4");
-		Diff diff = gitClient.getDiffForJiraIssueOnDefaultBranchesAndBranchesWithName(issue);
+		Diff diff = gitClient.getDiffForJiraIssueOnDefaultBranchesAndFeatureBranches(issue);
 
 		assertEquals(1, diff.getRefs().size());
 		assertEquals("refs/remotes/origin/TEST-4.feature.branch", diff.getRefs().get(0).getName());
@@ -28,7 +28,7 @@ public class TestGetDiffForJiraIssueOnAllBranches extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueNull() {
-		List<RevCommit> commits = gitClient.getDiffForJiraIssueOnDefaultBranchesAndBranchesWithName(null).getCommits();
+		List<RevCommit> commits = gitClient.getDiffForJiraIssueOnDefaultBranchesAndFeatureBranches(null).getCommits();
 		assertEquals(0, commits.size());
 	}
 }

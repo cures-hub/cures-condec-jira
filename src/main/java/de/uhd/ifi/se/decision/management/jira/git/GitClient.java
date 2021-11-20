@@ -180,21 +180,32 @@ public class GitClient {
 	 *            have the key in it.
 	 * @return {@link Diff} object for a Jira issue containing the
 	 *         {@link ChangedFile}s from both the default branch(es) and the feature
-	 *         branches. Each {@link ChangedFile} is created from a diff entry and
-	 *         contains the respective edit list.
+	 *         branches that have the Jira issue key in the branch name. Each
+	 *         {@link ChangedFile} is created from a diff entry and contains the
+	 *         respective edit list.
 	 */
-	public Diff getDiffForJiraIssueOnDefaultBranchesAndBranchesWithName(Issue jiraIssue) {
+	public Diff getDiffForJiraIssueOnDefaultBranchesAndFeatureBranches(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
 
 		Diff diffForJiraIssue = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diffForJiraIssue.addAll(gitClientForSingleRepo.getDiffForJiraIssue(jiraIssue));
+			diffForJiraIssue
+					.addAll(gitClientForSingleRepo.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue));
 		}
 		return diffForJiraIssue;
 	}
 
+	/**
+	 * @param jiraIssue
+	 *            a Jira issue such as work item/development task/requirement.
+	 * @return {@link Diff} object for a Jira issue containing the
+	 *         {@link ChangedFile}s from the default branch(es). The commit messages
+	 *         on the default branch(es) need to contain the Jira issue key. Each
+	 *         {@link ChangedFile} is created from a diff entry and contains the
+	 *         respective edit list.
+	 */
 	public Diff getDiffForJiraIssueOnDefaultBranches(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();

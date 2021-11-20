@@ -14,7 +14,7 @@ public class TestGetDiffForBranchWithName extends TestSetUpGit {
 
 	@Test
 	public void testFeatureBranch() {
-		Diff diff = gitClient.getDiffForBranchWithName("TEST-4.feature.branch");
+		Diff diff = gitClient.getDiffForBranchWithName("TEST-4");
 
 		assertEquals(1, diff.getRefs().size());
 		assertEquals("refs/remotes/origin/TEST-4.feature.branch", diff.getRefs().get(0).getName());
@@ -26,10 +26,27 @@ public class TestGetDiffForBranchWithName extends TestSetUpGit {
 	}
 
 	@Test
-	public void testAllBranches() {
-		List<RevCommit> commits = gitClient.getDiffForBranchWithName("master").getCommits();
+	public void testDefaultBranch() {
+		Diff diff = gitClient.getDiffForBranchWithName("master");
+
+		assertEquals(1, diff.getRefs().size());
+		assertEquals("refs/remotes/origin/master", diff.getRefs().get(0).getName());
+
+		List<RevCommit> commits = diff.getCommits();
 		// TODO Why zero?
 		assertEquals(0, commits.size());
+
+	}
+
+	@Test
+	public void testAllBranches() {
+		Diff diff = gitClient.getDiffForBranchWithName("");
+
+		assertEquals(2, diff.getRefs().size());
+
+		List<RevCommit> commits = diff.getCommits();
+		// TODO Why not more?
+		assertEquals(5, commits.size());
 
 	}
 
