@@ -67,7 +67,7 @@
 	};
 
 	ConDecGitAPI.prototype.deleteGitRepos = function(projectKey) {
-		generalApi.postJSON(this.restPrefix + "/deleteGitRepos?projectKey=" + projectKey, null,
+		generalApi.postJSON(this.restPrefix + "/delete?projectKey=" + projectKey, null,
 			function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The git repos for this project were deleted.");

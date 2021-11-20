@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
@@ -147,7 +148,16 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/deleteGitRepos")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return true if all git repositories that were associated to the Jira project
+	 *         and also all database entries were successfully deleted.
+	 */
+	@Path("/delete")
 	@POST
 	public Response deleteGitRepos(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
@@ -213,7 +223,8 @@ public class GitRest {
 		new CommitMessageToCommentTranscriber(jiraIssue).postCommitsIntoJiraIssueComments();
 
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
-		Diff diffForJiraIssue = GitClient.getInstance(projectKey).getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue);
+		Diff diffForJiraIssue = GitClient.getInstance(projectKey)
+				.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue);
 		return Response.ok(diffForJiraIssue).build();
 	}
 
