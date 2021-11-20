@@ -24,5 +24,8 @@ public class TestGetDiffOfEntireDefaultBranch extends TestSetUpGit {
 		assertEquals("Tangled2.java", extractedClass.getName());
 		assertEquals(1, extractedClass.getCommits().size());
 		assertEquals("TEST-30", extractedClass.getJiraIssueKeys().iterator().next());
+
+		assertEquals(12, diff.getCodeElements().size());
+		assertEquals(0, diff.getCommitElements().size());
 	}
 }

@@ -17,7 +17,7 @@ public class TestGetDiffOfEntireDefaultBranchFromKnowledgeGraph extends TestSetU
 		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);
 
 		diff = gitClient.getDiffOfEntireDefaultBranchFromKnowledgeGraph();
-		assertTrue(diff.get(0).getCodeElements().size() > 0);
+		assertTrue(diff.getCodeElements().size() > 0);
 
 		// List<RevCommit> allCommits = diff.getCommits();
 		// assertEquals(6, allCommits.size());

@@ -24,6 +24,9 @@ public class TestGetDiffForJiraIssueOnDefaultBranchAndFeatureBranches extends Te
 
 		List<RevCommit> commits = diff.getCommits();
 		assertEquals(5, commits.size());
+
+		assertEquals(5, diff.getCodeElements().size());
+		assertEquals(6, diff.getCommitElements().size());
 	}
 
 	@Test

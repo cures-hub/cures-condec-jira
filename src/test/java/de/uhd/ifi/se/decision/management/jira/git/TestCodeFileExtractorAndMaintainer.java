@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 
@@ -88,6 +89,7 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setFileTypesToExtract(new ArrayList<>());
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		assertNull(gitConfig.getFileTypeForEnding(".java"));
 
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
