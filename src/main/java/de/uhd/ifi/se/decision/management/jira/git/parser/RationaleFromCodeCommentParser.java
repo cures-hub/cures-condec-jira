@@ -215,6 +215,7 @@ public class RationaleFromCodeCommentParser {
 		} else {
 			rationaleTypeName = rationaleTypeStartTag.substring(atCharPosition + 1).split(" ")[0];
 		}
-		return KnowledgeType.getKnowledgeType(rationaleTypeName);
+		KnowledgeType type = KnowledgeType.getKnowledgeType(rationaleTypeName);
+		return type.isDecisionKnowledge() ? type : KnowledgeType.OTHER;
 	}
 }

@@ -107,5 +107,6 @@ public class TestCodeCommentParser extends TestSetUp {
 
 		assertTrue(parser.isCommentInStringsOfTestCase(fileContent, 1));
 		assertFalse(parser.isCommentInStringsOfTestCase(fileContent, 0));
+		assertFalse(parser.isCommentInStringsOfTestCase("@issue", 1));
 	}
 }
