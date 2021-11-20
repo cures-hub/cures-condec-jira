@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.gitrest;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
@@ -25,13 +26,36 @@ public class TestGetSummarizedCode extends TestSetUpGit {
 	}
 
 	@Test
-	public void testFilterSettingsValid() {
+	public void testGitConnectionDisabled() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(false);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElement("TEST-14");
+		assertEquals(Status.SERVICE_UNAVAILABLE.getStatusCode(),
+				gitRest.getSummarizedCode(filterSettings, 0).getStatus());
+	}
+
+	@Test
+	public void testFilterSettingsValidJiraIssueWithLinkedCode() {
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setSelectedElement("TEST-14");
 		assertEquals(Status.OK.getStatusCode(), gitRest.getSummarizedCode(filterSettings, 0).getStatus());
+	}
+
+	@Test
+	public void testFilterSettingsValidJiraIssueWithoutLinkedCode() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElement("TEST-42");
+		Response response = gitRest.getSummarizedCode(filterSettings, 0);
+		assertEquals(Status.OK.getStatusCode(), response.getStatus());
+		assertEquals("This Jira issue does not have any code committed.", response.getEntity().toString());
 	}
 
 	@Test

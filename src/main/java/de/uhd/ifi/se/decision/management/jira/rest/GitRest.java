@@ -230,7 +230,7 @@ public class GitRest {
 		return Response.ok(diffForJiraIssue).build();
 	}
 
-	@Path("summary")
+	@Path("/summary")
 	@POST
 	public Response getSummarizedCode(FilterSettings filterSettings, @QueryParam("probability") int probability) {
 		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
