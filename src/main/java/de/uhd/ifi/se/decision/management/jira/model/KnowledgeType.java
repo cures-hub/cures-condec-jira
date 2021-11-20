@@ -203,7 +203,9 @@ public enum KnowledgeType {
 	public static List<String> toStringList() {
 		List<String> knowledgeTypes = new ArrayList<String>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			knowledgeTypes.add(knowledgeType.toString());
+			if (knowledgeType.isDecisionKnowledge()) {
+				knowledgeTypes.add(knowledgeType.toString());
+			}
 		}
 		return knowledgeTypes;
 	}

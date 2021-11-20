@@ -79,18 +79,24 @@ public abstract class TestSetUpGit extends TestSetUp {
 		}
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("GodClass.java",
-				"// @con This is a structure violation, but it should not kill knowledge extraction\n" + "\n"
+				"// @con This is a structure violation, but it should not kill knowledge extraction\n\n"
 						+ "// @goal This is a goal outside an issue, let's see where it lands.\n"
-						+ "// @assumption This is an assumption outside an issue, let's see where it lands.\n" + "\n"
-						+ "// @alternative Here is another structure violation!\n" + "\n" + "/**\n"
-						+ " * @issue Is this yet another structure violation?\n" + " * @con It would appear so.\n"
+						+ "// @assumption This is an assumption outside an issue, let's see where it lands.\n\n"
+						+ "// @alternative Here is another structure violation!\n\n" //
+						+ "/**\n" //
+						+ " * @issue Is this yet another structure violation?\n" //
+						+ " * @con It would appear so.\n"
 						+ " * @assumption Here is an assumption inside an issue, let's see where this one lands.\n"
-						+ " * @goal Here is a goal inside an issue, let's see where this one lands.\n" + " */" + "\n"
+						+ " * @goal Here is a goal inside an issue, let's see where this one lands.\n" //
+						+ " */\n" //
 						+ "public class GodClass {\n"
 						+ "//@issue Small code issue in GodClass, it does nothing. \t \n \t \n" + "/** \n"
-						+ " * @issue Will this issue be parsed correctly? \n" + " * @alternative We will see!\n"
+						+ " * @issue Will this issue be parsed correctly? \n" //
+						+ " * @alternative We will see!\n" //
 						+ " * @pro This is a very long argument, so we put it into more than one\n" + " * line. \n"
-						+ " * \n" + " * not rationale text anymore\n" + " */ \t \n}",
+						+ " * \n" //
+						+ " * not rationale text anymore\n" //
+						+ " */ \t \n}",
 				"TEST-12: Develop great software");
 		makeExampleCommit("Untangled.java",
 				"package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" + "\n" + "public class Main {\n"
@@ -242,9 +248,11 @@ public abstract class TestSetUpGit extends TestSetUp {
 				+ "/*@issue 2nd issue in comment block*/\r\n" //
 				+ "/**\r\n* @issue 3rd issue in javadoc\r\n*\r\n" //
 				+ "* @alternative 1st alt in javadoc*/\r\n}",
-				"TEST-12: Develop great software" + "//[issue]Huston we have a small problem..[/issue]" + "\r\n"
-						+ "//[alternative]ignore it![/alternative]" + "\r\n" + "//[pro]ignorance is bliss[/pro]"
-						+ "\r\n" + "//[decision]solve it ASAP![/decision]" + "\r\n"
+				"TEST-12: Develop great software" //
+						+ "//[issue]Huston we have a small problem..[/issue]\r\n"
+						+ "//[alternative]ignore it![/alternative]\r\n" //
+						+ "//[pro]ignorance is bliss[/pro]\r\n" //
+						+ "//[decision]solve it ASAP![/decision]\r\n" //
 						+ "//[pro]life is valuable, prevent even smallest risks[/pro]");
 		makeExampleCommit("readMe.featureBranch.txt", "", "");
 		makeExampleCommit("readMe.featureBranch.txt", "", "[issue]This is an issue![/Issue] But I love pizza!");
