@@ -159,16 +159,17 @@ public class GitClient {
 
 	/**
 	 * @param branchName
-	 *            e.g. "master", Jira issue key, or Jira project key.
-	 * @return all changes on branches that contain the name.
+	 *            e.g. Jira issue key or Jira project key.
+	 * @return all changes on branches that contain the name that are NOT on the
+	 *         default branch.
 	 */
-	public Diff getDiffForBranchWithName(String branchName) {
+	public Diff getDiffForFeatureBranchWithName(String branchName) {
 		if (branchName == null) {
 			return new Diff();
 		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.addAll(gitClientForSingleRepo.getDiffOnBranchWithName(branchName));
+			diff.addAll(gitClientForSingleRepo.getDiffForFeatureBranchWithName(branchName));
 		}
 		return diff;
 	}

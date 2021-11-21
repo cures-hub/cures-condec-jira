@@ -256,7 +256,7 @@ public class GitRest {
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
 		GitClient gitClient = GitClient.getInstance(projectKey);
-		Diff branchesForProject = gitClient.getDiffForBranchWithName(projectKey);
+		Diff branchesForProject = gitClient.getDiffForFeatureBranchWithName(projectKey);
 		branchesForProject.addAll(gitClient.getDiffOfEntireDefaultBranchFromKnowledgeGraph());
 		return Response.ok(branchesForProject).build();
 	}

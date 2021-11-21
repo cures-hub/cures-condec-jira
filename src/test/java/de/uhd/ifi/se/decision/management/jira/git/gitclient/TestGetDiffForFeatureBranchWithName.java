@@ -13,11 +13,11 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 
-public class TestGetDiffForBranchWithName extends TestSetUpGit {
+public class TestGetDiffForFeatureBranchWithName extends TestSetUpGit {
 
 	@Test
 	public void testFeatureBranch() {
-		Diff diff = gitClient.getDiffForBranchWithName("TEST-4");
+		Diff diff = gitClient.getDiffForFeatureBranchWithName("TEST-4");
 
 		assertEquals(1, diff.getRefs().size());
 		Ref featureBranch = diff.getRefs().get(0);
@@ -31,33 +31,19 @@ public class TestGetDiffForBranchWithName extends TestSetUpGit {
 	}
 
 	@Test
-	public void testDefaultBranch() {
-		Diff diff = gitClient.getDiffForBranchWithName("master");
+	public void testDefaultBranchCommitsAreNotIncluded() {
+		Diff diff = gitClient.getDiffForFeatureBranchWithName("master");
 
 		assertEquals(1, diff.getRefs().size());
 		assertEquals("refs/remotes/origin/master", diff.getRefs().get(0).getName());
 
 		List<RevCommit> commits = diff.getCommits();
-		// TODO Why zero?
 		assertEquals(0, commits.size());
-
-	}
-
-	@Test
-	public void testAllBranches() {
-		Diff diff = gitClient.getDiffForBranchWithName("");
-
-		assertEquals(2, diff.getRefs().size());
-
-		List<RevCommit> commits = diff.getCommits();
-		// TODO Why not more?
-		assertEquals(5, commits.size());
-
 	}
 
 	@Test
 	public void testBranchNameNull() {
-		List<RevCommit> commits = gitClient.getDiffForBranchWithName(null).getCommits();
+		List<RevCommit> commits = gitClient.getDiffForFeatureBranchWithName(null).getCommits();
 		assertEquals(0, commits.size());
 	}
 }

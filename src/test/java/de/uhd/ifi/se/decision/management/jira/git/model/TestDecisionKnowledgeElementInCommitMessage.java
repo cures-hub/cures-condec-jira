@@ -36,7 +36,7 @@ public class TestDecisionKnowledgeElementInCommitMessage extends TestSetUpGit {
 	@Test
 	public void testUrl() {
 		commitMessageElement.setRepoUri(GIT_URI);
-		RevCommit commit = gitClient.getDiffForBranchWithName("").getCommits().get(0);
+		RevCommit commit = gitClient.getDiffForFeatureBranchWithName("").getCommits().get(0);
 		commitMessageElement.setCommit(commit);
 		assertEquals(URLEncoder.encode(GIT_URI + "/commit/" + commitMessageElement.getCommitName(),
 				Charset.defaultCharset()), commitMessageElement.getUrl());

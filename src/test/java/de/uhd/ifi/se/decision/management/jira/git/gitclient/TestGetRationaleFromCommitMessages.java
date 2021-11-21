@@ -19,7 +19,7 @@ public class TestGetRationaleFromCommitMessages extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void fromFeatureBranchCommits() {
-		Diff diff = gitClient.getDiffForBranchWithName("TEST-4.feature.branch");
+		Diff diff = gitClient.getDiffForFeatureBranchWithName("TEST-4.feature.branch");
 		assertEquals(6, diff.get(0).getRationaleElementsFromCommitMessages().size());
 	}
 }

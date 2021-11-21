@@ -69,7 +69,7 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		Diff diffFromFeatureBranches = gitClient.getDiffForBranchWithName(jiraIssue.getKey());
+		Diff diffFromFeatureBranches = gitClient.getDiffForFeatureBranchWithName(jiraIssue.getKey());
 		return postCommitsIntoJiraIssueComments(diffFromFeatureBranches);
 	}
 

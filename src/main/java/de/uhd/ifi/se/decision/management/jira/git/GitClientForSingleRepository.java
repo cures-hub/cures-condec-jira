@@ -448,19 +448,19 @@ public class GitClientForSingleRepository {
 	 *            e.g. "master", Jira issue key, or Jira project key.
 	 * @return all changes on branches that contain the name.
 	 */
-	public Diff getDiffOnBranchWithName(String branchName) {
+	public Diff getDiffForFeatureBranchWithName(String branchName) {
 		Diff diff = new Diff();
 		List<Ref> refsWithName = getRefs().stream()
 				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 				.collect(Collectors.toList());
 		for (Ref ref : refsWithName) {
-			DiffForSingleRef diffForSingleRef = getDiff(ref);
+			DiffForSingleRef diffForSingleRef = getDiffForFeatureBranch(ref);
 			diff.add(diffForSingleRef);
 		}
 		return diff;
 	}
 
-	public DiffForSingleRef getDiff(Ref ref) {
+	public DiffForSingleRef getDiffForFeatureBranch(Ref ref) {
 		DiffForSingleRef diffForRef = new DiffForSingleRef(getRemoteUri());
 		diffForRef.setProjectKey(projectKey);
 		diffForRef.setRef(ref);
@@ -499,7 +499,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public Diff getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(Issue jiraIssue) {
-		Diff diffOnFeatureBranches = getDiffOnBranchWithName(jiraIssue.getKey());
+		Diff diffOnFeatureBranches = getDiffForFeatureBranchWithName(jiraIssue.getKey());
 		DiffForSingleRef branch = getDiffOnDefaultBranch(jiraIssue);
 		if (!branch.getCommits().isEmpty()) {
 			diffOnFeatureBranches.add(branch);
