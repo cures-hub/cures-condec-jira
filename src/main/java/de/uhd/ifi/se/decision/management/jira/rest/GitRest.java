@@ -27,10 +27,13 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -44,11 +47,16 @@ public class GitRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRest.class);
 
 	/**
-	 * 
 	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param projectKey
+	 *            of a Jira project.
 	 * @param isKnowledgeExtractedFromGit
-	 * @return
+	 *            true if {@link ChangedFile}s and decision knowledge is extracted
+	 *            from git. The decision knowledge is both extracted from commit
+	 *            messages and code comments.
+	 * @return ok if the knowledge extraction from git was successfully activated.
 	 */
 	@Path("/activate/{projectKey}")
 	@POST
@@ -81,6 +89,18 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param isPostFeatureBranchCommits
+	 *            true if git commit messages of feature branch commits should be
+	 *            posted as Jira issue comments. This enables to integrate decision
+	 *            knowledge from commit messages into the {@link KnowledgeGraph}.
+	 * @return ok if successfully activated.
+	 */
 	@Path("/configuration/{projectKey}/post-feature-branch-commits")
 	@POST
 	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
@@ -95,6 +115,20 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param isPostDefaultBranchCommits
+	 *            true if git commit messages of default branch commits (e.g.
+	 *            squashed commits) should be posted as Jira issue comments. This
+	 *            enables to integrate decision knowledge from commit messages into
+	 *            the {@link KnowledgeGraph}.
+	 * @return ok if successfully activated and if all messages from commits on the
+	 *         default branch(es) were successfully posted to Jira issue comments.
+	 */
 	@Path("/configuration/{projectKey}/post-default-branch-commits")
 	@POST
 	public Response setPostDefaultBranchCommits(@Context HttpServletRequest request,
@@ -115,6 +149,19 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param gitRepositoryConfigurations
+	 *            list of configuration details for the git repositories connected
+	 *            to the Jira project, i.e., for every
+	 *            {@link GitClientForSingleRepository}.
+	 * @return ok if the configuration for git repositories connected to the Jira
+	 *         project was successfully saved.
+	 */
 	@Path("/configuration/{projectKey}/repositories")
 	@POST
 	public Response setGitRepositoryConfigurations(@Context HttpServletRequest request,
@@ -135,6 +182,16 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * HttpServletRequest with an authorized Jira {@link ApplicationUser}.
+	 * 
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param codeFileEndings
+	 *            defines which code files are extracted from git and decision
+	 *            knowledge from their code comments.
+	 * @return ok if code file endings were successfully configured.
+	 */
 	@Path("/configuration/{projectKey}/file-endings")
 	@POST
 	public Response setCodeFileEndings(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
@@ -180,9 +237,10 @@ public class GitRest {
 	}
 
 	/**
-	 * 
 	 * @param projectKey
-	 * @return
+	 *            of a Jira project.
+	 * @return {@link Diff} that contains all changes on the default branch and
+	 *         feature branches for the entire project.
 	 */
 	@Path("/diff/project")
 	@GET
@@ -204,10 +262,15 @@ public class GitRest {
 	}
 
 	/**
-	 * 
 	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param jiraIssueKey
-	 * @return
+	 *            of a Jira issue to show a {@link Diff} for.
+	 * @return {@link Diff} that contains all changes on the default branch and
+	 *         feature branches for the Jira issue. The commits on the default
+	 *         branch need to have the key in their message and the feature
+	 *         branch(es) need to have the key in the branch name.
 	 */
 	@Path("/diff/jira-issue")
 	@GET
@@ -236,9 +299,20 @@ public class GitRest {
 		return Response.ok(diffForJiraIssue).build();
 	}
 
+	/**
+	 * @param filterSettings
+	 *            object of {@link FilterSettings} class that contains the selected
+	 *            element for which the summary should be shown.
+	 * @param minProbabilityOfCorrectness
+	 *            to filter out wrong linkes between the Jira issue and code files
+	 *            resulting from tangled changes.
+	 * @return summary of code changes for the selected element in the
+	 *         {@link FilterSettings}.
+	 */
 	@Path("/summary")
 	@POST
-	public Response getSummarizedCode(FilterSettings filterSettings, @QueryParam("probability") int probability) {
+	public Response getSummarizedCode(FilterSettings filterSettings,
+			@QueryParam("minProbabilityOfCorrectness") int minProbabilityOfCorrectness) {
 		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
@@ -255,7 +329,7 @@ public class GitRest {
 		KnowledgeElement element = filterSettings.getSelectedElement();
 		Issue jiraIssue = element.getJiraIssue();
 
-		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
+		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, minProbabilityOfCorrectness);
 		if (summary.isBlank()) {
 			summary = "This Jira issue does not have any code committed.";
 		}

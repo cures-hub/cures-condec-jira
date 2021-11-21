@@ -122,6 +122,11 @@ public class GitConfiguration {
 		this.isPostFeatureBranchCommitsActivated = isPostFeatureBranchCommitsActivated;
 	}
 
+	/**
+	 * @param codeFileEndingMap
+	 *            defines which code files are extracted from git and decision
+	 *            knowledge from their code comments.
+	 */
 	public void setCodeFileEndings(Map<String, String> codeFileEndingMap) {
 		fileTypesToExtract = new ArrayList<>();
 		for (String commentStyleTypeString : codeFileEndingMap.keySet()) {

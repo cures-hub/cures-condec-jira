@@ -43,14 +43,12 @@ public class CodeSummarizer {
 	}
 
 	/**
-	 * Creates a summary of code changes for all commits associated to a Jira issue.
-	 * 
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @param minProbabilityOfCorrectness
 	 *            probabilityOfCorrectness. Integer value for filter over
 	 *            correctness
-	 * @return summary as a String.
+	 * @return summary of code changes for all commits associated to a Jira issue.
 	 */
 	public String createSummary(Issue jiraIssue, int minProbabilityOfCorrectness) {
 		if (jiraIssue == null) {
@@ -62,11 +60,9 @@ public class CodeSummarizer {
 	}
 
 	/**
-	 * Creates a summary of code changes for a diff.
-	 * 
 	 * @param diff
 	 *            object of {@link Diff} class containing {@link ChangedFile}s.
-	 * @return summary as a String.
+	 * @return summary of code changes for a diff.
 	 */
 	public String createSummary(Diff diff) {
 		if (diff == null || diff.getChangedFiles().isEmpty()) {

@@ -84,7 +84,7 @@
 			}
 		};
 		return generalApi.postJSONReturnTextPromise(this.restPrefix
-			+ "/summary?probability=" + probability, filterSettings);
+			+ "/summary?minProbabilityOfCorrectness=" + probability, filterSettings);
 	};
 
 	/**
