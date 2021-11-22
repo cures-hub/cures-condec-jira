@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -44,10 +45,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 public class ConfigRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
 
-	@Path("/setActivated")
+	@Path("{projectKey}/activate")
 	@POST
-	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") boolean isActivated) {
+	public Response setActivated(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
+			boolean isActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -83,10 +84,10 @@ public class ConfigRest {
 		return Response.ok(isActivated).build();
 	}
 
-	@Path("/setJiraIssueDocumentationLocationActivated")
+	@Path("{projectKey}/activate-jira-issue-documentation")
 	@POST
 	public Response setJiraIssueDocumentationLocationActivated(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("isActivated") boolean isActivated) {
+			@PathParam("projectKey") String projectKey, boolean isActivated) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
