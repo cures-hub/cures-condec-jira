@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jgrapht.GraphPath;
@@ -199,13 +200,12 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "type")
 	public String getTypeAsString() {
-		if (this.getType() == KnowledgeType.OTHER
-				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+		if (getType() == KnowledgeType.OTHER && getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
-			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
+			Issue issue = issueManager.getIssueByCurrentKey(getKey());
 			return issue != null ? issue.getIssueType().getName() : "";
 		}
-		return this.getType().toString();
+		return getType().toString();
 	}
 
 	/**
@@ -444,9 +444,10 @@ public class KnowledgeElement {
 	/**
 	 * @return true if the element exists in database.
 	 */
+	@JsonIgnore
 	public boolean existsInDatabase() {
-		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance("").getKnowledgeElement(id,
-				documentationLocation);
+		KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance(project.getProjectKey())
+				.getKnowledgeElement(id, documentationLocation);
 		return elementInDatabase != null && elementInDatabase.getId() > 0;
 	}
 
@@ -636,10 +637,10 @@ public class KnowledgeElement {
 	 *         be found.
 	 */
 	public Link getLink(KnowledgeElement otherElement) {
-		if (this.equals(otherElement)) {
+		if (equals(otherElement)) {
 			return null;
 		}
-		for (Link link : this.getLinks()) {
+		for (Link link : getLinks()) {
 			if (link.getOppositeElement(this).equals(otherElement)) {
 				return link;
 			}
@@ -656,10 +657,10 @@ public class KnowledgeElement {
 	 *         outgoing edge/link/relationshio can be found.
 	 */
 	public Link getOutgoingLink(KnowledgeElement targetElement) {
-		if (this.equals(targetElement)) {
+		if (equals(targetElement)) {
 			return null;
 		}
-		for (Link link : this.getLinks()) {
+		for (Link link : getLinks()) {
 			if (link.getTarget().equals(targetElement)) {
 				return link;
 			}
@@ -786,7 +787,7 @@ public class KnowledgeElement {
 	 */
 	public boolean hasKnowledgeType(KnowledgeType... knowledgeTypes) {
 		for (KnowledgeType knowledgeType : knowledgeTypes) {
-			if (this.getType() == knowledgeType)
+			if (getType() == knowledgeType)
 				return true;
 		}
 		return false;

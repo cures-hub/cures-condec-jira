@@ -41,7 +41,7 @@ public enum DocumentationLocation {
 			return UNKNOWN;
 		}
 		for (DocumentationLocation location : values()) {
-			if (identifier.contains(location.identifier)) {
+			if (identifier.equalsIgnoreCase(location.getIdentifier())) {
 				return location;
 			}
 		}
