@@ -320,7 +320,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		KnowledgeElement elementWithCorrectId = getElementBySummaryAndTypeInJiraIssue(element.getSummary(),
 				parentElement.getJiraIssue().getId(), element.getType());
 
-		return elementWithCorrectId;
+		return elementWithCorrectId != null ? elementWithCorrectId : element;
 	}
 
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
