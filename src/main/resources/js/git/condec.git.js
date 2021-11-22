@@ -25,7 +25,7 @@
 					return;
 				}
 				if (branches.length === 0) {
-					contentHtml.innerText = "No feature branches found for this Jira issue.";
+					contentHtml.innerText = "No commits and branches were found for this Jira issue.";
 				} else {
 					contentHtml.innerText = "";
 					for (branch of branches) {
