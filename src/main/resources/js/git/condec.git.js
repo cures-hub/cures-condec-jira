@@ -177,12 +177,15 @@
 	function createBranchQualityAssessment(branch) {
 		qualitySummary = document.createElement("div");
 		qualitySummary.className = "condec-box";
+		var menuItem = document.getElementById("menu-item-git");
 		if (branch.commitElements.length + branch.codeElements.length === 0) {
 			qualitySummary.innerText = "No (new) decision knowledge found in commit messages and comments of changed files!";
 			qualitySummary.classList.add("condec-warning");
+			conDecNudgingAPI.setAmbientFeedback(menuItem, "condec-warning");
 		} else if (branch.qualityProblems.length === 0) {
 			qualitySummary.innerText = "No quality problems found in this branch. Great work!";
 			qualitySummary.classList.add("condec-fine");
+			conDecNudgingAPI.setAmbientFeedback(menuItem, "condec-fine");
 		} else {
 			qualitySummary.innerHTML = "The decision knowledge documentation in this branch has the following quality problems: <ul>";
 			for (problem of branch.qualityProblems) {
@@ -190,6 +193,7 @@
 			}
 			qualitySummary.innerHTML += "</ul>Please improve the decision knowledge documentation in code comments in git.";
 			qualitySummary.classList.add("dodViolation");
+			conDecNudgingAPI.setAmbientFeedback(menuItem, "condec-error");
 		}
 		return qualitySummary;
 	}
