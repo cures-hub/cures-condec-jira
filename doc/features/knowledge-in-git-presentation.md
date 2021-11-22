@@ -19,13 +19,13 @@ to motivate the developers to improve the quality (e.g. coloring of menu items).
 ## Activation and Configuration
 The extraction and presentation of knowledge from git offers various configuration possibilities.
 
-![Configuration view for the automatic text classifier](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/config_git.png)
+![Configuration view for the automatic text classifier](../screenshots/config_git.png)
 
 *Configuration view for the extraction and presentation of knowledge from git*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
 
-![Overview class diagram](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/diagrams/class_diagram_git.png)
+![Overview class diagram](../diagrams/class_diagram_git.png)
 
 *Overview class diagram for the extraction and presentation of knowledge in git*
