@@ -246,7 +246,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @return decision knowledge element documented in the description or comments
 	 *         of a Jira issue with the summary and type.
 	 */
-	public KnowledgeElement getElementBySummaryAndTypeInJiraIssue(String summary, long jiraIssueId, KnowledgeType type) {
+	public KnowledgeElement getElementBySummaryAndTypeInJiraIssue(String summary, long jiraIssueId,
+			KnowledgeType type) {
 		if (summary == null || jiraIssueId <= 0 || type == null || summary.isBlank()) {
 			return null;
 		}
@@ -315,7 +316,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			createCommentInJiraIssue(element, parentElement.getJiraIssue(), user);
 		}
 
-		return element;
+		// ensure that database id is set correctly
+		KnowledgeElement elementWithCorrectId = getElementBySummaryAndTypeInJiraIssue(element.getSummary(),
+				parentElement.getJiraIssue().getId(), element.getType());
+
+		return elementWithCorrectId != null ? elementWithCorrectId : element;
 	}
 
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {

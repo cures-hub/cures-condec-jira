@@ -199,4 +199,9 @@ public class TestRationaleFromCodeCommentParser {
 		assertEquals("Use menu items in context menu to trigger decision exploration and change impact analysis!*",
 				elementsFound.get(7).getSummary());
 	}
+
+	@Test
+	public void testCodeExplanationIsNotExtracted() {
+		assertEquals(KnowledgeType.OTHER, RationaleFromCodeCommentParser.getRationaleTypeFromTag("@code Code Example"));
+	}
 }

@@ -137,7 +137,7 @@ public class CodeCommentParser {
 	 * @return true if the comment is only a mock comment for unit testing in
 	 *         ConDec. Then, it will not be added to the {@link KnowledgeGraph}.
 	 */
-	private boolean isCommentInStringsOfTestCase(String line, int positionOfCommentTag) {
+	public boolean isCommentInStringsOfTestCase(String line, int positionOfCommentTag) {
 		return positionOfCommentTag > 0 && line.substring(positionOfCommentTag - 1, positionOfCommentTag).matches("\"");
 	}
 }

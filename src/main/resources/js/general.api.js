@@ -18,12 +18,9 @@
 		return JSON.parse(xhr.response);
 	};
 
-	GeneralAPI.prototype.getText = function(url, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.setRequestHeader("Content-type", "plain/text");
-		xhr.onload = handleResponse(xhr, callback);
-		xhr.send();
+	GeneralAPI.prototype.postJSONReturnText = function(url, data, callback) {
+		xhr = createRequest("POST", url, data, callback);
+		xhr.responseType = "text";
 	};
 
 	GeneralAPI.prototype.postJSON = function(url, data, callback) {
@@ -73,6 +70,18 @@
 			})
 		})
 	};
+	
+	GeneralAPI.prototype.postJSONReturnTextPromise = function(url, data) {
+		return new Promise(function(resolve, reject) {
+			generalApi.postJSONReturnText(url, data, function(err, result) {
+				if (err === null) {
+					resolve(result);
+				} else {
+					reject(err);
+				}
+			})
+		})
+	};
 
 	function createRequest(requestType, url, data, callback) {
 		var xhr = new XMLHttpRequest();
@@ -80,6 +89,7 @@
 		xhr = setJsonHeaders(xhr);
 		xhr.onload = handleResponse(xhr, callback);
 		xhr.send(JSON.stringify(data));
+		return xhr;
 	}
 
 	function setJsonHeaders(xhr) {

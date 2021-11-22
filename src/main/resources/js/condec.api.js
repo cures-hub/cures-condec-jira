@@ -134,8 +134,7 @@
 			"description": description,
 			"documentationLocation": documentationLocation
 		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/createDecisionKnowledgeElement?idOfExistingElement="
-			+ idOfExistingElement + "&documentationLocationOfExistingElement="
+		generalApi.postJSON(this.restPrefix + "/knowledge/element/" + idOfExistingElement + "/"
 			+ documentationLocationOfExistingElement, newElement, function(error, newElement) {
 				if (error === null) {
 					showFlag("success", type + " and link have been created.");
@@ -182,7 +181,7 @@
 			}
 		});
 	};
-	
+
 	/**
 	 * Updates the knowledge type of the element.
 	 *
@@ -428,8 +427,8 @@
 	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setActivated = function(isActivated, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setActivated?projectKey=" + projectKey
-			+ "&isActivated=" + isActivated, null, function(error, response) {
+		generalApi.postJSON(this.restPrefix + "/config/" + projectKey + "/activate", isActivated,
+			function(error, response) {
 				if (error === null) {
 					showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
 				}
@@ -452,8 +451,8 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setJiraIssueDocumentationLocationActivated = function(isActivated, projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/setJiraIssueDocumentationLocationActivated?projectKey=" + projectKey
-			+ "&isActivated=" + isActivated, null, function(error, response) {
+		generalApi.postJSON(this.restPrefix + "/config/" + projectKey + "/activate-jira-issue-documentation", isActivated,
+			function(error, response) {
 				if (error === null) {
 					showFlag("success", "Documentation of rationale in entire Jira has been set to " + isActivated);
 				}
@@ -622,7 +621,7 @@
 				}
 			});
 	};
-	
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */

@@ -52,7 +52,7 @@ public class CommitMessageToCommentTranscriber {
 	 *         already posted, an empty list is returned.
 	 */
 	public List<Comment> postCommitsIntoJiraIssueComments() {
-		if (jiraIssue == null || gitClient == null) {
+		if (jiraIssue == null) {
 			LOGGER.error(
 					"Commit messages cannot be posted to Jira issue comment because preconditions are not fullfilled.");
 			return new ArrayList<>();
@@ -69,12 +69,12 @@ public class CommitMessageToCommentTranscriber {
 	}
 
 	public List<Comment> postFeatureBranchCommits() {
-		Diff diffFromFeatureBranches = gitClient.getDiff(jiraIssue.getKey());
+		Diff diffFromFeatureBranches = gitClient.getDiffForFeatureBranchWithName(jiraIssue.getKey());
 		return postCommitsIntoJiraIssueComments(diffFromFeatureBranches);
 	}
 
 	public List<Comment> postDefaultBranchCommits() {
-		Diff diffOnDefaultBranchesForJiraIssue = gitClient.getDiffForJiraIssueOnDefaultBranches(jiraIssue);
+		Diff diffOnDefaultBranchesForJiraIssue = gitClient.getDiffForJiraIssueOnDefaultBranch(jiraIssue);
 		return postCommitsIntoJiraIssueComments(diffOnDefaultBranchesForJiraIssue);
 	}
 
@@ -103,7 +103,7 @@ public class CommitMessageToCommentTranscriber {
 	 */
 	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch, String uri) {
 		String commentText = generateCommentString(commit, branch, uri);
-		if (commentText == null || commentText.isBlank()) {
+		if (commentText.isBlank()) {
 			LOGGER.warn("Commit messages cannot be posted to Jira issue comment because comment text would be blank.");
 			return null;
 		}

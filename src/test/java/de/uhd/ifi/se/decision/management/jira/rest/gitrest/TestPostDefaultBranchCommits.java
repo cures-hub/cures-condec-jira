@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestPostSquashedCommits extends TestSetUp {
+public class TestPostDefaultBranchCommits extends TestSetUp {
 
 	private HttpServletRequest request;
 	private GitRest gitRest;

@@ -8,6 +8,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -146,11 +147,11 @@ public class KnowledgeRest {
 	 *            passed, not both.
 	 * @return new {@link KnowledgeElement} with its internal database id set.
 	 */
-	@Path("/createDecisionKnowledgeElement")
+	@Path("/element/{idOfExistingElement}/{documentationLocationOfExistingElement}")
 	@POST
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request, KnowledgeElement element,
-			@QueryParam("idOfExistingElement") long idOfExistingElement,
-			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
+			@PathParam("idOfExistingElement") long idOfExistingElement,
+			@PathParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
 			@QueryParam("keyOfExistingElement") String keyOfExistingElement) {
 		if (element == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -335,7 +336,7 @@ public class KnowledgeRest {
 
 		if (isDeleted) {
 			LOGGER.info("Link " + link + " was deleted.");
-			return Response.status(Status.OK).build();
+			return Response.ok().build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();

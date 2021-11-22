@@ -191,7 +191,7 @@ a:focus a:hover {
     color: crimson;
 }
 .condec-warning, .text-field.condec-warning {
-    color: orange;
+    color: darkorange;
 }
 .condec-fine, .text-field.condec-fine {
     color: forestgreen;

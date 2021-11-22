@@ -110,9 +110,6 @@ public class GitClientForSingleRepository {
 	}
 
 	private boolean openRepository(File directory) {
-		if (directory == null) {
-			return false;
-		}
 		try {
 			git = Git.open(directory);
 		} catch (Exception e) {
@@ -170,6 +167,7 @@ public class GitClientForSingleRepository {
 		try {
 			objectId = git.getRepository().resolve(getDefaultRef().getName());
 		} catch (RevisionSyntaxException | IOException | NullPointerException e) {
+			LOGGER.debug("Position of git default branch is unknown. " + e.getMessage());
 		}
 		return objectId;
 	}
@@ -184,7 +182,7 @@ public class GitClientForSingleRepository {
 		return addCommitsToChangedFiles(diffSinceLastFetch, newCommits);
 	}
 
-	public DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
+	private DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
 		for (RevCommit commit : commits) {
 			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
 			for (DiffEntry diffEntry : diffEntriesInCommit) {
@@ -450,19 +448,19 @@ public class GitClientForSingleRepository {
 	 *            e.g. "master", Jira issue key, or Jira project key.
 	 * @return all changes on branches that contain the name.
 	 */
-	public Diff getDiffOnBranchWithName(String branchName) {
+	public Diff getDiffForFeatureBranchWithName(String branchName) {
 		Diff diff = new Diff();
 		List<Ref> refsWithName = getRefs().stream()
 				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
 				.collect(Collectors.toList());
 		for (Ref ref : refsWithName) {
-			DiffForSingleRef diffForSingleRef = getDiff(ref);
+			DiffForSingleRef diffForSingleRef = getDiffForFeatureBranch(ref);
 			diff.add(diffForSingleRef);
 		}
 		return diff;
 	}
 
-	public DiffForSingleRef getDiff(Ref ref) {
+	public DiffForSingleRef getDiffForFeatureBranch(Ref ref) {
 		DiffForSingleRef diffForRef = new DiffForSingleRef(getRemoteUri());
 		diffForRef.setProjectKey(projectKey);
 		diffForRef.setRef(ref);
@@ -493,13 +491,6 @@ public class GitClientForSingleRepository {
 	}
 
 	/**
-	 * @return name of the default branch (e.g. master).
-	 */
-	public String getDefaultBranchName() {
-		return gitRepositoryConfiguration.getDefaultBranch();
-	}
-
-	/**
 	 * @return file system manager responsible to create and delete the directory
 	 *         that the repository is cloned to.
 	 */
@@ -507,8 +498,8 @@ public class GitClientForSingleRepository {
 		return fileSystemManager;
 	}
 
-	public Diff getDiffForJiraIssue(Issue jiraIssue) {
-		Diff diffOnFeatureBranches = getDiffOnBranchWithName(jiraIssue.getKey());
+	public Diff getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(Issue jiraIssue) {
+		Diff diffOnFeatureBranches = getDiffForFeatureBranchWithName(jiraIssue.getKey());
 		DiffForSingleRef branch = getDiffOnDefaultBranch(jiraIssue);
 		if (!branch.getCommits().isEmpty()) {
 			diffOnFeatureBranches.add(branch);
@@ -530,5 +521,18 @@ public class GitClientForSingleRepository {
 			branch.add(getDiff(baseCommit, lastCommit));
 		}
 		return branch;
+	}
+
+	public DiffForSingleRef getDiffOfEntireDefaultBranch() {
+		List<RevCommit> commits = getDefaultBranchCommits();
+		commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
+		if (commits.size() < 2) {
+			// because first commit does not have a parent commit
+			return new DiffForSingleRef();
+		}
+		DiffForSingleRef diff = getDiff(commits.get(1), commits.get(commits.size() - 1));
+		diff.setCommits(commits);
+		addCommitsToChangedFiles(diff, commits);
+		return diff;
 	}
 }

@@ -91,7 +91,7 @@ public class GitRepositoryFileSystemManager {
 	 * @return true if deletion was successful.
 	 */
 	public boolean deleteWorkingDirectory() {
-		if (pathToWorkingDirectory == null || !pathToWorkingDirectory.exists()) {
+		if (!pathToWorkingDirectory.exists()) {
 			return false;
 		}
 		return GitRepositoryFileSystemManager.deleteDirectory(pathToWorkingDirectory);

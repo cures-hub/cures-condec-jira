@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.git.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -102,5 +104,9 @@ public class TestCodeCommentParser extends TestSetUp {
 		CodeCommentParser parser = new CodeCommentParser();
 		List<CodeComment> codeComments = parser.getComments(fileContent, CommentStyleType.JAVA_C);
 		assertEquals(0, codeComments.size());
+
+		assertTrue(parser.isCommentInStringsOfTestCase(fileContent, 1));
+		assertFalse(parser.isCommentInStringsOfTestCase(fileContent, 0));
+		assertFalse(parser.isCommentInStringsOfTestCase("@issue", 1));
 	}
 }

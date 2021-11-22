@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -18,16 +19,21 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.git.CodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -40,11 +46,22 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.CodeCl
 public class GitRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRest.class);
 
-	@Path("/setKnowledgeExtractedFromGit")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param isKnowledgeExtractedFromGit
+	 *            true if {@link ChangedFile}s and decision knowledge is extracted
+	 *            from git. The decision knowledge is both extracted from commit
+	 *            messages and code comments.
+	 * @return ok if the knowledge extraction from git was successfully activated.
+	 */
+	@Path("/activate/{projectKey}")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeExtractedFromGit") boolean isKnowledgeExtractedFromGit) {
+			@PathParam("projectKey") String projectKey, boolean isKnowledgeExtractedFromGit) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -72,11 +89,22 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setPostFeatureBranchCommits")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param isPostFeatureBranchCommits
+	 *            true if git commit messages of feature branch commits should be
+	 *            posted as Jira issue comments. This enables to integrate decision
+	 *            knowledge from commit messages into the {@link KnowledgeGraph}.
+	 * @return ok if successfully activated.
+	 */
+	@Path("/configuration/{projectKey}/post-feature-branch-commits")
 	@POST
 	public Response setPostFeatureBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isPostFeatureBranchCommits") boolean isPostFeatureBranchCommits) {
+			@PathParam("projectKey") String projectKey, boolean isPostFeatureBranchCommits) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -87,11 +115,24 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setPostDefaultBranchCommits")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param isPostDefaultBranchCommits
+	 *            true if git commit messages of default branch commits (e.g.
+	 *            squashed commits) should be posted as Jira issue comments. This
+	 *            enables to integrate decision knowledge from commit messages into
+	 *            the {@link KnowledgeGraph}.
+	 * @return ok if successfully activated and if all messages from commits on the
+	 *         default branch(es) were successfully posted to Jira issue comments.
+	 */
+	@Path("/configuration/{projectKey}/post-default-branch-commits")
 	@POST
 	public Response setPostDefaultBranchCommits(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isPostDefaultBranchCommits") boolean isPostDefaultBranchCommits) {
+			@PathParam("projectKey") String projectKey, boolean isPostDefaultBranchCommits) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -108,10 +149,23 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setGitRepositoryConfigurations")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param gitRepositoryConfigurations
+	 *            list of configuration details for the git repositories connected
+	 *            to the Jira project, i.e., for every
+	 *            {@link GitClientForSingleRepository}.
+	 * @return ok if the configuration for git repositories connected to the Jira
+	 *         project was successfully saved.
+	 */
+	@Path("/configuration/{projectKey}/repositories")
 	@POST
 	public Response setGitRepositoryConfigurations(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
+			@PathParam("projectKey") String projectKey, List<GitRepositoryConfiguration> gitRepositoryConfigurations) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -128,9 +182,19 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setCodeFileEndings")
+	/**
+	 * HttpServletRequest with an authorized Jira {@link ApplicationUser}.
+	 * 
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param codeFileEndings
+	 *            defines which code files are extracted from git and decision
+	 *            knowledge from their code comments.
+	 * @return ok if code file endings were successfully configured.
+	 */
+	@Path("/configuration/{projectKey}/file-endings")
 	@POST
-	public Response setCodeFileEndings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response setCodeFileEndings(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			Map<String, String> codeFileEndings) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
@@ -147,9 +211,18 @@ public class GitRest {
 		return Response.ok().build();
 	}
 
-	@Path("/deleteGitRepos")
-	@POST
-	public Response deleteGitRepos(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return true if all git repositories that were associated to the Jira project
+	 *         and also all database entries were successfully deleted.
+	 */
+	@Path("/{projectKey}")
+	@DELETE
+	public Response deleteGitRepos(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -164,9 +237,10 @@ public class GitRest {
 	}
 
 	/**
-	 * 
 	 * @param projectKey
-	 * @return
+	 *            of a Jira project.
+	 * @return {@link Diff} that contains all changes on the default branch and
+	 *         feature branches for the entire project.
 	 */
 	@Path("/diff/project")
 	@GET
@@ -182,16 +256,21 @@ public class GitRest {
 
 		LOGGER.info("Feature branch dashboard opened for project:" + projectKey);
 		GitClient gitClient = GitClient.getInstance(projectKey);
-		Diff branchesForProject = gitClient.getDiff(projectKey);
-		branchesForProject.addAll(gitClient.getDiffForDefaultBranches());
+		Diff branchesForProject = gitClient.getDiffForFeatureBranchWithName(projectKey);
+		branchesForProject.addAll(gitClient.getDiffOfEntireDefaultBranchFromKnowledgeGraph());
 		return Response.ok(branchesForProject).build();
 	}
 
 	/**
-	 * 
 	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param jiraIssueKey
-	 * @return
+	 *            of a Jira issue to show a {@link Diff} for.
+	 * @return {@link Diff} that contains all changes on the default branch and
+	 *         feature branches for the Jira issue. The commits on the default
+	 *         branch need to have the key in their message and the feature
+	 *         branch(es) need to have the key in the branch name.
 	 */
 	@Path("/diff/jira-issue")
 	@GET
@@ -201,11 +280,13 @@ public class GitRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Invalid parameters given. Knowledge from feature branch cannot be shown.")).build();
 		}
-		String projectKey = getProjectKey(jiraIssueKey);
 		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
 		if (jiraIssue == null) {
-			return jiraIssueKeyIsInvalid();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Summary cannot be shown since the Jira issue key is invalid."))
+					.build();
 		}
+		String projectKey = jiraIssue.getProjectObject().getKey();
 		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Git extraction is disabled in project settings.")).build();
@@ -213,20 +294,30 @@ public class GitRest {
 		new CommitMessageToCommentTranscriber(jiraIssue).postCommitsIntoJiraIssueComments();
 
 		LOGGER.info("Feature branch dashboard opened for Jira issue:" + jiraIssueKey);
-		Diff diffForJiraIssue = GitClient.getInstance(projectKey).getDiffForJiraIssue(jiraIssue);
+		Diff diffForJiraIssue = GitClient.getInstance(projectKey)
+				.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue);
 		return Response.ok(diffForJiraIssue).build();
 	}
 
-	// TODO Change to POST and pass FilterSettings object
-	@Path("/getSummarizedCode")
-	@GET
-	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation,
-			@QueryParam("probability") int probability) {
-		if (projectKey == null || id <= 0) {
+	/**
+	 * @param filterSettings
+	 *            object of {@link FilterSettings} class that contains the selected
+	 *            element for which the summary should be shown.
+	 * @param minProbabilityOfCorrectness
+	 *            to filter out wrong linkes between the Jira issue and code files
+	 *            resulting from tangled changes.
+	 * @return summary of code changes for the selected element in the
+	 *         {@link FilterSettings}.
+	 */
+	@Path("/summary")
+	@POST
+	public Response getSummarizedCode(FilterSettings filterSettings,
+			@QueryParam("minProbabilityOfCorrectness") int minProbabilityOfCorrectness) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
 		}
+		String projectKey = filterSettings.getProjectKey();
 
 		if (!ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
@@ -235,25 +326,13 @@ public class GitRest {
 					.build();
 		}
 
-		KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey).getKnowledgeElement(id,
-				documentationLocation);
+		KnowledgeElement element = filterSettings.getSelectedElement();
 		Issue jiraIssue = element.getJiraIssue();
 
-		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, probability);
-		if (summary == null || summary.isEmpty()) {
+		String summary = new CodeSummarizer(projectKey).createSummary(jiraIssue, minProbabilityOfCorrectness);
+		if (summary.isBlank()) {
 			summary = "This Jira issue does not have any code committed.";
 		}
 		return Response.ok(summary).build();
 	}
-
-	private String getProjectKey(String elementKey) {
-		return elementKey.split("-")[0].toUpperCase(Locale.ENGLISH);
-	}
-
-	private Response jiraIssueKeyIsInvalid() {
-		String message = "Decision knowledge elements cannot be shown since the Jira issue key is invalid.";
-		LOGGER.error(message);
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", message)).build();
-	}
-
 }

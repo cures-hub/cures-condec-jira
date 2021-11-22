@@ -61,4 +61,14 @@ public class Diff extends ArrayList<DiffForSingleRef> {
 		return stream().map(diffForSingleRepo -> diffForSingleRepo.getRef()).collect(Collectors.toList());
 	}
 
+	public List<DecisionKnowledgeElementInCodeComment> getCodeElements() {
+		return stream().flatMap(diffForSingleRepo -> diffForSingleRepo.getCodeElements().stream())
+				.collect(Collectors.toList());
+	}
+
+	public List<DecisionKnowledgeElementInCommitMessage> getCommitElements() {
+		return stream().flatMap(diffForSingleRepo -> diffForSingleRepo.getCommitElements().stream())
+				.collect(Collectors.toList());
+	}
+
 }

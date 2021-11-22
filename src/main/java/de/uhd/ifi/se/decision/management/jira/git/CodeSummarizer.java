@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.io.FilenameUtils;
 
 import com.atlassian.jira.issue.Issue;
@@ -40,67 +43,61 @@ public class CodeSummarizer {
 	}
 
 	/**
-	 * Creates a summary of code changes for all commits associated to a Jira issue.
-	 * 
 	 * @param jiraIssue
 	 *            Jira issue. Its key is searched for in commit messages.
 	 * @param minProbabilityOfCorrectness
 	 *            probabilityOfCorrectness. Integer value for filter over
 	 *            correctness
-	 * @return summary as a String.
+	 * @return summary of code changes for all commits associated to a Jira issue.
 	 */
 	public String createSummary(Issue jiraIssue, int minProbabilityOfCorrectness) {
 		if (jiraIssue == null) {
 			return "";
 		}
 		this.minProbabilityOfCorrectness = minProbabilityOfCorrectness;
-		if (gitClient == null) {
-			return "";
-		}
-		Diff diff = gitClient.getDiffForJiraIssue(jiraIssue);
+		Diff diff = gitClient.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue);
 		return createSummary(diff);
 	}
 
 	/**
-	 * Creates a summary of code changes for a diff.
-	 * 
 	 * @param diff
 	 *            object of {@link Diff} class containing {@link ChangedFile}s.
-	 * @return summary as a String.
+	 * @return summary of code changes for a diff.
 	 */
 	public String createSummary(Diff diff) {
 		if (diff == null || diff.getChangedFiles().isEmpty()) {
 			return "";
 		}
 
-		diff.getChangedFiles().removeIf(changedFile -> !changedFile.isExistingJavaFile());
 		TangledChangeDetector tangledCommitDetection = new TangledChangeDetector();
 		tangledCommitDetection.estimateWhetherChangedFilesAreCorrectlyIncludedInDiff(diff);
+		List<ChangedFile> changedFiles = new ArrayList<>(diff.getChangedFiles());
+		changedFiles.removeIf(changedFile -> !changedFile.isCodeFileToExtract());
 
 		if (formatForComments) {
-			return generateSummaryForJiraIssueComment(diff);
+			return generateSummaryForJiraIssueComment(changedFiles);
 		}
-		return generateSummaryForHtmlDialog(diff);
+		return generateSummaryForHtmlDialog(changedFiles);
 	}
 
-	private static String generateSummaryForJiraIssueComment(Diff diff) {
+	private static String generateSummaryForJiraIssueComment(List<ChangedFile> changedFiles) {
 		String summary = "The following classes were changed: ";
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
+		for (ChangedFile changedFile : changedFiles) {
 			summary += changedFile.getName() + "; ";
 		}
 		return summary;
 	}
 
-	private String generateSummaryForHtmlDialog(Diff diff) {
+	private String generateSummaryForHtmlDialog(List<ChangedFile> changedFiles) {
 		String rows = "";
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
+		for (ChangedFile changedFile : changedFiles) {
 			if (changedFile.getProbabilityOfCorrectness() >= minProbabilityOfCorrectness) {
 				rows += addRow(addTableItem(FilenameUtils.removeExtension(changedFile.getName()),
 						summarizeMethods(changedFile),
 						String.format("%.2f", changedFile.getProbabilityOfCorrectness())));
 			}
 		}
-		return this.generateTable(rows);
+		return generateTable(rows);
 	}
 
 	private String summarizeMethods(ChangedFile changedFile) {

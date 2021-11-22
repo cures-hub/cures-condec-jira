@@ -2,13 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.git;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,22 +114,13 @@ public class GitClient {
 	/**
 	 * @return {@link Diff} object for all commits on the default branch(es)
 	 *         containing the {@link ChangedFile}s. Each {@link ChangedFile} is
-	 *         created from a diff entry and contains the respective edit list.
+	 *         created from a diff entry and contains the respective edit list and a
+	 *         reference to all commits that changed the file.
 	 */
 	public Diff getDiffOfEntireDefaultBranch() {
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			List<RevCommit> commits = gitClientForSingleRepo.getDefaultBranchCommits();
-			commits.sort(Comparator.comparingInt(RevCommit::getCommitTime));
-			if (commits.size() < 2) {
-				// because first commit does not have a parent commit
-				continue;
-			}
-			DiffForSingleRef diffOfDefaultBranchOfSingleRepo = gitClientForSingleRepo.getDiff(commits.get(1),
-					commits.get(commits.size() - 1));
-			diffOfDefaultBranchOfSingleRepo.setCommits(commits);
-			gitClientForSingleRepo.addCommitsToChangedFiles(diffOfDefaultBranchOfSingleRepo, commits);
-			diff.add(diffOfDefaultBranchOfSingleRepo);
+			diff.add(gitClientForSingleRepo.getDiffOfEntireDefaultBranch());
 		}
 		return diff;
 	}
@@ -170,16 +159,17 @@ public class GitClient {
 
 	/**
 	 * @param branchName
-	 *            e.g. "master", Jira issue key, or Jira project key.
-	 * @return all changes on branches that contain the name.
+	 *            e.g. Jira issue key or Jira project key.
+	 * @return all changes on branches that contain the name that are NOT on the
+	 *         default branch.
 	 */
-	public Diff getDiff(String branchName) {
+	public Diff getDiffForFeatureBranchWithName(String branchName) {
 		if (branchName == null) {
 			return new Diff();
 		}
 		Diff diff = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diff.addAll(gitClientForSingleRepo.getDiffOnBranchWithName(branchName));
+			diff.addAll(gitClientForSingleRepo.getDiffForFeatureBranchWithName(branchName));
 		}
 		return diff;
 	}
@@ -191,22 +181,33 @@ public class GitClient {
 	 *            have the key in it.
 	 * @return {@link Diff} object for a Jira issue containing the
 	 *         {@link ChangedFile}s from both the default branch(es) and the feature
-	 *         branches. Each {@link ChangedFile} is created from a diff entry and
-	 *         contains the respective edit list.
+	 *         branches that have the Jira issue key in the branch name. Each
+	 *         {@link ChangedFile} is created from a diff entry and contains the
+	 *         respective edit list.
 	 */
-	public Diff getDiffForJiraIssue(Issue jiraIssue) {
+	public Diff getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
 
 		Diff diffForJiraIssue = new Diff();
 		for (GitClientForSingleRepository gitClientForSingleRepo : getGitClientsForSingleRepos()) {
-			diffForJiraIssue.addAll(gitClientForSingleRepo.getDiffForJiraIssue(jiraIssue));
+			diffForJiraIssue
+					.addAll(gitClientForSingleRepo.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(jiraIssue));
 		}
 		return diffForJiraIssue;
 	}
 
-	public Diff getDiffForJiraIssueOnDefaultBranches(Issue jiraIssue) {
+	/**
+	 * @param jiraIssue
+	 *            a Jira issue such as work item/development task/requirement.
+	 * @return {@link Diff} object for a Jira issue containing the
+	 *         {@link ChangedFile}s from the default branch(es). The commit messages
+	 *         on the default branch(es) need to contain the Jira issue key. Each
+	 *         {@link ChangedFile} is created from a diff entry and contains the
+	 *         respective edit list.
+	 */
+	public Diff getDiffForJiraIssueOnDefaultBranch(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new Diff();
 		}
@@ -218,7 +219,7 @@ public class GitClient {
 		return diffForJiraIssueOnDefaultBranches;
 	}
 
-	public Diff getDiffForDefaultBranches() {
+	public Diff getDiffOfEntireDefaultBranchFromKnowledgeGraph() {
 		Diff diffForDefaultBranches = new Diff();
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
@@ -237,9 +238,7 @@ public class GitClient {
 					elementsFromRepo.add((DecisionKnowledgeElementInCodeComment) element);
 				}
 			}
-
 			Collections.sort(elementsFromRepo);
-
 			DiffForSingleRef branch = new DiffForSingleRef(gitClientForSingleRepo.getDefaultRef(), elementsFromRepo,
 					new ArrayList<>());
 			branch.setRepoUri(gitClientForSingleRepo.getRemoteUri());
