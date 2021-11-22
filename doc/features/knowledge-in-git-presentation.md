@@ -12,9 +12,9 @@ ConDec offers dedicated views for the knowledge in git.
 It indicates quality problems in the decision knowledge documentation and uses [nudging mechanisms](./nudging.md) 
 to motivate the developers to improve the quality (e.g. coloring of menu items).
 
-![View on knowledge from git for a specific Jira issue](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/git_knowledge_work_item.png)
+![View on knowledge from git for a specific Jira issue](../screenshots/git_knowledge_work_item.png)
 
-*View on knowledge from git for a specific Jira issue with highlighting of quality problems (to nudge the developers to improve the quality)*
+*View on knowledge from git for a specific Jira issue with highlighting of quality problems to nudge the developers to improve the quality*
 
 ## Activation and Configuration
 The extraction and presentation of knowledge from git offers various configuration possibilities.
