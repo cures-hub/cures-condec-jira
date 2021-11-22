@@ -317,10 +317,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		}
 
 		// ensure that database id is set correctly
-		element = getElementBySummaryAndTypeInJiraIssue(element.getSummary(), parentElement.getJiraIssue().getId(),
-				element.getType());
+		KnowledgeElement elementWithCorrectId = getElementBySummaryAndTypeInJiraIssue(element.getSummary(),
+				parentElement.getJiraIssue().getId(), element.getType());
 
-		return element;
+		return elementWithCorrectId;
 	}
 
 	private Comment createCommentInJiraIssue(KnowledgeElement element, Issue jiraIssue, ApplicationUser user) {
