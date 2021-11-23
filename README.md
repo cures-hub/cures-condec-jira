@@ -75,7 +75,7 @@ ConDec offers the following features:
 - [Decision knowledge documentation in various documentation locations](doc/features/documentation.md)
 - [Extraction and presentation of knowledge in git](doc/features/knowledge-in-git-presentation.md)
 - Knowledge graph creation comprising requirements, decision knowledge, code files, and other software artifacts
-- Interactive knowledge visualization
+- [Interactive knowledge visualization](doc/features/knowledge-visualization.md)
 - Change impact analysis
 - [Definition of done checking to support high quality of the knowledge documentation](doc/features/quality-checking.md)
 - [Automatic text classification to identify decision knowledge in natural language text](doc/features/automatic-text-classification.md)
