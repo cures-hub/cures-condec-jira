@@ -72,8 +72,8 @@ The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/ma
 
 ### Features
 ConDec offers the following features:
-- Decision knowledge documentation in various documentation locations (Jira and git)
-- [Extraction and presentation of knowledge in git](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/knowledge-in-git-presentation.md)
+- [Decision knowledge documentation in various documentation locations](doc/features/documentation.md)
+- [Extraction and presentation of knowledge in git](./doc/features/knowledge-in-git-presentation.md)
 - Knowledge graph creation comprising requirements, decision knowledge, code files, and other software artifacts
 - Interactive knowledge visualization
 - Change impact analysis

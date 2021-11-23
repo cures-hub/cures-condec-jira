@@ -16,6 +16,36 @@ to motivate the developers to improve the quality (e.g. coloring of menu items).
 
 *View on knowledge from git for a specific Jira issue with highlighting of quality problems to nudge the developers to improve the quality*
 
+The following code snippet shows the improved decision in the code comment:
+
+```java
+/**
+ * @issue Who should be the author of the new Jira issue comment that a commit
+ *        messages was posted into?
+ * @decision The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
+ *           that a commit messages was posted into!
+ * @pro It is clear that the comment origined from a commit messages.
+ * @alternative The user that opens the Jira issue could be the creator of the
+ *              Jira issue comment that a commit messages was posted into.
+ * @con It would be confusing to users if they see that they posted something
+ *      that they did not write.
+ * @alternative The git user could be the creator of the Jira issue comment that
+ *              a commit messages was posted into.
+ * @con Git user names can be different to Jira user names and it is hard to
+ *      match them.
+ */
+private ApplicationUser getUser() {
+```
+*Example of decision knowledge documented in code comments of the class
+[CommitMessageToCommentTranscriber](../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/CommitMessageToCommentTranscriber.java)*
+
+To annotate decision knowledge in commit messages, the following syntax is used:
+```
+[issue] How can we replace filtered nodes/elements in the knowledge graph with transitive links? [/issue]
+[decision] Use ShortestPathAlgorithm of jGprahT library to get SingleSourcePaths from a knowledge element within a certain distance in the graph, use the GraphPaths to create transitive links! [/decision]
+```
+*Example of decision knowledge documented in a [commit message](https://github.com/cures-hub/cures-condec-jira/commit/c828dae348404a7731db402ca73d1834238bd399)*
+
 ## Activation and Configuration
 The extraction and presentation of knowledge from git offers various configuration possibilities.
 
