@@ -1,13 +1,6 @@
 # Extraction and Presentation of Knowledge in Git
 
-The ConDec Jira plug-in enables to explicitly document decision knowledge in commit messages and code comments.
-It integrates code files as well as decision knowledge from commit messages and code comments into the knowledge graph.
-Developers can filter the knowledge graph views, e.g. to only see the knowledge documented in git.
-Trace link creation and maintenance between code files and Jira issues works as follows: 
-1. Initial trace link creation during git clone. 
-2. Manual link improvement and maintenance by developers. Developers can manually change links. 
-3. Automatic trace link maintenance during git fetch based on recent changes.
-
+The ConDec Jira plug-in enables to explicitly [document decision knowledge in commit messages and code comments](documentation.md).
 ConDec offers dedicated views for the knowledge in git.
 It indicates quality problems in the decision knowledge documentation and uses [nudging mechanisms](nudging.md) 
 to motivate the developers to improve the quality (e.g. coloring of menu items).
@@ -24,9 +17,11 @@ To annotate decision knowledge directly in commit messages, the following syntax
 ```
 *Example of decision knowledge documented in a [commit message](https://github.com/cures-hub/cures-condec-jira/commit/c828dae348404a7731db402ca73d1834238bd399)*
 
-ConDec transcribes commit messages into Jira issue comments and developers can evolve the decision knowledge documentation there.
+ConDec transcribes commit messages into Jira issue comments.
+Developers can annotate and evolve the decision knowledge documentation there.
 
 ![Commit message posted/transcribed into a Jira issue comment](../screenshots/git_commit_message_posted_into_comment.png)
+
 *Example of a [commit message](https://github.com/cures-hub/cures-condec-jira/commit/c828dae348404a7731db402ca73d1834238bd399) that was automatically posted/transcribed into a Jira issue comment*
 
 In contrast, developers evolve the decision knowledge documentation in code comments directly within the code.
@@ -47,6 +42,13 @@ private ApplicationUser getUser() {
 ```
 *Example of decision knowledge documented in a code comment of the class
 [CommitMessageToCommentTranscriber](../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/CommitMessageToCommentTranscriber.java)*
+
+ConDec integrates code files as well as decision knowledge from commit messages and code comments into the knowledge graph.
+Developers can filter the knowledge graph views, e.g. to only see the knowledge documented in git.
+Trace link creation and maintenance between code files and Jira issues works as follows: 
+1. Initial trace link creation during git clone. 
+2. Manual link improvement and maintenance by developers. Developers can manually change links. 
+3. Automatic trace link maintenance during git fetch based on recent changes.
 
 ## Activation and Configuration
 The extraction and presentation of knowledge from git offers various configuration possibilities.
