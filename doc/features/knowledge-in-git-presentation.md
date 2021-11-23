@@ -25,6 +25,10 @@ To annotate decision knowledge directly in commit messages, the following syntax
 *Example of decision knowledge documented in a [commit message](https://github.com/cures-hub/cures-condec-jira/commit/c828dae348404a7731db402ca73d1834238bd399)*
 
 ConDec transcribes commit messages into Jira issue comments and developers can evolve the decision knowledge documentation there.
+
+![Commit message posted/transcribed into a Jira issue comment](../screenshots/git_commit_message_posted_into_comment.png)
+*Example of a [commit message](https://github.com/cures-hub/cures-condec-jira/commit/c828dae348404a7731db402ca73d1834238bd399) that was automatically posted/transcribed into a Jira issue comment*
+
 In contrast, developers evolve the decision knowledge documentation in code comments directly within the code.
 The following code snippet shows the [improved decision in the code comment](../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/CommitMessageToCommentTranscriber.java):
 

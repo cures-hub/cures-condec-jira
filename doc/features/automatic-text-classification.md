@@ -20,5 +20,5 @@ Basic descriptive statistics on ground truth files can be calculated using the R
 ## Activation and Configuration
 The text classifier can be trained and evaluated directly in Jira.
 
-![Configuration view for the automatic text classifier](../../screenshots/config_automatic_text_classification.png)
+![Configuration view for the automatic text classifier](../screenshots/config_automatic_text_classification.png)
 *Configuration view for the automatic text classifier*
