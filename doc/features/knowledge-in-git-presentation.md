@@ -9,38 +9,33 @@ Trace link creation and maintenance between code files and Jira issues works as 
 3. Automatic trace link maintenance during git fetch based on recent changes.
 
 ConDec offers dedicated views for the knowledge in git.
-It indicates quality problems in the decision knowledge documentation and uses [nudging mechanisms](./nudging.md) 
+It indicates quality problems in the decision knowledge documentation and uses [nudging mechanisms](nudging.md) 
 to motivate the developers to improve the quality (e.g. coloring of menu items).
 
 ![View on knowledge from git for a specific Jira issue](../screenshots/git_knowledge_work_item.png)
 
 *View on knowledge from git for a specific Jira issue with highlighting of quality problems to nudge the developers to improve the quality*
 
-The following code snippet shows the improved decision in the code comment:
+Developers evolve the decision knowledge documentation directly within the code.
+The following code snippet shows the [improved decision in the code comment](../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/CommitMessageToCommentTranscriber.java):
 
 ```java
 /**
- * @issue Who should be the author of the new Jira issue comment that a commit
- *        messages was posted into?
- * @decision The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment
- *           that a commit messages was posted into!
+ * @issue Who should be the author of the new Jira issue comment that a commit messages was posted into?
+ * @decision The user "GIT-COMMIT-COMMENTATOR" creates the Jira issue comment that a commit messages was posted into!
  * @pro It is clear that the comment origined from a commit messages.
- * @alternative The user that opens the Jira issue could be the creator of the
- *              Jira issue comment that a commit messages was posted into.
- * @con It would be confusing to users if they see that they posted something
- *      that they did not write.
- * @alternative The git user could be the creator of the Jira issue comment that
- *              a commit messages was posted into.
- * @con Git user names can be different to Jira user names and it is hard to
- *      match them.
+ * @alternative The user that opens the Jira issue could be the creator of the Jira issue comment that a commit messages was posted into.
+ * @con It would be confusing to users if they see that they posted something that they did not write.
+ * @alternative The git user could be the creator of the Jira issue comment that a commit messages was posted into.
+ * @con Git user names can be different to Jira user names and it is hard to match them.
  */
 private ApplicationUser getUser() {
 ```
-*Example of decision knowledge documented in code comments of the class
+*Example of decision knowledge documented in a code comment of the class
 [CommitMessageToCommentTranscriber](../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/CommitMessageToCommentTranscriber.java)*
 
 To annotate decision knowledge in commit messages, the following syntax is used:
-```
+```html
 [issue] How can we replace filtered nodes/elements in the knowledge graph with transitive links? [/issue]
 [decision] Use ShortestPathAlgorithm of jGprahT library to get SingleSourcePaths from a knowledge element within a certain distance in the graph, use the GraphPaths to create transitive links! [/decision]
 ```

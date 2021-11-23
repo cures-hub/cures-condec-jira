@@ -42,8 +42,8 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 - Select "Manage add-ons" on the side-bar.
 - Click on "Upload add-on" and select the previously compiled .jar file.
 - Click "Upload" for upload and installation.
-- [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/installed_plugin.png)
-- Activate the plug-in for the specific project in the [setting page.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/config_plugin.png)
+- [Activate the "Decision Documentation and Exploration" plug-in.](doc/screenshots/installed_plugin.png)
+- Activate the plug-in for the specific project in the [setting page.](doc/screenshots/config_plugin.png)
 
 ## ConDec Views and Features
 
@@ -53,19 +53,19 @@ The user can choose the type of the top level knowledge element, e.g., to unders
 The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
 Decision knowledge elements can be selected and the related elements can be viewed and selected as well.
 
-![Jira ConDec plug-in](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry.png)
+![Jira ConDec plug-in](doc/screenshots/example_radargrammetry.png)
 *TreeViewer (left) and tree view of a single decision (right)*
 
 The *Tree* view enables the user to explore decision knowledge related to the selected decision knowledge element.
 The tree view was implemented using the [Treant.js library](http://fperucic.github.io/treant-js).
 
-The user can [filter the decision knowledge](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_context_menu.png).
+The user can [filter the decision knowledge](doc/screenshots/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_context_menu.png).
 
 ### Jira Issue Module
 Jira ConDec provides a [Jira issue module that enables the user to explore decision knowledge related to Jira issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
 
 ### Configuration
-The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/config_plugin.png) enables the user to:
+The [project setting page](doc/screenshots/config_plugin.png) enables the user to:
 - Activate the plug-in for the specific project.
 - Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
 - Configure the features listed below
@@ -73,31 +73,31 @@ The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/ma
 ### Features
 ConDec offers the following features:
 - [Decision knowledge documentation in various documentation locations](doc/features/documentation.md)
-- [Extraction and presentation of knowledge in git](./doc/features/knowledge-in-git-presentation.md)
+- [Extraction and presentation of knowledge in git](doc/features/knowledge-in-git-presentation.md)
 - Knowledge graph creation comprising requirements, decision knowledge, code files, and other software artifacts
 - Interactive knowledge visualization
 - Change impact analysis
-- [Definition of done checking to support high quality of the knowledge documentation](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/quality-checking.md)
-- [Automatic text classification to identify decision knowledge in natural language text](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/automatic-text-classification.md)
-- [Recommendation of solution options from external knowledge sources](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/decision-guidance.md)
-- [Link recommendation and duplicate recognition](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/link-recommendation.md)
-- [Nudges for decision knowledge documentation and exploitation](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/nudging.md)
-- [Decision grouping](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/decision-grouping.md)
-- [Creation of release notes with explicit decision knowledge](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/features/release-notes-creation.md)
+- [Definition of done checking to support high quality of the knowledge documentation](doc/features/quality-checking.md)
+- [Automatic text classification to identify decision knowledge in natural language text](doc/features/automatic-text-classification.md)
+- [Recommendation of solution options from external knowledge sources](doc/features/decision-guidance.md)
+- [Link recommendation and duplicate recognition](doc/features/link-recommendation.md)
+- [Nudges for decision knowledge documentation and exploitation](doc/features/nudging.md)
+- [Decision grouping](doc/features/decision-grouping.md)
+- [Creation of release notes with explicit decision knowledge](doc/features/release-notes-creation.md)
 - Metrics presentation in a knowledge dashboard
 
 ## Implementation Details
 
 ### Model
-The [model interfaces and classes](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
+The [model interfaces and classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
 
-![Model](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/diagrams/model.png)
+![Model](doc/diagrams/model.png)
 *Model interfaces and classes*
 
 ### Persistence Strategies
-The Jira ConDec plug-in supports two strategies to [persist decision knowledge in Jira](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
+The Jira ConDec plug-in supports two strategies to [persist decision knowledge in Jira](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
 
-![Persistence strategies](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/diagrams/decision_storage_strategies.png)
+![Persistence strategies](doc/diagrams/decision_storage_strategies.png)
 *Persistence strategies*
 
 The issue strategy represents decision knowledge elements as Jira issues.
@@ -108,13 +108,13 @@ To overcome this disadvantage, the active object strategy uses distinct model cl
 This strategy uses object-relational mapping to communicate with Jira's internal database.
 
 ### REST API
-This plug-in provides a [representational state transfer (REST) application programming interface (API)](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
+This plug-in provides a [representational state transfer (REST) application programming interface (API)](src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
 e.g., to retrieve, insert, update, and delete decision knowledge in Jira.
 These services can be accessed via the following link:
 
 **Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decisionguidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
-The Jira ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/condec.api.js) from the user interface.
+The Jira ConDec plug-in uses the REST services in the [REST Java Script client](src/main/resources/js/condec.api.js) from the user interface.
 
 ### Webhook
 Jira ConDec provides a webhook sending decision knowledge to a receiver system via a HTTP post request. To activate the webhook, do the following steps:
@@ -130,4 +130,4 @@ Jira ConDec provides a webhook sending decision knowledge to a receiver system v
 The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 
 e.g. to evaluate which views the users prefer.
 You need to configure the `log4j.properties` so that `LOGGER.info()` statements are logged.
-More infos on usage data analysis can be found [here](https://github.com/cures-hub/cures-condec-jira/tree/master/doc/logging/).
+More infos on usage data analysis can be found [here](doc/logging/).
