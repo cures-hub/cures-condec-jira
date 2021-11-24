@@ -53,6 +53,25 @@
 			var node = tree.node.data;
 			conDecFiltering.setSelectedElement("jstree", node.key);
 		});
+
+		// Check whether Change Impact Analysis is being conducted
+		if (filterSettings.areChangeImpactsHighlighted) {
+
+			// Show tooltip to user when hovering above a node
+			jQuery("#jstree").on("hover_node.jstree", function(error, tree) {
+
+				// Check if node is root
+				var ciaExplanation = ($("#" + tree.node.id).attr("id").substring(0,2) === "tv") ?
+				"This is the source node from which the Change Impact Analysis was calculated" :
+				"Overall CIA Impact Factor: " + $("#" + tree.node.id).attr("cia_impactFactor") +
+					"\n--- --- --- --- --- --- --- --- --- --- ---" +
+					"\nParent Impact: " + $("#" + tree.node.id).attr("cia_parentImpact") +
+					"\nLink Type Weight: " + $("#" + tree.node.id).attr("cia_linkTypeWeight") +
+					"\nDecay Value: " + $("#" + tree.node.id).attr("cia_decayValue") +
+					"\nPropagation Rule Value: " + $("#" + tree.node.id).attr("cia_ruleBasedValue");
+				$("#" + tree.node.id).prop("title", ciaExplanation);
+			});
+		}
 	};
 
 	/**

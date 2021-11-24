@@ -44,7 +44,7 @@ public class ChangeImpactAnalysisService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangeImpactAnalysisService.class);
 
 	public static TreeViewer calculateTreeImpact(FilterSettings filterSettings) {
-		Map<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
+		Map<KnowledgeElement, Map<String, Double>> results = calculateImpactedKnowledgeElements(filterSettings);
 		TreeViewer tree = new TreeViewer(filterSettings);
 		tree.getNodes().forEach(node -> {
 			colorizeNode(node, results);
@@ -53,13 +53,19 @@ public class ChangeImpactAnalysisService {
 	}
 
 	public static VisGraph calculateGraphImpact(FilterSettings filterSettings) {
-		Map<KnowledgeElement, Double> results = calculateImpactedKnowledgeElements(filterSettings);
+		Map<KnowledgeElement, Map<String, Double>> results = calculateImpactedKnowledgeElements(filterSettings);
+		Map<KnowledgeElement, Double> filteredResults = new HashMap<>();
+		double impact;
+		for (Map.Entry<KnowledgeElement, Map<String, Double>> entry : results.entrySet()) {
+			impact = entry.getValue().get("impactFactor");
+			filteredResults.put(entry.getKey(), impact);
+		}
 		KnowledgeGraph graph = new FilteringManager(filterSettings).getFilteredGraph();
-		return asVisGraph(results, filterSettings, graph);
+		return asVisGraph(filteredResults, filterSettings, graph);
 	}
 
 	public static Matrix calculateMatrixImpact(FilterSettings filterSettings) {
-		Map<KnowledgeElement, Double> impactGraph = calculateImpactedKnowledgeElements(filterSettings);
+		Map<KnowledgeElement, Map<String, Double>> impactGraph = calculateImpactedKnowledgeElements(filterSettings);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElement> elementSet = impactGraph.keySet().stream()
 				.filter(knowledgeElement -> filteringManager.isElementMatchingKnowledgeTypeFilter(knowledgeElement))
@@ -67,8 +73,8 @@ public class ChangeImpactAnalysisService {
 				.collect(Collectors.toSet());
 		Map<KnowledgeElement, String> colorMap = new HashMap<>();
 		elementSet.forEach(entry -> {
-			if (impactGraph.get(entry) != 0.0) {
-				colorMap.put(entry, colorForImpact(impactGraph.get(entry)));
+			if (impactGraph.get(entry).get("impactFactor") != 0.0) {
+				colorMap.put(entry, colorForImpact(impactGraph.get(entry).get("impactFactor")));
 			} else {
 				colorMap.put(entry, "#FFFFFF");
 			}
@@ -76,10 +82,17 @@ public class ChangeImpactAnalysisService {
 		return new Matrix(filterSettings, colorMap);
 	}
 
-	private static Map<KnowledgeElement, Double> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
-		Map<KnowledgeElement, Double> results = new HashMap<>();
+	private static Map<KnowledgeElement, Map<String, Double>> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
+		Map<KnowledgeElement, Map<String, Double>> results = new HashMap<>();
+		Map<String, Double> innerResults = new HashMap<>();
+		
 		KnowledgeElement root = filterSettings.getSelectedElement();
-		results.put(root, 1.0);
+		innerResults.put("parentImpact", 1.0);
+		innerResults.put("linkTypeWeight", 1.0);
+		innerResults.put("decayValue", 1.0);
+		innerResults.put("ruleBasedValue", 1.0);
+		innerResults.put("impactFactor", 1.0);
+		results.put(root, innerResults);
 		calculateImpactedKnowledgeElementsHelper(root, 1.0, filterSettings, results,
 				(long) filterSettings.getLinkDistance());
 		LOGGER.info("ConDec change impact analysis estimated {} impacted elements.", results.size());
@@ -87,7 +100,7 @@ public class ChangeImpactAnalysisService {
 	}
 
 	private static void calculateImpactedKnowledgeElementsHelper(KnowledgeElement currentElement, double parentImpact,
-			FilterSettings filterSettings, Map<KnowledgeElement, Double> results, long context) {
+			FilterSettings filterSettings, Map<KnowledgeElement, Map<String, Double>> results, long context) {
 		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 		for (Link link : currentElement.getLinks()) {
 			boolean isOutwardLink = link.isOutwardLinkFrom(currentElement);
@@ -96,25 +109,34 @@ public class ChangeImpactAnalysisService {
 				LOGGER.warn("CIA couldn't be processed: {}", "link -> " + linkTypeName + ", source -> "
 						+ link.getSource().getId() + ", target -> " + link.getTarget().getId());
 			}
+			// Map containing all distinct impact scores
+			Map<String, Double> impactMap = new HashMap<>();
+			impactMap.put("parentImpact", parentImpact);
+
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
+			impactMap.put("linkTypeWeight", linkTypeWeight);
+
 			double decayValue = ciaConfig.getDecayValue();
+			impactMap.put("decayValue", decayValue);
 
 			double ruleBasedValue = 1.0;
 			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
 				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
 			}
+			impactMap.put("ruleBasedValue", ruleBasedValue);
 
 			double impact = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
+			impactMap.put("impactFactor", impact);
 
 			KnowledgeElement nextElement = (isOutwardLink) ? link.getTarget() : link.getSource();
 
 			if (impact >= ciaConfig.getThreshold()) {
-				if (!results.containsKey(nextElement) || results.get(nextElement) < impact) {
-					results.put(nextElement, impact);
+				if (!results.containsKey(nextElement) || results.get(nextElement).get("impactFactor") < impact) {
+					results.put(nextElement, impactMap);
 					calculateImpactedKnowledgeElementsHelper(nextElement, impact, filterSettings, results, context);
 				}
 			} else if (ciaConfig.getContext() > 0 && context > 0 && !results.containsKey(nextElement)) {
-				results.put(nextElement, 0.0);
+				results.put(nextElement, impactMap);
 				calculateImpactedKnowledgeElementsHelper(nextElement, 0.0, filterSettings, results, context - 1);
 			}
 		}
@@ -127,15 +149,28 @@ public class ChangeImpactAnalysisService {
 		return graphVis;
 	}
 
-	private static void colorizeNode(TreeViewerNode node, Map<KnowledgeElement, Double> results) {
+	private static void colorizeNode(TreeViewerNode node, Map<KnowledgeElement, Map<String, Double>> results) {
 		String style = "";
 		if (results.containsKey(node.getElement())) {
-			style = "background-color:" + colorForImpact(results.get(node.getElement()));
+			style = "background-color:" + colorForImpact(results.get(node.getElement()).get("impactFactor"));
 		} else {
 			style = "background-color:white";
 		}
 		String clzz = node.getLiAttr().get("class");
-		node.setLiAttr(ImmutableMap.<String, String>builder().put("style", style).put("class", clzz).build());
+		node.setLiAttr(ImmutableMap.<String, String>builder()
+			.put("style", style)
+			.put("class", clzz)
+			.put("cia_parentImpact",
+				String.format("%.2f", results.get(node.getElement()).get("parentImpact")))
+			.put("cia_linkTypeWeight",
+				String.format("%.2f", results.get(node.getElement()).get("linkTypeWeight")))
+			.put("cia_decayValue",
+				String.format("%.2f", results.get(node.getElement()).get("decayValue")))
+			.put("cia_ruleBasedValue",
+				String.format("%.2f", results.get(node.getElement()).get("ruleBasedValue")))
+			.put("cia_impactFactor",
+				String.format("%.2f", results.get(node.getElement()).get("impactFactor")))
+			.build());
 		String aStyle = "color:black";
 		node.setAttr(ImmutableMap.of("style", aStyle));
 		node.getChildren().forEach(child -> {
@@ -143,7 +178,7 @@ public class ChangeImpactAnalysisService {
 		});
 	}
 
-	private static void colorizeNode(VisNode node, double impact) {
+	private static void colorizeNode(VisNode node, Double impact) {
 		Map<String, String> colorMap = new HashMap<>();
 		colorMap.put("background", colorForImpact(impact));
 		colorMap.put("border", "black");
@@ -153,10 +188,10 @@ public class ChangeImpactAnalysisService {
 		}
 	}
 
-	private static String colorForImpact(double impact) {
+	private static String colorForImpact(Double impact) {
 		Color red = Color.RED;
 		Color green = Color.GREEN;
-		Color blendColor = blend(green, red, (float) impact);
+		Color blendColor = blend(green, red, impact.floatValue());
 		return String.format("#%02x%02x%02x", blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue());
 	}
 
