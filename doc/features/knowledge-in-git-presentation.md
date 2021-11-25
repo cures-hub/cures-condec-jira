@@ -1,8 +1,8 @@
 # Extraction and Presentation of Knowledge in Git
 
 The ConDec Jira plug-in enables to explicitly [document decision knowledge in commit messages and code comments](documentation.md).
-ConDec offers dedicated views for the knowledge in git.
-It indicates quality problems in the decision knowledge documentation and uses [nudging mechanisms](nudging.md) 
+ConDec offers dedicated views for the **knowledge in git**.
+It **indicates quality problems** in the decision knowledge documentation and uses **[nudging mechanisms](nudging.md)** 
 to motivate the developers to improve the quality (e.g. coloring of menu items).
 
 ![View on knowledge from git for a specific Jira issue](../screenshots/git_knowledge_work_item.png)
@@ -17,7 +17,7 @@ To annotate decision knowledge directly in commit messages, the following syntax
 ```
 *Example of decision knowledge documented in a [commit message][commit]*
 
-ConDec transcribes a commit message into a new comment of the Jira issue that was mentioned in the commit message.
+ConDec **transcribes a commit message into a new comment of the Jira issue** that was mentioned in the commit message.
 Developers can annotate and evolve the decision knowledge documentation in the Jira issue comment.
 
 ![Commit message posted/transcribed into a Jira issue comment](../screenshots/git_commit_message_posted_into_comment.png)
@@ -42,14 +42,14 @@ private ApplicationUser getUser() {
 ```
 *Example of decision knowledge documented in a code comment of the class [CommitMessageToCommentTranscriber]*
 
-ConDec integrates code files as well as decision knowledge from commit messages and code comments into the knowledge graph.
-Developers can filter the knowledge graph views, e.g. to only see the knowledge documented in git.
+ConDec **integrates code files as well as decision knowledge** from commit messages and code comments **into the knowledge graph**.
+Developers can **filter the knowledge graph views**, e.g. to only see the knowledge documented in git.
 
 ![Node-link tree diagram for the CommitMessageToCommentTranscriber class and decision knowledge documented in its code comments](../screenshots/git_knowledge_graph_view_treant.png)
 
 *Node-link tree diagram for the [CommitMessageToCommentTranscriber] class and decision knowledge documented in its code comments*
 
-Trace link creation and maintenance between code files and Jira issues works as follows: 
+**Trace link creation and maintenance** between code files and Jira issues works as follows: 
 1. Initial trace link creation during git clone. 
 2. Manual link improvement and maintenance by developers. Developers can manually change links. 
 3. Automatic trace link maintenance during git fetch based on recent changes.
@@ -59,13 +59,13 @@ Trace link creation and maintenance between code files and Jira issues works as 
 *Node-link diagram for a code class and related knowledge elements*
 
 Trace links between Jira issues and code can be wrong.
-Wrong links hinder the exploitation of the knowledge graph e.g. during [change impact analysis](change-impact-analysis.md).
-A reason for wrong links can be that a commit linked to a Jira issue (via mentioning the key in the commit message) contains tangled, i.e. unrelated changes.
+**Wrong links hinder the exploitation** of the knowledge graph e.g. during [change impact analysis](change-impact-analysis.md).
+A reason for wrong links can be that a commit linked to a Jira issue (via mentioning the key in the commit message) contains **tangled, i.e. unrelated changes**.
 For example, a commit could be linked to a work item (WI, also called development task) for improving a certain feature.
 This commit would be tangled if it also contains a bug fix for a totally different feature.
 In our example, the work item *WI: Improve generation and support for transitive links* is wrongly linked to the class [CommitMessageToCommentTranscriber].
-ConDec offers a simple method to assess whether the links between a Jira issue and the code files are correct using a package distance metric.
-However, ConDec needs further extension regarding trace link improvement and maintenance.
+ConDec offers a simple **method to assess whether the links between a Jira issue and the code files are correct** using a package distance metric.
+However, ConDec needs further extension regarding **trace link improvement and maintenance**.
 
 ![Context menu to access the code summary view that shows the probability of correct linkage](../screenshots/git_context_menu_summarization.png)
 
