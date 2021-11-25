@@ -59,7 +59,7 @@ Trace link creation and maintenance between code files and Jira issues works as 
 *Node-link diagram for a code class and related knowledge elements*
 
 Trace links between Jira issues and code can be wrong.
-Wrong links hinder the exploitation of the knowledge graph e.g. during [change impact analysis](change_impact_analysis.md).
+Wrong links hinder the exploitation of the knowledge graph e.g. during [change impact analysis](change-impact-analysis.md).
 A reason for wrong links can be that a commit linked to a Jira issue (via mentioning the key in the commit message) contains tangled, i.e. unrelated changes.
 For example, a commit could be linked to a work item (WI, also called development task) for improving a certain feature.
 This commit would be tangled if it also contains a bug fix for a totally different feature.
