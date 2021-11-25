@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -38,11 +39,14 @@ public class Matrix {
 	private KnowledgeGraph filteredGraph;
 	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
 
-	public Matrix(FilterSettings filterSettings, Map<KnowledgeElement, String> colorMap) {
+	public Matrix(FilterSettings filterSettings, Map<KnowledgeElementWithImpact, String> colorMap) {
 		this(filterSettings);
 		headerElementsWithHighlighting.forEach(headerElementWithHighlighting -> {
-			headerElementWithHighlighting
-					.setChangeImpactColor(colorMap.get(headerElementWithHighlighting.getElement()));
+			for (Map.Entry<KnowledgeElementWithImpact, String> entry : colorMap.entrySet()) {
+				if (entry.getKey().getElement() == headerElementWithHighlighting.getElement()) {
+					headerElementWithHighlighting.setChangeImpactColor(entry.getValue());
+				}
+			}
 		});
 	}
 

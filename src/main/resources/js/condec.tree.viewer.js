@@ -64,11 +64,11 @@
 				var ciaExplanation = ($("#" + tree.node.id).attr("id").substring(0,2) === "tv") ?
 				"This is the source node from which the Change Impact Analysis was calculated" :
 				"Overall CIA Impact Factor: " + $("#" + tree.node.id).attr("cia_impactFactor") +
-					"\n--- --- --- --- --- --- --- --- --- --- ---" +
+					"\n--- --- --- --- --- --- --- --- ---" +
 					"\nParent Impact: " + $("#" + tree.node.id).attr("cia_parentImpact") +
 					"\nLink Type Weight: " + $("#" + tree.node.id).attr("cia_linkTypeWeight") +
-					"\nDecay Value: " + $("#" + tree.node.id).attr("cia_decayValue") +
-					"\nPropagation Rule Value: " + $("#" + tree.node.id).attr("cia_ruleBasedValue");
+					"\nPropagation Rule Value: " + $("#" + tree.node.id).attr("cia_ruleBasedValue") +
+					"\n\n" + $("#" + tree.node.id).attr("cia_valueExplanation");
 				$("#" + tree.node.id).prop("title", ciaExplanation);
 			});
 		}
