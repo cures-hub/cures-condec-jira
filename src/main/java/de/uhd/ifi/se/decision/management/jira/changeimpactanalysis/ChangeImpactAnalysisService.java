@@ -108,17 +108,45 @@ public class ChangeImpactAnalysisService {
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
 			double ruleBasedValue = 1.0;
+			Map<String, Double> mapOfRules = new HashMap<>();
 			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
 				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement.getElement(), link);
+
+				// Each rule is individually mapped with its description and impact score
+				mapOfRules.put(
+					rule.getDescription(),
+					rule.getFunction().isChangePropagated(filterSettings, currentElement.getElement(), link)
+				);
 			}
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
+
+			String impactExplanation = "";
+			if (Math.min(parentImpact, Math.min(linkTypeWeight, ruleBasedValue)) == parentImpact
+				&& ((1 - parentImpact) >= decayValue)) {
+					impactExplanation =  "This element has a lowered chance of being affected" +
+					" by a change introduced in the source node, mainly due to its parent having a low impact score. ";
+			} else if (Math.min(linkTypeWeight, Math.min(parentImpact, ruleBasedValue)) == linkTypeWeight
+				&& ((1 - linkTypeWeight) >= decayValue)) {
+					impactExplanation = "This element has a lowered chance of being affected" +
+					" by a change introduced in the source node, mainly due to the link type of the traversed edge" +
+					" between this node and its parent. ";
+			} else if (Math.min(ruleBasedValue, Math.min(parentImpact, linkTypeWeight)) == ruleBasedValue
+				&& ((1 - ruleBasedValue) >= decayValue)) {
+					impactExplanation = "This element has a lowered chance of being affected" +
+					" by a change introduced in the source node, mainly due to a used propagation rule. ";
+			} else {
+				impactExplanation = "This element has a lowered chance of being affected" +
+				" by a change introduced in the source node, mainly due to the decay value. ";
+			}
+			impactExplanation += "A high impact value generally indicates that the element is highly affected " +
+				"by the change and might need to be changed as well.";
 
 			// Add calculated impact values to knowledge element
 			KnowledgeElementWithImpact nextElement = (isOutwardLink)
 				? new KnowledgeElementWithImpact(link.getTarget(),
-					impactValue, parentImpact, linkTypeWeight, ruleBasedValue)
+					impactValue, parentImpact, linkTypeWeight, ruleBasedValue, mapOfRules, impactExplanation)
 				: new KnowledgeElementWithImpact(link.getSource(),
-					impactValue, parentImpact, linkTypeWeight, ruleBasedValue);
+					impactValue, parentImpact, linkTypeWeight, ruleBasedValue, mapOfRules, impactExplanation);
 
 			// Check whether element should be added to list of impacted elements
 			if (impactValue >= ciaConfig.getThreshold()) {
@@ -139,40 +167,63 @@ public class ChangeImpactAnalysisService {
 	private static VisGraph asVisGraph(List<KnowledgeElementWithImpact> impactedElements, FilterSettings filterSettings,
 			KnowledgeGraph graph) {
 		VisGraph graphVis = new VisGraph(filterSettings);
-		// TODO: Refactor Graph Impact
-		// graphVis.getNodes().forEach(node -> colorizeNode(node, impactedElements.getOrDefault(node.getElement(), 0.0)));
+		graphVis.getNodes().forEach(node -> {
+			impactedElements.stream().forEach( element -> {
+				if (element.getElement() != node.getElement()) {
+					colorizeNode(node, 0.0);
+				} else {
+					colorizeNode(node, element.getImpactValue());
+				}
+			});
+		});
 		return graphVis;
 	}
 
 	private static void colorizeNode(TreeViewerNode node, List<KnowledgeElementWithImpact> impactedElements) {
 		String style = "";
 		KnowledgeElementWithImpact treeViewerNode = new KnowledgeElementWithImpact(node.getElement());
-		
+		String propagationRuleSummary = "";
+		String clzz = node.getLiAttr().get("class");		
+
 		if (impactedElements.contains(treeViewerNode)) {
 			style = "background-color:" + colorForImpact(impactedElements
 				.get(impactedElements.indexOf(treeViewerNode)).getImpactValue());
+			/*
+				Iterating through all utilized propagation rules,
+				appending each to a single summarizing String
+			*/
+			for(Map.Entry<String, Double> entry : impactedElements.get(
+				impactedElements.indexOf(treeViewerNode)).getPropagationRules().entrySet()) {
+					propagationRuleSummary = propagationRuleSummary + "-> " + String
+						.format("%.2f", entry.getValue()) + ": " + entry.getKey() + "\n";
+			}
+			node.setLiAttr(ImmutableMap.<String, String>builder()
+				.put("style", style)
+				.put("class", clzz)
+				.put("cia_parentImpact",
+					String.format("%.2f", impactedElements
+					.get(impactedElements.indexOf(treeViewerNode)).getParentImpact()))
+				.put("cia_linkTypeWeight",
+					String.format("%.2f", impactedElements
+					.get(impactedElements.indexOf(treeViewerNode)).getLinkTypeWeight()))
+				.put("cia_ruleBasedValue",
+					String.format("%.2f", impactedElements
+					.get(impactedElements.indexOf(treeViewerNode)).getRuleBasedValue()))
+				.put("cia_impactFactor",
+					String.format("%.2f", impactedElements
+					.get(impactedElements.indexOf(treeViewerNode)).getImpactValue()))
+				.put("cia_propagationRuleSummary", propagationRuleSummary)
+				.put("cia_valueExplanation", impactedElements
+					.get(impactedElements.indexOf(treeViewerNode)).getImpactExplanation())
+				.build());
 		} else {
 			style = "background-color:white";
+			node.setLiAttr(ImmutableMap.<String, String>builder()
+				.put("style", style)
+				.put("class", clzz)
+				.build());
 		}
-		String clzz = node.getLiAttr().get("class");
-		node.setLiAttr(ImmutableMap.<String, String>builder()
-			.put("style", style)
-			.put("class", clzz)
-			.put("cia_parentImpact",
-				String.format("%.2f", impactedElements
-				.get(impactedElements.indexOf(treeViewerNode)).getParentImpact()))
-			.put("cia_linkTypeWeight",
-				String.format("%.2f", impactedElements
-				.get(impactedElements.indexOf(treeViewerNode)).getLinkTypeWeight()))
-			.put("cia_ruleBasedValue",
-				String.format("%.2f", impactedElements
-				.get(impactedElements.indexOf(treeViewerNode)).getRuleBasedValue()))
-			.put("cia_impactFactor",
-				String.format("%.2f", impactedElements
-				.get(impactedElements.indexOf(treeViewerNode)).getImpactValue()))
-			.put("cia_valueExplanation", impactedElements
-				.get(impactedElements.indexOf(treeViewerNode)).getImpactExplanation())
-			.build());
+
 		String aStyle = "color:black";
 		node.setAttr(ImmutableMap.of("style", aStyle));
 		node.getChildren().forEach(child -> {
@@ -180,7 +231,7 @@ public class ChangeImpactAnalysisService {
 		});
 	}
 
-	private static void colorizeNode(VisNode node, Double impact) {
+	private static void colorizeNode(VisNode node, double impact) {
 		Map<String, String> colorMap = new HashMap<>();
 		colorMap.put("background", colorForImpact(impact));
 		colorMap.put("border", "black");

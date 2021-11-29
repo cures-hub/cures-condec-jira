@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
@@ -14,17 +17,20 @@ public class KnowledgeElementWithImpact {
     private double impactValue;
     private double parentImpact;
     private double linkTypeWeight;
-    private double ruleBasedValue;
+    private double propagationRuleValue;
+    private Map<String, Double> propagationRules;
     private String impactExplanation;
 
     public KnowledgeElementWithImpact(KnowledgeElement element, double impactValue,
-            double parentImpact, double linkTypeWeight, double ruleBasedValue) {
+            double parentImpact, double linkTypeWeight, double propagationRuleValue,
+            Map<String, Double> propagationRule, String impactExplanation) {
         this.element = element;
         this.impactValue = impactValue;
         this.parentImpact = parentImpact;
         this.linkTypeWeight = linkTypeWeight;
-        this.ruleBasedValue = ruleBasedValue;
-        this.impactExplanation = "[ToDo]";
+        this.propagationRuleValue = propagationRuleValue;
+        this.propagationRules = propagationRule;
+        this.impactExplanation = impactExplanation;
     }
 
     public KnowledgeElementWithImpact(KnowledgeElement element) {
@@ -32,8 +38,9 @@ public class KnowledgeElementWithImpact {
         this.impactValue = 1.0;
         this.parentImpact = 1.0;
         this.linkTypeWeight = 1.0;
-        this.ruleBasedValue = 1.0;
-        this.impactExplanation = "[ToDo]";
+        this.propagationRuleValue = 1.0;
+        this.propagationRules = new HashMap<>();
+        this.impactExplanation = "";
     }
 
     @Override
@@ -70,11 +77,11 @@ public class KnowledgeElementWithImpact {
     }
 
     public double getRuleBasedValue() {
-        return ruleBasedValue;
+        return propagationRuleValue;
     }
 
-    public void setRuleBasedValue(double ruleBasedValue) {
-        this.ruleBasedValue = ruleBasedValue;
+    public void setRuleBasedValue(double propagationRuleValue) {
+        this.propagationRuleValue = propagationRuleValue;
     }
 
     public double getLinkTypeWeight() {
@@ -91,6 +98,14 @@ public class KnowledgeElementWithImpact {
 
     public void setParentImpact(double parentImpact) {
         this.parentImpact = parentImpact;
+    }
+
+    public Map<String, Double> getPropagationRules() {
+        return propagationRules;
+    }
+
+    public void setPropagationRules(Map<String, Double> propagationRules) {
+        this.propagationRules = propagationRules;
     }
 
     public String getImpactExplanation() {

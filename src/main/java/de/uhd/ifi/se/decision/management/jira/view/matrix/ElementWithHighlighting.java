@@ -19,12 +19,14 @@ public class ElementWithHighlighting {
 	private String qualityColor;
 	private String qualityProblemExplanation;
 	private String changeImpactColor;
+	private double changeImpactValue;
 
 	public ElementWithHighlighting(KnowledgeElement element) {
 		this.element = element;
 		this.qualityColor = element.getStatus().getColor();
 		this.qualityProblemExplanation = "";
 		this.changeImpactColor = "#FFFFFF";
+		this.changeImpactValue = 0.0;
 	}
 
 	@XmlElement
@@ -57,5 +59,13 @@ public class ElementWithHighlighting {
 
 	public void setChangeImpactColor(String changeImpactColor) {
 		this.changeImpactColor = changeImpactColor;
+	}
+
+	public double getChangeImpactValue() {
+		return changeImpactValue;
+	}
+
+	public void setChangeImpactValue(double changeImpactValue) {
+		this.changeImpactValue = changeImpactValue;
 	}
 }

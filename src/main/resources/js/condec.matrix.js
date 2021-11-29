@@ -124,9 +124,10 @@
 		if (bgColor !== undefined && bgColor !== "#FFFFFF") {
 			div.classList.add("ciaHighlighted");
 			headerCell.style.backgroundColor = bgColor;
+			conDecCIATooltip.addMatrixTooltip(headerCell);
 		}
-
-		AJS.$(headerCell).tooltip();
+		
+		// AJS.$(headerCell).tooltip();
 		headerCell.appendChild(div);
 		return headerCell;
 	}

@@ -45,6 +45,7 @@ public class Matrix {
 			for (Map.Entry<KnowledgeElementWithImpact, String> entry : colorMap.entrySet()) {
 				if (entry.getKey().getElement() == headerElementWithHighlighting.getElement()) {
 					headerElementWithHighlighting.setChangeImpactColor(entry.getValue());
+					headerElementWithHighlighting.setChangeImpactValue(entry.getKey().getImpactValue());
 				}
 			}
 		});
