@@ -151,18 +151,21 @@ public abstract class TestSetUpGit extends TestSetUp {
 		gitConfig.addGitRepoConfiguration(
 				new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
 		ConfigPersistenceManager.saveGitConfiguration("HTTP", gitConfig);
+		GitClient.getInstance("HTTP");
 		secureGitClients.add(GitClient.getInstance("HTTP"));
 
 		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITHUB");
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB",
 				"githubuser", "g1thubT0ken"));
 		ConfigPersistenceManager.saveGitConfiguration("GITHUB", gitConfig);
+		GitClient.getInstance("GITHUB");
 		secureGitClients.add(GitClient.getInstance("GITHUB"));
 
 		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITLAB");
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB",
 				"gitlabuser", "g1tl@bT0ken"));
 		ConfigPersistenceManager.saveGitConfiguration("GITLAB", gitConfig);
+		GitClient.getInstance("GITLAB");
 		secureGitClients.add(GitClient.getInstance("GITLAB"));
 	}
 
