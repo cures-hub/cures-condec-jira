@@ -2,9 +2,16 @@ package de.uhd.ifi.se.decision.management.jira.git.gitclient;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestGetGitDirectory extends TestSetUpGit {
+
+	@Before
+	public void setUp() {
+		super.setUp();
+		super.setUpGitClientsSecure();
+	}
 
 	@Test
 	public void testClonedRepoExisting() {

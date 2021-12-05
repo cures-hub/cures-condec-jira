@@ -4,12 +4,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 
 public class TestGitClientsForSingleRepos extends TestSetUpGit {
+
+	@Before
+	public void setUp() {
+		super.setUp();
+		super.setUpGitClientsSecure();
+	}
 
 	@Test
 	public void testGitObjectExisting() {

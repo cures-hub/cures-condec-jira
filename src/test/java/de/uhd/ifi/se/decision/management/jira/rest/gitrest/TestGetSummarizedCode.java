@@ -44,7 +44,7 @@ public class TestGetSummarizedCode extends TestSetUpGit {
 		gitConfig.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		filterSettings.setSelectedElement("TEST-1");
+		filterSettings.setSelectedElement("TEST-42");
 		Response response = gitRest.getSummarizedCode(filterSettings, 0);
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 		assertEquals("This Jira issue does not have any code committed.", response.getEntity().toString());
