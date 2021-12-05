@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -36,7 +35,6 @@ public class TestDeleteGitRepos extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testRequestValidProjectKeyValid() {
 		assertEquals(Status.OK.getStatusCode(), gitRest.deleteGitRepos(request, "TEST").getStatus());
 	}
