@@ -140,7 +140,7 @@ public abstract class TestSetUpGit extends TestSetUp {
 	}
 
 	public static void setUpBeforeClassSecure() {
-		if (secureGitClients != null) {
+		if (secureGitClients != null && secureGitClients.size() == SECURE_GIT_URIS.size()) {
 			// secure git clients already exist
 			return;
 		}

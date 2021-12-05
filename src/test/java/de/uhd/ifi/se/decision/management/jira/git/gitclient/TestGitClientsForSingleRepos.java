@@ -14,7 +14,7 @@ public class TestGitClientsForSingleRepos extends TestSetUpGit {
 	@Test
 	public void testGitObjectExisting() {
 		assertNotNull(gitClient.getGitClientsForSingleRepo(GIT_URI).getGit());
-		for (int i = 0; i < SECURE_GIT_URIS.size(); i++) {
+		for (int i = 0; i < secureGitClients.size(); i++) {
 			assertNotNull(secureGitClients.get(i).getGitClientsForSingleRepo(SECURE_GIT_URIS.get(i)).getGit());
 		}
 	}

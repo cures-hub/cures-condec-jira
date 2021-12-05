@@ -9,9 +9,9 @@ public class TestGetGitDirectory extends TestSetUpGit {
 	@Test
 	public void testClonedRepoExisting() {
 		assertTrue(gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists());
-		for (int i = 0; i < 3; i++) {
-			assertTrue(
-					secureGitClients.get(i).getGitClientsForSingleRepo(SECURE_GIT_URIS.get(i)).getGitDirectory().exists());
+		for (int i = 0; i < secureGitClients.size(); i++) {
+			assertTrue(secureGitClients.get(i).getGitClientsForSingleRepo(SECURE_GIT_URIS.get(i)).getGitDirectory()
+					.exists());
 		}
 	}
 
