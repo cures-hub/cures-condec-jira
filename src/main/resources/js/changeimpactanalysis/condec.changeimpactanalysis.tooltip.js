@@ -6,13 +6,13 @@
 	ConDecCIATooltip.prototype.addJSTreeTooltip = function() {
         jQuery("#jstree").on("hover_node.jstree", function(error, tree) {
             let propagationRuleExplanation = ($("#" + tree.node.id).attr("cia_propagationRuleSummary") !== "") ?
-                ("\nPropagation Rule Value: " + $("#" + tree.node.id).attr("cia_ruleBasedValue") +
-                "; Utilized Rules:" + 
-                "\n" + $("#" + tree.node.id).attr("cia_propagationRuleSummary")) :
-                ""
+            ("\nPropagation Rule Value: " + $("#" + tree.node.id).attr("cia_ruleBasedValue") +
+            "; Utilized Rules:" + 
+            "\n" + $("#" + tree.node.id).attr("cia_propagationRuleSummary")) :
+            ""
             // Check if node is root
             let ciaExplanation = ($("#" + tree.node.id).attr("id").substring(0,2) === "tv") ?
-            "This is the source node from which the Change Impact Analysis was calculated" :
+            "This is the source node from which the Change Impact Analysis was calculated." :
             "Overall CIA Impact Factor: " + $("#" + tree.node.id).attr("cia_impactFactor") +
                 "\n--- --- --- --- --- --- --- --- ---" +
                 "\nParent Node Impact: " + $("#" + tree.node.id).attr("cia_parentImpact") +

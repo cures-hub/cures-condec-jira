@@ -43,60 +43,49 @@ public class ChangeImpactAnalysisService {
 
 	public static TreeViewer calculateTreeImpact(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
-		TreeViewer tree = new TreeViewer(filterSettings);
+		TreeViewer tree = new TreeViewer(filterSettings, impactedElements);
 		tree.getNodes().forEach(node -> {
-			Colorizer.colorizeTreeNode(node, impactedElements, filterSettings);
+			node = Colorizer.colorizeTreeNode(node, impactedElements, filterSettings);
 		});
 		return tree;
 	}
 
 	public static VisGraph calculateGraphImpact(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
-		KnowledgeGraph graph = new FilteringManager(filterSettings).getFilteredGraph();
-		return asVisGraph(impactedElements, filterSettings, graph);
+		VisGraph graphVis = new VisGraph(filterSettings, impactedElements);
+		graphVis.getNodes().forEach(node -> {
+			for (KnowledgeElementWithImpact element : impactedElements) {
+				if (node.getElement().getId() == element.getId()) {
+					Colorizer.colorizeVisNode(node, element.getImpactValue());
+					break;
+				}
+			}
+		});
+		return graphVis;
 	}
 
 	public static Matrix calculateMatrixImpact(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElementWithImpact> elementSet = impactedElements.stream()
-			.filter(element -> filteringManager.isElementMatchingKnowledgeTypeFilter(element.getElement()))
-			.filter(element -> filteringManager.isElementMatchingStatusFilter(element.getElement()))
+			.filter(element -> filteringManager.isElementMatchingKnowledgeTypeFilter(element))
+			.filter(element -> filteringManager.isElementMatchingStatusFilter(element))
 			.collect(Collectors.toSet());
 				
 		Map<KnowledgeElementWithImpact, String> colorMap = new HashMap<>();
 		elementSet.forEach(entry -> {
-			if (impactedElements.get(impactedElements.indexOf(entry)).getImpactValue() != 0.0) {
-				colorMap.put(entry, Colorizer.colorForImpact(impactedElements.get(impactedElements.indexOf(entry)).getImpactValue()));
-			} else {
-				colorMap.put(entry, "#FFFFFF");
-			}
+			colorMap.put(entry, Colorizer.colorForImpact(entry.getImpactValue()));
 		});
 		return new Matrix(filterSettings, colorMap);
 	}
 	
-	private static List<KnowledgeElementWithImpact> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
+	public static List<KnowledgeElementWithImpact> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		KnowledgeElementWithImpact rootElement = new KnowledgeElementWithImpact(filterSettings.getSelectedElement());
 		impactedElements.add(rootElement);
-		impactedElements = Calculator.calculateChangeImpact(rootElement, 1.0, filterSettings, impactedElements,
+		impactedElements = Calculator.calculateChangeImpact(filterSettings.getSelectedElement(), 1.0, filterSettings, impactedElements,
 				(long) filterSettings.getLinkDistance());
 		LOGGER.info("ConDec change impact analysis estimated {} impacted elements.", impactedElements.size());
 		return impactedElements;
-	}
-
-	private static VisGraph asVisGraph(List<KnowledgeElementWithImpact> impactedElements, FilterSettings filterSettings,
-			KnowledgeGraph graph) {
-		VisGraph graphVis = new VisGraph(filterSettings);
-		graphVis.getNodes().forEach(node -> {
-			impactedElements.stream().forEach( element -> {
-				if (element.getElement() != node.getElement()) {
-					Colorizer.colorizeVisNode(node, 0.0);
-				} else {
-					Colorizer.colorizeVisNode(node, element.getImpactValue());
-				}
-			});
-		});
-		return graphVis;
 	}
 }

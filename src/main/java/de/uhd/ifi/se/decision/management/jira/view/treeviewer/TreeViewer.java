@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -114,6 +115,40 @@ public class TreeViewer {
 			filteringManager.getFilterSettings().setSelectedElementObject(element);
 			graph = filteringManager.getFilteredGraph();
 			nodes.add(getTreeViewerNodeWithChildren(element));
+		}
+	}
+
+	/**
+	 * A specialized constructor for a jstree tree viewer that matches the {@link FilterSettings}.
+	 * The tree viewer comprises only one tree with the selected element as the root element. Vertices
+	 * that are not included in the supplied list of {@link KnowledgeElementWithImpact} are removed.
+	 *
+	 * @param filterSettings
+	 *            For example, the {@link FilterSettings} cover the selected element
+	 *            and the knowledge types to be shown. The selected element cannot be
+	 *            null.
+	 * @param impactedElements
+	 * 			  A list of {@link KnowledgeElementWithImpact}.
+	 */
+	public TreeViewer(FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements) {
+		this();
+		if (filterSettings == null) {
+			return;
+		}
+		LOGGER.info(filterSettings.toString());
+
+		this.filterSettings = filterSettings;
+
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		graph = filteringManager.getFilteredGraph(impactedElements);
+
+		KnowledgeElement rootElement = filterSettings.getSelectedElement();
+
+		if (rootElement != null) {
+			// only one tree is shown
+			TreeViewerNode rootNode = getTreeViewerNodeWithChildren(rootElement);
+			nodes.add(rootNode);
+			return;
 		}
 	}
 

@@ -11,9 +11,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  * 
  * @see ChangePropagationRule
  */
-public class KnowledgeElementWithImpact {
+public class KnowledgeElementWithImpact extends KnowledgeElement {
 
-    private KnowledgeElement element;
     private double impactValue;
     private double parentImpact;
     private double linkTypeWeight;
@@ -24,7 +23,13 @@ public class KnowledgeElementWithImpact {
     public KnowledgeElementWithImpact(KnowledgeElement element, double impactValue,
             double parentImpact, double linkTypeWeight, double propagationRuleValue,
             Map<String, Double> propagationRule, String impactExplanation) {
-        this.element = element;
+        this.project = element.getProject();
+		this.id = element.getId();
+        this.setDescription(element.getDescription());
+		this.setSummary(element.getSummary());
+		this.documentationLocation = element.getDocumentationLocation();
+		this.type = element.getType();
+
         this.impactValue = impactValue;
         this.parentImpact = parentImpact;
         this.linkTypeWeight = linkTypeWeight;
@@ -34,7 +39,13 @@ public class KnowledgeElementWithImpact {
     }
 
     public KnowledgeElementWithImpact(KnowledgeElement element) {
-        this.element = element;
+        this.project = element.getProject();
+		this.id = element.getId();
+        this.setDescription(element.getDescription());
+		this.setSummary(element.getSummary());
+		this.documentationLocation = element.getDocumentationLocation();
+		this.type = element.getType();
+
         this.impactValue = 1.0;
         this.parentImpact = 1.0;
         this.linkTypeWeight = 1.0;
@@ -47,27 +58,16 @@ public class KnowledgeElementWithImpact {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
+        if (!super.equals(obj))
             return false;
         if (getClass() != obj.getClass())
             return false;
         KnowledgeElementWithImpact other = (KnowledgeElementWithImpact) obj;
-        if (element == null) {
-            if (other.element != null)
-                return false;
-        } else if (!element.equals(other.element))
+        if (id != other.getId())
             return false;
         return true;
     }
-
-    public KnowledgeElement getElement() {
-        return element;
-    }
-
-    public void setElement(KnowledgeElement element) {
-        this.element = element;
-    }
-
+    
     public double getImpactValue() {
         return impactValue;
     }
@@ -115,5 +115,4 @@ public class KnowledgeElementWithImpact {
     public void setImpactExplanation(String impactExplanation) {
         this.impactExplanation = impactExplanation;
     }
-
 }

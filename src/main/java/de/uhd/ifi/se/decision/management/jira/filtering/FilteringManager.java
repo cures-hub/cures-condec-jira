@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -44,7 +45,7 @@ public class FilteringManager {
 		this(new FilterSettings(projectKey, query, user));
 	}
 
-	/**
+    /**
 	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
 	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
@@ -72,7 +73,8 @@ public class FilteringManager {
 		}
 
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = filteredGraph.vertexSet().stream()
-				.filter(element -> !isElementMatchingFilterSettings(element)).collect(Collectors.toSet());
+				.filter(element -> !isElementMatchingFilterSettings(element))
+				.collect(Collectors.toSet());
 		if (filterSettings.getSelectedElement() != null) {
 			// the selected element is never filtered out
 			elementsNotMatchingFilterSettings.remove(filterSettings.getSelectedElement());
@@ -91,6 +93,58 @@ public class FilteringManager {
 		removeLinksWithTypesNotInFilterSettings(filteredGraph);
 		return filteredGraph;
 	}
+
+	/**
+	 * @param impactedElements
+	 *         List of {@link KnowledgeElementWithImpact}.
+	 * @return new {@link KnowledgeGraph} that matches the {@link FilterSettings}.
+	 * 		   Removes all vertices that are not included in the supplied list of
+	 *         {@link KnowledgeElementWithImpact}.
+	 *         If no transitive links are created, a subgraph of the original graph
+	 *         is returned. If transitive links are created, the returned graph
+	 *         contains new {@link Link}s (and is thus no subgraph).
+	 */
+	public KnowledgeGraph getFilteredGraph(List<KnowledgeElementWithImpact> impactedElements) {
+		if (filterSettings == null || graph == null) {
+			LOGGER.error("FilteringManager misses important attributes.");
+			return null;
+		}
+		KnowledgeGraph filteredGraph;
+		if (filterSettings.getSelectedElement() != null) {
+			filteredGraph = graph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
+					filterSettings.getLinkDistance());
+		} else {
+			filteredGraph = graph.copy();
+		}
+
+		Set<KnowledgeElement> elementsNotMatchingFilterSettings = filteredGraph.vertexSet().stream()
+				.filter(element -> !isElementMatchingFilterSettings(element))
+				.collect(Collectors.toSet());
+
+		filteredGraph.vertexSet().stream().forEach(element -> {
+			if (!impactedElements.contains(element)) {
+				elementsNotMatchingFilterSettings.add(element);
+			}
+		});
+				
+		if (filterSettings.getSelectedElement() != null) {
+			// the selected element is never filtered out
+			elementsNotMatchingFilterSettings.remove(filterSettings.getSelectedElement());
+		}
+		filteredGraph.removeAllVertices(elementsNotMatchingFilterSettings);
+
+		if (filterSettings.getSelectedElement() != null) {
+			if (filterSettings.createTransitiveLinks()) {
+				addTransitiveLinksToFilteredGraph(filteredGraph);
+			} else {
+				filteredGraph = filteredGraph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
+						filterSettings.getLinkDistance());
+			}
+		}
+		
+		removeLinksWithTypesNotInFilterSettings(filteredGraph);
+		return filteredGraph;
+    }
 
 	/**
 	 * @param filteredGraph

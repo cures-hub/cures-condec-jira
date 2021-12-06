@@ -139,4 +139,8 @@ public class VisNode {
 	public void setElement(KnowledgeElement element) {
 		this.element = element;
 	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 }

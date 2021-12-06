@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactA
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -26,13 +27,12 @@ public class Calculator {
     private static final Logger LOGGER = LoggerFactory.getLogger(Calculator.class);
 
     public static List<KnowledgeElementWithImpact> calculateChangeImpact(
-        KnowledgeElementWithImpact currentElement, double parentImpact,
-        FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements,
-        long context) {
+        KnowledgeElement currentElement, double parentImpact,
+        FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements, long context) {
         ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
-
-		for (Link link : currentElement.getElement().getLinks()) {
-			boolean isOutwardLink = link.isOutwardLinkFrom(currentElement.getElement());
+		
+		for (Link link : currentElement.getLinks()) {
+			boolean isOutwardLink = link.isOutwardLinkFrom(currentElement);
 			String linkTypeName = (isOutwardLink)
 				? link.getType().getOutwardName()
 				: link.getType().getInwardName();
@@ -48,12 +48,12 @@ public class Calculator {
 			double ruleBasedValue = 1.0;
 			Map<String, Double> mapOfRules = new HashMap<>();
 			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
-				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement.getElement(), link);
+				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
 
 				// Each rule is individually mapped with its description and impact score
 				mapOfRules.put(
 					rule.getDescription(),
-					rule.getFunction().isChangePropagated(filterSettings, currentElement.getElement(), link)
+					rule.getFunction().isChangePropagated(filterSettings, currentElement, link)
 				);
 			}
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
@@ -95,18 +95,22 @@ public class Calculator {
 				: new KnowledgeElementWithImpact(link.getSource(),
 					impactValue, parentImpact, linkTypeWeight, ruleBasedValue, mapOfRules, impactExplanation);
 
+			KnowledgeElement nextElementInPath = (isOutwardLink)
+				? link.getTarget()
+				: link.getSource();
+
 			// Check whether element should be added to list of impacted elements
 			if (impactValue >= ciaConfig.getThreshold()) {
 				if (!impactedElements.contains(nextElement)) {
 					impactedElements.add(nextElement);
-					calculateChangeImpact(nextElement, impactValue, filterSettings, impactedElements, context);
+					calculateChangeImpact(nextElementInPath, impactValue, filterSettings, impactedElements, context);
 				} else if (impactedElements.get(impactedElements.indexOf(nextElement)).getImpactValue() < impactValue) {
 					impactedElements.set(impactedElements.indexOf(nextElement), nextElement);
-					calculateChangeImpact(nextElement, impactValue, filterSettings, impactedElements, context);
+					calculateChangeImpact(nextElementInPath, impactValue, filterSettings, impactedElements, context);
 				}
 			} else if (ciaConfig.getContext() > 0 && context > 0 && !impactedElements.contains(nextElement)) {
 				impactedElements.add(nextElement);
-				calculateChangeImpact(nextElement, 0.0, filterSettings, impactedElements, context - 1);
+				calculateChangeImpact(nextElementInPath, 0.0, filterSettings, impactedElements, context - 1);
 			}
 		}
 		return impactedElements;

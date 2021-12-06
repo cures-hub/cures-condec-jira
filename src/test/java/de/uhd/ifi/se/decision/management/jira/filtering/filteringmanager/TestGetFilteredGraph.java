@@ -3,8 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.filtering.filteringmanager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.Graph;
@@ -12,6 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisService;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -109,5 +113,14 @@ public class TestGetFilteredGraph extends TestSetUp {
 		Set<Link> transitiveLinks = new HashSet<Link>(subgraph.edgeSet());
 		transitiveLinks.removeIf(link -> link.getType() != LinkType.TRANSITIVE);
 		assertEquals(0, transitiveLinks.size());
+	}
+
+	@Test
+	public void testCIAThresholdFiltering() {
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
+		impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+		
+		assertEquals(7, filteringManager.getFilteredGraph(impactedElements).vertexSet().size());
 	}
 }

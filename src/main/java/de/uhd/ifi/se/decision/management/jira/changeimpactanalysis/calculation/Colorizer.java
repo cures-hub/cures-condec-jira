@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
  * @see Calculator
  */
 public class Colorizer {
-    public static void colorizeTreeNode(TreeViewerNode node,
+    public static TreeViewerNode colorizeTreeNode(TreeViewerNode node,
         List<KnowledgeElementWithImpact> impactedElements, FilterSettings filterSettings) {
         String style = "";
         KnowledgeElementWithImpact treeViewerNode = new KnowledgeElementWithImpact(node.getElement());
@@ -30,7 +30,7 @@ public class Colorizer {
                 Painting the background color white for the root node to prevent a red
                 background due to root impactValue always being 1.0
             */
-            if (filterSettings.getSelectedElement() == treeViewerNode.getElement()) {
+            if (filterSettings.getSelectedElement().getId() == treeViewerNode.getId()) {
                 style = "background-color:white";
             } else {
                 style = "background-color:" + colorForImpact(impactedElements
@@ -68,19 +68,14 @@ public class Colorizer {
                 .put("cia_valueExplanation", impactedElements
                     .get(impactedElements.indexOf(treeViewerNode)).getImpactExplanation())
                 .build());
-        } else {
-            style = "background-color:white";
-            node.setLiAttr(ImmutableMap.<String, String>builder()
-                .put("style", style)
-                .put("class", clzz)
-                .build());
         }
 
         String aStyle = "color:black";
         node.setAttr(ImmutableMap.of("style", aStyle));
         node.getChildren().forEach(child -> {
-            colorizeTreeNode(child, impactedElements, filterSettings);
+            child = colorizeTreeNode(child, impactedElements, filterSettings);
         });
+        return node;
     }
 
     public static void colorizeVisNode(VisNode node, double impact) {
@@ -88,9 +83,7 @@ public class Colorizer {
         colorMap.put("background", colorForImpact(impact));
         colorMap.put("border", "black");
         node.getColorMap().putAll(colorMap);
-        if (impact <= 0) {
-            node.setCollapsed();
-        }
+        node.setTitle("Overall CIA Impact Factor: " + impact);
     }
 
     public static String colorForImpact(double impact) {

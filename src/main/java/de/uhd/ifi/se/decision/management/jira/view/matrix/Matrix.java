@@ -43,9 +43,10 @@ public class Matrix {
 		this(filterSettings);
 		headerElementsWithHighlighting.forEach(headerElementWithHighlighting -> {
 			for (Map.Entry<KnowledgeElementWithImpact, String> entry : colorMap.entrySet()) {
-				if (entry.getKey().getElement() == headerElementWithHighlighting.getElement()) {
+				if (entry.getKey().getId() == headerElementWithHighlighting.getElement().getId()) {
 					headerElementWithHighlighting.setChangeImpactColor(entry.getValue());
 					headerElementWithHighlighting.setChangeImpactValue(entry.getKey().getImpactValue());
+					break;
 				}
 			}
 		});
