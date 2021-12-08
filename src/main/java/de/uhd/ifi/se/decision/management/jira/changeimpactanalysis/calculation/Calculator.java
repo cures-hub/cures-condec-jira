@@ -66,26 +66,26 @@ public class Calculator {
 			if (Math.min(parentImpact, Math.min(linkTypeWeight, ruleBasedValue)) == parentImpact
 				&& ((1 - parentImpact) >= decayValue)) {
 					impactExplanation =  "This element has a lowered chance of being affected" +
-					" by a change introduced in the source node, mainly due to its parent having a lowered impact score. ";
+					" by a change introduced in the source node, mainly due to its parent having a lowered impact score.\n";
 			} else if (Math.min(linkTypeWeight, Math.min(parentImpact, ruleBasedValue)) == linkTypeWeight
 				&& ((1 - linkTypeWeight) >= decayValue)) {
 					impactExplanation = "This element has a lowered chance of being affected" +
 					" by a change introduced in the source node, mainly due to the link type of the traversed edge" +
-					" between this node and its parent. ";
+					" between this node and its parent.\n";
 			} else if (Math.min(ruleBasedValue, Math.min(parentImpact, linkTypeWeight)) == ruleBasedValue
 				&& ((1 - ruleBasedValue) >= decayValue)) {
 					impactExplanation = "This element has a lowered chance of being affected" +
-					" by a change introduced in the source node, mainly due to a used propagation rule. ";
+					" by a change introduced in the source node, mainly due to a used propagation rule.\n";
 			} else {
 				impactExplanation = "This element has a lowered chance of being affected" +
-				" by a change introduced in the source node, mainly due to the decay value. ";
+				" by a change introduced in the source node, mainly due to the decay value.\n";
 			}
 			if (impactValue >= 0.5) {
 				impactExplanation += "A high impact value generally indicates that the element is highly affected " +
-				"by the change and might need to be changed as well.";
+				"by the change and might need to be changed as well.\n";
 			} else {
 				impactExplanation += "A low impact value generally indicates that the element is less likely to be affected " +
-				"by the change and probably doesn't need to be changed as well.";
+				"by the change and probably doesn't need to be changed as well.\n";
 			}
 
 			// Add calculated impact values to knowledge element

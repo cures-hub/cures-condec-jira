@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.view.matrix.ElementWithHighlighting;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewerNode;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
 
@@ -18,72 +19,71 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
  * @see Calculator
  */
 public class Colorizer {
-    public static TreeViewerNode colorizeTreeNode(TreeViewerNode node,
-        List<KnowledgeElementWithImpact> impactedElements, FilterSettings filterSettings) {
+    public static TreeViewerNode colorizeTreeNode(List<KnowledgeElementWithImpact> impactedElements, TreeViewerNode node, FilterSettings filterSettings) {
         String style = "";
-        KnowledgeElementWithImpact treeViewerNode = new KnowledgeElementWithImpact(node.getElement());
-        String propagationRuleSummary = "";
         String clzz = node.getLiAttr().get("class");
 
-        if (impactedElements.contains(treeViewerNode)) {
-            /*
-                Painting the background color white for the root node to prevent a red
-                background due to root impactValue always being 1.0
-            */
-            if (filterSettings.getSelectedElement().getId() == treeViewerNode.getId()) {
-                style = "background-color:white";
-            } else {
-                style = "background-color:" + colorForImpact(impactedElements
-                    .get(impactedElements.indexOf(treeViewerNode)).getImpactValue());
-            }
-            /*
-                Iterating through all utilized propagation rules,
-                appending each to a single summarizing String
-            */
-            for(Map.Entry<String, Double> entry : impactedElements.get(
-                impactedElements.indexOf(treeViewerNode)).getPropagationRules().entrySet()) {
-                    propagationRuleSummary = propagationRuleSummary + "-> " + String
-                        .format("%.2f", entry.getValue()) + ": " + entry.getKey() + "\n";
-            }
-            /*
-                Saving the Li attributes inside the node, containing all previously
-                determined CIA impact scores and the corresponding explanation
-            */
-            node.setLiAttr(ImmutableMap.<String, String>builder()
-                .put("style", style)
-                .put("class", clzz)
-                .put("cia_parentImpact",
-                    String.format("%.2f", impactedElements
-                    .get(impactedElements.indexOf(treeViewerNode)).getParentImpact()))
-                .put("cia_linkTypeWeight",
-                    String.format("%.2f", impactedElements
-                    .get(impactedElements.indexOf(treeViewerNode)).getLinkTypeWeight()))
-                .put("cia_ruleBasedValue",
-                    String.format("%.2f", impactedElements
-                    .get(impactedElements.indexOf(treeViewerNode)).getRuleBasedValue()))
-                .put("cia_impactFactor",
-                    String.format("%.2f", impactedElements
-                    .get(impactedElements.indexOf(treeViewerNode)).getImpactValue()))
-                .put("cia_propagationRuleSummary", propagationRuleSummary)
-                .put("cia_valueExplanation", impactedElements
-                    .get(impactedElements.indexOf(treeViewerNode)).getImpactExplanation())
-                .build());
-        }
+        for (KnowledgeElementWithImpact element : impactedElements) {
+            if (node.getElement().getId() == element.getId()) {
+                /*
+                    Painting the background color white for the root node to prevent a red
+                    background due to root impactValue always being 1.0
+                */
+                if (filterSettings.getSelectedElement().getId() == element.getId()) {
+                    style = "background-color:white";
+                } else {
+                    style = "background-color:" + colorForImpact(element.getImpactValue());
+                }
 
-        String aStyle = "color:black";
-        node.setAttr(ImmutableMap.of("style", aStyle));
-        node.getChildren().forEach(child -> {
-            child = colorizeTreeNode(child, impactedElements, filterSettings);
-        });
+                node.setLiAttr(ImmutableMap.<String, String>builder()
+                    .put("style", style)
+                    .put("class", clzz)
+                    .put("cia_tooltip", Tooltip.createTooltip(element, filterSettings))
+                    .build());
+
+                String aStyle = "color:black";
+                node.setAttr(ImmutableMap.of("style", aStyle));
+                node.getChildren().forEach(child -> {
+                    child = colorizeTreeNode(impactedElements, child, filterSettings);
+                });
+                break;
+            }
+        }
         return node;
     }
 
-    public static void colorizeVisNode(VisNode node, double impact) {
+    public static VisNode colorizeVisNode(KnowledgeElementWithImpact element, VisNode node, FilterSettings filterSettings) {
         Map<String, String> colorMap = new HashMap<>();
-        colorMap.put("background", colorForImpact(impact));
+        /*
+            Painting the background color white for the root node to prevent a red
+            background due to root impactValue always being 1.0
+        */
+        if (filterSettings.getSelectedElement().getId() == element.getId()) {
+            colorMap.put("background", "white");
+        } else {
+            colorMap.put("background", colorForImpact(element.getImpactValue()));
+        }
         colorMap.put("border", "black");
         node.getColorMap().putAll(colorMap);
-        node.setTitle("Overall CIA Impact Factor: " + impact);
+        node.setTitle(Tooltip.createTooltip(element, filterSettings));
+        return node;
+    }
+
+    public static ElementWithHighlighting colorizeMatrixElement(KnowledgeElementWithImpact element,
+        ElementWithHighlighting node, FilterSettings filterSettings) {
+            /*
+                Painting the background color white for the root node to prevent a red
+                background due to root impactValue always being 1.0. Color has to be different to
+                #FFFFFF
+            */
+            if (filterSettings.getSelectedElement().getId() == element.getId()) {
+                node.setChangeImpactColor("#FFFFFA");
+            } else {
+                node.setChangeImpactColor(Colorizer.colorForImpact(element.getImpactValue()));
+            }    
+
+            node.setChangeImpactExplanation(Tooltip.createTooltip(element, filterSettings));
+            return node;
     }
 
     public static String colorForImpact(double impact) {

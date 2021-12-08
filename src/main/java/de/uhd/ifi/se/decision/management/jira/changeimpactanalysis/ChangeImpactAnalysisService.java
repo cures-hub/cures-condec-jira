@@ -1,11 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.calculation.Calculator;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.calculation.Colorizer;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
@@ -44,19 +39,24 @@ public class ChangeImpactAnalysisService {
 	public static TreeViewer calculateTreeImpact(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
 		TreeViewer tree = new TreeViewer(filterSettings, impactedElements);
+		
+		// Colorize individual nodes
 		tree.getNodes().forEach(node -> {
-			node = Colorizer.colorizeTreeNode(node, impactedElements, filterSettings);
-		});
+			node = Colorizer.colorizeTreeNode(impactedElements, node, filterSettings);
+			}
+		);
 		return tree;
 	}
 
 	public static VisGraph calculateGraphImpact(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
 		VisGraph graphVis = new VisGraph(filterSettings, impactedElements);
+		
+		// Colorize individual nodes
 		graphVis.getNodes().forEach(node -> {
 			for (KnowledgeElementWithImpact element : impactedElements) {
 				if (node.getElement().getId() == element.getId()) {
-					Colorizer.colorizeVisNode(node, element.getImpactValue());
+					node = Colorizer.colorizeVisNode(element, node, filterSettings);
 					break;
 				}
 			}
@@ -66,17 +66,18 @@ public class ChangeImpactAnalysisService {
 
 	public static Matrix calculateMatrixImpact(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
-		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		Set<KnowledgeElementWithImpact> elementSet = impactedElements.stream()
-			.filter(element -> filteringManager.isElementMatchingKnowledgeTypeFilter(element))
-			.filter(element -> filteringManager.isElementMatchingStatusFilter(element))
-			.collect(Collectors.toSet());
-				
-		Map<KnowledgeElementWithImpact, String> colorMap = new HashMap<>();
-		elementSet.forEach(entry -> {
-			colorMap.put(entry, Colorizer.colorForImpact(entry.getImpactValue()));
+		Matrix matrix = new Matrix(filterSettings, impactedElements);
+		
+		// Colorize individual nodes
+		matrix.getHeaderElementsWithHighlighting().forEach(node -> {
+			for (KnowledgeElementWithImpact element : impactedElements) {
+				if (node.getElement().getId() == element.getId()) {
+					Colorizer.colorizeMatrixElement(element, node, filterSettings);
+					break;
+				}
+			}
 		});
-		return new Matrix(filterSettings, colorMap);
+		return matrix;
 	}
 	
 	public static List<KnowledgeElementWithImpact> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {

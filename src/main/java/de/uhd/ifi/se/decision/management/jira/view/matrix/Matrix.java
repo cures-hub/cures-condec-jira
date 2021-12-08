@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -39,17 +40,23 @@ public class Matrix {
 	private KnowledgeGraph filteredGraph;
 	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
 
-	public Matrix(FilterSettings filterSettings, Map<KnowledgeElementWithImpact, String> colorMap) {
-		this(filterSettings);
-		headerElementsWithHighlighting.forEach(headerElementWithHighlighting -> {
-			for (Map.Entry<KnowledgeElementWithImpact, String> entry : colorMap.entrySet()) {
-				if (entry.getKey().getId() == headerElementWithHighlighting.getElement().getId()) {
-					headerElementWithHighlighting.setChangeImpactColor(entry.getValue());
-					headerElementWithHighlighting.setChangeImpactValue(entry.getKey().getImpactValue());
-					break;
+	public Matrix(FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements) {
+		LOGGER.info(filterSettings.toString());
+		filteredGraph = new FilteringManager(filterSettings).getFilteredGraph(impactedElements);
+		headerElementsWithHighlighting = new LinkedHashSet<>();
+		filteredGraph.vertexSet().forEach(element -> {
+			ElementWithHighlighting elementWithColors = new ElementWithHighlighting(element);
+			if (filterSettings.areQualityProblemHighlighted()) {
+				String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element,
+						filterSettings);
+				if (!problemExplanation.isEmpty()) {
+					elementWithColors.setQualityColor("crimson");
+					elementWithColors.setQualityProblemExplanation(problemExplanation);
 				}
 			}
+			headerElementsWithHighlighting.add(elementWithColors);
 		});
+		size = headerElementsWithHighlighting.size();
 	}
 
 	public Matrix(FilterSettings filterSettings) {

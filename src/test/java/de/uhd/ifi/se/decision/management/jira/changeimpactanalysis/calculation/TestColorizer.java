@@ -30,7 +30,7 @@ public class TestColorizer extends TestSetUp {
 		impactedElements.add(rootElement);
 
         tree.getNodes().forEach(node -> {
-			Colorizer.colorizeTreeNode(node, impactedElements, settings);
+			Colorizer.colorizeTreeNode(impactedElements, node, settings);
             if (node.getElement() == rootElement) {
                 assertEquals("1.00", node.getLiAttr().get("cia_parentImpact"));
                 assertEquals("1.00", node.getLiAttr().get("cia_linkTypeWeight"));
