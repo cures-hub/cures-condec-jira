@@ -124,6 +124,10 @@ public class VisNode {
 		return font;
 	}
 
+	public void setFont(Map<String, String> colorMap) {
+		this.font = colorMap;
+	}
+
 	public String getColor() {
 		return color.get("background");
 	}

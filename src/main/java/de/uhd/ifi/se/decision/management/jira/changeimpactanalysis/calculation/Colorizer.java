@@ -54,6 +54,7 @@ public class Colorizer {
 
     public static VisNode colorizeVisNode(KnowledgeElementWithImpact element, VisNode node, FilterSettings filterSettings) {
         Map<String, String> colorMap = new HashMap<>();
+        Map<String, String> fontMap = new HashMap<>();
         /*
             Painting the background color white for the root node to prevent a red
             background due to root impactValue always being 1.0
@@ -64,6 +65,8 @@ public class Colorizer {
             colorMap.put("background", colorForImpact(element.getImpactValue()));
         }
         colorMap.put("border", "black");
+        fontMap.put("color", "black");
+        node.setFont(fontMap);
         node.getColorMap().putAll(colorMap);
         node.setTitle(Tooltip.createTooltip(element, filterSettings));
         return node;
@@ -73,7 +76,7 @@ public class Colorizer {
         ElementWithHighlighting node, FilterSettings filterSettings) {
             /*
                 Painting the background color white for the root node to prevent a red
-                background due to root impactValue always being 1.0. Color has to be different to
+                background due to root impactValue always being 1.0. Color has to be different than
                 #FFFFFF
             */
             if (filterSettings.getSelectedElement().getId() == element.getId()) {

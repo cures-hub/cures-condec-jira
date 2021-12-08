@@ -45,7 +45,6 @@
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "adjacency-matrix") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			conDecMatrix.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
-
 			let headerRow = document.getElementById("matrix-header-row-" + viewIdentifier);
 			headerRow.innerHTML = "";
 			let firstRowHeaderCell = document.createElement("th");
@@ -123,6 +122,7 @@
 		}
 		if (bgColor !== undefined && bgColor !== "#FFFFFF") {
 			div.classList.add("ciaHighlighted");
+			headerCell.style.color = "#000000";
 			headerCell.style.backgroundColor = bgColor;
 			headerCell.title = knowledgeElementWithColors.changeImpactExplanation;
 		}

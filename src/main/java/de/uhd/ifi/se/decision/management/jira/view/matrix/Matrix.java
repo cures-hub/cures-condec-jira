@@ -46,14 +46,6 @@ public class Matrix {
 		headerElementsWithHighlighting = new LinkedHashSet<>();
 		filteredGraph.vertexSet().forEach(element -> {
 			ElementWithHighlighting elementWithColors = new ElementWithHighlighting(element);
-			if (filterSettings.areQualityProblemHighlighted()) {
-				String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element,
-						filterSettings);
-				if (!problemExplanation.isEmpty()) {
-					elementWithColors.setQualityColor("crimson");
-					elementWithColors.setQualityProblemExplanation(problemExplanation);
-				}
-			}
 			headerElementsWithHighlighting.add(elementWithColors);
 		});
 		size = headerElementsWithHighlighting.size();

@@ -32,7 +32,7 @@ public class Tooltip {
         String tooltip = "Overall CIA Impact Factor: " + String.format("%.2f", element.getImpactValue()) +
         "\n--- --- --- --- --- --- --- --- ---" +
         "\nParent Node Impact: " + String.format("%.2f", element.getParentImpact()) +
-        "\nLink Type Decay Weight: " + String.format("%.2f", element.getLinkTypeWeight()) +
+        "\nLink Type Weight: " + String.format("%.2f", element.getLinkTypeWeight()) +
         propagationRuleSummary +
         "\n--- --- --- --- --- --- --- --- ---" +
         "\n" + element.getImpactExplanation();
