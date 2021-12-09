@@ -136,33 +136,30 @@ public abstract class TestSetUpGit extends TestSetUp {
 						+ "            }\n" + "        }\n" + "    };\n" + "\n" + "}\n",
 				"TEST-30 add class A");
 		setupFeatureBranch();
-		setUpBeforeClassSecure();
 	}
 
-	public static void setUpBeforeClassSecure() {
-		if (secureGitClients != null) {
-			// secure git clients already exist
-			return;
-		}
-
+	public static void setUpGitClientsSecure() {
 		secureGitClients = new ArrayList<GitClient>();
 
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("HTTP");
 		gitConfig.addGitRepoConfiguration(
 				new GitRepositoryConfiguration(SECURE_GIT_URIS.get(0), "master", "HTTP", "httpuser", "httpP@ssw0rd"));
 		ConfigPersistenceManager.saveGitConfiguration("HTTP", gitConfig);
+		GitClient.getInstance("HTTP"); // fetching returns null otherwise
 		secureGitClients.add(GitClient.getInstance("HTTP"));
 
 		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITHUB");
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(1), "master", "GITHUB",
 				"githubuser", "g1thubT0ken"));
 		ConfigPersistenceManager.saveGitConfiguration("GITHUB", gitConfig);
+		GitClient.getInstance("GITHUB"); // fetching returns null otherwise
 		secureGitClients.add(GitClient.getInstance("GITHUB"));
 
 		gitConfig = ConfigPersistenceManager.getGitConfiguration("GITLAB");
 		gitConfig.addGitRepoConfiguration(new GitRepositoryConfiguration(SECURE_GIT_URIS.get(2), "master", "GITLAB",
 				"gitlabuser", "g1tl@bT0ken"));
 		ConfigPersistenceManager.saveGitConfiguration("GITLAB", gitConfig);
+		GitClient.getInstance("GITLAB"); // fetching returns null otherwise
 		secureGitClients.add(GitClient.getInstance("GITLAB"));
 	}
 

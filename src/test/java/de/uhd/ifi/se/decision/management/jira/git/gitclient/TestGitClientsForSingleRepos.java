@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
@@ -11,10 +12,16 @@ import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfigurat
 
 public class TestGitClientsForSingleRepos extends TestSetUpGit {
 
+	@Before
+	public void setUp() {
+		super.setUp();
+		super.setUpGitClientsSecure();
+	}
+
 	@Test
 	public void testGitObjectExisting() {
 		assertNotNull(gitClient.getGitClientsForSingleRepo(GIT_URI).getGit());
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < secureGitClients.size(); i++) {
 			assertNotNull(secureGitClients.get(i).getGitClientsForSingleRepo(SECURE_GIT_URIS.get(i)).getGit());
 		}
 	}

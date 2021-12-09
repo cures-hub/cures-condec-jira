@@ -33,11 +33,6 @@ and `ruleBasedValue` is calculated based on rules. For example, rules are:
 The element is included in the **estimated impact set (EIS)** if `elementImpact >= threshold`.
 Developers can see an **explanation for the impact factor** of each node via a tooltip.
 
-![JSTree View with change impact tooltip](../screenshots/change_impact_analysis_treeview_tooltip.png)
-
-*Tree Visualization with change impact highlighting and tooltip.*
-
-
 ## Configuration
 The rationale manager can set default parameters for the change impact analysis.
 Besides, the developer can change the default values during the usage of change impact analysis.

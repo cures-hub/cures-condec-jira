@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -16,14 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.rest.GitRest;
 
 public class TestGetSummarizedCode extends TestSetUpGit {
 
-	private GitRest gitRest;
-
-	@Override
-	@Before
-	public void setUp() {
-		gitRest = new GitRest();
-		super.setUp();
-	}
+	private GitRest gitRest = new GitRest();
 
 	@Test
 	public void testGitConnectionDisabled() {
