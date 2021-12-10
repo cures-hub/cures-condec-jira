@@ -11,10 +11,12 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
+import de.uhd.ifi.se.decision.management.jira.view.matrix.MatrixNode;
+import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewerNode;
+import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
 
 public class TestColorizer extends TestSetUp {
-    
+
     @Before
 	public void setUp() {
         init();
@@ -24,23 +26,39 @@ public class TestColorizer extends TestSetUp {
     public void testColorizeTreeNode() {
         FilterSettings settings = new FilterSettings("TEST", "");
         settings.setSelectedElement("TEST-1");
-        TreeViewer tree = new TreeViewer(settings);
-        List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
-        KnowledgeElementWithImpact rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
-		impactedElements.add(rootElement);
 
-        tree.getNodes().forEach(node -> {
-			Colorizer.colorizeTreeNode(impactedElements, node, settings);
-            if (node.getElement() == rootElement) {
-                assertEquals("1.00", node.getLiAttr().get("cia_parentImpact"));
-                assertEquals("1.00", node.getLiAttr().get("cia_linkTypeWeight"));
-                assertEquals("1.00", node.getLiAttr().get("cia_ruleBasedValue"));
-                assertEquals("1.00", node.getLiAttr().get("cia_impactFactor"));
-                assertEquals("", node.getLiAttr().get("cia_propagationRuleSummary"));
-                assertEquals("", node.getLiAttr().get("cia_valueExplanation"));
-            }
-            assertEquals("background-color:white", node.getLiAttr().get("style"));
-        });
+        TreeViewerNode node = new TreeViewerNode(settings.getSelectedElement(), settings);
+        List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
+        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
+		impactedElements.add(element);
+        node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
+
+        assertEquals("background-color:white", node.getLiAttr().get("style"));
+    }
+
+    @Test
+    public void testColorizeVisNode() {
+        FilterSettings settings = new FilterSettings("TEST", "");
+        settings.setSelectedElement("TEST-1");
+
+		VisNode node = new VisNode(settings.getSelectedElement(), settings);
+        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
+        node = Colorizer.colorizeVisNode(element, node, settings);
+
+        assertEquals("white", node.getColor());
+        assertEquals("black", node.getFont().get("color"));
+    }
+
+    @Test
+    public void testColorizeMatrixNode() {
+        FilterSettings settings = new FilterSettings("TEST", "");
+        settings.setSelectedElement("TEST-1");
+
+		MatrixNode node = new MatrixNode(settings.getSelectedElement());
+        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
+        node = Colorizer.colorizeMatrixNode(element, node, settings);
+
+        assertEquals("#FFFFFF", node.getChangeImpactColor());
     }
 
     @Test

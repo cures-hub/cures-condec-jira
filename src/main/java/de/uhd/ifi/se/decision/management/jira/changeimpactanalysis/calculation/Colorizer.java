@@ -72,7 +72,7 @@ public class Colorizer {
         return node;
     }
 
-    public static MatrixNode colorizeMatrixElement(KnowledgeElementWithImpact element,
+    public static MatrixNode colorizeMatrixNode(KnowledgeElementWithImpact element,
         MatrixNode node, FilterSettings filterSettings) {
             /*
                 Painting the background color white for the root node to prevent a red

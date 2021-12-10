@@ -81,7 +81,7 @@ public class ChangeImpactAnalysisService {
 		matrix.getHeaderElementsWithHighlighting().forEach(node -> {
 			for (KnowledgeElementWithImpact element : impactedElements) {
 				if (node.getElement().getId() == element.getId()) {
-					Colorizer.colorizeMatrixElement(element, node, filterSettings);
+					Colorizer.colorizeMatrixNode(element, node, filterSettings);
 					break;
 				}
 			}
