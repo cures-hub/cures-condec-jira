@@ -9,12 +9,12 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.view.matrix.ElementWithHighlighting;
+import de.uhd.ifi.se.decision.management.jira.view.matrix.MatrixNode;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewerNode;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
 
 /**
- * Colorizes {@link TreeViewerNode} based on their change impact scores.
+ * Colorizes an object based on their change impact score.
  * 
  * @see Calculator
  */
@@ -72,15 +72,14 @@ public class Colorizer {
         return node;
     }
 
-    public static ElementWithHighlighting colorizeMatrixElement(KnowledgeElementWithImpact element,
-        ElementWithHighlighting node, FilterSettings filterSettings) {
+    public static MatrixNode colorizeMatrixElement(KnowledgeElementWithImpact element,
+        MatrixNode node, FilterSettings filterSettings) {
             /*
                 Painting the background color white for the root node to prevent a red
-                background due to root impactValue always being 1.0. Color has to be different than
-                #FFFFFF
+                background due to root impactValue always being 1.0
             */
             if (filterSettings.getSelectedElement().getId() == element.getId()) {
-                node.setChangeImpactColor("#FFFFFA");
+                node.setChangeImpactColor("#FFFFFF");
             } else {
                 node.setChangeImpactColor(Colorizer.colorForImpact(element.getImpactValue()));
             }    

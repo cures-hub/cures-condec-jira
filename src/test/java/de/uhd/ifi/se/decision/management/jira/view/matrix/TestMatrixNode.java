@@ -8,14 +8,14 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestElementWithHighlighting extends TestSetUp {
+public class TestMatrixNode extends TestSetUp {
 
-	private ElementWithHighlighting elementWithHighlighting;
+	private MatrixNode elementWithHighlighting;
 
 	@Before
 	public void setUp() {
 		init();
-		elementWithHighlighting = new ElementWithHighlighting(KnowledgeElements.getTestKnowledgeElement());
+		elementWithHighlighting = new MatrixNode(KnowledgeElements.getTestKnowledgeElement());
 	}
 
 	@Test

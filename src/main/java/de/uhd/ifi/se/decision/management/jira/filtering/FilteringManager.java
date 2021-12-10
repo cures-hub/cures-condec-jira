@@ -105,46 +105,12 @@ public class FilteringManager {
 	 *         contains new {@link Link}s (and is thus no subgraph).
 	 */
 	public KnowledgeGraph getFilteredGraph(List<KnowledgeElementWithImpact> impactedElements) {
-		if (filterSettings == null || graph == null) {
-			LOGGER.error("FilteringManager misses important attributes.");
-			return null;
-		}
-		KnowledgeGraph filteredGraph;
-		if (filterSettings.getSelectedElement() != null) {
-			filteredGraph = graph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
-					filterSettings.getLinkDistance());
-		} else {
-			filteredGraph = graph.copy();
-		}
-
+		KnowledgeGraph filteredGraph = getFilteredGraph();
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = filteredGraph.vertexSet().stream()
-				.filter(element -> !isElementMatchingFilterSettings(element))
-				.collect(Collectors.toSet());
-
-		filteredGraph.vertexSet().stream().forEach(element -> {
-			if (!impactedElements.contains(element)) {
-				elementsNotMatchingFilterSettings.add(element);
-			}
-		});
-				
-		if (filterSettings.getSelectedElement() != null) {
-			// the selected element is never filtered out
-			elementsNotMatchingFilterSettings.remove(filterSettings.getSelectedElement());
-		}
+				.filter(element -> !impactedElements.contains(element)).collect(Collectors.toSet());
 		filteredGraph.removeAllVertices(elementsNotMatchingFilterSettings);
-
-		if (filterSettings.getSelectedElement() != null) {
-			if (filterSettings.createTransitiveLinks()) {
-				addTransitiveLinksToFilteredGraph(filteredGraph);
-			} else {
-				filteredGraph = filteredGraph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
-						filterSettings.getLinkDistance());
-			}
-		}
-		
-		removeLinksWithTypesNotInFilterSettings(filteredGraph);
 		return filteredGraph;
-    }
+	}
 
 	/**
 	 * @param filteredGraph

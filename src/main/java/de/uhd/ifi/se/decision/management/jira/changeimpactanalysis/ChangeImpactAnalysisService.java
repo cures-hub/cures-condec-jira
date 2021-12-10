@@ -37,7 +37,10 @@ public class ChangeImpactAnalysisService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangeImpactAnalysisService.class);
 
 	public static TreeViewer calculateTreeImpact(FilterSettings filterSettings) {
+		// Calculate impacted elements
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
+
+		// Construct JSTree based on impacted elements
 		TreeViewer tree = new TreeViewer(filterSettings, impactedElements);
 		
 		// Colorize individual nodes
@@ -49,7 +52,10 @@ public class ChangeImpactAnalysisService {
 	}
 
 	public static VisGraph calculateGraphImpact(FilterSettings filterSettings) {
+		// Calculate impacted elements
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
+
+		// Construct VisGraph based on impacted elements
 		VisGraph graphVis = new VisGraph(filterSettings, impactedElements);
 		
 		// Colorize individual nodes
@@ -65,7 +71,10 @@ public class ChangeImpactAnalysisService {
 	}
 
 	public static Matrix calculateMatrixImpact(FilterSettings filterSettings) {
+		// Calculate impacted elements
 		List<KnowledgeElementWithImpact> impactedElements = calculateImpactedKnowledgeElements(filterSettings);
+
+		// Construct Matrix based on impacted elements
 		Matrix matrix = new Matrix(filterSettings, impactedElements);
 		
 		// Colorize individual nodes
@@ -82,8 +91,12 @@ public class ChangeImpactAnalysisService {
 	
 	public static List<KnowledgeElementWithImpact> calculateImpactedKnowledgeElements(FilterSettings filterSettings) {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
+
+		// Selected element is designated as the root of the impact calculation
 		KnowledgeElementWithImpact rootElement = new KnowledgeElementWithImpact(filterSettings.getSelectedElement());
 		impactedElements.add(rootElement);
+
+		// Calculate impacted elements
 		impactedElements = Calculator.calculateChangeImpact(filterSettings.getSelectedElement(), 1.0,
 			filterSettings, impactedElements, (long) filterSettings.getLinkDistance());
 		LOGGER.info("ConDec change impact analysis estimated {} impacted elements.", impactedElements.size());

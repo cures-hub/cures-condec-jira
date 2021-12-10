@@ -120,10 +120,11 @@
 			headerCell.style.color = textColor;
 			headerCell.title = knowledgeElementWithColors.qualityProblemExplanation;
 		}
-		if (bgColor !== undefined && bgColor !== "#FFFFFF") {
-			div.classList.add("ciaHighlighted");
-			headerCell.style.color = "#000000";
+
+		// Check whether Change Impact Analysis has been conducted
+		if (knowledgeElementWithColors.changeImpactExplanation !== "") {
 			headerCell.style.backgroundColor = bgColor;
+			headerCell.style.color = "black";
 			headerCell.title = knowledgeElementWithColors.changeImpactExplanation;
 		}
 		

@@ -31,6 +31,7 @@ public class Calculator {
         FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements, long context) {
         ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 		
+		// Iterating through all outgoing and incoming links of the current element
 		for (Link link : currentElement.getLinks()) {
 			boolean isOutwardLink = link.isOutwardLinkFrom(currentElement);
 			String linkTypeName = (isOutwardLink)
@@ -88,13 +89,14 @@ public class Calculator {
 				"by the change and probably doesn't need to be changed as well.\n";
 			}
 
-			// Add calculated impact values to knowledge element
+			// Add calculated impact values to new KnowledgeElementWithImpact
 			KnowledgeElementWithImpact nextElement = (isOutwardLink)
 				? new KnowledgeElementWithImpact(link.getTarget(),
 					impactValue, parentImpact, linkTypeWeight, ruleBasedValue, mapOfRules, impactExplanation)
 				: new KnowledgeElementWithImpact(link.getSource(),
 					impactValue, parentImpact, linkTypeWeight, ruleBasedValue, mapOfRules, impactExplanation);
 
+			// Determine the next element in the path
 			KnowledgeElement nextElementInPath = (isOutwardLink)
 				? link.getTarget()
 				: link.getSource();
