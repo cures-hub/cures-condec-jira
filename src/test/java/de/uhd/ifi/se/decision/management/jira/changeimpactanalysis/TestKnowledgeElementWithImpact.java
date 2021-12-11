@@ -12,16 +12,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class TestKnowledgeElementWithImpact extends TestSetUp {
     
-    private KnowledgeElement element;
-    private KnowledgeElementWithImpact elementWithImpact;
-    private KnowledgeElementWithImpact elementWithImpactChild;
-    private Map<String, Double> ruleMap = new HashMap<>();
-
     @Test
 	public void testKnowledgeElementWithImpactEqualsWhenUsingSameKnowledgeElement() {
-        element = new KnowledgeElement();
-        elementWithImpact = new KnowledgeElementWithImpact(element);
-        elementWithImpactChild = new KnowledgeElementWithImpact(
+        KnowledgeElement element = new KnowledgeElement();
+        KnowledgeElementWithImpact elementWithImpact = new KnowledgeElementWithImpact(element);
+        Map<String, Double> ruleMap = new HashMap<>();
+
+        KnowledgeElementWithImpact elementWithImpactChild = new KnowledgeElementWithImpact(
             element, 0.375, 0.75, 1.0, 1.0, ruleMap, "");   
 		assertEquals(elementWithImpact, elementWithImpactChild);
         assertEquals(element, elementWithImpactChild);

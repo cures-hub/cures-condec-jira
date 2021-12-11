@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.calculation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +39,41 @@ public class TestCalculator extends TestSetUp {
         assertEquals(0, impactedElements.get(0).getPropagationRules().size());
         assertEquals(0.75, impactedElements.get(1).getImpactValue(), 0.05);
         assertEquals(3, impactedElements.get(1).getPropagationRules().size());
+    }
+
+    @Test
+    public void testGenerateImpactExplanationPropagationRule() {
+        double impactValue = 0.75;
+        double parentImpact = 1.0;
+        double ruleBasedValue = 0.5;
+        double decayValue = 0.25;
+
+        String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue);
+
+        assertTrue(explanation.contains("mainly due to a used propagation rule."));
+    }
+
+    @Test
+    public void testGenerateImpactExplanationParentImpact() {
+        double impactValue = 0.25;
+        double parentImpact = 0.5;
+        double ruleBasedValue = 1.0;
+        double decayValue = 0.25;
+
+        String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue);
+
+        assertTrue(explanation.contains("mainly due to its parent having a lowered impact score."));
+    }
+
+    @Test
+    public void testGenerateImpactExplanationDecayValue() {
+        double impactValue = 0.25;
+        double parentImpact = 1.0;
+        double ruleBasedValue = 1.0;
+        double decayValue = 0.75;
+
+        String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue);
+
+        assertTrue(explanation.contains("mainly due to the decay value."));
     }
 }

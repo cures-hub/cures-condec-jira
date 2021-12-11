@@ -58,36 +58,7 @@ public class Calculator {
 				);
 			}
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
-
-			/*
-				Set the impact explanation by checking the minimum of each calculated impact score.
-				The minimum impacts the score the most, therefore the explanation aims to give a textual reason why.
-			*/
-			String impactExplanation = "";
-			if (Math.min(parentImpact, Math.min(linkTypeWeight, ruleBasedValue)) == parentImpact
-				&& ((1 - parentImpact) >= decayValue)) {
-					impactExplanation =  "This element has a lowered chance of being affected" +
-					" by a change introduced in the source node, mainly due to its parent having a lowered impact score.\n";
-			} else if (Math.min(linkTypeWeight, Math.min(parentImpact, ruleBasedValue)) == linkTypeWeight
-				&& ((1 - linkTypeWeight) >= decayValue)) {
-					impactExplanation = "This element has a lowered chance of being affected" +
-					" by a change introduced in the source node, mainly due to the link type of the traversed edge" +
-					" between this node and its parent.\n";
-			} else if (Math.min(ruleBasedValue, Math.min(parentImpact, linkTypeWeight)) == ruleBasedValue
-				&& ((1 - ruleBasedValue) >= decayValue)) {
-					impactExplanation = "This element has a lowered chance of being affected" +
-					" by a change introduced in the source node, mainly due to a used propagation rule.\n";
-			} else {
-				impactExplanation = "This element has a lowered chance of being affected" +
-				" by a change introduced in the source node, mainly due to the decay value.\n";
-			}
-			if (impactValue >= 0.5) {
-				impactExplanation += "A high impact value generally indicates that the element is highly affected " +
-				"by the change and might need to be changed as well.\n";
-			} else {
-				impactExplanation += "A low impact value generally indicates that the element is less likely to be affected " +
-				"by the change and probably doesn't need to be changed as well.\n";
-			}
+			String impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue);
 
 			// Add calculated impact values to new KnowledgeElementWithImpact
 			KnowledgeElementWithImpact nextElement = (isOutwardLink)
@@ -117,4 +88,33 @@ public class Calculator {
 		}
 		return impactedElements;
     }
+
+	/**
+	 * Generates the impact explanation by checking the minimum of each calculated impact score.
+	 * The minimum impacts the score the most, therefore the explanation aims to give a textual reason why.
+	 */
+	public static String generateImpactExplanation(double parentImpact, double ruleBasedValue,
+		double decayValue, double impactValue) {
+			String impactExplanation = "";
+			if (Math.min(parentImpact, ruleBasedValue) == parentImpact
+				&& ((1 - parentImpact) >= decayValue)) {
+					impactExplanation =  "This element has a lowered chance of being affected" +
+					" by a change introduced in the source node, mainly due to its parent having a lowered impact score.\n";
+			} else if (Math.min(ruleBasedValue, parentImpact) == ruleBasedValue
+				&& ((1 - ruleBasedValue) >= decayValue)) {
+					impactExplanation = "This element has a lowered chance of being affected" +
+					" by a change introduced in the source node, mainly due to a used propagation rule.\n";
+			} else {
+				impactExplanation = "This element has a lowered chance of being affected" +
+				" by a change introduced in the source node, mainly due to the decay value.\n";
+			}
+			if (impactValue >= 0.5) {
+				impactExplanation += "A high impact value generally indicates that the element is highly affected " +
+				"by the change and might need to be changed as well.\n";
+			} else {
+				impactExplanation += "A low impact value generally indicates that the element is less likely to be affected " +
+				"by the change and probably doesn't need to be changed as well.\n";
+			}
+			return impactExplanation;
+		}
 }

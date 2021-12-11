@@ -17,7 +17,7 @@ public class TestTooltip extends TestSetUp {
 	}
 
     @Test
-    public void testCreateTooltip_RootElement() {
+    public void testCreateTooltipWithRootElement() {
         FilterSettings settings = new FilterSettings("TEST", "");
         settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
