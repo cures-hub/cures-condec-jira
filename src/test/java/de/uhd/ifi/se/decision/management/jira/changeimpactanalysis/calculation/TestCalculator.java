@@ -12,6 +12,8 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class TestCalculator extends TestSetUp {
     
@@ -39,6 +41,16 @@ public class TestCalculator extends TestSetUp {
         assertEquals(0, impactedElements.get(0).getPropagationRules().size());
         assertEquals(0.75, impactedElements.get(1).getImpactValue(), 0.05);
         assertEquals(3, impactedElements.get(1).getPropagationRules().size());
+    }
+
+    @Test
+    public void testCalculatePropagationRuleImpact() {
+        FilterSettings settings = new FilterSettings("TEST", "");
+        settings.setSelectedElement("TEST-1");
+        KnowledgeElement element = settings.getSelectedElement();
+        Link link = element.getLinks().iterator().next();
+
+        assertEquals(0.0, Calculator.calculatePropagationRuleImpact(settings, element, link), 0.05);
     }
 
     @Test

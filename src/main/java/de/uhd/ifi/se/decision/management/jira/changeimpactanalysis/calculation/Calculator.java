@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public class Calculator {
 
+	private static Map<String, Double> propagationRuleResult;
     private static final Logger LOGGER = LoggerFactory.getLogger(Calculator.class);
 
     public static List<KnowledgeElementWithImpact> calculateChangeImpact(
@@ -33,10 +34,17 @@ public class Calculator {
 		
 		// Iterating through all outgoing and incoming links of the current element
 		for (Link link : currentElement.getLinks()) {
-			boolean isOutwardLink = link.isOutwardLinkFrom(currentElement);
-			String linkTypeName = (isOutwardLink)
-				? link.getType().getOutwardName()
-				: link.getType().getInwardName();
+			String linkTypeName;
+			KnowledgeElement nextElementInPath;
+
+			// Determine next element in path
+			if (link.isOutwardLinkFrom(currentElement)) {
+				linkTypeName = link.getType().getOutwardName();
+				nextElementInPath = link.getTarget();
+			} else {
+				linkTypeName = link.getType().getInwardName();
+				nextElementInPath = link.getSource();
+			}
 
 			if (!ciaConfig.getLinkImpact().containsKey(linkTypeName)) {
 				LOGGER.warn("CIA couldn't be processed: {}", "link -> " + linkTypeName + ", source -> "
@@ -46,31 +54,13 @@ public class Calculator {
 			// Calculate distinct impact values
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
-			double ruleBasedValue = 1.0;
-			Map<String, Double> mapOfRules = new HashMap<>();
-			for (ChangePropagationRule rule : ciaConfig.getPropagationRules()) {
-				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
-
-				// Each rule is individually mapped with its description and impact score
-				mapOfRules.put(
-					rule.getDescription(),
-					rule.getFunction().isChangePropagated(filterSettings, currentElement, link)
-				);
-			}
+			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, currentElement, link);
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
 			String impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue);
 
 			// Add calculated impact values to new KnowledgeElementWithImpact
-			KnowledgeElementWithImpact nextElement = (isOutwardLink)
-				? new KnowledgeElementWithImpact(link.getTarget(),
-					impactValue, parentImpact, linkTypeWeight, ruleBasedValue, mapOfRules, impactExplanation)
-				: new KnowledgeElementWithImpact(link.getSource(),
-					impactValue, parentImpact, linkTypeWeight, ruleBasedValue, mapOfRules, impactExplanation);
-
-			// Determine the next element in the path
-			KnowledgeElement nextElementInPath = (isOutwardLink)
-				? link.getTarget()
-				: link.getSource();
+			KnowledgeElementWithImpact nextElement = new KnowledgeElementWithImpact(nextElementInPath, impactValue,
+				parentImpact, linkTypeWeight, ruleBasedValue, propagationRuleResult, impactExplanation);
 
 			// Check whether element should be added to list of impacted elements
 			if (impactValue >= ciaConfig.getThreshold()) {
@@ -90,8 +80,35 @@ public class Calculator {
     }
 
 	/**
+	 * Calculates the propagation rule impact as defined by the {@link FilterSettings}.
+	 * 
+	 * @return
+	 * 		Double containing the calculated propagation rule score, value between 0 and 1.0
+	 */
+	public static double calculatePropagationRuleImpact(
+		FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
+			Map<String, Double> mapOfRules = new HashMap<>();
+			double ruleBasedValue = 1.0;
+
+			// Each rule is individually mapped with its description and corresponding impact score
+			for (ChangePropagationRule rule : filterSettings.getChangeImpactAnalysisConfig().getPropagationRules()) {
+				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
+
+				mapOfRules.put(
+					rule.getDescription(),
+					rule.getFunction().isChangePropagated(filterSettings, currentElement, link)
+				);
+			}
+			propagationRuleResult = mapOfRules;
+			return ruleBasedValue;
+	}
+
+	/**
 	 * Generates the impact explanation by checking the minimum of each calculated impact score.
 	 * The minimum impacts the score the most, therefore the explanation aims to give a textual reason why.
+	 * 
+	 * @return
+	 * 		String containing the the impact value explanation
 	 */
 	public static String generateImpactExplanation(double parentImpact, double ruleBasedValue,
 		double decayValue, double impactValue) {

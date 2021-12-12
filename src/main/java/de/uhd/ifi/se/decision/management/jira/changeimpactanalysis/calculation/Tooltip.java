@@ -23,7 +23,7 @@ public class Tooltip {
                 propagationRuleSummary = propagationRuleSummary + "-> " + String
                     .format("%.2f", entry.getValue()) + ": " + entry.getKey() + "\n";
         }
-        if (propagationRuleSummary.equals("")) {
+        if (!propagationRuleSummary.equals("")) {
             propagationRuleSummary = "\nPropagation Rule Value: " + String.format("%.2f", element.getRuleBasedValue()) +
             "; Utilized Rules:\n" + propagationRuleSummary;
         }
