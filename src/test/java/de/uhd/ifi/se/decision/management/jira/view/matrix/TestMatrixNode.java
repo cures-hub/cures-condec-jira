@@ -31,4 +31,10 @@ public class TestMatrixNode extends TestSetUp {
 		elementWithHighlighting.setChangeImpactColor("green");
 		assertEquals("green", elementWithHighlighting.getChangeImpactColor());
 	}
+
+	@Test
+	public void testSettersAndGetters() {
+		elementWithHighlighting.setChangeImpactExplanation("FooBar");
+		assertEquals("FooBar", elementWithHighlighting.getChangeImpactExplanation());
+	}
 }

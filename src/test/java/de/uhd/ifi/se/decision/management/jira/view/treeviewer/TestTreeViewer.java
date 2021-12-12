@@ -101,6 +101,14 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	public void testConstructorWithCIAElementsSettingsNull() {
+		filterSettings.setSelectedElement("TEST-1");
+		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+		
+		assertEquals(0, new TreeViewer(null, impactedElements).getNodes().size());
+	}
+
+	@Test
 	@NonTransactional
 	public void testTreeViewerWithComment() {
 		List<PartOfJiraIssueText> comment = JiraIssues

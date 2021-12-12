@@ -101,6 +101,14 @@ public class TestVisGraph extends TestSetUp {
 	}
 
 	@Test
+	public void testConstructorWithCIAElementsSettingsNull() {
+		filterSettings.setSelectedElement("TEST-1");
+		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+		
+		assertEquals(0, new VisGraph(null, impactedElements).getNodes().size());
+	}
+
+	@Test
 	public void testVisGraphWithHierarchy() {
 		filterSettings.setHierarchical(true);
 		filterSettings.setSelectedElement("TEST-1");
