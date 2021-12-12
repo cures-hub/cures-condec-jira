@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +46,7 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		Matrix matrix = ChangeImpactAnalysisService.calculateMatrixImpact(settings);
-		assertEquals(10, matrix.getHeaderElementsWithHighlighting().size());
+		assertEquals(7, matrix.getHeaderElementsWithHighlighting().size());
 	}
 
 	@Test
@@ -55,6 +57,16 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 		TreeViewer tree = ChangeImpactAnalysisService.calculateTreeImpact(settings);
 		assertEquals(1, tree.getNodes().size());
 		int childSize = tree.getNodes().stream().findFirst().orElseThrow().getChildren().size();
-		assertEquals(5, childSize);
+		assertEquals(4, childSize);
+	}
+
+	@Test
+	public void testCalculateImpactedKnowledgeElements() {
+		FilterSettings settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-1");
+
+		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(settings);
+		assertEquals(7, impactedElements.size());
+		assertEquals(settings.getSelectedElement(), impactedElements.get(0));
 	}
 }

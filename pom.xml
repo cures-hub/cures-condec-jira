@@ -29,6 +29,10 @@
             <name>Markus Boerner</name>
         </developer>
 		<developer>
+			<id>LukasB-Git</id>
+			<name>Lukas Bendl</name>
+		</developer>
+		<developer>
 			<id>mruder</id>
 			<name>Marvin A. Ruder</name>
 		</developer>

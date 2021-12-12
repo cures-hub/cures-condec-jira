@@ -5,15 +5,17 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestElementWithHighlighting {
+public class TestMatrixNode extends TestSetUp {
 
-	private ElementWithHighlighting elementWithHighlighting;
+	private MatrixNode elementWithHighlighting;
 
 	@Before
 	public void setUp() {
-		elementWithHighlighting = new ElementWithHighlighting(KnowledgeElements.getTestKnowledgeElement());
+		init();
+		elementWithHighlighting = new MatrixNode(KnowledgeElements.getTestKnowledgeElement());
 	}
 
 	@Test
@@ -28,5 +30,11 @@ public class TestElementWithHighlighting {
 	public void testChangeImpactHighlighting() {
 		elementWithHighlighting.setChangeImpactColor("green");
 		assertEquals("green", elementWithHighlighting.getChangeImpactColor());
+	}
+
+	@Test
+	public void testSettersAndGetters() {
+		elementWithHighlighting.setChangeImpactExplanation("FooBar");
+		assertEquals("FooBar", elementWithHighlighting.getChangeImpactExplanation());
 	}
 }

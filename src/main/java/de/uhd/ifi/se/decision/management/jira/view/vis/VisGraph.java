@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,6 +16,7 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -70,6 +72,30 @@ public class VisGraph {
 	}
 
 	/**
+	 * A specialized constructor for a visgraph that matches the {@link FilterSettings}.
+	 * Vertices that are not included in the supplied list of {@link KnowledgeElementWithImpact} are removed.
+	 *
+	 * @param filterSettings
+	 *            For example, the {@link FilterSettings} cover the selected element
+	 *            and the knowledge types to be shown. The selected element cannot be
+	 *            null.
+	 * @param impactedElements
+	 * 			  A list of {@link KnowledgeElementWithImpact}.
+	 */
+	public VisGraph(FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements) {
+		this();
+		if (filterSettings == null || filterSettings.getProjectKey() == null) {
+			return;
+		}
+		LOGGER.info(filterSettings.toString());
+		this.filterSettings = filterSettings;
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		subgraph = filteringManager.getFilteredGraph(impactedElements);
+		selectedElement = filterSettings.getSelectedElement();
+		addNodesAndEdges();
+    }
+
+    /**
 	 * @param isHierarchical
 	 *            true if the {@link KnowledgeGraph} or a respective subgraph
 	 *            provided by the {@link FilteringManager} should be shown with a

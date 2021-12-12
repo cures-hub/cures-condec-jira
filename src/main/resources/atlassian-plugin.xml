@@ -161,8 +161,11 @@
 			location="/js/grouping/condec.decision.grouping.js" />
 		<resource type="download" name="condec.decision.grouping.api.js"
 			location="/js/grouping/condec.decision.grouping.api.js" />
-			<resource type="download" name="condec.decision.grouping.dialogs.js"
+		<resource type="download" name="condec.decision.grouping.dialogs.js"
 			location="/js/grouping/condec.decision.grouping.dialogs.js" />
+		<resource type="download" name="condec.changeimpactanalysis.tooltip.js"
+			location="/js/changeimpactanalysis/condec.changeimpactanalysis.tooltip.js" />
+
 	</web-resource>
 
 	<web-resource key="release-notes-resources" name="ConDec Release Notes Page Resources">

@@ -13,6 +13,8 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisService;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -87,6 +89,25 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	public void testConstructorFilterSettingsNull() {
 		assertEquals(0, new TreeViewer(null).getNodes().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testConstructorWithCIAElements() {
+		filterSettings.setSelectedElement("TEST-1");
+		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+		TreeViewer treeViewer = new TreeViewer(filterSettings, impactedElements);
+		
+		assertEquals(1, treeViewer.getNodes().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testConstructorWithCIAElementsSettingsNull() {
+		filterSettings.setSelectedElement("TEST-1");
+		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+		
+		assertEquals(0, new TreeViewer(null, impactedElements).getNodes().size());
 	}
 
 	@Test

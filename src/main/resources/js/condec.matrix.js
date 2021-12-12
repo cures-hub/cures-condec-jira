@@ -45,7 +45,6 @@
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "adjacency-matrix") {
 		conDecAPI.getMatrix(filterSettings, function(matrix) {
 			conDecMatrix.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
-
 			let headerRow = document.getElementById("matrix-header-row-" + viewIdentifier);
 			headerRow.innerHTML = "";
 			let firstRowHeaderCell = document.createElement("th");
@@ -121,12 +120,15 @@
 			headerCell.style.color = textColor;
 			headerCell.title = knowledgeElementWithColors.qualityProblemExplanation;
 		}
-		if (bgColor !== undefined && bgColor !== "#FFFFFF") {
-			div.classList.add("ciaHighlighted");
-			headerCell.style.backgroundColor = bgColor;
-		}
 
-		AJS.$(headerCell).tooltip();
+		// Check whether Change Impact Analysis has been conducted
+		if (knowledgeElementWithColors.changeImpactExplanation !== "") {
+			headerCell.style.backgroundColor = bgColor;
+			headerCell.style.color = "black";
+			headerCell.title = knowledgeElementWithColors.changeImpactExplanation;
+		}
+		
+		// AJS.$(headerCell).tooltip();
 		headerCell.appendChild(div);
 		return headerCell;
 	}

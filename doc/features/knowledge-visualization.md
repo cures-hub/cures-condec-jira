@@ -8,5 +8,5 @@ All the views use the same knowledge graph data structure underneath, which enab
 ## Publication
 
 Kleebaum, A., Paech, B., Johanssen, J. O., & Bruegge, B. (2021). Continuous Rationale Visualization. 
-In 2021 Working Conference on Software Visualization (VISSOFT) (pp. 33–43). 
+In 2021 Working Conference on Software Visualization (VISSOFT) (pp. 33ï¿½43). 
 Luxembourg: IEEE. https://doi.org/10.1109/VISSOFT52517.2021.00013

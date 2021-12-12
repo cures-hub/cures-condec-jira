@@ -7,24 +7,26 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 
 /**
- * Models a {@link KnowledgeElement} atogether with its quality and change
+ * Models a {@link KnowledgeElement} together with its quality and change
  * impact highlighting in the {@link KnowledgeGraph}.
  * 
  * @see FilterSettings#areQualityProblemHighlighted()
  * @see FilterSettings#areChangeImpactsHighlighted()
  */
-public class ElementWithHighlighting {
+public class MatrixNode {
 
 	private KnowledgeElement element;
 	private String qualityColor;
 	private String qualityProblemExplanation;
 	private String changeImpactColor;
+	private String changeImpactExplanation;
 
-	public ElementWithHighlighting(KnowledgeElement element) {
+	public MatrixNode(KnowledgeElement element) {
 		this.element = element;
 		this.qualityColor = element.getStatus().getColor();
 		this.qualityProblemExplanation = "";
 		this.changeImpactColor = "#FFFFFF";
+		this.changeImpactExplanation = "";
 	}
 
 	@XmlElement
@@ -58,4 +60,14 @@ public class ElementWithHighlighting {
 	public void setChangeImpactColor(String changeImpactColor) {
 		this.changeImpactColor = changeImpactColor;
 	}
+
+	@XmlElement
+	public String getChangeImpactExplanation() {
+		return changeImpactExplanation;
+	}
+
+	public void setChangeImpactExplanation(String changeImpactExplanation) {
+		this.changeImpactExplanation = changeImpactExplanation;
+	}
+
 }

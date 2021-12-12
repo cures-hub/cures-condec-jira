@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.matrix;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -11,6 +12,7 @@ import javax.xml.bind.annotation.XmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -33,17 +35,20 @@ import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfD
  */
 public class Matrix {
 
-	private Set<ElementWithHighlighting> headerElementsWithHighlighting;
+	private Set<MatrixNode> headerElementsWithHighlighting;
 	private int size;
 	private KnowledgeGraph filteredGraph;
 	private static final Logger LOGGER = LoggerFactory.getLogger(Matrix.class);
 
-	public Matrix(FilterSettings filterSettings, Map<KnowledgeElement, String> colorMap) {
-		this(filterSettings);
-		headerElementsWithHighlighting.forEach(headerElementWithHighlighting -> {
-			headerElementWithHighlighting
-					.setChangeImpactColor(colorMap.get(headerElementWithHighlighting.getElement()));
+	public Matrix(FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements) {
+		LOGGER.info(filterSettings.toString());
+		filteredGraph = new FilteringManager(filterSettings).getFilteredGraph(impactedElements);
+		headerElementsWithHighlighting = new LinkedHashSet<>();
+		filteredGraph.vertexSet().forEach(element -> {
+			MatrixNode elementWithColors = new MatrixNode(element);
+			headerElementsWithHighlighting.add(elementWithColors);
 		});
+		size = headerElementsWithHighlighting.size();
 	}
 
 	public Matrix(FilterSettings filterSettings) {
@@ -51,7 +56,7 @@ public class Matrix {
 		filteredGraph = new FilteringManager(filterSettings).getFilteredGraph();
 		headerElementsWithHighlighting = new LinkedHashSet<>();
 		filteredGraph.vertexSet().forEach(element -> {
-			ElementWithHighlighting elementWithColors = new ElementWithHighlighting(element);
+			MatrixNode elementWithColors = new MatrixNode(element);
 			if (filterSettings.areQualityProblemHighlighted()) {
 				String problemExplanation = DefinitionOfDoneChecker.getQualityProblemExplanation(element,
 						filterSettings);
@@ -66,7 +71,7 @@ public class Matrix {
 	}
 
 	@XmlElement
-	public Set<ElementWithHighlighting> getHeaderElementsWithHighlighting() {
+	public Set<MatrixNode> getHeaderElementsWithHighlighting() {
 		return headerElementsWithHighlighting;
 	}
 
@@ -76,7 +81,7 @@ public class Matrix {
 	@XmlElement(name = "links")
 	public Link[][] getMatrixOfLinks() {
 		Link[][] links = new Link[size][size];
-		Iterator<ElementWithHighlighting> iterator = headerElementsWithHighlighting.iterator();
+		Iterator<MatrixNode> iterator = headerElementsWithHighlighting.iterator();
 		for (int positionY = 0; positionY < size; positionY++) {
 			KnowledgeElement sourceElement = iterator.next().getElement();
 			links[positionY] = getRowOfLinks(sourceElement);
@@ -86,7 +91,7 @@ public class Matrix {
 
 	public Link[] getRowOfLinks(KnowledgeElement sourceElement) {
 		Link[] row = new Link[size];
-		Iterator<ElementWithHighlighting> iterator = headerElementsWithHighlighting.iterator();
+		Iterator<MatrixNode> iterator = headerElementsWithHighlighting.iterator();
 		for (int positionX = 0; positionX < size; positionX++) {
 			KnowledgeElement targetElement = iterator.next().getElement();
 			if (targetElement.getId() == sourceElement.getId()) {

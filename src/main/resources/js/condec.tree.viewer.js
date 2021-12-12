@@ -53,6 +53,11 @@
 			var node = tree.node.data;
 			conDecFiltering.setSelectedElement("jstree", node.key);
 		});
+
+		// Add tooltip if Change Impact Analysis is being conducted
+		if (filterSettings.areChangeImpactsHighlighted) {
+			conDecCIATooltip.addJSTreeTooltip();
+		}
 	};
 
 	/**

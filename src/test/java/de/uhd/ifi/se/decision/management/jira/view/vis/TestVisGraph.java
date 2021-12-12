@@ -5,12 +5,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisService;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -86,6 +89,23 @@ public class TestVisGraph extends TestSetUp {
 		visGraph = new VisGraph(filterSettings);
 		assertTrue(KnowledgeGraph.getInstance("TEST").vertexSet().size() > visGraph.getGraph().vertexSet().size());
 		assertTrue(KnowledgeGraph.getInstance("TEST").edgeSet().size() > visGraph.getGraph().edgeSet().size());
+	}
+
+	@Test
+	public void testConstructorWithCIAElements() {
+		filterSettings.setSelectedElement("TEST-1");
+		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+		VisGraph visGraph = new VisGraph(filterSettings, impactedElements);
+		
+		assertEquals(7, visGraph.getNodes().size());
+	}
+
+	@Test
+	public void testConstructorWithCIAElementsSettingsNull() {
+		filterSettings.setSelectedElement("TEST-1");
+		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+		
+		assertEquals(0, new VisGraph(null, impactedElements).getNodes().size());
 	}
 
 	@Test
