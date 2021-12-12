@@ -92,6 +92,7 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testConstructorWithCIAElements() {
 		filterSettings.setSelectedElement("TEST-1");
 		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
@@ -101,6 +102,7 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testConstructorWithCIAElementsSettingsNull() {
 		filterSettings.setSelectedElement("TEST-1");
 		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
