@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -24,6 +25,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.changehistory.ChangeHistory;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -52,7 +54,7 @@ public class KnowledgeElement {
 	protected KnowledgeType type;
 	private String key;
 	private Date creationDate;
-	private Date updatingDate;
+	private TreeMap<Date, String> updateDateAndAuthor;
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
 	protected KnowledgeStatus status;
@@ -108,7 +110,12 @@ public class KnowledgeElement {
 		this.key = issue.getKey();
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		this.creationDate = issue.getCreated();
-		this.updatingDate = issue.getUpdated();
+		//this.updateDateAndAuthor = issue.getUpdated();
+		this.updateDateAndAuthor = new TreeMap<Date, String>();
+        List<ChangeHistory> changeHistory = ComponentAccessor.getChangeHistoryManager().getChangeHistories(issue);
+		changeHistory.forEach(changeItem -> {
+			updateDateAndAuthor.put(changeItem.getTimePerformed(), changeItem.getAuthorDisplayName());
+		});
 		if (issue.getStatus() != null) {
 			this.status = KnowledgeStatus.getKnowledgeStatus(issue.getStatus().getName());
 		}
@@ -423,22 +430,29 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @return date of last update of the knowledge element.
+	 * @return sorted map of all update dates and their corresponding authors of the knowledge element.
 	 */
-	@XmlElement
-	public Date getUpdatingDate() {
-		if (updatingDate == null) {
-			return getCreationDate();
-		}
-		return updatingDate;
+	public Map<Date, String> getUpdateDateAndAuthor() {
+		return updateDateAndAuthor;
 	}
 
 	/**
-	 * @param updatingDate
-	 *            date of last update of the knowledge element.
+	 * @return date of last update of the knowledge element.
 	 */
-	public void setUpdatingDate(Date updatingDate) {
-		this.updatingDate = updatingDate;
+	@XmlElement
+	public Date getLatestUpdatingDate() {
+		if (updateDateAndAuthor == null || updateDateAndAuthor.isEmpty()) {
+			return getCreationDate();
+		}
+		return updateDateAndAuthor.lastKey();
+	}
+
+	/**
+	 * @param updateDateAndAuthor
+	 *            map containing the update dates of the knowledge element and their corresponding authors.
+	 */
+	public void setUpdateDateAndAuthor(TreeMap<Date, String> updateDateAndAuthor) {
+		this.updateDateAndAuthor = updateDateAndAuthor;
 	}
 
 	/**

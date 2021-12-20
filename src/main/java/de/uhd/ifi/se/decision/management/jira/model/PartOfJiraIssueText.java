@@ -228,7 +228,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	@Override
-	public Date getUpdatingDate() {
+	public Date getLatestUpdatingDate() {
 		Comment comment = getComment();
 		if (comment != null) {
 			return comment.getUpdated();
@@ -237,7 +237,7 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		if (issue != null) {
 			return issue.getUpdated();
 		}
-		return super.getUpdatingDate();
+		return super.getLatestUpdatingDate();
 	}
 
 	/**

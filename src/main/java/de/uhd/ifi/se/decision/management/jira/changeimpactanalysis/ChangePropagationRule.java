@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.AmountOfDistinctAuthors;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTextualSimilar;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IncludeOnlySameComponents;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtSameElementType;
 
 /**
@@ -14,10 +16,14 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtS
 public enum ChangePropagationRule {
 
 	STOP_AT_SAME_ELEMENT_TYPE("Stop at elements with the same type as the selected element",
-			new StopAtSameElementType()), //
-	IGNORE_INCOMING_LINKS("Outward links only", new IgnoreIncomingLinks()), //
+			new StopAtSameElementType()),
+	IGNORE_INCOMING_LINKS("Outward links only", new IgnoreIncomingLinks()),
 	BOOST_WHEN_TEXTUAL_SIMILAR("Boost when element is textual similar to the selected element",
-			new BoostWhenTextualSimilar());
+			new BoostWhenTextualSimilar()),
+	AMOUNT_OF_DISTINCT_AUTHORS("Boost when element has a large number of distinct update authors",
+			new AmountOfDistinctAuthors()),
+	SAME_COMPONENT_ONLY("Only include elements which are part of the same component",
+			new IncludeOnlySameComponents());
 
 	private String description;
 	private ChangePropagationFunction function;

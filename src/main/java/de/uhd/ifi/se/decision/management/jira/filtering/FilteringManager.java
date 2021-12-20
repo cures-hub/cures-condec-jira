@@ -236,12 +236,12 @@ public class FilteringManager {
 	 * @return true if the element is created or updated in the given time frame in
 	 *         the {@link FilterSettings}. See
 	 *         {@link KnowledgeElement#getCreationDate()} and
-	 *         {@link KnowledgeElement#getUpdatingDate()}.
+	 *         {@link KnowledgeElement#getLatestUpdatingDate()}.
 	 */
 	public boolean isElementMatchingTimeFilter(KnowledgeElement element) {
 		boolean isMatchingTimeFilter = true;
 		if (filterSettings.getStartDate() > 0) {
-			isMatchingTimeFilter = element.getUpdatingDate().getTime() >= filterSettings.getStartDate();
+			isMatchingTimeFilter = element.getLatestUpdatingDate().getTime() >= filterSettings.getStartDate();
 		}
 		if (filterSettings.getEndDate() > 0) {
 			isMatchingTimeFilter = isMatchingTimeFilter

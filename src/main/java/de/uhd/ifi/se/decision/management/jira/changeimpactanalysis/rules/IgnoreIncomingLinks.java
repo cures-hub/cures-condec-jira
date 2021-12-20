@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Rule that defines that a change impact is not propagated along an incoming
- * link to an element. With this rule activated, impacts are only propagted
+ * link to an element. With this rule activated, impacts are only propagated
  * along outgoing links from an element.
  * 
  * For example, if decision A -> decision B, the change is propageted from

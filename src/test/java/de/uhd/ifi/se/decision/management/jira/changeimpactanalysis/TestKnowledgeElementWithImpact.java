@@ -35,6 +35,7 @@ public class TestKnowledgeElementWithImpact extends TestSetUp {
         assertTrue(elementWithImpact.equals(elementWithImpact));
     }
 
+    @SuppressWarnings("unlikely-arg-type")
     @Test
     public void testEqualsUsingDifferentObjects() {
         String string = "This is a test string!";
