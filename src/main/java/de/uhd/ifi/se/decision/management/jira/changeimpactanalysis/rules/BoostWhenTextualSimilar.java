@@ -18,8 +18,8 @@ public class BoostWhenTextualSimilar implements ChangePropagationFunction {
 	private static final TextualSimilarityContextInformationProvider similarityProvider = new TextualSimilarityContextInformationProvider();
 
 	@Override
-	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
-		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), currentElement)
+	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
+		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
 				.getValue();
 		return similarityScore;
 	}

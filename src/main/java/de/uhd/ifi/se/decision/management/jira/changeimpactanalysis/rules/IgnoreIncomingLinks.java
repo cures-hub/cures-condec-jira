@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class IgnoreIncomingLinks implements ChangePropagationFunction {
 
 	@Override
-	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
-		return link.isInwardLinkTo(currentElement) ? 0.0 : 1.0;
+	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
+		return link.isInwardLinkTo(nextElement) ? 1.0 : 0.0;
 	}
 }

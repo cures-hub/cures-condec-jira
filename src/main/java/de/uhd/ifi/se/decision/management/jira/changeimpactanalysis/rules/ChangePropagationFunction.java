@@ -24,8 +24,8 @@ public interface ChangePropagationFunction {
 	 * @param filterSettings
 	 *            including the selected element that is changed (see
 	 *            {@link FilterSettings#getSelectedElement()}.
-	 * @param currentElement
-	 *            current {@link KnowledgeElement} in the {@link KnowledgeGraph}
+	 * @param nextElement
+	 *            next {@link KnowledgeElement} in the {@link KnowledgeGraph}
 	 *            that is traversed and that is affected by the change.
 	 * @param link
 	 *            {@link Link} (i.e. edge/relationship in the
@@ -34,5 +34,5 @@ public interface ChangePropagationFunction {
 	 * @return a value > 0 if the change should be propagated. If 0, the change
 	 *         impact of the next element will be set to 0.
 	 */
-	double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link);
+	double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link);
 }

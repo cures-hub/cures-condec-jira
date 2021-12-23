@@ -2,8 +2,14 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
+/**
+ * Rule that defines that a change impact is stronger propagated if the
+ * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} has a larger
+ * amount of distinct update authors.
+ */
 public class AmountOfDistinctAuthors implements ChangePropagationFunction {
     
     /**
@@ -17,7 +23,7 @@ public class AmountOfDistinctAuthors implements ChangePropagationFunction {
      *      would need to be filtered in their own distinct way.
 	 */
     @Override
-    public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
-        return 1.0 - (0.1 / currentElement.getUpdateDateAndAuthor().values().stream().distinct().count());
+    public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
+        return 1.0 - (0.1 / nextElement.getUpdateDateAndAuthor().values().stream().distinct().count());
     }
 }

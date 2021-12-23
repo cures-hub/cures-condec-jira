@@ -54,14 +54,14 @@ public class Calculator {
 			// Calculate distinct impact values
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
-			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, currentElement, link);
+			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, nextElementInPath, link);
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
 			String impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue);
 
 			// Add calculated impact values to new KnowledgeElementWithImpact
 			KnowledgeElementWithImpact nextElement = new KnowledgeElementWithImpact(nextElementInPath, impactValue,
 				parentImpact, linkTypeWeight, ruleBasedValue, propagationRuleResult, impactExplanation);
-
+			
 			// Check whether element should be added to list of impacted elements
 			if (impactValue >= ciaConfig.getThreshold()) {
 				if (!impactedElements.contains(nextElement)) {
@@ -92,11 +92,12 @@ public class Calculator {
 
 			// Each rule is individually mapped with its description and corresponding impact score
 			for (ChangePropagationRule rule : filterSettings.getChangeImpactAnalysisConfig().getPropagationRules()) {
-				ruleBasedValue *= rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
+				double ruleCalculationValue = rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
+				ruleBasedValue *= ruleCalculationValue;
 
 				mapOfRules.put(
 					rule.getDescription(),
-					rule.getFunction().isChangePropagated(filterSettings, currentElement, link)
+					ruleCalculationValue
 				);
 			}
 			propagationRuleResult = mapOfRules;

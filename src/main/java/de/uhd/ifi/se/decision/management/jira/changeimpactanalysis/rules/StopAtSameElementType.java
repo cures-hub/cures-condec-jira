@@ -16,9 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class StopAtSameElementType implements ChangePropagationFunction {
 
 	@Override
-	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
-		KnowledgeElement traversedElement = link.getOppositeElement(currentElement);
-		return traversedElement.getTypeAsString().equals(filterSettings.getSelectedElement().getTypeAsString()) ? 0.0
-				: 1.0;
+	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
+		return nextElement.getTypeAsString()
+			.equals(filterSettings.getSelectedElement().getTypeAsString()) ? 0.0 : 1.0;
 	}
 }

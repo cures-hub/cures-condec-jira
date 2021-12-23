@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.AmountOfDistinctAuthors;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenMoreOutboundElements;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTextualSimilar;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
@@ -22,8 +23,10 @@ public enum ChangePropagationRule {
 			new BoostWhenTextualSimilar()),
 	AMOUNT_OF_DISTINCT_AUTHORS("Boost when element has a large number of distinct update authors",
 			new AmountOfDistinctAuthors()),
-	SAME_COMPONENT_ONLY("Only include elements which are part of the same component",
-			new IncludeOnlySameComponents());
+	SAME_COMPONENT_ONLY("Exclude elements which are not part of the same component",
+			new IncludeOnlySameComponents()),
+	BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND("Boost when element has more outbound than inbound elements",
+			new BoostWhenMoreOutboundElements());
 
 	private String description;
 	private ChangePropagationFunction function;

@@ -110,7 +110,6 @@ public class KnowledgeElement {
 		this.key = issue.getKey();
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		this.creationDate = issue.getCreated();
-		//this.updateDateAndAuthor = issue.getUpdated();
 		this.updateDateAndAuthor = new TreeMap<Date, String>();
         List<ChangeHistory> changeHistory = ComponentAccessor.getChangeHistoryManager().getChangeHistories(issue);
 		changeHistory.forEach(changeItem -> {
