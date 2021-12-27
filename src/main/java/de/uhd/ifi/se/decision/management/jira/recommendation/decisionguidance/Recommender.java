@@ -133,10 +133,6 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		}
 	}
 
-	public String getProjectKey() {
-		return projectKey;
-	}
-
 	/**
 	 * @return either {@link RDFSource} or {@link ProjectSource}.
 	 */

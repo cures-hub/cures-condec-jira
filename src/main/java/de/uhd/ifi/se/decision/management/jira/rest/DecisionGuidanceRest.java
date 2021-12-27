@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -32,21 +33,30 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
 /**
  * REST resource for configuration and usage of decision guidance
  */
-@Path("/decisionguidance")
+@Path("/decision-guidance")
 public class DecisionGuidanceRest {
 
-	@Path("/setMaxNumberOfRecommendations")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param maxNumberOfRecommendations
+	 * @return ok if the maximal number of recommendations was successfully saved.
+	 */
+	@Path("/configuration/{projectKey}/max-recommendations")
 	@POST
 	public Response setMaxNumberOfRecommendations(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("maxNumberOfRecommendations") int maxNumberOfRecommendations) {
+			@PathParam("projectKey") String projectKey, int maxNumberOfRecommendations) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
 		if (maxNumberOfRecommendations < 0) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The maximum number of results cannot be smaller 0.")).build();
+					.entity(ImmutableMap.of("error", "The maximum number of recommendations cannot be negative."))
+					.build();
 		}
 
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
@@ -56,10 +66,10 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setSimilarityThreshold")
+	@Path("/configuration/{projectKey}/similarity-threshold")
 	@POST
 	public Response setSimilarityThreshold(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("threshold") double threshold) {
+			@PathParam("projectKey") String projectKey, double threshold) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
@@ -186,11 +196,10 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setAddRecommendationDirectly")
+	@Path("/configuration/{projectKey}/add-recommendations-directly")
 	@POST
 	public Response setAddRecommendationDirectly(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("addRecommendationDirectly") boolean addRecommendationDirectly) {
+			@PathParam("projectKey") String projectKey, boolean addRecommendationDirectly) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;

@@ -5,13 +5,13 @@
  *
  * Is referenced in HTML by
  * settings/decisionguidance/*
- * tabs/decisiontable/*
+ * tabs/recommendation/*
  * jiraIssueModule.vm
  */
 (function(global) {
 
 	var ConDecDecisionGuidanceAPI = function() {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/decisionguidance";
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/decision-guidance";
 		this.recommendationsPerProblem = new Map();
 	};
 
@@ -49,36 +49,24 @@
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function(projectKey, maxNumberOfRecommendations) {
-		generalApi.postJSON(this.restPrefix + "/setMaxNumberOfRecommendations.json?projectKey=" + projectKey + "&maxNumberOfRecommendations=" + maxNumberOfRecommendations, null, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberOfRecommendations);
-			}
-		});
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/max-recommendations", maxNumberOfRecommendations,
+			function(error, response) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "Maximum number of results are updated to: " + maxNumberOfRecommendations);
+				}
+			});
 	};
 
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setSimilarityThreshold = function(projectKey, threshold) {
-		generalApi.postJSON(this.restPrefix + "/setSimilarityThreshold.json?projectKey=" + projectKey + "&threshold=" + threshold, null, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The similarity threshold is updated to: " + threshold);
-			}
-		});
-	};
-
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
-	 */
-	ConDecDecisionGuidanceAPI.prototype.setIrrelevantWords = function(projectKey, words) {
-		generalApi.postJSON(this.restPrefix + "/setIrrelevantWords.json?projectKey=" + projectKey + "&words=" + words, null, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The irrelevant words are updated!");
-			}
-		});
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/similarity-threshold", threshold,
+			function(error, response) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "The similarity threshold is updated to: " + threshold);
+				}
+			});
 	};
 
 	/*
@@ -97,9 +85,11 @@
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setAddRecommendationDirectly = function(projectKey, addRecommendationDirectly) {
-		generalApi.postJSON(this.restPrefix + "/setAddRecommendationDirectly.json?projectKey=" + projectKey + "&addRecommendationDirectly=" + addRecommendationDirectly, null,
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/add-recommendations-directly", addRecommendationDirectly,
 			function(error, results) {
-				conDecAPI.showFlag("success", "Recommendation settings successfully changed");
+				if (error === null) {
+					conDecAPI.showFlag("success", "The recommendation settings were successfully changed.");
+				}
 			});
 	};
 

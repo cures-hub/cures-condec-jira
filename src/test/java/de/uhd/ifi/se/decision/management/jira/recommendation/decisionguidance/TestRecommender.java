@@ -57,7 +57,6 @@ public class TestRecommender extends TestSetUp {
 	@NonTransactional
 	public void testRecommenderProperties() {
 		Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource("TEST", projectSource);
-		assertEquals("TEST", recommender.getProjectKey());
 		assertEquals(projectSource, recommender.getKnowledgeSource());
 	}
 }
