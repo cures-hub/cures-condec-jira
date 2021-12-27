@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -66,6 +67,15 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param threshold
+	 * @return ok if the similarity threshold was successfully saved.
+	 */
 	@Path("/configuration/{projectKey}/similarity-threshold")
 	@POST
 	public Response setSimilarityThreshold(@Context HttpServletRequest request,
@@ -113,25 +123,34 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/deleteKnowledgeSource")
-	@POST
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param knowledgeSourceName
+	 *            of an {@link RDFSource}.
+	 * @return ok if the connection to the knowledge source was successfully
+	 *         deleted, bad request or internal server error otherwise.
+	 */
+	@Path("/{projectKey}/{knowledgeSourceName}")
+	@DELETE
 	public Response deleteKnowledgeSource(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("knowledgeSourceName") String knowledgeSourceName) {
+			@PathParam("projectKey") String projectKey, @PathParam("knowledgeSourceName") String knowledgeSourceName) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (knowledgeSourceName.isBlank()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The knowledge source must not be empty.")).build();
-		}
 
 		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
 				.getDecisionGuidanceConfiguration(projectKey);
-		decisionGuidanceConfiguration.deleteRDFKnowledgeSource(knowledgeSourceName);
-		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-		return Response.ok().build();
+		if (decisionGuidanceConfiguration.deleteRDFKnowledgeSource(knowledgeSourceName)) {
+			ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
+			return Response.ok().build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "The knowledge source could not be deleted.")).build();
 	}
 
 	@Path("/updateKnowledgeSource")

@@ -129,13 +129,13 @@
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
 	ConDecDecisionGuidanceAPI.prototype.deleteKnowledgeSource = function(projectKey, knowledgeSourceName, callback) {
-		generalApi.postJSON(this.restPrefix + "/deleteKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName, null, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " was successfully deleted.");
-				callback();
-			}
-		});
+		generalApi.deleteJSON(this.restPrefix + "/" + projectKey + "/" + knowledgeSourceName, null,
+			function(error, response) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " was successfully deleted.");
+					callback();
+				}
+			});
 	};
 
 	/*

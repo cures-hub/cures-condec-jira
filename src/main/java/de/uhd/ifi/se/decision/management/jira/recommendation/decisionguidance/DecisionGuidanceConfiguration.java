@@ -134,8 +134,8 @@ public class DecisionGuidanceConfiguration {
 	 * @param knowledgeSourceName
 	 *            of an {@link RDFSource}.
 	 */
-	public void deleteRDFKnowledgeSource(String knowledgeSourceName) {
-		rdfKnowledgeSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
+	public boolean deleteRDFKnowledgeSource(String knowledgeSourceName) {
+		return rdfKnowledgeSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
 	}
 
 	/**
