@@ -1,7 +1,7 @@
 <b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b></br>
 <b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b>
 DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;
-Jira-Projekt <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira-Projekt</span>
+Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Project</span>
 
 <form class="aui">
     <select id="decision-guidance-dropdown-items" class="select long-field">
