@@ -1,7 +1,8 @@
 # Recommendation of Solution Options from External Knowledge Sources (Decision Guidance)
 
 The ConDec Jira plug-in offers a feature that recommends solution options for decision problems from **external knowledge sources**.
-External knowledge sources can be **DBPedia** or **other Jira projects**.
+Knowledge sources can be **other Jira projects** (ProjectSources) or RDFSources such as **DBPedia**. 
+RDFSources are knowledge sources identified using the [Resource Description Framework (RDF)](https://en.wikipedia.org/wiki/Resource_Description_Framework) format.
 
 The Figure below shows the **decision guidance view** with three recommendations generated from DBPedia 
 for the decision problem *Which framework should we use as a webcrawler?*
@@ -11,11 +12,6 @@ If they accept a recommendation, the respective solution option and arguments ar
 ![Decision guidance view with three recommendations generated from DBPedia](../screenshots/decision_guidance_webcrawler.png)
 
 *Decision guidance view with three recommendations generated from DBPedia*
-
-## Nudging
-
-The colored menu item indicates whether action is needed.
-TODO JIP and ambient feedback
 
 ## Recommendation Score
 
@@ -30,7 +26,7 @@ Besides, the recommendation score can be composed of various sub-scores for the 
 
 ## Evaluation
 
-Software engineering researchers can assess the quality of the recommendations in the evaluation view.
+Software engineering researchers can judge the performance of the recommendations in the **evaluation view**.
 The solution options documented for a selected decision problem are assumed to be the **ground truth/gold standard**.
 The following evaluation metrics are calculated:
 
@@ -52,9 +48,18 @@ If the first recommendation is irrelevant and the second recommendation is relev
 *Decision guidance evaluation view*
 
 The evaluation view shows the total amount of recommendations generated from the knowledge source.
-The recommendations for the decision problem *Which framework should we use as a webcrawler?* are:
+The recommendations for the decision problem *Which framework should we use as a webcrawler?* are
 *Heritrix, Apache Nutch, Frontera (web crawling), SortSite, PowerMapper, HTTrack, Scrapy, Googlebot*.
 Only the top-k recommendations (k=5 in the Figure) are used for the evaluation.
+
+## Nudging Mechanisms
+
+ConDec uses the following [nudging mechanisms](nudging.md) to support the usage of the decision guidance feature:
+
+- **Ambient feedback:** The colored menu item indicate whether action is needed, i.e., 
+whether there are recommendations that were not yet accepted or discarded by the developers.
+- **Just-in-time prompt:** ConDec shows a [just-in-time prompt](../screenshots/nudging_prompt.png) to the developers when they change the state of a Jira issue.
+The just-in-time prompt indicates whether action is needed.
 
 ## Activation and Configuration
 The decision guidance feature offers various configuration possibilities.
