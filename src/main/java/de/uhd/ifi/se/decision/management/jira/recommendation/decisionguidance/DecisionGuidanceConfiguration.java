@@ -51,8 +51,8 @@ public class DecisionGuidanceConfiguration {
 
 	/**
 	 * @param isRecommendationAddedToKnowledgeGraph
-	 *            true if all recommendations for a decision problem are directly
-	 *            added to the knowledge graph.
+	 *            true if all recommendations for a decision problem should be
+	 *            directly added to the knowledge graph.
 	 */
 	@JsonProperty
 	public void setRecommendationAddedToKnowledgeGraph(boolean isRecommendationAddedToKnowledgeGraph) {

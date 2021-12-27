@@ -21,11 +21,14 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
@@ -45,6 +48,8 @@ public class DecisionGuidanceRest {
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param maxNumberOfRecommendations
+	 *            maximum number of recommendations from an external knowledge
+	 *            source that is shown to the user.
 	 * @return ok if the maximal number of recommendations was successfully saved.
 	 */
 	@Path("/configuration/{projectKey}/max-recommendations")
@@ -75,6 +80,9 @@ public class DecisionGuidanceRest {
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param threshold
+	 *            minimum similarity score for textual similarity. Recommendations
+	 *            need to be more textual similar to the original element(s) than
+	 *            this threshold.
 	 * @return ok if the similarity threshold was successfully saved.
 	 */
 	@Path("/configuration/{projectKey}/similarity-threshold")
@@ -94,13 +102,23 @@ public class DecisionGuidanceRest {
 				.getDecisionGuidanceConfiguration(projectKey);
 		decisionGuidanceConfiguration.setSimilarityThreshold(threshold);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(projectKey, decisionGuidanceConfiguration);
-		return Response.ok(Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
-	@Path("/createRDFKnowledgeSource")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rdfSource
+	 *            {@link RDFSource} object.
+	 * @return ok if the RDF knowledge source was successfully created.
+	 */
+	@Path("/configuration/{projectKey}/create/rdf-source")
 	@POST
 	public Response createRDFKnowledgeSource(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, RDFSource rdfSource) {
+			@PathParam("projectKey") String projectKey, RDFSource rdfSource) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
@@ -132,10 +150,10 @@ public class DecisionGuidanceRest {
 	 *            of a Jira project.
 	 * @param knowledgeSourceName
 	 *            of an {@link RDFSource}.
-	 * @return ok if the connection to the knowledge source was successfully
-	 *         deleted, bad request or internal server error otherwise.
+	 * @return ok if the connection to the RDF knowledge source was successfully
+	 *         deleted. Returns a bad request or internal server error otherwise.
 	 */
-	@Path("/{projectKey}/{knowledgeSourceName}")
+	@Path("/configuration/{projectKey}/rdf-source/{knowledgeSourceName}")
 	@DELETE
 	public Response deleteRDFKnowledgeSource(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey, @PathParam("knowledgeSourceName") String knowledgeSourceName) {
@@ -154,10 +172,22 @@ public class DecisionGuidanceRest {
 				.entity(ImmutableMap.of("error", "The knowledge source could not be deleted.")).build();
 	}
 
-	@Path("/updateKnowledgeSource")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param knowledgeSourceName
+	 *            of an {@link RDFSource}.
+	 * @param rdfSource
+	 *            updated {@link RDFSource} object.
+	 * @return ok if the RDF knowledge source was successfully updated.
+	 */
+	@Path("/configuration/{projectKey}/update/rdf-source/{knowledgeSourceName}")
 	@POST
-	public Response updateKnowledgeSource(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
+	public Response updateRDFKnowledgeSource(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey, @PathParam("knowledgeSourceName") String knowledgeSourceName,
 			RDFSource rdfSource) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
@@ -242,6 +272,17 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param addRecommendationDirectly
+	 *            true if all recommendations for a decision problem should be
+	 *            directly added to the knowledge graph.
+	 * @return ok if the setting was successfully saved.
+	 */
 	@Path("/configuration/{projectKey}/add-recommendations-directly")
 	@POST
 	public Response setAddRecommendationDirectly(@Context HttpServletRequest request,
@@ -258,6 +299,16 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param jiraIssueId
+	 *            id of a Jira issue
+	 * @return number of removed recommendations for the given Jira issue. The
+	 *         recommendations are removed from the {@link KnowledgeGraph} and the
+	 *         database.
+	 */
 	@Path("/removeRecommendationsForKnowledgeElement")
 	@POST
 	public Response removeRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
@@ -286,9 +337,21 @@ public class DecisionGuidanceRest {
 				numberOfRemovedElements++;
 			}
 		}
-		return Response.status(Status.OK).entity(numberOfRemovedElements).build();
+		return Response.ok(numberOfRemovedElements).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            including the selected decision problem and additional keywords
+	 *            (optional) as the search term.
+	 * @return {@link ElementRecommendation}s for the given decision problem and
+	 *         keywords. Uses the activated {@link KnowledgeSource}s in the
+	 *         {@link DecisionGuidanceConfiguration} to generate the
+	 *         recommendations.
+	 */
 	@Path("/recommendations")
 	@POST
 	public Response getRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
@@ -312,6 +375,19 @@ public class DecisionGuidanceRest {
 		return Response.ok(recommendations).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param keyword
+	 * @param knowledgeSourceName
+	 * @param kResults
+	 * @param issueId
+	 * @param documentationLocation
+	 * @return
+	 */
 	@Path("/recommendationEvaluation")
 	@GET
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,

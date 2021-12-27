@@ -27,7 +27,7 @@
 		if (this.recommendationsPerProblem.has(decisionProblem.id)) {
 			return this.recommendationsPerProblem.get(decisionProblem.id);
 		}
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations.json", filterSettings)
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations", filterSettings)
 			.then(recommendations => {
 				recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
 				conDecDecisionGuidanceAPI.recommendationsPerProblem.set(filterSettings.selectedElementObject.id, recommendations);
@@ -73,7 +73,7 @@
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
 	ConDecDecisionGuidanceAPI.prototype.createRDFKnowledgeSource = function(projectKey, rdfSource) {
-		generalApi.postJSON(this.restPrefix + "/createRDFKnowledgeSource.json?projectKey=" + projectKey, rdfSource,
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/create/rdf-source", rdfSource,
 			function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The knowledge source is successfully created. <b>Please refresh the page.</b> ");
@@ -131,7 +131,7 @@
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
 	ConDecDecisionGuidanceAPI.prototype.deleteRDFKnowledgeSource = function(projectKey, knowledgeSourceName, callback) {
-		generalApi.deleteJSON(this.restPrefix + "/" + projectKey + "/" + knowledgeSourceName, null,
+		generalApi.deleteJSON(this.restPrefix + "/configuration/" + projectKey + "/rdf-source/" + knowledgeSourceName, null,
 			function(error, response) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " was successfully deleted.");
@@ -143,13 +143,13 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.updateKnowledgeSource = function(projectKey, knowledgeSourceName, knowledgeSource) {
-		generalApi.postJSON(this.restPrefix + "/updateKnowledgeSource.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName, knowledgeSource, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The knowledge source was successfully updated.");
-			}
-		});
+	ConDecDecisionGuidanceAPI.prototype.updateRDFKnowledgeSource = function(projectKey, knowledgeSourceName, knowledgeSource) {
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/update/rdf-source/" + knowledgeSourceName, knowledgeSource,
+			function(error, response) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "The knowledge source was successfully updated.");
+				}
+			});
 	};
 
 	/*
@@ -159,7 +159,7 @@
 		generalApi.postJSON(this.restPrefix + "/removeRecommendationsForKnowledgeElement.json", jiraIssueId,
 			function(error, numberOfElements) {
 				if (error === null) {
-					conDecAPI.showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
+					conDecAPI.showFlag("success", numberOfElements + " decision knowledge elements were removed from the knowledge graph.");
 					callback();
 				}
 			});

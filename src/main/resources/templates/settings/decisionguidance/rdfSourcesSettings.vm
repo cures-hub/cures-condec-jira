@@ -84,7 +84,7 @@
 			const knowledgeSourceName = $(this).attr("name");
 			var rdfSource = readRdfSourceSettings(rdfId);
 			console.log(rdfSource);
-			conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
+			conDecDecisionGuidanceAPI.updateRDFKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
         });
     });
 
