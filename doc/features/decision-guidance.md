@@ -59,12 +59,15 @@ ConDec uses the following [nudging mechanisms](nudging.md) to support the usage 
 - **Ambient feedback:** The colored menu item indicate whether action is needed, i.e., 
 whether there are recommendations that were not yet accepted or discarded by the developers.
 - **Just-in-time prompt:** ConDec shows a [just-in-time prompt](../screenshots/nudging_prompt.png) to the developers when they change the state of a Jira issue.
-The just-in-time prompt indicates whether action is needed.
+Similar to the ambient feedback nudge, the just-in-time prompt indicates whether action is needed.
 
 ## Activation and Configuration
 The decision guidance feature offers various configuration possibilities.
+For example, the rationale manager can configure the RDFSources and ProjectSources that are used as external knowledge sources.
 
-TODO config screenshot
+![Configuration view for decision guidance](../screenshots/config_decision_guidance.png)
+
+*Configuration view for decision guidance*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
