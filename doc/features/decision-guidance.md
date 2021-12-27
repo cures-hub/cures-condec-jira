@@ -77,7 +77,9 @@ The following class diagram gives an overview of relevant backend classes for th
 *Overview class diagram for the decision guidance feature*
 
 You find the explanation for the class diagramm in the Javadoc in the code:
-[Java code for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/decisionguidance)
+
+- [Java code for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/decisionguidance)
+- [Java REST API for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/DecisionGuidanceRest.java)
 
 The UI code for decision guidance can be found here:
 

@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestDeleteKnowledgeSource extends TestSetUp {
+public class TestDeleteRDFKnowledgeSource extends TestSetUp {
 	protected HttpServletRequest request;
 	protected DecisionGuidanceRest decisionGuidanceRest;
 
@@ -31,18 +31,18 @@ public class TestDeleteKnowledgeSource extends TestSetUp {
 	@Test
 	public void testDeleteRDFKnowledgeSourceValid() {
 		assertEquals(Status.OK.getStatusCode(),
-				decisionGuidanceRest.deleteKnowledgeSource(request, "TEST", new RDFSource().getName()).getStatus());
+				decisionGuidanceRest.deleteRDFKnowledgeSource(request, "TEST", new RDFSource().getName()).getStatus());
 	}
 
 	@Test
 	public void testDeleteRDFKnowledgeSourceInvalidValue() {
 		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-				decisionGuidanceRest.deleteKnowledgeSource(request, "TEST", "").getStatus());
+				decisionGuidanceRest.deleteRDFKnowledgeSource(request, "TEST", "").getStatus());
 	}
 
 	@Test
 	public void testDeleteRDFKnowledgeSourceInvalidProject() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				decisionGuidanceRest.deleteKnowledgeSource(request, "", "DBPedia - Frameworks").getStatus());
+				decisionGuidanceRest.deleteRDFKnowledgeSource(request, "", "DBPedia - Frameworks").getStatus());
 	}
 }

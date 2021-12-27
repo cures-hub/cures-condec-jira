@@ -29,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.De
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.Evaluator;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 
 /**
@@ -136,7 +137,7 @@ public class DecisionGuidanceRest {
 	 */
 	@Path("/{projectKey}/{knowledgeSourceName}")
 	@DELETE
-	public Response deleteKnowledgeSource(@Context HttpServletRequest request,
+	public Response deleteRDFKnowledgeSource(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey, @PathParam("knowledgeSourceName") String knowledgeSourceName) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
@@ -175,11 +176,24 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setKnowledgeSourceActivated")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param knowledgeSourceName
+	 *            name of an existing {@link RDFSource}.
+	 * @param isActivated
+	 *            true if {@link RDFSource} is activated.
+	 * @return ok if the RDF knowledge source was successfully activated or
+	 *         deactivated.
+	 */
+	@Path("/configuration/{projectKey}/activate/rdf-source/{knowledgeSourceName}")
 	@POST
-	public Response setKnowledgeSourceActivated(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("knowledgeSourceName") String knowledgeSourceName,
-			@QueryParam("isActivated") boolean isActivated) {
+	public Response setRDFKnowledgeSourceActivated(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey, @PathParam("knowledgeSourceName") String knowledgeSourceName,
+			boolean isActivated) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
@@ -196,10 +210,23 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-	@Path("/setProjectSource")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param projectSourceKey
+	 *            of a Jira project that should be used as a knowledge source.
+	 * @param isActivated
+	 *            true if {@link ProjectSource} should be activated.
+	 * @return ok if the project knowledge source was successfully activated or
+	 *         deactivated.
+	 */
+	@Path("/configuration/{projectKey}/activate/project-source/{projectSourceKey}")
 	@POST
-	public Response setProjectSource(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("projectSourceKey") String projectSourceKey, @QueryParam("isActivated") boolean isActivated) {
+	public Response setProjectSource(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
+			@PathParam("projectSourceKey") String projectSourceKey, boolean isActivated) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;

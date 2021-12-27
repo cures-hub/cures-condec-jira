@@ -96,39 +96,41 @@
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.setKnowledgeSourceActivated = function(projectKey, knowledgeSourceName, isActivated) {
-		generalApi.postJSON(this.restPrefix + "/setKnowledgeSourceActivated.json?projectKey=" + projectKey + "&knowledgeSourceName=" + knowledgeSourceName + "&isActivated=" + isActivated, null, function(
-			error, response) {
-			if (error === null) {
-				if (isActivated) {
-					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " is activated.");
-				} else {
-					conDecAPI.showFlag("success", "The knowledge source " + knowledgeSourceName + " is deactivated.");
+	ConDecDecisionGuidanceAPI.prototype.setRDFKnowledgeSourceActivated = function(projectKey, knowledgeSourceName, isActivated) {
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/activate/rdf-source/" + knowledgeSourceName, isActivated,
+			function(error, response) {
+				if (error === null) {
+					var message = "The knowledge source " + knowledgeSourceName + " is ";
+					if (isActivated) {
+						conDecAPI.showFlag("success", message + "activated.");
+					} else {
+						conDecAPI.showFlag("success", message + "deactivated.");
+					}
 				}
-			}
-		});
+			});
 	};
 
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setProjectSource = function(projectKey, projectSourceKey, isActivated) {
-		generalApi.postJSON(this.restPrefix + "/setProjectSource.json?projectKey=" + projectKey + "&projectSourceKey=" + projectSourceKey + "&isActivated=" + isActivated, null, function(
-			error, response) {
-			if (error === null) {
-				if (isActivated) {
-					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>activated</b> as a knowledge source.");
-				} else {
-					conDecAPI.showFlag("success", "The project <b>" + projectSourceKey + "</b> is now <b>deactivated</b> as a knowledge source.");
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/activate/project-source/" + projectSourceKey, isActivated,
+			function(error, response) {
+				if (error === null) {
+					var message = "The project <b>" + projectSourceKey + "</b> is now ";
+					if (isActivated) {
+						conDecAPI.showFlag("success", message + "activated.");
+					} else {
+						conDecAPI.showFlag("success", message + "deactivated.");
+					}
 				}
-			}
-		});
+			});
 	};
 
 	/*
 	 * external references: settings/decisionguidance/decisionGuidance.vm
 	 */
-	ConDecDecisionGuidanceAPI.prototype.deleteKnowledgeSource = function(projectKey, knowledgeSourceName, callback) {
+	ConDecDecisionGuidanceAPI.prototype.deleteRDFKnowledgeSource = function(projectKey, knowledgeSourceName, callback) {
 		generalApi.deleteJSON(this.restPrefix + "/" + projectKey + "/" + knowledgeSourceName, null,
 			function(error, response) {
 				if (error === null) {
