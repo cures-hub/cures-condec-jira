@@ -84,7 +84,7 @@ ConDec offers the following features:
 - [Nudges for decision knowledge documentation and exploitation](doc/features/nudging.md)
 - [Decision grouping](doc/features/decision-grouping.md)
 - [Creation of release notes with explicit decision knowledge](doc/features/release-notes-creation.md)
-- Metrics presentation in a knowledge dashboard
+- [Metrics presentation in a knowledge dashboard](doc/features/dashboard.md)
 
 ## Implementation Details
 
