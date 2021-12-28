@@ -130,9 +130,16 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
 			elementRecommendation.setProject(projectKey);
 			elementRecommendation.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-			KnowledgeElement insertedElement = manager.insertKnowledgeElement(elementRecommendation, user,
-					parentElement);
-			parentElement = insertedElement;
+			if (parentElement.getJiraIssue() != null) {
+				parentElement = manager.insertKnowledgeElement(elementRecommendation, user, parentElement);
+			}
+
+			// for (Argument argument : elementRecommendation.getArguments()) {
+			// argument.setProject(projectKey);
+			// argument.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+			// insertedElement = manager.insertKnowledgeElement(argument, user,
+			// insertedElement);
+			// }
 		}
 	}
 
