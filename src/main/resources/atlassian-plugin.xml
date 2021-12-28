@@ -467,15 +467,6 @@
 		<link linkId="reset-decision-knowledge-from-text-link" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-item key="remove-recommendations-from-knowledge-graph"
-		name="Menu Item for Removing the Recommendations in the Knowledge Graph" section="operations-operations">
-		<label key="condec.remove.recommendations.from.knowledge.graph.label" />
-		<description>Adds a menu item to the "More" dropdown in the Jira issue
-			view.
-		</description>
-		<link linkId="remove-recommendations-from-knowledge-graph-link" />
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
-	</web-item>
 
 	<macro key="issue" name="ConDec Editor Macro for Issues"
 		class="de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro">

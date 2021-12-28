@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSourceRecommender;
@@ -135,15 +134,14 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		}
 	}
 
-	public static KnowledgeElement addToJiraIssue(KnowledgeElement newElement, KnowledgeElement parentElement,
+	private static KnowledgeElement addToJiraIssue(KnowledgeElement newElement, KnowledgeElement parentElement,
 			ApplicationUser user) {
 		DecisionKnowledgeProject project = parentElement.getProject();
 		newElement.setProject(project);
 		newElement.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		if (parentElement.getJiraIssue() != null) {
-			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(project)
-					.getJiraIssueTextManager();
-			return persistenceManager.insertKnowledgeElement(newElement, user, parentElement);
+			return KnowledgePersistenceManager.getInstance(project).insertKnowledgeElement(newElement, user,
+					parentElement);
 		}
 		return parentElement;
 	}

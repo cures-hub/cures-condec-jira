@@ -13,16 +13,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
@@ -304,48 +300,6 @@ public class DecisionGuidanceRest {
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
-	 * @param jiraIssueId
-	 *            id of a Jira issue
-	 * @return number of removed recommendations for the given Jira issue. The
-	 *         recommendations are removed from the {@link KnowledgeGraph} and the
-	 *         database.
-	 */
-	// TODO DELETE
-	@Path("/removeRecommendationsForKnowledgeElement")
-	@POST
-	public Response removeRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
-		if (request == null || jiraIssueId == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
-					.build();
-		}
-		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
-		if (jiraIssue == null) {
-			return Response.status(Status.NOT_FOUND)
-					.entity(ImmutableMap.of("error", "Resetting all recommendations for this Jira issue failed "
-							+ "because the Jira issue could not be found."))
-					.build();
-		}
-		String projectKey = jiraIssue.getProjectObject().getKey();
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<KnowledgeElement> knowledgeElementsInJiraIssue = persistenceManager.getJiraIssueTextManager()
-				.getElementsInJiraIssue(jiraIssueId);
-
-		int numberOfRemovedElements = 0;
-		for (KnowledgeElement element : knowledgeElementsInJiraIssue) {
-			if (element.getStatus() == KnowledgeStatus.RECOMMENDED) {
-				persistenceManager.deleteKnowledgeElement(element, user);
-				numberOfRemovedElements++;
-			}
-		}
-		return Response.ok(numberOfRemovedElements).build();
-	}
-
-	/**
-	 * @param request
-	 *            HttpServletRequest with an authorized Jira
-	 *            {@link ApplicationUser}.
 	 * @param filterSettings
 	 *            including the selected decision problem and additional keywords
 	 *            (optional) as the search term.
@@ -368,12 +322,14 @@ public class DecisionGuidanceRest {
 		}
 
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
-		KnowledgeElement selectedElementFromDatabase = persistenceManager.getKnowledgeElement(filterSettings.getSelectedElement());
-		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, selectedElementFromDatabase,
-				filterSettings.getSearchTerm());
+		KnowledgeElement selectedElementFromDatabase = persistenceManager
+				.getKnowledgeElement(filterSettings.getSelectedElement());
+		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
+				selectedElementFromDatabase, filterSettings.getSearchTerm());
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
-			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request), recommendations);
+			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request),
+					recommendations);
 		}
 		return Response.ok(recommendations).build();
 	}

@@ -152,18 +152,5 @@
 			});
 	};
 
-	/*
-	 * external references: jiraIssueModule.vm
-	 */
-	ConDecDecisionGuidanceAPI.prototype.removeRecommendationForKnowledgeElement = function(jiraIssueId, callback) {
-		generalApi.postJSON(this.restPrefix + "/removeRecommendationsForKnowledgeElement.json", jiraIssueId,
-			function(error, numberOfElements) {
-				if (error === null) {
-					conDecAPI.showFlag("success", numberOfElements + " decision knowledge elements were removed from the knowledge graph.");
-					callback();
-				}
-			});
-	};
-
 	global.conDecDecisionGuidanceAPI = new ConDecDecisionGuidanceAPI();
 })(window);
