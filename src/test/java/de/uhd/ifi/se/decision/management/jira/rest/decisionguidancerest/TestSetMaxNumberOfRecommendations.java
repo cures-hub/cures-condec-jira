@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,16 +28,19 @@ public class TestSetMaxNumberOfRecommendations extends TestSetUp {
 
 	@Test
 	public void testSetMaxRecommendationsValid() {
-		assertEquals(200, decisionGuidanceRest.setMaxNumberOfRecommendations(request, "TEST", 20).getStatus());
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.setMaxNumberOfRecommendations(request, "TEST", 20).getStatus());
 	}
 
 	@Test
 	public void testSetMaxRecommendationsInvalidValue() {
-		assertEquals(400, decisionGuidanceRest.setMaxNumberOfRecommendations(request, "TEST", -20).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.setMaxNumberOfRecommendations(request, "TEST", -20).getStatus());
 	}
 
 	@Test
 	public void testSetMaxRecommendationsInvalidProject() {
-		assertEquals(400, decisionGuidanceRest.setMaxNumberOfRecommendations(request, "", 20).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.setMaxNumberOfRecommendations(request, "", 20).getStatus());
 	}
 }

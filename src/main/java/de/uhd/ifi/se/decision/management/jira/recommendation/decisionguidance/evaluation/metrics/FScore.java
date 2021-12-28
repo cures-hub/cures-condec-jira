@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 
 /**
- * Measures the harmonic mean of {@link Precision} and {@Recall}.
+ * Measures the harmonic mean of {@link Precision} and {@link Recall}.
  */
 public class FScore extends EvaluationMetric {
 

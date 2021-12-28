@@ -6,9 +6,12 @@ import java.util.stream.Collectors;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.Argument;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
@@ -104,8 +107,9 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	}
 
 	/**
-	 * Adds all recommendation to the knowledge graph with the status "recommended".
-	 * The recommendations will be appended to the root element
+	 * Adds all recommendations to the knowledge graph with the status
+	 * "recommended". The recommendations will be appended to the decision problem
+	 * and written into a Jira issue description or a comment.
 	 *
 	 * @param decisionProblem
 	 *            to which the recommended solution options should be linked in the
@@ -116,25 +120,33 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 *            of a Jira project.
 	 * @param recommendations
 	 *            list of recommended solution options
-	 *            ({@link ElementRecommendation}s) that should be linked in the
-	 *            {@link KnowledgeGraph}.
+	 *            ({@link ElementRecommendation}s) and recommended arguments that
+	 *            should be linked in the {@link KnowledgeGraph}.
 	 */
 	public static void addToKnowledgeGraph(KnowledgeElement decisionProblem, ApplicationUser user,
 			List<Recommendation> recommendations) {
-		String projectKey = decisionProblem.getProject().getProjectKey();
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance(projectKey);
+		KnowledgeElement parentElement = decisionProblem;
 		for (Recommendation recommendation : recommendations) {
-			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
-			elementRecommendation.setProject(projectKey);
-			elementRecommendation.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-			KnowledgeElement insertedElement = manager.insertKnowledgeElement(elementRecommendation, user,
-					decisionProblem);
-			manager.insertLink(decisionProblem, insertedElement, user);
+			ElementRecommendation solutionOptionRecommendation = (ElementRecommendation) recommendation;
+			parentElement = addToJiraIssue(solutionOptionRecommendation, parentElement, user);
+
+			for (Argument argumentRecommendation : solutionOptionRecommendation.getArguments()) {
+				parentElement = addToJiraIssue(argumentRecommendation, parentElement, user);
+			}
 		}
 	}
 
-	public String getProjectKey() {
-		return projectKey;
+	private static KnowledgeElement addToJiraIssue(KnowledgeElement newElement, KnowledgeElement parentElement,
+			ApplicationUser user) {
+		DecisionKnowledgeProject project = parentElement.getProject();
+		newElement.setProject(project);
+		newElement.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+		newElement.setStatus(KnowledgeStatus.RECOMMENDED);
+		if (parentElement.getJiraIssue() != null) {
+			return KnowledgePersistenceManager.getInstance(project).insertKnowledgeElement(newElement, user,
+					parentElement);
+		}
+		return parentElement;
 	}
 
 	/**

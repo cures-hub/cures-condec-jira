@@ -23,7 +23,6 @@ public class AveragePrecision extends EvaluationMetric {
 	public double calculateMetric() {
 		int numberOfMatches = 0;
 		double precisionAtK = 0.0;
-		// GTP refers to the total number of ground truth positives
 		double numberOfGroundTruthPositives = groundTruthSolutionOptions.size();
 
 		for (int i = 0; i < recommendations.size(); i++) {

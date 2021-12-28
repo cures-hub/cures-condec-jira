@@ -5,7 +5,7 @@
  * 
  * @see <a href=
  *      "https://github.com/cures-hub/cures-condec-jira/blob/master/doc/features/decision-guidance.md">
- *      README for Decision Guidance/Recommendation of Solution Options from
- *      External Knowledge Sources</a>
+ *      README for the Recommendation of Solution Options from External
+ *      Knowledge Sources (Decision Guidance)</a>
  */
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;

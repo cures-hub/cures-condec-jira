@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,11 +28,13 @@ public class TestSetAddRecommendationDirectly extends TestSetUp {
 
 	@Test
 	public void testSetAddRecommendationDirectlyValidProject() {
-		assertEquals(200, decisionGuidanceRest.setAddRecommendationDirectly(request, "TEST", true).getStatus());
+		assertEquals(Status.OK.getStatusCode(),
+				decisionGuidanceRest.setAddRecommendationDirectly(request, "TEST", true).getStatus());
 	}
 
 	@Test
 	public void testSetAddRecommendationDirectlyInvalidProject() {
-		assertEquals(400, decisionGuidanceRest.setAddRecommendationDirectly(request, "", true).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				decisionGuidanceRest.setAddRecommendationDirectly(request, "", true).getStatus());
 	}
 }

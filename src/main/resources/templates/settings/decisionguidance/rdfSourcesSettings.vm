@@ -84,7 +84,7 @@
 			const knowledgeSourceName = $(this).attr("name");
 			var rdfSource = readRdfSourceSettings(rdfId);
 			console.log(rdfSource);
-			conDecDecisionGuidanceAPI.updateKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
+			conDecDecisionGuidanceAPI.updateRDFKnowledgeSource("$projectKey", knowledgeSourceName, rdfSource);
         });
     });
 
@@ -92,7 +92,7 @@
 		$(this).change(function() {
 			const knowledgeSourceName =  $(this).attr("name");
 			const isActivated = $(this).prop("checked");
-			conDecDecisionGuidanceAPI.setKnowledgeSourceActivated("$projectKey", knowledgeSourceName, isActivated);
+			conDecDecisionGuidanceAPI.setRDFKnowledgeSourceActivated("$projectKey", knowledgeSourceName, isActivated);
 		})
 	});
 	
@@ -102,7 +102,7 @@
             var confirm = window.confirm("Do you really want to delete this knowledge source?");
             if(confirm) {
                 const knowledgeSourceName = $(this).attr("name");
-                conDecDecisionGuidanceAPI.deleteKnowledgeSource("$projectKey", knowledgeSourceName, function() {
+                conDecDecisionGuidanceAPI.deleteRDFKnowledgeSource("$projectKey", knowledgeSourceName, function() {
                 	location.reload();
                 });
             }

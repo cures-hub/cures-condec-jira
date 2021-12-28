@@ -1,5 +1,5 @@
 <div class="field-group">
-	<label>Add Recommendations directly?</label>
+	<label>Add Recommendations Directly?</label>
 	<aui-toggle id="add-recommendation-directly" label="Add Recommendations directly?"
 		#if($decisionGuidanceConfig.isRecommendationAddedToKnowledgeGraph())
 		checked
@@ -15,18 +15,18 @@
 		id="max-recommendation"/>
 	<button id="save-max-recommendation-btn" class='aui-button'>Save</button>
 	<div class="description">Set the maximum number of recommendations from the activated knowledge sources that should be
-		displayed in the Jira issue view.
+		generated.
 	</div>
 </div>
 
 <div class="field-group">
-	<label for="similarity-threshold">Similarity Score</label>
+	<label for="similarity-threshold">Similarity Threshold</label>
 	<input class="text short-field"	type="number" data-aui-validation-field
        	min="0"	max="1"	step="0.1"       	
        	value="$decisionGuidanceConfig.getSimilarityThreshold()"
        	id="similarity-threshold"/>
 	<button id="save-similarity-threshold" class='aui-button'>Save</button>
-	<div class="description">Set the similarity score for textual similarity.</div>
+	<div class="description">Set the minimum textual similarity necessary to create a recommendation.</div>
 </div>
 
 <script>

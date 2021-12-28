@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestUpdateKnowledgeSource extends TestSetUp {
+public class TestUpdateRDFKnowledgeSource extends TestSetUp {
 	protected HttpServletRequest request;
 	protected DecisionGuidanceRest decisionGuidanceRest;
 
@@ -29,21 +29,21 @@ public class TestUpdateKnowledgeSource extends TestSetUp {
 	@Test
 	public void testUpdateRDFKnowledgeSourceValid() {
 		RDFSource rdfSource = new RDFSource("VALID SOURCE", "SERVICE", "QUERY", 30000, "");
-		assertEquals(200, decisionGuidanceRest.updateKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
+		assertEquals(200, decisionGuidanceRest.updateRDFKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
 				.getStatus());
 	}
 
 	@Test
 	public void testUpdateRDFKnowledgeSourceProjectKeyInvalid() {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, "");
-		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
+		assertEquals(400, decisionGuidanceRest.updateRDFKnowledgeSource(request, "TEST", "DBPedia - Frameworks", rdfSource)
 				.getStatus());
 	}
 
 	@Test
 	public void testUpdateRDFKnowledgeSourceInValidRequest() {
 		RDFSource rdfSource = new RDFSource("", "SERVICE", "QUERY", 30000, "");
-		assertEquals(400, decisionGuidanceRest.updateKnowledgeSource(null, "TEST", "DBPedia - Frameworks", rdfSource)
+		assertEquals(400, decisionGuidanceRest.updateRDFKnowledgeSource(null, "TEST", "DBPedia - Frameworks", rdfSource)
 				.getStatus());
 	}
 }

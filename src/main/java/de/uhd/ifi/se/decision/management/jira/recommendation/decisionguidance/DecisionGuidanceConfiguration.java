@@ -51,8 +51,8 @@ public class DecisionGuidanceConfiguration {
 
 	/**
 	 * @param isRecommendationAddedToKnowledgeGraph
-	 *            true if all recommendations for a decision problem are directly
-	 *            added to the knowledge graph.
+	 *            true if all recommendations for a decision problem should be
+	 *            directly added to the knowledge graph.
 	 */
 	@JsonProperty
 	public void setRecommendationAddedToKnowledgeGraph(boolean isRecommendationAddedToKnowledgeGraph) {
@@ -78,7 +78,7 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	/**
-	 * @return similarity score for textual similarity.
+	 * @return minimum textual similarity necessary to create a recommendation.
 	 */
 	public double getSimilarityThreshold() {
 		return similarityThreshold;
@@ -86,7 +86,7 @@ public class DecisionGuidanceConfiguration {
 
 	/**
 	 * @param similarityThreshold
-	 *            similarity score for textual similarity.
+	 *            minimum textual similarity necessary to create a recommendation.
 	 */
 	@JsonProperty
 	public void setSimilarityThreshold(double similarityThreshold) {
@@ -134,8 +134,8 @@ public class DecisionGuidanceConfiguration {
 	 * @param knowledgeSourceName
 	 *            of an {@link RDFSource}.
 	 */
-	public void deleteRDFKnowledgeSource(String knowledgeSourceName) {
-		rdfKnowledgeSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
+	public boolean deleteRDFKnowledgeSource(String knowledgeSourceName) {
+		return rdfKnowledgeSources.removeIf(rdfSource -> knowledgeSourceName.equals(rdfSource.getName()));
 	}
 
 	/**

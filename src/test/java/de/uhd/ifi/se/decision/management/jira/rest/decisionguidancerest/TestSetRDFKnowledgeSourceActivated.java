@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestSetKnowledgeSourceActivated extends TestSetUp {
+public class TestSetRDFKnowledgeSourceActivated extends TestSetUp {
 	protected HttpServletRequest request;
 	protected DecisionGuidanceRest decisionGuidanceRest;
 
@@ -28,16 +28,16 @@ public class TestSetKnowledgeSourceActivated extends TestSetUp {
 	@Test
 	public void testActivateRDFKnowledgeSourceValidProjectValidValue() {
 		assertEquals(200,
-				decisionGuidanceRest.setKnowledgeSourceActivated(request, "TEST", "DBPedia", true).getStatus());
+				decisionGuidanceRest.setRDFKnowledgeSourceActivated(request, "TEST", "DBPedia", true).getStatus());
 	}
 
 	@Test
 	public void testActivateRDFKnowledgeSourceInvalidProjectValidValue() {
-		assertEquals(400, decisionGuidanceRest.setKnowledgeSourceActivated(request, null, "DBPedia", true).getStatus());
+		assertEquals(400, decisionGuidanceRest.setRDFKnowledgeSourceActivated(request, null, "DBPedia", true).getStatus());
 	}
 
 	@Test
 	public void testActivateRDFKnowledgeSourceValidProjectInvalidKnowledgeSourceName() {
-		assertEquals(400, decisionGuidanceRest.setKnowledgeSourceActivated(request, "TEST", "", true).getStatus());
+		assertEquals(400, decisionGuidanceRest.setRDFKnowledgeSourceActivated(request, "TEST", "", true).getStatus());
 	}
 }

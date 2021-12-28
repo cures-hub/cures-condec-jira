@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -41,14 +42,15 @@ public class TestRecommender extends TestSetUp {
 		knowledgeSources.add(rdfSource);
 
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
+		assertNotNull(decisionProblem);
+		assertNotNull(decisionProblem.getJiraIssue());
 
 		List<Recommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
 				decisionProblem, "");
 		assertEquals(2, recommendations.size());
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance("TEST");
-		Recommender.addToKnowledgeGraph(KnowledgeElements.getTestKnowledgeElement(),
-				JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
+		Recommender.addToKnowledgeGraph(decisionProblem, JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
 
 		assertTrue(manager.getKnowledgeElements().size() > 17);
 	}
@@ -57,7 +59,6 @@ public class TestRecommender extends TestSetUp {
 	@NonTransactional
 	public void testRecommenderProperties() {
 		Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource("TEST", projectSource);
-		assertEquals("TEST", recommender.getProjectKey());
 		assertEquals(projectSource, recommender.getKnowledgeSource());
 	}
 }
