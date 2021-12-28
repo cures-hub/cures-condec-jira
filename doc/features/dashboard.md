@@ -8,6 +8,14 @@ The dashboard shows metrics regarding the
 - the rationale-to-artifact traceability (e.g., *is it possible to navigate to the requirements affected by a decision?*), and 
 - the feature branch quality regarding the rationale documentation.
 
+## Intra-Rationale Completeness
+
+## Rationale Coverage
+
+## General Metrics
+
+## Metrics about the Decision Knowledge in Git
+
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for the dashboard.
 
@@ -17,7 +25,7 @@ The following class diagram gives an overview of relevant backend classes for th
 
 You find the explanation for the class diagramm in the Javadoc in the code:
 
-- [Java code for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/view/dashboard)
+- [Java code for the dashboard](../../src/main/java/de/uhd/ifi/se/decision/management/jira/view/dashboard)
 - [Java REST API for dashboard](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/DashboardRest.java)
 
 The UI code for the dashboard can be found here:

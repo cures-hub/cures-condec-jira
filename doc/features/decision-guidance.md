@@ -14,7 +14,6 @@ If they accept a recommendation, the respective solution option and arguments ar
 *Decision guidance view with three recommendations generated from DBPedia*
 
 ## Recommendation Score
-
 The **recommendation score** represents the predicted relevance of a recommendation, i.e., how likely the developers accept the recommendation.
 The recommendation score is used to rank the recommendations.
 The recommendation score consists of a value and an explanation. 
@@ -25,7 +24,6 @@ Besides, the recommendation score can be composed of various sub-scores for the 
 *Explanation of the score for a recommendation generated from DBPedia*
 
 ## Evaluation
-
 Software engineering researchers can judge the performance of the recommendations in the **evaluation view**.
 The solution options documented for a selected decision problem are assumed to be the **ground truth/gold standard**.
 The following evaluation metrics are calculated:
@@ -53,7 +51,6 @@ The recommendations for the decision problem *Which framework should we use as a
 Only the top-k recommendations (k=5 in the Figure) are used for the evaluation.
 
 ## Nudging Mechanisms
-
 ConDec uses the following [nudging mechanisms](nudging.md) to support the usage of the decision guidance feature:
 
 - **Ambient feedback:** The colored menu item indicate whether action is needed, i.e., 
@@ -71,12 +68,20 @@ For example, the rationale manager can configure the RDFSources and ProjectSourc
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
+The *DecisionGuidanceConfiguration* class stores the settings on a per-project basis. 
+This configuration can be associated with 0 or more *KnowledgeSource*s. 
+The *KnowledgeSource*s can either be sources configured using RDF or other Jira projects from the same server. 
+The *KnowledgeSource* is used to generate *ElementRecommendation*s.
+The class *ElementRecommendation* implements the *Recommendation* interface and inherits from *SolutionOption*. 
+There can be *Argument*s attached to the solution options. 
+The classes *SolutionOption* and *Argument* are concretizations of the *KnowledgeElement* class.
+The *Evaluator* evaluates the *Recommendation*s using six different *EvaluationMetric*s (see metrics above).
 
 ![Overview class diagram](../diagrams/class_diagram_decision_guidance.png)
 
 *Overview class diagram for the decision guidance feature*
 
-You find the explanation for the class diagramm in the Javadoc in the code:
+You find more explanation for the class diagramm in the Javadoc in the code:
 
 - [Java code for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/decisionguidance)
 - [Java REST API for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/DecisionGuidanceRest.java)
