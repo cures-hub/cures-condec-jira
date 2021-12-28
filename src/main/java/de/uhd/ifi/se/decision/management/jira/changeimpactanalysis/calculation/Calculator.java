@@ -31,7 +31,7 @@ public class Calculator {
         KnowledgeElement currentElement, double parentImpact,
         FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements, long context) {
         ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
-		
+
 		// Iterating through all outgoing and incoming links of the current element
 		for (Link link : currentElement.getLinks()) {
 			String linkTypeName;
@@ -94,7 +94,7 @@ public class Calculator {
 			// Each rule is individually mapped with its description and corresponding impact score
 			for (ChangePropagationRule rule : filterSettings.getChangeImpactAnalysisConfig().getPropagationRules()) {
 				double ruleCalculationValue = rule.getFunction().isChangePropagated(filterSettings, currentElement, link);
-				ruleBasedValue *= ruleCalculationValue;
+				ruleBasedValue = ruleBasedValue * ruleCalculationValue;
 
 				mapOfRules.put(
 					rule.getDescription(),

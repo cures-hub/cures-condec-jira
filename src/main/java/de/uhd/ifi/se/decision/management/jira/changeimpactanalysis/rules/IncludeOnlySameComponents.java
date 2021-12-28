@@ -22,6 +22,7 @@ public class IncludeOnlySameComponents implements ChangePropagationFunction {
     public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
         if (filterSettings.getSelectedElement().getJiraIssue() != null
             && nextElement.getJiraIssue() != null
+            && filterSettings.getSelectedElement().getJiraIssue().getComponents() != null
             && !filterSettings.getSelectedElement().getJiraIssue().getComponents().isEmpty()) {
                 if (nextElement.getJiraIssue().getComponents().isEmpty()) {
                     return 0.0;

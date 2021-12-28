@@ -28,7 +28,7 @@ public class TestIncludeOnlySameComponent extends TestSetUp {
 
     @Test
 	public void testDescription() {
-		assertEquals("Only include elements which are part of the same component",
+		assertEquals("Exclude elements which are not part of at least one equal component",
 				ChangePropagationRule.SAME_COMPONENT_ONLY.getDescription());
 	}
 
