@@ -19,18 +19,26 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
  * @see Calculator
  */
 public class Colorizer {
+
+    // Background color for the root node
+    private static String rootColor = "#FFFFFF";
+    // Background color for nodes which are included due to the context setting
+    private static String contextColor = "#3399CC";
+
     public static TreeViewerNode colorizeTreeNode(List<KnowledgeElementWithImpact> impactedElements, TreeViewerNode node, FilterSettings filterSettings) {
         String style = "";
         String clzz = node.getLiAttr().get("class");
 
         for (KnowledgeElementWithImpact element : impactedElements) {
             if (node.getElement().getId() == element.getId()) {
-                /*
-                    Painting the background color white for the root node to prevent a red
-                    background due to root impactValue always being 1.0
-                */
+                // Painting the background color white for the root node to prevent a red
+                // background due to root impactValue always being 1.0
                 if (filterSettings.getSelectedElement().getId() == element.getId()) {
-                    style = "background-color:white";
+                    style = "background-color:" + rootColor;
+                // Using a designated color to mark elements which are below the threshold but
+                // have been included due to the context setting being larger than 0
+                } else  if (element.getImpactExplanation().contains("context")) {
+                    style = "background-color:" + contextColor;
                 } else {
                     style = "background-color:" + colorForImpact(element.getImpactValue());
                 }
@@ -55,12 +63,14 @@ public class Colorizer {
     public static VisNode colorizeVisNode(KnowledgeElementWithImpact element, VisNode node, FilterSettings filterSettings) {
         Map<String, String> colorMap = new HashMap<>();
         Map<String, String> fontMap = new HashMap<>();
-        /*
-            Painting the background color white for the root node to prevent a red
-            background due to root impactValue always being 1.0
-        */
+        // Painting the background color white for the root node to prevent a red
+        // background due to root impactValue always being 1.0
         if (filterSettings.getSelectedElement().getId() == element.getId()) {
-            colorMap.put("background", "white");
+            colorMap.put("background", rootColor);
+        // Using a designated color to mark elements which are below the threshold but
+        // have been included due to the context setting being larger than 0
+        } else if (element.getImpactExplanation().contains("context")) {
+            colorMap.put("background", contextColor);
         } else {
             colorMap.put("background", colorForImpact(element.getImpactValue()));
         }
@@ -74,15 +84,17 @@ public class Colorizer {
 
     public static MatrixNode colorizeMatrixNode(KnowledgeElementWithImpact element,
         MatrixNode node, FilterSettings filterSettings) {
-            /*
-                Painting the background color white for the root node to prevent a red
-                background due to root impactValue always being 1.0
-            */
+            // Painting the background color white for the root node to prevent a red
+            // background due to root impactValue always being 1.0
             if (filterSettings.getSelectedElement().getId() == element.getId()) {
-                node.setChangeImpactColor("#FFFFFF");
+                node.setChangeImpactColor(rootColor);
+            // Using a designated color to mark elements which are below the threshold but
+            // have been included due to the context setting being larger than 0
+            } else if (element.getImpactExplanation().contains("context")) {
+                node.setChangeImpactColor(contextColor);
             } else {
-                node.setChangeImpactColor(Colorizer.colorForImpact(element.getImpactValue()));
-            }    
+                node.setChangeImpactColor(colorForImpact(element.getImpactValue()));
+            }
 
             node.setChangeImpactExplanation(Tooltip.createTooltip(element, filterSettings));
             return node;

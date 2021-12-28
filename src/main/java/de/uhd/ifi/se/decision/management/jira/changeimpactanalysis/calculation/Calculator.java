@@ -72,6 +72,7 @@ public class Calculator {
 					calculateChangeImpact(nextElementInPath, impactValue, filterSettings, impactedElements, context);
 				}
 			} else if (ciaConfig.getContext() > 0 && context > 0 && !impactedElements.contains(nextElement)) {
+				nextElement.setImpactExplanation("This element is below the set threshold but has been included due to the selected context setting.");
 				impactedElements.add(nextElement);
 				calculateChangeImpact(nextElementInPath, 0.0, filterSettings, impactedElements, context - 1);
 			}

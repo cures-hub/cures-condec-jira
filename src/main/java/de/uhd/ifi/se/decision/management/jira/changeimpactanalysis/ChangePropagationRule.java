@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.AmountOfDistinctAuthors;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenLowAverageAge;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenMoreOutboundElements;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTextualSimilar;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
@@ -23,10 +24,12 @@ public enum ChangePropagationRule {
 			new BoostWhenTextualSimilar()),
 	AMOUNT_OF_DISTINCT_AUTHORS("Boost when element has a large number of distinct update authors",
 			new AmountOfDistinctAuthors()),
-	SAME_COMPONENT_ONLY("Exclude elements which are not part of the same component",
+	SAME_COMPONENT_ONLY("Exclude elements which are not part of at least one equal component",
 			new IncludeOnlySameComponents()),
 	BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND("Boost when element has more outbound than inbound elements",
-			new BoostWhenMoreOutboundElements());
+			new BoostWhenMoreOutboundElements()),
+	BOOST_WHEN_LOW_AVERAGE_AGE("Boost when element has a low average age",
+			new BoostWhenLowAverageAge());
 
 	private String description;
 	private ChangePropagationFunction function;
