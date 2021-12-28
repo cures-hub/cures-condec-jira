@@ -39,7 +39,7 @@
 	 * external references: condec.decision.guidance
 	 */
 	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function(projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
-		generalApi.getJSON(this.restPrefix + "/evaluation/" + projectKey + "&keyword=" + keyword + "&issueId=" + issueId + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
+		generalApi.getJSON(this.restPrefix + "/evaluation/" + projectKey + "?keyword=" + keyword + "&issueId=" + issueId + "&knowledgeSource=" + knowledgeSources + "&kResults=" + kResults + "&documentationLocation=" + documentationLocation,
 			function(error, results) {
 				callback(results, error);
 			});
