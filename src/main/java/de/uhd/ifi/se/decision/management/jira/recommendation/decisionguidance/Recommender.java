@@ -11,6 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSourceRecommender;
@@ -122,14 +123,16 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	public static void addToKnowledgeGraph(KnowledgeElement decisionProblem, ApplicationUser user,
 			List<Recommendation> recommendations) {
 		String projectKey = decisionProblem.getProject().getProjectKey();
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance(projectKey);
+		JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getInstance(projectKey)
+				.getJiraIssueTextManager();
+		KnowledgeElement parentElement = decisionProblem;
 		for (Recommendation recommendation : recommendations) {
 			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
 			elementRecommendation.setProject(projectKey);
 			elementRecommendation.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 			KnowledgeElement insertedElement = manager.insertKnowledgeElement(elementRecommendation, user,
-					decisionProblem);
-			manager.insertLink(decisionProblem, insertedElement, user);
+					parentElement);
+			parentElement = insertedElement;
 		}
 	}
 

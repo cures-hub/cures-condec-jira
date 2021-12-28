@@ -76,8 +76,8 @@ public class Evaluator {
 	 *            {@link RecommendationScore} that should be included in the
 	 *            evaluation. All other recommendations are ignored.
 	 * @param knowledgeSourceName
-	 *            name of the {@link KnowledgeSource} that is evaluated. It most be
-	 *            existing in the {@link DecisionGuidanceConfiguration}.
+	 *            name of the {@link KnowledgeSource} that is evaluated. It must
+	 *            exist in the {@link DecisionGuidanceConfiguration}.
 	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
 	 *         for one {@link KnowledgeSource} for a given decision problem and
 	 *         keywords.

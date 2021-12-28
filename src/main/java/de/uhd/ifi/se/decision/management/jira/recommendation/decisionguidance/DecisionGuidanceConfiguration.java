@@ -78,7 +78,7 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	/**
-	 * @return similarity score for textual similarity.
+	 * @return minimum textual similarity necessary to create a recommendation.
 	 */
 	public double getSimilarityThreshold() {
 		return similarityThreshold;
@@ -86,7 +86,7 @@ public class DecisionGuidanceConfiguration {
 
 	/**
 	 * @param similarityThreshold
-	 *            similarity score for textual similarity.
+	 *            minimum textual similarity necessary to create a recommendation.
 	 */
 	@JsonProperty
 	public void setSimilarityThreshold(double similarityThreshold) {

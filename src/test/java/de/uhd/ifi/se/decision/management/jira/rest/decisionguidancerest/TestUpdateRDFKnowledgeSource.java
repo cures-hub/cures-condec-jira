@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
-public class TestUpdateKnowledgeSource extends TestSetUp {
+public class TestUpdateRDFKnowledgeSource extends TestSetUp {
 	protected HttpServletRequest request;
 	protected DecisionGuidanceRest decisionGuidanceRest;
 

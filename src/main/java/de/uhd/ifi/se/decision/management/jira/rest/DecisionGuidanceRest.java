@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
@@ -80,9 +81,9 @@ public class DecisionGuidanceRest {
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param threshold
-	 *            minimum similarity score for textual similarity. Recommendations
-	 *            need to be more textual similar to the original element(s) than
-	 *            this threshold.
+	 *            minimum textual similarity necessary to create a recommendation.
+	 *            Recommendations need to be more textual similar to the original
+	 *            element(s) than this threshold.
 	 * @return ok if the similarity threshold was successfully saved.
 	 */
 	@Path("/configuration/{projectKey}/similarity-threshold")
@@ -309,6 +310,7 @@ public class DecisionGuidanceRest {
 	 *         recommendations are removed from the {@link KnowledgeGraph} and the
 	 *         database.
 	 */
+	// TODO DELETE
 	@Path("/removeRecommendationsForKnowledgeElement")
 	@POST
 	public Response removeRecommendationsForKnowledgeElement(@Context HttpServletRequest request, Long jiraIssueId) {
@@ -348,9 +350,9 @@ public class DecisionGuidanceRest {
 	 *            including the selected decision problem and additional keywords
 	 *            (optional) as the search term.
 	 * @return {@link ElementRecommendation}s for the given decision problem and
-	 *         keywords. Uses the activated {@link KnowledgeSource}s in the
-	 *         {@link DecisionGuidanceConfiguration} to generate the
-	 *         recommendations.
+	 *         keywords. Uses the settings in the
+	 *         {@link DecisionGuidanceConfiguration} including the activated
+	 *         {@link KnowledgeSource}s to generate the recommendations.
 	 */
 	@Path("/recommendations")
 	@POST
@@ -365,12 +367,13 @@ public class DecisionGuidanceRest {
 			return response;
 		}
 
-		KnowledgeElement selectedElement = filterSettings.getSelectedElement();
-		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, selectedElement,
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
+		KnowledgeElement selectedElementFromDatabase = persistenceManager.getKnowledgeElement(filterSettings.getSelectedElement());
+		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey, selectedElementFromDatabase,
 				filterSettings.getSearchTerm());
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
-			Recommender.addToKnowledgeGraph(selectedElement, AuthenticationManager.getUser(request), recommendations);
+			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request), recommendations);
 		}
 		return Response.ok(recommendations).build();
 	}
@@ -382,32 +385,45 @@ public class DecisionGuidanceRest {
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param keyword
+	 *            additional keywords used to query the knowledge source.
 	 * @param knowledgeSourceName
-	 * @param kResults
-	 * @param issueId
+	 *            name of the {@link KnowledgeSource} that is evaluated. It must
+	 *            exist in the {@link DecisionGuidanceConfiguration}.
+	 * @param topKResults
+	 *            number of {@link ElementRecommendation}s with the highest
+	 *            {@link RecommendationScore} that should be included in the
+	 *            evaluation. All other recommendations are ignored.
+	 * @param decisionProblemId
+	 *            id of a decision problem with existing solution options
+	 *            (alternatives, decision, solution, claims) used as the ground
+	 *            truth/gold standard for the evaluation.
 	 * @param documentationLocation
-	 * @return
+	 *            of the decision problem (e.g. Jira issue text).
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
+	 *         for one {@link KnowledgeSource} for a given decision problem and
+	 *         keywords.
 	 */
-	@Path("/recommendationEvaluation")
+	@Path("/evaluation/{projectKey}")
 	@GET
 	public Response getRecommendationEvaluation(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
-			@QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int kResults,
-			@QueryParam("issueId") int issueId, @QueryParam("documentationLocation") String documentationLocation) {
+			@PathParam("projectKey") String projectKey, @QueryParam("keyword") String keyword,
+			@QueryParam("knowledgeSource") String knowledgeSourceName, @QueryParam("kResults") int topKResults,
+			@QueryParam("issueId") int decisionProblemId,
+			@QueryParam("documentationLocation") String documentationLocation) {
 		Response checkIfDataIsValidResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (checkIfDataIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfDataIsValidResponse;
 		}
 
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance(projectKey);
-		KnowledgeElement issue = manager.getKnowledgeElement(issueId, documentationLocation);
+		KnowledgeElement issue = manager.getKnowledgeElement(decisionProblemId, documentationLocation);
 
 		if (issue == null) {
 			return Response.status(Status.NOT_FOUND).entity(ImmutableMap.of("error", "The issue could not be found."))
 					.build();
 		}
 
-		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(issue, keyword, kResults,
+		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(issue, keyword, topKResults,
 				knowledgeSourceName);
 
 		return Response.ok(recommendationEvaluation).build();
