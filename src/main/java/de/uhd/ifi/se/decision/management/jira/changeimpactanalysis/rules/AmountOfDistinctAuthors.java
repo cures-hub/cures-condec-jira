@@ -26,7 +26,7 @@ public class AmountOfDistinctAuthors implements ChangePropagationFunction {
     public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
         double amountOfDistinctAuthors = nextElement.getUpdateDateAndAuthor().values().stream().distinct().count();
         if (amountOfDistinctAuthors != 0.0) {
-            return 1.0 - (0.1 / nextElement.getUpdateDateAndAuthor().values().stream().distinct().count());
+            return 1.0 - (0.1 / amountOfDistinctAuthors);
         } else {
             return 1.0;
         }

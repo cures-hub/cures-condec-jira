@@ -97,7 +97,7 @@ public class TestVisGraph extends TestSetUp {
 		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
 		VisGraph visGraph = new VisGraph(filterSettings, impactedElements);
 		
-		assertEquals(7, visGraph.getNodes().size());
+		assertEquals(4, visGraph.getNodes().size());
 	}
 
 	@Test
