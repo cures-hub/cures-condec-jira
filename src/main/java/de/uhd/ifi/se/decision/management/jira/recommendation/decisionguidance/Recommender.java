@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.Argument;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -122,25 +124,28 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 */
 	public static void addToKnowledgeGraph(KnowledgeElement decisionProblem, ApplicationUser user,
 			List<Recommendation> recommendations) {
-		String projectKey = decisionProblem.getProject().getProjectKey();
-		JiraIssueTextPersistenceManager manager = KnowledgePersistenceManager.getInstance(projectKey)
-				.getJiraIssueTextManager();
 		KnowledgeElement parentElement = decisionProblem;
 		for (Recommendation recommendation : recommendations) {
-			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
-			elementRecommendation.setProject(projectKey);
-			elementRecommendation.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-			if (parentElement.getJiraIssue() != null) {
-				parentElement = manager.insertKnowledgeElement(elementRecommendation, user, parentElement);
-			}
+			ElementRecommendation solutionOptionRecommendation = (ElementRecommendation) recommendation;
+			parentElement = addToJiraIssue(solutionOptionRecommendation, parentElement, user);
 
-			// for (Argument argument : elementRecommendation.getArguments()) {
-			// argument.setProject(projectKey);
-			// argument.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
-			// insertedElement = manager.insertKnowledgeElement(argument, user,
-			// insertedElement);
-			// }
+			for (Argument argumentRecommendation : solutionOptionRecommendation.getArguments()) {
+				parentElement = addToJiraIssue(argumentRecommendation, parentElement, user);
+			}
 		}
+	}
+
+	public static KnowledgeElement addToJiraIssue(KnowledgeElement newElement, KnowledgeElement parentElement,
+			ApplicationUser user) {
+		DecisionKnowledgeProject project = parentElement.getProject();
+		newElement.setProject(project);
+		newElement.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+		if (parentElement.getJiraIssue() != null) {
+			JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(project)
+					.getJiraIssueTextManager();
+			return persistenceManager.insertKnowledgeElement(newElement, user, parentElement);
+		}
+		return parentElement;
 	}
 
 	/**
