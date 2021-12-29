@@ -44,5 +44,5 @@ You find more explanation for the class diagramm in the Javadoc in the code:
 The UI code for the automatic text classification can be found here:
 
 - [Velocity templates for configuration and evaluation](../../src/main/resources/templates/settings/classification)
-- [Velocity templates for text classification view](../../src/main/resources/templates/tabs/textClassification.vm)
+- [Velocity template for text classification view](../../src/main/resources/templates/tabs/textClassification.vm)
 - [JavaScript code for text classification](../../src/main/resources/js/classification)

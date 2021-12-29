@@ -13,6 +13,9 @@ The result of the quality checking is displayed in the following ways:
 - in the [rationale backlog](rationale-backlog.md)
 - in a metric plot in the [knowledge dashboard](dashboard.md)
 
+## Configuration
+The rationale manager can configure the criteria for the DoD.
+
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
 The *DefinitionOfDone* stores the rules that are configured for the decision knowledge project’s rationale documentation to be considered complete. 
@@ -33,5 +36,5 @@ You find more explanation for the class diagramm in the Javadoc in the code:
 The UI code for quality checking can be found here:
 
 - [Velocity templates for configuration](../../src/main/resources/templates/settings/definitionofdone)
-- [Velocity templates for quality checking](../../src/main/resources/templates/tabs/qualityCheck.vm)
+- [Velocity template for quality checking](../../src/main/resources/templates/tabs/qualityCheck.vm)
 - [JavaScript code for quality checking](../../src/main/resources/js/definitionofdone)
