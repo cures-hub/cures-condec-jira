@@ -16,6 +16,8 @@ The dashboard shows metrics regarding the
 
 ## Metrics about the Decision Knowledge in Git
 
+## Navigation
+
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for the dashboard.
 
