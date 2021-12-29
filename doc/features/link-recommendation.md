@@ -30,11 +30,11 @@ which means they have source and target elements, as well as a *LinkType* (not s
 
 You find more explanation for the class diagramm in the Javadoc in the code:
 
-- [Java code for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/linkrecommendation)
-- [Java REST API for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/LinkRecommendationRest.java)
+- [Java code for link recommendation](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/linkrecommendation)
+- [Java REST API for link recommendation](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/LinkRecommendationRest.java)
 
 The UI code for link recommendation can be found here:
 
 - [Velocity templates for configuration and evaluation](../../src/main/resources/templates/settings/linkrecommendation)
 - [Velocity templates for usage during development](../../src/main/resources/templates/tabs/recommendation)
-- [JavaScript code for decision guidance](../../src/main/resources/js/recommendation)
+- [JavaScript code for link recommendation](../../src/main/resources/js/recommendation)
