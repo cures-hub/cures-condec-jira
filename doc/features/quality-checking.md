@@ -16,6 +16,10 @@ The result of the quality checking is displayed in the following ways:
 ## Configuration
 The rationale manager can configure the criteria for the DoD.
 
+![Configuration view for the DoD for the knowledge documentation](../screenshots/config_definition_of_done.png)
+
+*Configuration view for the DoD for the knowledge documentation*
+
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
 The *DefinitionOfDone* stores the rules that are configured for the decision knowledge project’s rationale documentation to be considered complete. 
