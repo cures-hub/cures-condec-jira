@@ -8,13 +8,29 @@ The dashboard shows metrics regarding the
 - the rationale-to-artifact traceability (e.g., *is it possible to navigate to the requirements affected by a decision?*), and 
 - the feature branch quality regarding the rationale documentation.
 
+## Rationale Coverage
+
+![Rationale coverage dashboard item](../screenshots/dashboard_rationale_coverage.png)
+
+*Rationale coverage dashboard item*
+
 ## Intra-Rationale Completeness
 
-## Rationale Coverage
+![Rationale coverage dashboard item](../screenshots/dashboard_intra_rationale_completeness.png)
+
+*Intra-rationale completeness dashboard item*
 
 ## General Metrics
 
+![General metrics dashboard item](../screenshots/dashboard_general_metrics.png)
+
+*General metrics dashboard item*
+
 ## Metrics about the Decision Knowledge in Git
+
+![Dashboard item showing metrics about the knowledge in git](../screenshots/dashboard_git.png)
+
+*Dashboard item showing metrics about the knowledge in git*
 
 ## Navigation
 
