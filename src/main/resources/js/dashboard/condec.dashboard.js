@@ -1,4 +1,4 @@
-/*
+/**
  This module contains methods used to render the dashboards and their configuration screens.
 
  Is referenced by

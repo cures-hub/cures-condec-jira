@@ -106,7 +106,7 @@
         chart.on('click', echartDataClicked);
         // remove development aids
         domElement.classList.remove("notsetyet");
-    }
+    };
 
     ConDecReqDash.prototype.initializeDivWithBoxPlotFromMap = function (boxplot, title, xAxis, dataMap) {
         var values = [];

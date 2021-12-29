@@ -6,6 +6,13 @@ The definition of done is checked and the status of the quality can be viewed co
 ConDec supports the fulfillment of the definition of done with the help of a [knowledge dashboard](dashboard.md) and automated quality checks integrated into the development workflow, e.g., when finishing a requirement. 
 For example, the developer can only finish the log-in requirement if all the decision problems that are documented in a certain link distance in the knowledge graph are solved.
 
+The result of the quality checking is displayed in the following ways:
+- in a quality checking view accessable from every knowledge element in the knowledge graph
+- using [red text color](nudging.md) in knowledge graph views if the DoD is violated. An explanation is given using a tooltip.
+- in a [just-in-time prompt](nudging.md) that is shown during status changes
+- in the [rationale backlog](rationale-backlog.md)
+- in a metric plot in the [knowledge dashboard](dashboard.md)
+
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
 The *DefinitionOfDone* stores the rules that are configured for the decision knowledge project’s rationale documentation to be considered complete. 
@@ -26,5 +33,5 @@ You find more explanation for the class diagramm in the Javadoc in the code:
 The UI code for quality checking can be found here:
 
 - [Velocity templates for configuration](../../src/main/resources/templates/settings/definitionofdone)
-- [Velocity templates for usage during development](../../src/main/resources/templates/tabs/qualityCheck.vm)
-- [JavaScript code for decision guidance](../../src/main/resources/js/definitionofdone)
+- [Velocity templates for quality checking](../../src/main/resources/templates/tabs/qualityCheck.vm)
+- [JavaScript code for quality checking](../../src/main/resources/js/definitionofdone)
