@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.calculation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,6 @@ public class TestTooltip extends TestSetUp {
         nextElementWithImpact.setPropagationRules(propagationRules);
 
         String tooltip = Tooltip.createTooltip(nextElementWithImpact, settings);
-        assertTrue(!tooltip.contains("Propagation Rule Value"));
+        assertFalse(tooltip.contains("Propagation Rule Value"));
     }
 }
