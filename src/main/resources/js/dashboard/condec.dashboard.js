@@ -12,17 +12,17 @@
 (function(global) {
 	var detailsOverlayClickHandlersSet = false;
 
-    var issueKeyParser = /([^a-z]*)([a-z]+)-([0-9]+).*/gi
+	var issueKeyParser = /([^a-z]*)([a-z]+)-([0-9]+).*/gi
 
-    var isIssueData = true;
+	var isIssueData = true;
 
-    var colorPalette = null;
+	var colorPalette = null;
 
-    const CHART_RICH_PIE = "piechartRich";
-    const CHART_SIMPLE_PIE = "piechartInteger";
-    const CHART_BOXPLOT = "boxplot";
-    const DEC_STRING_SEPARATOR = " ";
-    
+	const CHART_RICH_PIE = "piechartRich";
+	const CHART_SIMPLE_PIE = "piechartInteger";
+	const CHART_BOXPLOT = "boxplot";
+	const DEC_STRING_SEPARATOR = " ";
+
 	var ConDecDashboard = function ConDecDashboard() {
 		console.log("ConDecDashboard constructor");
 	};
@@ -313,14 +313,14 @@
 		}
 		conDecFiltering.fillFilterElementsFromSettings(viewIdentifier, filterSettings);
 	}
-	
-	 /** 
-     * @issue How to convert a velocity map into a Javascript map?
-	 * @decision Do a manual conversion from a velocity map into a Javascript map!
-	 * @con Not very elegant at all.
-	 * @alternative Directly use velocity maps in Javascript.
-	 * @con It is not possible to use velocity maps in Javascript.
-	 */	
+
+	/** 
+	* @issue How to convert a velocity map into a Javascript map?
+	* @decision Do a manual conversion from a velocity map into a Javascript map!
+	* @con Not very elegant at all.
+	* @alternative Directly use velocity maps in Javascript.
+	* @con It is not possible to use velocity maps in Javascript.
+	*/
 	function getMap(velocityMap) {
 		velocityMap = JSON.stringify(velocityMap);
 
@@ -339,113 +339,113 @@
 		return jsMap;
 	}
 
-	ConDecDashboard.prototype.initializeChart = function (divId, title, subtitle, dataMap) {
+	ConDecDashboard.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
 		isIssueData = true;
 		colorPalette = null;
 		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
 	}
 
 	/* used by branch dashboard item condec.rationale.coverage.dashboard.js */
-	ConDecDashboard.prototype.initializeChartWithColorPalette = function (divId, title, subtitle, dataMap, palette) {
+	ConDecDashboard.prototype.initializeChartWithColorPalette = function(divId, title, subtitle, dataMap, palette) {
 		isIssueData = true;
 		colorPalette = palette;
 		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
 	}
 
-    /* used by branch dashboard item condec.git.branches.dashboard.js */
-    ConDecDashboard.prototype.initializeChartForBranchSource = function (divId, title, subtitle, dataMap) {
-        isIssueData = false;
+	/* used by branch dashboard item condec.git.branches.dashboard.js */
+	ConDecDashboard.prototype.initializeChartForBranchSource = function(divId, title, subtitle, dataMap) {
+		isIssueData = false;
 		colorPalette = null;
-        this.initializeChartForSources(divId, title, subtitle, dataMap);
-    }
+		this.initializeChartForSources(divId, title, subtitle, dataMap);
+	}
 
-    /* TODO: Below function does not need to be exposed! */
-    ConDecDashboard.prototype.initializeChartForSources = function (divId, title, subtitle, dataMap) {
-        var domElement = document.getElementById(divId);
-        if (!domElement) {
-            console.warn("Could not find element with ID: " + divId);
-            return;
-        }
-        var chart = echarts.init(domElement);
-        if (!chart) {
-            console.warn("Could not init chart for element " + divId);
-            return;
-        }
-        // pick the chart type based on html element's id attribute
-        if (divId.startsWith(CHART_RICH_PIE)) {
-            chart = this.initializeDivWithPieChartData(chart, title, subtitle, dataMap, true);
-        } else if (divId.startsWith(CHART_SIMPLE_PIE)) {
-            chart = this.initializeDivWithPieChartData(chart, title, subtitle, dataMap, false);
-        } else if (divId.startsWith(CHART_BOXPLOT)) {
-            chart = this.initializeDivWithBoxPlotFromMap(chart, title, subtitle, dataMap);
-        } else {
-            chart = null;
-        }
+	/* TODO: Below function does not need to be exposed! */
+	ConDecDashboard.prototype.initializeChartForSources = function(divId, title, subtitle, dataMap) {
+		var domElement = document.getElementById(divId);
+		if (!domElement) {
+			console.warn("Could not find element with ID: " + divId);
+			return;
+		}
+		var chart = echarts.init(domElement);
+		if (!chart) {
+			console.warn("Could not init chart for element " + divId);
+			return;
+		}
+		// pick the chart type based on html element's id attribute
+		if (divId.startsWith(CHART_RICH_PIE)) {
+			chart = this.initializeDivWithPieChartData(chart, title, subtitle, dataMap, true);
+		} else if (divId.startsWith(CHART_SIMPLE_PIE)) {
+			chart = this.initializeDivWithPieChartData(chart, title, subtitle, dataMap, false);
+		} else if (divId.startsWith(CHART_BOXPLOT)) {
+			chart = this.initializeDivWithBoxPlotFromMap(chart, title, subtitle, dataMap);
+		} else {
+			chart = null;
+		}
 
-        if (!chart) {
-            console.error("could not setup chart for element " + divId);
-        }
-        // add click handler for chart data (in canvas)
-        chart.on('click', echartDataClicked);
-        // remove development aids
-        domElement.classList.remove("notsetyet");
-    };
+		if (!chart) {
+			console.error("could not setup chart for element " + divId);
+		}
+		// add click handler for chart data (in canvas)
+		chart.on('click', echartDataClicked);
+		// remove development aids
+		domElement.classList.remove("notsetyet");
+	};
 
-    ConDecDashboard.prototype.initializeDivWithBoxPlotFromMap = function (boxplot, title, xAxis, dataMap) {
-        var values = [];
-        var keysAsArray = Array.from(dataMap.keys());
-        for (var i = keysAsArray.length - 1; i >= 0; i--) {
-            var value = Number(dataMap.get(keysAsArray[i]));
-            values.push(value);
-        }
+	ConDecDashboard.prototype.initializeDivWithBoxPlotFromMap = function(boxplot, title, xAxis, dataMap) {
+		var values = [];
+		var keysAsArray = Array.from(dataMap.keys());
+		for (var i = keysAsArray.length - 1; i >= 0; i--) {
+			var value = Number(dataMap.get(keysAsArray[i]));
+			values.push(value);
+		}
 
-        var data = echarts.dataTool.prepareBoxplotData(new Array(values));
-        boxplot.setOption(getOptionsForBoxplot(title, xAxis, "", data));
-        boxplot.rawConDecData = dataMap;
-        return boxplot;
-    };
+		var data = echarts.dataTool.prepareBoxplotData(new Array(values));
+		boxplot.setOption(getOptionsForBoxplot(title, xAxis, "", data));
+		boxplot.rawConDecData = dataMap;
+		return boxplot;
+	};
 
-    /* TODO: Function does not need to be exposed */
-    ConDecDashboard.prototype.initializeDivWithPieChartData = function (pieChart, title, subtitle,
-                                                                      objectsMap, hasRichData) {
-        var data = [];
-        var source = [];
+	/* TODO: Function does not need to be exposed */
+	ConDecDashboard.prototype.initializeDivWithPieChartData = function(pieChart, title, subtitle,
+		objectsMap, hasRichData) {
+		var data = [];
+		var source = [];
 
-        var sourceCounter = function (accumulator, currentValue) {
-            if (currentValue.trim() === "") {
-                return accumulator + 0;
-            }
-            return accumulator + 1
-        }
+		var sourceCounter = function(accumulator, currentValue) {
+			if (currentValue.trim() === "") {
+				return accumulator + 0;
+			}
+			return accumulator + 1
+		}
 
-        var dataAsArray = Array.from(objectsMap.keys());
-        for (var i = dataAsArray.length - 1; i >= 0; i--) {
-            var key = dataAsArray[i];
-            var value = objectsMap.get(key)
-            var entry = {};
-            if (hasRichData && (typeof value === 'string' || value instanceof String)) {
-                entry["value"] = value.split(' ').reduce(sourceCounter, 0);
-            } else if (!hasRichData && (typeof value === 'string' || value instanceof String)) {
-                entry["value"] = Number(value);
-            } else {
-                entry["value"] = value;
-            }
-            entry["name"] = key;
-            data.push(entry);
-            source.push(value);
-        }
+		var dataAsArray = Array.from(objectsMap.keys());
+		for (var i = dataAsArray.length - 1; i >= 0; i--) {
+			var key = dataAsArray[i];
+			var value = objectsMap.get(key)
+			var entry = {};
+			if (hasRichData && (typeof value === 'string' || value instanceof String)) {
+				entry["value"] = value.split(' ').reduce(sourceCounter, 0);
+			} else if (!hasRichData && (typeof value === 'string' || value instanceof String)) {
+				entry["value"] = Number(value);
+			} else {
+				entry["value"] = value;
+			}
+			entry["name"] = key;
+			data.push(entry);
+			source.push(value);
+		}
 
 		pieChart.setOption(getOptionsForPieChart(title, subtitle, dataAsArray, data));
-        if (hasRichData) {
+		if (hasRichData) {
 			pieChart.groupedConDecData = source;
-        }
-        return pieChart;
-    };
+		}
+		return pieChart;
+	};
 
-    ConDecDashboard.prototype.navigateToElement = function (elementName) {
+	ConDecDashboard.prototype.navigateToElement = function(elementName) {
 		var targetBaseUrl = AJS.contextPath();
 		var issueKey = elementName.replace(issueKeyParser, issueKeyBuilder);
-        if (!isIssueData) {
+		if (!isIssueData) {
 			var issueKeyParts = elementName.split("origin/");
 			var branchName = issueKeyParts[0];
 			if (issueKeyParts.length > 1) { // not local branch name
@@ -466,48 +466,48 @@
 			var projectKey = elementName.substring(0, elementName.indexOf('-'));
 			var codeFileName = elementName.substring(elementName.indexOf('-') + 1);
 			window.open(targetBaseUrl + '/projects/' + projectKey + '?selectedItem=decision-knowledge-page&codeFileName=' + codeFileName, '_blank');
-        } else {
+		} else {
 			window.open(targetBaseUrl + '/browse/' + issueKey, '_blank');
 		}
-    }
+	};
 
-    ConDecDashboard.prototype.showClickedSource = function (chart, dataIndexClicked, dataClicked) {
-        if (chart.hasOwnProperty("groupedConDecData")) { // CHART_RICH_PIE case
-            // extract data keys (dec. knowledge elements)
-            return showDecKnowledgeElementsOverlay(chart.groupedConDecData[dataIndexClicked], isIssueData);
-        } else if (chart.hasOwnProperty("rawConDecData")) { // CHART_BOXPLOT case
-            // match source data map entries with clicked data
-            var elementsList = extractBoxplotData(chart, dataClicked);
-            return showDecKnowledgeElementsOverlay(elementsList, isIssueData);
-        } else { // CHART_SIMPLE_PIE or other case
-            console.warn("Not supported chart type.")
-        }
-    }
+	ConDecDashboard.prototype.showClickedSource = function(chart, dataIndexClicked, dataClicked) {
+		if (chart.hasOwnProperty("groupedConDecData")) { // CHART_RICH_PIE case
+			// extract data keys (dec. knowledge elements)
+			return showDecKnowledgeElementsOverlay(chart.groupedConDecData[dataIndexClicked], isIssueData);
+		} else if (chart.hasOwnProperty("rawConDecData")) { // CHART_BOXPLOT case
+			// match source data map entries with clicked data
+			var elementsList = extractBoxplotData(chart, dataClicked);
+			return showDecKnowledgeElementsOverlay(elementsList, isIssueData);
+		} else { // CHART_SIMPLE_PIE or other case
+			console.warn("Not supported chart type.")
+		}
+	}
 
-    function cleanPreviousChildNodes(parentNode) {
-        var nodeList = parentNode.childNodes;
-        //remove child elements from back, nodeList.length will shrink
-        for (var i = nodeList.length - 1; i >= 0; i--) {
-            nodeList[i].parentNode.removeChild(nodeList[i]);
-        }
-    }
+	function cleanPreviousChildNodes(parentNode) {
+		var nodeList = parentNode.childNodes;
+		//remove child elements from back, nodeList.length will shrink
+		for (var i = nodeList.length - 1; i >= 0; i--) {
+			nodeList[i].parentNode.removeChild(nodeList[i]);
+		}
+	}
 
-    function extractBoxplotData(boxplot, dataClicked) {
-        var completeArray2d = Array.from(boxplot.rawConDecData) // [ [decElem, int], ... ]
-        var trimmedData = dataClicked.slice(1);
-        var involvedElements = completeArray2d.filter(
-            function (elem) {
-                return this.includes(Number(elem[1]));
-            }, trimmedData);
+	function extractBoxplotData(boxplot, dataClicked) {
+		var completeArray2d = Array.from(boxplot.rawConDecData) // [ [decElem, int], ... ]
+		var trimmedData = dataClicked.slice(1);
+		var involvedElements = completeArray2d.filter(
+			function(elem) {
+				return this.includes(Number(elem[1]));
+			}, trimmedData);
 
 		return involvedElements.map(
-			function (val) { // value is a 2-element array
+			function(val) { // value is a 2-element array
 				return val[0];
 			}
 		).join(DEC_STRING_SEPARATOR);
-    }
+	}
 
-    function getOptionsForBoxplot(name, xLabel, yLabel, data) {
+	function getOptionsForBoxplot(name, xLabel, yLabel, data) {
 		return {
 			title: [{
 				text: name,
@@ -554,10 +554,10 @@
 				data: data.outliers
 			}]
 		};
-    }
+	}
 
-    function getOptionsForPieChart(title, subtitle, dataKeys, dataMap) {
-        var options = {
+	function getOptionsForPieChart(title, subtitle, dataKeys, dataMap) {
+		var options = {
 			title: {
 				text: title,
 				subtext: subtitle,
@@ -602,73 +602,73 @@
 			}],
 		};
 
-        if (colorPalette) {
+		if (colorPalette) {
 			options.color = colorPalette;
 		}
 
 		return options;
-    }
+	}
 
-    function issueKeyBuilder(m, p1, p2, p3) {
-        return p2 + "-" + p3;
-    }
+	function issueKeyBuilder(m, p1, p2, p3) {
+		return p2 + "-" + p3;
+	}
 
-    function fillChildNodes(node, flatList, isIssueData) {
-        var listArray = flatList.split(DEC_STRING_SEPARATOR);
-        if (!isIssueData) {
-            listArray = listArray.map(function (e) {
-                return e.replace("refs/remotes/", "");
-            });
-        }
+	function fillChildNodes(node, flatList, isIssueData) {
+		var listArray = flatList.split(DEC_STRING_SEPARATOR);
+		if (!isIssueData) {
+			listArray = listArray.map(function(e) {
+				return e.replace("refs/remotes/", "");
+			});
+		}
 
-        for (var i = 0; i < listArray.length; i++) {
-            var span = document.createElement("p");
-            span.dataset.isbranch = !isIssueData;
-            span.innerText = listArray[i];
-            node.appendChild(span);
-        }
-    }
+		for (var i = 0; i < listArray.length; i++) {
+			var span = document.createElement("p");
+			span.dataset.isbranch = !isIssueData;
+			span.innerText = listArray[i];
+			node.appendChild(span);
+		}
+	}
 
-    function showDecKnowledgeElementsOverlay(flatList, isIssueData) {
-        var overlay = document.getElementById('decKnowElementsOverlay');
-        overlay.classList.remove("hidden");
-        var contents = document.getElementById('extractedDecKnowElements');
+	function showDecKnowledgeElementsOverlay(flatList, isIssueData) {
+		var overlay = document.getElementById('decKnowElementsOverlay');
+		overlay.classList.remove("hidden");
+		var contents = document.getElementById('extractedDecKnowElements');
 
-        if (!detailsOverlayClickHandlersSet) {
-            console.info("attaching overlay handlers")
-            overlay.addEventListener('click', clickDecKnowledgeElementsOverlay, {
-                capture: true,
-                once: false,
-                passive: false
-            });
-            contents.addEventListener('click', clickDecKnowledgeElementsInOverlay, {
-                capture: true,
-                once: false,
-                passive: false
-            });
-            detailsOverlayClickHandlersSet = true;
-        }
-        cleanPreviousChildNodes(contents);
-        fillChildNodes(contents, flatList, isIssueData);
-    }
+		if (!detailsOverlayClickHandlersSet) {
+			console.info("attaching overlay handlers")
+			overlay.addEventListener('click', clickDecKnowledgeElementsOverlay, {
+				capture: true,
+				once: false,
+				passive: false
+			});
+			contents.addEventListener('click', clickDecKnowledgeElementsInOverlay, {
+				capture: true,
+				once: false,
+				passive: false
+			});
+			detailsOverlayClickHandlersSet = true;
+		}
+		cleanPreviousChildNodes(contents);
+		fillChildNodes(contents, flatList, isIssueData);
+	}
 
 	global.conDecDashboard = new ConDecDashboard();
 })(window);
 
 function echartDataClicked(param) {
-    if (typeof param.seriesIndex != 'undefined') {
-        conDecDashboard.showClickedSource(this, param.dataIndex, param.data)
-    }
+	if (typeof param.seriesIndex != 'undefined') {
+		conDecDashboard.showClickedSource(this, param.dataIndex, param.data)
+	}
 }
 
 function clickDecKnowledgeElementsInOverlay(event) {
-    if (event.target.nodeName.toLowerCase() === "p") {
-        conDecDashboard.navigateToElement(event.target.innerText);
-    }
+	if (event.target.nodeName.toLowerCase() === "p") {
+		conDecDashboard.navigateToElement(event.target.innerText);
+	}
 }
 
 function clickDecKnowledgeElementsOverlay(event) {
-    if (event.target === event.currentTarget) {
-        event.currentTarget.classList.add("hidden");
-    }
+	if (event.target === event.currentTarget) {
+		event.currentTarget.classList.add("hidden");
+	}
 }
