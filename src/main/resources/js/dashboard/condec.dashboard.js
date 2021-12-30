@@ -35,13 +35,17 @@
 		dashboardAPI.once("afterRender",
 			function() {
 				// The following splitting is necessary because dashboardAPI.savePreferences(filterSettings)
-				// saves lists as strings
+				// saves lists as strings and cannot save objects such as definitionOfDone
 				filterSettings.knowledgeTypes = filterSettings["knowledgeTypes"].split(',');
 				filterSettings.linkTypes = filterSettings["linkTypes"].split(',');
 				filterSettings.status = filterSettings["status"].split(',');
 				filterSettings.documentationLocations = filterSettings["documentationLocations"].split(',');
 				filterSettings.groups = filterSettings["groups"].split(',');
 				filterSettings.changeImpactAnalysisConfig = {};
+				filterSettings.definitionOfDone = {
+					"minimumDecisionsWithinLinkDistance": filterSettings.minimumDecisionsWithinLinkDistance,
+					"maximumLinkDistanceToDecisions": filterSettings.maximumLinkDistanceToDecisions
+				}
 				if (filterSettings["projectKey"]) {
 					createRender(dashboard, viewIdentifier, dashboardAPI, filterSettings);
 				}
@@ -171,10 +175,12 @@
 			var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 
 			if (filterSettings["projectKey"]) {
-				var filterSettingsAsJsonString = JSON.stringify(filterSettings);
 				console.log("save");
-				console.log(filterSettingsAsJsonString);
-				console.log(JSON.parse(filterSettingsAsJsonString));
+				if (filterSettings["definitionOfDone"]) {
+					// necessary since savePreferences cannot store objects
+					Object.assign(filterSettings, filterSettings.definitionOfDone);
+				}
+				console.log(filterSettings);
 				dashboardAPI.savePreferences(filterSettings);
 			}
 

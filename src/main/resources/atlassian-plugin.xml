@@ -532,20 +532,12 @@
 		<resource type="download" name="condec.dashboard.api.js" location="js/dashboard/condec.dashboard.api.js" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
-		<resource type="download" name="condec.git.branches.dashboard.configuration.js"
-			location="js/dashboard/condec.git.branches.dashboard.configuration.js" />
 		<resource type="download" name="condec.general.metrics.dashboard.js"
 			location="js/dashboard/condec.general.metrics.dashboard.js" />
-		<resource type="download" name="condec.general.metrics.dashboard.configuration.js"
-			location="js/dashboard/condec.general.metrics.dashboard.configuration.js" />
 		<resource type="download" name="condec.rationale.completeness.dashboard.js"
 			location="js/dashboard/condec.rationale.completeness.dashboard.js" />
-		<resource type="download" name="condec.rationale.completeness.dashboard.configuration.js"
-			location="js/dashboard/condec.rationale.completeness.dashboard.configuration.js" />
 		<resource type="download" name="condec.rationale.coverage.dashboard.js"
 			location="js/dashboard/condec.rationale.coverage.dashboard.js" />
-		<resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
-			location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
 		<resource type="download" name="condec.requirements.dashboard.js"
 			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />

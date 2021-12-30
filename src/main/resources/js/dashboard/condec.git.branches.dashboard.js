@@ -1,13 +1,15 @@
 /*
- This module fills the box plots and pie charts used in the feature task branch dashboard item.
+ This module renders the dashboard and its configuration screen used in the feature branch dashboard item.
 
  Requires
  * condec.requirements.dashboard.js
+ * condec.git.branches.dashboard.js
 
  Is referenced in HTML by
  * dashboard/featureBranches.vm
  */
-(function(global) {
+define('dashboard/branches', [], function () {
+	var dashboardAPI;
 	var issueBranchKeyRx = null;
 	var branchesQuality = [];
 
@@ -26,9 +28,30 @@
 	var ISSUE_WITHOUT_DECISIONS = "Issue does not have a valid decision!";
 	var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
-	var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
-		console.log("ConDecBranchesDashboard constructor");
+	var ConDecBranchesDashboardItem = function (API) {
+		dashboardAPI = API;
 	};
+
+	/**
+	 * Called to render the view for a fully configured dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecBranchesDashboardItem.prototype.render = function (context, preferences) {
+		conDecDashboard.initRender(this, "branch", dashboardAPI, preferences);
+	};
+
+	/**
+	 * Called to render the edit view for a dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecBranchesDashboardItem.prototype.renderEdit = function (context, preferences) {
+		conDecDashboard.initConfiguration("branch", dashboardAPI, preferences);
+	};
+	
 
 	/**
 	 * Gets the data to fill the dashboard plots by making an API-call.
@@ -38,13 +61,14 @@
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
-	ConDecBranchesDashboard.prototype.getData = function(dashboardAPI, filterSettings) {
+	ConDecBranchesDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
+		conDecBranchesDashboardItem = this;
 		conDecGitAPI.getDiffForProject(filterSettings.projectKey)
 			.then(branches => {
-				conDecDashboard.processData(null, branches, conDecBranchesDashboard, "branch",
+				conDecDashboard.processData(null, branches, conDecBranchesDashboardItem, "branch",
 					dashboardAPI, filterSettings);
 			}).catch(error => {
-				conDecDashboard.processData(error, null, conDecBranchesDashboard, "branch",
+				conDecDashboard.processData(error, null, conDecBranchesDashboardItem, "branch",
 					dashboardAPI, filterSettings);
 			});
 	};
@@ -57,7 +81,7 @@
 	 * @param data the data returned from the API-call
 	 * @param filterSettings the filterSettings used in the API-call
 	 */
-	ConDecBranchesDashboard.prototype.renderData = function(branches, filterSettings) {
+	ConDecBranchesDashboardItem.prototype.renderData = function(branches, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
@@ -296,5 +320,5 @@
 		return "Incorrect";
 	}
 
-	global.conDecBranchesDashboard = new ConDecBranchesDashboard();
-})(window);
+	return ConDecBranchesDashboardItem;
+});

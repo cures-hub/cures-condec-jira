@@ -1,17 +1,39 @@
 /*
- This module fills the box plots and pie charts used in the rationale coverage dashboard item.
+ This module renders the dashboard and its configuration screen used in the rationale coverage dashboard item.
 
  Requires
  * condec.requirements.dashboard.js
+ * condec.rationale.coverage.dashboard.js
 
  Is referenced in HTML by
  * dashboard/rationaleCoverage.vm
  */
+define('dashboard/rationaleCoverage', [], function() {
+	var dashboardAPI;
 
-(function (global) {
+	var ConDecRationaleCoverageDashboardItem = function(API) {
+		dashboardAPI = API;
+	};
 
-	var ConDecRationaleCoverageDashboard = function() {
-		console.log("ConDecRationaleCoverageDashboard constructor");
+	/**
+	 * Called to render the view for a fully configured dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecRationaleCoverageDashboardItem.prototype.render = function(context, preferences) {
+		conDecDashboard.initRender(this, "rationale-coverage",
+			dashboardAPI, preferences);
+	};
+
+	/**
+	 * Called to render the edit view for a dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecRationaleCoverageDashboardItem.prototype.renderEdit = function(context, preferences) {
+		conDecDashboard.initConfiguration("rationale-coverage", dashboardAPI, preferences);
 	};
 
 	/**
@@ -23,10 +45,10 @@
 	 * @param filterSettings the filterSettings used for the API-call
 	 * @param sourceKnowledgeTypes the source knowledge types used for the API-call
 	 */
-	ConDecRationaleCoverageDashboard.prototype.getData = function (dashboardAPI, filterSettings, sourceKnowledgeTypes) {
-		conDecDashboardAPI.getRationaleCoverage(filterSettings, sourceKnowledgeTypes, function (error, result) {
-			conDecDashboard.processData(error, result, conDecRationaleCoverageDashboard,
-				"rationale-coverage", dashboardAPI);
+	ConDecRationaleCoverageDashboardItem.prototype.getData = function(dashboardAPI, filterSettings, sourceKnowledgeTypes) {
+		var conDecRationaleCoverageDashboardItem = this;
+		conDecDashboardAPI.getRationaleCoverage(filterSettings, sourceKnowledgeTypes, function(error, result) {
+			conDecDashboard.processData(error, result, conDecRationaleCoverageDashboardItem, "rationale-coverage", dashboardAPI);
 		});
 	};
 
@@ -37,7 +59,7 @@
 	 *
 	 * @param data the data returned from the API-call
 	 */
-	ConDecRationaleCoverageDashboard.prototype.renderData = function (data) {
+	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(data) {
 		/*  init data for charts */
 		var issuesPerSelectedJiraIssue = new Map();
 		var decisionsPerSelectedJiraIssue = new Map();
@@ -76,5 +98,5 @@
 			colorPalette);
 	};
 
-	global.conDecRationaleCoverageDashboard = new ConDecRationaleCoverageDashboard();
-})(window);
+	return ConDecRationaleCoverageDashboardItem;
+});

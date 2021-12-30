@@ -1,17 +1,38 @@
 /*
- This module fills the box plots and pie charts used in the rationale completeness dashboard item.
+ This module renders the dashboard and its configuration screen used in the rationale completeness dashboard item.
 
  Requires
  * condec.requirements.dashboard.js
+ * condec.rationale.completeness.dashboard.js
 
  Is referenced in HTML by
  * dashboard/rationaleCompleteness.vm
  */
+define('dashboard/rationaleCompleteness', [], function() {
+	var dashboardAPI;
 
-(function (global) {
+	var ConDecRationaleCompletenessDashboardItem = function(API) {
+		dashboardAPI = API;
+	};
 
-	var ConDecRationaleCompletenessDashboard = function () {
-		console.log("ConDecRationaleCompletenessDashboard constructor");
+	/**
+	 * Called to render the view for a fully configured dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecRationaleCompletenessDashboardItem.prototype.render = function(context, preferences) {
+		conDecDashboard.initRender(this, "rationale-completeness", dashboardAPI, preferences);
+	};
+
+	/**
+	 * Called to render the edit view for a dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecRationaleCompletenessDashboardItem.prototype.renderEdit = function(context, preferences) {
+		conDecDashboard.initConfiguration("rationale-completeness", dashboardAPI, preferences);
 	};
 
 	/**
@@ -22,10 +43,10 @@
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
-	ConDecRationaleCompletenessDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
-		conDecDashboardAPI.getRationaleCompleteness(filterSettings, function (error, result) {
-			conDecDashboard.processData(error, result, conDecRationaleCompletenessDashboard,
-				"rationale-completeness", dashboardAPI);
+	ConDecRationaleCompletenessDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
+		conDecRationaleCompletenessDashboardItem = this;
+		conDecDashboardAPI.getRationaleCompleteness(filterSettings, function(error, result) {
+			conDecDashboard.processData(error, result, conDecRationaleCompletenessDashboardItem, "rationale-completeness", dashboardAPI);
 		});
 	};
 
@@ -36,7 +57,7 @@
 	 *
 	 * @param data the data returned from the API-call
 	 */
-	ConDecRationaleCompletenessDashboard.prototype.renderData = function (data) {
+	ConDecRationaleCompletenessDashboardItem.prototype.renderData = function(data) {
 		/*  init data for charts */
 		var issuesSolvedByDecision = new Map();
 		var decisionsSolvingIssues = new Map();
@@ -85,5 +106,5 @@
 			colorPalette);
 	};
 
-	global.conDecRationaleCompletenessDashboard = new ConDecRationaleCompletenessDashboard();
-})(window);
+	return ConDecRationaleCompletenessDashboardItem;
+});
