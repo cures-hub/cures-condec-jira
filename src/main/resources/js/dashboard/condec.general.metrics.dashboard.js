@@ -1,12 +1,8 @@
-/*
- This module renders the dashboard and its configuration screen used in the general metrics dashboard item.
-
- Requires
- * condec.requirements.dashboard.js
- * condec.general.metrics.dashboard.js
-
- Is referenced in HTML by
- * dashboard/generalMetrics.vm
+/**
+ * This module renders the dashboard and its configuration screen used in the general metrics dashboard item.
+ *
+ * Requires
+ * condec.dashboard.js
  */
 define('dashboard/generalMetrics', [], function() {
 	var dashboardAPI;

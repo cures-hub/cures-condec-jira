@@ -90,10 +90,10 @@
 	 * Automatically when the dashboard edit function is selected or
 	 * when the dashboard loads without set filterSettings.
 	 * 
-	 * external references: condec.general.metrics.dashboard.configuration.js
-	 * condec.git.branches.dashboard.configuration.js,
-	 * condec.rationale.completeness.dashboard.configuration.js,
-	 * condec.rationale.coverage.dashboard.configuration.js
+	 * external references: condec.general.metrics.dashboard.js
+	 * condec.git.branches.dashboard.js,
+	 * condec.rationale.completeness.dashboard.js,
+	 * condec.rationale.coverage.dashboard.js
 	 * 
 	 * @param viewIdentifier identifies the html elements of the dashboard
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
@@ -151,10 +151,10 @@
 	/**
 	 * Process the data that was returned from a REST-call.
 	 *
-	 * external references: condec.general.metrics.dashboard.configuration.js
-	 * condec.git.branches.dashboard.configuration.js,
-	 * condec.rationale.completeness.dashboard.configuration.js,
-	 * condec.rationale.coverage.dashboard.configuration.js
+	 * external references: condec.general.metrics.dashboard.js
+	 * condec.git.branches.dashboard.js,
+	 * condec.rationale.completeness.dashboard.js,
+	 * condec.rationale.coverage.dashboard.js
 	 *
 	 * @param error the error message returned in the REST-call
 	 *              null if no error occurred
@@ -617,7 +617,7 @@
 		var listArray = flatList.split(DEC_STRING_SEPARATOR);
 		if (!isIssueData) {
 			listArray = listArray.map(function(e) {
-				return e.replace("refs/remotes/", "");
+					return e.replace("refs/remotes/", "");
 			});
 		}
 
@@ -652,23 +652,23 @@
 		fillChildNodes(contents, flatList, isIssueData);
 	}
 
+	function clickDecKnowledgeElementsOverlay(event) {
+		if (event.target === event.currentTarget) {
+			event.currentTarget.classList.add("hidden");
+		}
+	}
+
+	function echartDataClicked(param) {
+		if (typeof param.seriesIndex != 'undefined') {
+			conDecDashboard.showClickedSource(this, param.dataIndex, param.data)
+		}
+	}
+
+	function clickDecKnowledgeElementsInOverlay(event) {
+		if (event.target.nodeName.toLowerCase() === "p") {
+			conDecDashboard.navigateToElement(event.target.innerText);
+		}
+	}
+
 	global.conDecDashboard = new ConDecDashboard();
 })(window);
-
-function echartDataClicked(param) {
-	if (typeof param.seriesIndex != 'undefined') {
-		conDecDashboard.showClickedSource(this, param.dataIndex, param.data)
-	}
-}
-
-function clickDecKnowledgeElementsInOverlay(event) {
-	if (event.target.nodeName.toLowerCase() === "p") {
-		conDecDashboard.navigateToElement(event.target.innerText);
-	}
-}
-
-function clickDecKnowledgeElementsOverlay(event) {
-	if (event.target === event.currentTarget) {
-		event.currentTarget.classList.add("hidden");
-	}
-}

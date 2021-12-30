@@ -1,14 +1,10 @@
-/*
- This module renders the dashboard and its configuration screen used in the feature branch dashboard item.
-
- Requires
- * condec.requirements.dashboard.js
- * condec.git.branches.dashboard.js
-
- Is referenced in HTML by
- * dashboard/featureBranches.vm
+/**
+ * This module renders the dashboard and its configuration screen used in the feature branch dashboard item.
+ *
+ * Requires
+ * condec.dashboard.js
  */
-define('dashboard/branches', [], function () {
+define('dashboard/branches', [], function() {
 	var dashboardAPI;
 	var issueBranchKeyRx = null;
 	var branchesQuality = [];
@@ -28,7 +24,7 @@ define('dashboard/branches', [], function () {
 	var ISSUE_WITHOUT_DECISIONS = "Issue does not have a valid decision!";
 	var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
-	var ConDecBranchesDashboardItem = function (API) {
+	var ConDecBranchesDashboardItem = function(API) {
 		dashboardAPI = API;
 	};
 
@@ -38,7 +34,7 @@ define('dashboard/branches', [], function () {
 	 * @param context The surrounding <div/> context that this items should render into.
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
-	ConDecBranchesDashboardItem.prototype.render = function (context, preferences) {
+	ConDecBranchesDashboardItem.prototype.render = function(context, preferences) {
 		conDecDashboard.initRender(this, "branch", dashboardAPI, preferences);
 	};
 
@@ -48,10 +44,10 @@ define('dashboard/branches', [], function () {
 	 * @param context The surrounding <div/> context that this items should render into.
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
-	ConDecBranchesDashboardItem.prototype.renderEdit = function (context, preferences) {
+	ConDecBranchesDashboardItem.prototype.renderEdit = function(context, preferences) {
 		conDecDashboard.initConfiguration("branch", dashboardAPI, preferences);
 	};
-	
+
 
 	/**
 	 * Gets the data to fill the dashboard plots by making an API-call.

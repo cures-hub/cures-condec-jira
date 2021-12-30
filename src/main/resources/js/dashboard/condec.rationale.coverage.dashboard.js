@@ -1,12 +1,8 @@
-/*
- This module renders the dashboard and its configuration screen used in the rationale coverage dashboard item.
-
- Requires
- * condec.requirements.dashboard.js
- * condec.rationale.coverage.dashboard.js
-
- Is referenced in HTML by
- * dashboard/rationaleCoverage.vm
+/**
+ * This module renders the dashboard and its configuration screen used in the rationale coverage dashboard item.
+ *
+ * Requires
+ * condec.dashboard.js
  */
 define('dashboard/rationaleCoverage', [], function() {
 	var dashboardAPI;
