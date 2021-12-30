@@ -44,9 +44,9 @@ define('dashboard/rationaleCompleteness', [], function() {
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
-		conDecRationaleCompletenessDashboardItem = this;
+		let self = this;
 		conDecDashboardAPI.getRationaleCompleteness(filterSettings, function(error, result) {
-			conDecDashboard.processData(error, result, conDecRationaleCompletenessDashboardItem, "rationale-completeness", dashboardAPI);
+			conDecDashboard.processData(error, result, self, "rationale-completeness", dashboardAPI);
 		});
 	};
 

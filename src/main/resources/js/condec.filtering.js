@@ -481,18 +481,19 @@
 			return null;
 		}
 		selectGroupField.innerHTML = "";
-		if (groups !== undefined && groups !== null && groups.length > 0) {
-			for (var i = 0; i < groups.length; i++) {
-				var isSelected = "";
-				if (selectedGroups !== undefined && selectedGroups !== null) {
-					if (selectedGroups.includes(groups[i])) {
-						isSelected = " selected";
-					}
+		if (!groups || groups.length == 0) {
+			return null;
+		}
+		for (var i = 0; i < groups.length; i++) {
+			var isSelected = "";
+			if (selectedGroups !== undefined && selectedGroups !== null) {
+				if (selectedGroups.includes(groups[i])) {
+					isSelected = " selected";
 				}
-				selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'" + isSelected + ">"
-					+ groups[i]
-					+ "</option>");
 			}
+			selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'" + isSelected + ">"
+				+ groups[i]
+				+ "</option>");
 		}
 		AJS.$(selectGroupField).auiSelect2();
 	};
