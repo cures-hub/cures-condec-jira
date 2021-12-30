@@ -22,6 +22,8 @@ define('dashboard/rationaleCompleteness', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.render = function (context, preferences) {
+		console.log("render");
+		console.log(preferences);
 		conDecDashboard.initRender(conDecRationaleCompletenessDashboard, "rationale-completeness",
 			dashboardAPI, preferences);
 	};
@@ -33,6 +35,8 @@ define('dashboard/rationaleCompleteness', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.renderEdit = function (context, preferences) {
+		console.log("renderEdit");
+		console.log(preferences);
 		conDecDashboard.initConfiguration("rationale-completeness", dashboardAPI, preferences);
 	};
 

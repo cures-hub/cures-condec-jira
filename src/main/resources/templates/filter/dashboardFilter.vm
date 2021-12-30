@@ -13,7 +13,7 @@
         #end
         #if($viewIdentifier != "branch")        	
             #parse("templates/filter/filterLabel.vm")
-            <div class="field-group condec-filter">
+            <div class="field-group">
             #parse("templates/filter/text.vm")
             #parse("templates/filter/knowledgeType.vm")
             #parse("templates/filter/status.vm")

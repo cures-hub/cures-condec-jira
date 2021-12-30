@@ -22,6 +22,8 @@ define('dashboard/branches', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.render = function (context, preferences) {
+		console.log("render");
+		console.log(preferences);
 		conDecDashboard.initRender(conDecBranchesDashboard, "branch", dashboardAPI, preferences);
 	};
 
@@ -32,6 +34,8 @@ define('dashboard/branches', [], function () {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.renderEdit = function (context, preferences) {
+		console.log("renderEdit");
+		console.log(preferences);
 		conDecDashboard.initConfiguration("branch", dashboardAPI, preferences);
 	};
 

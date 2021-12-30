@@ -146,9 +146,15 @@
 		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
 		if (startDatePicker !== null && endDatePicker !== null) {
 			var startDate = new Date(startDatePicker.value).getTime();
+			if (!startDate) {
+				startDate = -1;
+			}
 			filterSettings["startDate"] = startDate;
 
-			var endDate = new Date(endDatePicker.value).getTime();
+			var endDate = new Date(endDatePicker.value).getTime();			
+			if (!endDate) {
+				endDate = -1;
+			}
 			filterSettings["endDate"] = endDate;
 		}
 
@@ -260,6 +266,17 @@
 		if (propagationRules) {
 			filterSettings["changeImpactAnalysisConfig"]["propagationRules"] = propagationRules;
 		}
+
+		// Read specific filter settings for knowledge dashboard
+		var projectKeyDropdown = document.getElementById("project-dropdown-" + viewIdentifier);
+		if (projectKeyDropdown) {
+			filterSettings["projectKey"] = projectKeyDropdown.value;
+		}
+
+		var sourceKnowledgeTypes = conDecFiltering.getSelectedItems("source-knowledge-type-dropdown-" + viewIdentifier);
+		if (sourceKnowledgeTypes) {
+			filterSettings["sourceKnowledgeTypes"] = sourceKnowledgeTypes;
+		} 
 
 		return filterSettings;
 	};
