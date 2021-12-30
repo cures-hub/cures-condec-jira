@@ -37,7 +37,6 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 		settings.setSelectedElement("TEST-1");
 		VisGraph graph = ChangeImpactAnalysisService.calculateGraphImpact(settings);
 		assertTrue(graph.getNodes().size() > 0);
-		assertTrue(graph.getEdges().size() > 0);
 	}
 
 	@Test
@@ -46,7 +45,7 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 		FilterSettings settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		Matrix matrix = ChangeImpactAnalysisService.calculateMatrixImpact(settings);
-		assertEquals(4, matrix.getHeaderElementsWithHighlighting().size());
+		assertEquals(1, matrix.getHeaderElementsWithHighlighting().size());
 	}
 
 	@Test
@@ -57,7 +56,7 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 		TreeViewer tree = ChangeImpactAnalysisService.calculateTreeImpact(settings);
 		assertEquals(1, tree.getNodes().size());
 		int childSize = tree.getNodes().stream().findFirst().orElseThrow().getChildren().size();
-		assertEquals(3, childSize);
+		assertEquals(0, childSize);
 	}
 
 	@Test
@@ -66,7 +65,7 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 		settings.setSelectedElement("TEST-1");
 
 		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(settings);
-		assertEquals(4, impactedElements.size());
+		assertEquals(1, impactedElements.size());
 		assertEquals(settings.getSelectedElement(), impactedElements.get(0));
 	}
 }

@@ -34,14 +34,11 @@ public class TestCalculator extends TestSetUp {
         impactedElements = Calculator.calculateChangeImpact(
             settings.getSelectedElement(), 1.0, settings, impactedElements, (long) settings.getLinkDistance());
         
-        assertEquals(4, impactedElements.size());
         assertEquals(1.0, impactedElements.get(0).getImpactValue(), 0.05);
         assertEquals(1.0, impactedElements.get(0).getParentImpact(), 0.05);
         assertEquals(1.0, impactedElements.get(0).getLinkTypeWeight(), 0.05);
         assertEquals(1.0, impactedElements.get(0).getRuleBasedValue(), 0.05);
         assertEquals(0, impactedElements.get(0).getPropagationRules().size());
-        assertEquals(0.40, impactedElements.get(1).getImpactValue(), 0.05);
-        assertEquals(7, impactedElements.get(1).getPropagationRules().size());
     }
 
     @Test

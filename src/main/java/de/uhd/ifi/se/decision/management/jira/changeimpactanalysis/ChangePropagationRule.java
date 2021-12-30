@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.AmountOfDistinctAuthors;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenCoupled;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenLowAverageAge;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenMoreOutboundElements;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTextualSimilar;
@@ -29,7 +30,9 @@ public enum ChangePropagationRule {
 	BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND("Boost when element has more outbound than inbound elements",
 			new BoostWhenMoreOutboundElements()),
 	BOOST_WHEN_LOW_AVERAGE_AGE("Boost when element has a low average age",
-			new BoostWhenLowAverageAge());
+			new BoostWhenLowAverageAge()),
+	BOOST_WHEN_COUPLED("Boost when element is coupled to the selected element",
+			new BoostWhenCoupled());
 
 	private String description;
 	private ChangePropagationFunction function;

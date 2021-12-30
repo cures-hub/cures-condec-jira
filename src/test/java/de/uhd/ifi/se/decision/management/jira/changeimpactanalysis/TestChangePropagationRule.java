@@ -16,6 +16,12 @@ public class TestChangePropagationRule extends TestSetUp {
     }
 
     @Test
+    public void testGetPropagationRuleInputEmpty() {
+        String propagationRuleName = "";
+        assertTrue(ChangePropagationRule.getPropagationRule(propagationRuleName) == null);
+    }
+
+    @Test
     public void testGetPropagationRuleNoRuleMatch() {
         String propagationRuleName = "FooBar";
         assertTrue(ChangePropagationRule.getPropagationRule(propagationRuleName) == null);

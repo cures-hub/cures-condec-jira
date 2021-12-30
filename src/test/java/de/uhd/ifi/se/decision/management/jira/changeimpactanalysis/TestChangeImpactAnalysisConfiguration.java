@@ -56,7 +56,7 @@ public class TestChangeImpactAnalysisConfiguration extends TestSetUp {
 	@Test
 	public void testPropagationRules() {
 		// default value
-		assertEquals(7, config.getPropagationRules().size());
+		assertEquals(8, config.getPropagationRules().size());
 		config.setPropagationRules(List.of(ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getDescription()));
 		assertEquals(1, config.getPropagationRules().size());
 		config.setPropagationRules(null);
@@ -65,7 +65,7 @@ public class TestChangeImpactAnalysisConfiguration extends TestSetUp {
 
 	@Test
 	public void testPropagationRulesAsStrings() {
-		assertEquals(7, config.getPropagationRulesAsStrings().size());
+		assertEquals(8, config.getPropagationRulesAsStrings().size());
 		assertEquals("Stop at elements with the same type as the selected element",
 				config.getPropagationRulesAsStrings().get(0));
 	}

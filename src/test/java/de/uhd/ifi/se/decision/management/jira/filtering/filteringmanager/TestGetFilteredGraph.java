@@ -121,6 +121,6 @@ public class TestGetFilteredGraph extends TestSetUp {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
 		
-		assertEquals(4, filteringManager.getFilteredGraph(impactedElements).vertexSet().size());
+		assertEquals(1, filteringManager.getFilteredGraph(impactedElements).vertexSet().size());
 	}
 }
