@@ -35,7 +35,7 @@ define('dashboard/branches', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.render = function(context, preferences) {
-		conDecDashboard.initRender(this, "branch", dashboardAPI, preferences);
+		conDecDashboard.initDashboard(this, "branch", dashboardAPI, preferences);
 	};
 
 	/**
@@ -47,7 +47,6 @@ define('dashboard/branches', [], function() {
 	ConDecBranchesDashboardItem.prototype.renderEdit = function(context, preferences) {
 		conDecDashboard.initConfiguration("branch", dashboardAPI, preferences);
 	};
-
 
 	/**
 	 * Gets the data to fill the dashboard plots by making an API-call.

@@ -18,8 +18,7 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.render = function(context, preferences) {
-		conDecDashboard.initRender(this, "rationale-coverage",
-			dashboardAPI, preferences);
+		conDecDashboard.initDashboard(this, "rationale-coverage", dashboardAPI, preferences);
 	};
 
 	/**

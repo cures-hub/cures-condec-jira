@@ -1,7 +1,7 @@
 /**
  This module contains methods used to render the dashboards and their configuration screens.
  
- Requires echarts library
+ Requires echarts library to plot metrics as boxplots and pie charts
 
  Is referenced by
  * condec.general.metrics.dashboard.js
@@ -28,41 +28,54 @@
 	};
 
 	/**
-	 * Initializes a dashboard.
-	 * Automatically called when a dashboard renders its content or
-	 * when the dashboard loads with set filterSettings.
+	 * Initializes a dashboard with saved filterSettings.
 	 * 
-	 * external references: condec.general.metrics.dashboard.configuration.js
-	 * condec.git.branches.dashboard.configuration.js, 
-	 * condec.rationale.completeness.dashboard.configuration.js, 
-	 * condec.rationale.coverage.dashboard.configuration.js
+	 * external references: condec.general.metrics.dashboard.js
+	 * condec.git.branches.dashboard.js, 
+	 * condec.rationale.completeness.dashboard.js, 
+	 * condec.rationale.coverage.dashboard.js
 	 * 
-	 * @param dashboard reference to the current dashboard
+	 * @param dashboard reference to the current dashboard item
 	 * @param viewIdentifier identifies the html elements of the dashboard
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
 	 * @param filterSettings the options set in the dashboard configuration
 	 */
-	ConDecDashboard.prototype.initRender = function(dashboard, viewIdentifier, dashboardAPI, filterSettings) {
+	ConDecDashboard.prototype.initDashboard = function(dashboard, viewIdentifier, dashboardAPI, savedFilterSettings) {
 		dashboardAPI.once("afterRender",
 			function() {
-				// the following splitting is necessary because dashboardAPI.savePreferences(filterSettings)
-				// saves lists as strings and cannot save objects such as definitionOfDone
-				filterSettings.knowledgeTypes = toList(filterSettings["knowledgeTypes"]);
-				filterSettings.linkTypes = toList(filterSettings["linkTypes"]);
-				filterSettings.status = toList(filterSettings["status"]);
-				filterSettings.documentationLocations = toList(filterSettings["documentationLocations"]);
-				filterSettings.groups = toList(filterSettings["groups"]);
-				filterSettings.sourceKnowledgeTypes = toList(filterSettings["sourceKnowledgeTypes"]);
-				filterSettings.changeImpactAnalysisConfig = {};
-				filterSettings.definitionOfDone = {
-					"minimumDecisionsWithinLinkDistance": filterSettings.minimumDecisionsWithinLinkDistance,
-					"maximumLinkDistanceToDecisions": filterSettings.maximumLinkDistanceToDecisions
-				};
+				var filterSettings = toFilterSettings(savedFilterSettings);
 				if (filterSettings["projectKey"]) {
-					createRender(dashboard, viewIdentifier, dashboardAPI, filterSettings);
+					dashboardAPI.showLoadingBar();
+
+					var sourceKnowledgeTypes = "";
+					if (filterSettings["sourceKnowledgeTypes"]) {
+						sourceKnowledgeTypes = filterSettings["sourceKnowledgeTypes"];
+					}
+					document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
+					dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);
+					dashboardAPI.resize();
 				}
 			});
 	};
+
+	/**
+	 * Neccessary because dashboardAPI.savePreferences(filterSettings) saves lists as strings 
+	 * and cannot save objects such as definitionOfDone.
+	 */
+	function toFilterSettings(filterSettings) {
+		filterSettings.knowledgeTypes = toList(filterSettings["knowledgeTypes"]);
+		filterSettings.linkTypes = toList(filterSettings["linkTypes"]);
+		filterSettings.status = toList(filterSettings["status"]);
+		filterSettings.documentationLocations = toList(filterSettings["documentationLocations"]);
+		filterSettings.groups = toList(filterSettings["groups"]);
+		filterSettings.sourceKnowledgeTypes = toList(filterSettings["sourceKnowledgeTypes"]);
+		filterSettings.changeImpactAnalysisConfig = {};
+		filterSettings.definitionOfDone = {
+			"minimumDecisionsWithinLinkDistance": filterSettings.minimumDecisionsWithinLinkDistance,
+			"maximumLinkDistanceToDecisions": filterSettings.maximumLinkDistanceToDecisions
+		};
+		return filterSettings;
+	}
 
 	/**
 	 * Converts a string to a list.
@@ -102,51 +115,16 @@
 	ConDecDashboard.prototype.initConfiguration = function(viewIdentifier, dashboardAPI, filterSettings) {
 		dashboardAPI.once("afterRender",
 			function() {
-				createConfiguration(viewIdentifier, dashboardAPI, filterSettings);
+				showDashboardSection("condec-dashboard-config-", viewIdentifier);
+
+				createSaveButton(dashboardAPI, viewIdentifier);
+				createCancelButton(filterSettings, dashboardAPI, viewIdentifier);
+				createListener(viewIdentifier);
+				setPreferences(filterSettings, viewIdentifier);
+
+				dashboardAPI.resize();
 			});
 	};
-
-	/**
-	 * Gets the filterSettings from the filterSettings and gets the data
-	 * from the server.
-	 *
-	 * @param dashboard reference to the current dashboard
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param filterSettings the options set in the dashboard configuration
-	 */
-	function createRender(dashboard, viewIdentifier, dashboardAPI, filterSettings) {
-		dashboardAPI.showLoadingBar();
-
-		var sourceKnowledgeTypes = "";
-		if (filterSettings["sourceKnowledgeTypes"]) {
-			sourceKnowledgeTypes = filterSettings["sourceKnowledgeTypes"];
-		}
-		getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes);
-
-		dashboardAPI.resize();
-	}
-
-	/**
-	 * Gets the data to fill the dashboard plots by calling the getData()-method
-	 * of the specified dashboard.
-	 *
-	 * @param dashboard reference to the current dashboard
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param filterSettings the filterSettings used for the REST-call
-	 * @param sourceKnowledgeTypes the sourceKnowledgeTypes used for the REST-call
-	 *                             (optional, only used for the RationaleCoverageDashboard)
-	 */
-	function getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes) {
-		if (!filterSettings.projectKey || !filterSettings.projectKey.length) {
-			return;
-		}
-
-		document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
-
-		dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);
-	}
 
 	/**
 	 * Process the data that was returned from a REST-call.
@@ -176,24 +154,6 @@
 
 		dashboardAPI.resize();
 	};
-
-	/**
-	 * Sets up the dashboard configuration screen and fills it from the filterSettings.
-	 *
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param filterSettings the options set in the dashboard configuration
-	 */
-	function createConfiguration(viewIdentifier, dashboardAPI, filterSettings) {
-		showDashboardSection("condec-dashboard-config-", viewIdentifier);
-
-		createSaveButton(dashboardAPI, viewIdentifier);
-		createCancelButton(filterSettings, dashboardAPI, viewIdentifier);
-		createListener(viewIdentifier);
-		setPreferences(filterSettings, viewIdentifier);
-
-		dashboardAPI.resize();
-	}
 
 	/**
 	 * Creates the save button and adds a listener to it.
@@ -482,7 +442,7 @@
 		} else { // CHART_SIMPLE_PIE or other case
 			console.warn("Not supported chart type.")
 		}
-	}
+	};
 
 	function cleanPreviousChildNodes(parentNode) {
 		var nodeList = parentNode.childNodes;
@@ -617,7 +577,7 @@
 		var listArray = flatList.split(DEC_STRING_SEPARATOR);
 		if (!isIssueData) {
 			listArray = listArray.map(function(e) {
-					return e.replace("refs/remotes/", "");
+				return e.replace("refs/remotes/", "");
 			});
 		}
 

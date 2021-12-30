@@ -18,7 +18,7 @@ define('dashboard/generalMetrics', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.render = function(context, preferences) {
-		conDecDashboard.initRender(this, "general-metrics", dashboardAPI, preferences);
+		conDecDashboard.initDashboard(this, "general-metrics", dashboardAPI, preferences);
 	};
 
 	/**
