@@ -32,6 +32,8 @@ The dashboard shows metrics regarding the
 
 *Dashboard item showing metrics about the knowledge in git*
 
+## Filtering
+
 ## Navigation
 
 ## Design Details

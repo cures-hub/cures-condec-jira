@@ -20,3 +20,13 @@ The following class diagram gives an overview of relevant backend classes for th
 ![Overview class diagram](../diagrams/class_diagram_decision_grouping.png)
 
 *Overview class diagram for the decision grouping feature*
+
+The Java code for decision grouping can be found here:
+
+- [Java code for decision group persistence](../../src/main/java/de/uhd/ifi/se/decision/management/jira/persistence/DecisionGroupPersistenceManager.java)
+- [Java REST API for decision grouping](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/DecisionGroupingRest.java)
+
+The UI code for decision grouping can be found here:
+
+- [Velocity template for decision group view](../../src/main/resources/templates/tabs/decisionGroups.vm)
+- [JavaScript code for decision grouping](../../src/main/resources/js/grouping)
