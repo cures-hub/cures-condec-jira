@@ -11,40 +11,22 @@
                 #parse("templates/filter/minimumDecisionCoverage.vm")
             </div>
         #end
-        #if($viewIdentifier != "branch")
+        #if($viewIdentifier != "branch")        	
             #parse("templates/filter/filterLabel.vm")
-            <div class="field-group">
-                #parse("templates/filter/text.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/knowledgeType.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/status.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/documentationLocation.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/linkType.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/decisionGroupDropdown.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/linkDistance.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/degree.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/documentationDate.vm")
-            </div>
-            <div class="field-group">
-                #parse("templates/filter/isDecisionKnowledgeOnly.vm")
-                #parse("templates/filter/isIncompleteKnowledge.vm")
-                #parse("templates/filter/isTestCode.vm")
-                #parse("templates/filter/isTransitiveLinks.vm")
+            <div class="field-group condec-filter">
+            #parse("templates/filter/text.vm")
+            #parse("templates/filter/knowledgeType.vm")
+            #parse("templates/filter/status.vm")
+            #parse("templates/filter/documentationLocation.vm")
+            #parse("templates/filter/linkType.vm")
+            #parse("templates/filter/decisionGroup.vm")
+            #parse("templates/filter/linkDistance.vm")
+			#parse("templates/filter/degree.vm")
+			#parse("templates/filter/documentationDate.vm")
+			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
+			#parse("templates/filter/isIncompleteKnowledge.vm")
+            #parse("templates/filter/isTestCode.vm")
+            #parse("templates/filter/isTransitiveLinks.vm")
             </div>
         #end
         #parse("templates/filter/dashboardFilterButtons.vm")

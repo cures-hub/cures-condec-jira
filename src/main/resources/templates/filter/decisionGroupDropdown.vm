@@ -1,5 +1,0 @@
-<button aria-controls="decision-group-dropdown-$viewIdentifier"
-        class="aui-button aui-dropdown2-trigger aui-style-default short-field" aria-haspopup="true">
-    $i18n.getText('condec.label.decision.groups')
-</button>
-<aui-dropdown-menu id="decision-group-dropdown-$viewIdentifier" name="decisionGroups"></aui-dropdown-menu>

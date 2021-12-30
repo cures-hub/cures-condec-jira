@@ -269,7 +269,7 @@
 		setPreferenceValue("knowledgeStatus", "list", preferences, "status-dropdown-" + viewIdentifier);
 		setPreferenceValue("documentationLocations", "list", preferences, "documentation-location-dropdown-" + viewIdentifier);
 		setPreferenceValue("linkTypes", "list", preferences, "link-type-dropdown-" + viewIdentifier);
-		setPreferenceValue("decisionGroups", "list", preferences, "decision-group-dropdown-" + viewIdentifier);
+		setPreferenceValue("decisionGroups", "groups", preferences, "select2-decision-group-" + viewIdentifier);
 		setPreferenceValue("linkDistance", null, preferences, "link-distance-input-" + viewIdentifier);
 		setPreferenceValue("minDegree", null, preferences, "min-degree-input-" + viewIdentifier);
 		setPreferenceValue("maxDegree", null, preferences, "max-degree-input-" + viewIdentifier);
@@ -330,7 +330,7 @@
 		setPreference("knowledgeStatus", "list", preferences, conDecAPI.knowledgeStatus, "status-dropdown-" + viewIdentifier);
 		setPreference("documentationLocations", "list", preferences, conDecAPI.documentationLocations, "documentation-location-dropdown-" + viewIdentifier);
 		setPreference("linkTypes", "list", preferences, conDecAPI.getLinkTypes(), "link-type-dropdown-" + viewIdentifier);
-		setPreference("decisionGroups", "list", preferences, conDecGroupingAPI.getAllDecisionGroups(), "decision-group-dropdown-" + viewIdentifier);
+		setPreference("decisionGroups", "groups", preferences, conDecGroupingAPI.getAllDecisionGroups(), "select2-decision-group-" + viewIdentifier);
 		setPreference("linkDistance", null, preferences, null, "link-distance-input-" + viewIdentifier);
 		setPreference("minDegree", null, preferences, null, "min-degree-input-" + viewIdentifier);
 		setPreference("maxDegree", null, preferences, null, "max-degree-input-" + viewIdentifier);
@@ -368,6 +368,10 @@
 				conDecAPI.projectKey = preferences["projectKey"];
 				conDecFiltering.initDropdown(elementId, items, preferences[key]);
 			}
+		} else if (type === "groups") {
+			if (preferences["projectKey"]) {
+				conDecFiltering.fillDecisionGroupSelect(elementId, items);
+			}
 		} else {
 			if (preferences[key]) {
 				node.value = preferences[key];
@@ -397,7 +401,7 @@
 		setFilterSetting("status", "knowledgeStatus", "list", filterSettings, preferences);
 		setFilterSetting("documentationLocations", "documentationLocations", "list", filterSettings, preferences);
 		setFilterSetting("linkTypes", "linkTypes", "list", filterSettings, preferences);
-		setFilterSetting("groups", "decisionGroups", "list", filterSettings, preferences);
+		setFilterSetting("groups", "decisionGroups", "groups", filterSettings, preferences);
 		setFilterSetting("linkDistance", "linkDistance", null, filterSettings, preferences);
 		setFilterSetting("minDegree", "minDegree", null, filterSettings, preferences);
 		setFilterSetting("maxDegree", "maxDegree", null, filterSettings, preferences);
@@ -437,6 +441,10 @@
 		} else if (type === "date") {
 			if (preferences[preferencesKey]) {
 				filterSettings[filterSettingKey] = new Date(preferences[preferencesKey]).getTime();
+			}
+		} else if (type === "groups") {
+			if (preferences[preferencesKey]) {
+				filterSettings[filterSettingKey] = conDecFiltering.getSelectedGroups(preferences[preferencesKey]);
 			}
 		} else if (type === "DoD") {
 			if (preferences[preferencesKey]) {
