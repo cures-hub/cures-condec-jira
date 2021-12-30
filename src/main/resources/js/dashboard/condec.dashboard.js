@@ -3,13 +3,9 @@
 
  Is referenced by
  * condec.general.metrics.dashboard.js
- * condec.general.metrics.dashboard.configuration.js
  * condec.git.branches.dashboard.js
- * condec.git.branches.dashboard.configuration.js
  * condec.rationale.completeness.dashboard.js
- * condec.rationale.completeness.dashboard.configuration.js
  * condec.rationale.coverage.dashboard.js
- * condec.rationale.coverage.dashboard.configuration.js
  */
 (function(global) {
 	var ConDecDashboard = function ConDecDashboard() {
@@ -34,18 +30,23 @@
 	ConDecDashboard.prototype.initRender = function(dashboard, viewIdentifier, dashboardAPI, filterSettings) {
 		dashboardAPI.once("afterRender",
 			function() {
-				// The following splitting is necessary because dashboardAPI.savePreferences(filterSettings)
+				// the following splitting is necessary because dashboardAPI.savePreferences(filterSettings)
 				// saves lists as strings and cannot save objects such as definitionOfDone
 				filterSettings.knowledgeTypes = filterSettings["knowledgeTypes"].split(',');
 				filterSettings.linkTypes = filterSettings["linkTypes"].split(',');
 				filterSettings.status = filterSettings["status"].split(',');
 				filterSettings.documentationLocations = filterSettings["documentationLocations"].split(',');
-				filterSettings.groups = filterSettings["groups"].split(',');
+				if (filterSettings.groups.length > 0) {
+					filterSettings.groups = filterSettings["groups"].split(',');
+				} else {
+					filterSettings.groups = [];
+				}
+				//filterSettings.sourceKnowledgeTypes = filterSettings["sourceKnowledgeTypes"].split(',');
 				filterSettings.changeImpactAnalysisConfig = {};
 				filterSettings.definitionOfDone = {
 					"minimumDecisionsWithinLinkDistance": filterSettings.minimumDecisionsWithinLinkDistance,
 					"maximumLinkDistanceToDecisions": filterSettings.maximumLinkDistanceToDecisions
-				}
+				};
 				if (filterSettings["projectKey"]) {
 					createRender(dashboard, viewIdentifier, dashboardAPI, filterSettings);
 				}
@@ -280,62 +281,7 @@
 		if (projectKey) {
 			conDecAPI.projectKey = projectKey;
 		}
-		setPreference("projectKey", null, filterSettings, null, "project-dropdown-" + viewIdentifier);
-		setPreference("sourceKnowledgeTypes", "list", filterSettings, conDecAPI.getKnowledgeTypes(), "source-knowledge-type-dropdown-" + viewIdentifier);
-		setPreference("minimumDecisionCoverage", null, filterSettings, null, "minimum-number-of-decisions-input-" + viewIdentifier);
-		setPreference("maximumLinkDistance", null, filterSettings, null, "link-distance-to-decision-number-input-" + viewIdentifier);
-		setPreference("searchTerm", null, filterSettings, null, "search-input-" + viewIdentifier);
-		setPreference("knowledgeTypes", "list", filterSettings, conDecAPI.getKnowledgeTypes(), "knowledge-type-dropdown-" + viewIdentifier);
-		setPreference("knowledgeStatus", "list", filterSettings, conDecAPI.knowledgeStatus, "status-dropdown-" + viewIdentifier);
-		setPreference("documentationLocations", "list", filterSettings, conDecAPI.documentationLocations, "documentation-location-dropdown-" + viewIdentifier);
-		setPreference("linkTypes", "list", filterSettings, conDecAPI.getLinkTypes(), "link-type-dropdown-" + viewIdentifier);
-		setPreference("decisionGroups", "groups", filterSettings, conDecGroupingAPI.getAllDecisionGroups(), "select2-decision-group-" + viewIdentifier);
-		setPreference("linkDistance", null, filterSettings, null, "link-distance-input-" + viewIdentifier);
-		setPreference("minDegree", null, filterSettings, null, "min-degree-input-" + viewIdentifier);
-		setPreference("maxDegree", null, filterSettings, null, "max-degree-input-" + viewIdentifier);
-		setPreference("startDate", null, filterSettings, null, "start-date-picker-" + viewIdentifier);
-		setPreference("endDate", null, filterSettings, null, "end-date-picker-" + viewIdentifier);
-		setPreference("decisionKnowledgeShown", "flag", filterSettings, null, "is-decision-knowledge-only-input-" + viewIdentifier);
-		setPreference("testCodeShown", "flag", filterSettings, null, "is-test-code-input-" + viewIdentifier);
-		setPreference("incompleteKnowledgeShown", "flag", filterSettings, null, "is-test-code-input-" + viewIdentifier);
-		setPreference("transitiveLinksShown", "flag", filterSettings, null, "is-transitive-links-input-" + viewIdentifier);
-	}
-
-	/**
-	 * Read the option set in the filterSettings and
-	 * set it in the html filter elements.
-	 *
-	 * @param key the key under which the options are saved
-	 *            in the filterSettings
-	 * @param type the type of the options saved,
-	 *             so it can be set in the right way
-	 *             possible options are "flag" and "list"
-	 *             if null just save the value as is
-	 * @param filterSettings the filterSettings the options are saved in
-	 * @param items the list of items that a dropdown menu should contain
-	 *              only necessary if type is "list" else can be null
-	 * @param elementId the id of the filter element that should be set
-	 */
-	function setPreference(key, type, filterSettings, items, elementId) {
-		var node = document.getElementById(elementId);
-		if (type === "flag") {
-			if (filterSettings[key]) {
-				node.checked = filterSettings[key];
-			}
-		} else if (type === "list") {
-			if (filterSettings["projectKey"]) {
-				conDecAPI.projectKey = filterSettings["projectKey"];
-				conDecFiltering.initDropdown(elementId, items, filterSettings[key]);
-			}
-		} else if (type === "groups") {
-			if (filterSettings["projectKey"]) {
-				conDecFiltering.fillDecisionGroupSelect(elementId, items);
-			}
-		} else {
-			if (filterSettings[key]) {
-				node.value = filterSettings[key];
-			}
-		}
+		conDecFiltering.fillFilterElementsFromSettings(viewIdentifier, filterSettings);
 	}
 
 	global.conDecDashboard = new ConDecDashboard();

@@ -151,7 +151,7 @@
 			}
 			filterSettings["startDate"] = startDate;
 
-			var endDate = new Date(endDatePicker.value).getTime();			
+			var endDate = new Date(endDatePicker.value).getTime();
 			if (!endDate) {
 				endDate = -1;
 			}
@@ -276,9 +276,82 @@
 		var sourceKnowledgeTypes = conDecFiltering.getSelectedItems("source-knowledge-type-dropdown-" + viewIdentifier);
 		if (sourceKnowledgeTypes) {
 			filterSettings["sourceKnowledgeTypes"] = sourceKnowledgeTypes;
-		} 
+		}
 
 		return filterSettings;
+	};
+
+	/**
+	 * Fills filter HTML elements of a view with the filter settings.
+	 * external references: condec.dashboard
+	 */
+	ConDecFiltering.prototype.fillFilterElementsFromSettings = function(viewIdentifier, filterSettings) {
+		document.getElementById("project-dropdown-" + viewIdentifier).value = filterSettings.projectKey;
+		this.initDropdown("source-knowledge-type-dropdown-" + viewIdentifier,
+			conDecAPI.getKnowledgeTypes(), filterSettings["sourceKnowledgeTypes"]);
+
+		var searchInput = document.getElementById("search-input-" + viewIdentifier);
+		if (searchInput !== null) {
+			searchInput.value = filterSettings["searchTerm"];
+		}
+
+		this.initDropdown("knowledge-type-dropdown-" + viewIdentifier,
+			conDecAPI.getKnowledgeTypes(), filterSettings["knowledgeTypes"]);
+		this.initDropdown("status-dropdown-" + viewIdentifier,
+			conDecAPI.knowledgeStatus, filterSettings["status"]);
+		this.initDropdown("documentation-location-dropdown-" + viewIdentifier,
+			conDecAPI.documentationLocations, filterSettings["documentationLocations"]);
+		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes(), filterSettings["linkTypes"]);
+		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier,
+			conDecGroupingAPI.getAllDecisionGroups(), filterSettings["groups"]);
+
+		var startDatePicker = document.getElementById("start-date-picker-" + viewIdentifier);
+		var endDatePicker = document.getElementById("end-date-picker-" + viewIdentifier);
+		if (startDatePicker !== null && endDatePicker !== null) {
+			var startDate = parseInt(filterSettings["startDate"]);
+			var endDate = parseInt(filterSettings["endDate"]);
+			if (startDate && startDate > -1) {
+				startDatePicker.value = new Date(startDate).toISOString().substr(0, 10);
+			}
+			if (endDate && endDate > -1) {
+				endDatePicker.value = new Date(endDate).toISOString().substr(0, 10);
+			}
+		}
+
+		var minDegreeInput = document.getElementById("min-degree-input-" + viewIdentifier);
+		var maxDegreeInput = document.getElementById("max-degree-input-" + viewIdentifier);
+		if (minDegreeInput !== null && maxDegreeInput !== null) {
+			minDegreeInput.value = filterSettings["minDegree"];
+			maxDegreeInput.value = filterSettings["maxDegree"];
+		}
+
+		var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
+		var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
+		if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+			minDecisionCoverageInput.value = filterSettings["definitionOfDone"]["minimumDecisionsWithinLinkDistance"];
+			maxLinkDistanceInput.value = filterSettings["definitionOfDone"]["maximumLinkDistanceToDecisions"];
+		}
+
+		var isOnlyDecisionKnowledgeShownInput = document.getElementById("is-decision-knowledge-only-input-"
+			+ viewIdentifier);
+		if (isOnlyDecisionKnowledgeShownInput !== null) {
+			isOnlyDecisionKnowledgeShownInput.checked = filterSettings["isOnlyDecisionKnowledgeShown"];
+		}
+
+		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
+		if (linkDistanceInput !== null) {
+			linkDistanceInput.value = filterSettings["linkDistance"];
+		}
+
+		var createTransitiveLinksInput = document.getElementById("is-transitive-links-input-" + viewIdentifier);
+		if (createTransitiveLinksInput !== null) {
+			createTransitiveLinksInput.checked = filterSettings["createTransitiveLinks"];
+		}
+
+		var isTestCodeShownInput = document.getElementById("is-test-code-input-" + viewIdentifier);
+		if (isTestCodeShownInput !== null) {
+			isTestCodeShownInput.checked = filterSettings["isTestCodeShown"];
+		}
 	};
 
 	/**
@@ -402,7 +475,7 @@
 	/**
 	 * Fills the filter for decision groups/levels.
 	 */
-	ConDecFiltering.prototype.fillDecisionGroupSelect = function(elementId, groups) {
+	ConDecFiltering.prototype.fillDecisionGroupSelect = function(elementId, groups, selectedGroups) {
 		var selectGroupField = document.getElementById(elementId);
 		if (selectGroupField === null || selectGroupField === undefined) {
 			return null;
@@ -410,7 +483,15 @@
 		selectGroupField.innerHTML = "";
 		if (groups !== undefined && groups !== null && groups.length > 0) {
 			for (var i = 0; i < groups.length; i++) {
-				selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'>" + groups[i] + "</option>");
+				var isSelected = "";
+				if (selectedGroups !== undefined && selectedGroups !== null) {
+					if (selectedGroups.includes(groups[i])) {
+						isSelected = " selected";
+					}
+				}
+				selectGroupField.insertAdjacentHTML("beforeend", "<option value='" + groups[i] + "'" + isSelected + ">"
+					+ groups[i]
+					+ "</option>");
 			}
 		}
 		AJS.$(selectGroupField).auiSelect2();

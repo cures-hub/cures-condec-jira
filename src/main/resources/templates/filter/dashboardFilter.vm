@@ -24,7 +24,6 @@
 			#parse("templates/filter/degree.vm")
 			#parse("templates/filter/documentationDate.vm")
 			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
-			#parse("templates/filter/isIncompleteKnowledge.vm")
             #parse("templates/filter/isTestCode.vm")
             #parse("templates/filter/isTransitiveLinks.vm")
             </div>

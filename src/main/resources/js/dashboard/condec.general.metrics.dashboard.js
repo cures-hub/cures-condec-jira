@@ -45,9 +45,9 @@ define('dashboard/generalMetrics', [], function() {
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		delete filterSettings.definitionOfDone;
-		conDecGeneralMetricsDashboardItem = this;
+		let self = this;
 		conDecDashboardAPI.getGeneralMetrics(filterSettings, function(error, result) {
-			conDecDashboard.processData(error, result, conDecGeneralMetricsDashboardItem, "general-metrics", dashboardAPI);
+			conDecDashboard.processData(error, result, self, "general-metrics", dashboardAPI);
 		});
 	};
 
