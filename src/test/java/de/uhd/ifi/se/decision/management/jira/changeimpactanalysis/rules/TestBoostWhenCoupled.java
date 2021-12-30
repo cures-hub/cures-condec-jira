@@ -23,6 +23,9 @@ public class TestBoostWhenCoupled extends TestSetUp {
     @Before
 	public void setUp() {
 		init();
+        rootElement = KnowledgeElements.getTestKnowledgeElements().get(0);
+        nextElement = KnowledgeElements.getTestKnowledgeElements().get(1);
+        filterSettings = new FilterSettings();
 	}
 
     @Test
@@ -33,14 +36,11 @@ public class TestBoostWhenCoupled extends TestSetUp {
 
     @Test
 	public void testPropagationNoCoupling() {
-        rootElement = KnowledgeElements.getTestKnowledgeElements().get(0);
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
         updateDateAndAuthor.put(new Date(0), "FooBar");
         rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-        filterSettings = new FilterSettings();
 		filterSettings.setSelectedElementObject(rootElement);
 
-        nextElement = KnowledgeElements.getTestKnowledgeElements().get(1);
         TreeMap<Date, String> updateDateAndAuthorNext = new TreeMap<Date, String>();
         updateDateAndAuthorNext.put(new Date(600001), "FooBar");
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
@@ -51,14 +51,11 @@ public class TestBoostWhenCoupled extends TestSetUp {
 
     @Test
 	public void testPropagationSingleCoupling() {
-        rootElement = KnowledgeElements.getTestKnowledgeElements().get(0);
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
         updateDateAndAuthor.put(new Date(0), "FooBar");
         rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-        filterSettings = new FilterSettings();
 		filterSettings.setSelectedElementObject(rootElement);
 
-        nextElement = KnowledgeElements.getTestKnowledgeElements().get(1);
         TreeMap<Date, String> updateDateAndAuthorNext = new TreeMap<Date, String>();
         updateDateAndAuthorNext.put(new Date(599999), "FooBar");
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
@@ -69,14 +66,11 @@ public class TestBoostWhenCoupled extends TestSetUp {
 
     @Test
 	public void testPropagationDoubleCoupling() {
-        rootElement = KnowledgeElements.getTestKnowledgeElements().get(0);
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
         updateDateAndAuthor.put(new Date(0), "FooBar");
         rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-        filterSettings = new FilterSettings();
 		filterSettings.setSelectedElementObject(rootElement);
 
-        nextElement = KnowledgeElements.getTestKnowledgeElements().get(1);
         TreeMap<Date, String> updateDateAndAuthorNext = new TreeMap<Date, String>();
         updateDateAndAuthorNext.put(new Date(599999), "FooBar");
         updateDateAndAuthorNext.put(new Date(0), "FooBar");
@@ -88,13 +82,10 @@ public class TestBoostWhenCoupled extends TestSetUp {
 
     @Test
 	public void testPropagationNoUpdates() {
-        rootElement = KnowledgeElements.getTestKnowledgeElements().get(0);
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
         rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-        filterSettings = new FilterSettings();
 		filterSettings.setSelectedElementObject(rootElement);
 
-        nextElement = KnowledgeElements.getTestKnowledgeElements().get(1);
         TreeMap<Date, String> updateDateAndAuthorNext = new TreeMap<Date, String>();
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
 

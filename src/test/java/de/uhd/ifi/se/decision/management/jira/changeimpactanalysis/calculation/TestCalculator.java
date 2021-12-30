@@ -18,16 +18,19 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class TestCalculator extends TestSetUp {
     
+    protected FilterSettings settings;
+    protected KnowledgeElementWithImpact rootElement;
+
     @Before
 	public void setUp() {
 		init();
+        settings = new FilterSettings("TEST", "");
+        settings.setSelectedElement("TEST-1");
+        rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
 	}
 
     @Test
     public void testCalculateChangeImpact() {
-        FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
-		KnowledgeElementWithImpact rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
         List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
         impactedElements.add(rootElement);
 
@@ -43,13 +46,13 @@ public class TestCalculator extends TestSetUp {
 
     @Test
     public void testCalculateChangeImpactContext() {
-        FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
         ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
         config.setContext(1);
+        List<String> propagationRules = new ArrayList<String>();
+        propagationRules.add("Boost when element is textual similar to the selected element");
+        config.setPropagationRules(propagationRules);
         settings.setChangeImpactAnalysisConfig(config);
 
-		KnowledgeElementWithImpact rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
         List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
         impactedElements.add(rootElement);
 
@@ -57,13 +60,11 @@ public class TestCalculator extends TestSetUp {
             settings.getSelectedElement(), 1.0, settings, impactedElements, (long) settings.getLinkDistance());
         
         assertEquals(10, impactedElements.size());
-        assertTrue(impactedElements.get(4).getImpactExplanation().contains("context"));
+        assertTrue(impactedElements.get(9).getImpactExplanation().contains("context"));
     }
 
     @Test
     public void testCalculatePropagationRuleImpact() {
-        FilterSettings settings = new FilterSettings("TEST", "");
-        settings.setSelectedElement("TEST-1");
         KnowledgeElement element = settings.getSelectedElement();
         Link link = element.getLinks().iterator().next();
 
