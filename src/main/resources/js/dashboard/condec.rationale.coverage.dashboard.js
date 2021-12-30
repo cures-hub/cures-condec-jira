@@ -83,17 +83,17 @@ define('dashboard/rationaleCoverage', [], function() {
 		var colorPalette = ['#EE6666', '#FAC858', '#91CC75'];
 
 		/* render box-plots */
-		ConDecReqDash.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
+		conDecDashboard.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
 			"", "# Issues per element", issuesPerSelectedJiraIssue,
 			colorPalette);
-		ConDecReqDash.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
+		conDecDashboard.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
 			"", "# Decisions per element", decisionsPerSelectedJiraIssue,
 			colorPalette);
 		/* render pie-charts */
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
 			"", "For how many elements is an issue documented?", issueDocumentedForSelectedJiraIssue,
 			colorPalette);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
 			"", "For how many elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
 			colorPalette);
 	};

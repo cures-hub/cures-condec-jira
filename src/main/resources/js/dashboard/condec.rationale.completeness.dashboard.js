@@ -86,22 +86,22 @@ define('dashboard/rationaleCompleteness', [], function() {
 		var colorPalette = ['#EE6666', '#91CC75'];
 
 		/* render pie-charts */
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-IssuesSolvedByDecision",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-IssuesSolvedByDecision",
 			"", "How many issues (=decision problems) are solved by a decision?", issuesSolvedByDecision,
 			colorPalette);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DecisionsSolvingIssues",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-DecisionsSolvingIssues",
 			"", "For how many decisions is the issue (=decision problem) documented?", decisionsSolvingIssues,
 			colorPalette);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForDecision",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForDecision",
 			"", "How many decisions have at least one pro argument documented?", proArgumentDocumentedForDecision,
 			colorPalette);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForDecision",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForDecision",
 			"", "How many decisions have at least one con argument documented?", conArgumentDocumentedForDecision,
 			colorPalette);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForAlternative",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForAlternative",
 			"", "How many alternatives have at least one pro argument documented?", proArgumentDocumentedForAlternative,
 			colorPalette);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForAlternative",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForAlternative",
 			"", "How many alternatives have at least one con argument documented?", conArgumentDocumentedForAlternative,
 			colorPalette);
 	};

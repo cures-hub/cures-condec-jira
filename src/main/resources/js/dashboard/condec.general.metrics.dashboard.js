@@ -91,20 +91,20 @@ define('dashboard/generalMetrics', [], function() {
 		var colorPalette = ['#91CC75', '#EE6666'];
 
 		/* render box-plots */
-		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
+		conDecDashboard.initializeChart("boxplot-CommentsPerJiraIssue",
 			"", "#Comments per Jira Issue", commentsPerIssue);
-		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue",
+		conDecDashboard.initializeChart("boxplot-CommitsPerJiraIssue",
 			"", "#Commits per Jira Issue", commitsPerIssue);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartRich-ReqCodeSummary",
+		conDecDashboard.initializeChart("piechartRich-ReqCodeSummary",
 			"", "#Requirements and Code Classes", reqCodeSummary);
-		ConDecReqDash.initializeChart("piechartRich-DecSources",
+		conDecDashboard.initializeChart("piechartRich-DecSources",
 			"", "#Rationale Elements per Origin", decSources);
-		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences",
+		conDecDashboard.initializeChart("piechartInteger-RelevantSentences",
 			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
-		ConDecReqDash.initializeChart("piechartRich-KnowledgeTypeDistribution",
+		conDecDashboard.initializeChart("piechartRich-KnowledgeTypeDistribution",
 			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-DoDCheck",
 			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);
 	};
 

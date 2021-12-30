@@ -538,8 +538,6 @@
 			location="js/dashboard/condec.rationale.completeness.dashboard.js" />
 		<resource type="download" name="condec.rationale.coverage.dashboard.js"
 			location="js/dashboard/condec.rationale.coverage.dashboard.js" />
-		<resource type="download" name="condec.requirements.dashboard.js"
-			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />

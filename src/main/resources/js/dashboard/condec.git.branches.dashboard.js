@@ -259,22 +259,22 @@ define('dashboard/branches', [], function () {
 		var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
 
 		/* render pie-charts */
-		ConDecReqDash.initializeChartForBranchSource("piechartRich-QualityStatusForBranches",
+		conDecDashboard.initializeChartForBranchSource("piechartRich-QualityStatusForBranches",
 			"", "How many branches document rationale well?", statusesForBranchesData); /* "Quality status" */
-		ConDecReqDash.initializeChartForBranchSource("piechartRich-ProblemTypesInBranches",
+		conDecDashboard.initializeChartForBranchSource("piechartRich-ProblemTypesInBranches",
 			"", "Which documentation mistakes are most common?", sortedProblemTypesOccurrence); /*"Total quality problems" */
-		ConDecReqDash.initializeChartForBranchSource("piechartRich-BranchesPerIssue",
+		conDecDashboard.initializeChartForBranchSource("piechartRich-BranchesPerIssue",
 			"", "How many branches do Jira tasks have?", sortedBranchesPerIssue);
 		/* render box-plots */
-		ConDecReqDash.initializeChartForBranchSource("boxplot-IssuesPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-IssuesPerBranch",
 			"", "Issues number in branches", issuesInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-DecisionsPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-DecisionsPerBranch",
 			"", "Decisions number in branches", decisionsInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-AlternativesPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-AlternativesPerBranch",
 			"", "Alternatives number in branches", alternativesInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-ProsPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-ProsPerBranch",
 			"", "Pro arguments number in branches", prosInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-ConsPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-ConsPerBranch",
 			"", "Con arguments number in branches", consInBranches);
 	}
 
