@@ -24,14 +24,21 @@ elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValu
 
 where `parentImpact` is the element impact of the ancestor node in the knowledge graph, 
 `decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, 
-and `ruleBasedValue` is calculated based on rules. For example, rules are:
+and `ruleBasedValue` is calculated based on rules. The following rules are available:
 
 1. Stop at elements with the same type as the selected element (e.g. at requirements with same type)
 2. Outward links only
 3. Boost when element is textual similar to the selected element
+4. Only include elements which are part of at least one equal component
+5. Boost when element has a high average age
+6. Boost when element has more outbound than inbound nodes 
+7. Boost when element has a large amount of distinct update authors
+8. Boost when element is coupled with the source element (i.e. received updates in the same timeframe)
 
 The element is included in the **estimated impact set (EIS)** if `elementImpact >= threshold`.
 Developers can see an **explanation for the impact factor** of each node via a tooltip.
+
+![JSTree diagram with change impact highlighting](../screenshots/change_impact_analysis_treeview_tooltip.png)
 
 ## Configuration
 The rationale manager can set default parameters for the change impact analysis.
