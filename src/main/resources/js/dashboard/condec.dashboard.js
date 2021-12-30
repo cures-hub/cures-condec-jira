@@ -32,16 +32,12 @@
 			function() {
 				// the following splitting is necessary because dashboardAPI.savePreferences(filterSettings)
 				// saves lists as strings and cannot save objects such as definitionOfDone
-				filterSettings.knowledgeTypes = filterSettings["knowledgeTypes"].split(',');
-				filterSettings.linkTypes = filterSettings["linkTypes"].split(',');
-				filterSettings.status = filterSettings["status"].split(',');
-				filterSettings.documentationLocations = filterSettings["documentationLocations"].split(',');
-				if (filterSettings.groups.length > 0) {
-					filterSettings.groups = filterSettings["groups"].split(',');
-				} else {
-					filterSettings.groups = [];
-				}
-				//filterSettings.sourceKnowledgeTypes = filterSettings["sourceKnowledgeTypes"].split(',');
+				filterSettings.knowledgeTypes = toList(filterSettings["knowledgeTypes"]);
+				filterSettings.linkTypes = toList(filterSettings["linkTypes"]);
+				filterSettings.status = toList(filterSettings["status"]);
+				filterSettings.documentationLocations = toList(filterSettings["documentationLocations"]);
+				filterSettings.groups = toList(filterSettings["groups"]);
+				filterSettings.sourceKnowledgeTypes = toList(filterSettings["sourceKnowledgeTypes"]);
 				filterSettings.changeImpactAnalysisConfig = {};
 				filterSettings.definitionOfDone = {
 					"minimumDecisionsWithinLinkDistance": filterSettings.minimumDecisionsWithinLinkDistance,
@@ -52,6 +48,27 @@
 				}
 			});
 	};
+
+	/**
+	 * Converts a string to a list.
+	 * Necessary because lists persists in the preferences as a string.
+	 *
+	 * @param string the string to be converted to a list.
+	 */
+	function toList(string) {
+		if (!string || !string.length) {
+			return null;
+		}
+
+		if (Array.isArray(string)) {
+			return string;
+		}
+
+		string = string.replace("\[", "").replace("\]", "");
+		string = string.replaceAll("\"", "");
+
+		return string.split(",");
+	}
 
 	/**
 	 * Initializes a dashboard configuration screen. 
@@ -176,12 +193,10 @@
 			var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 
 			if (filterSettings["projectKey"]) {
-				console.log("save");
 				if (filterSettings["definitionOfDone"]) {
 					// necessary since savePreferences cannot store objects
 					Object.assign(filterSettings, filterSettings.definitionOfDone);
 				}
-				console.log(filterSettings);
 				dashboardAPI.savePreferences(filterSettings);
 			}
 
