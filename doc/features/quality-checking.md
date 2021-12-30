@@ -32,7 +32,7 @@ An interface to the frontend is provided through the REST endpoints in the class
 
 *Overview class diagram for the quality checking feature*
 
-You find more explanation for the class diagramm in the Javadoc in the code:
+The Java code for quality checking can be found here:
 
 - [Java code for quality checking](../../src/main/java/de/uhd/ifi/se/decision/management/jira/quality)
 - [Java REST API for quality checking](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/DefinitionOfDoneCheckingRest.java)

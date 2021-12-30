@@ -81,7 +81,7 @@ The *Evaluator* evaluates the *Recommendation*s using six different *EvaluationM
 
 *Overview class diagram for the decision guidance feature*
 
-You find more explanation for the class diagramm in the Javadoc in the code:
+The Java code for decision guidance can be found here:
 
 - [Java code for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/decisionguidance)
 - [Java REST API for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/DecisionGuidanceRest.java)

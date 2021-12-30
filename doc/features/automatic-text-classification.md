@@ -36,7 +36,7 @@ Any time a validated element is added, the classifier learns.
 
 *Overview class diagram for the automatic text classification*
 
-You find more explanation for the class diagramm in the Javadoc in the code:
+The Java code for the automatic text classification can be found here:
 
 - [Java code for automatic text classification](../../src/main/java/de/uhd/ifi/se/decision/management/jira/classification)
 - [Java REST API for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/TextClassificationRest.java)

@@ -17,6 +17,7 @@ The right side shows the context of a decision problem (issue) in the node-link 
 
 ## Design Details
 There are no dedicated Java classes for the rationale backlog because the rationale backlog comprises the [knowledge graph view]s with special filtering.
+
 The UI code for the rationale backlog can be found here:
 
 - [Velocity template for the rationale backlog](../../src/main/resources/templates/tabs/rationaleBacklog.vm)

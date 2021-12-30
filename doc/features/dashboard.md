@@ -43,7 +43,7 @@ The following class diagram gives an overview of relevant backend classes for th
 
 *Overview class diagram for the dashboard*
 
-You find the explanation for the class diagramm in the Javadoc in the code:
+The Java code for the dashboard can be found here:
 
 - [Java code for the dashboard](../../src/main/java/de/uhd/ifi/se/decision/management/jira/view/dashboard)
 - [Java REST API for dashboard](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/DashboardRest.java)

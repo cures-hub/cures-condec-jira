@@ -28,7 +28,7 @@ which means they have source and target elements, as well as a *LinkType* (not s
 
 *Overview class diagram for the link recommendation feature*
 
-You find more explanation for the class diagramm in the Javadoc in the code:
+The Java code for link recommendation can be found here:
 
 - [Java code for link recommendation](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/linkrecommendation)
 - [Java REST API for link recommendation](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/LinkRecommendationRest.java)
