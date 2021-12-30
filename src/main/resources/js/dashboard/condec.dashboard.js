@@ -36,8 +36,8 @@
 	 * condec.rationale.coverage.dashboard.js
 	 * 
 	 * @param dashboard reference to the current dashboard item
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
 	 * @param filterSettings the options set in the dashboard configuration
 	 */
 	ConDecDashboard.prototype.initDashboard = function(dashboard, viewIdentifier, dashboardAPI, savedFilterSettings) {
@@ -46,13 +46,8 @@
 				var filterSettings = toFilterSettings(savedFilterSettings);
 				if (filterSettings["projectKey"]) {
 					dashboardAPI.showLoadingBar();
-
-					var sourceKnowledgeTypes = "";
-					if (filterSettings["sourceKnowledgeTypes"]) {
-						sourceKnowledgeTypes = filterSettings["sourceKnowledgeTypes"];
-					}
 					document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
-					dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);
+					dashboard.getData(dashboardAPI, filterSettings);
 					dashboardAPI.resize();
 				}
 			});
@@ -61,6 +56,8 @@
 	/**
 	 * Neccessary because dashboardAPI.savePreferences(filterSettings) saves lists as strings 
 	 * and cannot save objects such as definitionOfDone.
+	 * 
+	 * @param filterSettings with lists as strings and no objects such as definitionOfDone
 	 */
 	function toFilterSettings(filterSettings) {
 		filterSettings.knowledgeTypes = toList(filterSettings["knowledgeTypes"]);
@@ -108,8 +105,8 @@
 	 * condec.rationale.completeness.dashboard.js,
 	 * condec.rationale.coverage.dashboard.js
 	 * 
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
 	 * @param filterSettings the options set in the dashboard configuration
 	 */
 	ConDecDashboard.prototype.initConfiguration = function(viewIdentifier, dashboardAPI, filterSettings) {
@@ -138,8 +135,8 @@
 	 *              null if no error occurred
 	 * @param result the result of the REST-call
 	 * @param dashboard reference to the current dashboard
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
 	 * @param filterSettings the filterSettings used in the REST-call
 	 */
 	ConDecDashboard.prototype.processData = function(error, result, dashboard, viewIdentifier, dashboardAPI, filterSettings) {
@@ -160,8 +157,8 @@
 	 * When the save button is pressed and the projectKey is set
 	 * the dashboard renders its content.
 	 *
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function createSaveButton(dashboardAPI, viewIdentifier) {
 		function onSaveButton() {
@@ -190,8 +187,8 @@
 	 * recalculating it
 	 *
 	 * @param filterSettings the options set in the dashboard configuration
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function createCancelButton(filterSettings, dashboardAPI, viewIdentifier) {
 		function onCancelButton() {
@@ -211,7 +208,7 @@
 	 * Creates a listener and adds it to the projectKey-dropdown.
 	 * If a project is selected, further filter elements can be filled.
 	 *
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function createListener(viewIdentifier) {
 		function onSelectProject() {
@@ -244,12 +241,12 @@
 	}
 
 	/**
-	 * Shown the specified html element.
-	 * All other html elements are hidden.
+	 * Shows the specified html element.
+	 * All other HTML elements are hidden.
 	 *
 	 * @param elementId the id of the element (without viewIdentifier) 
 	 *                  that should be shown
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function showDashboardSection(elementId, viewIdentifier) {
 		var hiddenClass = "hidden";
@@ -264,7 +261,7 @@
 	 * Set the options of the html filter elements from the preferences.
 	 *
 	 * @param preferences stores the filter options
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function setPreferences(filterSettings, viewIdentifier) {
 		var projectKey = filterSettings["projectKey"];
@@ -303,21 +300,21 @@
 		isIssueData = true;
 		colorPalette = null;
 		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
-	}
+	};
 
 	/* used by branch dashboard item condec.rationale.coverage.dashboard.js */
 	ConDecDashboard.prototype.initializeChartWithColorPalette = function(divId, title, subtitle, dataMap, palette) {
 		isIssueData = true;
 		colorPalette = palette;
 		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
-	}
+	};
 
 	/* used by branch dashboard item condec.git.branches.dashboard.js */
 	ConDecDashboard.prototype.initializeChartForBranchSource = function(divId, title, subtitle, dataMap) {
 		isIssueData = false;
 		colorPalette = null;
 		this.initializeChartForSources(divId, title, subtitle, dataMap);
-	}
+	};
 
 	/* TODO: Below function does not need to be exposed! */
 	ConDecDashboard.prototype.initializeChartForSources = function(divId, title, subtitle, dataMap) {

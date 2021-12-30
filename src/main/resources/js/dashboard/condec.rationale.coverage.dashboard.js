@@ -40,9 +40,9 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param filterSettings the filterSettings used for the API-call
 	 * @param sourceKnowledgeTypes the source knowledge types used for the API-call
 	 */
-	ConDecRationaleCoverageDashboardItem.prototype.getData = function(dashboardAPI, filterSettings, sourceKnowledgeTypes) {
+	ConDecRationaleCoverageDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		let self = this;
-		conDecDashboardAPI.getRationaleCoverage(filterSettings, sourceKnowledgeTypes, function(error, result) {
+		conDecDashboardAPI.getRationaleCoverage(filterSettings, filterSettings["sourceKnowledgeTypes"], function(error, result) {
 			conDecDashboard.processData(error, result, self, "rationale-coverage", dashboardAPI);
 		});
 	};
