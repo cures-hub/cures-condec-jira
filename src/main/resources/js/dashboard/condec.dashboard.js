@@ -340,9 +340,10 @@
 
 		var dataAsArray = Array.from(objectsMap.keys());
 		for (var i = dataAsArray.length - 1; i >= 0; i--) {
-			var key = dataAsArray[i];
-			var value = objectsMap.get(key);
 			var entry = {};
+			entry["name"] = dataAsArray[i];
+			var value = objectsMap.get(entry["name"]);
+			
 			if (hasRichData && (typeof value === 'string' || value instanceof String)) {
 				entry["value"] = value.split(' ').reduce(sourceCounter, 0);
 			} else if (!hasRichData && (typeof value === 'string' || value instanceof String)) {
@@ -350,7 +351,6 @@
 			} else {
 				entry["value"] = value;
 			}
-			entry["name"] = key;
 			data.push(entry);
 			source.push(value);
 		}
