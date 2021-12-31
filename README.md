@@ -78,13 +78,15 @@ ConDec offers the following features:
 - [Interactive knowledge visualization](doc/features/knowledge-visualization.md)
 - [Change impact analysis](doc/features/change-impact-analysis.md)
 - [Definition of done checking to support high quality of the knowledge documentation](doc/features/quality-checking.md)
+- [Rationale backlog listing knowledge elements that violate the definition of done](doc/features/rationale-backlog.md)
 - [Automatic text classification to identify decision knowledge in natural language text](doc/features/automatic-text-classification.md)
 - [Recommendation of solution options from external knowledge sources](doc/features/decision-guidance.md)
 - [Link recommendation and duplicate recognition](doc/features/link-recommendation.md)
 - [Nudges for decision knowledge documentation and exploitation](doc/features/nudging.md)
 - [Decision grouping](doc/features/decision-grouping.md)
 - [Creation of release notes with explicit decision knowledge](doc/features/release-notes-creation.md)
-- Metrics presentation in a knowledge dashboard
+- [Metrics presentation in a knowledge dashboard](doc/features/dashboard.md)
+- [Webhook to inform a receiver system about changed knowledge](doc/features/webhook.md)
 
 ## Implementation Details
 
@@ -112,19 +114,9 @@ This plug-in provides a [representational state transfer (REST) application prog
 e.g., to retrieve, insert, update, and delete decision knowledge in Jira.
 These services can be accessed via the following link:
 
-**Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decisionguidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
+**Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decision-guidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
 The Jira ConDec plug-in uses the REST services in the [REST Java Script client](src/main/resources/js/condec.api.js) from the user interface.
-
-### Webhook
-Jira ConDec provides a webhook sending decision knowledge to a receiver system via a HTTP post request. To activate the webhook, do the following steps:
-
-- As a project administrator, navigate to Jira project settings.
-- Select "Webhook" on the side-bar under "ConDec Decision Knowledge".
-- Insert a receiver URL and a shared secret (for Slack, there is no need to set a shared secret).
-- Select the types of elements, which trigger the webhook, if they are created or edited.
-- Activate the webhook with the switch on the top of the page
-- You can click the test button to send a test post to the given URL.
 
 ### Logging and Monitoring
 The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 

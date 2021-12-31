@@ -22,3 +22,27 @@ The text classifier can be trained and evaluated directly in Jira.
 
 ![Configuration view for the automatic text classifier](../screenshots/config_automatic_text_classification.png)
 *Configuration view for the automatic text classifier*
+
+## Design Details
+The following class diagram gives an overview of relevant backend classes for this feature.
+The class *TextClassifier* is responsible for processing the text of the description and comments of a Jira issue. 
+It uses a classifier type, ground-truth data, as well as some configuration information in order to classify the text. 
+The *ClassificationManagerForJiraIssueText* calls the TextClassifier to classify the text. 
+The *JiraTextExtractionEventListener* is used for online learning, so that the classifier can learn while in use. 
+Developers manually approve classifications by setting them as "validated". 
+Any time a validated element is added, the classifier learns.
+
+![Overview class diagram](../diagrams/class_diagram_classification.png)
+
+*Overview class diagram for the automatic text classification*
+
+The Java code for the automatic text classification can be found here:
+
+- [Java code for automatic text classification](../../src/main/java/de/uhd/ifi/se/decision/management/jira/classification)
+- [Java REST API for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/TextClassificationRest.java)
+
+The UI code for the automatic text classification can be found here:
+
+- [Velocity templates for configuration and evaluation](../../src/main/resources/templates/settings/classification)
+- [Velocity template for text classification view](../../src/main/resources/templates/tabs/textClassification.vm)
+- [JavaScript code for text classification](../../src/main/resources/js/classification)

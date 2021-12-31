@@ -1,32 +1,49 @@
-/*
- This module fills the box plots and pie charts used in the general metrics dashboard item.
-
- Requires
- * condec.requirements.dashboard.js
-
- Is referenced in HTML by
- * dashboard/generalMetrics.vm
+/**
+ * This module renders the dashboard and its configuration screen used in the general metrics dashboard item.
+ *
+ * Requires
+ * condec.dashboard.js
  */
+define('dashboard/generalMetrics', [], function() {
+	var dashboardAPI;
 
-(function (global) {
-
-	var ConDecGeneralMetricsDashboard = function() {
-		console.log("ConDecGeneralMetricsDashboard constructor");
+	var ConDecGeneralMetricsDashboardItem = function(API) {
+		dashboardAPI = API;
 	};
 
 	/**
-	 * Gets the data to fill the dashboard plots by making an API-call.
+	 * Called to render the view for a fully configured dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecGeneralMetricsDashboardItem.prototype.render = function(context, preferences) {
+		conDecDashboard.initDashboard(this, "general-metrics", dashboardAPI, preferences);
+	};
+
+	/**
+	 * Called to render the edit view for a dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecGeneralMetricsDashboardItem.prototype.renderEdit = function(context, preferences) {
+		conDecDashboard.initConfiguration("general-metrics", dashboardAPI, preferences);
+	};
+
+	/**
+	 * Gets the metrics to fill the dashboard plots by making an API-call.
 	 *
 	 * external references: condec.dashboard.js
 	 *
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
-	ConDecGeneralMetricsDashboard.prototype.getData = function (dashboardAPI, filterSettings) {
+	ConDecGeneralMetricsDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		delete filterSettings.definitionOfDone;
-		conDecDashboardAPI.getGeneralMetrics(filterSettings, function (error, result) {
-			conDecDashboard.processData(error, result, conDecGeneralMetricsDashboard,
-				"general-metrics", dashboardAPI);
+		let self = this;
+		conDecDashboardAPI.getGeneralMetrics(filterSettings, function(error, result) {
+			conDecDashboard.processData(error, result, self, "general-metrics", dashboardAPI);
 		});
 	};
 
@@ -35,57 +52,29 @@
 	 *
 	 * external references: condec.dashboard.js
 	 *
-	 * @param data the data returned from the API-call
+	 * @param generalMetrics the data returned from the API-call
 	 */
-	ConDecGeneralMetricsDashboard.prototype.renderData = function (data) {
-		/*  init data for charts */
-		var commentsPerIssue = new Map();
-		var commitsPerIssue = new Map();
-		var reqCodeSummary = new Map();
-		var decSources = new Map();
-		var relevantSentences = new Map();
-		var knowledgeTypeDistribution = new Map();
-		var definitionOfDoneCheckResults = new Map();
-
-		/* set something in case no data will be added to them */
-		commentsPerIssue.set("none", 0);
-		commitsPerIssue.set("none", 0);
-
-		reqCodeSummary.set("no code classes", "");
-		decSources.set("no rationale elements", "");
-		relevantSentences.set("no Jira issue", "");
-		knowledgeTypeDistribution.set("no knowledge type", "");
-		definitionOfDoneCheckResults.set("no rationale elements", "");
-
-		/* form data for charts */
-		commentsPerIssue = data.numberOfCommentsPerIssue;
-		commitsPerIssue = data.numberOfCommits;
-		reqCodeSummary = data.reqAndClassSummary;
-		decSources = data.elementsFromDifferentOrigins;
-		relevantSentences = data.numberOfRelevantComments;
-		knowledgeTypeDistribution = data.distributionOfKnowledgeTypes;
-		definitionOfDoneCheckResults = data.definitionOfDoneCheckResults;
-
+	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
 		/* define color palette */
 		var colorPalette = ['#91CC75', '#EE6666'];
 
 		/* render box-plots */
-		ConDecReqDash.initializeChart("boxplot-CommentsPerJiraIssue",
-			"", "#Comments per Jira Issue", commentsPerIssue);
-		ConDecReqDash.initializeChart("boxplot-CommitsPerJiraIssue",
-			"", "#Commits per Jira Issue", commitsPerIssue);
+		conDecDashboard.initializeChart("boxplot-CommentsPerJiraIssue",
+			"", "#Comments per Jira Issue", generalMetrics.numberOfCommentsPerIssue);
+		conDecDashboard.initializeChart("boxplot-CommitsPerJiraIssue",
+			"", "#Commits per Jira Issue", generalMetrics.numberOfCommits);
 		/* render pie-charts */
-		ConDecReqDash.initializeChart("piechartRich-ReqCodeSummary",
-			"", "#Requirements and Code Classes", reqCodeSummary);
-		ConDecReqDash.initializeChart("piechartRich-DecSources",
-			"", "#Rationale Elements per Origin", decSources);
-		ConDecReqDash.initializeChart("piechartInteger-RelevantSentences",
-			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
-		ConDecReqDash.initializeChart("piechartRich-KnowledgeTypeDistribution",
-			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
-		ConDecReqDash.initializeChartWithColorPalette("piechartRich-DoDCheck",
-			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);
+		conDecDashboard.initializeChart("piechartRich-ReqCodeSummary",
+			"", "#Requirements and Code Classes", generalMetrics.reqAndClassSummary);
+		conDecDashboard.initializeChart("piechartRich-DecSources",
+			"", "#Rationale Elements per Origin", generalMetrics.elementsFromDifferentOrigins);
+		conDecDashboard.initializeChart("piechartInteger-RelevantSentences",
+			"", "Comments in Jira Issues relevant to Decision Knowledge", generalMetrics.numberOfRelevantComments);
+		conDecDashboard.initializeChart("piechartRich-KnowledgeTypeDistribution",
+			"", "Distribution of Knowledge Types", generalMetrics.distributionOfKnowledgeTypes);
+		conDecDashboard.initializeChartWithColorPalette("piechartRich-DoDCheck",
+			"", "Definition of Done Check", generalMetrics.definitionOfDoneCheckResults, colorPalette);
 	};
 
-	global.conDecGeneralMetricsDashboard = new ConDecGeneralMetricsDashboard();
-})(window);
+	return ConDecGeneralMetricsDashboardItem;
+});

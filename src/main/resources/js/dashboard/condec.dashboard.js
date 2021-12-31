@@ -1,126 +1,145 @@
-/*
+/**
  This module contains methods used to render the dashboards and their configuration screens.
+ 
+ Requires echarts library to plot metrics as boxplots and pie charts
 
  Is referenced by
  * condec.general.metrics.dashboard.js
- * condec.general.metrics.dashboard.configuration.js
  * condec.git.branches.dashboard.js
- * condec.git.branches.dashboard.configuration.js
  * condec.rationale.completeness.dashboard.js
- * condec.rationale.completeness.dashboard.configuration.js
  * condec.rationale.coverage.dashboard.js
- * condec.rationale.coverage.dashboard.configuration.js
  */
-(function (global) {
+(function(global) {
+	var detailsOverlayClickHandlersSet = false;
+
+	var issueKeyParser = /([^a-z]*)([a-z]+)-([0-9]+).*/gi
+
+	var isIssueData = true;
+
+	var colorPalette = null;
+
+	const CHART_RICH_PIE = "piechartRich";
+	const CHART_SIMPLE_PIE = "piechartInteger";
+	const CHART_BOXPLOT = "boxplot";
+	const DEC_STRING_SEPARATOR = " ";
+
 	var ConDecDashboard = function ConDecDashboard() {
 		console.log("ConDecDashboard constructor");
 	};
 
 	/**
-	 * Initializes a dashboard.
-	 * Automatically called when a dashboard renders its content or
-	 * when the dashboard loads with set preferences.
+	 * Initializes a dashboard with saved filterSettings.
 	 * 
-	 * external references: condec.general.metrics.dashboard.configuration.js
-	 * condec.git.branches.dashboard.configuration.js, 
-	 * condec.rationale.completeness.dashboard.configuration.js, 
-	 * condec.rationale.coverage.dashboard.configuration.js
+	 * external references: condec.general.metrics.dashboard.js
+	 * condec.git.branches.dashboard.js, 
+	 * condec.rationale.completeness.dashboard.js, 
+	 * condec.rationale.coverage.dashboard.js
 	 * 
-	 * @param dashboard reference to the current dashboard
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param preferences the options set in the dashboard configuration
+	 * @param dashboard reference to the current dashboard item
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
+	 * @param filterSettings the options set in the dashboard configuration
 	 */
-	ConDecDashboard.prototype.initRender = function (dashboard, viewIdentifier, dashboardAPI, preferences) {
+	ConDecDashboard.prototype.initDashboard = function(dashboard, viewIdentifier, dashboardAPI, savedFilterSettings) {
 		dashboardAPI.once("afterRender",
 			function() {
-				if (preferences["projectKey"]) {
-					createRender(dashboard, viewIdentifier, dashboardAPI, preferences);
+				var filterSettings = toFilterSettings(savedFilterSettings);
+				if (filterSettings["projectKey"]) {
+					dashboardAPI.showLoadingBar();
+					document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
+					dashboard.getData(dashboardAPI, filterSettings);
+					dashboardAPI.resize();
 				}
 			});
 	};
 
 	/**
+	 * Neccessary because dashboardAPI.savePreferences(filterSettings) saves lists as strings 
+	 * and cannot save objects such as definitionOfDone.
+	 * 
+	 * @param filterSettings with lists as strings and no objects such as definitionOfDone
+	 */
+	function toFilterSettings(filterSettings) {
+		filterSettings.knowledgeTypes = toList(filterSettings["knowledgeTypes"]);
+		filterSettings.linkTypes = toList(filterSettings["linkTypes"]);
+		filterSettings.status = toList(filterSettings["status"]);
+		filterSettings.documentationLocations = toList(filterSettings["documentationLocations"]);
+		filterSettings.groups = toList(filterSettings["groups"]);
+		filterSettings.sourceKnowledgeTypes = toList(filterSettings["sourceKnowledgeTypes"]);
+		filterSettings.changeImpactAnalysisConfig = {};
+		filterSettings.definitionOfDone = {
+			"minimumDecisionsWithinLinkDistance": filterSettings.minimumDecisionsWithinLinkDistance,
+			"maximumLinkDistanceToDecisions": filterSettings.maximumLinkDistanceToDecisions
+		};
+		return filterSettings;
+	}
+
+	/**
+	 * Converts a string to a list.
+	 * Necessary because lists persists in the preferences as a string.
+	 *
+	 * @param string the string to be converted to a list.
+	 */
+	function toList(string) {
+		if (!string || !string.length) {
+			return null;
+		}
+
+		if (Array.isArray(string)) {
+			return string;
+		}
+
+		string = string.replace("\[", "").replace("\]", "");
+		string = string.replaceAll("\"", "");
+
+		return string.split(",");
+	}
+
+	/**
 	 * Initializes a dashboard configuration screen. 
 	 * Automatically when the dashboard edit function is selected or
-	 * when the dashboard loads without set preferences.
+	 * when the dashboard loads without set filterSettings.
 	 * 
-	 * external references: condec.general.metrics.dashboard.configuration.js
-	 * condec.git.branches.dashboard.configuration.js,
-	 * condec.rationale.completeness.dashboard.configuration.js,
-	 * condec.rationale.coverage.dashboard.configuration.js
+	 * external references: condec.general.metrics.dashboard.js
+	 * condec.git.branches.dashboard.js,
+	 * condec.rationale.completeness.dashboard.js,
+	 * condec.rationale.coverage.dashboard.js
 	 * 
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param preferences the options set in the dashboard configuration
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
+	 * @param filterSettings the options set in the dashboard configuration
 	 */
-	ConDecDashboard.prototype.initConfiguration = function (viewIdentifier, dashboardAPI, preferences) {
+	ConDecDashboard.prototype.initConfiguration = function(viewIdentifier, dashboardAPI, filterSettings) {
 		dashboardAPI.once("afterRender",
 			function() {
-				createConfiguration(viewIdentifier, dashboardAPI, preferences);
+				showDashboardSection("condec-dashboard-config-", viewIdentifier);
+
+				createSaveButton(dashboardAPI, viewIdentifier);
+				createCancelButton(filterSettings, dashboardAPI, viewIdentifier);
+				createListener(viewIdentifier);
+				setPreferences(filterSettings, viewIdentifier);
+
+				dashboardAPI.resize();
 			});
 	};
 
 	/**
-	 * Gets the filterSettings from the preferences and gets the data
-	 * from the server.
-	 *
-	 * @param dashboard reference to the current dashboard
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param preferences the options set in the dashboard configuration
-	 */
-	function createRender(dashboard, viewIdentifier, dashboardAPI, preferences) {
-		dashboardAPI.showLoadingBar();
-
-		var sourceKnowledgeTypes = "";
-		if (preferences["sourceKnowledgeTypes"]) {
-			sourceKnowledgeTypes = preferences["sourceKnowledgeTypes"];
-		}
-		var filterSettings = getFilterSettings(preferences);
-		getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes);
-
-		dashboardAPI.resize();
-	}
-
-	/**
-	 * Gets the data to fill the dashboard plots by calling the getData()-method
-	 * of the specified dashboard.
-	 *
-	 * @param dashboard reference to the current dashboard
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param filterSettings the filterSettings used for the REST-call
-	 * @param sourceKnowledgeTypes the sourceKnowledgeTypes used for the REST-call
-	 *                             (optional, only used for the RationaleCoverageDashboard)
-	 */
-	function getData(dashboard, viewIdentifier, dashboardAPI, filterSettings, sourceKnowledgeTypes) {
-		if (!filterSettings.projectKey || !filterSettings.projectKey.length) {
-			return;
-		}
-
-		document.getElementById("condec-dashboard-selected-project-" + viewIdentifier).innerText = filterSettings.projectKey;
-
-		dashboard.getData(dashboardAPI, filterSettings, sourceKnowledgeTypes);
-	}
-
-	/**
 	 * Process the data that was returned from a REST-call.
 	 *
-	 * external references: condec.general.metrics.dashboard.configuration.js
-	 * condec.git.branches.dashboard.configuration.js,
-	 * condec.rationale.completeness.dashboard.configuration.js,
-	 * condec.rationale.coverage.dashboard.configuration.js
+	 * external references: condec.general.metrics.dashboard.js
+	 * condec.git.branches.dashboard.js,
+	 * condec.rationale.completeness.dashboard.js,
+	 * condec.rationale.coverage.dashboard.js
 	 *
 	 * @param error the error message returned in the REST-call
 	 *              null if no error occurred
 	 * @param result the result of the REST-call
 	 * @param dashboard reference to the current dashboard
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
 	 * @param filterSettings the filterSettings used in the REST-call
 	 */
-	ConDecDashboard.prototype.processData = function (error, result, dashboard, viewIdentifier, dashboardAPI, filterSettings) {
+	ConDecDashboard.prototype.processData = function(error, result, dashboard, viewIdentifier, dashboardAPI, filterSettings) {
 		dashboardAPI.hideLoadingBar();
 		if (error) {
 			showDashboardSection("condec-dashboard-contents-data-error-", viewIdentifier);
@@ -134,37 +153,23 @@
 	};
 
 	/**
-	 * Sets up the dashboard configuration screen and fills it from the preferences.
-	 *
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param preferences the options set in the dashboard configuration
-	 */
-	function createConfiguration(viewIdentifier, dashboardAPI, preferences) {
-		showDashboardSection("condec-dashboard-config-", viewIdentifier);
-
-		createSaveButton(dashboardAPI, viewIdentifier);
-		createCancelButton(preferences, dashboardAPI, viewIdentifier);
-		createListener(viewIdentifier);
-		setPreferences(preferences, viewIdentifier);
-
-		dashboardAPI.resize();
-	}
-
-	/**
 	 * Creates the save button and adds a listener to it.
 	 * When the save button is pressed and the projectKey is set
 	 * the dashboard renders its content.
 	 *
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function createSaveButton(dashboardAPI, viewIdentifier) {
 		function onSaveButton() {
-			var preferences = getPreferences(viewIdentifier);
+			var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 
-			if (preferences["projectKey"]) {
-				dashboardAPI.savePreferences(preferences);
+			if (filterSettings["projectKey"]) {
+				if (filterSettings["definitionOfDone"]) {
+					// necessary since savePreferences cannot store objects
+					Object.assign(filterSettings, filterSettings.definitionOfDone);
+				}
+				dashboardAPI.savePreferences(filterSettings);
 			}
 
 			dashboardAPI.resize();
@@ -181,13 +186,13 @@
 	 * it opens the already rendered content view without
 	 * recalculating it
 	 *
-	 * @param preferences the options set in the dashboard configuration
-	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param filterSettings the options set in the dashboard configuration
+	 * @param dashboardAPI used to call methods of the Jira dashboard API
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
-	function createCancelButton(preferences, dashboardAPI, viewIdentifier) {
+	function createCancelButton(filterSettings, dashboardAPI, viewIdentifier) {
 		function onCancelButton() {
-			if (preferences["projectKey"]) {
+			if (filterSettings["projectKey"]) {
 				showDashboardSection("condec-dashboard-contents-container-", viewIdentifier);
 			}
 
@@ -203,7 +208,7 @@
 	 * Creates a listener and adds it to the projectKey-dropdown.
 	 * If a project is selected, further filter elements can be filled.
 	 *
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function createListener(viewIdentifier) {
 		function onSelectProject() {
@@ -236,12 +241,12 @@
 	}
 
 	/**
-	 * Shown the specified html element.
-	 * All other html elements are hidden.
+	 * Shows the specified html element.
+	 * All other HTML elements are hidden.
 	 *
 	 * @param elementId the id of the element (without viewIdentifier) 
 	 *                  that should be shown
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
 	function showDashboardSection(elementId, viewIdentifier) {
 		var hiddenClass = "hidden";
@@ -253,222 +258,343 @@
 	}
 
 	/**
-	 * Return the preferences set in the html filter elements.
-	 * 
-	 * @param viewIdentifier identifies the html elements of the dashboard
-	 */
-	function getPreferences(viewIdentifier) {
-		var preferences = {};
-
-		setPreferenceValue("projectKey", null, preferences, "project-dropdown-" + viewIdentifier);
-		setPreferenceValue("sourceKnowledgeTypes", "list", preferences, "source-knowledge-type-dropdown-" + viewIdentifier);
-		setPreferenceValue("minimumDecisionCoverage", null, preferences, "minimum-number-of-decisions-input-" + viewIdentifier);
-		setPreferenceValue("maximumLinkDistance", null, preferences, "link-distance-to-decision-number-input-" + viewIdentifier);
-		setPreferenceValue("searchTerm", null, preferences, "search-input-" + viewIdentifier);
-		setPreferenceValue("knowledgeTypes", "list", preferences, "knowledge-type-dropdown-" + viewIdentifier);
-		setPreferenceValue("knowledgeStatus", "list", preferences, "status-dropdown-" + viewIdentifier);
-		setPreferenceValue("documentationLocations", "list", preferences, "documentation-location-dropdown-" + viewIdentifier);
-		setPreferenceValue("linkTypes", "list", preferences, "link-type-dropdown-" + viewIdentifier);
-		setPreferenceValue("decisionGroups", "list", preferences, "decision-group-dropdown-" + viewIdentifier);
-		setPreferenceValue("linkDistance", null, preferences, "link-distance-input-" + viewIdentifier);
-		setPreferenceValue("minDegree", null, preferences, "min-degree-input-" + viewIdentifier);
-		setPreferenceValue("maxDegree", null, preferences, "max-degree-input-" + viewIdentifier);
-		setPreferenceValue("startDate", null, preferences, "start-date-picker-" + viewIdentifier);
-		setPreferenceValue("endDate", null, preferences, "end-date-picker-" + viewIdentifier);
-		setPreferenceValue("endDate", null, preferences, "end-date-picker-" + viewIdentifier);
-		setPreferenceValue("decisionKnowledgeShown", "flag", preferences, "is-decision-knowledge-only-input-" + viewIdentifier);
-		setPreferenceValue("testCodeShown", "flag", preferences, "is-test-code-input-" + viewIdentifier);
-		setPreferenceValue("incompleteKnowledgeShown", "flag", preferences, "is-incomplete-knowledge-input-" + viewIdentifier);
-		setPreferenceValue("transitiveLinksShown", "flag", preferences, "is-transitive-links-input-" + viewIdentifier);
-
-		return preferences;
-	}
-
-	/**
-	 * Read the option set in a html filter element and 
-	 * set it in the preferences.
-	 *
-	 * @param key the key under which the options should be saved 
-	 *            in the preferences
-	 * @param type the type of the options read out, 
-	 *             so it can be saved in the right way
-	 *             possible options are "flag" and "list"
-	 *             if null just save the value as is
-	 * @param preferences the preferences the options should be saved in
-	 * @param elementId the id of the filter element that should be read
-	 */
-	function setPreferenceValue(key, type, preferences, elementId) {
-		var node = document.getElementById(elementId);
-		if (node) {
-			if (type === "flag") {
-				preferences[key] = node.checked;
-			} else if (type === "list") {
-				preferences[key] = conDecFiltering.getSelectedItems(elementId);
-			} else {
-				preferences[key] = node.value;
-			}
-		}
-	}
-
-	/**
 	 * Set the options of the html filter elements from the preferences.
 	 *
 	 * @param preferences stores the filter options
-	 * @param viewIdentifier identifies the html elements of the dashboard
+	 * @param viewIdentifier identifies the HTML elements of the dashboard
 	 */
-	function setPreferences(preferences, viewIdentifier) {
-		var projectKey = preferences["projectKey"];
+	function setPreferences(filterSettings, viewIdentifier) {
+		var projectKey = filterSettings["projectKey"];
 		if (projectKey) {
 			conDecAPI.projectKey = projectKey;
 		}
-		setPreference("projectKey", null, preferences, null, "project-dropdown-" + viewIdentifier);
-		setPreference("sourceKnowledgeTypes", "list", preferences, conDecAPI.getKnowledgeTypes(), "source-knowledge-type-dropdown-" + viewIdentifier);
-		setPreference("minimumDecisionCoverage", null, preferences, null, "minimum-number-of-decisions-input-" + viewIdentifier);
-		setPreference("maximumLinkDistance", null, preferences, null, "link-distance-to-decision-number-input-" + viewIdentifier);
-		setPreference("searchTerm", null, preferences, null, "search-input-" + viewIdentifier);
-		setPreference("knowledgeTypes", "list", preferences, conDecAPI.getKnowledgeTypes(), "knowledge-type-dropdown-" + viewIdentifier);
-		setPreference("knowledgeStatus", "list", preferences, conDecAPI.knowledgeStatus, "status-dropdown-" + viewIdentifier);
-		setPreference("documentationLocations", "list", preferences, conDecAPI.documentationLocations, "documentation-location-dropdown-" + viewIdentifier);
-		setPreference("linkTypes", "list", preferences, conDecAPI.getLinkTypes(), "link-type-dropdown-" + viewIdentifier);
-		setPreference("decisionGroups", "list", preferences, conDecGroupingAPI.getAllDecisionGroups(), "decision-group-dropdown-" + viewIdentifier);
-		setPreference("linkDistance", null, preferences, null, "link-distance-input-" + viewIdentifier);
-		setPreference("minDegree", null, preferences, null, "min-degree-input-" + viewIdentifier);
-		setPreference("maxDegree", null, preferences, null, "max-degree-input-" + viewIdentifier);
-		setPreference("startDate", null, preferences, null, "start-date-picker-" + viewIdentifier);
-		setPreference("endDate", null, preferences, null, "end-date-picker-" + viewIdentifier);
-		setPreference("decisionKnowledgeShown", "flag", preferences, null, "is-decision-knowledge-only-input-" + viewIdentifier);
-		setPreference("testCodeShown", "flag", preferences, null, "is-test-code-input-" + viewIdentifier);
-		setPreference("incompleteKnowledgeShown", "flag", preferences, null, "is-test-code-input-" + viewIdentifier);
-		setPreference("transitiveLinksShown", "flag", preferences, null, "is-transitive-links-input-" + viewIdentifier);
+		conDecFiltering.fillFilterElementsFromSettings(viewIdentifier, filterSettings);
 	}
 
-	/**
-	 * Read the option set in the preferences and
-	 * set it in the html filter elements.
-	 *
-	 * @param key the key under which the options are saved
-	 *            in the preferences
-	 * @param type the type of the options saved,
-	 *             so it can be set in the right way
-	 *             possible options are "flag" and "list"
-	 *             if null just save the value as is
-	 * @param preferences the preferences the options are saved in
-	 * @param items the list of items that a dropdown menu should contain
-	 *              only necessary if type is "list" else can be null
-	 * @param elementId the id of the filter element that should be set
-	 */
-	function setPreference(key, type, preferences, items, elementId) {
-		var node = document.getElementById(elementId);
-		if (type === "flag") {
-			if (preferences[key]) {
-				node.checked = preferences[key];
-			}
-		} else if (type === "list") {
-			if (preferences["projectKey"]) {
-				conDecAPI.projectKey = preferences["projectKey"];
-				conDecFiltering.initDropdown(elementId, items, preferences[key]);
-			}
+	ConDecDashboard.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
+		this.initializeChartWithColorPalette(divId, title, subtitle, dataMap, null);
+	};
+
+	/* used by branch dashboard item condec.rationale.coverage.dashboard.js */
+	ConDecDashboard.prototype.initializeChartWithColorPalette = function(divId, title, subtitle, dataMap, palette) {
+		isIssueData = true;
+		colorPalette = palette;
+		initializeChartForSources(divId, title, subtitle, new Map(Object.entries(dataMap)));
+	};
+
+	/* used by branch dashboard item condec.git.branches.dashboard.js */
+	ConDecDashboard.prototype.initializeChartForBranchSource = function(divId, title, subtitle, dataMap) {
+		isIssueData = false;
+		colorPalette = null;
+		initializeChartForSources(divId, title, subtitle, dataMap);
+	};
+
+	function initializeChartForSources(divId, title, subtitle, dataMap) {
+		var domElement = document.getElementById(divId);
+		if (!domElement) {
+			console.warn("Could not find element with ID: " + divId);
+			return;
+		}
+		var chart = echarts.init(domElement);
+		if (!chart) {
+			console.warn("Could not init chart for element " + divId);
+			return;
+		}
+		// pick the chart type based on html element's id attribute
+		if (divId.startsWith(CHART_RICH_PIE)) {
+			chart = initializeDivWithPieChartData(chart, title, subtitle, dataMap, true);
+		} else if (divId.startsWith(CHART_SIMPLE_PIE)) {
+			chart = initializeDivWithPieChartData(chart, title, subtitle, dataMap, false);
+		} else if (divId.startsWith(CHART_BOXPLOT)) {
+			chart = initializeDivWithBoxPlotFromMap(chart, title, subtitle, dataMap);
 		} else {
-			if (preferences[key]) {
-				node.value = preferences[key];
-			}
+			chart = null;
 		}
+
+		if (!chart) {
+			console.error("could not setup chart for element " + divId);
+		}
+		// add click handler for chart data (in canvas)
+		chart.on('click', echartDataClicked);
+		// remove development aids
+		domElement.classList.remove("notsetyet");
 	}
 
-	/**
-	 * Converts the options stored in the preferences for persistence
-	 * into filterSettings used for REST-calls.
-	 * Necessary because the the data persisting in the preferences
-	 * must is saved slightly different than in the filterSettings
-	 * for some data types (like lists, dates or the DoD).
-	 *
-	 * @param preferences stores the filter options
-	 */
-	function getFilterSettings(preferences) {
-		var filterSettings = {};
-		filterSettings.definitionOfDone = {};
-		filterSettings.searchTerm = "";
+	function initializeDivWithBoxPlotFromMap(boxplot, title, xAxis, dataMap) {
+		var values = [];
+		var keysAsArray = Array.from(dataMap.keys());
+		for (var i = keysAsArray.length - 1; i >= 0; i--) {
+			var value = Number(dataMap.get(keysAsArray[i]));
+			values.push(value);
+		}
 
-		setFilterSetting("projectKey", "projectKey", null, filterSettings, preferences);
-		setFilterSetting("minimumDecisionsWithinLinkDistance", "minimumDecisionCoverage", "DoD", filterSettings, preferences);
-		setFilterSetting("maximumLinkDistanceToDecisions", "maximumLinkDistance", "DoD", filterSettings, preferences);
-		setFilterSetting("searchTerm", "searchTerm", null, filterSettings, preferences);
-		setFilterSetting("knowledgeTypes", "knowledgeTypes", "list", filterSettings, preferences);
-		setFilterSetting("status", "knowledgeStatus", "list", filterSettings, preferences);
-		setFilterSetting("documentationLocations", "documentationLocations", "list", filterSettings, preferences);
-		setFilterSetting("linkTypes", "linkTypes", "list", filterSettings, preferences);
-		setFilterSetting("groups", "decisionGroups", "list", filterSettings, preferences);
-		setFilterSetting("linkDistance", "linkDistance", null, filterSettings, preferences);
-		setFilterSetting("minDegree", "minDegree", null, filterSettings, preferences);
-		setFilterSetting("maxDegree", "maxDegree", null, filterSettings, preferences);
-		setFilterSetting("startDate", "startDate", "date", filterSettings, preferences);
-		setFilterSetting("endDate", "endDate", "date", filterSettings, preferences);
-		setFilterSetting("isOnlyDecisionKnowledgeShown", "decisionKnowledgeShown", "list", filterSettings, preferences);
-		setFilterSetting("isTestCodeShown", "testCodeShown", "list", filterSettings, preferences);
-		setFilterSetting("isIncompleteKnowledgeShown", "incompleteKnowledgeShown", "list", filterSettings, preferences);
-		setFilterSetting("createTransitiveLinks", "transitiveLinksShown", "list", filterSettings, preferences);
-
-		return filterSettings;
+		var data = echarts.dataTool.prepareBoxplotData(new Array(values));
+		boxplot.setOption(getOptionsForBoxplot(title, xAxis, "", data));
+		boxplot.rawConDecData = dataMap;
+		return boxplot;
 	}
 
-	/**
-	 * Read the option set in the preferences and
-	 * set it in the filterSettings.
-	 *
-	 * @param filterSettingKey the key under which the options should be saved
-	 *                         in the filterSettings
-	 * @param preferencesKey the key under which the options are saved
-	 *                         in the preferences
-	 * @param type the type of the options converted,
-	 *             so it can be set in the right way
-	 *             possible options are "list", "date" and "DoD"
-	 *             if null just save the value as is
-	 * @param filterSettings the filterSettings the options should
-	 *                       be saved in
-	 * @param preferences the preferences the options are saved in
-	 *              only necessary if type is "list" else can be null
-	 */
-	function setFilterSetting(filterSettingKey, preferencesKey, type, filterSettings, preferences) {
-		if (type === "list") {
-			var list = getList(preferences[preferencesKey]);
-			if (list && Array.isArray(list) && list.length) {
-				filterSettings[filterSettingKey] = list;
+	function initializeDivWithPieChartData(pieChart, title, subtitle, objectsMap, hasRichData) {
+		var data = [];
+		var source = [];
+
+		var dataAsArray = Array.from(objectsMap.keys());
+		for (var i = dataAsArray.length - 1; i >= 0; i--) {
+			var entry = {};
+			entry["name"] = dataAsArray[i];
+			var value = objectsMap.get(entry["name"]);
+			
+			if (hasRichData && (typeof value === 'string' || value instanceof String)) {
+				entry["value"] = value.split(' ').reduce(sourceCounter, 0);
+			} else if (!hasRichData && (typeof value === 'string' || value instanceof String)) {
+				entry["value"] = Number(value);
+			} else {
+				entry["value"] = value;
 			}
-		} else if (type === "date") {
-			if (preferences[preferencesKey]) {
-				filterSettings[filterSettingKey] = new Date(preferences[preferencesKey]).getTime();
+			data.push(entry);
+			source.push(value);
+		}
+
+		pieChart.setOption(getOptionsForPieChart(title, subtitle, dataAsArray, data));
+		if (hasRichData) {
+			pieChart.groupedConDecData = source;
+		}
+		return pieChart;
+	}
+
+	var sourceCounter = function(accumulator, currentValue) {
+		if (currentValue.trim() === "") {
+			return accumulator + 0;
+		}
+		return accumulator + 1;
+	}
+
+	function navigateToElement(elementName) {
+		var targetBaseUrl = AJS.contextPath();
+		var issueKey = elementName.replace(issueKeyParser, issueKeyBuilder);
+		if (!isIssueData) {
+			var issueKeyParts = elementName.split("origin/");
+			var branchName = issueKeyParts[0];
+			if (issueKeyParts.length > 1) { // not local branch name
+				branchName = issueKeyParts[1];
 			}
-		} else if (type === "DoD") {
-			if (preferences[preferencesKey]) {
-				filterSettings["definitionOfDone"][filterSettingKey] = preferences[preferencesKey];
+			var branchNameParts = branchName.split(".");
+			issueKey = branchNameParts[0];
+			var newWindow = window.open(targetBaseUrl + '/browse/' + issueKey + '#menu-item-git', '_blank');
+			var script = document.createElement('script');
+			function openTab() {
+				AJS.tabs.change(AJS.$("a[href=#git-tab]"));
 			}
+			script.innerHTML = '(' + openTab.toString() + '());';
+			newWindow.onload = function() {
+				this.document.body.appendChild(script);
+			};
+		} else if (elementName.includes('.')) {
+			var projectKey = elementName.substring(0, elementName.indexOf('-'));
+			var codeFileName = elementName.substring(elementName.indexOf('-') + 1);
+			window.open(targetBaseUrl + '/projects/' + projectKey + '?selectedItem=decision-knowledge-page&codeFileName=' + codeFileName, '_blank');
 		} else {
-			if (preferences[preferencesKey]) {
-				filterSettings[filterSettingKey] = preferences[preferencesKey];
-			}
+			window.open(targetBaseUrl + '/browse/' + issueKey, '_blank');
 		}
 	}
 
-	/**
-	 * Convert a string to a list.
-	 * Necessary because lists persists in the preferences
-	 * as a string.
-	 *
-	 * @param string the string to be converted
-	 */
-	function getList(string) {
-		if (!string || !string.length) {
-			return null;
+	function showClickedSource(chart, dataIndexClicked, dataClicked) {
+		if (chart.hasOwnProperty("groupedConDecData")) { // CHART_RICH_PIE case
+			// extract data keys (dec. knowledge elements)
+			return showDecKnowledgeElementsOverlay(chart.groupedConDecData[dataIndexClicked], isIssueData);
+		} else if (chart.hasOwnProperty("rawConDecData")) { // CHART_BOXPLOT case
+			// match source data map entries with clicked data
+			var elementsList = extractBoxplotData(chart, dataClicked);
+			return showDecKnowledgeElementsOverlay(elementsList, isIssueData);
+		} else { // CHART_SIMPLE_PIE or other case
+			console.warn("Not supported chart type.")
+		}
+	}
+
+	function cleanPreviousChildNodes(parentNode) {
+		var nodeList = parentNode.childNodes;
+		//remove child elements from back, nodeList.length will shrink
+		for (var i = nodeList.length - 1; i >= 0; i--) {
+			nodeList[i].parentNode.removeChild(nodeList[i]);
+		}
+	}
+
+	function extractBoxplotData(boxplot, dataClicked) {
+		var completeArray2d = Array.from(boxplot.rawConDecData) // [ [decElem, int], ... ]
+		var trimmedData = dataClicked.slice(1);
+		var involvedElements = completeArray2d.filter(
+			function(elem) {
+				return this.includes(Number(elem[1]));
+			}, trimmedData);
+
+		return involvedElements.map(
+			function(val) { // value is a 2-element array
+				return val[0];
+			}
+		).join(DEC_STRING_SEPARATOR);
+	}
+
+	function getOptionsForBoxplot(name, xLabel, yLabel, data) {
+		return {
+			title: [{
+				text: name,
+				left: "center",
+			},],
+			tooltip: {
+				trigger: "item",
+				axisPointer: {
+					type: "shadow"
+				}
+			},
+			grid: {
+				left: "15%",
+				right: "10%",
+				bottom: "15%"
+			},
+			xAxis: {
+				type: "category",
+				data: data.axisData,
+				boundaryGap: true,
+				nameGap: 30,
+				splitArea: {
+					show: false
+				},
+				axisLabel: {
+					formatter: xLabel
+				},
+			},
+			yAxis: {
+				type: "value",
+				name: yLabel,
+				splitArea: {
+					show: true
+				}
+			},
+			series: [{
+				name: "boxplot",
+				type: "boxplot",
+				data: data.boxData,
+
+			}, {
+				name: "outlier",
+				type: "scatter",
+				data: data.outliers
+			}]
+		};
+	}
+
+	function getOptionsForPieChart(title, subtitle, dataKeys, dataMap) {
+		var options = {
+			title: {
+				text: title,
+				subtext: subtitle,
+				x: "center"
+			},
+			tooltip: {
+				trigger: "item",
+				formatter: "{b} : {c} ({d}%)"
+			},
+			legend: {
+				orient: "horizontal",
+				bottom: "bottom",
+				data: dataKeys
+			},
+			series: [{
+				type: "pie",
+				radius: "60%",
+				center: ["50%", "50%"],
+				data: dataMap,
+				itemStyle: {
+					emphasis: {
+						shadowBlur: 10,
+						shadowOffsetX: 0,
+						shadowColor: "rgba(0, 0, 0, 0.5)"
+					}
+				},
+				avoidLabelOverlap: true,
+				label: {
+					normal: {
+						show: false,
+						position: 'center'
+					},
+					emphasis: {
+						show: false
+					}
+				},
+				labelLine: {
+					normal: {
+						show: false
+					}
+				}
+			}],
+		};
+
+		if (colorPalette) {
+			options.color = colorPalette;
 		}
 
-		if (Array.isArray(string)) {
-			return string;
+		return options;
+	}
+
+	function issueKeyBuilder(m, p1, p2, p3) {
+		return p2 + "-" + p3;
+	}
+
+	function fillChildNodes(node, flatList, isIssueData) {
+		var listArray = flatList.split(DEC_STRING_SEPARATOR);
+		if (!isIssueData) {
+			listArray = listArray.map(function(e) {
+				return e.replace("refs/remotes/", "");
+			});
 		}
 
-		string = string.replace("\[", "").replace("\]", "");
-		string = string.replaceAll("\"", "");
+		for (var i = 0; i < listArray.length; i++) {
+			var span = document.createElement("p");
+			span.dataset.isbranch = !isIssueData;
+			span.innerText = listArray[i];
+			node.appendChild(span);
+		}
+	}
 
-		return string.split(",");
+	function showDecKnowledgeElementsOverlay(flatList, isIssueData) {
+		var overlay = document.getElementById('decKnowElementsOverlay');
+		overlay.classList.remove("hidden");
+		var contents = document.getElementById('extractedDecKnowElements');
+
+		if (!detailsOverlayClickHandlersSet) {
+			console.info("attaching overlay handlers")
+			overlay.addEventListener('click', clickDecKnowledgeElementsOverlay, {
+				capture: true,
+				once: false,
+				passive: false
+			});
+			contents.addEventListener('click', clickDecKnowledgeElementsInOverlay, {
+				capture: true,
+				once: false,
+				passive: false
+			});
+			detailsOverlayClickHandlersSet = true;
+		}
+		cleanPreviousChildNodes(contents);
+		fillChildNodes(contents, flatList, isIssueData);
+	}
+
+	function clickDecKnowledgeElementsOverlay(event) {
+		if (event.target === event.currentTarget) {
+			event.currentTarget.classList.add("hidden");
+		}
+	}
+
+	function echartDataClicked(param) {
+		if (typeof param.seriesIndex != 'undefined') {
+			showClickedSource(this, param.dataIndex, param.data)
+		}
+	}
+
+	function clickDecKnowledgeElementsInOverlay(event) {
+		if (event.target.nodeName.toLowerCase() === "p") {
+			navigateToElement(event.target.innerText);
+		}
 	}
 
 	global.conDecDashboard = new ConDecDashboard();

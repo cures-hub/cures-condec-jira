@@ -89,5 +89,16 @@ The following class diagram gives an overview of relevant backend classes for th
 
 *Overview class diagram for the extraction and presentation of knowledge in git*
 
+The Java code for the extraction and presentation of knowledge in git can be found here:
+
+- [Java code for the extraction and presentation of knowledge in git](../../src/main/java/de/uhd/ifi/se/decision/management/jira/git)
+- [Java REST API for the extraction and presentation of knowledge in git](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/GitRest.java)
+
+The UI code for the extraction and presentation of knowledge in git can be found here:
+
+- [Velocity templates for the configuration](../../src/main/resources/templates/settings/git)
+- [Velocity templates for the view on knowledge from git](../../src/main/resources/templates/tabs/knowledgeInGit.vm)
+- [JavaScript code for the extraction and presentation of knowledge in git](../../src/main/resources/js/git)
+
 [CommitMessageToCommentTranscriber]: ../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/CommitMessageToCommentTranscriber.java
 [commit]: https://github.com/cures-hub/cures-condec-jira/commit/c828dae348404a7731db402ca73d1834238bd399

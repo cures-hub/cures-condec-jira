@@ -61,3 +61,14 @@ The following class diagram gives an overview of relevant backend classes for th
 ![Overview class diagram](../diagrams/class_diagram_release_notes.png)
 
 *Overview class diagram for the release notes creation feature*
+
+The Java code for release notes creation can be found here:
+
+- [Java code for release notes creation](../../src/main/java/de/uhd/ifi/se/decision/management/jira/releasenotes)
+- [Java REST API for decision guidance](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ReleaseNotesRest.java)
+
+The UI code for release notes creation can be found here:
+
+- [Velocity template for configuration](../../src/main/resources/templates/settings/releaseNotesSettings.vm)
+- [Velocity templates for release notes creation](../../src/main/resources/templates/releasenotes)
+- [JavaScript code for release notes creation](../../src/main/resources/js/releasenotes)

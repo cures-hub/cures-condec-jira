@@ -1,13 +1,11 @@
-/*
- This module fills the box plots and pie charts used in the feature task branch dashboard item.
-
- Requires
- * condec.requirements.dashboard.js
-
- Is referenced in HTML by
- * dashboard/featureBranches.vm
+/**
+ * This module renders the dashboard and its configuration screen used in the feature branch dashboard item.
+ *
+ * Requires
+ * condec.dashboard.js
  */
-(function(global) {
+define('dashboard/branches', [], function() {
+	var dashboardAPI;
 	var issueBranchKeyRx = null;
 	var branchesQuality = [];
 
@@ -26,8 +24,28 @@
 	var ISSUE_WITHOUT_DECISIONS = "Issue does not have a valid decision!";
 	var ISSUE_WITHOUT_ALTERNATIVES = "Issue does not have any alternatives yet";
 
-	var ConDecBranchesDashboard = function ConDecBranchesDashboard() {
-		console.log("ConDecBranchesDashboard constructor");
+	var ConDecBranchesDashboardItem = function(API) {
+		dashboardAPI = API;
+	};
+
+	/**
+	 * Called to render the view for a fully configured dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecBranchesDashboardItem.prototype.render = function(context, preferences) {
+		conDecDashboard.initDashboard(this, "branch", dashboardAPI, preferences);
+	};
+
+	/**
+	 * Called to render the edit view for a dashboard item.
+	 *
+	 * @param context The surrounding <div/> context that this items should render into.
+	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 */
+	ConDecBranchesDashboardItem.prototype.renderEdit = function(context, preferences) {
+		conDecDashboard.initConfiguration("branch", dashboardAPI, preferences);
 	};
 
 	/**
@@ -38,13 +56,14 @@
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
 	 * @param filterSettings the filterSettings used for the API-call
 	 */
-	ConDecBranchesDashboard.prototype.getData = function(dashboardAPI, filterSettings) {
+	ConDecBranchesDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
+		conDecBranchesDashboardItem = this;
 		conDecGitAPI.getDiffForProject(filterSettings.projectKey)
 			.then(branches => {
-				conDecDashboard.processData(null, branches, conDecBranchesDashboard, "branch",
+				conDecDashboard.processData(null, branches, conDecBranchesDashboardItem, "branch",
 					dashboardAPI, filterSettings);
 			}).catch(error => {
-				conDecDashboard.processData(error, null, conDecBranchesDashboard, "branch",
+				conDecDashboard.processData(error, null, conDecBranchesDashboardItem, "branch",
 					dashboardAPI, filterSettings);
 			});
 	};
@@ -57,7 +76,7 @@
 	 * @param data the data returned from the API-call
 	 * @param filterSettings the filterSettings used in the API-call
 	 */
-	ConDecBranchesDashboard.prototype.renderData = function(branches, filterSettings) {
+	ConDecBranchesDashboardItem.prototype.renderData = function(branches, filterSettings) {
 		/*
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
@@ -235,22 +254,22 @@
 		var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
 
 		/* render pie-charts */
-		ConDecReqDash.initializeChartForBranchSource("piechartRich-QualityStatusForBranches",
+		conDecDashboard.initializeChartForBranchSource("piechartRich-QualityStatusForBranches",
 			"", "How many branches document rationale well?", statusesForBranchesData); /* "Quality status" */
-		ConDecReqDash.initializeChartForBranchSource("piechartRich-ProblemTypesInBranches",
+		conDecDashboard.initializeChartForBranchSource("piechartRich-ProblemTypesInBranches",
 			"", "Which documentation mistakes are most common?", sortedProblemTypesOccurrence); /*"Total quality problems" */
-		ConDecReqDash.initializeChartForBranchSource("piechartRich-BranchesPerIssue",
+		conDecDashboard.initializeChartForBranchSource("piechartRich-BranchesPerIssue",
 			"", "How many branches do Jira tasks have?", sortedBranchesPerIssue);
 		/* render box-plots */
-		ConDecReqDash.initializeChartForBranchSource("boxplot-IssuesPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-IssuesPerBranch",
 			"", "Issues number in branches", issuesInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-DecisionsPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-DecisionsPerBranch",
 			"", "Decisions number in branches", decisionsInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-AlternativesPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-AlternativesPerBranch",
 			"", "Alternatives number in branches", alternativesInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-ProsPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-ProsPerBranch",
 			"", "Pro arguments number in branches", prosInBranches);
-		ConDecReqDash.initializeChartForBranchSource("boxplot-ConsPerBranch",
+		conDecDashboard.initializeChartForBranchSource("boxplot-ConsPerBranch",
 			"", "Con arguments number in branches", consInBranches);
 	}
 
@@ -296,5 +315,5 @@
 		return "Incorrect";
 	}
 
-	global.conDecBranchesDashboard = new ConDecBranchesDashboard();
-})(window);
+	return ConDecBranchesDashboardItem;
+});

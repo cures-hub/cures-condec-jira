@@ -1,4 +1,4 @@
-# Update guide for Javascript libraries
+# Update guide for JavaScript libraries
 
 # vis-network
 This lib is used to plot the knowledge graph.
@@ -7,7 +7,6 @@ https://github.com/visjs/vis-network
 
 Run "npm install vis-network"
 Only the "dist" folder is kept, all other folders are deleted.
-
 
 # vis-timeline
 This lib is used to plot the chronology of knowledge elements.
@@ -30,3 +29,10 @@ Check if the following images are up-to-date in images folder: 32px.png, 40px.pn
 # treant
 Used to plot trees of knowledge elements.
 https://fperucic.github.io/treant-js/
+
+# echarts
+Used to plot pie charts and boxplots in dashboard items.
+https://echarts.apache.org/en/index.html
+
+Run "npm install echarts" or download from https://github.com/apache/echarts/tree/master/dist
+Download echarts.js and extension/dataTool.js

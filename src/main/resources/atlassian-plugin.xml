@@ -61,8 +61,6 @@
 			location="/js/lib/vis-network/dist/img/network/connectIcon.png" />
 		<resource type="download" name="img/network/cross.png"
 			location="/js/lib/vis-network/dist/img/network/cross.png" />
-		<!-- dashboard item thumbnail -->
-		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
@@ -529,26 +527,17 @@
 
 	<web-resource key="dashboard-item-condec-resources" name="ConDec Dashboard Web Resources">
 		<resource type="download" name="condec.dashboard.css" location="/css/condec.dashboard.css" />
+		<resource type="download" name="dashboardItem.png" location="/images/dashboardItem.png" />
 		<resource type="download" name="condec.dashboard.js" location="js/dashboard/condec.dashboard.js" />
 		<resource type="download" name="condec.dashboard.api.js" location="js/dashboard/condec.dashboard.api.js" />
 		<resource type="download" name="condec.git.branches.dashboard.js"
 			location="js/dashboard/condec.git.branches.dashboard.js" />
-		<resource type="download" name="condec.git.branches.dashboard.configuration.js"
-			location="js/dashboard/condec.git.branches.dashboard.configuration.js" />
 		<resource type="download" name="condec.general.metrics.dashboard.js"
 			location="js/dashboard/condec.general.metrics.dashboard.js" />
-		<resource type="download" name="condec.general.metrics.dashboard.configuration.js"
-			location="js/dashboard/condec.general.metrics.dashboard.configuration.js" />
 		<resource type="download" name="condec.rationale.completeness.dashboard.js"
 			location="js/dashboard/condec.rationale.completeness.dashboard.js" />
-		<resource type="download" name="condec.rationale.completeness.dashboard.configuration.js"
-			location="js/dashboard/condec.rationale.completeness.dashboard.configuration.js" />
 		<resource type="download" name="condec.rationale.coverage.dashboard.js"
 			location="js/dashboard/condec.rationale.coverage.dashboard.js" />
-		<resource type="download" name="condec.rationale.coverage.dashboard.configuration.js"
-			location="js/dashboard/condec.rationale.coverage.dashboard.configuration.js" />
-		<resource type="download" name="condec.requirements.dashboard.js"
-			location="js/dashboard/condec.requirements.dashboard.js" />
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
@@ -571,7 +560,7 @@
 				<name>ConDec team</name>
 			</author>
 			<thumbnail
-				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.knowledge.in.git.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/featureBranches.vm" />
@@ -591,7 +580,7 @@
 				<name>ConDec team</name>
 			</author>
 			<thumbnail
-				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.generalmetrics.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/generalMetrics.vm" />
@@ -611,7 +600,7 @@
 				<name>ConDec team</name>
 			</author>
 			<thumbnail
-				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.rationalecompleteness.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCompleteness.vm" />
@@ -631,7 +620,7 @@
 				<name>ConDec team</name>
 			</author>
 			<thumbnail
-				location="/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/dashboardItem.png" />
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources/dashboardItem.png" />
 		</definition>
 		<description key="condec.dashboard.rationalecoverage.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCoverage.vm" />
