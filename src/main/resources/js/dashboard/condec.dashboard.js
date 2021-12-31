@@ -271,42 +271,15 @@
 		conDecFiltering.fillFilterElementsFromSettings(viewIdentifier, filterSettings);
 	}
 
-	/** 
-	* @issue How to convert a velocity map into a Javascript map?
-	* @decision Do a manual conversion from a velocity map into a Javascript map!
-	* @con Not very elegant at all.
-	* @alternative Directly use velocity maps in Javascript.
-	* @con It is not possible to use velocity maps in Javascript.
-	*/
-	function getMap(velocityMap) {
-		velocityMap = JSON.stringify(velocityMap);
-
-		// removes brackets
-		velocityMap = velocityMap.replaceAll("\{", "")
-		velocityMap = velocityMap.replaceAll("\}", "");
-		velocityMap = velocityMap.replaceAll("\":", "\" : ");
-		velocityMap = velocityMap.replaceAll("\"", "");
-
-		var jsMap = new Map();
-		var mapEntries = velocityMap.split(",");
-		for (var i = 0; i < mapEntries.length; i++) {
-			var mapEntry = mapEntries[i].split(" : ");
-			jsMap.set(mapEntry[0], mapEntry[1]);
-		}
-		return jsMap;
-	}
-
 	ConDecDashboard.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
-		isIssueData = true;
-		colorPalette = null;
-		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
+		this.initializeChartWithColorPalette(divId, title, subtitle, dataMap, null);
 	};
 
 	/* used by branch dashboard item condec.rationale.coverage.dashboard.js */
 	ConDecDashboard.prototype.initializeChartWithColorPalette = function(divId, title, subtitle, dataMap, palette) {
 		isIssueData = true;
 		colorPalette = palette;
-		this.initializeChartForSources(divId, title, subtitle, getMap(dataMap));
+		this.initializeChartForSources(divId, title, subtitle, new Map(Object.entries(dataMap)));
 	};
 
 	/* used by branch dashboard item condec.git.branches.dashboard.js */
