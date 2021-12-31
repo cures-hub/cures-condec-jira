@@ -477,13 +477,13 @@
 	 */
 	ConDecFiltering.prototype.fillDecisionGroupSelect = function(elementId, groups, selectedGroups) {
 		var selectGroupField = document.getElementById(elementId);
-		if (selectGroupField === null || selectGroupField === undefined || !groups || groups.length == 0) {
+		if (selectGroupField === null || selectGroupField === undefined || !groups) {
 			return null;
 		}
 		selectGroupField.innerHTML = "";
 		for (var i = 0; i < groups.length; i++) {
 			var isSelected = "";
-			if (selectedGroups !== undefined && selectedGroups !== null) {
+			if (selectedGroups) {
 				if (selectedGroups.includes(groups[i])) {
 					isSelected = " selected";
 				}

@@ -338,17 +338,10 @@
 		var data = [];
 		var source = [];
 
-		var sourceCounter = function(accumulator, currentValue) {
-			if (currentValue.trim() === "") {
-				return accumulator + 0;
-			}
-			return accumulator + 1;
-		}
-
 		var dataAsArray = Array.from(objectsMap.keys());
 		for (var i = dataAsArray.length - 1; i >= 0; i--) {
 			var key = dataAsArray[i];
-			var value = objectsMap.get(key)
+			var value = objectsMap.get(key);
 			var entry = {};
 			if (hasRichData && (typeof value === 'string' || value instanceof String)) {
 				entry["value"] = value.split(' ').reduce(sourceCounter, 0);
@@ -367,6 +360,13 @@
 			pieChart.groupedConDecData = source;
 		}
 		return pieChart;
+	}
+
+	var sourceCounter = function(accumulator, currentValue) {
+		if (currentValue.trim() === "") {
+			return accumulator + 0;
+		}
+		return accumulator + 1;
 	}
 
 	function navigateToElement(elementName) {
