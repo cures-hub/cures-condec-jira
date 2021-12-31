@@ -34,7 +34,15 @@ The dashboard shows metrics regarding the
 
 ## Filtering
 
+![Filter settings for rationale coverage dashboard item](../screenshots/dashboard_filter_settings.png)
+
+*Filter settings for rationale coverage dashboard item*
+
 ## Navigation
+
+![Navigation dialog with elements violating the DoD](../screenshots/dashboard_navigation.png)
+
+*Navigation dialog with elements violating the DoD*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for the dashboard.
