@@ -32,7 +32,7 @@ define('dashboard/generalMetrics', [], function() {
 	};
 
 	/**
-	 * Gets the data to fill the dashboard plots by making an API-call.
+	 * Gets the metrics to fill the dashboard plots by making an API-call.
 	 *
 	 * external references: condec.dashboard.js
 	 *
