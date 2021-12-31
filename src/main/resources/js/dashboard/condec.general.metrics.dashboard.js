@@ -52,56 +52,28 @@ define('dashboard/generalMetrics', [], function() {
 	 *
 	 * external references: condec.dashboard.js
 	 *
-	 * @param data the data returned from the API-call
+	 * @param generalMetrics the data returned from the API-call
 	 */
-	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(data) {
-		/*  init data for charts */
-		var commentsPerIssue = new Map();
-		var commitsPerIssue = new Map();
-		var reqCodeSummary = new Map();
-		var decSources = new Map();
-		var relevantSentences = new Map();
-		var knowledgeTypeDistribution = new Map();
-		var definitionOfDoneCheckResults = new Map();
-
-		/* set something in case no data will be added to them */
-		commentsPerIssue.set("none", 0);
-		commitsPerIssue.set("none", 0);
-
-		reqCodeSummary.set("no code classes", "");
-		decSources.set("no rationale elements", "");
-		relevantSentences.set("no Jira issue", "");
-		knowledgeTypeDistribution.set("no knowledge type", "");
-		definitionOfDoneCheckResults.set("no rationale elements", "");
-
-		/* form data for charts */
-		commentsPerIssue = data.numberOfCommentsPerIssue;
-		commitsPerIssue = data.numberOfCommits;
-		reqCodeSummary = data.reqAndClassSummary;
-		decSources = data.elementsFromDifferentOrigins;
-		relevantSentences = data.numberOfRelevantComments;
-		knowledgeTypeDistribution = data.distributionOfKnowledgeTypes;
-		definitionOfDoneCheckResults = data.definitionOfDoneCheckResults;
-
+	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
 		/* define color palette */
 		var colorPalette = ['#91CC75', '#EE6666'];
 
 		/* render box-plots */
 		conDecDashboard.initializeChart("boxplot-CommentsPerJiraIssue",
-			"", "#Comments per Jira Issue", commentsPerIssue);
+			"", "#Comments per Jira Issue", generalMetrics.numberOfCommentsPerIssue);
 		conDecDashboard.initializeChart("boxplot-CommitsPerJiraIssue",
-			"", "#Commits per Jira Issue", commitsPerIssue);
+			"", "#Commits per Jira Issue", generalMetrics.numberOfCommits);
 		/* render pie-charts */
 		conDecDashboard.initializeChart("piechartRich-ReqCodeSummary",
-			"", "#Requirements and Code Classes", reqCodeSummary);
+			"", "#Requirements and Code Classes", generalMetrics.reqAndClassSummary);
 		conDecDashboard.initializeChart("piechartRich-DecSources",
-			"", "#Rationale Elements per Origin", decSources);
+			"", "#Rationale Elements per Origin", generalMetrics.elementsFromDifferentOrigins);
 		conDecDashboard.initializeChart("piechartInteger-RelevantSentences",
-			"", "Comments in Jira Issues relevant to Decision Knowledge", relevantSentences);
+			"", "Comments in Jira Issues relevant to Decision Knowledge", generalMetrics.numberOfRelevantComments);
 		conDecDashboard.initializeChart("piechartRich-KnowledgeTypeDistribution",
-			"", "Distribution of Knowledge Types", knowledgeTypeDistribution);
+			"", "Distribution of Knowledge Types", generalMetrics.distributionOfKnowledgeTypes);
 		conDecDashboard.initializeChartWithColorPalette("piechartRich-DoDCheck",
-			"", "Definition of Done Check", definitionOfDoneCheckResults, colorPalette);
+			"", "Definition of Done Check", generalMetrics.definitionOfDoneCheckResults, colorPalette);
 	};
 
 	return ConDecGeneralMetricsDashboardItem;

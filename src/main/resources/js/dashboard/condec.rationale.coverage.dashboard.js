@@ -32,7 +32,7 @@ define('dashboard/rationaleCoverage', [], function() {
 	};
 
 	/**
-	 * Gets the data to fill the dashboard plots by making an API-call.
+	 * Gets the metrics to fill the dashboard plots by making an API-call.
 	 *
 	 * external references: condec.dashboard.js
 	 *
@@ -52,44 +52,25 @@ define('dashboard/rationaleCoverage', [], function() {
 	 *
 	 * external references: condec.dashboard.js
 	 *
-	 * @param data the data returned from the API-call
+	 * @param metrics the metrics returned from the API-call
 	 */
-	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(data) {
-		/*  init data for charts */
-		var issuesPerSelectedJiraIssue = new Map();
-		var decisionsPerSelectedJiraIssue = new Map();
-		var issueDocumentedForSelectedJiraIssue = new Map();
-		var decisionDocumentedForSelectedJiraIssue = new Map();
-
-		/* set something for box plots in case no data will be added to them */
-		issuesPerSelectedJiraIssue.set("none", 0);
-		decisionsPerSelectedJiraIssue.set("none", 0);
-
-		issueDocumentedForSelectedJiraIssue.set("no rationale elements", "");
-		decisionDocumentedForSelectedJiraIssue.set("no code classes", "");
-
-		/* form data for charts */
-		issuesPerSelectedJiraIssue = data.issuesPerSelectedJiraIssue;
-		decisionsPerSelectedJiraIssue = data.decisionsPerSelectedJiraIssue;
-		issueDocumentedForSelectedJiraIssue = data.issueDocumentedForSelectedJiraIssue;
-		decisionDocumentedForSelectedJiraIssue = data.decisionDocumentedForSelectedJiraIssue;
-
+	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(metrics) {
 		/* define color palette */
 		var colorPalette = ['#EE6666', '#FAC858', '#91CC75'];
 
 		/* render box-plots */
 		conDecDashboard.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per element", issuesPerSelectedJiraIssue,
+			"", "# Issues per element", metrics.issuesPerSelectedJiraIssue,
 			colorPalette);
 		conDecDashboard.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per element", decisionsPerSelectedJiraIssue,
+			"", "# Decisions per element", metrics.decisionsPerSelectedJiraIssue,
 			colorPalette);
 		/* render pie-charts */
 		conDecDashboard.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"", "For how many elements is an issue documented?", issueDocumentedForSelectedJiraIssue,
+			"", "For how many elements is an issue documented?", metrics.issueDocumentedForSelectedJiraIssue,
 			colorPalette);
 		conDecDashboard.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many elements is a decision documented?", decisionDocumentedForSelectedJiraIssue,
+			"", "For how many elements is a decision documented?", metrics.decisionDocumentedForSelectedJiraIssue,
 			colorPalette);
 	};
 

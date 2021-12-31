@@ -11,7 +11,7 @@
 	 * external references: dashboard/condec.general.metrics.dashboard.js
 	 */
 	ConDecDashboardAPI.prototype.getGeneralMetrics = function(filterSettings, callback) {
-		generalApi.postJSON(this.restPrefix + "/generalMetrics", filterSettings,
+		generalApi.postJSON(this.restPrefix + "/general-metrics", filterSettings,
 			function(error, result) {
 				callback(error, result);
 			});
@@ -21,7 +21,7 @@
 	 * external references: dashboard/condec.rationale.completeness.dashboard.js
 	 */
 	ConDecDashboardAPI.prototype.getRationaleCompleteness = function(filterSettings, callback) {
-		generalApi.postJSON(this.restPrefix + "/rationaleCompleteness", filterSettings,
+		generalApi.postJSON(this.restPrefix + "/rationale-completeness", filterSettings,
 			function(error, result) {
 				callback(error, result);
 			});
@@ -31,7 +31,7 @@
 	 * external references: dashboard/condec.rationale.coverage.dashboard.js
 	 */
 	ConDecDashboardAPI.prototype.getRationaleCoverage = function(filterSettings, sourceKnowledgeTypes, callback) {
-		generalApi.postJSON(this.restPrefix + "/rationaleCoverage?sourceKnowledgeTypes=" +
+		generalApi.postJSON(this.restPrefix + "/rationale-coverage?sourceKnowledgeTypes=" +
 			sourceKnowledgeTypes, filterSettings, function(error, result) {
 				callback(error, result);
 			});
