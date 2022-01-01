@@ -31,37 +31,37 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetIssuesSolvedByDecision() {
-		assertEquals(calculator.getIssuesSolvedByDecision().size(), 2);
+		assertEquals(2, calculator.getIssuesSolvedByDecision().getCompleteElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDecisionsSolvingIssues() {
-		assertEquals(calculator.getDecisionsSolvingIssues().size(), 2);
+		assertEquals(1, calculator.getDecisionsSolvingIssues().getCompleteElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetProArgumentDocumentedForAlternative() {
-		assertEquals(calculator.getProArgumentDocumentedForAlternative().size(), 2);
+		assertEquals(0, calculator.getProArgumentDocumentedForAlternative().getCompleteElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetConArgumentDocumentedForAlternative() {
-		assertEquals(calculator.getConArgumentDocumentedForAlternative().size(), 2);
+		assertEquals(0, calculator.getConArgumentDocumentedForAlternative().getCompleteElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetProArgumentDocumentedForDecision() {
-		assertEquals(calculator.getProArgumentDocumentedForDecision().size(), 2);
+		assertEquals(0, calculator.getProArgumentDocumentedForDecision().getCompleteElements().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetConArgumentDocumentedForDecision() {
-		assertEquals(calculator.getConArgumentDocumentedForDecision().size(), 2);
+		assertEquals(0, calculator.getConArgumentDocumentedForDecision().getCompleteElements().size());
 	}
 
 }

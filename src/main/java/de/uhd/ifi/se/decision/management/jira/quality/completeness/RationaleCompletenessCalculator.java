@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -16,19 +14,20 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Calculates metrics for the intra-rationale completeness.
+ * Calculates metrics for the intra-rationale completeness: e.g., are there
+ * arguments for the decisions?
  */
 public class RationaleCompletenessCalculator {
 
 	@JsonIgnore
 	private FilterSettings filterSettings;
 
-	private Map<String, String> issuesSolvedByDecision;
-	private Map<String, String> decisionsSolvingIssues;
-	private Map<String, String> proArgumentDocumentedForAlternative;
-	private Map<String, String> conArgumentDocumentedForAlternative;
-	private Map<String, String> proArgumentDocumentedForDecision;
-	private Map<String, String> conArgumentDocumentedForDecision;
+	private RationaleCompletenessMetric issuesSolvedByDecision;
+	private RationaleCompletenessMetric decisionsSolvingIssues;
+	private RationaleCompletenessMetric proArgumentDocumentedForAlternative;
+	private RationaleCompletenessMetric conArgumentDocumentedForAlternative;
+	private RationaleCompletenessMetric proArgumentDocumentedForDecision;
+	private RationaleCompletenessMetric conArgumentDocumentedForDecision;
 
 	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
@@ -48,58 +47,52 @@ public class RationaleCompletenessCalculator {
 				KnowledgeType.CON);
 	}
 
-	private Map<String, String> calculateElementsWithNeighborsOfOtherType(KnowledgeType sourceElementType,
+	private RationaleCompletenessMetric calculateElementsWithNeighborsOfOtherType(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
 		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
 		KnowledgeGraph graph = new FilteringManager(filterSettings).getFilteredGraph();
 		List<KnowledgeElement> allSourceElements = graph.getElements(sourceElementType);
-		StringBuilder sourceElementsWithTargetTypeLinked = new StringBuilder();
-		StringBuilder sourceElementsWithoutTargetTypeLinked = new StringBuilder();
+		RationaleCompletenessMetric metric = new RationaleCompletenessMetric(sourceElementType, targetElementType);
 
 		for (KnowledgeElement sourceElement : allSourceElements) {
 			if (sourceElement.hasNeighborOfType(targetElementType)) {
-				sourceElementsWithTargetTypeLinked.append(sourceElement.getKey()).append(" ");
+				metric.addCompleteElement(sourceElement);
 			} else {
-				sourceElementsWithoutTargetTypeLinked.append(sourceElement.getKey()).append(" ");
+				metric.addIncompleteElement(sourceElement);
 			}
 		}
 
-		Map<String, String> havingLinkMap = new LinkedHashMap<>();
-		havingLinkMap.put(sourceElementType + " has " + targetElementType,
-				sourceElementsWithTargetTypeLinked.toString().trim());
-		havingLinkMap.put(sourceElementType + " has no " + targetElementType,
-				sourceElementsWithoutTargetTypeLinked.toString().trim());
-		return havingLinkMap;
+		return metric;
 	}
 
 	@JsonProperty
-	public Map<String, String> getIssuesSolvedByDecision() {
+	public RationaleCompletenessMetric getIssuesSolvedByDecision() {
 		return issuesSolvedByDecision;
 	}
 
 	@JsonProperty
-	public Map<String, String> getDecisionsSolvingIssues() {
+	public RationaleCompletenessMetric getDecisionsSolvingIssues() {
 		return decisionsSolvingIssues;
 	}
 
 	@JsonProperty
-	public Map<String, String> getProArgumentDocumentedForAlternative() {
+	public RationaleCompletenessMetric getProArgumentDocumentedForAlternative() {
 		return proArgumentDocumentedForAlternative;
 	}
 
 	@JsonProperty
-	public Map<String, String> getConArgumentDocumentedForAlternative() {
+	public RationaleCompletenessMetric getConArgumentDocumentedForAlternative() {
 		return conArgumentDocumentedForAlternative;
 	}
 
 	@JsonProperty
-	public Map<String, String> getProArgumentDocumentedForDecision() {
+	public RationaleCompletenessMetric getProArgumentDocumentedForDecision() {
 		return proArgumentDocumentedForDecision;
 	}
 
 	@JsonProperty
-	public Map<String, String> getConArgumentDocumentedForDecision() {
+	public RationaleCompletenessMetric getConArgumentDocumentedForDecision() {
 		return conArgumentDocumentedForDecision;
 	}
 }

@@ -16,8 +16,6 @@
 
 	var isIssueData = true;
 
-	var colorPalette = null;
-
 	const CHART_RICH_PIE = "piechartRich";
 	const CHART_SIMPLE_PIE = "piechartInteger";
 	const CHART_BOXPLOT = "boxplot";
@@ -276,20 +274,59 @@
 	};
 
 	/* used by branch dashboard item condec.rationale.coverage.dashboard.js */
-	ConDecDashboard.prototype.initializeChartWithColorPalette = function(divId, title, subtitle, dataMap, palette) {
+	ConDecDashboard.prototype.initializeChartWithColorPalette = function(divId, title, subtitle, dataMap, colorPalette) {
 		isIssueData = true;
-		colorPalette = palette;
-		initializeChartForSources(divId, title, subtitle, new Map(Object.entries(dataMap)));
+		initializeChartForSources(divId, title, subtitle, new Map(Object.entries(dataMap)), colorPalette);
 	};
 
 	/* used by branch dashboard item condec.git.branches.dashboard.js */
 	ConDecDashboard.prototype.initializeChartForBranchSource = function(divId, title, subtitle, dataMap) {
 		isIssueData = false;
-		colorPalette = null;
 		initializeChartForSources(divId, title, subtitle, dataMap);
 	};
 
-	function initializeChartForSources(divId, title, subtitle, dataMap) {
+	ConDecDashboard.prototype.createPieChart = function(divId, title, keys, data, colorPalette) {
+		var domElement = document.getElementById(divId);
+		if (!domElement) {
+			console.warn("Could not find element with ID: " + divId);
+			return;
+		}
+		var chart = echarts.init(domElement);
+		if (!chart) {
+			console.warn("Could not init chart for element " + divId);
+			return;
+		}
+		chart.setOption(getOptionsForPieChart("", title, keys, data, colorPalette));
+
+		if (!chart) {
+			console.error("could not setup chart for element " + divId);
+		}
+		// add click handler for chart data (in canvas)
+		chart.on('click', function(param) {
+			if (typeof param.seriesIndex != 'undefined') {
+				// param.dataIndex
+				// param.data
+				console.log(param);
+				var navigationDialog = document.getElementById("navigate-dialog");
+				AJS.dialog2(navigationDialog).show();
+
+				var dialogContent = document.getElementById("navigate-dialog-content");
+				dialogContent.innerHTML = "";
+				for (element of param.data.elements) {
+					console.log(element);
+					var link = document.createElement("a");
+					link.classList = "navigationLink";
+					link.innerText = element.key;
+					link.href = element.url;
+					link.target = "_blank";
+					dialogContent.appendChild(link);
+				}
+			}
+		});
+		return chart;
+	};
+
+	function initializeChartForSources(divId, title, subtitle, dataMap, colorPalette) {
 		var domElement = document.getElementById(divId);
 		if (!domElement) {
 			console.warn("Could not find element with ID: " + divId);
@@ -302,9 +339,9 @@
 		}
 		// pick the chart type based on html element's id attribute
 		if (divId.startsWith(CHART_RICH_PIE)) {
-			chart = initializeDivWithPieChartData(chart, title, subtitle, dataMap, true);
+			chart = initializeDivWithPieChartData(chart, title, subtitle, dataMap, colorPalette, true);
 		} else if (divId.startsWith(CHART_SIMPLE_PIE)) {
-			chart = initializeDivWithPieChartData(chart, title, subtitle, dataMap, false);
+			chart = initializeDivWithPieChartData(chart, title, subtitle, dataMap, colorPalette, false);
 		} else if (divId.startsWith(CHART_BOXPLOT)) {
 			chart = initializeDivWithBoxPlotFromMap(chart, title, subtitle, dataMap);
 		} else {
@@ -316,8 +353,6 @@
 		}
 		// add click handler for chart data (in canvas)
 		chart.on('click', echartDataClicked);
-		// remove development aids
-		domElement.classList.remove("notsetyet");
 	}
 
 	function initializeDivWithBoxPlotFromMap(boxplot, title, xAxis, dataMap) {
@@ -334,7 +369,7 @@
 		return boxplot;
 	}
 
-	function initializeDivWithPieChartData(pieChart, title, subtitle, objectsMap, hasRichData) {
+	function initializeDivWithPieChartData(pieChart, title, subtitle, objectsMap, colorPalette, hasRichData) {
 		var data = [];
 		var source = [];
 
@@ -343,7 +378,7 @@
 			var entry = {};
 			entry["name"] = dataAsArray[i];
 			var value = objectsMap.get(entry["name"]);
-			
+
 			if (hasRichData && (typeof value === 'string' || value instanceof String)) {
 				entry["value"] = value.split(' ').reduce(sourceCounter, 0);
 			} else if (!hasRichData && (typeof value === 'string' || value instanceof String)) {
@@ -355,7 +390,7 @@
 			source.push(value);
 		}
 
-		pieChart.setOption(getOptionsForPieChart(title, subtitle, dataAsArray, data));
+		pieChart.setOption(getOptionsForPieChart(title, subtitle, dataAsArray, data, colorPalette));
 		if (hasRichData) {
 			pieChart.groupedConDecData = source;
 		}
@@ -473,8 +508,7 @@
 			series: [{
 				name: "boxplot",
 				type: "boxplot",
-				data: data.boxData,
-
+				data: data.boxData
 			}, {
 				name: "outlier",
 				type: "scatter",
@@ -483,7 +517,8 @@
 		};
 	}
 
-	function getOptionsForPieChart(title, subtitle, dataKeys, dataMap) {
+	function getOptionsForPieChart(title, subtitle, dataKeys, dataMap, colorPalette) {
+		console.log(dataKeys);
 		var options = {
 			title: {
 				text: title,
@@ -587,7 +622,7 @@
 
 	function echartDataClicked(param) {
 		if (typeof param.seriesIndex != 'undefined') {
-			showClickedSource(this, param.dataIndex, param.data)
+			showClickedSource(this, param.dataIndex, param.data);
 		}
 	}
 
