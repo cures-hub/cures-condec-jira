@@ -36,17 +36,15 @@ public class RationaleCompletenessCalculator {
 	public RationaleCompletenessCalculator(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 
-		this.issuesSolvedByDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE,
-				KnowledgeType.DECISION);
-		this.decisionsSolvingIssues = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
-				KnowledgeType.ISSUE);
-		this.proArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
+		issuesSolvedByDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION);
+		decisionsSolvingIssues = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.ISSUE);
+		proArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
 				KnowledgeType.PRO);
-		this.conArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
+		conArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
 				KnowledgeType.CON);
-		this.proArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
+		proArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
 				KnowledgeType.PRO);
-		this.conArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
+		conArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
 				KnowledgeType.CON);
 	}
 
@@ -75,32 +73,32 @@ public class RationaleCompletenessCalculator {
 		return havingLinkMap;
 	}
 
-	@JsonProperty("issuesSolvedByDecision")
+	@JsonProperty
 	public Map<String, String> getIssuesSolvedByDecision() {
 		return issuesSolvedByDecision;
 	}
 
-	@JsonProperty("decisionsSolvingIssues")
+	@JsonProperty
 	public Map<String, String> getDecisionsSolvingIssues() {
 		return decisionsSolvingIssues;
 	}
 
-	@JsonProperty("proArgumentDocumentedForAlternative")
+	@JsonProperty
 	public Map<String, String> getProArgumentDocumentedForAlternative() {
 		return proArgumentDocumentedForAlternative;
 	}
 
-	@JsonProperty("conArgumentDocumentedForAlternative")
+	@JsonProperty
 	public Map<String, String> getConArgumentDocumentedForAlternative() {
 		return conArgumentDocumentedForAlternative;
 	}
 
-	@JsonProperty("proArgumentDocumentedForDecision")
+	@JsonProperty
 	public Map<String, String> getProArgumentDocumentedForDecision() {
 		return proArgumentDocumentedForDecision;
 	}
 
-	@JsonProperty("conArgumentDocumentedForDecision")
+	@JsonProperty
 	public Map<String, String> getConArgumentDocumentedForDecision() {
 		return conArgumentDocumentedForDecision;
 	}
