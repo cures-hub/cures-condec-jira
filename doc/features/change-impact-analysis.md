@@ -50,7 +50,7 @@ Besides, the developer can change the default values during the usage of change 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for the change impact analysis.
 
-![Overview class diagram](../diagrams/class_diagram_change_impact_analysis.png)
+![Overview class diagram](../screenshots/change_impact_analysis_class_diagram.png)
 
 *Overview class diagram for the change impact analysis*
 
