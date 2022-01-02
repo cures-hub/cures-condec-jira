@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} has more
  * outbound elements than inbound elements.
  */
-public class BoostWhenMoreOutboundElements implements ChangePropagationFunction {
+public class BoostWhenMoreOutboundLinks implements ChangePropagationFunction {
 
     @Override
     public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {

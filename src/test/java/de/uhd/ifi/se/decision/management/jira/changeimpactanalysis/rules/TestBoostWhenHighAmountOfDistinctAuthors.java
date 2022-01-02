@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropaga
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestAmountOfDistinctAuthors extends TestSetUp {
+public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
     
     private KnowledgeElement currentElement;
 
@@ -25,7 +25,7 @@ public class TestAmountOfDistinctAuthors extends TestSetUp {
     @Test
 	public void testDescription() {
 		assertEquals("Boost when element has a large number of distinct update authors",
-				ChangePropagationRule.AMOUNT_OF_DISTINCT_AUTHORS.getDescription());
+				ChangePropagationRule.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getDescription());
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class TestAmountOfDistinctAuthors extends TestSetUp {
         updateDateAndAuthor.put(new Date(), "FooBar");
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
-		assertEquals(0.9, ChangePropagationRule.AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
+		assertEquals(0.9, ChangePropagationRule.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
 				.isChangePropagated(null, currentElement, null), 0.2);
 	}
 
@@ -48,7 +48,7 @@ public class TestAmountOfDistinctAuthors extends TestSetUp {
         }
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
-		assertEquals(0.98, ChangePropagationRule.AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
+		assertEquals(0.98, ChangePropagationRule.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
 				.isChangePropagated(null, currentElement, null), 0.005);
 	}
 }

@@ -29,17 +29,35 @@ and `ruleBasedValue` is calculated based on rules. The following rules are avail
 1. Stop at elements with the same type as the selected element (e.g. at requirements with same type)
 2. Outward links only
 3. Boost when element is textual similar to the selected element
-4. Only include elements which are part of at least one equal component
-5. Boost when element has a high average age
-6. Boost when element has more outbound than inbound nodes 
-7. Boost when element has a large amount of distinct update authors
-8. Boost when element is coupled with the source element (i.e. received updates in the same timeframe)
+4. Boost when element is assigned to the same component
+5. Boost when element is assigned to the same decision group
+6. Boost when element has a low average age
+7. Boost when element has more outbound than inbound links 
+8. Boost when element has a large amount of distinct update authors
+9. Boost when element received updates in the same timeframe (i.e. is timely coupled)
 
 The element is included in the **estimated impact set (EIS)** if `elementImpact >= threshold`.
 Developers can see an **explanation for the impact factor** of each node via a tooltip.
 
 ![JSTree diagram with change impact highlighting](../screenshots/change_impact_analysis_treeview_tooltip.png)
 
+*JSTree diagram with change impact hightlighting*
+
 ## Configuration
 The rationale manager can set default parameters for the change impact analysis.
 Besides, the developer can change the default values during the usage of change impact analysis.
+
+## Design Details
+The following class diagram gives an overview of relevant backend classes for the change impact analysis.
+
+![Overview class diagram](../diagrams/class_diagram_change_impact_analysis.png)
+
+*Overview class diagram for the change impact analysis*
+
+The Java code for the change impact analysis can be found here:
+
+- [Java code for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/changeimpactanalysis)
+
+The UI code for the change impact analysis can be found here:
+
+- [JavaScript code for the change impact analysis](../../src/main/resources/js/changeimpactanalysis)

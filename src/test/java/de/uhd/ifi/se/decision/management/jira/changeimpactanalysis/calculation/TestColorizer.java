@@ -25,12 +25,12 @@ public class TestColorizer extends TestSetUp {
 	public void setUp() {
         init();
         settings = new FilterSettings("TEST", "");
+        settings.setSelectedElement("TEST-1");
         impactedElements = new ArrayList<>();
 	}
 
     @Test
     public void testColorizeTreeRootNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
 		impactedElements.add(element);
 
@@ -42,7 +42,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeTreeContextNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
         element.setImpactExplanation("context");
         impactedElements.add(element);
@@ -55,7 +54,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeTreeNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
         element.setImpactValue(0.5);
         impactedElements.add(element);
@@ -68,7 +66,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeVisRootNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
 
 		VisNode node = new VisNode(settings.getSelectedElement(), settings);
@@ -80,7 +77,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeVisContextNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
         element.setImpactExplanation("context");
 
@@ -93,7 +89,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeVisNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
         element.setImpactValue(0.5);
 
@@ -106,7 +101,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeMatrixRootNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
 
 		MatrixNode node = new MatrixNode(settings.getSelectedElement());
@@ -117,7 +111,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeMatrixContextNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
         element.setImpactExplanation("context");
 
@@ -129,7 +122,6 @@ public class TestColorizer extends TestSetUp {
 
     @Test
     public void testColorizeMatrixNode() {
-        settings.setSelectedElement("TEST-1");
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
         element.setImpactValue(0.5);
 

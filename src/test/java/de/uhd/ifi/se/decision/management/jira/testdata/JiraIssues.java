@@ -2,8 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.testdata;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.atlassian.jira.bc.project.component.MutableProjectComponent;
+import com.atlassian.jira.bc.project.component.ProjectComponent;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
@@ -59,6 +62,7 @@ public class JiraIssues {
 		jiraIssue = createJiraIssue(14, jiraIssueTypes.get(0), project, "WI: Yet another work item", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(30, jiraIssueTypes.get(0), project, "WI: Do an interesting task", user);
+		jiraIssue = addTestComponentToIssue(jiraIssue);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(31, jiraIssueTypes.get(0), project, "WI: Deal with the drunken sailor", user);
 		jiraIssues.add(jiraIssue);
@@ -223,5 +227,13 @@ public class JiraIssues {
 	public static boolean getNonValidatedSentence() {
 		List<PartOfJiraIssueText> sentences = getSentencesForCommentText("This is a test sentence.");
 		return sentences.get(0).isValidated();
+	}
+
+	public static MutableIssue addTestComponentToIssue(MutableIssue issue) {
+		MutableProjectComponent component = new MutableProjectComponent((long) 0, "Feature", "Do something", "FEATURE", (long) 0, issue.getProjectId(), false);
+		Collection<ProjectComponent> components = new ArrayList<ProjectComponent>();
+		components.add(component);
+		issue.setComponent(components);
+		return issue;
 	}
 }

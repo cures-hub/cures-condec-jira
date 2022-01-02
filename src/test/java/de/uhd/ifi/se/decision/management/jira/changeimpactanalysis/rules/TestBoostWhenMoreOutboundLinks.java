@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestBoostWhenMoreOutboundElements extends TestSetUp {
+public class TestBoostWhenMoreOutboundLinks extends TestSetUp {
 
     private KnowledgeElement currentElement;
 	private KnowledgeElement nextElement;
@@ -23,7 +23,7 @@ public class TestBoostWhenMoreOutboundElements extends TestSetUp {
 
     @Test
     public void testDescription() {
-        assertEquals("Boost when element has more outbound than inbound elements",
+        assertEquals("Boost when element has more outbound than inbound links",
             ChangePropagationRule.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND.getDescription());
     }
     

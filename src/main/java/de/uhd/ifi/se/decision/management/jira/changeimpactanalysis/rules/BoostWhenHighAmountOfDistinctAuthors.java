@@ -7,10 +7,10 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Rule that defines that a change impact is stronger propagated if the
- * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} has a larger
+ * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} has a large
  * amount of distinct update authors.
  */
-public class AmountOfDistinctAuthors implements ChangePropagationFunction {
+public class BoostWhenHighAmountOfDistinctAuthors implements ChangePropagationFunction {
     
     /**
 	 * @issue Should the amount of distinct authors for the purpose of CIA be filtered?
