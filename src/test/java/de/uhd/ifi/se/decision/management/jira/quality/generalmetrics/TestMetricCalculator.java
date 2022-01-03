@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testGetNumberOfCommentsPerIssue() {
-		assertTrue(calculator.getNumberOfCommentsPerIssue().size() > 10);
+		assertEquals(1, calculator.getNumberOfCommentsMap().size());
 	}
 
 	@Test
@@ -68,7 +67,7 @@ public class TestMetricCalculator extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testGetNumberOfCommits() {
-		assertEquals(calculator.getNumberOfCommits().size(), 0);
+		assertEquals(0, calculator.getNumberOfCommitsMap().size());
 	}
 
 	@Test

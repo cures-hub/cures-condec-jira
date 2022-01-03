@@ -57,12 +57,15 @@ define('dashboard/generalMetrics', [], function() {
 	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
 		/* define color palette */
 		var colorPalette = ['#91CC75', '#EE6666'];
+		// necessary because Java map is not recognized as a map in JavaScript
+		generalMetrics.numberOfCommentsMap = new Map(Object.entries(generalMetrics.numberOfCommentsMap));
+		generalMetrics.numberOfCommitsMap = new Map(Object.entries(generalMetrics.numberOfCommitsMap));
 
 		/* render box-plots */
-		conDecDashboard.initializeChart("boxplot-CommentsPerJiraIssue",
-			"", "#Comments per Jira Issue", generalMetrics.numberOfCommentsPerIssue);
-		conDecDashboard.initializeChart("boxplot-CommitsPerJiraIssue",
-			"", "#Commits per Jira Issue", generalMetrics.numberOfCommits);
+		conDecDashboard.createBoxPlot("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue", 
+				generalMetrics.numberOfCommentsMap);
+		conDecDashboard.createBoxPlot("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue", 
+				generalMetrics.numberOfCommitsMap);
 		/* render pie-charts */
 		conDecDashboard.initializeChart("piechartRich-ReqCodeSummary",
 			"", "#Requirements and Code Classes", generalMetrics.reqAndClassSummary);

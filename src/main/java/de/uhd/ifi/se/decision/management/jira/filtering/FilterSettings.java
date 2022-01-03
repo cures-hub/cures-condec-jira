@@ -611,7 +611,6 @@ public class FilterSettings {
 	 * @return list of selected {@link KnowledgeType}s for that the rationale
 	 *         coverage is calculated using the {@link RationaleCoverageCalculator}.
 	 */
-	@XmlElement
 	public Set<String> getKnowledgeTypesToBeCoveredWithRationale() {
 		return knowledgeTypesToBeCoveredWithRationale;
 	}

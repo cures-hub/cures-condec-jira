@@ -6,21 +6,21 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
-public class CharacterizedJiraIssue {
+public class CharacterizedJiraIssue extends KnowledgeElement {
 
 	private List<Comment> comments;
-	private Issue jiraIssue;
 	private int numberOfRelevantComments;
 	private int numberOfIrrelevantComment;
 	private int numberOfCommits;
 
 	public CharacterizedJiraIssue(Issue jiraIssue) {
-		this.jiraIssue = jiraIssue;
+		super(jiraIssue);
 		comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
 
 		String projectKey = jiraIssue.getProjectObject().getKey();
@@ -43,10 +43,6 @@ public class CharacterizedJiraIssue {
 
 	public Integer getNumberOfComments() {
 		return comments.size();
-	}
-
-	public String getKey() {
-		return jiraIssue.getKey();
 	}
 
 	public int getNumberOfIrrelevantComments() {

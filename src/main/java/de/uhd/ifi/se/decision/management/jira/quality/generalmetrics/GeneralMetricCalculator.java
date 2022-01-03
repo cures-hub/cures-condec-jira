@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
@@ -36,8 +38,8 @@ public class GeneralMetricCalculator {
 	@JsonIgnore
 	private CommentMetricCalculator commentMetricCalculator;
 
-	private Map<String, Integer> numberOfCommentsPerIssue;
-	private Map<String, Integer> numberOfCommits;
+	private Map<Integer, List<KnowledgeElement>> numberOfCommentsMap;
+	private Map<Integer, List<KnowledgeElement>> numberOfCommitsMap;
 	private Map<String, String> distributionOfKnowledgeTypes;
 	private Map<String, String> reqAndClassSummary;
 	private Map<String, String> elementsFromDifferentOrigins;
@@ -56,20 +58,16 @@ public class GeneralMetricCalculator {
 				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 
-		this.numberOfCommentsPerIssue = calculateNumberOfCommentsPerIssue();
+		this.numberOfCommentsMap = commentMetricCalculator.getNumberOfCommentsPerIssue();
 		this.distributionOfKnowledgeTypes = calculateDistributionOfKnowledgeTypes();
 		this.reqAndClassSummary = calculateReqAndClassSummary();
 		this.elementsFromDifferentOrigins = calculateElementsFromDifferentOrigins();
 		this.numberOfRelevantComments = calculateNumberOfRelevantComments();
-		this.numberOfCommits = calculateNumberOfCommits();
+		this.numberOfCommitsMap = calculateNumberOfCommits();
 		this.definitionOfDoneCheckResults = calculateDefinitionOfDoneCheckResults();
 	}
 
-	private Map<String, Integer> calculateNumberOfCommentsPerIssue() {
-		return commentMetricCalculator.getNumberOfCommentsPerIssue();
-	}
-
-	private Map<String, Integer> calculateNumberOfCommits() {
+	private Map<Integer, List<KnowledgeElement>> calculateNumberOfCommits() {
 		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
 			return new HashMap<>();
 		}
@@ -170,14 +168,14 @@ public class GeneralMetricCalculator {
 		return resultMap;
 	}
 
-	@JsonProperty("numberOfCommentsPerIssue")
-	public Map<String, Integer> getNumberOfCommentsPerIssue() {
-		return numberOfCommentsPerIssue;
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsMap() {
+		return numberOfCommentsMap;
 	}
 
-	@JsonProperty("numberOfCommits")
-	public Map<String, Integer> getNumberOfCommits() {
-		return numberOfCommits;
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsMap() {
+		return numberOfCommitsMap;
 	}
 
 	@JsonProperty("distributionOfKnowledgeTypes")
