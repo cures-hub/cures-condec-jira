@@ -6,8 +6,7 @@
  */
 define('dashboard/branches', [], function() {
 	var dashboardAPI;
-	var issueBranchKeyRx = null;
-	var branchesQuality = [];
+	var issueBranchKeyRegex = null;
 
 	var ConDecBranchesDashboardItem = function(API) {
 		dashboardAPI = API;
@@ -67,10 +66,8 @@ define('dashboard/branches', [], function() {
 		 * Match branch names either: starting with issue key followed by dot OR
 		 * exactly the issue key
 		 */
-		issueBranchKeyRx = RegExp("origin/(" + filterSettings.projectKey
+		issueBranchKeyRegex = RegExp("origin/(" + filterSettings.projectKey
 			+ "-\\d+)\\.|origin/(" + filterSettings.projectKey + "-\\d+)$", "i");
-
-		branchesQuality = [];
 
 		for (branch of branches) {
 			branch.status = getBranchStatus(branch);
@@ -79,172 +76,112 @@ define('dashboard/branches', [], function() {
 			branch.numAlternatives = countElementType("Alternative", branch);
 			branch.numPros = countElementType("Pro", branch);
 			branch.numCons = countElementType("Con", branch);
-			branchesQuality.push(branch);
 		}
 		/* sort lexicographically */
-		branchesQuality = sortBranches(branchesQuality);
+		branches = sortBranches(branches);
 		/* render charts and plots */
-		renderChartsAndPlots();
+		renderChartsAndPlots(branches);
 	};
 
-	function renderChartsAndPlots() {
-		const BRANCHES_SEPARATOR_TOKEN = " ";
-
-		function branchesPerJiraIssueReducer(accumulator, currentBranch) {
-			var nameOfBranch = currentBranch.name;
-			var issueMatch = nameOfBranch.match(issueBranchKeyRx);
-			var accumulatorField = "";
-			var nextValue = nameOfBranch;
-
-			if (!issueMatch || (!issueMatch[1] && !issueMatch[2])) {
-				accumulatorField = "no Jira task";
-			} else {
-				if (issueMatch[1]) {
-					accumulatorField = issueMatch[1];
-				}
-				if (issueMatch[2]) {
-					accumulatorField = issueMatch[2];
-				}
-			}
-
-			if (accumulator.has(accumulatorField)) {
-				nextValue = accumulator.get(accumulatorField) + BRANCHES_SEPARATOR_TOKEN + nameOfBranch;
-			}
-
-			accumulator.set(accumulatorField, nextValue);
-			return accumulator;
-		}
-
-
-		function numberIssuesInBranchesReducer(accumulator, currentBranch) {
-			accumulator.set(currentBranch.name, currentBranch.numIssues);
-			accumulator.delete("none");
-			return accumulator;
-		}
-
-		function numberDecisionsInBranchesReducer(accumulator, currentBranch) {
-			accumulator.set(currentBranch.name, currentBranch.numDecisions);
-			accumulator.delete("none");
-			return accumulator;
-		}
-
-		function numberAlternativesInBranchesReducer(accumulator, currentBranch) {
-			accumulator.set(currentBranch.name, currentBranch.numAlternatives);
-			accumulator.delete("none");
-			return accumulator;
-		}
-
-		function numberProsInBranchesReducer(accumulator, currentBranch) {
-			accumulator.set(currentBranch.name, currentBranch.numPros);
-			accumulator.delete("none");
-			return accumulator;
-		}
-
-		function numberConInBranchesReducer(accumulator, currentBranch) {
-			accumulator.set(currentBranch.name, currentBranch.numCons);
-			accumulator.delete("none");
-			return accumulator;
-		}
-
-		function sortByBranchNumberDescending(unsortedMap) {
-			var keys = Array.from(unsortedMap.keys());
-			var keyVal = [];
-			for (var i = 0; i < keys.length; i++) {
-				var count = 0;
-				if (unsortedMap.get(keys[i]).length > 0) {
-					count = unsortedMap.get(keys[i]).split(" ").length;
-				}
-				keyVal.push([keys[i], count]);
-			}
-			var sortedKeyByVal = keyVal.sort(function(a, b) {
-				return b[1] - a[1];
-			});
-			var sortedMap = new Map();
-			for (var j = 0; j < sortedKeyByVal.length; j++) {
-				var mapKey = sortedKeyByVal[j][0];
-				sortedMap.set(mapKey, unsortedMap.get(mapKey));
-			}
-			return sortedMap;
-		}
-
+	function renderChartsAndPlots(branches) {
 		/*  init data for charts */
 		var statusesForBranchesData = new Map();
 		statusesForBranchesData.set("Incorrect", []);
 		statusesForBranchesData.set("Good", []);
 		statusesForBranchesData.set("No rationale", []);
-		for (branch of branchesQuality) {
+		for (branch of branches) {
 			var statusOfBranch = branch.status;
-			if (statusesForBranchesData.has(statusOfBranch)) {
-				var previousBranchesInStatus = statusesForBranchesData.get(statusOfBranch);
-				previousBranchesInStatus.push(branch);
-				statusesForBranchesData.set(statusOfBranch, previousBranchesInStatus);
-			}
+			addValueToMap(statusesForBranchesData, statusOfBranch, branch);
 		}
 
 		var problemTypesOccurrence = new Map();
-		for (branch of branchesQuality) {
+		for (branch of branches) {
 			for (problem of branch.qualityProblems) {
-				console.log(problem);
-				if (!problemTypesOccurrence.has(problem.explanation)) {
-					problemTypesOccurrence.set(problem.explanation, []);
-				}
-				var branchesWithProblem = problemTypesOccurrence.get(problem.explanation);
-				branchesWithProblem.push(branch);
-				problemTypesOccurrence.set(problem.explanation, branchesWithProblem);
+				addValueToMap(problemTypesOccurrence, problem.explanation, branch);
 			}
 		}
 
 		var branchesPerIssue = new Map();
+		for (branch of branches) {
+			var issueMatch = branch.name.match(issueBranchKeyRegex);
+			var key = "";
+
+			if (!issueMatch || (!issueMatch[1] && !issueMatch[2])) {
+				key = "no Jira task";
+			} else {
+				if (issueMatch[1]) {
+					key = issueMatch[1];
+				}
+				if (issueMatch[2]) {
+					key = issueMatch[2];
+				}
+			}
+
+			addValueToMap(branchesPerIssue, key, branch);
+		}
+
 		var issuesInBranches = new Map();
 		var decisionsInBranches = new Map();
 		var alternativesInBranches = new Map();
 		var prosInBranches = new Map();
 		var consInBranches = new Map();
 
-		/* set something in case no data will be added to them */
-		issuesInBranches.set("none", 0);
-		decisionsInBranches.set("none", 0);
-		alternativesInBranches.set("none", 0);
-		prosInBranches.set("none", 0);
-		consInBranches.set("none", 0);
-
-		branchesPerIssue.set("no Jira task", "");
-
-		/* form data for charts */
-		branchesQuality.reduce(branchesPerJiraIssueReducer, branchesPerIssue);
-		branchesQuality.reduce(numberIssuesInBranchesReducer, issuesInBranches);
-		branchesQuality.reduce(numberDecisionsInBranchesReducer, decisionsInBranches);
-		branchesQuality.reduce(numberAlternativesInBranchesReducer, alternativesInBranches);
-		branchesQuality.reduce(numberProsInBranchesReducer, prosInBranches);
-		branchesQuality.reduce(numberConInBranchesReducer, consInBranches);
-
-
-
-		/* sort some data by number of branches */
-		//var sortedProblemTypesOccurrence = sortByBranchNumberDescending(problemTypesOccurrence);
-		var sortedBranchesPerIssue = sortByBranchNumberDescending(branchesPerIssue);
+		for (branch of branches) {
+			addValueToMap(issuesInBranches, branch.numIssues, branch);
+			addValueToMap(decisionsInBranches, branch.numDecisions, branch);
+			addValueToMap(alternativesInBranches, branch.numAlternatives, branch);
+			addValueToMap(prosInBranches, branch.numPros, branch);
+			addValueToMap(consInBranches, branch.numCons, branch);
+		}
 
 		/* render pie-charts */
-		/* "Quality status" */
-		console.log(statusesForBranchesData);
 		createPieChart(statusesForBranchesData, "piechartRich-QualityStatusForBranches",
 			"How many branches document rationale well?");
 		createPieChart(problemTypesOccurrence, "piechartRich-ProblemTypesInBranches",
 			"Which documentation mistakes are most common?");
+		createPieChart(branchesPerIssue, "piechartRich-BranchesPerIssue",
+			"How many branches do Jira tasks have?");
 
-		conDecDashboard.initializeChartForBranchSource("piechartRich-BranchesPerIssue",
-			"", "How many branches do Jira tasks have?", sortedBranchesPerIssue);
 		/* render box-plots */
-		conDecDashboard.initializeChartForBranchSource("boxplot-IssuesPerBranch",
-			"", "Issues number in branches", issuesInBranches);
-		conDecDashboard.initializeChartForBranchSource("boxplot-DecisionsPerBranch",
-			"", "Decisions number in branches", decisionsInBranches);
-		conDecDashboard.initializeChartForBranchSource("boxplot-AlternativesPerBranch",
-			"", "Alternatives number in branches", alternativesInBranches);
-		conDecDashboard.initializeChartForBranchSource("boxplot-ProsPerBranch",
-			"", "Pro arguments number in branches", prosInBranches);
-		conDecDashboard.initializeChartForBranchSource("boxplot-ConsPerBranch",
-			"", "Con arguments number in branches", consInBranches);
+		createBoxPlot("boxplot-IssuesPerBranch", "#Issues in branches", issuesInBranches);
+		createBoxPlot("boxplot-DecisionsPerBranch", "#Decisions in branches", decisionsInBranches);
+		createBoxPlot("boxplot-AlternativesPerBranch", "#Alternatives in branches", alternativesInBranches);
+		createBoxPlot("boxplot-ProsPerBranch", "#Pro-arguments in branches", prosInBranches);
+		createBoxPlot("boxplot-ConsPerBranch", "#Con-arguments in branches", consInBranches);
+	}
+
+	function createBoxPlot(divId, title, dataMap) {
+		var boxplot = conDecDashboard.createBoxPlot(divId, title, dataMap);
+		boxplot.on('click', function(param) {
+			if (typeof param.seriesIndex != 'undefined') {
+				var navigationDialog = document.getElementById("navigate-dialog");
+				AJS.dialog2(navigationDialog).show();
+
+				var dialogContent = document.getElementById("navigate-dialog-content");
+				dialogContent.innerHTML = "";
+				console.log(param);
+				var selectedValues = param.data;
+				console.log(selectedValues);
+				var selectedBranches = [];
+				for (value of selectedValues) {
+					if (dataMap.has(value)) {
+						selectedBranches = selectedBranches.concat(dataMap.get(value));
+					}
+				}
+				for (branch of new Set(selectedBranches)) {
+					var link = createLinkToGitView(branch);
+					dialogContent.appendChild(link);
+				}
+			}
+		});
+	}
+
+	function addValueToMap(map, key, value) {
+		if (!map.has(key)) {
+			map.set(key, []);
+		}
+		map.get(key).push(value);
+		return map;
 	}
 
 	function countElementType(targetType, branch) {
@@ -293,22 +230,27 @@ define('dashboard/branches', [], function() {
 				var dialogContent = document.getElementById("navigate-dialog-content");
 				dialogContent.innerHTML = "";
 				for (branch of param.data.branches) {
-					var link = document.createElement("a");
-					link.classList = "navigationLink";
-					link.innerText = branch.name;
-					link.addEventListener('click', function() {
-						var newWindow = window.open(AJS.contextPath() + '/projects/' + conDecAPI.projectKey + '?selectedItem=decision-knowledge-page#menu-item-git',
-							'_blank');
-						var script = document.createElement('script');
-						script.innerHTML = 'AJS.tabs.change(AJS.$("a[href=#git-tab]"))';
-						newWindow.onload = function() {
-							this.document.body.appendChild(script);
-						};
-					});
+					var link = createLinkToGitView(branch);
 					dialogContent.appendChild(link);
 				}
 			}
 		});
+	}
+
+	function createLinkToGitView(branch) {
+		var link = document.createElement("a");
+		link.classList = "navigationLink";
+		link.innerText = branch.name;
+		link.addEventListener('click', function() {
+			var newWindow = window.open(AJS.contextPath() + '/projects/' + conDecAPI.projectKey + '?selectedItem=decision-knowledge-page#menu-item-git',
+				'_blank');
+			var script = document.createElement('script');
+			script.innerHTML = 'AJS.tabs.change(AJS.$("a[href=#git-tab]"))';
+			newWindow.onload = function() {
+				this.document.body.appendChild(script);
+			};
+		});
+		return link;
 	}
 
 	return ConDecBranchesDashboardItem;

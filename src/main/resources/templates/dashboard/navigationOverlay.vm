@@ -1,9 +1,0 @@
-<div id="decKnowElementsOverlay" class="hidden overlay">
-	<div class="box">
-		<h1>
-			Navigate to Detail View of:
-		</h1>
-		<div id="extractedDecKnowElements" class="contents">
-		</div>
-	</div>
-</div>
