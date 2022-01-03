@@ -116,7 +116,6 @@
 				createCancelButton(filterSettings, dashboardAPI, viewIdentifier);
 				createListener(viewIdentifier);
 				setPreferences(filterSettings, viewIdentifier);
-
 				dashboardAPI.resize();
 			});
 	};
@@ -267,6 +266,16 @@
 			conDecAPI.projectKey = projectKey;
 		}
 		conDecFiltering.fillFilterElementsFromSettings(viewIdentifier, filterSettings);
+		var decisionKnowledgeTypes = ["Issue", "Decision", "Alternative", "Argument", "Goal"];
+		if (viewIdentifier === "rationale-coverage" && filterSettings.knowledgeTypes) {
+			var knowledgeTypesWithoutDecisionKnowledge = conDecAPI.getKnowledgeTypes().filter(function(value, index, arr) {
+				return !decisionKnowledgeTypes.includes(value);
+			});
+			console.log(knowledgeTypesWithoutDecisionKnowledge);
+			conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-coverage",
+				knowledgeTypesWithoutDecisionKnowledge,
+				filterSettings.knowledgeTypes);
+		}
 	}
 
 	ConDecDashboard.prototype.initializeChart = function(divId, title, subtitle, dataMap) {
@@ -316,7 +325,8 @@
 					console.log(element);
 					var link = document.createElement("a");
 					link.classList = "navigationLink";
-					link.innerText = element.key;
+					link.innerText = element.type + ": " + element.summary;
+					link.title = element.key;
 					link.href = element.url;
 					link.target = "_blank";
 					dialogContent.appendChild(link);

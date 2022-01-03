@@ -3,10 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -51,11 +49,11 @@ public class DefinitionOfDoneCheckingRest {
 	 *
 	 * @param request
 	 * @param filterSettings
-	 * @return List<QualityProblem> A list containing the {@link QualityProblemType}.
+	 * @return List<QualityProblem> A list containing the
+	 *         {@link QualityProblemType}.
 	 */
 	@Path("/getQualityProblems")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getQualityProblems(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey().isEmpty()) {
 			return Response.status(Status.BAD_REQUEST)
@@ -83,7 +81,6 @@ public class DefinitionOfDoneCheckingRest {
 	 */
 	@Path("/getCoverageOfJiraIssue")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCoverageOfJiraIssue(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey().isEmpty()) {
 			return Response.status(Status.BAD_REQUEST)
@@ -100,8 +97,6 @@ public class DefinitionOfDoneCheckingRest {
 		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings);
 
 		return Response.ok()
-				.entity(calculator.calculateNumberOfDecisionKnowledgeElementsForKnowledgeElement(knowledgeElement,
-						KnowledgeType.DECISION))
-				.build();
+				.entity(calculator.getReachableElementsOfType(knowledgeElement, KnowledgeType.DECISION).size()).build();
 	}
 }

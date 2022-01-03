@@ -89,7 +89,6 @@ define('dashboard/rationaleCompleteness', [], function() {
 		];
 
 		var pieChart = conDecDashboard.createPieChart(divId, title, keys, data, colorPalette);
-
 	}
 
 	return ConDecRationaleCompletenessDashboardItem;

@@ -59,11 +59,7 @@ public class DashboardRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 					.build();
 		}
-
-		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(
-				filterSettings);
-
-		return Response.ok(rationaleCompletenessCalculator).build();
+		return Response.ok(new RationaleCompletenessCalculator(filterSettings)).build();
 	}
 
 	/**
@@ -83,10 +79,6 @@ public class DashboardRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 					.build();
 		}
-
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings,
-				sourceKnowledgeTypes);
-
-		return Response.ok(rationaleCoverageCalculator).build();
+		return Response.ok(new RationaleCoverageCalculator(filterSettings)).build();
 	}
 }

@@ -24,6 +24,7 @@
 
 .navigationLink {
 	margin: 0.1rem 0.4rem;
+	display: inline-block;
 }
 
 #decKnowElementsOverlay {

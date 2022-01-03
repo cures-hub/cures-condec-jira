@@ -2,8 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import javax.xml.bind.annotation.XmlElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  */
 public class RationaleCompletenessCalculator {
 
-	@JsonIgnore
 	private FilterSettings filterSettings;
-
 	private RationaleCompletenessMetric issuesSolvedByDecision;
 	private RationaleCompletenessMetric decisionsSolvingIssues;
 	private RationaleCompletenessMetric proArgumentDocumentedForAlternative;
@@ -29,25 +27,29 @@ public class RationaleCompletenessCalculator {
 	private RationaleCompletenessMetric proArgumentDocumentedForDecision;
 	private RationaleCompletenessMetric conArgumentDocumentedForDecision;
 
-	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
 	public RationaleCompletenessCalculator(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
-
-		issuesSolvedByDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE, KnowledgeType.DECISION);
-		decisionsSolvingIssues = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION, KnowledgeType.ISSUE);
-		proArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
-				KnowledgeType.PRO);
-		conArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
-				KnowledgeType.CON);
-		proArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
-				KnowledgeType.PRO);
-		conArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
-				KnowledgeType.CON);
+		issuesSolvedByDecision = calculateCompletenessMetric(KnowledgeType.ISSUE, KnowledgeType.DECISION);
+		decisionsSolvingIssues = calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.ISSUE);
+		proArgumentDocumentedForAlternative = calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO);
+		conArgumentDocumentedForAlternative = calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.CON);
+		proArgumentDocumentedForDecision = calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.PRO);
+		conArgumentDocumentedForDecision = calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.CON);
 	}
 
-	private RationaleCompletenessMetric calculateElementsWithNeighborsOfOtherType(KnowledgeType sourceElementType,
+	/**
+	 * @param sourceElementType
+	 *            {@link KnowledgeType}, e.g. issue.
+	 * @param targetElementType
+	 *            {@link KnowledgeType}, e.g. decision.
+	 * @return intra-rationale completeness between elements of the source and
+	 *         target type. The elements are part of the knowledge graph filtered by
+	 *         the {@link FilterSettings}. For example, enables to answer the
+	 *         question, how many issues are solved by a decision.
+	 */
+	private RationaleCompletenessMetric calculateCompletenessMetric(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
 		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
@@ -66,32 +68,32 @@ public class RationaleCompletenessCalculator {
 		return metric;
 	}
 
-	@JsonProperty
+	@XmlElement
 	public RationaleCompletenessMetric getIssuesSolvedByDecision() {
 		return issuesSolvedByDecision;
 	}
 
-	@JsonProperty
+	@XmlElement
 	public RationaleCompletenessMetric getDecisionsSolvingIssues() {
 		return decisionsSolvingIssues;
 	}
 
-	@JsonProperty
+	@XmlElement
 	public RationaleCompletenessMetric getProArgumentDocumentedForAlternative() {
 		return proArgumentDocumentedForAlternative;
 	}
 
-	@JsonProperty
+	@XmlElement
 	public RationaleCompletenessMetric getConArgumentDocumentedForAlternative() {
 		return conArgumentDocumentedForAlternative;
 	}
 
-	@JsonProperty
+	@XmlElement
 	public RationaleCompletenessMetric getProArgumentDocumentedForDecision() {
 		return proArgumentDocumentedForDecision;
 	}
 
-	@JsonProperty
+	@XmlElement
 	public RationaleCompletenessMetric getConArgumentDocumentedForDecision() {
 		return conArgumentDocumentedForDecision;
 	}
