@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +24,7 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 		init();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		String sourceKnowledgeTypes = "Task";
+		filterSettings.setKnowledgeTypesToBeCoveredWithRationale(Set.of("Task"));
 		calculator = new RationaleCoverageCalculator(filterSettings);
 	}
 

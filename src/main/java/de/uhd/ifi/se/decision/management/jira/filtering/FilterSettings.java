@@ -623,8 +623,7 @@ public class FilterSettings {
 	 */
 	@JsonProperty
 	public void setKnowledgeTypesToBeCoveredWithRationale(Set<String> namesOfTypes) {
-		knowledgeTypesToBeCoveredWithRationale = namesOfTypes != null ? namesOfTypes
-				: project.getNamesOfKnowledgeTypes();
+		knowledgeTypesToBeCoveredWithRationale = namesOfTypes;
 	}
 
 	/**
