@@ -30,11 +30,10 @@
 	/**
 	 * external references: dashboard/condec.rationale.coverage.dashboard.js
 	 */
-	ConDecDashboardAPI.prototype.getRationaleCoverage = function(filterSettings, sourceKnowledgeTypes, callback) {
-		generalApi.postJSON(this.restPrefix + "/rationale-coverage?sourceKnowledgeTypes=" +
-			sourceKnowledgeTypes, filterSettings, function(error, result) {
-				callback(error, result);
-			});
+	ConDecDashboardAPI.prototype.getRationaleCoverage = function(filterSettings, callback) {
+		generalApi.postJSON(this.restPrefix + "/rationale-coverage", filterSettings, function(error, result) {
+			callback(error, result);
+		});
 	};
 
 	global.conDecDashboardAPI = new ConDecDashboardAPI();

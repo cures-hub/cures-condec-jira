@@ -5,27 +5,29 @@
         </div>
         #if($viewIdentifier == "rationale-coverage")
             <div class="field-group">
-                #parse("templates/filter/sourceKnowledgeType.vm")
+                #parse("templates/filter/knowledgeTypesToBeCoveredWithRationale.vm")
             </div>
             <div class="field-group">
+            	<label>Minimum Coverage Required</label>
                 #parse("templates/filter/minimumDecisionCoverage.vm")
             </div>
         #end
-        #if($viewIdentifier != "branch")        	
-            #parse("templates/filter/filterLabel.vm")
-            <div class="field-group">
+        #if($viewIdentifier != "branch")   	
+			<div class="field-group">
+            <label>$i18n.getText("condec.label.filter.options")</label>
+            <div class="condec-filter">
             #parse("templates/filter/text.vm")
             #parse("templates/filter/knowledgeType.vm")
             #parse("templates/filter/status.vm")
             #parse("templates/filter/documentationLocation.vm")
             #parse("templates/filter/linkType.vm")
             #parse("templates/filter/decisionGroup.vm")
-            #parse("templates/filter/linkDistance.vm")
 			#parse("templates/filter/degree.vm")
 			#parse("templates/filter/documentationDate.vm")
 			#parse("templates/filter/isDecisionKnowledgeOnly.vm")
             #parse("templates/filter/isTestCode.vm")
             #parse("templates/filter/isTransitiveLinks.vm")
+            </div>
             </div>
         #end
         #parse("templates/filter/dashboardFilterButtons.vm")

@@ -35,6 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
@@ -69,6 +70,7 @@ public class FilterSettings {
 	private boolean createTransitiveLinks;
 	private boolean areQualityProblemsHighlighted;
 	private DefinitionOfDone definitionOfDone;
+	private Set<String> knowledgeTypesToBeCoveredWithRationale;
 	private boolean areChangeImpactsHighlighted;
 	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
 
@@ -603,6 +605,26 @@ public class FilterSettings {
 		this.definitionOfDone
 				.setMinimumDecisionsWithinLinkDistance(definitionOfDone.getMinimumDecisionsWithinLinkDistance());
 		this.definitionOfDone.setMaximumLinkDistanceToDecisions(definitionOfDone.getMaximumLinkDistanceToDecisions());
+	}
+
+	/**
+	 * @return list of selected {@link KnowledgeType}s for that the rationale
+	 *         coverage is calculated using the {@link RationaleCoverageCalculator}.
+	 */
+	@XmlElement
+	public Set<String> getKnowledgeTypesToBeCoveredWithRationale() {
+		return knowledgeTypesToBeCoveredWithRationale;
+	}
+
+	/**
+	 * @param namesOfTypes
+	 *            names of {@link KnowledgeType}s for that the rationale coverage is
+	 *            calculated using the {@link RationaleCoverageCalculator}.
+	 */
+	@JsonProperty
+	public void setKnowledgeTypesToBeCoveredWithRationale(Set<String> namesOfTypes) {
+		knowledgeTypesToBeCoveredWithRationale = namesOfTypes != null ? namesOfTypes
+				: project.getNamesOfKnowledgeTypes();
 	}
 
 	/**

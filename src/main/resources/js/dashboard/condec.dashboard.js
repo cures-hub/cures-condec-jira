@@ -63,7 +63,7 @@
 		filterSettings.status = toList(filterSettings["status"]);
 		filterSettings.documentationLocations = toList(filterSettings["documentationLocations"]);
 		filterSettings.groups = toList(filterSettings["groups"]);
-		filterSettings.sourceKnowledgeTypes = toList(filterSettings["sourceKnowledgeTypes"]);
+		filterSettings.knowledgeTypesToBeCoveredWithRationale = toList(filterSettings["knowledgeTypesToBeCoveredWithRationale"]);
 		filterSettings.changeImpactAnalysisConfig = {};
 		filterSettings.definitionOfDone = {
 			"minimumDecisionsWithinLinkDistance": filterSettings.minimumDecisionsWithinLinkDistance,
@@ -266,16 +266,6 @@
 			conDecAPI.projectKey = projectKey;
 		}
 		conDecFiltering.fillFilterElementsFromSettings(viewIdentifier, filterSettings);
-		var decisionKnowledgeTypes = ["Issue", "Decision", "Alternative", "Argument", "Goal"];
-		if (viewIdentifier === "rationale-coverage" && filterSettings.knowledgeTypes) {
-			var knowledgeTypesWithoutDecisionKnowledge = conDecAPI.getKnowledgeTypes().filter(function(value, index, arr) {
-				return !decisionKnowledgeTypes.includes(value);
-			});
-			console.log(knowledgeTypesWithoutDecisionKnowledge);
-			conDecFiltering.initDropdown("knowledge-type-dropdown-rationale-coverage",
-				knowledgeTypesWithoutDecisionKnowledge,
-				filterSettings.knowledgeTypes);
-		}
 	}
 
 	ConDecDashboard.prototype.initializeChart = function(divId, title, subtitle, dataMap) {

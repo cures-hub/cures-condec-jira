@@ -38,13 +38,12 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * external references: condec.dashboard.js
 	 *
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param filterSettings the filterSettings used for the API-call
-	 * @param sourceKnowledgeTypes the source knowledge types used for the API-call
+	 * @param filterSettings the filterSettings used for the API-call including the rationaleCoveredKnowledgeTypes
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		let self = this;
 		//definitionOfDone = filterSettings.definitionOfDone;
-		conDecDashboardAPI.getRationaleCoverage(filterSettings, filterSettings["sourceKnowledgeTypes"], function(error, result) {
+		conDecDashboardAPI.getRationaleCoverage(filterSettings, function(error, result) {
 			conDecDashboard.processData(error, result, self, "rationale-coverage", dashboardAPI);
 		});
 	};

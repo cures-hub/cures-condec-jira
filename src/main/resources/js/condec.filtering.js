@@ -273,9 +273,9 @@
 			filterSettings["projectKey"] = projectKeyDropdown.value;
 		}
 
-		var sourceKnowledgeTypes = conDecFiltering.getSelectedItems("source-knowledge-type-dropdown-" + viewIdentifier);
-		if (sourceKnowledgeTypes) {
-			filterSettings["sourceKnowledgeTypes"] = sourceKnowledgeTypes;
+		var rationaleCoveredKnowledgeTypes = conDecFiltering.getSelectedItems("rationale-covered-knowledge-type-dropdown-" + viewIdentifier);
+		if (rationaleCoveredKnowledgeTypes) {
+			filterSettings["knowledgeTypesToBeCoveredWithRationale"] = rationaleCoveredKnowledgeTypes;
 		}
 
 		return filterSettings;
@@ -287,11 +287,9 @@
 	 */
 	ConDecFiltering.prototype.fillFilterElementsFromSettings = function(viewIdentifier, filterSettings) {
 		document.getElementById("project-dropdown-" + viewIdentifier).value = filterSettings.projectKey;
-		this.initDropdown("source-knowledge-type-dropdown-" + viewIdentifier,
-			conDecAPI.getKnowledgeTypes(), filterSettings["sourceKnowledgeTypes"]);
 
 		var searchInput = document.getElementById("search-input-" + viewIdentifier);
-		if (searchInput !== null) {
+		if (searchInput && filterSettings["searchTerm"]) {
 			searchInput.value = filterSettings["searchTerm"];
 		}
 
@@ -319,15 +317,17 @@
 		}
 
 		var minDegreeInput = document.getElementById("min-degree-input-" + viewIdentifier);
-		var maxDegreeInput = document.getElementById("max-degree-input-" + viewIdentifier);
-		if (minDegreeInput !== null && maxDegreeInput !== null) {
+		if (minDegreeInput && filterSettings["minDegree"]) {
 			minDegreeInput.value = filterSettings["minDegree"];
+		}
+		var maxDegreeInput = document.getElementById("max-degree-input-" + viewIdentifier);
+		if (maxDegreeInput && filterSettings["maxDegree"]) {
 			maxDegreeInput.value = filterSettings["maxDegree"];
 		}
 
 		var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
 		var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
-		if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+		if (minDecisionCoverageInput && maxLinkDistanceInput && filterSettings["definitionOfDone"]) {
 			minDecisionCoverageInput.value = filterSettings["definitionOfDone"]["minimumDecisionsWithinLinkDistance"];
 			maxLinkDistanceInput.value = filterSettings["definitionOfDone"]["maximumLinkDistanceToDecisions"];
 		}
@@ -339,7 +339,7 @@
 		}
 
 		var linkDistanceInput = document.getElementById("link-distance-input-" + viewIdentifier);
-		if (linkDistanceInput !== null) {
+		if (linkDistanceInput && filterSettings["linkDistance"]) {
 			linkDistanceInput.value = filterSettings["linkDistance"];
 		}
 
@@ -352,6 +352,8 @@
 		if (isTestCodeShownInput !== null) {
 			isTestCodeShownInput.checked = filterSettings["isTestCodeShown"];
 		}
+		this.initDropdown("rationale-covered-knowledge-type-dropdown-" + viewIdentifier,
+			conDecAPI.getKnowledgeTypesWithoutDecisionKnowledge(), filterSettings["knowledgeTypesToBeCoveredWithRationale"]);
 	};
 
 	/**
@@ -365,6 +367,7 @@
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
 		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier, conDecGroupingAPI.getAllDecisionGroups());
+		this.initDropdown("rationale-covered-knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypesWithoutDecisionKnowledge());
 	}
 
 	/**

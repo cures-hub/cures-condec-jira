@@ -28,36 +28,20 @@ public class RationaleCoverageCalculator {
 
 	public RationaleCoverageCalculator(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
-		this.decisionCoverageMetric = calculateKnowledgeElementsWithNeighborsOfOtherType(KnowledgeType.DECISION);
-		this.issueCoverageMetric = calculateKnowledgeElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE);
+		this.decisionCoverageMetric = calculateCoverage(KnowledgeType.DECISION);
+		this.issueCoverageMetric = calculateCoverage(KnowledgeType.ISSUE);
 	}
 
-	private RationaleCoverageMetric calculateKnowledgeElementsWithNeighborsOfOtherType(KnowledgeType knowledgeType) {
+	private RationaleCoverageMetric calculateCoverage(KnowledgeType knowledgeType) {
 		LOGGER.info("RationaleCoverageCalculator calculateKnowledgeElementsWithNeighborsOfOtherType");
 
 		RationaleCoverageMetric metric = new RationaleCoverageMetric(knowledgeType);
-
-		if (knowledgeType == null) {
-			return null;
-		}
-
 		metric.setMinimumRequiredCoverage(filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
+		Set<KnowledgeElement> elementsToBeCovered = getElementsToBeCovered();
 
-		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		Set<KnowledgeElement> sourceElements = filteringManager.getElementsMatchingFilterSettings();
-
-		FilterSettings filterSettingsForTargetType = new FilterSettings(filterSettings.getProjectKey(),
-				filterSettings.getSearchTerm());
-		filterSettingsForTargetType.setKnowledgeTypes(Set.of(knowledgeType.toString()));
-		filterSettingsForTargetType.setCreateTransitiveLinks(true);
-
-		for (KnowledgeElement knowledgeElement : sourceElements) {
-			filterSettingsForTargetType.setSelectedElementObject(knowledgeElement);
-			filteringManager.setFilterSettings(filterSettingsForTargetType);
-			Set<KnowledgeElement> reachableElements = filteringManager.getElementsMatchingFilterSettings();
-			Set<KnowledgeElement> reachableElementsOfTargetType = reachableElements.stream()
-					.filter(element -> element.getType() == knowledgeType).collect(Collectors.toSet());
-
+		for (KnowledgeElement knowledgeElement : elementsToBeCovered) {
+			Set<KnowledgeElement> reachableElementsOfTargetType = getReachableElementsOfType(knowledgeElement,
+					knowledgeType);
 			Integer numberOfReachableElementsOfTargetType = reachableElementsOfTargetType.size();
 
 			if (!metric.getCoverageMap().containsKey(numberOfReachableElementsOfTargetType)) {
@@ -65,8 +49,18 @@ public class RationaleCoverageCalculator {
 			}
 			metric.getCoverageMap().get(numberOfReachableElementsOfTargetType).add(knowledgeElement);
 		}
+		filterSettings.setSelectedElementObject(null);
 
 		return metric;
+	}
+
+	public Set<KnowledgeElement> getElementsToBeCovered() {
+		Set<String> knowledgeTypesInFilter = filterSettings.getKnowledgeTypes();
+		filterSettings.setKnowledgeTypes(filterSettings.getKnowledgeTypesToBeCoveredWithRationale());
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		Set<KnowledgeElement> elementsToBeCoveredWithRationale = filteringManager.getElementsMatchingFilterSettings();
+		filterSettings.setKnowledgeTypes(knowledgeTypesInFilter);
+		return elementsToBeCoveredWithRationale;
 	}
 
 	public Set<KnowledgeElement> getReachableElementsOfType(KnowledgeElement sourceElement, KnowledgeType targetType) {

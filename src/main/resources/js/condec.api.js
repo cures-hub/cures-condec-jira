@@ -69,6 +69,13 @@
 		}
 		return this.extendedKnowledgeTypes;
 	};
+	
+	ConDecAPI.prototype.getKnowledgeTypesWithoutDecisionKnowledge = function() {
+		var decisionKnowledgeTypes = ["Issue", "Decision", "Alternative", "Argument", "Goal"];
+		return this.getKnowledgeTypes().filter(function(value, index, arr) {
+			return !decisionKnowledgeTypes.includes(value);
+		});
+	};
 
 	/**
 	 * Replaces argument with pro-argument and con-argument in knowledge types

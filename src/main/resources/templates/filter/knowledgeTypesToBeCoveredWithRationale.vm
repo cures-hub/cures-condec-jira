@@ -1,0 +1,6 @@
+<label>$i18n.getText('condec.label.source.knowledge.types')</label>
+<button aria-controls="rationale-covered-knowledge-type-dropdown-$viewIdentifier"
+        class="aui-button aui-dropdown2-trigger aui-style-default medium-long-field" aria-haspopup="true">
+    Knowledge Types to be Covered
+</button>
+<aui-dropdown-menu id="rationale-covered-knowledge-type-dropdown-$viewIdentifier"></aui-dropdown-menu>

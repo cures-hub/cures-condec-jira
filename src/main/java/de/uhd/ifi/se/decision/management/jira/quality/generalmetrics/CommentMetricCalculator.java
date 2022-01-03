@@ -33,7 +33,7 @@ public class CommentMetricCalculator {
 
 	public Map<String, Integer> getNumberOfCommentsPerIssue() {
 		LOGGER.info("CommentMetricCalculator numberOfCommentsPerIssue");
-		Map<String, Integer> numberOfCommentsPerJiraIssue = new HashMap<String, Integer>();
+		Map<String, Integer> numberOfCommentsPerJiraIssue = new HashMap<>();
 		characterizedJiraIssues.forEach(
 				jiraIssue -> numberOfCommentsPerJiraIssue.put(jiraIssue.getKey(), jiraIssue.getNumberOfComments()));
 		return numberOfCommentsPerJiraIssue;
@@ -41,7 +41,7 @@ public class CommentMetricCalculator {
 
 	public Map<String, Integer> getNumberOfRelevantComments() {
 		LOGGER.info("CommentMetricCalculator getNumberOfRelevantComments");
-		Map<String, Integer> commentRelevanceMap = new LinkedHashMap<String, Integer>();
+		Map<String, Integer> commentRelevanceMap = new LinkedHashMap<>();
 		commentRelevanceMap.put("Relevant Comment", numberOfRelevantComments);
 		commentRelevanceMap.put("Irrelevant Comment", numberOfIrrelevantComments);
 		return commentRelevanceMap;

@@ -10,10 +10,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Represents the intra-rationale completeness between two
- * {@link KnowledgeType}s. For example, a question to be answered with the
- * metric is "How many decisions have pro-arguments documented and how many
- * decisions do not have pro-arguments documented?"
+ * Represents the rationale coverage of e.g. requirements, code, and other
+ * software artifacts (=knowledge elements) regarding a specific decision
+ * knowledge type, e.g. {@link KnowledgeType#ISSUE} or
+ * {@link KnowledgeType#DECISION}.
  */
 public class RationaleCoverageMetric {
 
