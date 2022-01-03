@@ -296,33 +296,16 @@
 
 	ConDecDashboard.prototype.createPieChart = function(divId, title, keys, data, colorPalette) {
 		var domElement = document.getElementById(divId);
-		if (!domElement) {
-			console.warn("Could not find element with ID: " + divId);
-			return;
-		}
 		var chart = echarts.init(domElement);
-		if (!chart) {
-			console.warn("Could not init chart for element " + divId);
-			return;
-		}
 		chart.setOption(getOptionsForPieChart("", title, keys, data, colorPalette));
-
-		if (!chart) {
-			console.error("could not setup chart for element " + divId);
-		}
-		// add click handler for chart data (in canvas)
 		chart.on('click', function(param) {
 			if (typeof param.seriesIndex != 'undefined') {
-				// param.dataIndex
-				// param.data
-				console.log(param);
 				var navigationDialog = document.getElementById("navigate-dialog");
 				AJS.dialog2(navigationDialog).show();
 
 				var dialogContent = document.getElementById("navigate-dialog-content");
 				dialogContent.innerHTML = "";
 				for (element of param.data.elements) {
-					console.log(element);
 					var link = document.createElement("a");
 					link.classList = "navigationLink";
 					link.innerText = element.type + ": " + element.summary;
@@ -334,6 +317,46 @@
 			}
 		});
 		return chart;
+	};
+
+	ConDecDashboard.prototype.createBoxPlot = function(divId, title, dataMap) {
+		var domElement = document.getElementById(divId);
+		var boxplot = echarts.init(domElement);
+
+		var values = [];
+
+		for (const [numberOfReachableElements, elements] of dataMap.entries()) {
+			for (element of elements) {
+				values.push(Number(numberOfReachableElements));
+			}
+		}
+		
+		console.log(values);
+
+		var data = echarts.dataTool.prepareBoxplotData(new Array(values));
+		console.log(data);
+		boxplot.setOption(getOptionsForBoxplot("", title, "", data));
+		boxplot.on('click', function(param) {
+			if (typeof param.seriesIndex != 'undefined') {
+				var navigationDialog = document.getElementById("navigate-dialog");
+				AJS.dialog2(navigationDialog).show();
+
+				var dialogContent = document.getElementById("navigate-dialog-content");
+				dialogContent.innerHTML = "";
+				var selectedValue = param.value[1];
+				var elementsForValue = dataMap.get(String(selectedValue));
+				for (element of elementsForValue) {
+					var link = document.createElement("a");
+					link.classList = "navigationLink";
+					link.innerText = element.type + ": " + element.summary;
+					link.title = element.key;
+					link.href = element.url;
+					link.target = "_blank";
+					dialogContent.appendChild(link);
+				}
+			}
+		});
+		return boxplot;
 	};
 
 	function initializeChartForSources(divId, title, subtitle, dataMap, colorPalette) {

@@ -6,7 +6,7 @@
  */
 define('dashboard/rationaleCoverage', [], function() {
 	var dashboardAPI;
-	
+
 	var ConDecRationaleCoverageDashboardItem = function(API) {
 		dashboardAPI = API;
 	};
@@ -57,19 +57,19 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(metrics) {
-		console.log(metrics.decisionDocumentedForSelectedJiraIssue);
-
-		/* define color palette */
-		var colorPalette = ['#EE6666', '#FAC858', '#91CC75'];
-
+		// necessary because Java map is not recognized as a map in JavaScript
+		metrics.issueCoverageMetric.coverageMap = new Map(Object.entries(metrics.issueCoverageMetric.coverageMap));
+		metrics.decisionCoverageMetric.coverageMap = new Map(Object.entries(metrics.decisionCoverageMetric.coverageMap));
 
 		// render box-plots 
-		conDecDashboard.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per element", metrics.issueCoverageMetric.coverageMap,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per element", metrics.decisionCoverageMetric.coverageMap,
-			colorPalette);
+		conDecDashboard.createBoxPlot(
+			"boxplot-IssuesPerJiraIssue",
+			"# Issues per element",
+			metrics.issueCoverageMetric.coverageMap);
+		conDecDashboard.createBoxPlot(
+			"boxplot-DecisionsPerJiraIssue",
+			"# Decisions per element",
+			metrics.decisionCoverageMetric.coverageMap);
 
 		// render pie-charts
 		createPieChart(metrics.issueCoverageMetric,
@@ -85,18 +85,12 @@ define('dashboard/rationaleCoverage', [], function() {
 		/* define color palette */
 		var colorPalette = ['#91CC75', '#FAC858', '#EE6666'];
 
-
-
-		// necessary because Java map is not recognized as a map in JavaScript
-		var coverageMap = new Map(Object.entries(metric.coverageMap));
-
 		var elementsWithNoCoverage = [];
 		var elementsWithLowCoverage = [];
 		var elementsWithHighCoverage = [];
-		for (const [numberOfReachableElements, elements] of coverageMap.entries()) {
+		for (const [numberOfReachableElements, elements] of metric.coverageMap.entries()) {
 			if (numberOfReachableElements == 0) {
 				elementsWithNoCoverage = elementsWithNoCoverage.concat(elements);
-				console.log(elements);
 			} else if (numberOfReachableElements < metric.minimumRequiredCoverage) {
 				elementsWithLowCoverage = elementsWithLowCoverage.concat(elements);
 			} else {
