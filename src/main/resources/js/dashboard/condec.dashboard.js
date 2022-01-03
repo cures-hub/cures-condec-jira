@@ -289,7 +289,7 @@
 		var chart = echarts.init(domElement);
 		chart.setOption(getOptionsForPieChart("", title, keys, data, colorPalette));
 		chart.on('click', function(param) {
-			if (typeof param.seriesIndex != 'undefined') {
+			if (typeof param.seriesIndex != 'undefined' && param.data.elements) {
 				var navigationDialog = document.getElementById("navigate-dialog");
 				AJS.dialog2(navigationDialog).show();
 

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +40,11 @@ public class GeneralMetricCalculator {
 
 	private Map<Integer, List<KnowledgeElement>> numberOfCommentsMap;
 	private Map<Integer, List<KnowledgeElement>> numberOfCommitsMap;
-	private Map<String, String> distributionOfKnowledgeTypes;
-	private Map<String, String> reqAndClassSummary;
-	private Map<String, String> elementsFromDifferentOrigins;
+	private Map<String, List<KnowledgeElement>> distributionOfKnowledgeTypes;
+	private Map<String, List<KnowledgeElement>> reqAndClassSummary;
+	private Map<String, List<KnowledgeElement>> elementsFromDifferentOrigins;
 	private Map<String, Integer> numberOfRelevantComments;
-	private Map<String, String> definitionOfDoneCheckResults;
+	private Map<String, List<KnowledgeElement>> definitionOfDoneCheckResults;
 
 	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
@@ -74,73 +74,68 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
-	private Map<String, String> calculateDistributionOfKnowledgeTypes() {
+	private Map<String, List<KnowledgeElement>> calculateDistributionOfKnowledgeTypes() {
 		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
-		Map<String, String> distributionMap = new HashMap<>();
+		Map<String, List<KnowledgeElement>> distributionMap = new HashMap<>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			for (KnowledgeElement element : graph.getElements(type)) {
 				if (!distributionMap.containsKey(type.toString())) {
-					distributionMap.put(type.toString(), element.getKey() + " ");
+					distributionMap.put(type.toString(), new ArrayList<>());
 				} else {
-					distributionMap.put(type.toString(), distributionMap.get(type.toString()) + element.getKey() + " ");
+					distributionMap.get(type.toString()).add(element);
 				}
 			}
 		}
 		return distributionMap;
 	}
 
-	private Map<String, String> calculateReqAndClassSummary() {
+	private Map<String, List<KnowledgeElement>> calculateReqAndClassSummary() {
 		LOGGER.info("GeneralMetricsCalculator getReqAndClassSummary");
-		Map<String, String> summaryMap = new HashMap<>();
-		StringBuilder requirements = new StringBuilder();
-		StringBuilder codeFiles = new StringBuilder();
+		Map<String, List<KnowledgeElement>> summaryMap = new HashMap<>();
+		List<KnowledgeElement> requirements = new ArrayList<>();
 		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
 		for (Issue issue : jiraIssues) {
 			if (requirementsTypes.contains(issue.getIssueType().getName())) {
 				KnowledgeElement knowledgeElement = new KnowledgeElement(issue);
-				requirements.append(knowledgeElement.getKey()).append(" ");
+				requirements.add(knowledgeElement);
 			}
 		}
-		for (KnowledgeElement knowledgeElement : graph.getElements(KnowledgeType.CODE)) {
-			codeFiles.append(filterSettings.getProjectKey()).append('-').append(knowledgeElement.getDescription())
-					.append(" ");
-		}
-		summaryMap.put("Requirements", requirements.toString().trim());
-		summaryMap.put("Code Files", codeFiles.toString().trim());
+		summaryMap.put("Requirements", requirements);
+		summaryMap.put("Code Files", graph.getElements(KnowledgeType.CODE));
 		return summaryMap;
 	}
 
-	private Map<String, String> calculateElementsFromDifferentOrigins() {
+	private Map<String, List<KnowledgeElement>> calculateElementsFromDifferentOrigins() {
 		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
-		Map<String, String> originMap = new HashMap<>();
+		Map<String, List<KnowledgeElement>> originMap = new HashMap<>();
 
-		StringBuilder elementsInJiraIssues = new StringBuilder();
-		StringBuilder elementsInJiraIssueText = new StringBuilder();
-		StringBuilder elementsInCommitMessages = new StringBuilder();
-		StringBuilder elementsInCodeComments = new StringBuilder();
+		List<KnowledgeElement> elementsInJiraIssues = new ArrayList<>();
+		List<KnowledgeElement> elementsInJiraIssueText = new ArrayList<>();
+		List<KnowledgeElement> elementsInCommitMessages = new ArrayList<>();
+		List<KnowledgeElement> elementsInCodeComments = new ArrayList<>();
 		for (KnowledgeElement element : knowledgeElements) {
 			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
-				elementsInJiraIssues.append(element.getKey()).append(" ");
+				elementsInJiraIssues.add(element);
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				if (element.getOrigin() == Origin.COMMIT) {
-					elementsInCommitMessages.append(element.getKey()).append(" ");
+					elementsInCommitMessages.add(element);
 				} else {
-					elementsInJiraIssueText.append(element.getKey()).append(" ");
+					elementsInJiraIssueText.add(element);
 				}
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
-				elementsInCodeComments.append(element.getKey()).append(" ");
+				elementsInCodeComments.add(element);
 			}
 		}
-		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText.toString().trim());
-		originMap.put("Entire Jira Issue", elementsInJiraIssues.toString().trim());
-		originMap.put("Commit Message", elementsInCommitMessages.toString().trim());
-		originMap.put("Code Comment", elementsInCodeComments.toString().trim());
+		originMap.put("Jira Issue Description or Comment", elementsInJiraIssueText);
+		originMap.put("Entire Jira Issue", elementsInJiraIssues);
+		originMap.put("Commit Message", elementsInCommitMessages);
+		originMap.put("Code Comment", elementsInCodeComments);
 
 		return originMap;
 	}
@@ -149,21 +144,21 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfRelevantComments();
 	}
 
-	private Map<String, String> calculateDefinitionOfDoneCheckResults() {
+	private Map<String, List<KnowledgeElement>> calculateDefinitionOfDoneCheckResults() {
 		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
-		Map<String, String> resultMap = new HashMap<>();
+		Map<String, List<KnowledgeElement>> resultMap = new HashMap<>();
 
-		StringBuilder elementsWithDoDCheckSuccess = new StringBuilder();
-		StringBuilder elementsWithDoDCheckFail = new StringBuilder();
+		List<KnowledgeElement> elementsWithDoDCheckSuccess = new ArrayList<>();
+		List<KnowledgeElement> elementsWithDoDCheckFail = new ArrayList<>();
 		for (KnowledgeElement element : knowledgeElements) {
 			if (DefinitionOfDoneChecker.checkDefinitionOfDone(element, filterSettings)) {
-				elementsWithDoDCheckSuccess.append(element.getKey()).append(" ");
+				elementsWithDoDCheckSuccess.add(element);
 			} else {
-				elementsWithDoDCheckFail.append(element.getKey()).append(" ");
+				elementsWithDoDCheckFail.add(element);
 			}
 		}
-		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess.toString().trim());
-		resultMap.put("Definition of Done Violated", elementsWithDoDCheckFail.toString().trim());
+		resultMap.put("Definition of Done Fulfilled", elementsWithDoDCheckSuccess);
+		resultMap.put("Definition of Done Violated", elementsWithDoDCheckFail);
 
 		return resultMap;
 	}
@@ -178,28 +173,28 @@ public class GeneralMetricCalculator {
 		return numberOfCommitsMap;
 	}
 
-	@JsonProperty("distributionOfKnowledgeTypes")
-	public Map<String, String> getDistributionOfKnowledgeTypes() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getDistributionOfKnowledgeTypes() {
 		return distributionOfKnowledgeTypes;
 	}
 
-	@JsonProperty("reqAndClassSummary")
-	public Map<String, String> getReqAndClassSummary() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getReqAndClassSummary() {
 		return reqAndClassSummary;
 	}
 
-	@JsonProperty("elementsFromDifferentOrigins")
-	public Map<String, String> getElementsFromDifferentOrigins() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getElementsFromDifferentOrigins() {
 		return elementsFromDifferentOrigins;
 	}
 
-	@JsonProperty("numberOfRelevantComments")
+	@XmlElement
 	public Map<String, Integer> getNumberOfRelevantComments() {
 		return numberOfRelevantComments;
 	}
 
-	@JsonProperty("definitionOfDoneCheckResults")
-	public Map<String, String> getDefinitionOfDoneCheckResults() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getDefinitionOfDoneCheckResults() {
 		return definitionOfDoneCheckResults;
 	}
 }

@@ -56,28 +56,54 @@ define('dashboard/generalMetrics', [], function() {
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
 		/* define color palette */
-		var colorPalette = ['#91CC75', '#EE6666'];
-		// necessary because Java map is not recognized as a map in JavaScript
-		generalMetrics.numberOfCommentsMap = new Map(Object.entries(generalMetrics.numberOfCommentsMap));
-		generalMetrics.numberOfCommitsMap = new Map(Object.entries(generalMetrics.numberOfCommitsMap));
+		var colorPalette = ['#EE6666', '#91CC75'];
 
 		/* render box-plots */
-		conDecDashboard.createBoxPlot("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue", 
-				generalMetrics.numberOfCommentsMap);
-		conDecDashboard.createBoxPlot("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue", 
-				generalMetrics.numberOfCommitsMap);
+		conDecDashboard.createBoxPlot("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue",
+			generalMetrics.numberOfCommentsMap);
+		conDecDashboard.createBoxPlot("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue",
+			generalMetrics.numberOfCommitsMap);
 		/* render pie-charts */
-		conDecDashboard.initializeChart("piechartRich-ReqCodeSummary",
-			"", "#Requirements and Code Classes", generalMetrics.reqAndClassSummary);
-		conDecDashboard.initializeChart("piechartRich-DecSources",
-			"", "#Rationale Elements per Origin", generalMetrics.elementsFromDifferentOrigins);
-		conDecDashboard.initializeChart("piechartInteger-RelevantSentences",
-			"", "Comments in Jira Issues relevant to Decision Knowledge", generalMetrics.numberOfRelevantComments);
-		conDecDashboard.initializeChart("piechartRich-KnowledgeTypeDistribution",
-			"", "Distribution of Knowledge Types", generalMetrics.distributionOfKnowledgeTypes);
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-DoDCheck",
-			"", "Definition of Done Check", generalMetrics.definitionOfDoneCheckResults, colorPalette);
+		createPieChart(generalMetrics.reqAndClassSummary,
+			"piechartRich-ReqCodeSummary",
+			"#Requirements and Code Classes");
+		createPieChart(generalMetrics.elementsFromDifferentOrigins,
+			"piechartRich-DecSources",
+			"#Rationale Elements per Origin");
+		createSimplePieChart(generalMetrics.numberOfRelevantComments,
+			"piechartInteger-RelevantSentences",
+			"Comments in Jira Issues relevant to Decision Knowledge");
+		createPieChart(generalMetrics.distributionOfKnowledgeTypes,
+			"piechartRich-KnowledgeTypeDistribution",
+			"Distribution of Knowledge Types");
+		createPieChart(generalMetrics.definitionOfDoneCheckResults,
+			"piechartRich-DoDCheck",
+			"Definition of Done Check", colorPalette);
 	};
+
+	function createSimplePieChart(metric, divId, title, colorPalette) {
+		var data = [];
+
+		for (const [category, number] of metric.entries()) {
+			entry = { "name": category, "value": number }
+			data.push(entry);
+		}
+
+		var pieChart = conDecDashboard.createPieChart(divId, title, Array.from(metric.keys()), data, colorPalette);
+	}
+
+	function createPieChart(metric, divId, title, colorPalette) {
+		var data = [];
+
+		for (const [category, elements] of metric.entries()) {
+			entry = { "name": category, "value": elements.length, "elements": elements }
+			data.push(entry);
+		}
+
+		console.log(metric.keys());
+
+		var pieChart = conDecDashboard.createPieChart(divId, title, Array.from(metric.keys()), data, colorPalette);
+	}
 
 	return ConDecGeneralMetricsDashboardItem;
 });
