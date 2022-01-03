@@ -541,7 +541,6 @@
 	}
 
 	function getOptionsForPieChart(title, subtitle, dataKeys, dataMap, colorPalette) {
-		console.log(dataKeys);
 		var options = {
 			title: {
 				text: title,
