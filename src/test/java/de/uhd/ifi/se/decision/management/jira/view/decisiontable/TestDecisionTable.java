@@ -21,7 +21,7 @@ public class TestDecisionTable extends TestSetUp {
 	public void setUp() {
 		init();
 		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration("TEST");
-		basicConfig.setCriteriaJiraQuery("project=CONDEC and type = \"Non functional requirement\"");
+		basicConfig.setCriteriaJiraQuery("project=CONDEC and type = \"Non-Functional Requirement\"");
 		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfig);
 	}
 
@@ -41,7 +41,7 @@ public class TestDecisionTable extends TestSetUp {
 
 	@Test
 	public void testGetCriteriaQuery() {
-		assertEquals("project=CONDEC and type = \"Non functional requirement\"",
+		assertEquals("project=CONDEC and type = \"Non-Functional Requirement\"",
 				DecisionTable.getCriteriaQuery("TEST"));
 	}
 

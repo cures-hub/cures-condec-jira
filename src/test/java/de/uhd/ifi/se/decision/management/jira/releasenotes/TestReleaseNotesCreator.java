@@ -31,7 +31,7 @@ public class TestReleaseNotesCreator extends TestSetUp {
 	@Test
 	public void testNonEmptyFeatures() {
 		ReleaseNotesConfiguration config = new ReleaseNotesConfiguration();
-		config.setJiraIssueTypesForNewFeatures(List.of("Non functional requirement"));
+		config.setJiraIssueTypesForNewFeatures(List.of("Non-Functional Requirement"));
 		releaseNotesCreator = new ReleaseNotesCreator(JiraIssues.getTestJiraIssues(), config,
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		assertNotNull(releaseNotesCreator.proposeReleaseNotes());
