@@ -55,7 +55,7 @@ define('dashboard/rationaleCompleteness', [], function() {
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.renderData = function(metrics) {
-		var colorPalette = ['#EE6666', '#91CC75'];
+		var colorPalette = ['#91CC75', '#EE6666'];
 
 		conDecDashboard.createPieChartWithListOfElements(metrics.issuesSolvedByDecision, "piechartRich-IssuesSolvedByDecision",
 			"How many issues (=decision problems) are solved by a decision?", viewId, colorPalette);

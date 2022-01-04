@@ -57,6 +57,7 @@ public class RationaleCoverageCalculator {
 		Map<Integer, List<KnowledgeElement>> metric = new LinkedHashMap<>();
 
 		FilterSettings clonedFilterSettings = filterSettings.clone();
+		clonedFilterSettings.setLinkDistance(filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions());
 		for (KnowledgeElement knowledgeElement : elementsToBeCoveredWithRationale) {
 			Set<KnowledgeElement> reachableElementsOfTargetType = getReachableElementsOfType(knowledgeElement,
 					knowledgeType, clonedFilterSettings);
@@ -81,11 +82,9 @@ public class RationaleCoverageCalculator {
 	}
 
 	private Set<KnowledgeElement> getElementsToBeCovered() {
-		Set<String> knowledgeTypesInFilter = filterSettings.getKnowledgeTypes();
-		filterSettings.setKnowledgeTypes(filterSettings.getKnowledgeTypesToBeCoveredWithRationale());
-		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		Set<KnowledgeElement> elementsToBeCoveredWithRationale = filteringManager.getElementsMatchingFilterSettings();
-		filterSettings.setKnowledgeTypes(knowledgeTypesInFilter);
-		return elementsToBeCoveredWithRationale;
+		FilterSettings clonedFilterSettings = filterSettings.clone();
+		clonedFilterSettings.setKnowledgeTypes(filterSettings.getKnowledgeTypesToBeCoveredWithRationale());
+		FilteringManager filteringManager = new FilteringManager(clonedFilterSettings);
+		return filteringManager.getElementsMatchingFilterSettings();
 	}
 }
