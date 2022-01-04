@@ -161,7 +161,8 @@ public class GeneralMetricCalculator {
 				} else {
 					elementsInJiraIssueText.add(element);
 				}
-			} else if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
+			} else {
+				// if (element.getDocumentationLocation() == DocumentationLocation.CODE)
 				elementsInCodeComments.add(element);
 			}
 		}
@@ -171,6 +172,7 @@ public class GeneralMetricCalculator {
 		originMap.put("Code Comment", elementsInCodeComments);
 
 		return originMap;
+
 	}
 
 	/**
