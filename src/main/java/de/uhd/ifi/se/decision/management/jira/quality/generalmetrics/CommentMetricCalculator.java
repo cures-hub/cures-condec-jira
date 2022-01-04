@@ -28,15 +28,27 @@ public class CommentMetricCalculator {
 		}
 	}
 
+	/**
+	 * @return number of relevant comments of all the Jira issues, i.e. number of
+	 *         comments with decision knowledge documented in the comment text.
+	 */
 	public int getNumberOfRelevantComments() {
 		return numberOfRelevantComments;
 	}
 
+	/**
+	 * @return number of irrelevant comments of all the Jira issues, i.e. number of
+	 *         comments without decision knowledge documented in the comment text.
+	 */
 	public int getNumberOfIrrelevantComments() {
 		return numberOfIrrelevantComments;
 	}
 
-	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsPerIssueMap() {
+	/**
+	 * @return map with number of comments as keys and elements (Jira issues) that
+	 *         have the respective number of comments as map values.
+	 */
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsPerJiraIssueMap() {
 		Map<Integer, List<KnowledgeElement>> numberOfCommentsPerJiraIssue = new HashMap<>();
 		for (CharacterizedJiraIssue jiraIssue : characterizedJiraIssues) {
 			int numberOfComments = jiraIssue.getNumberOfComments();
@@ -48,7 +60,11 @@ public class CommentMetricCalculator {
 		return numberOfCommentsPerJiraIssue;
 	}
 
-	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsPerIssueMap() {
+	/**
+	 * @return map with number of commits as keys and elements (Jira issues) that
+	 *         have the respective number of commits linked as map values.
+	 */
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsPerJiraIssueMap() {
 		Map<Integer, List<KnowledgeElement>> numberOfCommitsPerJiraIssue = new HashMap<>();
 		for (CharacterizedJiraIssue jiraIssue : characterizedJiraIssues) {
 			int numberOfCommits = jiraIssue.getNumberOfCommits();

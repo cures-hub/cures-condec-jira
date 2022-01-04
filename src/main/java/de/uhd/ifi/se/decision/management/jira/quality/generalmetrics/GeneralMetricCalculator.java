@@ -80,7 +80,7 @@ public class GeneralMetricCalculator {
 	 */
 	@XmlElement
 	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsMap() {
-		return commentMetricCalculator.getNumberOfCommentsPerIssueMap();
+		return commentMetricCalculator.getNumberOfCommentsPerJiraIssueMap();
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class GeneralMetricCalculator {
 		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
 			return new HashMap<>();
 		}
-		return commentMetricCalculator.getNumberOfCommitsPerIssueMap();
+		return commentMetricCalculator.getNumberOfCommitsPerJiraIssueMap();
 	}
 
 	/**
@@ -174,13 +174,16 @@ public class GeneralMetricCalculator {
 	}
 
 	/**
-	 * @return map
+	 * @return map with two keys "Relevant Comments" and "Irrelevant Comments" and
+	 *         the respective numbers as map values.
+	 * @see CommentMetricCalculator#getNumberOfRelevantComments()
+	 * @see CommentMetricCalculator#getNumberOfIrrelevantComments()
 	 */
 	@XmlElement
 	public Map<String, Integer> getNumberOfRelevantAndIrrelevantComments() {
 		Map<String, Integer> commentRelevanceMap = new LinkedHashMap<>();
-		commentRelevanceMap.put("Relevant Comment", commentMetricCalculator.getNumberOfRelevantComments());
-		commentRelevanceMap.put("Irrelevant Comment", commentMetricCalculator.getNumberOfIrrelevantComments());
+		commentRelevanceMap.put("Relevant Comments", commentMetricCalculator.getNumberOfRelevantComments());
+		commentRelevanceMap.put("Irrelevant Comments", commentMetricCalculator.getNumberOfIrrelevantComments());
 		return commentRelevanceMap;
 	}
 

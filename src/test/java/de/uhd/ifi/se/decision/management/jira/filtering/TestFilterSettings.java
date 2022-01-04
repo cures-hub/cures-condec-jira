@@ -362,4 +362,9 @@ public class TestFilterSettings extends TestSetUp {
 		assertEquals("TEST", settings.getProjectKey());
 		assertEquals(-2, settings.getSelectedElement().getId());
 	}
+
+	@Test
+	public void testClone() {
+		assertEquals(filterSettings.getProjectKey(), filterSettings.clone().getProjectKey());
+	}
 }

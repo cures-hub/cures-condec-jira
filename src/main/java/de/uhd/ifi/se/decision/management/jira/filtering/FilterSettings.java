@@ -47,7 +47,7 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "projectKey" })
-public class FilterSettings {
+public class FilterSettings implements Cloneable {
 
 	private DecisionKnowledgeProject project;
 	private String searchTerm;
