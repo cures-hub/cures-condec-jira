@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Set;
 
@@ -17,7 +16,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestRationaleCoverageCalculator extends TestSetUp {
 
-	private RationaleCoverageCalculator calculator;
+	private RationaleCoverageCalculator rationaleCoverageCalculator;
 	private FilterSettings filterSettings;
 
 	@Before
@@ -26,42 +25,30 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 		CodeFiles.addCodeFilesToKnowledgeGraph();
 		filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setKnowledgeTypesToBeCoveredWithRationale(Set.of("Task"));
-		calculator = new RationaleCoverageCalculator(filterSettings);
+		rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings);
 	}
 
 	@Test
 	@NonTransactional
-	public void testRationaleCoverageCalculator() {
-		assertNotNull(calculator);
+	public void testGetDecisionCoverageMetric() {
+		assertEquals(2, rationaleCoverageCalculator.getDecisionCoverageMetric().size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testRationaleCoverageCalculatorNoTypes() {
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
-		RationaleCoverageCalculator newCalculator = new RationaleCoverageCalculator(filterSettings);
-		assertNotNull(newCalculator);
+	public void testGetIssueCoverageMetric() {
+		assertEquals(2, rationaleCoverageCalculator.getIssueCoverageMetric().size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetDecisionDocumentedForSelectedJiraIssue() {
+	public void testGetReachableElementsOfType() {
 		assertEquals(1,
 				RationaleCoverageCalculator.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(),
 						KnowledgeType.DECISION, filterSettings).size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetIssueDocumentedForSelectedJiraIssue() {
 		assertEquals(2,
 				RationaleCoverageCalculator.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(),
 						KnowledgeType.ISSUE, filterSettings).size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNull() {
 		assertEquals(0, RationaleCoverageCalculator
 				.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(), null, filterSettings).size());
 	}

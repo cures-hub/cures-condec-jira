@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,12 +19,6 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 		String projectKey = "TEST";
 		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		calculator = new RationaleCompletenessCalculator(filterSettings);
-	}
-
-	@Test
-	@NonTransactional
-	public void testRationaleCompletenessCalculator() {
-		assertNotNull(calculator);
 	}
 
 	@Test
@@ -63,5 +56,4 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	public void testGetConArgumentDocumentedForDecision() {
 		assertEquals(2, calculator.getConArgumentDocumentedForDecision().size());
 	}
-
 }
