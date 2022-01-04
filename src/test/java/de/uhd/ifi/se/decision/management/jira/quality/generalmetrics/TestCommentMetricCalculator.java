@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
-import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.addComment;
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
 import static org.junit.Assert.assertEquals;
 
@@ -23,27 +22,34 @@ public class TestCommentMetricCalculator extends TestSetUp {
 	public void setUp() {
 		init();
 		commentMetricCalculator = new CommentMetricCalculator(getTestJiraIssues());
-		JiraIssues.addCommentsToIssue(getTestJiraIssues().get(0), "Hash: 123");
 	}
 
 	@Test
 	@NonTransactional
 	public void testNumberOfCommentsPerIssue() {
-		Map<Integer, List<KnowledgeElement>> map = commentMetricCalculator.getNumberOfCommentsPerIssue();
+		Map<Integer, List<KnowledgeElement>> map = commentMetricCalculator.getNumberOfCommentsPerIssueMap();
 		assertEquals(1, map.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfRelevantComments() {
-		addComment(getTestJiraIssues().get(7));
-		assertEquals(2, commentMetricCalculator.getNumberOfRelevantComments().size());
+		JiraIssues.getSentencesForCommentText("{decision} We will use MySQL! {decision}");
+		assertEquals(1, new CommentMetricCalculator(getTestJiraIssues()).getNumberOfRelevantComments());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetNumberOfIrrelevantComments() {
+		JiraIssues.getSentencesForCommentText("I am an irrelevant comment.");
+		assertEquals(1, new CommentMetricCalculator(getTestJiraIssues()).getNumberOfIrrelevantComments());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfCommitsPerJiraIssue() {
-		assertEquals(1, commentMetricCalculator.getNumberOfCommitsPerIssue().size());
+		JiraIssues.getSentencesForCommentText("Hash: 123");
+		assertEquals(2, new CommentMetricCalculator(getTestJiraIssues()).getNumberOfCommitsPerIssueMap().size());
 	}
 
 }

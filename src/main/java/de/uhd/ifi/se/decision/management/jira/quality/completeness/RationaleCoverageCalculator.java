@@ -56,9 +56,10 @@ public class RationaleCoverageCalculator {
 	private Map<Integer, List<KnowledgeElement>> calculateCoverage(KnowledgeType knowledgeType) {
 		Map<Integer, List<KnowledgeElement>> metric = new LinkedHashMap<>();
 
+		FilterSettings clonedFilterSettings = filterSettings.clone();
 		for (KnowledgeElement knowledgeElement : elementsToBeCoveredWithRationale) {
 			Set<KnowledgeElement> reachableElementsOfTargetType = getReachableElementsOfType(knowledgeElement,
-					knowledgeType, filterSettings);
+					knowledgeType, clonedFilterSettings);
 			Integer numberOfReachableElementsOfTargetType = reachableElementsOfTargetType.size();
 
 			if (!metric.containsKey(numberOfReachableElementsOfTargetType)) {
@@ -66,7 +67,6 @@ public class RationaleCoverageCalculator {
 			}
 			metric.get(numberOfReachableElementsOfTargetType).add(knowledgeElement);
 		}
-		filterSettings.setSelectedElementObject(null);
 
 		return metric;
 	}

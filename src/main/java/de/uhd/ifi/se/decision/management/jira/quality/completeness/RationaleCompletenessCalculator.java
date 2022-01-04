@@ -42,7 +42,6 @@ public class RationaleCompletenessCalculator {
 	 */
 	private Map<String, List<KnowledgeElement>> calculateCompletenessMetric(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
-
 		List<KnowledgeElement> allSourceElements = filteredGraph.getElements(sourceElementType);
 		Map<String, List<KnowledgeElement>> resultMap = new LinkedHashMap<>();
 		List<KnowledgeElement> elementsWithDoDCheckSuccess = new ArrayList<>();
@@ -60,7 +59,6 @@ public class RationaleCompletenessCalculator {
 		resultMap.put(sourceElementType + " has no " + targetElementType, elementsWithDoDCheckFail);
 
 		return resultMap;
-
 	}
 
 	@XmlElement

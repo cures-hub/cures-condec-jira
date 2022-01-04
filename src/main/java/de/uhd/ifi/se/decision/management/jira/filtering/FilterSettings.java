@@ -688,4 +688,19 @@ public class FilterSettings {
 		}
 		return filterSettingsAsJson;
 	}
+
+	/**
+	 * Clones the FilterSettings object so that it can be changed without side
+	 * effects.
+	 */
+	public FilterSettings clone() {
+		FilterSettings clonedFilterSettings = this;
+		try {
+			clonedFilterSettings = (FilterSettings) super.clone();
+		} catch (CloneNotSupportedException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return clonedFilterSettings;
+	}
+
 }

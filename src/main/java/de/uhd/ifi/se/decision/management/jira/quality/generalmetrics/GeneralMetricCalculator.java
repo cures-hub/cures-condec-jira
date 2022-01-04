@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class GeneralMetricCalculator {
 	 */
 	@XmlElement
 	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsMap() {
-		return commentMetricCalculator.getNumberOfCommentsPerIssue();
+		return commentMetricCalculator.getNumberOfCommentsPerIssueMap();
 	}
 
 	/**
@@ -91,35 +92,37 @@ public class GeneralMetricCalculator {
 		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
 			return new HashMap<>();
 		}
-		return commentMetricCalculator.getNumberOfCommitsPerIssue();
+		return commentMetricCalculator.getNumberOfCommitsPerIssueMap();
 	}
 
 	/**
-	 * @return map with decision knowledge types (issue, decision, alternative,
-	 *         argument) as keys and respective decision knowledge elements as map
+	 * @return map with decision knowledge types (e.g. issue, decision, alternative,
+	 *         pro, con) as keys and respective decision knowledge elements as map
 	 *         values.
 	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getDistributionOfKnowledgeTypes() {
+	public Map<String, List<KnowledgeElement>> getNumberOfDecisionKnowledgeElements() {
 		Map<String, List<KnowledgeElement>> distributionMap = new HashMap<>();
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			for (KnowledgeElement element : graph.getElements(type)) {
-				if (!distributionMap.containsKey(type.toString())) {
-					distributionMap.put(type.toString(), new ArrayList<>());
-				} else {
-					distributionMap.get(type.toString()).add(element);
-				}
+		for (KnowledgeElement element : knowledgeElements) {
+			if (!element.getType().isDecisionKnowledge()) {
+				continue;
+			}
+			String decisionKnowledgeTypeName = element.getType().toString();
+			if (!distributionMap.containsKey(decisionKnowledgeTypeName)) {
+				distributionMap.put(decisionKnowledgeTypeName, new ArrayList<>());
+			} else {
+				distributionMap.get(decisionKnowledgeTypeName).add(element);
 			}
 		}
 		return distributionMap;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * @return map with two keys "Requirements" and "Code Files" and respective
+	 *         knowledge elements as map values.
 	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getReqAndClassSummary() {
+	public Map<String, List<KnowledgeElement>> getRequirementsAndCodeFiles() {
 		Map<String, List<KnowledgeElement>> summaryMap = new HashMap<>();
 		List<KnowledgeElement> requirements = new ArrayList<>();
 		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
@@ -134,6 +137,10 @@ public class GeneralMetricCalculator {
 		return summaryMap;
 	}
 
+	/**
+	 * @return map with different {@link Origin}s as keys and respective knowledge
+	 *         elements that are captured in the origin as map values.
+	 */
 	@XmlElement
 	public Map<String, List<KnowledgeElement>> getElementsFromDifferentOrigins() {
 		Map<String, List<KnowledgeElement>> originMap = new HashMap<>();
@@ -143,21 +150,18 @@ public class GeneralMetricCalculator {
 		List<KnowledgeElement> elementsInCommitMessages = new ArrayList<>();
 		List<KnowledgeElement> elementsInCodeComments = new ArrayList<>();
 		for (KnowledgeElement element : knowledgeElements) {
-			if (element.getType() == KnowledgeType.CODE || element.getType() == KnowledgeType.OTHER) {
+			if (!element.getType().isDecisionKnowledge()) {
 				continue;
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 				elementsInJiraIssues.add(element);
-				continue;
-			}
-			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
+			} else if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 				if (element.getOrigin() == Origin.COMMIT) {
 					elementsInCommitMessages.add(element);
 				} else {
 					elementsInJiraIssueText.add(element);
 				}
-			}
-			if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
+			} else if (element.getDocumentationLocation() == DocumentationLocation.CODE) {
 				elementsInCodeComments.add(element);
 			}
 		}
@@ -169,9 +173,15 @@ public class GeneralMetricCalculator {
 		return originMap;
 	}
 
+	/**
+	 * @return map
+	 */
 	@XmlElement
-	public Map<String, Integer> getNumberOfRelevantComments() {
-		return commentMetricCalculator.getNumberOfRelevantComments();
+	public Map<String, Integer> getNumberOfRelevantAndIrrelevantComments() {
+		Map<String, Integer> commentRelevanceMap = new LinkedHashMap<>();
+		commentRelevanceMap.put("Relevant Comment", commentMetricCalculator.getNumberOfRelevantComments());
+		commentRelevanceMap.put("Irrelevant Comment", commentMetricCalculator.getNumberOfIrrelevantComments());
+		return commentRelevanceMap;
 	}
 
 	@XmlElement

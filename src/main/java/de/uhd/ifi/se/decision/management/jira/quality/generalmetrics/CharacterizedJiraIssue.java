@@ -7,6 +7,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -29,7 +30,7 @@ public class CharacterizedJiraIssue extends KnowledgeElement {
 				.getJiraIssueTextManager();
 		for (Comment comment : comments) {
 			List<PartOfJiraIssueText> elements = persistenceManager.getElementsInComment(comment.getId());
-			if (elements.isEmpty()) {
+			if (elements.stream().noneMatch(element -> element.getType() != KnowledgeType.OTHER)) {
 				numberOfIrrelevantComment++;
 			} else {
 				numberOfRelevantComments++;

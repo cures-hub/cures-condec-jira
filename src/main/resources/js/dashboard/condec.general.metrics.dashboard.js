@@ -64,18 +64,18 @@ define('dashboard/generalMetrics', [], function() {
 		conDecDashboard.createBoxPlot("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue",
 			generalMetrics.numberOfCommitsMap);
 		/* render pie-charts */
-		createPieChart(generalMetrics.reqAndClassSummary,
+		createPieChart(generalMetrics.requirementsAndCodeFiles,
 			"piechartRich-ReqCodeSummary",
-			"#Requirements and Code Classes");
+			"#Requirements and Code Files");
 		createPieChart(generalMetrics.elementsFromDifferentOrigins,
 			"piechartRich-DecSources",
 			"#Rationale Elements per Origin");
-		createSimplePieChart(generalMetrics.numberOfRelevantComments,
+		createSimplePieChart(generalMetrics.numberOfRelevantAndIrrelevantComments,
 			"piechartInteger-RelevantSentences",
 			"Comments in Jira Issues relevant to Decision Knowledge");
-		createPieChart(generalMetrics.distributionOfKnowledgeTypes,
+		createPieChart(generalMetrics.numberOfDecisionKnowledgeElements,
 			"piechartRich-KnowledgeTypeDistribution",
-			"Distribution of Knowledge Types");
+			"#Decision Knowledge Elements");
 		createPieChart(generalMetrics.definitionOfDoneCheckResults,
 			"piechartRich-DoDCheck",
 			"Definition of Done Check", colorPalette);
