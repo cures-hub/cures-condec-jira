@@ -6,6 +6,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 
+import de.uhd.ifi.se.decision.management.jira.git.CommitMessageToCommentTranscriber;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
@@ -13,6 +14,11 @@ import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
+/**
+ * Represents a Jira issue with information about the number of comments, number
+ * of relevant and irrelevant comments wrt. decision knowledge, and the number
+ * of commits.
+ */
 public class CharacterizedJiraIssue extends KnowledgeElement {
 
 	private List<Comment> comments;
@@ -42,18 +48,36 @@ public class CharacterizedJiraIssue extends KnowledgeElement {
 		}
 	}
 
-	public Integer getNumberOfComments() {
+	/**
+	 * @return number of comments of the Jira issue.
+	 */
+	public int getNumberOfComments() {
 		return comments.size();
 	}
 
+	/**
+	 * @return number of irrelevant comments of the Jira issue, i.e. number of
+	 *         comments without decision knowledge documented in the comment text.
+	 */
 	public int getNumberOfIrrelevantComments() {
 		return numberOfIrrelevantComment;
 	}
 
+	/**
+	 * @return number of relevant comments of the Jira issue, i.e. number of
+	 *         comments with decision knowledge documented in the comment text.
+	 */
 	public int getNumberOfRelevantComments() {
 		return numberOfRelevantComments;
 	}
 
+	/**
+	 * @return number of commits linked to the Jira issue by mentioning the Jira
+	 *         issue key in the commit message. ConDec transcribes/posts the commit
+	 *         messages into Jira issue comments. This method counts the Jira issue
+	 *         comments that originate from commits in git.
+	 * @see CommitMessageToCommentTranscriber
+	 */
 	public int getNumberOfCommits() {
 		return numberOfCommits;
 	}
