@@ -338,6 +338,12 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testKnowledgeTypesToBeCoveredWithRationale() {
+		filterSettings.setKnowledgeTypesToBeCoveredWithRationale(Set.of("Epic", "Code"));
+		assertEquals(2, filterSettings.getKnowledgeTypesToBeCoveredWithRationale().size());
+	}
+
+	@Test
 	public void testToString() {
 		assertTrue(filterSettings.toString().contains("\"projectKey\":\"TEST\""));
 	}
@@ -355,5 +361,10 @@ public class TestFilterSettings extends TestSetUp {
 		assertNotNull(settings);
 		assertEquals("TEST", settings.getProjectKey());
 		assertEquals(-2, settings.getSelectedElement().getId());
+	}
+
+	@Test
+	public void testClone() {
+		assertEquals(filterSettings.getProjectKey(), filterSettings.clone().getProjectKey());
 	}
 }

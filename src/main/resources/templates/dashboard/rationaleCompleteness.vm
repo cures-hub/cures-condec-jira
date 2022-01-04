@@ -18,4 +18,4 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
 
 #parse("templates/dashboard/dashboardNoProject.vm")
 #parse("templates/dashboard/dashboardError.vm")
-#parse("templates/dashboard/navigationOverlay.vm")
+#parse("templates/dashboard/navigationDialog.vm")

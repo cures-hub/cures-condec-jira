@@ -23,7 +23,7 @@ public class TestArgument extends TestSetUp {
 	public void setUp() {
 		init();
 		BasicConfiguration basicConfig = ConfigPersistenceManager.getBasicConfiguration("TEST");
-		basicConfig.setCriteriaJiraQuery("project=CONDEC and type = \"Non functional requirement\"");
+		basicConfig.setCriteriaJiraQuery("project=CONDEC and type = \"Non-Functional Requirement\"");
 		ConfigPersistenceManager.saveBasicConfiguration("TEST", basicConfig);
 
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
@@ -59,7 +59,7 @@ public class TestArgument extends TestSetUp {
 	@Test
 	public void testGetCriteriaTypes() {
 		assertEquals(1, Argument.getCriteriaTypes("TEST").size());
-		assertEquals("Non functional requirement", Argument.getCriteriaTypes("TEST").iterator().next());
+		assertEquals("Non-Functional Requirement", Argument.getCriteriaTypes("TEST").iterator().next());
 	}
 
 	@Test

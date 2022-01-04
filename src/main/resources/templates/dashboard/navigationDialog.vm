@@ -1,0 +1,9 @@
+<section id="navigate-dialog-$viewIdentifier" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 id="navigate-dialog-header" class="aui-dialog2-header-main">Navigate to Details</h2>
+        <button class="aui-close-button" type="button" id="navigate-dialog-cancel-icon" aria-label="close"></button>
+    </header>
+    <div id="navigate-dialog-content-$viewIdentifier" class="aui-dialog2-content">
+       
+    </div>
+</section>

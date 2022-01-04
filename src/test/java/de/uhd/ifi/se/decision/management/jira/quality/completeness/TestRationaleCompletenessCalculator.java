@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,44 +23,37 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testRationaleCompletenessCalculator() {
-		assertNotNull(calculator);
-	}
-
-	@Test
-	@NonTransactional
 	public void testGetIssuesSolvedByDecision() {
-		assertEquals(calculator.getIssuesSolvedByDecision().size(), 2);
+		assertEquals(2, calculator.getIssuesSolvedByDecision().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDecisionsSolvingIssues() {
-		assertEquals(calculator.getDecisionsSolvingIssues().size(), 2);
+		assertEquals(2, calculator.getDecisionsSolvingIssues().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetProArgumentDocumentedForAlternative() {
-		assertEquals(calculator.getProArgumentDocumentedForAlternative().size(), 2);
+		assertEquals(2, calculator.getProArgumentDocumentedForAlternative().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetConArgumentDocumentedForAlternative() {
-		assertEquals(calculator.getConArgumentDocumentedForAlternative().size(), 2);
+		assertEquals(2, calculator.getConArgumentDocumentedForAlternative().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetProArgumentDocumentedForDecision() {
-		assertEquals(calculator.getProArgumentDocumentedForDecision().size(), 2);
+		assertEquals(2, calculator.getProArgumentDocumentedForDecision().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetConArgumentDocumentedForDecision() {
-		assertEquals(calculator.getConArgumentDocumentedForDecision().size(), 2);
+		assertEquals(2, calculator.getConArgumentDocumentedForDecision().size());
 	}
-
 }

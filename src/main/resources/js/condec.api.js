@@ -41,7 +41,6 @@
 		this.knowledgeStatus = this.decisionStatus.concat(this.issueStatus).concat(this.alternativeStatus).concat("undefined");
 		this.rationaleBacklogItemStatus = ["challenged", "unresolved", "DoD violated"];
 
-		// Todo handle origin
 		this.documentationLocations = ["JiraIssues", "JiraIssueText", "Code", "PullRequest"];
 
 		this.linkTypes = [];
@@ -68,6 +67,13 @@
 			this.extendedKnowledgeTypes = createExtendedKnowledgeTypes(this.extendedKnowledgeTypes);
 		}
 		return this.extendedKnowledgeTypes;
+	};
+	
+	ConDecAPI.prototype.getKnowledgeTypesWithoutDecisionKnowledge = function() {
+		var decisionKnowledgeTypes = ["Issue", "Decision", "Alternative", "Argument", "Goal"];
+		return this.getKnowledgeTypes().filter(function(value, index, arr) {
+			return !decisionKnowledgeTypes.includes(value);
+		});
 	};
 
 	/**

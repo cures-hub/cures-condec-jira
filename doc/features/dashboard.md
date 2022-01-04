@@ -22,6 +22,15 @@ The dashboard shows metrics regarding the
 
 ## General Metrics
 
+Offers the following **metrics on the knowledge graph data structure** after it was filtered with the given filter settings: 
+- Number of comments per Jira issue
+- Number of commits per Jira issue
+- Number of code files and requirements in the project
+- Number of rationale elements per origin/documentation location
+- Number of comments with and without decision knowledge
+- Number of decision knowledge elements per decision knowledge type
+- Number of knowledge elements fulfilling and violating the definition of done (DoD)
+
 ![General metrics dashboard item](../screenshots/dashboard_general_metrics.png)
 
 *General metrics dashboard item*

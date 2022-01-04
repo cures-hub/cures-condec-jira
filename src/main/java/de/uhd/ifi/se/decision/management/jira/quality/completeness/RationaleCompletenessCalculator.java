@@ -1,11 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import javax.xml.bind.annotation.XmlElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,92 +17,77 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Calculates metrics for the intra-rationale completeness.
+ * Calculates metrics for the intra-rationale completeness: e.g., are there
+ * arguments for the decisions?
  */
 public class RationaleCompletenessCalculator {
 
-	@JsonIgnore
-	private FilterSettings filterSettings;
+	private KnowledgeGraph filteredGraph;
 
-	private Map<String, String> issuesSolvedByDecision;
-	private Map<String, String> decisionsSolvingIssues;
-	private Map<String, String> proArgumentDocumentedForAlternative;
-	private Map<String, String> conArgumentDocumentedForAlternative;
-	private Map<String, String> proArgumentDocumentedForDecision;
-	private Map<String, String> conArgumentDocumentedForDecision;
-
-	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
 	public RationaleCompletenessCalculator(FilterSettings filterSettings) {
-		this.filterSettings = filterSettings;
-
-		this.issuesSolvedByDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ISSUE,
-				KnowledgeType.DECISION);
-		this.decisionsSolvingIssues = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
-				KnowledgeType.ISSUE);
-		this.proArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
-				KnowledgeType.PRO);
-		this.conArgumentDocumentedForAlternative = calculateElementsWithNeighborsOfOtherType(KnowledgeType.ALTERNATIVE,
-				KnowledgeType.CON);
-		this.proArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
-				KnowledgeType.PRO);
-		this.conArgumentDocumentedForDecision = calculateElementsWithNeighborsOfOtherType(KnowledgeType.DECISION,
-				KnowledgeType.CON);
+		filteredGraph = new FilteringManager(filterSettings).getFilteredGraph();
 	}
 
-	private Map<String, String> calculateElementsWithNeighborsOfOtherType(KnowledgeType sourceElementType,
+	/**
+	 * @param sourceElementType
+	 *            {@link KnowledgeType}, e.g. issue.
+	 * @param targetElementType
+	 *            {@link KnowledgeType}, e.g. decision.
+	 * @return intra-rationale completeness between elements of the source and
+	 *         target type. The elements are part of the knowledge graph filtered by
+	 *         the {@link FilterSettings}. For example, enables to answer the
+	 *         question, how many issues are solved by a decision.
+	 */
+	private Map<String, List<KnowledgeElement>> calculateCompletenessMetric(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
-		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
-
-		KnowledgeGraph graph = new FilteringManager(filterSettings).getFilteredGraph();
-		List<KnowledgeElement> allSourceElements = graph.getElements(sourceElementType);
-		StringBuilder sourceElementsWithTargetTypeLinked = new StringBuilder();
-		StringBuilder sourceElementsWithoutTargetTypeLinked = new StringBuilder();
+		List<KnowledgeElement> allSourceElements = filteredGraph.getElements(sourceElementType);
+		Map<String, List<KnowledgeElement>> resultMap = new LinkedHashMap<>();
+		List<KnowledgeElement> elementsWithDoDCheckSuccess = new ArrayList<>();
+		List<KnowledgeElement> elementsWithDoDCheckFail = new ArrayList<>();
 
 		for (KnowledgeElement sourceElement : allSourceElements) {
 			if (sourceElement.hasNeighborOfType(targetElementType)) {
-				sourceElementsWithTargetTypeLinked.append(sourceElement.getKey()).append(" ");
+				elementsWithDoDCheckSuccess.add(sourceElement);
 			} else {
-				sourceElementsWithoutTargetTypeLinked.append(sourceElement.getKey()).append(" ");
+				elementsWithDoDCheckFail.add(sourceElement);
 			}
 		}
 
-		Map<String, String> havingLinkMap = new LinkedHashMap<>();
-		havingLinkMap.put(sourceElementType + " has " + targetElementType,
-				sourceElementsWithTargetTypeLinked.toString().trim());
-		havingLinkMap.put(sourceElementType + " has no " + targetElementType,
-				sourceElementsWithoutTargetTypeLinked.toString().trim());
-		return havingLinkMap;
+		resultMap.put(sourceElementType + " has " + targetElementType, elementsWithDoDCheckSuccess);
+		resultMap.put(sourceElementType + " has no " + targetElementType, elementsWithDoDCheckFail);
+
+		return resultMap;
 	}
 
-	@JsonProperty("issuesSolvedByDecision")
-	public Map<String, String> getIssuesSolvedByDecision() {
-		return issuesSolvedByDecision;
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getIssuesSolvedByDecision() {
+		return calculateCompletenessMetric(KnowledgeType.ISSUE, KnowledgeType.DECISION);
 	}
 
-	@JsonProperty("decisionsSolvingIssues")
-	public Map<String, String> getDecisionsSolvingIssues() {
-		return decisionsSolvingIssues;
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getDecisionsSolvingIssues() {
+		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.ISSUE);
 	}
 
-	@JsonProperty("proArgumentDocumentedForAlternative")
-	public Map<String, String> getProArgumentDocumentedForAlternative() {
-		return proArgumentDocumentedForAlternative;
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForAlternative() {
+		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO);
 	}
 
-	@JsonProperty("conArgumentDocumentedForAlternative")
-	public Map<String, String> getConArgumentDocumentedForAlternative() {
-		return conArgumentDocumentedForAlternative;
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForAlternative() {
+		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.CON);
 	}
 
-	@JsonProperty("proArgumentDocumentedForDecision")
-	public Map<String, String> getProArgumentDocumentedForDecision() {
-		return proArgumentDocumentedForDecision;
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForDecision() {
+		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.PRO);
 	}
 
-	@JsonProperty("conArgumentDocumentedForDecision")
-	public Map<String, String> getConArgumentDocumentedForDecision() {
-		return conArgumentDocumentedForDecision;
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForDecision() {
+		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.CON);
 	}
 }

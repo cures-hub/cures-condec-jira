@@ -35,6 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
@@ -46,7 +47,7 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "projectKey" })
-public class FilterSettings {
+public class FilterSettings implements Cloneable {
 
 	private DecisionKnowledgeProject project;
 	private String searchTerm;
@@ -69,6 +70,7 @@ public class FilterSettings {
 	private boolean createTransitiveLinks;
 	private boolean areQualityProblemsHighlighted;
 	private DefinitionOfDone definitionOfDone;
+	private Set<String> knowledgeTypesToBeCoveredWithRationale;
 	private boolean areChangeImpactsHighlighted;
 	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
 
@@ -606,6 +608,24 @@ public class FilterSettings {
 	}
 
 	/**
+	 * @return list of selected {@link KnowledgeType}s for that the rationale
+	 *         coverage is calculated using the {@link RationaleCoverageCalculator}.
+	 */
+	public Set<String> getKnowledgeTypesToBeCoveredWithRationale() {
+		return knowledgeTypesToBeCoveredWithRationale;
+	}
+
+	/**
+	 * @param namesOfTypes
+	 *            names of {@link KnowledgeType}s for that the rationale coverage is
+	 *            calculated using the {@link RationaleCoverageCalculator}.
+	 */
+	@JsonProperty
+	public void setKnowledgeTypesToBeCoveredWithRationale(Set<String> namesOfTypes) {
+		knowledgeTypesToBeCoveredWithRationale = namesOfTypes;
+	}
+
+	/**
 	 * @return true if the impacts of a change in the selected element should be
 	 *         highlighted within the knowledge subgraph matching the filter
 	 *         settings. The background of the nodes in the knowledge graph views is
@@ -668,4 +688,19 @@ public class FilterSettings {
 		}
 		return filterSettingsAsJson;
 	}
+
+	/**
+	 * Clones the FilterSettings object so that it can be changed without side
+	 * effects.
+	 */
+	public FilterSettings clone() {
+		FilterSettings clonedFilterSettings = this;
+		try {
+			clonedFilterSettings = (FilterSettings) super.clone();
+		} catch (CloneNotSupportedException e) {
+			LOGGER.error(e.getMessage());
+		}
+		return clonedFilterSettings;
+	}
+
 }

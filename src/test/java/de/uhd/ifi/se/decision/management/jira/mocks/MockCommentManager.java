@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
@@ -19,7 +20,6 @@ import com.atlassian.jira.issue.comments.CommentSummary;
 import com.atlassian.jira.issue.comments.MockComment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
-import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONObject;
@@ -62,8 +62,7 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public List<Comment> getComments(Issue issue) {
-		((MockIssue) issue).setIssueTypeId("alternative");
-		return comments;
+		return comments.stream().filter(comment -> comment.getIssue().equals(issue)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -222,6 +221,6 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public void deleteCommentsForIssue(Issue issue) {
-		comments = new ArrayList<>();
+		comments.removeAll(getComments(issue));
 	}
 }

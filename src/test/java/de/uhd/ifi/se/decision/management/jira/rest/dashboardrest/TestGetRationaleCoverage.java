@@ -17,59 +17,35 @@ import de.uhd.ifi.se.decision.management.jira.rest.DashboardRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestGetRationaleCoverage extends TestSetUp {
-	protected DashboardRest dashboardRest;
-	protected HttpServletRequest request;
+	private DashboardRest dashboardRest;
+	private HttpServletRequest request;
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
 		dashboardRest = new DashboardRest();
 		ApplicationUser user = JiraUsers.BLACK_HEAD.getApplicationUser();
-		this.request = new MockHttpServletRequest();
-		this.request.setAttribute("user", user);
+		request = new MockHttpServletRequest();
+		request.setAttribute("user", user);
+		filterSettings = new FilterSettings("TEST", "");
 	}
 
 	@Test
-	public void testGetRationaleCoverageForRequirement() {
-		String projectKey = "TEST";
-		String issueType = "Epic";
-		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
+	public void testRequestValidFilterSettingsValid() {
+		Response response = dashboardRest.getRationaleCoverage(request, filterSettings);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
 	@Test
-	public void testGetRationaleCoverageForCode() {
-		String projectKey = "TEST";
-		String issueType = "Code";
-		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
-		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-	}
-
-	@Test
-	public void testGetRationaleCoverageNull() {
-		FilterSettings filterSettings = null;
-		String issueType = "TEST";
-		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
+	public void testRequestValidFilterSettingsNull() {
+		Response response = dashboardRest.getRationaleCoverage(request, null);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 
 	@Test
-	public void testGetRationaleCoverageIssueTypeNull() {
-		String projectKey = "TEST";
-		String issueType = null;
-		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		Response response = dashboardRest.getRationaleCoverage(request, filterSettings, issueType);
-		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-	}
-
-	@Test
-	public void testGetRationaleCoverageResponseNull() {
-		String projectKey = "TEST";
-		String issueType = "TEST";
-		FilterSettings filterSettings = new FilterSettings(projectKey, "");
-		Response response = dashboardRest.getRationaleCoverage(null, filterSettings, issueType);
+	public void testRequestNullFilterSettingsValid() {
+		Response response = dashboardRest.getRationaleCoverage(null, filterSettings);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 }

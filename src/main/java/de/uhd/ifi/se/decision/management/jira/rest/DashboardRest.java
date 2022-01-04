@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -38,9 +37,7 @@ public class DashboardRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 					.build();
 		}
-		GeneralMetricCalculator generalMetricsCalculator = new GeneralMetricCalculator(filterSettings);
-
-		return Response.ok(generalMetricsCalculator).build();
+		return Response.ok(new GeneralMetricCalculator(filterSettings)).build();
 	}
 
 	/**
@@ -56,14 +53,10 @@ public class DashboardRest {
 	@POST
 	public Response getRationaleCompleteness(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected."))
 					.build();
 		}
-
-		RationaleCompletenessCalculator rationaleCompletenessCalculator = new RationaleCompletenessCalculator(
-				filterSettings);
-
-		return Response.ok(rationaleCompletenessCalculator).build();
+		return Response.ok(new RationaleCompletenessCalculator(filterSettings)).build();
 	}
 
 	/**
@@ -77,16 +70,12 @@ public class DashboardRest {
 	 */
 	@Path("/rationale-coverage")
 	@POST
-	public Response getRationaleCoverage(@Context HttpServletRequest request, FilterSettings filterSettings,
-			@QueryParam("sourceKnowledgeTypes") String sourceKnowledgeTypes) {
-		if (request == null || filterSettings == null || sourceKnowledgeTypes == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
+	public Response getRationaleCoverage(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected."))
 					.build();
 		}
 
-		RationaleCoverageCalculator rationaleCoverageCalculator = new RationaleCoverageCalculator(filterSettings,
-				sourceKnowledgeTypes);
-
-		return Response.ok(rationaleCoverageCalculator).build();
+		return Response.ok(new RationaleCoverageCalculator(filterSettings)).build();
 	}
 }

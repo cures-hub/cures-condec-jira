@@ -6,6 +6,7 @@
  */
 define('dashboard/rationaleCompleteness', [], function() {
 	var dashboardAPI;
+	const viewId = "rationale-completeness";
 
 	var ConDecRationaleCompletenessDashboardItem = function(API) {
 		dashboardAPI = API;
@@ -18,7 +19,7 @@ define('dashboard/rationaleCompleteness', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.render = function(context, preferences) {
-		conDecDashboard.initDashboard(this, "rationale-completeness", dashboardAPI, preferences);
+		conDecDashboard.initDashboard(this, viewId, dashboardAPI, preferences);
 	};
 
 	/**
@@ -28,7 +29,7 @@ define('dashboard/rationaleCompleteness', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.renderEdit = function(context, preferences) {
-		conDecDashboard.initConfiguration("rationale-completeness", dashboardAPI, preferences);
+		conDecDashboard.initConfiguration(viewId, dashboardAPI, preferences);
 	};
 
 	/**
@@ -42,7 +43,7 @@ define('dashboard/rationaleCompleteness', [], function() {
 	ConDecRationaleCompletenessDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		let self = this;
 		conDecDashboardAPI.getRationaleCompleteness(filterSettings, function(error, result) {
-			conDecDashboard.processData(error, result, self, "rationale-completeness", dashboardAPI);
+			conDecDashboard.processData(error, result, self, viewId, dashboardAPI);
 		});
 	};
 
@@ -54,28 +55,24 @@ define('dashboard/rationaleCompleteness', [], function() {
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.renderData = function(metrics) {
-		/* define color palette */
-		var colorPalette = ['#EE6666', '#91CC75'];
+		var colorPalette = ['#91CC75', '#EE6666'];
 
-		/* render pie-charts */
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-IssuesSolvedByDecision",
-			"", "How many issues (=decision problems) are solved by a decision?", metrics.issuesSolvedByDecision,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-DecisionsSolvingIssues",
-			"", "For how many decisions is the issue (=decision problem) documented?", metrics.decisionsSolvingIssues,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForDecision",
-			"", "How many decisions have at least one pro argument documented?", metrics.proArgumentDocumentedForDecision,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForDecision",
-			"", "How many decisions have at least one con argument documented?", metrics.conArgumentDocumentedForDecision,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-ProArgumentDocumentedForAlternative",
-			"", "How many alternatives have at least one pro argument documented?", metrics.proArgumentDocumentedForAlternative,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-ConArgumentDocumentedForAlternative",
-			"", "How many alternatives have at least one con argument documented?", metrics.conArgumentDocumentedForAlternative,
-			colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.issuesSolvedByDecision, "piechartRich-IssuesSolvedByDecision",
+			"How many issues (=decision problems) are solved by a decision?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.decisionsSolvingIssues, "piechartRich-DecisionsSolvingIssues",
+			"For how many decisions is the issue (=decision problem) documented?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.proArgumentDocumentedForDecision,
+			"piechartRich-ProArgumentDocumentedForDecision",
+			"How many decisions have at least one pro argument documented?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.conArgumentDocumentedForDecision,
+			"piechartRich-ConArgumentDocumentedForDecision",
+			"How many decisions have at least one con argument documented?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.proArgumentDocumentedForAlternative,
+			"piechartRich-ProArgumentDocumentedForAlternative",
+			"How many alternatives have at least one pro argument documented?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.conArgumentDocumentedForAlternative,
+			"piechartRich-ConArgumentDocumentedForAlternative",
+			"How many alternatives have at least one con argument documented?", viewId, colorPalette);
 	};
 
 	return ConDecRationaleCompletenessDashboardItem;

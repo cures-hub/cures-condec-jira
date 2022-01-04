@@ -6,6 +6,7 @@
  */
 define('dashboard/rationaleCoverage', [], function() {
 	var dashboardAPI;
+	const viewId = "rationale-coverage";
 
 	var ConDecRationaleCoverageDashboardItem = function(API) {
 		dashboardAPI = API;
@@ -18,17 +19,18 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.render = function(context, preferences) {
-		conDecDashboard.initDashboard(this, "rationale-coverage", dashboardAPI, preferences);
+		preferences.definitionOfDone = {};
+		conDecDashboard.initDashboard(this, viewId, dashboardAPI, preferences);
 	};
 
 	/**
 	 * Called to render the edit view for a dashboard item.
 	 *
 	 * @param context The surrounding <div/> context that this items should render into.
-	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
+	 * @param filterSettings The user filterSettings saved for this dashboard item (e.g. filter id, number of results...)
 	 */
-	ConDecRationaleCoverageDashboardItem.prototype.renderEdit = function(context, preferences) {
-		conDecDashboard.initConfiguration("rationale-coverage", dashboardAPI, preferences);
+	ConDecRationaleCoverageDashboardItem.prototype.renderEdit = function(context, filterSettings) {
+		conDecDashboard.initConfiguration(viewId, dashboardAPI, filterSettings);
 	};
 
 	/**
@@ -37,13 +39,12 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * external references: condec.dashboard.js
 	 *
 	 * @param dashboardAPI used to call methods of the Jira dashboard api
-	 * @param filterSettings the filterSettings used for the API-call
-	 * @param sourceKnowledgeTypes the source knowledge types used for the API-call
+	 * @param filterSettings the filterSettings used for the API-call including the rationaleCoveredKnowledgeTypes
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		let self = this;
-		conDecDashboardAPI.getRationaleCoverage(filterSettings, filterSettings["sourceKnowledgeTypes"], function(error, result) {
-			conDecDashboard.processData(error, result, self, "rationale-coverage", dashboardAPI);
+		conDecDashboardAPI.getRationaleCoverage(filterSettings, function(error, result) {
+			conDecDashboard.processData(error, result, self, viewId, dashboardAPI);
 		});
 	};
 
@@ -55,24 +56,43 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(metrics) {
-		/* define color palette */
-		var colorPalette = ['#EE6666', '#FAC858', '#91CC75'];
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-IssuesPerJiraIssue",
+			"#Issues per element", metrics.issueCoverageMetric, viewId);
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-DecisionsPerJiraIssue",
+			"#Decisions per element", metrics.decisionCoverageMetric, viewId);
 
-		/* render box-plots */
-		conDecDashboard.initializeChartWithColorPalette("boxplot-IssuesPerJiraIssue",
-			"", "# Issues per element", metrics.issuesPerSelectedJiraIssue,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("boxplot-DecisionsPerJiraIssue",
-			"", "# Decisions per element", metrics.decisionsPerSelectedJiraIssue,
-			colorPalette);
-		/* render pie-charts */
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"", "For how many elements is an issue documented?", metrics.issueDocumentedForSelectedJiraIssue,
-			colorPalette);
-		conDecDashboard.initializeChartWithColorPalette("piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"", "For how many elements is a decision documented?", metrics.decisionDocumentedForSelectedJiraIssue,
-			colorPalette);
+		createPieChart(metrics.issueCoverageMetric, "piechartRich-IssueDocumentedForSelectedJiraIssue",
+			"For how many elements is an issue documented?", "Issue", metrics.minimumRequiredCoverage);
+		createPieChart(metrics.decisionCoverageMetric, "piechartRich-DecisionDocumentedForSelectedJiraIssue",
+			"For how many elements is a decision documented?", "Decision", metrics.minimumRequiredCoverage);
 	};
+
+	function createPieChart(metric, divId, title, targetElementType, minimumRequiredCoverage) {
+		var colorPalette = ['#91CC75', '#FAC858', '#EE6666'];
+
+		var elementsWithNoCoverage = [];
+		var elementsWithLowCoverage = [];
+		var elementsWithHighCoverage = [];
+		for (const [coverage, elements] of metric.entries()) {
+			if (coverage == 0) {
+				elementsWithNoCoverage = elementsWithNoCoverage.concat(elements);
+			} else if (coverage < minimumRequiredCoverage) {
+				elementsWithLowCoverage = elementsWithLowCoverage.concat(elements);
+			} else {
+				elementsWithHighCoverage = elementsWithHighCoverage.concat(elements);
+			}
+		}
+
+		var coverageMap = new Map();
+		coverageMap.set("More than or equal to " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
+			elementsWithHighCoverage);
+		coverageMap.set("Less than " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
+			elementsWithLowCoverage);
+		coverageMap.set("No " + targetElementType + "s reachable",
+			elementsWithNoCoverage);
+
+		var pieChart = conDecDashboard.createPieChartWithListOfElements(coverageMap, divId, title, viewId, colorPalette);
+	}
 
 	return ConDecRationaleCoverageDashboardItem;
 });

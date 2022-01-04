@@ -2,4 +2,4 @@
         class="aui-button aui-dropdown2-trigger aui-style-default short-field" aria-haspopup="true">
     $i18n.getText('condec.label.knowledge.type')
 </button>
-<aui-dropdown-menu id="knowledge-type-dropdown-$viewIdentifier" name="knowledgeTypes"></aui-dropdown-menu>
+<aui-dropdown-menu id="knowledge-type-dropdown-$viewIdentifier"></aui-dropdown-menu>
