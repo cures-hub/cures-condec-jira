@@ -12,24 +12,24 @@ import org.slf4j.LoggerFactory;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Calculates the rationale coverage of requirements, code, and other software
- * artifacts (=knowledge elements). For example, calculates how many decisions
- * are linked to a requirement or how many decisions are linked to a code file.
+ * Calculates the coverage of requirements, code, and other software artifacts
+ * (=knowledge elements) with a specific decision knowledge type, e.g.
+ * {@link KnowledgeType#ISSUE} or {@link KnowledgeType#DECISION}. For example,
+ * calculates how many decisions are linked to a requirement or how many
+ * decisions are linked to a code file within a certain link distance in the
+ * {@link KnowledgeGraph}.
  */
 public class RationaleCoverageCalculator {
 	private FilterSettings filterSettings;
-	private RationaleCoverageMetric decisionCoverageMetric;
-	private RationaleCoverageMetric issueCoverageMetric;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
 	public RationaleCoverageCalculator(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
-		this.decisionCoverageMetric = calculateCoverage(KnowledgeType.DECISION);
-		this.issueCoverageMetric = calculateCoverage(KnowledgeType.ISSUE);
 	}
 
 	private RationaleCoverageMetric calculateCoverage(KnowledgeType knowledgeType) {
@@ -73,11 +73,11 @@ public class RationaleCoverageCalculator {
 
 	@XmlElement
 	public RationaleCoverageMetric getDecisionCoverageMetric() {
-		return decisionCoverageMetric;
+		return calculateCoverage(KnowledgeType.DECISION);
 	}
 
 	@XmlElement
 	public RationaleCoverageMetric getIssueCoverageMetric() {
-		return issueCoverageMetric;
+		return calculateCoverage(KnowledgeType.ISSUE);
 	}
 }

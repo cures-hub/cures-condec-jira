@@ -19,24 +19,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  */
 public class RationaleCompletenessCalculator {
 
-	private FilterSettings filterSettings;
-	private RationaleCompletenessMetric issuesSolvedByDecision;
-	private RationaleCompletenessMetric decisionsSolvingIssues;
-	private RationaleCompletenessMetric proArgumentDocumentedForAlternative;
-	private RationaleCompletenessMetric conArgumentDocumentedForAlternative;
-	private RationaleCompletenessMetric proArgumentDocumentedForDecision;
-	private RationaleCompletenessMetric conArgumentDocumentedForDecision;
+	private KnowledgeGraph filteredGraph;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
 
 	public RationaleCompletenessCalculator(FilterSettings filterSettings) {
-		this.filterSettings = filterSettings;
-		issuesSolvedByDecision = calculateCompletenessMetric(KnowledgeType.ISSUE, KnowledgeType.DECISION);
-		decisionsSolvingIssues = calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.ISSUE);
-		proArgumentDocumentedForAlternative = calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO);
-		conArgumentDocumentedForAlternative = calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.CON);
-		proArgumentDocumentedForDecision = calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.PRO);
-		conArgumentDocumentedForDecision = calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.CON);
+		filteredGraph = new FilteringManager(filterSettings).getFilteredGraph();
 	}
 
 	/**
@@ -51,10 +39,8 @@ public class RationaleCompletenessCalculator {
 	 */
 	private RationaleCompletenessMetric calculateCompletenessMetric(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
-		LOGGER.info("RequirementsDashboard getElementsWithNeighborsOfOtherType");
 
-		KnowledgeGraph graph = new FilteringManager(filterSettings).getFilteredGraph();
-		List<KnowledgeElement> allSourceElements = graph.getElements(sourceElementType);
+		List<KnowledgeElement> allSourceElements = filteredGraph.getElements(sourceElementType);
 		RationaleCompletenessMetric metric = new RationaleCompletenessMetric(sourceElementType, targetElementType);
 
 		for (KnowledgeElement sourceElement : allSourceElements) {
@@ -70,31 +56,31 @@ public class RationaleCompletenessCalculator {
 
 	@XmlElement
 	public RationaleCompletenessMetric getIssuesSolvedByDecision() {
-		return issuesSolvedByDecision;
+		return calculateCompletenessMetric(KnowledgeType.ISSUE, KnowledgeType.DECISION);
 	}
 
 	@XmlElement
 	public RationaleCompletenessMetric getDecisionsSolvingIssues() {
-		return decisionsSolvingIssues;
+		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.ISSUE);
 	}
 
 	@XmlElement
 	public RationaleCompletenessMetric getProArgumentDocumentedForAlternative() {
-		return proArgumentDocumentedForAlternative;
+		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO);
 	}
 
 	@XmlElement
 	public RationaleCompletenessMetric getConArgumentDocumentedForAlternative() {
-		return conArgumentDocumentedForAlternative;
+		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.CON);
 	}
 
 	@XmlElement
 	public RationaleCompletenessMetric getProArgumentDocumentedForDecision() {
-		return proArgumentDocumentedForDecision;
+		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.PRO);
 	}
 
 	@XmlElement
 	public RationaleCompletenessMetric getConArgumentDocumentedForDecision() {
-		return conArgumentDocumentedForDecision;
+		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.CON);
 	}
 }

@@ -73,11 +73,19 @@ public class GeneralMetricCalculator {
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
 	}
 
+	/**
+	 * @return map with number of comments as keys and elements (Jira issues) that
+	 *         have the respective number of comments as map values.
+	 */
 	@XmlElement
 	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsMap() {
 		return commentMetricCalculator.getNumberOfCommentsPerIssue();
 	}
 
+	/**
+	 * @return map with number of commits as keys and elements (Jira issues) that
+	 *         have the respective number of commits linked as map values.
+	 */
 	@XmlElement
 	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsMap() {
 		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
@@ -86,9 +94,13 @@ public class GeneralMetricCalculator {
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
+	/**
+	 * @return map with decision knowledge types (issue, decision, alternative,
+	 *         argument) as keys and respective decision knowledge elements as map
+	 *         values.
+	 */
 	@XmlElement
 	public Map<String, List<KnowledgeElement>> getDistributionOfKnowledgeTypes() {
-		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
 		Map<String, List<KnowledgeElement>> distributionMap = new HashMap<>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			for (KnowledgeElement element : graph.getElements(type)) {
@@ -102,9 +114,12 @@ public class GeneralMetricCalculator {
 		return distributionMap;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	@XmlElement
 	public Map<String, List<KnowledgeElement>> getReqAndClassSummary() {
-		LOGGER.info("GeneralMetricsCalculator getReqAndClassSummary");
 		Map<String, List<KnowledgeElement>> summaryMap = new HashMap<>();
 		List<KnowledgeElement> requirements = new ArrayList<>();
 		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
@@ -121,7 +136,6 @@ public class GeneralMetricCalculator {
 
 	@XmlElement
 	public Map<String, List<KnowledgeElement>> getElementsFromDifferentOrigins() {
-		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
 		Map<String, List<KnowledgeElement>> originMap = new HashMap<>();
 
 		List<KnowledgeElement> elementsInJiraIssues = new ArrayList<>();
@@ -162,7 +176,6 @@ public class GeneralMetricCalculator {
 
 	@XmlElement
 	public Map<String, List<KnowledgeElement>> getDefinitionOfDoneCheckResults() {
-		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
 		Map<String, List<KnowledgeElement>> resultMap = new HashMap<>();
 
 		List<KnowledgeElement> elementsWithDoDCheckSuccess = new ArrayList<>();
