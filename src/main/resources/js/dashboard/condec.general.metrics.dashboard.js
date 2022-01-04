@@ -6,6 +6,7 @@
  */
 define('dashboard/generalMetrics', [], function() {
 	var dashboardAPI;
+	const viewId = "general-metrics";
 
 	var ConDecGeneralMetricsDashboardItem = function(API) {
 		dashboardAPI = API;
@@ -18,7 +19,7 @@ define('dashboard/generalMetrics', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.render = function(context, preferences) {
-		conDecDashboard.initDashboard(this, "general-metrics", dashboardAPI, preferences);
+		conDecDashboard.initDashboard(this, viewId, dashboardAPI, preferences);
 	};
 
 	/**
@@ -28,7 +29,7 @@ define('dashboard/generalMetrics', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.renderEdit = function(context, preferences) {
-		conDecDashboard.initConfiguration("general-metrics", dashboardAPI, preferences);
+		conDecDashboard.initConfiguration(viewId, dashboardAPI, preferences);
 	};
 
 	/**
@@ -43,7 +44,7 @@ define('dashboard/generalMetrics', [], function() {
 		delete filterSettings.definitionOfDone;
 		let self = this;
 		conDecDashboardAPI.getGeneralMetrics(filterSettings, function(error, result) {
-			conDecDashboard.processData(error, result, self, "general-metrics", dashboardAPI);
+			conDecDashboard.processData(error, result, self, viewId, dashboardAPI);
 		});
 	};
 
@@ -55,55 +56,23 @@ define('dashboard/generalMetrics', [], function() {
 	 * @param generalMetrics the data returned from the API-call
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
-		/* define color palette */
 		var colorPalette = ['#EE6666', '#91CC75'];
 
-		/* render box-plots */
-		conDecDashboard.createBoxPlot("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue",
-			generalMetrics.numberOfCommentsMap);
-		conDecDashboard.createBoxPlot("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue",
-			generalMetrics.numberOfCommitsMap);
-		/* render pie-charts */
-		createPieChart(generalMetrics.requirementsAndCodeFiles,
-			"piechartRich-ReqCodeSummary",
-			"#Requirements and Code Files");
-		createPieChart(generalMetrics.elementsFromDifferentOrigins,
-			"piechartRich-DecSources",
-			"#Rationale Elements per Origin");
-		createSimplePieChart(generalMetrics.numberOfRelevantAndIrrelevantComments,
-			"piechartInteger-RelevantSentences",
-			"Comments in Jira Issues relevant to Decision Knowledge");
-		createPieChart(generalMetrics.numberOfDecisionKnowledgeElements,
-			"piechartRich-KnowledgeTypeDistribution",
-			"#Decision Knowledge Elements");
-		createPieChart(generalMetrics.definitionOfDoneCheckResults,
-			"piechartRich-DoDCheck",
-			"Definition of Done Check", colorPalette);
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue",
+			generalMetrics.numberOfCommentsMap, viewId);
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue",
+			generalMetrics.numberOfCommitsMap, viewId);
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFiles,
+			"piechartRich-ReqCodeSummary", "#Requirements and Code Files", viewId);
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.elementsFromDifferentOrigins,
+			"piechartRich-DecSources", "#Rationale Elements per Origin", viewId);
+		conDecDashboard.createSimplePieChart(generalMetrics.numberOfRelevantAndIrrelevantComments,
+			"piechartInteger-RelevantSentences", "#Comments in Jira Issues relevant to Decision Knowledge");
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.numberOfDecisionKnowledgeElements,
+			"piechartRich-KnowledgeTypeDistribution", "#Decision Knowledge Elements", viewId);
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.definitionOfDoneCheckResults,
+			"piechartRich-DoDCheck", "Definition of Done Check", viewId, colorPalette);
 	};
-
-	function createSimplePieChart(metric, divId, title, colorPalette) {
-		var data = [];
-
-		for (const [category, number] of metric.entries()) {
-			entry = { "name": category, "value": number }
-			data.push(entry);
-		}
-
-		var pieChart = conDecDashboard.createPieChart(divId, title, Array.from(metric.keys()), data, colorPalette);
-	}
-
-	function createPieChart(metric, divId, title, colorPalette) {
-		var data = [];
-
-		for (const [category, elements] of metric.entries()) {
-			entry = { "name": category, "value": elements.length, "elements": elements }
-			data.push(entry);
-		}
-
-		console.log(metric.keys());
-
-		var pieChart = conDecDashboard.createPieChart(divId, title, Array.from(metric.keys()), data, colorPalette);
-	}
 
 	return ConDecGeneralMetricsDashboardItem;
 });

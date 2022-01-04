@@ -204,7 +204,7 @@
 				// reset cashed settings of former project
 				conDecAPI.knowledgeTypes = [];
 				conDecGroupingAPI.decisionGroups = [];
-				
+
 				conDecFiltering.fillDropdownMenus(viewIdentifier);
 				conDecFiltering.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, projectKey);
 			}
@@ -277,29 +277,79 @@
 		initializeChartForSources(divId, title, subtitle, dataMap);
 	};
 
-	ConDecDashboard.prototype.createPieChart = function(divId, title, keys, data, colorPalette) {
-		var domElement = document.getElementById(divId);
-		var chart = echarts.init(domElement);
-		chart.setOption(getOptionsForPieChart("", title, keys, data, colorPalette));
-		chart.on('click', function(param) {
-			if (typeof param.seriesIndex != 'undefined' && param.data.elements) {
-				var navigationDialog = document.getElementById("navigate-dialog");
-				AJS.dialog2(navigationDialog).show();
-
-				var dialogContent = document.getElementById("navigate-dialog-content");
-				dialogContent.innerHTML = "";
-				for (element of param.data.elements) {
-					var link = document.createElement("a");
-					link.classList = "navigationLink";
-					link.innerText = element.type + ": " + element.summary;
-					link.title = element.key;
-					link.href = element.url;
-					link.target = "_blank";
+	ConDecDashboard.prototype.createPieChartWithListOfElements = function(dataMap, divId, title, viewIdentifier, colorPalette) {
+		var pieChart = this.createPieChartWithList(dataMap, divId, title, colorPalette);
+		pieChart.on('click', function(param) {
+			if (typeof param.seriesIndex != 'undefined' && param.data.list) {
+				var dialogContent = conDecDashboard.initDialog(viewIdentifier);
+				for (element of param.data.list) {
+					var link = createLinkToElement(element);
 					dialogContent.appendChild(link);
 				}
 			}
 		});
+	};
+
+	ConDecDashboard.prototype.initDialog = function(viewIdentifier) {
+		var navigationDialog = document.getElementById("navigate-dialog-" + viewIdentifier);
+		AJS.dialog2(navigationDialog).show();
+		var dialogContent = document.getElementById("navigate-dialog-content-" + viewIdentifier);
+		dialogContent.innerHTML = "";
+		return dialogContent;
+	}
+
+	function createLinkToElement(element) {
+		var link = document.createElement("a");
+		link.classList = "navigationLink";
+		link.innerText = element.type + ": " + element.summary;
+		link.title = element.key;
+		link.href = element.url;
+		link.target = "_blank";
+		return link;
+	}
+
+	ConDecDashboard.prototype.createPieChartWithList = function(dataMap, divId, title, colorPalette) {
+		var data = [];
+		for (const [category, list] of dataMap.entries()) {
+			entry = { "name": category, "value": list.length, "list": list }
+			data.push(entry);
+		}
+		return createPieChart(divId, title, Array.from(dataMap.keys()), data, colorPalette);
+	};
+
+	ConDecDashboard.prototype.createSimplePieChart = function(dataMap, divId, title, colorPalette) {
+		var data = [];
+		for (const [category, value] of dataMap.entries()) {
+			entry = { "name": category, "value": value }
+			data.push(entry);
+		}
+		return createPieChart(divId, title, Array.from(dataMap.keys()), data, colorPalette);
+	};
+
+	function createPieChart(divId, title, keys, data, colorPalette) {
+		var domElement = document.getElementById(divId);
+		var chart = echarts.init(domElement);
+		chart.setOption(getOptionsForPieChart("", title, keys, data, colorPalette));
 		return chart;
+	}
+
+	ConDecDashboard.prototype.createBoxPlotWithListOfElements = function(divId, title, dataMap, viewIdentifier) {
+		var boxplot = this.createBoxPlot(divId, title, dataMap);
+		boxplot.on('click', function(param) {
+			if (typeof param.seriesIndex != 'undefined') {
+				var dialogContent = conDecDashboard.initDialog(viewIdentifier);
+				var selectedValue = param.value[1];
+				var elementsForValue = dataMap.get(String(selectedValue));
+				if (!elementsForValue) {
+					return;
+				}
+				for (element of elementsForValue) {
+					var link = createLinkToElement(element);
+					dialogContent.appendChild(link);
+				}
+			}
+		});
+		return boxplot;
 	};
 
 	ConDecDashboard.prototype.createBoxPlot = function(divId, title, dataMap) {
@@ -307,41 +357,15 @@
 		var boxplot = echarts.init(domElement);
 
 		var values = [];
-
 		for (const [number, elements] of dataMap.entries()) {
 			for (element of elements) {
-				values.push(Number(number));
+				values.push(number);
 			}
 		}
-
-		console.log(values);
+		values = values.map(Number);
 
 		var data = echarts.dataTool.prepareBoxplotData(new Array(values));
-		console.log(data);
 		boxplot.setOption(getOptionsForBoxplot("", title, "", data));
-		boxplot.on('click', function(param) {
-			if (typeof param.seriesIndex != 'undefined') {
-				var navigationDialog = document.getElementById("navigate-dialog");
-				AJS.dialog2(navigationDialog).show();
-
-				var dialogContent = document.getElementById("navigate-dialog-content");
-				dialogContent.innerHTML = "";
-				var selectedValue = param.value[1];
-				var elementsForValue = dataMap.get(String(selectedValue));
-				if (!elementsForValue) {
-					return;
-				}
-				for (element of elementsForValue) {
-					var link = document.createElement("a");
-					link.classList = "navigationLink";
-					link.innerText = element.type + ": " + element.summary;
-					link.title = element.key;
-					link.href = element.url;
-					link.target = "_blank";
-					dialogContent.appendChild(link);
-				}
-			}
-		});
 		return boxplot;
 	};
 

@@ -7,6 +7,7 @@
 define('dashboard/branches', [], function() {
 	var dashboardAPI;
 	var issueBranchKeyRegex = null;
+	const viewId = "branch";
 
 	var ConDecBranchesDashboardItem = function(API) {
 		dashboardAPI = API;
@@ -19,7 +20,7 @@ define('dashboard/branches', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.render = function(context, preferences) {
-		conDecDashboard.initDashboard(this, "branch", dashboardAPI, preferences);
+		conDecDashboard.initDashboard(this, viewId, dashboardAPI, preferences);
 	};
 
 	/**
@@ -29,7 +30,7 @@ define('dashboard/branches', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecBranchesDashboardItem.prototype.renderEdit = function(context, preferences) {
-		conDecDashboard.initConfiguration("branch", dashboardAPI, preferences);
+		conDecDashboard.initConfiguration(viewId, dashboardAPI, preferences);
 	};
 
 	/**
@@ -45,10 +46,10 @@ define('dashboard/branches', [], function() {
 		conDecAPI.projectKey = filterSettings.projectKey;
 		conDecGitAPI.getDiffForProject(filterSettings.projectKey)
 			.then(branches => {
-				conDecDashboard.processData(null, branches, conDecBranchesDashboardItem, "branch",
+				conDecDashboard.processData(null, branches, conDecBranchesDashboardItem, viewId,
 					dashboardAPI, filterSettings);
 			}).catch(error => {
-				conDecDashboard.processData(error, null, conDecBranchesDashboardItem, "branch",
+				conDecDashboard.processData(error, null, conDecBranchesDashboardItem, viewId,
 					dashboardAPI, filterSettings);
 			});
 	};
@@ -117,10 +118,10 @@ define('dashboard/branches', [], function() {
 		var consInBranches = new Map();
 
 		for (branch of branches) {
-			addValueToMap(statusesForBranchesData, branch.status, branch);			
+			addValueToMap(statusesForBranchesData, branch.status, branch);
 			for (problem of branch.qualityProblems) {
 				addValueToMap(problemTypesOccurrence, problem.explanation, branch);
-			}			
+			}
 			addValueToMap(issuesInBranches, branch.numIssues, branch);
 			addValueToMap(decisionsInBranches, branch.numDecisions, branch);
 			addValueToMap(alternativesInBranches, branch.numAlternatives, branch);
@@ -129,11 +130,11 @@ define('dashboard/branches', [], function() {
 		}
 
 		/* render pie-charts */
-		createPieChart(statusesForBranchesData, "piechartRich-QualityStatusForBranches",
+		createPieChartWithListOfBranches(statusesForBranchesData, "piechartRich-QualityStatusForBranches",
 			"How many branches document rationale well?");
-		createPieChart(problemTypesOccurrence, "piechartRich-ProblemTypesInBranches",
+		createPieChartWithListOfBranches(problemTypesOccurrence, "piechartRich-ProblemTypesInBranches",
 			"Which documentation mistakes are most common?");
-		createPieChart(branchesPerIssue, "piechartRich-BranchesPerIssue",
+		createPieChartWithListOfBranches(branchesPerIssue, "piechartRich-BranchesPerIssue",
 			"How many branches do Jira tasks have?");
 
 		/* render box-plots */
@@ -148,11 +149,7 @@ define('dashboard/branches', [], function() {
 		var boxplot = conDecDashboard.createBoxPlot(divId, title, dataMap);
 		boxplot.on('click', function(param) {
 			if (typeof param.seriesIndex != 'undefined') {
-				var navigationDialog = document.getElementById("navigate-dialog");
-				AJS.dialog2(navigationDialog).show();
-
-				var dialogContent = document.getElementById("navigate-dialog-content");
-				dialogContent.innerHTML = "";
+				var dialogContent = conDecDashboard.initDialog(viewId);
 				console.log(param);
 				var selectedValues = param.data;
 				console.log(selectedValues);
@@ -205,25 +202,12 @@ define('dashboard/branches', [], function() {
 		return "Incorrect";
 	}
 
-	function createPieChart(metric, divId, title, colorPalette) {
-		var data = [];
-
-		for (const [category, branches] of metric.entries()) {
-			entry = { "name": category, "value": branches.length, "branches": branches }
-			data.push(entry);
-		}
-
-		console.log(metric.keys());
-
-		var pieChart = conDecDashboard.createPieChart(divId, title, Array.from(metric.keys()), data, colorPalette);
+	function createPieChartWithListOfBranches(metric, divId, title, colorPalette) {
+		var pieChart = conDecDashboard.createPieChartWithList(metric, divId, title, colorPalette);
 		pieChart.on('click', function(param) {
-			if (typeof param.seriesIndex != 'undefined' && param.data.branches) {
-				var navigationDialog = document.getElementById("navigate-dialog");
-				AJS.dialog2(navigationDialog).show();
-
-				var dialogContent = document.getElementById("navigate-dialog-content");
-				dialogContent.innerHTML = "";
-				for (branch of param.data.branches) {
+			if (typeof param.seriesIndex != 'undefined' && param.data.list) {
+				var dialogContent = conDecDashboard.initDialog(viewId);
+				for (branch of param.data.list) {
 					var link = createLinkToGitView(branch);
 					dialogContent.appendChild(link);
 				}

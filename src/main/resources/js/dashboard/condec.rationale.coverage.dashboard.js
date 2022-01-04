@@ -6,6 +6,7 @@
  */
 define('dashboard/rationaleCoverage', [], function() {
 	var dashboardAPI;
+	const viewId = "rationale-coverage";
 
 	var ConDecRationaleCoverageDashboardItem = function(API) {
 		dashboardAPI = API;
@@ -19,7 +20,7 @@ define('dashboard/rationaleCoverage', [], function() {
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.render = function(context, preferences) {
 		preferences.definitionOfDone = {};
-		conDecDashboard.initDashboard(this, "rationale-coverage", dashboardAPI, preferences);
+		conDecDashboard.initDashboard(this, viewId, dashboardAPI, preferences);
 	};
 
 	/**
@@ -29,7 +30,7 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param filterSettings The user filterSettings saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderEdit = function(context, filterSettings) {
-		conDecDashboard.initConfiguration("rationale-coverage", dashboardAPI, filterSettings);
+		conDecDashboard.initConfiguration(viewId, dashboardAPI, filterSettings);
 	};
 
 	/**
@@ -43,7 +44,7 @@ define('dashboard/rationaleCoverage', [], function() {
 	ConDecRationaleCoverageDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		let self = this;
 		conDecDashboardAPI.getRationaleCoverage(filterSettings, function(error, result) {
-			conDecDashboard.processData(error, result, self, "rationale-coverage", dashboardAPI);
+			conDecDashboard.processData(error, result, self, viewId, dashboardAPI);
 		});
 	};
 
@@ -55,10 +56,10 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(metrics) {
-		conDecDashboard.createBoxPlot("boxplot-IssuesPerJiraIssue",
-			"#Issues per element", metrics.issueCoverageMetric);
-		conDecDashboard.createBoxPlot("boxplot-DecisionsPerJiraIssue",
-			"#Decisions per element", metrics.decisionCoverageMetric);
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-IssuesPerJiraIssue",
+			"#Issues per element", metrics.issueCoverageMetric, viewId);
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-DecisionsPerJiraIssue",
+			"#Decisions per element", metrics.decisionCoverageMetric, viewId);
 
 		createPieChart(metrics.issueCoverageMetric, "piechartRich-IssueDocumentedForSelectedJiraIssue",
 			"For how many elements is an issue documented?", "Issue", metrics.minimumRequiredCoverage);
@@ -82,19 +83,15 @@ define('dashboard/rationaleCoverage', [], function() {
 			}
 		}
 
-		var keys = [
-			"More than or equal to " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
-			"Less than " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
-			"No " + targetElementType + "s reachable"
-		];
+		var coverageMap = new Map();
+		coverageMap.set("More than or equal to " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
+			elementsWithHighCoverage);
+		coverageMap.set("Less than " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
+			elementsWithLowCoverage);
+		coverageMap.set("No " + targetElementType + "s reachable",
+			elementsWithNoCoverage);
 
-		var data = [
-			{ "name": keys[0], "value": elementsWithHighCoverage.length, "elements": elementsWithHighCoverage },
-			{ "name": keys[1], "value": elementsWithLowCoverage.length, "elements": elementsWithLowCoverage },
-			{ "name": keys[2], "value": elementsWithNoCoverage.length, "elements": elementsWithNoCoverage }
-		];
-
-		var pieChart = conDecDashboard.createPieChart(divId, title, keys, data, colorPalette);
+		var pieChart = conDecDashboard.createPieChartWithListOfElements(coverageMap, divId, title, viewId, colorPalette);
 	}
 
 	return ConDecRationaleCoverageDashboardItem;
