@@ -277,7 +277,7 @@ public enum KnowledgeType {
 	public static List<String> getRequirementsTypes() {
 		List<String> requirementsTypes = new ArrayList<>();
 		requirementsTypes.add("System Function");
-		requirementsTypes.add("Nonfunctional Requirement");
+		requirementsTypes.add("Non-Functional Requirement");
 		requirementsTypes.add("Persona");
 		requirementsTypes.add("Usertask");
 		requirementsTypes.add("Subtask");
