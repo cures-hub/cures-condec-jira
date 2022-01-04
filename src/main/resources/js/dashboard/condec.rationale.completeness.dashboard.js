@@ -73,22 +73,20 @@ define('dashboard/rationaleCompleteness', [], function() {
 			"piechartRich-ConArgumentDocumentedForAlternative",
 			"How many alternatives have at least one con argument documented?");
 	};
-
-	function createPieChart(metric, divId, title) {
+	
+	function createPieChart(metric, divId, title, colorPalette) {
 		/* define color palette */
 		var colorPalette = ['#EE6666', '#91CC75'];
+		var data = [];
 
-		var keys = [
-			metric.sourceElementType + " has " + metric.targetElementType,
-			metric.sourceElementType + " has no " + metric.targetElementType,
-		];
+		for (const [category, elements] of metric.entries()) {
+			entry = { "name": category, "value": elements.length, "elements": elements }
+			data.push(entry);
+		}
 
-		var data = [
-			{ "name": keys[0], "value": metric.completeElements.length, "elements": metric.completeElements },
-			{ "name": keys[1], "value": metric.incompleteElements.length, "elements": metric.incompleteElements }
-		];
+		console.log(metric.keys());
 
-		var pieChart = conDecDashboard.createPieChart(divId, title, keys, data, colorPalette);
+		var pieChart = conDecDashboard.createPieChart(divId, title, Array.from(metric.keys()), data, colorPalette);
 	}
 
 	return ConDecRationaleCompletenessDashboardItem;

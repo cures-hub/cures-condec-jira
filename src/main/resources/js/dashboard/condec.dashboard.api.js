@@ -23,8 +23,9 @@
 	 */
 	ConDecDashboardAPI.prototype.getRationaleCompleteness = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + "/rationale-completeness", filterSettings,
-			function(error, result) {
-				callback(error, result);
+			function(error, rationaleCompletenessMetrics) {
+				convertJavaMapToJavaScriptMap(rationaleCompletenessMetrics);
+				callback(error, rationaleCompletenessMetrics);
 			});
 	};
 

@@ -1,6 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -37,50 +40,56 @@ public class RationaleCompletenessCalculator {
 	 *         the {@link FilterSettings}. For example, enables to answer the
 	 *         question, how many issues are solved by a decision.
 	 */
-	private RationaleCompletenessMetric calculateCompletenessMetric(KnowledgeType sourceElementType,
+	private Map<String, List<KnowledgeElement>> calculateCompletenessMetric(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
 
 		List<KnowledgeElement> allSourceElements = filteredGraph.getElements(sourceElementType);
-		RationaleCompletenessMetric metric = new RationaleCompletenessMetric(sourceElementType, targetElementType);
+		Map<String, List<KnowledgeElement>> resultMap = new LinkedHashMap<>();
+		List<KnowledgeElement> elementsWithDoDCheckSuccess = new ArrayList<>();
+		List<KnowledgeElement> elementsWithDoDCheckFail = new ArrayList<>();
 
 		for (KnowledgeElement sourceElement : allSourceElements) {
 			if (sourceElement.hasNeighborOfType(targetElementType)) {
-				metric.addCompleteElement(sourceElement);
+				elementsWithDoDCheckSuccess.add(sourceElement);
 			} else {
-				metric.addIncompleteElement(sourceElement);
+				elementsWithDoDCheckFail.add(sourceElement);
 			}
 		}
 
-		return metric;
+		resultMap.put(sourceElementType + " has " + targetElementType, elementsWithDoDCheckSuccess);
+		resultMap.put(sourceElementType + " has no " + targetElementType, elementsWithDoDCheckFail);
+
+		return resultMap;
+
 	}
 
 	@XmlElement
-	public RationaleCompletenessMetric getIssuesSolvedByDecision() {
+	public Map<String, List<KnowledgeElement>> getIssuesSolvedByDecision() {
 		return calculateCompletenessMetric(KnowledgeType.ISSUE, KnowledgeType.DECISION);
 	}
 
 	@XmlElement
-	public RationaleCompletenessMetric getDecisionsSolvingIssues() {
+	public Map<String, List<KnowledgeElement>> getDecisionsSolvingIssues() {
 		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.ISSUE);
 	}
 
 	@XmlElement
-	public RationaleCompletenessMetric getProArgumentDocumentedForAlternative() {
+	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForAlternative() {
 		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO);
 	}
 
 	@XmlElement
-	public RationaleCompletenessMetric getConArgumentDocumentedForAlternative() {
+	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForAlternative() {
 		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.CON);
 	}
 
 	@XmlElement
-	public RationaleCompletenessMetric getProArgumentDocumentedForDecision() {
+	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForDecision() {
 		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.PRO);
 	}
 
 	@XmlElement
-	public RationaleCompletenessMetric getConArgumentDocumentedForDecision() {
+	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForDecision() {
 		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.CON);
 	}
 }

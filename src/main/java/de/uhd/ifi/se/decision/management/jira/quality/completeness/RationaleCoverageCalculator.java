@@ -58,7 +58,7 @@ public class RationaleCoverageCalculator {
 
 		for (KnowledgeElement knowledgeElement : elementsToBeCoveredWithRationale) {
 			Set<KnowledgeElement> reachableElementsOfTargetType = getReachableElementsOfType(knowledgeElement,
-					knowledgeType);
+					knowledgeType, filterSettings);
 			Integer numberOfReachableElementsOfTargetType = reachableElementsOfTargetType.size();
 
 			if (!metric.containsKey(numberOfReachableElementsOfTargetType)) {
@@ -71,7 +71,8 @@ public class RationaleCoverageCalculator {
 		return metric;
 	}
 
-	public Set<KnowledgeElement> getReachableElementsOfType(KnowledgeElement sourceElement, KnowledgeType targetType) {
+	public static Set<KnowledgeElement> getReachableElementsOfType(KnowledgeElement sourceElement,
+			KnowledgeType targetType, FilterSettings filterSettings) {
 		filterSettings.setSelectedElementObject(sourceElement);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElement> reachableElements = filteringManager.getElementsMatchingFilterSettings();

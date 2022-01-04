@@ -94,9 +94,9 @@ public class DefinitionOfDoneCheckingRest {
 					"Coverage check could not be performed because the element could not be found.")).build();
 		}
 
-		RationaleCoverageCalculator calculator = new RationaleCoverageCalculator(filterSettings);
-
 		return Response.ok()
-				.entity(calculator.getReachableElementsOfType(knowledgeElement, KnowledgeType.DECISION).size()).build();
+				.entity(RationaleCoverageCalculator
+						.getReachableElementsOfType(knowledgeElement, KnowledgeType.DECISION, filterSettings).size())
+				.build();
 	}
 }

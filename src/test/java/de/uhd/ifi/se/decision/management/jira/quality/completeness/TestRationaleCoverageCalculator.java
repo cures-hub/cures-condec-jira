@@ -18,12 +18,13 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestRationaleCoverageCalculator extends TestSetUp {
 
 	private RationaleCoverageCalculator calculator;
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setKnowledgeTypesToBeCoveredWithRationale(Set.of("Task"));
 		calculator = new RationaleCoverageCalculator(filterSettings);
 	}
@@ -46,22 +47,22 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@NonTransactional
 	public void testGetDecisionDocumentedForSelectedJiraIssue() {
 		assertEquals(1,
-				calculator
-						.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(), KnowledgeType.DECISION)
-						.size());
+				RationaleCoverageCalculator.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(),
+						KnowledgeType.DECISION, filterSettings).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetIssueDocumentedForSelectedJiraIssue() {
-		assertEquals(2, calculator
-				.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(), KnowledgeType.ISSUE).size());
+		assertEquals(2,
+				RationaleCoverageCalculator.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(),
+						KnowledgeType.ISSUE, filterSettings).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCalculateNumberOfDecisionKnowledgeElementsForKnowledgeElementNull() {
-		assertEquals(0,
-				calculator.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(), null).size());
+		assertEquals(0, RationaleCoverageCalculator
+				.getReachableElementsOfType(KnowledgeElements.getTestKnowledgeElement(), null, filterSettings).size());
 	}
 }
