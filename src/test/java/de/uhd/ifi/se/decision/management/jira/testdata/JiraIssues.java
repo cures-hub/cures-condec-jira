@@ -205,7 +205,11 @@ public class JiraIssues {
 	}
 
 	public static List<PartOfJiraIssueText> getSentencesForCommentText(String text) {
-		Issue issue = ComponentAccessor.getIssueManager().getIssueObject("TEST-30");
+		return getSentencesForCommentText(text, "TEST-30");
+	}
+
+	public static List<PartOfJiraIssueText> getSentencesForCommentText(String text, String issueKey) {
+		Issue issue = getJiraIssueByKey(issueKey);
 		ApplicationUser currentUser = JiraUsers.SYS_ADMIN.createApplicationUser();
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
