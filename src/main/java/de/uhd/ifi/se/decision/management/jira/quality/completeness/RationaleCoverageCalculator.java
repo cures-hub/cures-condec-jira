@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.quality.completeness;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
@@ -25,42 +25,50 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  */
 public class RationaleCoverageCalculator {
 	private FilterSettings filterSettings;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(RationaleCompletenessCalculator.class);
+	private Set<KnowledgeElement> elementsToBeCoveredWithRationale;
 
 	public RationaleCoverageCalculator(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
+		elementsToBeCoveredWithRationale = getElementsToBeCovered();
 	}
 
-	private RationaleCoverageMetric calculateCoverage(KnowledgeType knowledgeType) {
-		LOGGER.info("RationaleCoverageCalculator calculateKnowledgeElementsWithNeighborsOfOtherType");
+	/**
+	 * @return map with the decision coverage as keys and elements that have the
+	 *         respective coverage as map values.
+	 */
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getDecisionCoverageMetric() {
+		return calculateCoverage(KnowledgeType.DECISION);
+	}
 
-		RationaleCoverageMetric metric = new RationaleCoverageMetric(knowledgeType);
-		metric.setMinimumRequiredCoverage(filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance());
-		Set<KnowledgeElement> elementsToBeCovered = getElementsToBeCovered();
+	/**
+	 * @return map with the decision problem coverage as keys and elements that have
+	 *         the respective coverage as map values. The status in the
+	 *         {@link FilterSettings} can be used to specify whether the decision
+	 *         problems should be resolved or unresolved. Per default, both resolved
+	 *         and unresolved decision problems (issues) are included.
+	 */
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getIssueCoverageMetric() {
+		return calculateCoverage(KnowledgeType.ISSUE);
+	}
 
-		for (KnowledgeElement knowledgeElement : elementsToBeCovered) {
+	private Map<Integer, List<KnowledgeElement>> calculateCoverage(KnowledgeType knowledgeType) {
+		Map<Integer, List<KnowledgeElement>> metric = new LinkedHashMap<>();
+
+		for (KnowledgeElement knowledgeElement : elementsToBeCoveredWithRationale) {
 			Set<KnowledgeElement> reachableElementsOfTargetType = getReachableElementsOfType(knowledgeElement,
 					knowledgeType);
 			Integer numberOfReachableElementsOfTargetType = reachableElementsOfTargetType.size();
 
-			if (!metric.getCoverageMap().containsKey(numberOfReachableElementsOfTargetType)) {
-				metric.getCoverageMap().put(numberOfReachableElementsOfTargetType, new ArrayList<>());
+			if (!metric.containsKey(numberOfReachableElementsOfTargetType)) {
+				metric.put(numberOfReachableElementsOfTargetType, new ArrayList<>());
 			}
-			metric.getCoverageMap().get(numberOfReachableElementsOfTargetType).add(knowledgeElement);
+			metric.get(numberOfReachableElementsOfTargetType).add(knowledgeElement);
 		}
 		filterSettings.setSelectedElementObject(null);
 
 		return metric;
-	}
-
-	public Set<KnowledgeElement> getElementsToBeCovered() {
-		Set<String> knowledgeTypesInFilter = filterSettings.getKnowledgeTypes();
-		filterSettings.setKnowledgeTypes(filterSettings.getKnowledgeTypesToBeCoveredWithRationale());
-		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		Set<KnowledgeElement> elementsToBeCoveredWithRationale = filteringManager.getElementsMatchingFilterSettings();
-		filterSettings.setKnowledgeTypes(knowledgeTypesInFilter);
-		return elementsToBeCoveredWithRationale;
 	}
 
 	public Set<KnowledgeElement> getReachableElementsOfType(KnowledgeElement sourceElement, KnowledgeType targetType) {
@@ -71,13 +79,12 @@ public class RationaleCoverageCalculator {
 				.collect(Collectors.toSet());
 	}
 
-	@XmlElement
-	public RationaleCoverageMetric getDecisionCoverageMetric() {
-		return calculateCoverage(KnowledgeType.DECISION);
-	}
-
-	@XmlElement
-	public RationaleCoverageMetric getIssueCoverageMetric() {
-		return calculateCoverage(KnowledgeType.ISSUE);
+	private Set<KnowledgeElement> getElementsToBeCovered() {
+		Set<String> knowledgeTypesInFilter = filterSettings.getKnowledgeTypes();
+		filterSettings.setKnowledgeTypes(filterSettings.getKnowledgeTypesToBeCoveredWithRationale());
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		Set<KnowledgeElement> elementsToBeCoveredWithRationale = filteringManager.getElementsMatchingFilterSettings();
+		filterSettings.setKnowledgeTypes(knowledgeTypesInFilter);
+		return elementsToBeCoveredWithRationale;
 	}
 }

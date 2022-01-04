@@ -17,16 +17,6 @@
 				callback(error, generalMetrics);
 			});
 	};
-	
-	/**
-	 * Necessary because Java map is not recognized as a map in JavaScript.
-	 */
-	function convertJavaMapToJavaScriptMap(metrics) {
-		for ([metricName, metricMap] of Object.entries(metrics)) {
-			metrics[metricName] = new Map(Object.entries(metricMap));
-		}
-		return metrics;
-	}
 
 	/**
 	 * external references: dashboard/condec.rationale.completeness.dashboard.js
@@ -42,10 +32,22 @@
 	 * external references: dashboard/condec.rationale.coverage.dashboard.js
 	 */
 	ConDecDashboardAPI.prototype.getRationaleCoverage = function(filterSettings, callback) {
-		generalApi.postJSON(this.restPrefix + "/rationale-coverage", filterSettings, function(error, result) {
-			callback(error, result);
+		generalApi.postJSON(this.restPrefix + "/rationale-coverage", filterSettings, function(error, rationaleCoverageMetrics) {
+			convertJavaMapToJavaScriptMap(rationaleCoverageMetrics);
+			rationaleCoverageMetrics.minimumRequiredCoverage = filterSettings.definitionOfDone.minimumDecisionsWithinLinkDistance;
+			callback(error, rationaleCoverageMetrics);
 		});
 	};
+
+	/**
+	 * Necessary because Java map is not recognized as a map in JavaScript.
+	 */
+	function convertJavaMapToJavaScriptMap(metrics) {
+		for ([metricName, metricMap] of Object.entries(metrics)) {
+			metrics[metricName] = new Map(Object.entries(metricMap));
+		}
+		return metrics;
+	}
 
 	global.conDecDashboardAPI = new ConDecDashboardAPI();
 })(window);

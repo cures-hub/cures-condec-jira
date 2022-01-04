@@ -42,7 +42,6 @@ define('dashboard/rationaleCoverage', [], function() {
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		let self = this;
-		//definitionOfDone = filterSettings.definitionOfDone;
 		conDecDashboardAPI.getRationaleCoverage(filterSettings, function(error, result) {
 			conDecDashboard.processData(error, result, self, "rationale-coverage", dashboardAPI);
 		});
@@ -56,44 +55,27 @@ define('dashboard/rationaleCoverage', [], function() {
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(metrics) {
-		// necessary because Java map is not recognized as a map in JavaScript
-		metrics.issueCoverageMetric.coverageMap = new Map(Object.entries(metrics.issueCoverageMetric.coverageMap));
-		metrics.decisionCoverageMetric.coverageMap = new Map(Object.entries(metrics.decisionCoverageMetric.coverageMap));
+		conDecDashboard.createBoxPlot("boxplot-IssuesPerJiraIssue",
+			"#Issues per element", metrics.issueCoverageMetric);
+		conDecDashboard.createBoxPlot("boxplot-DecisionsPerJiraIssue",
+			"#Decisions per element", metrics.decisionCoverageMetric);
 
-
-		// render pie-charts
-		createPieChart(metrics.issueCoverageMetric,
-			"piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"For how many elements is an issue documented?");
-
-		createPieChart(metrics.decisionCoverageMetric,
-			"piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"For how many elements is a decision documented?");
-		
-
-		// render box-plots 
-		conDecDashboard.createBoxPlot(
-			"boxplot-IssuesPerJiraIssue",
-			"# Issues per element",
-			metrics.issueCoverageMetric.coverageMap);
-		conDecDashboard.createBoxPlot(
-			"boxplot-DecisionsPerJiraIssue",
-			"# Decisions per element",
-			metrics.decisionCoverageMetric.coverageMap);
-
+		createPieChart(metrics.issueCoverageMetric, "piechartRich-IssueDocumentedForSelectedJiraIssue",
+			"For how many elements is an issue documented?", "Issue", metrics.minimumRequiredCoverage);
+		createPieChart(metrics.decisionCoverageMetric, "piechartRich-DecisionDocumentedForSelectedJiraIssue",
+			"For how many elements is a decision documented?", "Decision", metrics.minimumRequiredCoverage);
 	};
 
-	function createPieChart(metric, divId, title) {
-		/* define color palette */
+	function createPieChart(metric, divId, title, targetElementType, minimumRequiredCoverage) {
 		var colorPalette = ['#91CC75', '#FAC858', '#EE6666'];
 
 		var elementsWithNoCoverage = [];
 		var elementsWithLowCoverage = [];
 		var elementsWithHighCoverage = [];
-		for (const [coverage, elements] of metric.coverageMap.entries()) {
+		for (const [coverage, elements] of metric.entries()) {
 			if (coverage == 0) {
 				elementsWithNoCoverage = elementsWithNoCoverage.concat(elements);
-			} else if (coverage < metric.minimumRequiredCoverage) {
+			} else if (coverage < minimumRequiredCoverage) {
 				elementsWithLowCoverage = elementsWithLowCoverage.concat(elements);
 			} else {
 				elementsWithHighCoverage = elementsWithHighCoverage.concat(elements);
@@ -101,9 +83,9 @@ define('dashboard/rationaleCoverage', [], function() {
 		}
 
 		var keys = [
-			"More than or equal to " + metric.minimumRequiredCoverage + " " + metric.targetElementType + "s reachable",
-			"Less than " + metric.minimumRequiredCoverage + " " + metric.targetElementType + "s reachable",
-			"No " + metric.targetElementType + "s reachable"
+			"More than or equal to " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
+			"Less than " + minimumRequiredCoverage + " " + targetElementType + "s reachable",
+			"No " + targetElementType + "s reachable"
 		];
 
 		var data = [
