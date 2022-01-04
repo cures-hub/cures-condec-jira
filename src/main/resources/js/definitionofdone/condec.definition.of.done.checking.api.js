@@ -21,7 +21,7 @@
 	 * nudging/condec.prompts.js, condec.quality.check.js
 	 */
 	ConDecDoDCheckingAPI.prototype.getDefinitionOfDone = function(projectKey, callback) {
-		conDecAPI.getFilterSettings(conDecAPI.getProjectKey(), "", (filterSettings) => {
+		conDecAPI.getFilterSettings(projectKey, "", (filterSettings) => {
 			callback(filterSettings["definitionOfDone"]);
 		});
 	};

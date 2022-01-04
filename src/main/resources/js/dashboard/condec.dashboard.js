@@ -201,6 +201,10 @@
 			var projectKey = document.getElementById("project-dropdown-" + viewIdentifier).value;
 			if (projectKey) {
 				conDecAPI.projectKey = projectKey;
+				// reset cashed settings of former project
+				conDecAPI.knowledgeTypes = [];
+				conDecGroupingAPI.decisionGroups = [];
+				
 				conDecFiltering.fillDropdownMenus(viewIdentifier);
 				conDecFiltering.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, projectKey);
 			}

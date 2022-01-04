@@ -41,7 +41,7 @@
 		}
 
 		// quality highlighting	
-		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.getProjectKey())
+		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.projectKey);
 
 		// change impact highlighting	
 		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
@@ -508,7 +508,7 @@
 		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
 			var minDecisionCoverageInput = document.getElementById("minimum-number-of-decisions-input-" + viewIdentifier);
 			var maxLinkDistanceInput = document.getElementById("link-distance-to-decision-number-input-" + viewIdentifier);
-			if (minDecisionCoverageInput !== null && maxLinkDistanceInput !== null) {
+			if (minDecisionCoverageInput && maxLinkDistanceInput) {
 				minDecisionCoverageInput.value = definitionOfDone.minimumDecisionsWithinLinkDistance;
 				maxLinkDistanceInput.value = definitionOfDone.maximumLinkDistanceToDecisions;
 			}
