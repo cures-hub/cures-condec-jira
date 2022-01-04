@@ -13,17 +13,20 @@
 	ConDecDashboardAPI.prototype.getGeneralMetrics = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + "/general-metrics", filterSettings,
 			function(error, generalMetrics) {
-				// necessary because Java map is not recognized as a map in JavaScript
-				generalMetrics.numberOfCommentsMap = new Map(Object.entries(generalMetrics.numberOfCommentsMap));
-				generalMetrics.numberOfCommitsMap = new Map(Object.entries(generalMetrics.numberOfCommitsMap));
-				generalMetrics.distributionOfKnowledgeTypes = new Map(Object.entries(generalMetrics.distributionOfKnowledgeTypes));
-				generalMetrics.elementsFromDifferentOrigins = new Map(Object.entries(generalMetrics.elementsFromDifferentOrigins));
-				generalMetrics.definitionOfDoneCheckResults = new Map(Object.entries(generalMetrics.definitionOfDoneCheckResults));
-				generalMetrics.reqAndClassSummary = new Map(Object.entries(generalMetrics.reqAndClassSummary));	
-				generalMetrics.numberOfRelevantComments = new Map(Object.entries(generalMetrics.numberOfRelevantComments));			
+				convertJavaMapToJavaScriptMap(generalMetrics);
 				callback(error, generalMetrics);
 			});
 	};
+	
+	/**
+	 * Necessary because Java map is not recognized as a map in JavaScript.
+	 */
+	function convertJavaMapToJavaScriptMap(metrics) {
+		for ([metricName, metricMap] of Object.entries(metrics)) {
+			metrics[metricName] = new Map(Object.entries(metricMap));
+		}
+		return metrics;
+	}
 
 	/**
 	 * external references: dashboard/condec.rationale.completeness.dashboard.js

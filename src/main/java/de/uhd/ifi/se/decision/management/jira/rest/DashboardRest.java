@@ -37,9 +37,7 @@ public class DashboardRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected"))
 					.build();
 		}
-		GeneralMetricCalculator generalMetricsCalculator = new GeneralMetricCalculator(filterSettings);
-
-		return Response.ok(generalMetricsCalculator).build();
+		return Response.ok(new GeneralMetricCalculator(filterSettings)).build();
 	}
 
 	/**

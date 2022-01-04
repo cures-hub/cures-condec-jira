@@ -60,6 +60,17 @@ define('dashboard/rationaleCoverage', [], function() {
 		metrics.issueCoverageMetric.coverageMap = new Map(Object.entries(metrics.issueCoverageMetric.coverageMap));
 		metrics.decisionCoverageMetric.coverageMap = new Map(Object.entries(metrics.decisionCoverageMetric.coverageMap));
 
+
+		// render pie-charts
+		createPieChart(metrics.issueCoverageMetric,
+			"piechartRich-IssueDocumentedForSelectedJiraIssue",
+			"For how many elements is an issue documented?");
+
+		createPieChart(metrics.decisionCoverageMetric,
+			"piechartRich-DecisionDocumentedForSelectedJiraIssue",
+			"For how many elements is a decision documented?");
+		
+
 		// render box-plots 
 		conDecDashboard.createBoxPlot(
 			"boxplot-IssuesPerJiraIssue",
@@ -70,14 +81,6 @@ define('dashboard/rationaleCoverage', [], function() {
 			"# Decisions per element",
 			metrics.decisionCoverageMetric.coverageMap);
 
-		// render pie-charts
-		createPieChart(metrics.issueCoverageMetric,
-			"piechartRich-IssueDocumentedForSelectedJiraIssue",
-			"For how many elements is an issue documented?");
-
-		createPieChart(metrics.decisionCoverageMetric,
-			"piechartRich-DecisionDocumentedForSelectedJiraIssue",
-			"For how many elements is a decision documented?");
 	};
 
 	function createPieChart(metric, divId, title) {
@@ -87,10 +90,10 @@ define('dashboard/rationaleCoverage', [], function() {
 		var elementsWithNoCoverage = [];
 		var elementsWithLowCoverage = [];
 		var elementsWithHighCoverage = [];
-		for (const [numberOfReachableElements, elements] of metric.coverageMap.entries()) {
-			if (numberOfReachableElements == 0) {
+		for (const [coverage, elements] of metric.coverageMap.entries()) {
+			if (coverage == 0) {
 				elementsWithNoCoverage = elementsWithNoCoverage.concat(elements);
-			} else if (numberOfReachableElements < metric.minimumRequiredCoverage) {
+			} else if (coverage < metric.minimumRequiredCoverage) {
 				elementsWithLowCoverage = elementsWithLowCoverage.concat(elements);
 			} else {
 				elementsWithHighCoverage = elementsWithHighCoverage.concat(elements);

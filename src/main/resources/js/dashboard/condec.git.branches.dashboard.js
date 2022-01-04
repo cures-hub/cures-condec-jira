@@ -89,17 +89,6 @@ define('dashboard/branches', [], function() {
 		statusesForBranchesData.set("Incorrect", []);
 		statusesForBranchesData.set("Good", []);
 		statusesForBranchesData.set("No rationale", []);
-		for (branch of branches) {
-			var statusOfBranch = branch.status;
-			addValueToMap(statusesForBranchesData, statusOfBranch, branch);
-		}
-
-		var problemTypesOccurrence = new Map();
-		for (branch of branches) {
-			for (problem of branch.qualityProblems) {
-				addValueToMap(problemTypesOccurrence, problem.explanation, branch);
-			}
-		}
 
 		var branchesPerIssue = new Map();
 		for (branch of branches) {
@@ -120,6 +109,7 @@ define('dashboard/branches', [], function() {
 			addValueToMap(branchesPerIssue, key, branch);
 		}
 
+		var problemTypesOccurrence = new Map();
 		var issuesInBranches = new Map();
 		var decisionsInBranches = new Map();
 		var alternativesInBranches = new Map();
@@ -127,6 +117,10 @@ define('dashboard/branches', [], function() {
 		var consInBranches = new Map();
 
 		for (branch of branches) {
+			addValueToMap(statusesForBranchesData, branch.status, branch);			
+			for (problem of branch.qualityProblems) {
+				addValueToMap(problemTypesOccurrence, problem.explanation, branch);
+			}			
 			addValueToMap(issuesInBranches, branch.numIssues, branch);
 			addValueToMap(decisionsInBranches, branch.numDecisions, branch);
 			addValueToMap(alternativesInBranches, branch.numAlternatives, branch);

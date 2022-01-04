@@ -8,7 +8,6 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +15,7 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -23,30 +23,44 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
 
+/**
+ * Calculates the following metrics on the {@link KnowledgeGraph} data structure
+ * after it was filtered with the given {@link FilterSettings}:
+ * <ul>
+ * <li>Number of comments per Jira issue, see
+ * {@link CharacterizedJiraIssue}</li>
+ * <li>Number of commits per Jira issue, see {@link CharacterizedJiraIssue} and
+ * {@link GitClient}</li>
+ * <li>Number of code files and requirements in the project</li>
+ * <li>Number of rationale elements per
+ * {@link Origin}/{@link DocumentationLocation}</li>
+ * <li>Number of comments with and without decision knowledge</li>
+ * <li>Number of decision knowledge elements per decision knowledge type</li>
+ * <li>Number of knowledge elements fulfilling and violating the
+ * {@link DefinitionOfDone}</li>
+ * </ul>
+ * 
+ * @issue How to model the results of the metric calculation?
+ * @decision We use maps that have categories as keys and the elements that fall
+ *           into the category as values to model the results of the metric
+ *           calculation!
+ * @pro Easy and similar representation for all metrics, similar treatment of
+ *      metrics in UI.
+ * @con Maps are not very "speaking". It is not clear what the categories are.
+ * @alternative We could use custom classes to represent the metrics.
+ * @con Needs individual treatment of metrics in the UI.
+ */
 public class GeneralMetricCalculator {
 
-	@JsonIgnore
 	private FilterSettings filterSettings;
-	@JsonIgnore
 	private List<Issue> jiraIssues;
-	@JsonIgnore
 	private KnowledgeGraph graph;
-	@JsonIgnore
 	private Set<KnowledgeElement> knowledgeElements;
-	@JsonIgnore
 	private CommentMetricCalculator commentMetricCalculator;
 
-	private Map<Integer, List<KnowledgeElement>> numberOfCommentsMap;
-	private Map<Integer, List<KnowledgeElement>> numberOfCommitsMap;
-	private Map<String, List<KnowledgeElement>> distributionOfKnowledgeTypes;
-	private Map<String, List<KnowledgeElement>> reqAndClassSummary;
-	private Map<String, List<KnowledgeElement>> elementsFromDifferentOrigins;
-	private Map<String, Integer> numberOfRelevantComments;
-	private Map<String, List<KnowledgeElement>> definitionOfDoneCheckResults;
-
-	@JsonIgnore
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
 
 	public GeneralMetricCalculator(FilterSettings filterSettings) {
@@ -57,24 +71,23 @@ public class GeneralMetricCalculator {
 		this.jiraIssues = KnowledgePersistenceManager.getInstance(filterSettings.getProjectKey()).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
-
-		this.numberOfCommentsMap = commentMetricCalculator.getNumberOfCommentsPerIssue();
-		this.distributionOfKnowledgeTypes = calculateDistributionOfKnowledgeTypes();
-		this.reqAndClassSummary = calculateReqAndClassSummary();
-		this.elementsFromDifferentOrigins = calculateElementsFromDifferentOrigins();
-		this.numberOfRelevantComments = calculateNumberOfRelevantComments();
-		this.numberOfCommitsMap = calculateNumberOfCommits();
-		this.definitionOfDoneCheckResults = calculateDefinitionOfDoneCheckResults();
 	}
 
-	private Map<Integer, List<KnowledgeElement>> calculateNumberOfCommits() {
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsMap() {
+		return commentMetricCalculator.getNumberOfCommentsPerIssue();
+	}
+
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsMap() {
 		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
 			return new HashMap<>();
 		}
 		return commentMetricCalculator.getNumberOfCommitsPerIssue();
 	}
 
-	private Map<String, List<KnowledgeElement>> calculateDistributionOfKnowledgeTypes() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getDistributionOfKnowledgeTypes() {
 		LOGGER.info("GeneralMetricsCalculator getDistributionOfKnowledgeTypes");
 		Map<String, List<KnowledgeElement>> distributionMap = new HashMap<>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
@@ -89,7 +102,8 @@ public class GeneralMetricCalculator {
 		return distributionMap;
 	}
 
-	private Map<String, List<KnowledgeElement>> calculateReqAndClassSummary() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getReqAndClassSummary() {
 		LOGGER.info("GeneralMetricsCalculator getReqAndClassSummary");
 		Map<String, List<KnowledgeElement>> summaryMap = new HashMap<>();
 		List<KnowledgeElement> requirements = new ArrayList<>();
@@ -105,7 +119,8 @@ public class GeneralMetricCalculator {
 		return summaryMap;
 	}
 
-	private Map<String, List<KnowledgeElement>> calculateElementsFromDifferentOrigins() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getElementsFromDifferentOrigins() {
 		LOGGER.info("GeneralMetricCalculator getElementsFromDifferentOrigins");
 		Map<String, List<KnowledgeElement>> originMap = new HashMap<>();
 
@@ -140,11 +155,13 @@ public class GeneralMetricCalculator {
 		return originMap;
 	}
 
-	private Map<String, Integer> calculateNumberOfRelevantComments() {
+	@XmlElement
+	public Map<String, Integer> getNumberOfRelevantComments() {
 		return commentMetricCalculator.getNumberOfRelevantComments();
 	}
 
-	private Map<String, List<KnowledgeElement>> calculateDefinitionOfDoneCheckResults() {
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getDefinitionOfDoneCheckResults() {
 		LOGGER.info("GeneralMetricCalculator calculateDefinitionOfDoneCheckResults");
 		Map<String, List<KnowledgeElement>> resultMap = new HashMap<>();
 
@@ -161,40 +178,5 @@ public class GeneralMetricCalculator {
 		resultMap.put("Definition of Done Violated", elementsWithDoDCheckFail);
 
 		return resultMap;
-	}
-
-	@XmlElement
-	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsMap() {
-		return numberOfCommentsMap;
-	}
-
-	@XmlElement
-	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsMap() {
-		return numberOfCommitsMap;
-	}
-
-	@XmlElement
-	public Map<String, List<KnowledgeElement>> getDistributionOfKnowledgeTypes() {
-		return distributionOfKnowledgeTypes;
-	}
-
-	@XmlElement
-	public Map<String, List<KnowledgeElement>> getReqAndClassSummary() {
-		return reqAndClassSummary;
-	}
-
-	@XmlElement
-	public Map<String, List<KnowledgeElement>> getElementsFromDifferentOrigins() {
-		return elementsFromDifferentOrigins;
-	}
-
-	@XmlElement
-	public Map<String, Integer> getNumberOfRelevantComments() {
-		return numberOfRelevantComments;
-	}
-
-	@XmlElement
-	public Map<String, List<KnowledgeElement>> getDefinitionOfDoneCheckResults() {
-		return definitionOfDoneCheckResults;
 	}
 }
