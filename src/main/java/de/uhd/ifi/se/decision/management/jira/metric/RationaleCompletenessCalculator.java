@@ -17,8 +17,16 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Calculates metrics for the intra-rationale completeness: e.g., are there
- * arguments for the decisions?
+ * Calculates metrics for the intra-rationale completeness. This enables to
+ * answer questions such as "Are there arguments for the decisions?" or "How
+ * many issues (=decision problems) are solved by a decision?".
+ * 
+ * @see #getIssuesSolvedByDecisionMap()
+ * @see #getDecisionsSolvingIssuesMap()
+ * @see #getProArgumentDocumentedForDecisionMap()
+ * @see #getConArgumentDocumentedForDecisionMap()
+ * @see #getProArgumentDocumentedForAlternativeMap()
+ * @see #getConArgumentDocumentedForAlternativeMap()
  */
 public class RationaleCompletenessCalculator {
 
@@ -35,10 +43,11 @@ public class RationaleCompletenessCalculator {
 	 *            {@link KnowledgeType}, e.g. issue.
 	 * @param targetElementType
 	 *            {@link KnowledgeType}, e.g. decision.
-	 * @return intra-rationale completeness between elements of the source and
-	 *         target type. The elements are part of the knowledge graph filtered by
-	 *         the {@link FilterSettings}. For example, enables to answer the
-	 *         question, how many issues are solved by a decision.
+	 * @return map with two keys "has" and "has no" direct links between source
+	 *         element and target element and the respective elements as map values.
+	 *         Enables to assess the intra-rationale completeness between elements
+	 *         of the source and target type. The elements are part of the knowledge
+	 *         graph filtered by the {@link FilterSettings}.
 	 */
 	private Map<String, List<KnowledgeElement>> calculateCompletenessMetric(KnowledgeType sourceElementType,
 			KnowledgeType targetElementType) {
@@ -61,33 +70,69 @@ public class RationaleCompletenessCalculator {
 		return resultMap;
 	}
 
+	/**
+	 * @return map with two keys "issue has decision" and "issue has no decision"
+	 *         and the respective issues as map values. Enables to answer the
+	 *         question "How many issues (=decision problems) are solved by a
+	 *         decision?".
+	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getIssuesSolvedByDecision() {
+	public Map<String, List<KnowledgeElement>> getIssuesSolvedByDecisionMap() {
 		return calculateCompletenessMetric(KnowledgeType.ISSUE, KnowledgeType.DECISION);
 	}
 
+	/**
+	 * @return map with two keys "decision has issue" and "decision has no issue"
+	 *         and the respective decisions as map values. Enables to answer the
+	 *         question "For how many decisions is the issue (=decision problem)
+	 *         documented?".
+	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getDecisionsSolvingIssues() {
+	public Map<String, List<KnowledgeElement>> getDecisionsSolvingIssuesMap() {
 		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.ISSUE);
 	}
 
+	/**
+	 * @return map with two keys "alternative has pro" and "alternative has no pro"
+	 *         and the respective alternatives as map values. Enables to answer the
+	 *         question "How many alternatives have at least one pro-argument
+	 *         documented?".
+	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForAlternative() {
+	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForAlternativeMap() {
 		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.PRO);
 	}
 
+	/**
+	 * @return map with two keys "alternative has con" and "alternative has no con"
+	 *         and the respective alternatives as map values. Enables to answer the
+	 *         question "How many alternatives have at least one con-argument
+	 *         documented?".
+	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForAlternative() {
+	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForAlternativeMap() {
 		return calculateCompletenessMetric(KnowledgeType.ALTERNATIVE, KnowledgeType.CON);
 	}
 
+	/**
+	 * @return map with two keys "decision has pro" and "decision has no pro" and
+	 *         the respective decisions as map values. Enables to answer the
+	 *         question "How many decisions have at least one pro-argument
+	 *         documented?".
+	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForDecision() {
+	public Map<String, List<KnowledgeElement>> getProArgumentDocumentedForDecisionMap() {
 		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.PRO);
 	}
 
+	/**
+	 * @return map with two keys "decision has con" and "decision has no con" and
+	 *         the respective decisions as map values. Enables to answer the
+	 *         question "How many decisions have at least one con-argument
+	 *         documented?".
+	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForDecision() {
+	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForDecisionMap() {
 		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.CON);
 	}
 }

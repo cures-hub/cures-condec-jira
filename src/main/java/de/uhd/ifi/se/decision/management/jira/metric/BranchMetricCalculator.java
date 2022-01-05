@@ -14,6 +14,18 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
 
+/**
+ * Calculates
+ * 
+ * @see #getBranchStatusMap()
+ * @see #getQualityProblemMap()
+ * @see #getNumberOfDecisionsMap()
+ * @see #getNumberOfIssuesMap()
+ * @see #getNumberOfAlternativesMap()
+ * @see #getNumberOfProsMap()
+ * @see #getNumberOfConsMap()
+ * @see #getJiraIssueMap()
+ */
 public class BranchMetricCalculator {
 
 	private Diff branchesForProject;

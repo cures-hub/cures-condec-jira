@@ -24,36 +24,36 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetIssuesSolvedByDecision() {
-		assertEquals(2, calculator.getIssuesSolvedByDecision().size());
+		assertEquals(2, calculator.getIssuesSolvedByDecisionMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDecisionsSolvingIssues() {
-		assertEquals(2, calculator.getDecisionsSolvingIssues().size());
+		assertEquals(2, calculator.getDecisionsSolvingIssuesMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetProArgumentDocumentedForAlternative() {
-		assertEquals(2, calculator.getProArgumentDocumentedForAlternative().size());
+		assertEquals(2, calculator.getProArgumentDocumentedForAlternativeMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetConArgumentDocumentedForAlternative() {
-		assertEquals(2, calculator.getConArgumentDocumentedForAlternative().size());
+		assertEquals(2, calculator.getConArgumentDocumentedForAlternativeMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetProArgumentDocumentedForDecision() {
-		assertEquals(2, calculator.getProArgumentDocumentedForDecision().size());
+		assertEquals(2, calculator.getProArgumentDocumentedForDecisionMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetConArgumentDocumentedForDecision() {
-		assertEquals(2, calculator.getConArgumentDocumentedForDecision().size());
+		assertEquals(2, calculator.getConArgumentDocumentedForDecisionMap().size());
 	}
 }

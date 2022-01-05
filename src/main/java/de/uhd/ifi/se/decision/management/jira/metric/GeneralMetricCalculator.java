@@ -30,19 +30,21 @@ import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
 /**
  * Calculates the following metrics on the {@link KnowledgeGraph} data structure
  * after it was filtered with the given {@link FilterSettings}:
- * <ul>
- * <li>Number of comments per Jira issue, see
- * {@link CharacterizedJiraIssue}</li>
- * <li>Number of commits per Jira issue, see {@link CharacterizedJiraIssue} and
- * {@link GitClient}</li>
- * <li>Number of code files and requirements in the project</li>
- * <li>Number of rationale elements per
- * {@link Origin}/{@link DocumentationLocation}</li>
- * <li>Number of comments with and without decision knowledge</li>
- * <li>Number of decision knowledge elements per decision knowledge type</li>
- * <li>Number of knowledge elements fulfilling and violating the
- * {@link DefinitionOfDone}</li>
- * </ul>
+ * 
+ * @see #getNumberOfCommentsPerJiraIssueMap() Number of comments per Jira issue,
+ *      see {@link CharacterizedJiraIssue}
+ * @see #getNumberOfCommitsPerJiraIssueMap() Number of commits per Jira issue,
+ *      see {@link CharacterizedJiraIssue} and {@link GitClient}
+ * @see #getRequirementsAndCodeFilesMap() Number of code files and requirements
+ *      in the project
+ * @see #getOriginMap() Number of rationale elements per
+ *      {@link Origin}/{@link DocumentationLocation}
+ * @see #getNumberOfRelevantAndIrrelevantCommentsMap() Number of comments with
+ *      and without decision knowledge
+ * @see #getDecisionKnowledgeTypeMap() Number of decision knowledge elements per
+ *      decision knowledge type
+ * @see #getDefinitionOfDoneCheckResultsMap() Number of knowledge elements
+ *      fulfilling and violating the {@link DefinitionOfDone}
  * 
  * @issue How to model the results of the metric calculation?
  * @decision We use maps that have categories as keys and the elements that fall
@@ -75,20 +77,21 @@ public class GeneralMetricCalculator {
 	}
 
 	/**
-	 * @return map with number of comments as keys and elements (Jira issues) that
-	 *         have the respective number of comments as map values.
+	 * @return map with number of comments per Jira issue as keys and elements (Jira
+	 *         issues) that have the respective number of comments as map values.
 	 */
 	@XmlElement
-	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsMap() {
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommentsPerJiraIssueMap() {
 		return commentMetricCalculator.getNumberOfCommentsPerJiraIssueMap();
 	}
 
 	/**
-	 * @return map with number of commits as keys and elements (Jira issues) that
-	 *         have the respective number of commits linked as map values.
+	 * @return map with number of commits per Jira issue as keys and elements (Jira
+	 *         issues) that have the respective number of commits linked as map
+	 *         values.
 	 */
 	@XmlElement
-	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsMap() {
+	public Map<Integer, List<KnowledgeElement>> getNumberOfCommitsPerJiraIssueMap() {
 		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
 			return new HashMap<>();
 		}
@@ -101,7 +104,7 @@ public class GeneralMetricCalculator {
 	 *         values.
 	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getNumberOfDecisionKnowledgeElements() {
+	public Map<String, List<KnowledgeElement>> getDecisionKnowledgeTypeMap() {
 		Map<String, List<KnowledgeElement>> distributionMap = new HashMap<>();
 		for (KnowledgeElement element : knowledgeElements) {
 			if (!element.getType().isDecisionKnowledge()) {
@@ -122,7 +125,7 @@ public class GeneralMetricCalculator {
 	 *         knowledge elements as map values.
 	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getRequirementsAndCodeFiles() {
+	public Map<String, List<KnowledgeElement>> getRequirementsAndCodeFilesMap() {
 		Map<String, List<KnowledgeElement>> summaryMap = new HashMap<>();
 		List<KnowledgeElement> requirements = new ArrayList<>();
 		List<String> requirementsTypes = KnowledgeType.getRequirementsTypes();
@@ -142,7 +145,7 @@ public class GeneralMetricCalculator {
 	 *         elements that are captured in the origin as map values.
 	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getElementsFromDifferentOrigins() {
+	public Map<String, List<KnowledgeElement>> getOriginMap() {
 		Map<String, List<KnowledgeElement>> originMap = new HashMap<>();
 
 		List<KnowledgeElement> elementsInJiraIssues = new ArrayList<>();
@@ -182,15 +185,20 @@ public class GeneralMetricCalculator {
 	 * @see CommentMetricCalculator#getNumberOfIrrelevantComments()
 	 */
 	@XmlElement
-	public Map<String, Integer> getNumberOfRelevantAndIrrelevantComments() {
+	public Map<String, Integer> getNumberOfRelevantAndIrrelevantCommentsMap() {
 		Map<String, Integer> commentRelevanceMap = new LinkedHashMap<>();
 		commentRelevanceMap.put("Relevant Comments", commentMetricCalculator.getNumberOfRelevantComments());
 		commentRelevanceMap.put("Irrelevant Comments", commentMetricCalculator.getNumberOfIrrelevantComments());
 		return commentRelevanceMap;
 	}
 
+	/**
+	 * @return map with two keys "Definition of Done Fulfilled" and "Definition of
+	 *         Done Violated" and the respective elements as map values.
+	 * @see DefinitionOfDoneChecker
+	 */
 	@XmlElement
-	public Map<String, List<KnowledgeElement>> getDefinitionOfDoneCheckResults() {
+	public Map<String, List<KnowledgeElement>> getDefinitionOfDoneCheckResultsMap() {
 		Map<String, List<KnowledgeElement>> resultMap = new HashMap<>();
 
 		List<KnowledgeElement> elementsWithDoDCheckSuccess = new ArrayList<>();

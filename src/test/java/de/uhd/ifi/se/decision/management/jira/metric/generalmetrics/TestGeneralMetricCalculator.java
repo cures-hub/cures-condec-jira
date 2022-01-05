@@ -40,26 +40,26 @@ public class TestGeneralMetricCalculator extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testGetNumberOfCommentsPerJiraIssueMap() {
-		assertEquals(1, calculator.getNumberOfCommentsMap().size());
+		assertEquals(1, calculator.getNumberOfCommentsPerJiraIssueMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfDecisionKnowledgeElements() {
-		assertEquals(calculator.getNumberOfDecisionKnowledgeElements().size(), 4);
+		assertEquals(calculator.getDecisionKnowledgeTypeMap().size(), 4);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetRequirementsAndCodeFiles() {
-		assertEquals(calculator.getRequirementsAndCodeFiles().size(), 2);
+		assertEquals(calculator.getRequirementsAndCodeFilesMap().size(), 2);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetElementsFromDifferentOriginsWithCommitElements() {
 		JiraIssues.getSentencesForCommentText("Hash: 123 {decision} We will use Nutch! {decision}", "TEST-4");
-		assertEquals(1, new GeneralMetricCalculator(filterSettings).getElementsFromDifferentOrigins()
+		assertEquals(1, new GeneralMetricCalculator(filterSettings).getOriginMap()
 				.get("Commit Message").size());
 	}
 
@@ -67,7 +67,7 @@ public class TestGeneralMetricCalculator extends TestSetUpGit {
 	@NonTransactional
 	public void testGetElementsFromDifferentOriginsWithJiraIssueComment() {
 		JiraIssues.addComment(JiraIssues.getTestJiraIssues().get(0));
-		assertEquals(1, new GeneralMetricCalculator(filterSettings).getElementsFromDifferentOrigins()
+		assertEquals(1, new GeneralMetricCalculator(filterSettings).getOriginMap()
 				.get("Jira Issue Description or Comment").size());
 	}
 
@@ -78,30 +78,30 @@ public class TestGeneralMetricCalculator extends TestSetUpGit {
 		decisionInCode.setDocumentationLocation(DocumentationLocation.CODE);
 		assertEquals(DocumentationLocation.CODE, decisionInCode.getDocumentationLocation());
 		KnowledgeGraph.getInstance("TEST").addVertex(decisionInCode);
-		assertEquals(1, new GeneralMetricCalculator(filterSettings).getElementsFromDifferentOrigins()
+		assertEquals(1, new GeneralMetricCalculator(filterSettings).getOriginMap()
 				.get("Code Comment").size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfRelevantComments() {
-		assertEquals(calculator.getNumberOfRelevantAndIrrelevantComments().size(), 2);
+		assertEquals(calculator.getNumberOfRelevantAndIrrelevantCommentsMap().size(), 2);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetNumberOfCommits() {
-		assertEquals(0, calculator.getNumberOfCommitsMap().size());
+		assertEquals(0, calculator.getNumberOfCommitsPerJiraIssueMap().size());
 		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
 		gitConfig.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
-		assertTrue(calculator.getNumberOfCommitsMap().size() > 0);
+		assertTrue(calculator.getNumberOfCommitsPerJiraIssueMap().size() > 0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetDefinitionOfDoneCheckResults() {
-		assertEquals(calculator.getDefinitionOfDoneCheckResults().size(), 2);
+		assertEquals(calculator.getDefinitionOfDoneCheckResultsMap().size(), 2);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class TestGeneralMetricCalculator extends TestSetUpGit {
 		definitionOfDone.setMaximumLinkDistanceToDecisions(6);
 		definitionOfDone.setMinimumDecisionsWithinLinkDistance(0);
 		filterSettings.setDefinitionOfDone(definitionOfDone);
-		assertEquals((new GeneralMetricCalculator(filterSettings)).getDefinitionOfDoneCheckResults().size(), 2);
+		assertEquals((new GeneralMetricCalculator(filterSettings)).getDefinitionOfDoneCheckResultsMap().size(), 2);
 	}
 
 }

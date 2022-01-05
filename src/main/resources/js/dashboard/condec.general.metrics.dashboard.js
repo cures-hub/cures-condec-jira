@@ -57,17 +57,17 @@ define("dashboard/generalMetrics", [], function() {
 		var colorPalette = ["#EE6666", "#91CC75"];
 
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue",
-			generalMetrics.numberOfCommentsMap, viewId);
+			generalMetrics.numberOfCommentsPerJiraIssueMap, viewId);
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue\n Transcribed into Comments",
-			generalMetrics.numberOfCommitsMap, viewId);
-		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFiles,
+			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFilesMap,
 			"piechartRich-ReqCodeSummary", "#Requirements and Code Files", viewId);
-		conDecDashboard.createPieChartWithListOfElements(generalMetrics.elementsFromDifferentOrigins,
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.originMap,
 			"piechartRich-DecSources", "#Rationale Elements per Origin", viewId);
-		conDecDashboard.createSimplePieChart(generalMetrics.numberOfRelevantAndIrrelevantComments,
+		conDecDashboard.createSimplePieChart(generalMetrics.numberOfRelevantAndIrrelevantCommentsMap,
 			"piechartInteger-RelevantSentences", "#Comments in Jira Issues relevant to Decision Knowledge");
-		createPieChartForNumberOfDecisionKnowledgeElements(generalMetrics.numberOfDecisionKnowledgeElements);
-		conDecDashboard.createPieChartWithListOfElements(generalMetrics.definitionOfDoneCheckResults,
+		createPieChartForNumberOfDecisionKnowledgeElements(generalMetrics.decisionKnowledgeTypeMap);
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.definitionOfDoneCheckResultsMap,
 			"piechartRich-DoDCheck", "Definition of Done Check", viewId, colorPalette);
 	};
 

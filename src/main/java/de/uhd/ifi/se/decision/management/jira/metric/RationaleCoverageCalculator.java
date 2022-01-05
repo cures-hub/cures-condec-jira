@@ -22,6 +22,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  * calculates how many decisions are reachable from a requirement or how many
  * decisions are reachable from a code file within a certain link distance in
  * the {@link KnowledgeGraph}.
+ * 
+ * @see #getDecisionCoverageMap()
+ * @see #getIssueCoverageMap()
  */
 public class RationaleCoverageCalculator {
 	private FilterSettings filterSettings;
