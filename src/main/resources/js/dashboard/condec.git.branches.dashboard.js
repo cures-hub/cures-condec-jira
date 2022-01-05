@@ -77,6 +77,7 @@ define('dashboard/branches', [], function() {
 				console.log(selectedValues);
 				var selectedBranches = [];
 				for (value of selectedValues) {
+					value = String(value);
 					if (dataMap.has(value)) {
 						selectedBranches = selectedBranches.concat(dataMap.get(value));
 					}

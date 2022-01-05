@@ -36,19 +36,6 @@ a:focus a:hover {
   height: auto;
 }
 
-.boxplot {
-  width: 190px;
-  height: 340px;
-  display: inline-block;
-}
-
-.piechart {
-  width: 410px;
-  height: 260px;
-  display: inline-block;
-  margin-bottom: 20px;
-}
-
 .noDots {
   list-style: none;
   padding-left: 0;

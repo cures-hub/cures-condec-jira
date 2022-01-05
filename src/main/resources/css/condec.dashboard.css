@@ -27,3 +27,16 @@
 	display: inline-block;
 	cursor: pointer;
 }
+
+.boxplot {
+  width: 190px;
+  height: 340px;
+  display: inline-block;
+}
+
+.piechart {
+  width: 410px;
+  height: 260px;
+  display: inline-block;
+  margin-bottom: 20px;
+}
