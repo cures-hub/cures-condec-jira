@@ -48,12 +48,9 @@ define('dashboard/branches', [], function() {
 	};
 
 	/**
-	 * Render the dashboard plots.
-	 *
-	 * external references: condec.dashboard.js
-	 *
-	 * @param data the data returned from the API-call
-	 * @param filterSettings the filterSettings used in the API-call
+	 * Renders the dashboard plots.	 
+	 * external references: condec.dashboard.js	 
+	 * @param branchMetrics the metrics returned from the API-call
 	 */
 	ConDecBranchesDashboardItem.prototype.renderData = function(branchMetrics) {
 		createPieChartWithListOfBranches(branchMetrics.branchStatusMap, "piechartRich-QualityStatusForBranches",
@@ -63,7 +60,6 @@ define('dashboard/branches', [], function() {
 		createPieChartWithListOfBranches(branchMetrics.jiraIssueMap, "piechartRich-BranchesPerIssue",
 				"How many branches do Jira tasks have?");
 		
-		/* render box-plots */
 		createBoxPlot("boxplot-IssuesPerBranch", "#Issues in branches", branchMetrics.numberOfIssuesMap);
 		createBoxPlot("boxplot-DecisionsPerBranch", "#Decisions in branches", branchMetrics.numberOfDecisionsMap);
 		createBoxPlot("boxplot-AlternativesPerBranch", "#Alternatives in branches", branchMetrics.numberOfAlternativesMap);

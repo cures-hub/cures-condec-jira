@@ -33,7 +33,7 @@ public class BranchMetricsCalculator {
 		Diff correctBranches = new Diff();
 		Diff branchesWithoutRationale = new Diff();
 		for (DiffForSingleRef branch : branchesForProject) {
-			if (branch.getCommitElements().size() + branch.getCodeElements().size() == 0) {
+			if (branch.getDecisionKnowledgeElements().isEmpty()) {
 				branchesWithoutRationale.add(branch);
 			} else if (branch.getQualityProblems().isEmpty()) {
 				correctBranches.add(branch);
@@ -113,4 +113,7 @@ public class BranchMetricsCalculator {
 		return qualityProblemMap;
 	}
 
+	public Diff getBranchesForProject() {
+		return branchesForProject;
+	}
 }
