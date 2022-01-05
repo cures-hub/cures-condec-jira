@@ -11,6 +11,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.metric.BranchMetricsCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.GeneralMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
@@ -27,7 +28,7 @@ public class DashboardRest {
 	 *            {@link ApplicationUser}.
 	 * @param filterSettings
 	 *            {@link FilterSettings} object.
-	 * @return general metrics for the elements of the knowledge graph filtered by
+	 * @return general metrics for the elements of the knowledge graph filtered with
 	 *         the filter settings.
 	 */
 	@Path("/general-metrics")
@@ -66,7 +67,7 @@ public class DashboardRest {
 	 * @param filterSettings
 	 *            {@link FilterSettings} object.
 	 * @return metrics about the rationale coverage for the elements of the
-	 *         knowledge graph filtered by the filter settings.
+	 *         knowledge graph filtered with the filter settings.
 	 */
 	@Path("/rationale-coverage")
 	@POST
@@ -77,5 +78,24 @@ public class DashboardRest {
 		}
 
 		return Response.ok(new RationaleCoverageCalculator(filterSettings)).build();
+	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            {@link FilterSettings} object.
+	 * @return metrics about the knowledge in git filtered with the filter settings.
+	 */
+	@Path("/git")
+	@POST
+	public Response getBranchMetrics(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "There is no project selected."))
+					.build();
+		}
+
+		return Response.ok(new BranchMetricsCalculator(filterSettings)).build();
 	}
 }
