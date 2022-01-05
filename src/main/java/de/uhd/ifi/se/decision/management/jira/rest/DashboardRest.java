@@ -15,9 +15,18 @@ import de.uhd.ifi.se.decision.management.jira.metric.BranchMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.GeneralMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem;
 
 /**
- * REST resource for dashboards
+ * REST resource for dashboard items to present metrics calculated on the
+ * {@link KnowledgeGraph} data structure. Note that also the
+ * {@link ConDecDashboardItem} is necessary to create dashboard items.
+ * 
+ * @see GeneralMetricCalculator
+ * @see RationaleCompletenessCalculator
+ * @see RationaleCoverageCalculator
+ * @see BranchMetricCalculator
  */
 @Path("/dashboard")
 public class DashboardRest {

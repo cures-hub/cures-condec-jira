@@ -27,6 +27,14 @@ public class RationaleCoverageCalculator {
 	private FilterSettings filterSettings;
 	private Set<KnowledgeElement> elementsToBeCoveredWithRationale;
 
+	/**
+	 * @param filterSettings
+	 *            {@link FilterSettings} used to filter the {@link KnowledgeGraph}.
+	 *            For example, the {@link FilterSettings} can be used to specify
+	 *            that the coverage of decisions should only include decisions with
+	 *            status "decided" and no decisions with status "rejected" or
+	 *            "challenged".
+	 */
 	public RationaleCoverageCalculator(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 		elementsToBeCoveredWithRationale = getElementsToBeCovered();
@@ -58,11 +66,8 @@ public class RationaleCoverageCalculator {
 	 *            decision knowledge type (see {@link KnowledgeType}) for that the
 	 *            coverage should be calculated (e.g. {@link KnowledgeType#DECISION}
 	 *            for decision coverage).
-	 * @return map with the decision problem coverage as keys and elements that have
-	 *         the respective coverage as map values. The status in the
-	 *         {@link FilterSettings} can be used to specify whether the decision
-	 *         problems should be resolved or unresolved. Per default, both resolved
-	 *         and unresolved decision problems (issues) are included.
+	 * @return map with the rationale coverage as keys and elements that have the
+	 *         respective coverage as map values.
 	 */
 	private Map<Integer, List<KnowledgeElement>> calculateCoverage(KnowledgeType knowledgeType) {
 		Map<Integer, List<KnowledgeElement>> metric = new LinkedHashMap<>();
@@ -93,7 +98,7 @@ public class RationaleCoverageCalculator {
 	 *            for decision coverage).
 	 * @param filterSettings
 	 *            {@link FilterSettings} to filter the {@link KnowledgeGraph}. The
-	 *            source element is selected.
+	 *            source element is the selected element.
 	 * @return reachable {@link KnowledgeElement}s of target type, e.g. decisions
 	 *         from source element.
 	 */

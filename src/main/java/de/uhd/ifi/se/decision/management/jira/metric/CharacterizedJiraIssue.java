@@ -17,7 +17,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 /**
  * Represents a Jira issue with information about the number of comments, number
  * of relevant and irrelevant comments wrt. decision knowledge, and the number
- * of commits.
+ * of commits. In ConDec, Jira issues are modeled as specific
+ * {@link KnowledgeElement}s.
  */
 public class CharacterizedJiraIssue extends KnowledgeElement {
 
