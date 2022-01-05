@@ -41,13 +41,6 @@ public class TestConDecDashboardItem extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetMetrics() {
-		Map<String, Object> metricsResult = dashboardItem.getMetrics();
-		assertTrue(metricsResult.isEmpty());
-	}
-
-	@Test
-	@NonTransactional
 	public void testAdditionalParameters() {
 		Map<String, Object> additionalParametersResult = dashboardItem.getAdditionalParameters();
 		assertTrue(additionalParametersResult.isEmpty());

@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.dashboard;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +21,34 @@ import com.google.common.collect.Maps;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.metric.BranchMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.metric.GeneralMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.metric.RationaleCompletenessCalculator;
+import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
+/**
+ * Abstract super class for all dashboard items that present metrics calculated
+ * on the {@link KnowledgeGraph} data structure. To create a dashboard item, one
+ * needs to register the dashboard item in the atlassian-plugin.xml and
+ * reference this class.
+ * 
+ * @see GeneralMetricCalculator
+ * @see RationaleCompletenessCalculator
+ * @see RationaleCoverageCalculator
+ * @see BranchMetricCalculator
+ * 
+ * @issue How are metrics passed from backend to the frontend?
+ * @alternative We used to pass the metrics via context parameters of the Java
+ *              servlet.
+ * @con The dashboard page needs to be reloaded to update the metrics (e.g.
+ *      after filtering).
+ * @decision We pass the metrics via the DashboardRest API!
+ * @pro Faster updating of metrics. The dashboard page does not need to be
+ *      reloaded.
+ */
 public class ConDecDashboardItem implements ContextProvider {
 	protected ApplicationUser user;
 	protected FilterSettings filterSettings;
@@ -67,7 +91,6 @@ public class ConDecDashboardItem implements ContextProvider {
 		filterSettings = new FilterSettings(projectKey, "");
 
 		newContext.putAll(getAdditionalParameters());
-		newContext.putAll(getMetrics());
 
 		LOGGER.info(filterSettings.toString());
 		return newContext;
@@ -84,7 +107,7 @@ public class ConDecDashboardItem implements ContextProvider {
 		return null;
 	}
 
-	protected Map<String, Object> fillAdditionalParameters() {
+	protected Map<String, Object> getAdditionalParameters() {
 		Map<String, Object> additionalParameters = new LinkedHashMap<>();
 
 		List<Project> projects = DecisionKnowledgeProject.getProjectsWithConDecActivatedAndAccessableForUser(user);
@@ -101,13 +124,5 @@ public class ConDecDashboardItem implements ContextProvider {
 		additionalParameters.put("projectsWithGit", accessableProjectsWithGitRepo);
 
 		return additionalParameters;
-	}
-
-	protected Map<String, Object> getAdditionalParameters() {
-		return new HashMap<>();
-	}
-
-	protected Map<String, Object> getMetrics() {
-		return new HashMap<>();
 	}
 }
