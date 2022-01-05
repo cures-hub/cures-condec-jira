@@ -9,6 +9,11 @@ import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
+/**
+ * Calculates metrics on the comments of Jira issues.
+ * 
+ * @see CharacterizedJiraIssue
+ */
 public class CommentMetricCalculator {
 
 	private List<CharacterizedJiraIssue> characterizedJiraIssues;

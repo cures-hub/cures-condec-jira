@@ -13,9 +13,11 @@ import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitM
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityProblemType;
 
 /**
- * Calculates
+ * Calculates decision knowledge-related and general metrics on the git branches
+ * of a Jira project. Branches are represented as a {@link Diff} object.
  * 
  * @see #getBranchStatusMap()
  * @see #getQualityProblemMap()
@@ -25,6 +27,9 @@ import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
  * @see #getNumberOfProsMap()
  * @see #getNumberOfConsMap()
  * @see #getJiraIssueMap()
+ * 
+ * @see GitClient
+ * @see Diff
  */
 public class BranchMetricCalculator {
 
@@ -39,6 +44,11 @@ public class BranchMetricCalculator {
 		}
 	}
 
+	/**
+	 * @return map with three keys "Incorrect", "Good", and "No Rationale" and the
+	 *         respective branches as map values. Branches are represented as a
+	 *         {@link Diff} object.
+	 */
 	@XmlElement
 	public Map<String, Diff> getBranchStatusMap() {
 		Diff incorrectBranches = new Diff();
@@ -60,6 +70,11 @@ public class BranchMetricCalculator {
 		return branchStatusMap;
 	}
 
+	/**
+	 * @return map with {@link QualityProblemType}s as keys and the respective
+	 *         branches as map values. Branches are represented as a {@link Diff}
+	 *         object.
+	 */
 	@XmlElement
 	public Map<String, Diff> getQualityProblemMap() {
 		Map<String, Diff> qualityProblemMap = new LinkedHashMap<>();
@@ -74,31 +89,56 @@ public class BranchMetricCalculator {
 		return qualityProblemMap;
 	}
 
+	/**
+	 * @return map with number of issues as keys and the respective branches as map
+	 *         values. Branches are represented as a {@link Diff} object.
+	 */
 	@XmlElement
 	public Map<Integer, Diff> getNumberOfIssuesMap() {
 		return getNumberOfElementsOfTypeMap(KnowledgeType.ISSUE);
 	}
 
+	/**
+	 * @return map with number of decisions as keys and the respective branches as
+	 *         map values. Branches are represented as a {@link Diff} object.
+	 */
 	@XmlElement
 	public Map<Integer, Diff> getNumberOfDecisionsMap() {
 		return getNumberOfElementsOfTypeMap(KnowledgeType.DECISION);
 	}
 
+	/**
+	 * @return map with number of alternatives as keys and the respective branches
+	 *         as map values. Branches are represented as a {@link Diff} object.
+	 */
 	@XmlElement
 	public Map<Integer, Diff> getNumberOfAlternativesMap() {
 		return getNumberOfElementsOfTypeMap(KnowledgeType.ALTERNATIVE);
 	}
 
+	/**
+	 * @return map with number of pro-arguments as keys and the respective branches
+	 *         as map values. Branches are represented as a {@link Diff} object.
+	 */
 	@XmlElement
 	public Map<Integer, Diff> getNumberOfProsMap() {
 		return getNumberOfElementsOfTypeMap(KnowledgeType.PRO);
 	}
 
+	/**
+	 * @return map with number of con-arguments as keys and the respective branches
+	 *         as map values. Branches are represented as a {@link Diff} object.
+	 */
 	@XmlElement
 	public Map<Integer, Diff> getNumberOfConsMap() {
 		return getNumberOfElementsOfTypeMap(KnowledgeType.CON);
 	}
 
+	/**
+	 * @return map with number of decision knowledge elements of a specific
+	 *         {@link KnowledgeType} as keys and the respective branches as map
+	 *         values. Branches are represented as a {@link Diff} object.
+	 */
 	private Map<Integer, Diff> getNumberOfElementsOfTypeMap(KnowledgeType type) {
 		Map<Integer, Diff> numberOfElementsOfTypeMap = new LinkedHashMap<>();
 		for (DiffForSingleRef branch : branchesForProject) {
@@ -111,6 +151,11 @@ public class BranchMetricCalculator {
 		return numberOfElementsOfTypeMap;
 	}
 
+	/**
+	 * @return map with Jira issue keys as keys and the respective branches that
+	 *         reference the Jira issue in the branch name as map values. Branches
+	 *         are represented as a {@link Diff} object.
+	 */
 	@XmlElement
 	public Map<String, Diff> getJiraIssueMap() {
 		Map<String, Diff> qualityProblemMap = new LinkedHashMap<>();
@@ -125,6 +170,9 @@ public class BranchMetricCalculator {
 		return qualityProblemMap;
 	}
 
+	/**
+	 * @return all branches of a Jira project as a {@link Diff} object.
+	 */
 	public Diff getBranchesForProject() {
 		return branchesForProject;
 	}
