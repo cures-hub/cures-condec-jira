@@ -31,13 +31,13 @@ public class TestRationaleCoverageCalculator extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testGetDecisionCoverageMetric() {
-		assertEquals(2, rationaleCoverageCalculator.getDecisionCoverageMetric().size());
+		assertEquals(2, rationaleCoverageCalculator.getDecisionCoverageMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetIssueCoverageMetric() {
-		assertEquals(2, rationaleCoverageCalculator.getIssueCoverageMetric().size());
+		assertEquals(2, rationaleCoverageCalculator.getIssueCoverageMap().size());
 	}
 
 	@Test

@@ -100,6 +100,9 @@ public class ConDecDashboardItem implements ContextProvider {
 		return com.atlassian.jira.web.ExecutingHttpRequest.get();
 	}
 
+	/**
+	 * @return user that views the dashboard item.
+	 */
 	public static ApplicationUser getApplicationUser() {
 		if (ComponentAccessor.getJiraAuthenticationContext() != null) {
 			return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
@@ -107,6 +110,11 @@ public class ConDecDashboardItem implements ContextProvider {
 		return null;
 	}
 
+	/**
+	 * @return map with two keys "projects" and "projectsWithGit" and the respective
+	 *         projects. The user that views the dashboard item needs to have the
+	 *         rights to access a project, othwise it is not included.
+	 */
 	protected Map<String, Object> getAdditionalParameters() {
 		Map<String, Object> additionalParameters = new LinkedHashMap<>();
 
