@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.completeness;
+package de.uhd.ifi.se.decision.management.jira.quality;
 
 /**
  * Models the possible quality problems of knowledge elements. Quality problems

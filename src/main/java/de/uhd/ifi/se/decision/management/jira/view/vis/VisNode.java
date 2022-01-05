@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
 
 /**
  * Model class for a vis.js node.

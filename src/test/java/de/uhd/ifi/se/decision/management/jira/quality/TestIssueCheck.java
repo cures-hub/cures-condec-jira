@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.completeness;
+package de.uhd.ifi.se.decision.management.jira.quality;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,12 +6,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -102,7 +107,8 @@ public class TestIssueCheck extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertTrue(issueCompletenessCheck.getQualityProblems(issue, definitionOfDone).isEmpty());
-		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
+		assertFalse(issueCompletenessCheck
+				.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
 	}
 
 	@Test
@@ -113,7 +119,8 @@ public class TestIssueCheck extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
 		assertTrue(issueCompletenessCheck.getQualityProblems(issue, definitionOfDone).isEmpty());
-		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
+		assertFalse(issueCompletenessCheck
+				.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
 	}
 
 	@Test
@@ -127,7 +134,8 @@ public class TestIssueCheck extends TestSetUp {
 		knowledgeElement.setProject(new DecisionKnowledgeProject("TEST"));
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 		assertFalse(issueCompletenessCheck.getQualityProblems(knowledgeElement, definitionOfDone).isEmpty());
-		assertFalse(issueCompletenessCheck.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
+		assertFalse(issueCompletenessCheck
+				.getQualityProblems(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
 	}
 
 	@After

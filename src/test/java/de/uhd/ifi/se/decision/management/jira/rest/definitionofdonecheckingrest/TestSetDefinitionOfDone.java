@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.rest.DefinitionOfDoneCheckingRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 

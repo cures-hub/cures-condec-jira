@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.completeness;
+package de.uhd.ifi.se.decision.management.jira.quality;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

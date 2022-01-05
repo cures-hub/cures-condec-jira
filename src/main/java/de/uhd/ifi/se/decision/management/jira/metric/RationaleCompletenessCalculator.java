@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.completeness;
+package de.uhd.ifi.se.decision.management.jira.metric;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

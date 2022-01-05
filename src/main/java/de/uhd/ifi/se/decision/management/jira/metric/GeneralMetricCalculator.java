@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
+package de.uhd.ifi.se.decision.management.jira.metric;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
 
 /**
  * Calculates the following metrics on the {@link KnowledgeGraph} data structure

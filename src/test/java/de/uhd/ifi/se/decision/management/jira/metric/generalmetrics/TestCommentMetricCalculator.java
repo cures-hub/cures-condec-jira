@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.quality.generalmetrics;
+package de.uhd.ifi.se.decision.management.jira.metric.generalmetrics;
 
 import static de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues.getTestJiraIssues;
 import static org.junit.Assert.assertEquals;
@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.metric.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;

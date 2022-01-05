@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.IssueCheck;
+import de.uhd.ifi.se.decision.management.jira.quality.IssueCheck;
 
 /**
  * Status of decision problems (=issues) and solution options (=decisions and

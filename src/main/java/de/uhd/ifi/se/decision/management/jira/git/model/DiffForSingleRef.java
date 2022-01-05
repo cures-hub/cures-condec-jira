@@ -16,7 +16,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
 
 /**
  * Represents changes made in a specific git repository. For example, the diff

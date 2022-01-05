@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.git.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
 
 /**
  * Represents a decision knowledge element documented in a {@link CodeComment}.

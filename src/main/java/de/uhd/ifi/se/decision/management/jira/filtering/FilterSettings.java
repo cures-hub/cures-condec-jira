@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
+import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -33,9 +34,8 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.KnowledgeElementCheck;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.KnowledgeElementCheck;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
