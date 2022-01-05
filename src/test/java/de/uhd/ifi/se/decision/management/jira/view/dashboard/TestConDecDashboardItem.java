@@ -43,7 +43,7 @@ public class TestConDecDashboardItem extends TestSetUp {
 	@NonTransactional
 	public void testAdditionalParameters() {
 		Map<String, Object> additionalParametersResult = dashboardItem.getAdditionalParameters();
-		assertTrue(additionalParametersResult.isEmpty());
+		assertFalse(additionalParametersResult.isEmpty());
 	}
 
 	@Test

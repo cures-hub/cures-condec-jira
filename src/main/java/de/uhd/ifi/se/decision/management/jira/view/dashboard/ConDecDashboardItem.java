@@ -30,10 +30,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Abstract super class for all dashboard items that present metrics calculated
- * on the {@link KnowledgeGraph} data structure. To create a dashboard item, one
- * needs to register the dashboard item in the atlassian-plugin.xml and
- * reference this class.
+ * Servlet class for all dashboard items that present metrics calculated on the
+ * {@link KnowledgeGraph} data structure. To create a dashboard item, one needs
+ * to register the dashboard item in the atlassian-plugin.xml and reference this
+ * class.
  * 
  * @see GeneralMetricCalculator
  * @see RationaleCompletenessCalculator
