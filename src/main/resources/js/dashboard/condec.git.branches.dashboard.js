@@ -54,12 +54,12 @@ define('dashboard/branches', [], function() {
 	 */
 	ConDecBranchesDashboardItem.prototype.renderData = function(branchMetrics) {
 		createPieChartWithListOfBranches(branchMetrics.branchStatusMap, "piechartRich-QualityStatusForBranches",
-				"How many branches document rationale well?");
+			"How many branches document rationale well?");
 		createPieChartWithListOfBranches(branchMetrics.qualityProblemMap, "piechartRich-ProblemTypesInBranches",
-				"Which documentation mistakes are most common?");
+			"Which documentation mistakes are most common?");
 		createPieChartWithListOfBranches(branchMetrics.jiraIssueMap, "piechartRich-BranchesPerIssue",
-				"How many branches do Jira tasks have?");
-		
+			"How many branches do Jira tasks have?");
+
 		createBoxPlot("boxplot-IssuesPerBranch", "#Issues in branches", branchMetrics.numberOfIssuesMap);
 		createBoxPlot("boxplot-DecisionsPerBranch", "#Decisions in branches", branchMetrics.numberOfDecisionsMap);
 		createBoxPlot("boxplot-AlternativesPerBranch", "#Alternatives in branches", branchMetrics.numberOfAlternativesMap);
@@ -72,9 +72,7 @@ define('dashboard/branches', [], function() {
 		boxplot.on('click', function(param) {
 			if (typeof param.seriesIndex != 'undefined') {
 				var dialogContent = conDecDashboard.initDialog(viewId);
-				console.log(param);
 				var selectedValues = param.data;
-				console.log(selectedValues);
 				var selectedBranches = [];
 				for (value of selectedValues) {
 					value = String(value);

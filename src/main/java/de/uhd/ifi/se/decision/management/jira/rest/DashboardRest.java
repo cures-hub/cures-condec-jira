@@ -11,7 +11,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.metric.BranchMetricsCalculator;
+import de.uhd.ifi.se.decision.management.jira.metric.BranchMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.GeneralMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.RationaleCompletenessCalculator;
 import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
@@ -96,6 +96,6 @@ public class DashboardRest {
 					.build();
 		}
 
-		return Response.ok(new BranchMetricsCalculator(filterSettings)).build();
+		return Response.ok(new BranchMetricCalculator(filterSettings)).build();
 	}
 }

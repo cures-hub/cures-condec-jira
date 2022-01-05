@@ -13,9 +13,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestBranchMetricsCalculator extends TestSetUpGit {
+public class TestBranchMetricCalculator extends TestSetUpGit {
 
-	private BranchMetricsCalculator branchMetricsCalculator;
+	private BranchMetricCalculator branchMetricsCalculator;
 	private FilterSettings filterSettings;
 
 	@Before
@@ -26,7 +26,7 @@ public class TestBranchMetricsCalculator extends TestSetUpGit {
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
-		branchMetricsCalculator = new BranchMetricsCalculator(filterSettings);
+		branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class TestBranchMetricsCalculator extends TestSetUpGit {
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(false);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
-		branchMetricsCalculator = new BranchMetricsCalculator(filterSettings);
+		branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
 		assertNull(branchMetricsCalculator.getBranchesForProject());
 	}
 

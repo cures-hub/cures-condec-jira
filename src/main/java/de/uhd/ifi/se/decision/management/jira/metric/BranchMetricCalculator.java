@@ -14,11 +14,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
 
-public class BranchMetricsCalculator {
+public class BranchMetricCalculator {
 
 	private Diff branchesForProject;
 
-	public BranchMetricsCalculator(FilterSettings filterSettings) {
+	public BranchMetricCalculator(FilterSettings filterSettings) {
 		String projectKey = filterSettings.getProjectKey();
 		if (ConfigPersistenceManager.getGitConfiguration(projectKey).isActivated()) {
 			GitClient gitClient = GitClient.getInstance(projectKey);

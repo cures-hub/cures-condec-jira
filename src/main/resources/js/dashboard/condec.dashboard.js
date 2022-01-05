@@ -375,7 +375,6 @@
 	};
 
 	function getOptionsForBoxplot(name, xLabel, yLabel, data) {
-		console.log(data);
 		return {
 			title: [{
 				text: name,
@@ -385,7 +384,8 @@
 				{ source: data },
 				{
 					transform: {
-						type: "boxplot"
+						type: "boxplot",
+						config: { itemNameFormatter: "" }
 					}
 				},
 				{
@@ -393,6 +393,12 @@
 					fromTransformResult: 1
 				}
 			],
+			tooltip: {
+				trigger: "item",
+				axisPointer: {
+					type: "shadow"
+				}
+			},
 			grid: {
 				left: "15%",
 				right: "10%",

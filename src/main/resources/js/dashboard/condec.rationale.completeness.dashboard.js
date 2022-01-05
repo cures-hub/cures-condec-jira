@@ -48,10 +48,8 @@ define('dashboard/rationaleCompleteness', [], function() {
 	};
 
 	/**
-	 * Render the dashboard plots.
-	 *
+	 * Renders the dashboard plots.
 	 * external references: condec.dashboard.js
-	 *
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.renderData = function(metrics) {
