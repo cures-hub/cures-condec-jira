@@ -2,13 +2,25 @@
 
 ConDec presents **metrics calculated on the knowledge graph data structure** in a knowledge dashboard.
 The dashboard comprises four dashboard items that show the following metrics:
-- the **rationale coverage** of requirements and code, e.g., *how many decisions are documented for a requirement?*, 
-- **intra-rationale completeness**, e.g., *are there arguments for the decisions?*, 
-- **general metrics**, e.g., *how many rationale elements are documented per origin/documentation location?*, 
-- **metrics on the knowledge in git** branches, e.g., 
+
+1. the **rationale coverage** of requirements and code, e.g., *how many decisions are documented for a requirement?*, 
+2. **intra-rationale completeness**, e.g., *are there arguments for the decisions?*, 
+3. **general metrics**, e.g., *how many rationale elements are documented per origin/documentation location?*, and
+4. **metrics on the knowledge in git**, e.g., 
 *do the rationale elements documented in code comments and commit messages of a branch fulfill the [definition of done](quality-checking.md)?*
 
+The four dashboard items are shown in the following sections.
+
 ## Rationale Coverage
+This dashboard item shows the coverage of requirements, code, and other software artifacts (=knowledge elements) 
+with a specific decision knowledge type, e.g. decsion problem or decision. 
+For example, this dashboard item shows how many decisions are reachable from a requirement or 
+how many decisions are reachable from a code file **within a certain link distance in the knowledge graph**.
+The filter settings used to filter the knowledge graph.
+For example, the status in the can be used to specify whether the decision problems should be *resolved* or *unresolved*. 
+Per default, both resolved and unresolved decision problems (issues) are included.
+Similarly, the filter settings can be used to specify that the coverage of decisions should only include decisions 
+with status *decided* and no decisions with status *rejected* or *challenged*.
 
 ![Rationale coverage dashboard item](../screenshots/dashboard_rationale_coverage.png)
 
