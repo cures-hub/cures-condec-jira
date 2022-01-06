@@ -41,6 +41,16 @@
 	};
 
 	/**
+	 * external references: dashboard/condec.git.branches.dashboard.js
+	 */
+	ConDecDashboardAPI.prototype.getBranchMetrics = function(filterSettings, callback) {
+		generalApi.postJSON(this.restPrefix + "/git", filterSettings, function(error, branchMetrics) {
+			convertJavaMapToJavaScriptMap(branchMetrics);
+			callback(error, branchMetrics);
+		});
+	};
+
+	/**
 	 * Necessary because Java map is not recognized as a map in JavaScript.
 	 */
 	function convertJavaMapToJavaScriptMap(metrics) {

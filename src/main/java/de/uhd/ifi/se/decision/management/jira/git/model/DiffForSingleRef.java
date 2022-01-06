@@ -16,7 +16,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
 
 /**
  * Represents changes made in a specific git repository. For example, the diff
@@ -130,6 +132,18 @@ public class DiffForSingleRef {
 			commitElements = getRationaleElementsFromCommitMessages();
 		}
 		return commitElements;
+	}
+
+	public List<KnowledgeElement> getDecisionKnowledgeElements() {
+		List<KnowledgeElement> decisionKnowledgeElements = new ArrayList<>();
+		decisionKnowledgeElements.addAll(getCommitElements());
+		decisionKnowledgeElements.addAll(getCodeElements());
+		return decisionKnowledgeElements;
+	}
+
+	public List<KnowledgeElement> getDecisionKnowledgeElementsOfType(KnowledgeType type) {
+		return getDecisionKnowledgeElements().stream().filter(element -> element.getType() == type)
+				.collect(Collectors.toList());
 	}
 
 	@XmlElement

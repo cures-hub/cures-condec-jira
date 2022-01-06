@@ -11,11 +11,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dash
     <div id="piechartRich-QualityStatusForBranches" class="piechart"></div>
 	<div id="piechartRich-ProblemTypesInBranches" class="piechart"></div>
 	<div id="piechartRich-BranchesPerIssue" class="piechart"></div>
-	<div id="boxplot-IssuesPerBranch" class="piechart"></div>
-	<div id="boxplot-DecisionsPerBranch" class="piechart"></div>
-	<div id="boxplot-AlternativesPerBranch" class="piechart"></div>
-	<div id="boxplot-ProsPerBranch" class="piechart"></div>
-	<div id="boxplot-ConsPerBranch" class="piechart"></div>
+	<div id="boxplot-IssuesPerBranch" class="boxplot"></div>
+	<div id="boxplot-DecisionsPerBranch" class="boxplot"></div>
+	<div id="boxplot-AlternativesPerBranch" class="boxplot"></div>
+	<div id="boxplot-ProsPerBranch" class="boxplot"></div>
+	<div id="boxplot-ConsPerBranch" class="boxplot"></div>
 </div>
 
 #parse("templates/dashboard/dashboardNoProject.vm")

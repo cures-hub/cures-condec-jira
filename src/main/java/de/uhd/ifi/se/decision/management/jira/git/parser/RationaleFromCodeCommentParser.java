@@ -13,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblem;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblemType;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityProblemType;
 
 /**
  * Extracts decision knowledge elements from {@link CodeComment}s of a

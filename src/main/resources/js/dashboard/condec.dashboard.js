@@ -364,8 +364,13 @@
 		}
 		values = values.map(Number);
 
-		var data = echarts.dataTool.prepareBoxplotData(new Array(values));
-		boxplot.setOption(getOptionsForBoxplot("", title, "", data));
+		var data = [];
+		for (const [category, list] of dataMap.entries()) {
+			entry = { "name": category, "value": list.length, "list": list }
+			data.push(entry);
+		}
+
+		boxplot.setOption(getOptionsForBoxplot("", title, "", new Array(values)));
 		return boxplot;
 	};
 
@@ -375,6 +380,19 @@
 				text: name,
 				left: "center",
 			},],
+			dataset: [
+				{ source: data },
+				{
+					transform: {
+						type: "boxplot",
+						config: { itemNameFormatter: "" }
+					}
+				},
+				{
+					fromDatasetIndex: 1,
+					fromTransformResult: 1
+				}
+			],
 			tooltip: {
 				trigger: "item",
 				axisPointer: {
@@ -388,7 +406,6 @@
 			},
 			xAxis: {
 				type: "category",
-				data: data.axisData,
 				boundaryGap: true,
 				nameGap: 30,
 				splitArea: {
@@ -405,14 +422,17 @@
 					show: true
 				}
 			},
+			legend: {
+				selected: { outlier: true }
+			},
 			series: [{
 				name: "boxplot",
 				type: "boxplot",
-				data: data.boxData
+				datasetIndex: 1
 			}, {
 				name: "outlier",
 				type: "scatter",
-				data: data.outliers
+				datasetIndex: 2
 			}]
 		};
 	}

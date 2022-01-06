@@ -565,7 +565,7 @@
 		<description key="condec.dashboard.knowledge.in.git.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/featureBranches.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.KnowledgeInGitDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/branches</amd-module>
 	</dashboard-item>
 
@@ -585,7 +585,7 @@
 		<description key="condec.dashboard.generalmetrics.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/generalMetrics.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.GeneralMetricsDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/generalMetrics</amd-module>
 	</dashboard-item>
 
@@ -605,7 +605,7 @@
 		<description key="condec.dashboard.rationalecompleteness.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCompleteness.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCompletenessDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/rationaleCompleteness</amd-module>
 	</dashboard-item>
 
@@ -625,7 +625,7 @@
 		<description key="condec.dashboard.rationalecoverage.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCoverage.vm" />
 		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.RationaleCoverageDashboardItem" />
+			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/rationaleCoverage</amd-module>
 	</dashboard-item>
 </atlassian-plugin>

@@ -4,7 +4,7 @@
  * Requires
  * condec.dashboard.js
  */
-define('dashboard/generalMetrics', [], function() {
+define("dashboard/generalMetrics", [], function() {
 	var dashboardAPI;
 	const viewId = "general-metrics";
 
@@ -49,30 +49,55 @@ define('dashboard/generalMetrics', [], function() {
 	};
 
 	/**
-	 * Render the dashboard plots.
-	 *
+	 * Renders the dashboard plots.
 	 * external references: condec.dashboard.js
-	 *
-	 * @param generalMetrics the data returned from the API-call
+	 * @param generalMetrics the metrics returned from the API-call
 	 */
 	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
-		var colorPalette = ['#EE6666', '#91CC75'];
+		var colorPalette = ["#EE6666", "#91CC75"];
 
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue",
-			generalMetrics.numberOfCommentsMap, viewId);
-		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue",
-			generalMetrics.numberOfCommitsMap, viewId);
-		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFiles,
+			generalMetrics.numberOfCommentsPerJiraIssueMap, viewId);
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue\n Transcribed into Comments",
+			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFilesMap,
 			"piechartRich-ReqCodeSummary", "#Requirements and Code Files", viewId);
-		conDecDashboard.createPieChartWithListOfElements(generalMetrics.elementsFromDifferentOrigins,
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.originMap,
 			"piechartRich-DecSources", "#Rationale Elements per Origin", viewId);
-		conDecDashboard.createSimplePieChart(generalMetrics.numberOfRelevantAndIrrelevantComments,
+		conDecDashboard.createSimplePieChart(generalMetrics.numberOfRelevantAndIrrelevantCommentsMap,
 			"piechartInteger-RelevantSentences", "#Comments in Jira Issues relevant to Decision Knowledge");
-		conDecDashboard.createPieChartWithListOfElements(generalMetrics.numberOfDecisionKnowledgeElements,
-			"piechartRich-KnowledgeTypeDistribution", "#Decision Knowledge Elements", viewId);
-		conDecDashboard.createPieChartWithListOfElements(generalMetrics.definitionOfDoneCheckResults,
+		createPieChartForNumberOfDecisionKnowledgeElements(generalMetrics.decisionKnowledgeTypeMap);
+		conDecDashboard.createPieChartWithListOfElements(generalMetrics.definitionOfDoneCheckResultsMap,
 			"piechartRich-DoDCheck", "Definition of Done Check", viewId, colorPalette);
 	};
+
+	function createPieChartForNumberOfDecisionKnowledgeElements(decisionKnowledgeElementsMap) {
+		var defaultColorPalette = ["#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"];
+		var colorPaletteForDecisionKnowledge = [];
+
+		for (const type of decisionKnowledgeElementsMap.keys()) {
+			colorPaletteForDecisionKnowledge.push(getColorForKnowledgeType(type, defaultColorPalette));
+		}
+
+		conDecDashboard.createPieChartWithListOfElements(decisionKnowledgeElementsMap,
+			"piechartRich-KnowledgeTypeDistribution", "#Decision Knowledge Elements", viewId, colorPaletteForDecisionKnowledge);
+	}
+
+	function getColorForKnowledgeType(type, defaultColorPalette) {
+		switch (type) {
+			case "Pro":
+				return "#91cc75";
+			case "Con":
+				return "#ee6666";
+			case "Issue":
+				return "#fac858";
+			case "Alternative":
+				return "#73c0de";
+			case "Decision":
+				return "#5470c6";
+		}
+		return defaultColorPalette.shift();
+	}
 
 	return ConDecGeneralMetricsDashboardItem;
 });

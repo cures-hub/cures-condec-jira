@@ -49,21 +49,19 @@ define('dashboard/rationaleCoverage', [], function() {
 	};
 
 	/**
-	 * Render the dashboard plots.
-	 *
+	 * Renders the dashboard plots.	
 	 * external references: condec.dashboard.js
-	 *
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCoverageDashboardItem.prototype.renderData = function(metrics) {
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-IssuesPerJiraIssue",
-			"#Issues per element", metrics.issueCoverageMetric, viewId);
+			"#Issues per element", metrics.issueCoverageMap, viewId);
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-DecisionsPerJiraIssue",
-			"#Decisions per element", metrics.decisionCoverageMetric, viewId);
+			"#Decisions per element", metrics.decisionCoverageMap, viewId);
 
-		createPieChart(metrics.issueCoverageMetric, "piechartRich-IssueDocumentedForSelectedJiraIssue",
+		createPieChart(metrics.issueCoverageMap, "piechartRich-IssueDocumentedForSelectedJiraIssue",
 			"For how many elements is an issue documented?", "Issue", metrics.minimumRequiredCoverage);
-		createPieChart(metrics.decisionCoverageMetric, "piechartRich-DecisionDocumentedForSelectedJiraIssue",
+		createPieChart(metrics.decisionCoverageMap, "piechartRich-DecisionDocumentedForSelectedJiraIssue",
 			"For how many elements is a decision documented?", "Decision", metrics.minimumRequiredCoverage);
 	};
 

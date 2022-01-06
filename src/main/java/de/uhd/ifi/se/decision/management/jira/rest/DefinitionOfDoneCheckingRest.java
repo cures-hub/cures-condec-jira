@@ -11,13 +11,13 @@ import javax.ws.rs.core.Response.Status;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDone;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.DefinitionOfDoneChecker;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.QualityProblemType;
-import de.uhd.ifi.se.decision.management.jira.quality.completeness.RationaleCoverageCalculator;
+import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityProblemType;
 
 /**
  * REST resource for definition of done (DoD) configuration and checking.

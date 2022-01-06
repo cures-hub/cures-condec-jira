@@ -48,31 +48,31 @@ define('dashboard/rationaleCompleteness', [], function() {
 	};
 
 	/**
-	 * Render the dashboard plots.
-	 *
+	 * Renders the dashboard plots.
 	 * external references: condec.dashboard.js
-	 *
 	 * @param metrics the metrics returned from the API-call
 	 */
 	ConDecRationaleCompletenessDashboardItem.prototype.renderData = function(metrics) {
 		var colorPalette = ['#91CC75', '#EE6666'];
 
-		conDecDashboard.createPieChartWithListOfElements(metrics.issuesSolvedByDecision, "piechartRich-IssuesSolvedByDecision",
+		conDecDashboard.createPieChartWithListOfElements(metrics.issuesSolvedByDecisionMap,
+			"piechartRich-IssuesSolvedByDecision",
 			"How many issues (=decision problems) are solved by a decision?", viewId, colorPalette);
-		conDecDashboard.createPieChartWithListOfElements(metrics.decisionsSolvingIssues, "piechartRich-DecisionsSolvingIssues",
+		conDecDashboard.createPieChartWithListOfElements(metrics.decisionsSolvingIssuesMap,
+			"piechartRich-DecisionsSolvingIssues",
 			"For how many decisions is the issue (=decision problem) documented?", viewId, colorPalette);
-		conDecDashboard.createPieChartWithListOfElements(metrics.proArgumentDocumentedForDecision,
+		conDecDashboard.createPieChartWithListOfElements(metrics.proArgumentDocumentedForDecisionMap,
 			"piechartRich-ProArgumentDocumentedForDecision",
-			"How many decisions have at least one pro argument documented?", viewId, colorPalette);
-		conDecDashboard.createPieChartWithListOfElements(metrics.conArgumentDocumentedForDecision,
+			"How many decisions have at least one pro-argument documented?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.conArgumentDocumentedForDecisionMap,
 			"piechartRich-ConArgumentDocumentedForDecision",
-			"How many decisions have at least one con argument documented?", viewId, colorPalette);
-		conDecDashboard.createPieChartWithListOfElements(metrics.proArgumentDocumentedForAlternative,
+			"How many decisions have at least one con-argument documented?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.proArgumentDocumentedForAlternativeMap,
 			"piechartRich-ProArgumentDocumentedForAlternative",
-			"How many alternatives have at least one pro argument documented?", viewId, colorPalette);
-		conDecDashboard.createPieChartWithListOfElements(metrics.conArgumentDocumentedForAlternative,
+			"How many alternatives have at least one pro-argument documented?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.conArgumentDocumentedForAlternativeMap,
 			"piechartRich-ConArgumentDocumentedForAlternative",
-			"How many alternatives have at least one con argument documented?", viewId, colorPalette);
+			"How many alternatives have at least one con-argument documented?", viewId, colorPalette);
 	};
 
 	return ConDecRationaleCompletenessDashboardItem;

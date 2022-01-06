@@ -14,6 +14,8 @@ import org.junit.Test;
 import com.atlassian.jira.issue.issuetype.IssueType;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -41,16 +43,22 @@ public class TestConDecDashboardItem extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testGetMetrics() {
-		Map<String, Object> metricsResult = dashboardItem.getMetrics();
-		assertTrue(metricsResult.isEmpty());
+	public void testAdditionalParametersWithGitExtractionEnabled() {
+		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
+		config.setActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
+		Map<String, Object> additionalParametersResult = dashboardItem.getAdditionalParameters();
+		assertFalse(additionalParametersResult.isEmpty());
 	}
 
 	@Test
 	@NonTransactional
-	public void testAdditionalParameters() {
+	public void testAdditionalParametersWithGitExtractionDisabled() {
+		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
+		config.setActivated(false);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
 		Map<String, Object> additionalParametersResult = dashboardItem.getAdditionalParameters();
-		assertTrue(additionalParametersResult.isEmpty());
+		assertFalse(additionalParametersResult.isEmpty());
 	}
 
 	@Test
