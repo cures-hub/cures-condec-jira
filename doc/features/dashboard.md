@@ -1,12 +1,12 @@
 # Knowledge Dashboard
 
-ConDec supports decision knowledge sharing and collaborative decision making using a rationale backlog and in meeting agendas.
-
-The dashboard shows metrics regarding the 
-- intra-rationale completeness (e.g., *are there arguments for the decisions?*), 
-- the rationale coverage of requirements and code (e.g., *how many decisions are documented for a requirement?*), 
-- the rationale-to-artifact traceability (e.g., *is it possible to navigate to the requirements affected by a decision?*), and 
-- the feature branch quality regarding the rationale documentation.
+ConDec presents **metrics calculated on the knowledge graph data structure** in a knowledge dashboard.
+The dashboard comprises four dashboard items that show the following metrics:
+- the **rationale coverage** of requirements and code, e.g., *how many decisions are documented for a requirement?*, 
+- **intra-rationale completeness**, e.g., *are there arguments for the decisions?*, 
+- **general metrics**, e.g., *how many rationale elements are documented per origin/documentation location?*, 
+- **metrics on the knowledge in git** branches, e.g., 
+*do the rationale elements documented in code comments and commit messages of a branch fulfill the [definition of done](quality-checking.md)?*
 
 ## Rationale Coverage
 
@@ -36,6 +36,7 @@ Offers the following **metrics on the knowledge graph data structure** after it 
 *General metrics dashboard item*
 
 ## Metrics about the Decision Knowledge in Git
+the feature branch quality regarding the rationale documentation.
 
 ![Dashboard item showing metrics about the knowledge in git](../screenshots/dashboard_git.png)
 
