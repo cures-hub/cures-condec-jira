@@ -7,8 +7,9 @@ The dashboard comprises four dashboard items that show the following metrics:
 2. **intra-rationale completeness**, e.g., *are there arguments for the decisions?*, 
 3. **general metrics**, e.g., *how many rationale elements are documented per origin/documentation location?*, and
 4. **metrics on the knowledge in git**, e.g., 
-*do the rationale elements documented in [code comments and commit messages of a branch](knowledge-in-git-presentation.md) fulfill the [definition of done](quality-checking.md)?*
+*do the rationale elements documented in [code comments and commit messages of a branch](knowledge-in-git-presentation.md) fulfill the [definition of done (DoD)](quality-checking.md)?*
 
+The metric plots are created using the [Apache ECharts library](https://echarts.apache.org).
 The four dashboard items are shown in the following sections.
 
 ## Rationale Coverage
@@ -72,7 +73,7 @@ i.e. no rationale elements documented in [code comments and commit messages of a
 *Dashboard item showing metrics about the knowledge in git using boxplots and pie charts*
 
 ## Filtering
-All dashboard items can be filtered and the filter settings are persisted for the dashboard item.
+All dashboard items can be filtered and the filter settings are persisted for every dashboard item.
 The filter settings are used to **filter the knowledge graph** similar to the [knowledge graph views](knowledge-visualization.md).
 For example, the status filter specifies whether the decision problems should be *resolved* or *unresolved*. 
 Per default, both resolved and unresolved decision problems (issues) are included.
@@ -84,7 +85,11 @@ with status *decided* and no decisions with status *rejected* or *challenged*.
 *Filter settings for rationale coverage dashboard item*
 
 ## Navigation
-Ubiquitous linking
+Developers can navigate to the detail views of the knowledge elements or branches that are shown in the dashboard metric plots,
+for example, to fix violations of the DoD.
+The metric plots are interactive and the developers can click on data points in the metrics plots.
+When clicking on a metric plot, ConDec presents a dialog with hyperlinks to the detail views of the respective knowledge elements or branches.
+The overall goal is to support [ubiquitous linking](https://linkingmanifesto.org).
 
 ![Navigation dialog with elements violating the DoD](../screenshots/dashboard_navigation.png)
 
@@ -108,4 +113,4 @@ The UI code for the dashboard can be found here:
 - [Velocity templates for the dashboard](../../src/main/resources/templates/dashboard)
 - [JavaScript code for the dashboard](../../src/main/resources/js/dashboard)
 
-[Diff](../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/model)
+[Diff]: ../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/model
