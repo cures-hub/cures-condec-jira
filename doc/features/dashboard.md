@@ -85,10 +85,10 @@ with status *decided* and no decisions with status *rejected* or *challenged*.
 *Filter settings for rationale coverage dashboard item*
 
 ## Navigation
-Developers can navigate to the detail views of the knowledge elements or branches that are shown in the dashboard metric plots,
+Developers can **navigate to the detail views of the knowledge elements or git branches** that are shown in the dashboard metric plots,
 for example, to fix violations of the DoD.
-The metric plots are interactive and the developers can click on data points in the metrics plots.
-When clicking on a metric plot, ConDec presents a dialog with hyperlinks to the detail views of the respective knowledge elements or branches.
+The metric plots are interactive and the developers can **click on data points in the metrics plots**.
+When clicking on a metric plot, ConDec presents a dialog with hyperlinks to the detail views of the respective knowledge elements or git branches.
 The overall goal is to support [ubiquitous linking](https://linkingmanifesto.org).
 
 ![Navigation dialog with elements violating the DoD](../screenshots/dashboard_navigation.png)
