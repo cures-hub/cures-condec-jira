@@ -7,7 +7,7 @@ The dashboard comprises four dashboard items that show the following metrics:
 2. **intra-rationale completeness**, e.g., *are there arguments for the decisions?*, 
 3. **general metrics**, e.g., *how many rationale elements are documented per origin/documentation location?*, and
 4. **metrics on the knowledge in git**, e.g., 
-*do the rationale elements documented in code comments and commit messages of a branch fulfill the [definition of done](quality-checking.md)?*
+*do the rationale elements documented in [code comments and commit messages of a branch](knowledge-in-git-presentation.md) fulfill the [definition of done](quality-checking.md)?*
 
 The four dashboard items are shown in the following sections.
 
@@ -46,7 +46,7 @@ In particular, metrics are shown to answer the following questions:
 
 ## General Metrics
 
-Offers the following **metrics on the knowledge graph data structure** after it was filtered with the given filter settings: 
+This dashboard item presents the following **metrics on the knowledge graph data structure** after the graph was filtered with the given filter settings: 
 - Number of comments per Jira issue
 - Number of commits per Jira issue
 - Number of code files and requirements in the project
@@ -57,7 +57,7 @@ Offers the following **metrics on the knowledge graph data structure** after it 
 
 ![General metrics dashboard item](../screenshots/dashboard_general_metrics.png)
 
-*General metrics dashboard item*
+*General metrics dashboard item showing metrics using boxplots and pie charts*
 
 ## Metrics about the Decision Knowledge in Git
 the feature branch quality regarding the rationale documentation.
