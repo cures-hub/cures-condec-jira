@@ -12,10 +12,13 @@ The dashboard comprises four dashboard items that show the following metrics:
 The four dashboard items are shown in the following sections.
 
 ## Rationale Coverage
-This dashboard item shows the coverage of requirements, code, and other software artifacts (=knowledge elements) 
-with a specific decision knowledge type, e.g. decsion problem or decision. 
+This dashboard item shows the **coverage of requirements, code, and other software artifacts (=knowledge elements) 
+with a specific decision knowledge type, in particular, decsion problem or decision**. 
 For example, this dashboard item shows how many decisions are reachable from a requirement or 
 how many decisions are reachable from a code file **within a certain link distance in the knowledge graph**.
+Note that the rationale coverage is not calculated for rationale elements as source elements because there are 
+dedicated metrics for intra-rationale completeness (see below).
+
 The filter settings used to filter the knowledge graph.
 For example, the status in the can be used to specify whether the decision problems should be *resolved* or *unresolved*. 
 Per default, both resolved and unresolved decision problems (issues) are included.
@@ -24,13 +27,22 @@ with status *decided* and no decisions with status *rejected* or *challenged*.
 
 ![Rationale coverage dashboard item](../screenshots/dashboard_rationale_coverage.png)
 
-*Rationale coverage dashboard item*
+*Rationale coverage dashboard item showing the **issue/decision problem coverage** and **decision coverage** using boxplots and pie charts*
 
 ## Intra-Rationale Completeness
 
+This dashboard item presents **metrics regarding the intra-rationale completeness**.
+In particular, metrics are shown to answer the following questions:
+- How many issues (=decision problems) are solved by a decision?
+- For how many decisions is the issue (=decision problem) documented?
+- How many decisions have at least one pro-argument documented?
+- How many decisions have at least one con-argument documented?
+- How many alternatives have at least one pro-argument documented?
+- How many alternatives have at least one con-argument documented?
+
 ![Rationale coverage dashboard item](../screenshots/dashboard_intra_rationale_completeness.png)
 
-*Intra-rationale completeness dashboard item*
+*Intra-rationale completeness dashboard item showing the metrics using pie charts*
 
 ## General Metrics
 
