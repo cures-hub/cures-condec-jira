@@ -146,9 +146,13 @@ public class DiffForSingleRef {
 				.collect(Collectors.toList());
 	}
 
-	@XmlElement
-	public String getRepoUri() {
+	@XmlElement(name = "repoUri")
+	public String getRepoUriEncoded() {
 		return URLEncoder.encode(repoUri, Charset.defaultCharset());
+	}
+
+	public String getRepoUri() {
+		return repoUri;
 	}
 
 	public void setRepoUri(String repoUri) {
