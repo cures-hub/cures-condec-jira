@@ -59,7 +59,8 @@ public class TestDiffForSingleRef extends TestSetUpGit {
 	@Test
 	public void testRepoUri() {
 		diffForSingleRef.setRepoUri(GIT_URI);
-		assertEquals(URLEncoder.encode(GIT_URI, Charset.defaultCharset()), diffForSingleRef.getRepoUri());
+		assertEquals(GIT_URI, diffForSingleRef.getRepoUri());
+		assertEquals(URLEncoder.encode(GIT_URI, Charset.defaultCharset()), diffForSingleRef.getRepoUriEncoded());
 	}
 
 	@Test

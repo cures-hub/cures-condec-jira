@@ -18,12 +18,14 @@ public class TestDiff extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		diffForCommit = gitClient.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(mockJiraIssueForGitTestsTangledSingleCommit);
-		diffForJiraIssue = gitClient.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(mockJiraIssueForGitTestsTangled);
+		diffForCommit = gitClient
+				.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(mockJiraIssueForGitTestsTangledSingleCommit);
+		diffForJiraIssue = gitClient
+				.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(mockJiraIssueForGitTestsTangled);
 	}
 
 	@Test
-	public void createDiff() {
+	public void testCreateDiff() {
 		DiffForSingleRef diff = new DiffForSingleRef();
 		assertEquals(0, diff.getChangedFiles().size());
 	}

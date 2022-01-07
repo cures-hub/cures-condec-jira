@@ -14,7 +14,7 @@ The four dashboard items are shown in the following sections.
 
 ## Rationale Coverage
 This dashboard item shows the **coverage of requirements, code, and other software artifacts (=knowledge elements) 
-with a specific decision knowledge type, in particular, decsion problem or decision**. 
+with a specific decision knowledge type, in particular, decision problem or decision**. 
 For example, this dashboard item shows how many decisions are reachable from a requirement or 
 how many decisions are reachable from a code file **within a certain link distance in the knowledge graph**.
 Note that the rationale coverage is not calculated for rationale elements as source elements because there are 
