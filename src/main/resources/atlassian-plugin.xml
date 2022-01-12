@@ -135,7 +135,7 @@
 		<resource type="download" name="condec.chronology.js" location="/js/condec.chronology.js" />
 		<resource type="download" name="condec.comparison.js" location="/js/condec.comparison.js" />
 		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
-		<resource type="download" name="condec.quality.check.js" location="/js/condec.quality.check.js" />
+		<resource type="download" name="condec.quality.check.js" location="/js/definitionofdone/condec.quality.check.js" />
 		<resource type="download" name="condec.definition.of.done.checking.api.js"
 			location="/js/definitionofdone/condec.definition.of.done.checking.api.js" />
 		<resource type="download" name="condec.rationale.backlog.js" location="/js/condec.rationale.backlog.js" />
