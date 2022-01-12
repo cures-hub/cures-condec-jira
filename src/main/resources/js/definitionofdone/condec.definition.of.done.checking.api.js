@@ -1,21 +1,21 @@
 (function(global) {
 
 	const ConDecDoDCheckingAPI = function() {
-		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/dodChecking";
+		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/quality-checking";
 	};
 
 	/*
 	 * external references: settings/definitionofdone/...
 	 */
 	ConDecDoDCheckingAPI.prototype.setDefinitionOfDone = function(projectKey, definitionOfDone) {
-		generalApi.postJSON(this.restPrefix + "/setDefinitionOfDone.json?projectKey=" + projectKey, definitionOfDone, function(
-			error, response) {
-			if (error === null) {
-				conDecAPI.showFlag("success", "The definition of done is updated.");
-			}
-		});
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/definition-of-done", definitionOfDone,
+			function(error, response) {
+				if (error === null) {
+					conDecAPI.showFlag("success", "The definition of done is updated.");
+				}
+			});
 	};
-	
+
 	/*
 	 * external references: settings/definitionofdone/...
 	 * nudging/condec.prompts.js, condec.quality.check.js
@@ -31,7 +31,7 @@
 	 * condec.quality.check.js
 	 */
 	ConDecDoDCheckingAPI.prototype.getQualityProblems = function(filterSettings, callback) {
-		generalApi.postJSON(this.restPrefix + '/getQualityProblems.json', filterSettings, function(
+		generalApi.postJSON(this.restPrefix + '/quality-problems', filterSettings, function(
 			error, result) {
 			if (error === null) {
 				callback(result);
