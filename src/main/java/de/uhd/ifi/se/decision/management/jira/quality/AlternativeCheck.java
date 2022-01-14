@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-public class AlternativeCheck implements KnowledgeElementCheck {
+public class AlternativeCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement alternative;
 

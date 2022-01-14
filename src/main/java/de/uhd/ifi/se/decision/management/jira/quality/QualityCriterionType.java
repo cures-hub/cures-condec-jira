@@ -11,7 +11,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum QualityCriterionType {
 	DECISION_COVERAGE("Minimum decision coverage is not reached.", "Decision coverage is ok."), //
-	QUALITY_OF_LINKED_KNOWLEDGE("Linked decision knowledge is incomplete.", "Linked decision knowledge is fine."), //
+	QUALITY_OF_LINKED_KNOWLEDGE(
+			"Linked decision knowledge is incomplete! (see knowledge graph views to understand what is violated)",
+			"Linked decision knowledge is fine."), //
 	ISSUE_LINKED_TO_DECISION("Issue does not have a valid decision!", "Issue is solved by decision."), //
 	ISSUE_LINKED_TO_ALTERNATIVE("Issue does not have an alternative!",
 			"At least one alternative is documented for the issue."), //

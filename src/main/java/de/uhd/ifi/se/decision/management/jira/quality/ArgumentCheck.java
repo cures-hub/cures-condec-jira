@@ -6,7 +6,7 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class ArgumentCheck implements KnowledgeElementCheck {
+public class ArgumentCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement argument;
 

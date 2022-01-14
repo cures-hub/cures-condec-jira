@@ -27,7 +27,9 @@ public class DefinitionOfDoneChecker {
 			entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()), //
 			entry(KnowledgeType.ARGUMENT, new ArgumentCheck()), //
 			entry(KnowledgeType.PRO, new ArgumentCheck()), //
-			entry(KnowledgeType.CON, new ArgumentCheck()));
+			entry(KnowledgeType.CON, new ArgumentCheck()), //
+			entry(KnowledgeType.CODE, new CodeCheck()), //
+			entry(KnowledgeType.OTHER, new OtherCheck()));
 
 	/**
 	 * Checks if the definition of done has been violated for a
@@ -56,10 +58,6 @@ public class DefinitionOfDoneChecker {
 	 */
 	public static boolean isComplete(KnowledgeElement knowledgeElement) {
 		if (knowledgeElement instanceof ElementRecommendation) {
-			return true;
-		}
-		if (knowledgeElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT
-				&& knowledgeElement.getType() == KnowledgeType.OTHER) {
 			return true;
 		}
 		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
@@ -162,54 +160,12 @@ public class DefinitionOfDoneChecker {
 				|| knowledgeElement.getType() != KnowledgeType.OTHER;
 	}
 
-	private static QualityCriterionCheckResult getCoverageQuality(KnowledgeElement knowledgeElement,
-			KnowledgeType knowledgeType, FilterSettings filterSettings) {
-		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
-				QualityCriterionType.DECISION_COVERAGE, false);
-		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
-			checkResult.setExplanation("This element is excluded from coverage measuring.");
-			return checkResult;
-		}
-
-		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
-		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
-		String requiredCoverage = filterSettings.getDefinitionOfDone().getRequiredCoverageExplanation();
-		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
-		checkResult.setExplanation(requiredCoverage);
-		for (KnowledgeElement linkedElement : linkedElements) {
-			if (linkedElement.getType() == knowledgeType) {
-				minimumCoverage--;
-			}
-			if (minimumCoverage <= 0) {
-				checkResult.appendExplanation("This coverage or more is reached.");
-				return checkResult;
-			}
-		}
-
-		checkResult.setCriterionViolated(true);
-
-		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
-			checkResult.appendExplanation(
-					"Only " + minimumCoverage + " decision" + (minimumCoverage > 1 ? "s are" : " is") + " reached.");
-		} else {
-			checkResult.appendExplanation("No decisions are reached.");
-		}
-
-		return checkResult;
-	}
-
 	/**
 	 * @return {@link QualityCriterionCheckResult}s of the {@link KnowledgeElement}.
 	 */
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		QualityCriterionCheckResult coverageProblem = getCoverageQuality(knowledgeElement, KnowledgeType.DECISION,
-				filterSettings);
-		if (coverageProblem != null) {
-			qualityCheckResults.add(coverageProblem);
-		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
 			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
@@ -218,12 +174,11 @@ public class DefinitionOfDoneChecker {
 					.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, false));
 		}
 
-		if (knowledgeElementCheckMap.containsKey(knowledgeElement.getType())) {
-			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
-					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-			qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
-		}
+		DefinitionOfDone definitionOfDone = ConfigPersistenceManager
+				.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
+		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
+		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(knowledgeElement, filterSettings));
+		qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
 
 		return qualityCheckResults;
 	}
@@ -250,13 +205,7 @@ public class DefinitionOfDoneChecker {
 		List<QualityCriterionCheckResult> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityCriterionCheckResult problem : qualityProblems) {
-			if (problem.getType() == QualityCriterionType.DECISION_COVERAGE) {
-				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.getType() == QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE) {
-				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else {
-				text.append(problem.getExplanation()).append(System.lineSeparator());
-			}
+			text.append(problem.getExplanation()).append(System.lineSeparator());
 		}
 		return text.toString().strip();
 	}

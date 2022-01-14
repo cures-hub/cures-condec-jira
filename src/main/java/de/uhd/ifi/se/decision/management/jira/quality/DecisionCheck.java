@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-public class DecisionCheck implements KnowledgeElementCheck {
+public class DecisionCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement decision;
 

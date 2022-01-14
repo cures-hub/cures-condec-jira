@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Checks whether a decision problem (=issue, question, goal, ...) fulfills the
  * {@link DefinitionOfDone}.
  */
-public class IssueCheck implements KnowledgeElementCheck {
+public class IssueCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement issue;
 
@@ -43,7 +43,8 @@ public class IssueCheck implements KnowledgeElementCheck {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		if (!isValidDecisionLinkedToDecisionProblem(issue)) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true));
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true));
 		} else {
 			qualityCheckResults
 					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, false));
@@ -60,8 +61,8 @@ public class IssueCheck implements KnowledgeElementCheck {
 				qualityCheckResults
 						.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, true));
 			} else {
-				qualityCheckResults.add(
-						new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, false));
+				qualityCheckResults
+						.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, false));
 			}
 		}
 
