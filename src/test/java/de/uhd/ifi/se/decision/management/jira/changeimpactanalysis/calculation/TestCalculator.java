@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -17,36 +18,53 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 public class TestCalculator extends TestSetUp {
     
+    protected FilterSettings settings;
+    protected KnowledgeElementWithImpact rootElement;
+
     @Before
 	public void setUp() {
 		init();
+        settings = new FilterSettings("TEST", "");
+        settings.setSelectedElement("TEST-1");
+        rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
 	}
 
     @Test
     public void testCalculateChangeImpact() {
-        FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
-		KnowledgeElementWithImpact rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
         List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
         impactedElements.add(rootElement);
 
         impactedElements = Calculator.calculateChangeImpact(
             settings.getSelectedElement(), 1.0, settings, impactedElements, (long) settings.getLinkDistance());
         
-        assertEquals(7, impactedElements.size());
         assertEquals(1.0, impactedElements.get(0).getImpactValue(), 0.05);
         assertEquals(1.0, impactedElements.get(0).getParentImpact(), 0.05);
         assertEquals(1.0, impactedElements.get(0).getLinkTypeWeight(), 0.05);
         assertEquals(1.0, impactedElements.get(0).getRuleBasedValue(), 0.05);
         assertEquals(0, impactedElements.get(0).getPropagationRules().size());
-        assertEquals(0.75, impactedElements.get(1).getImpactValue(), 0.05);
-        assertEquals(3, impactedElements.get(1).getPropagationRules().size());
+    }
+
+    @Test
+    public void testCalculateChangeImpactContext() {
+        ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
+        config.setContext(1);
+        List<String> propagationRules = new ArrayList<String>();
+        propagationRules.add("Boost when element is textual similar to the selected element");
+        config.setPropagationRules(propagationRules);
+        settings.setChangeImpactAnalysisConfig(config);
+
+        List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
+        impactedElements.add(rootElement);
+
+        impactedElements = Calculator.calculateChangeImpact(
+            settings.getSelectedElement(), 1.0, settings, impactedElements, (long) settings.getLinkDistance());
+        
+        assertEquals(10, impactedElements.size());
+        assertTrue(impactedElements.get(9).getImpactExplanation().contains("context"));
     }
 
     @Test
     public void testCalculatePropagationRuleImpact() {
-        FilterSettings settings = new FilterSettings("TEST", "");
-        settings.setSelectedElement("TEST-1");
         KnowledgeElement element = settings.getSelectedElement();
         Link link = element.getLinks().iterator().next();
 

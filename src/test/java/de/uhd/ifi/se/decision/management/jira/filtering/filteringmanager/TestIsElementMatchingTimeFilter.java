@@ -59,7 +59,7 @@ public class TestIsElementMatchingTimeFilter extends TestSetUp {
 
 	@Test
 	public void testTimeFilterSetAndElementCreatedExactlyThen() {
-		filteringManager.getFilterSettings().setStartDate(element.getUpdatingDate().getTime());
+		filteringManager.getFilterSettings().setStartDate(element.getLatestUpdatingDate().getTime());
 		filteringManager.getFilterSettings().setEndDate(element.getCreationDate().getTime() + 86400000);
 
 		assertTrue(filteringManager.isElementMatchingTimeFilter(element));

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
+import java.util.TreeMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -95,11 +96,13 @@ public class TestKnowledgeElementJiraIssue extends TestSetUp {
 
 	@Test
 	public void testGetUpdatingDate() {
-		decisionKnowledgeElement.setUpdatingDate(null);
-		assertNotNull(decisionKnowledgeElement.getUpdatingDate());
+		TreeMap<Date, String> updateMap = new TreeMap<Date, String>();
+		decisionKnowledgeElement.setUpdateDateAndAuthor(updateMap);
+		assertNotNull(decisionKnowledgeElement.getLatestUpdatingDate());
 
-		decisionKnowledgeElement.setUpdatingDate(new Date());
-		assertNotNull(decisionKnowledgeElement.getUpdatingDate());
+		updateMap.put(new Date(), "FooBar");
+		decisionKnowledgeElement.setUpdateDateAndAuthor(updateMap);
+		assertNotNull(decisionKnowledgeElement.getLatestUpdatingDate());
 	}
 
 	@SuppressWarnings("unlikely-arg-type")

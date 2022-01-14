@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -24,6 +25,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.changehistory.ChangeHistory;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -51,12 +53,10 @@ public class KnowledgeElement {
 	private String description;
 	protected KnowledgeType type;
 	private String key;
-	private Date creationDate;
-	private Date updatingDate;
+	private TreeMap<Date, String> updateDateAndAuthor;
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
 	protected KnowledgeStatus status;
-	protected String authorName;
 
 	public KnowledgeElement() {
 		this.description = "";
@@ -107,8 +107,16 @@ public class KnowledgeElement {
 		}
 		this.key = issue.getKey();
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
-		this.creationDate = issue.getCreated();
-		this.updatingDate = issue.getUpdated();
+
+		this.updateDateAndAuthor = new TreeMap<Date, String>();
+		if (issue.getCreated() != null) {
+			updateDateAndAuthor.put(issue.getCreated(), "");
+		}
+        List<ChangeHistory> changeHistory = ComponentAccessor.getChangeHistoryManager().getChangeHistories(issue);
+		changeHistory.forEach(changeItem -> {
+			updateDateAndAuthor.put(changeItem.getTimePerformed(), changeItem.getAuthorDisplayName());
+		});
+
 		if (issue.getStatus() != null) {
 			this.status = KnowledgeStatus.getKnowledgeStatus(issue.getStatus().getName());
 		}
@@ -408,10 +416,10 @@ public class KnowledgeElement {
 	 */
 	@XmlElement
 	public Date getCreationDate() {
-		if (creationDate == null) {
-			return new Date();
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty()) {
+			return updateDateAndAuthor.firstKey();
 		}
-		return creationDate;
+		return new Date();
 	}
 
 	/**
@@ -419,26 +427,45 @@ public class KnowledgeElement {
 	 *            of creation of the knowledge element.
 	 */
 	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty() && creationDate != null) {
+			String creator = updateDateAndAuthor.firstEntry().getValue();
+
+			// Check whether the new creation date is actually older than the
+			// updates stored inside the TreeMap
+			TreeMap<Date, String> clonedMap = new TreeMap<Date, String>();
+			clonedMap.putAll(updateDateAndAuthor);
+			clonedMap.remove(clonedMap.firstKey());
+			clonedMap.put(creationDate, creator);
+			if (clonedMap.firstKey() == creationDate) {
+				updateDateAndAuthor = clonedMap;
+			}
+		}
+	}
+
+	/**
+	 * @return sorted map of all update dates and their corresponding authors of the knowledge element.
+	 */
+	public Map<Date, String> getUpdateDateAndAuthor() {
+		return updateDateAndAuthor;
 	}
 
 	/**
 	 * @return date of last update of the knowledge element.
 	 */
 	@XmlElement
-	public Date getUpdatingDate() {
-		if (updatingDate == null) {
+	public Date getLatestUpdatingDate() {
+		if (updateDateAndAuthor == null || updateDateAndAuthor.isEmpty()) {
 			return getCreationDate();
 		}
-		return updatingDate;
+		return updateDateAndAuthor.lastKey();
 	}
 
 	/**
-	 * @param updatingDate
-	 *            date of last update of the knowledge element.
+	 * @param updateDateAndAuthor
+	 *            map containing the update dates of the knowledge element and their corresponding authors.
 	 */
-	public void setUpdatingDate(Date updatingDate) {
-		this.updatingDate = updatingDate;
+	public void setUpdateDateAndAuthor(TreeMap<Date, String> updateDateAndAuthor) {
+		this.updateDateAndAuthor = updateDateAndAuthor;
 	}
 
 	/**
@@ -490,15 +517,19 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "creator")
 	public String getCreatorName() {
-		if (authorName != null) {
-			return authorName;
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.firstEntry().getValue().isEmpty()) {
+			return updateDateAndAuthor.firstEntry().getValue();
 		}
 		ApplicationUser user = getCreator();
 		return user != null ? user.getDisplayName() : "";
 	}
 
 	public void setCreator(String authorName) {
-		this.authorName = authorName;
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty()) {
+			updateDateAndAuthor.replace(this.updateDateAndAuthor.firstKey(), authorName);
+		}
+		this.updateDateAndAuthor = new TreeMap<Date, String>();
+		updateDateAndAuthor.put(new Date(), authorName);
 	}
 
 	/**

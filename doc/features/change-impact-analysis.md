@@ -24,15 +24,41 @@ elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValu
 
 where `parentImpact` is the element impact of the ancestor node in the knowledge graph, 
 `decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, 
-and `ruleBasedValue` is calculated based on rules. For example, rules are:
+and `ruleBasedValue` is calculated based on rules. The following rules are available:
 
 1. Stop at elements with the same type as the selected element (e.g. at requirements with same type)
 2. Outward links only
 3. Boost when element is textual similar to the selected element
+4. Boost when element is assigned to the same component
+5. Boost when element is assigned to the same decision group
+6. Boost when element has a low average age
+7. Boost when element has more outbound than inbound links 
+8. Boost when element has a large amount of distinct update authors
+9. Boost when element received updates in the same timeframe (i.e. is timely coupled)
 
 The element is included in the **estimated impact set (EIS)** if `elementImpact >= threshold`.
 Developers can see an **explanation for the impact factor** of each node via a tooltip.
 
+![JSTree diagram with change impact highlighting](../screenshots/change_impact_analysis_treeview_tooltip.png)
+
+*JSTree diagram with change impact hightlighting*
+
 ## Configuration
 The rationale manager can set default parameters for the change impact analysis.
 Besides, the developer can change the default values during the usage of change impact analysis.
+
+## Design Details
+The following class diagram gives an overview of relevant backend classes for the change impact analysis.
+
+![Overview class diagram](../screenshots/change_impact_analysis_class_diagram.png)
+
+*Overview class diagram for the change impact analysis*
+
+The Java code for the change impact analysis can be found here:
+
+- [Java code for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/changeimpactanalysis)
+- [REST-API for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ConfigRest.java)
+
+The UI code for the change impact analysis can be found here:
+
+- [JavaScript code for the change impact analysis](../../src/main/resources/js/changeimpactanalysis)

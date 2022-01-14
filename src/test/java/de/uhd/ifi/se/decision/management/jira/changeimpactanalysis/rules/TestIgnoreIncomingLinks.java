@@ -33,13 +33,13 @@ public class TestIgnoreIncomingLinks extends TestSetUp {
 	public void testPropagationTrueBecauseOutwardLink() {
 		Link link = new Link(currentElement, nextElement, LinkType.RELATE);
 		assertEquals(1.0, ChangePropagationRule.IGNORE_INCOMING_LINKS.getFunction().isChangePropagated(null,
-				currentElement, link), 0.0);
+			nextElement, link), 0.0);
 	}
 
 	@Test
 	public void testPropagationFalseBecauseIncomingLink() {
 		Link link = new Link(nextElement, currentElement, LinkType.RELATE);
 		assertEquals(0.0, ChangePropagationRule.IGNORE_INCOMING_LINKS.getFunction().isChangePropagated(null,
-				currentElement, link), 0.0);
+			nextElement, link), 0.0);
 	}
 }

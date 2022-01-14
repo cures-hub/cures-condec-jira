@@ -192,19 +192,19 @@ public class TestChangedFile extends TestSetUpGit {
 
 	@Test
 	public void testUpdatingDate() {
-		assertNotNull(changedFile.getUpdatingDate());
+		assertNotNull(changedFile.getLatestUpdatingDate());
 	}
 
 	@Test
 	public void testUpdatingDateCommitsNull() {
 		changedFile.setCommits(null);
-		assertNotNull(changedFile.getUpdatingDate());
+		assertNotNull(changedFile.getLatestUpdatingDate());
 	}
 
 	@Test
 	public void testUpdatingDateCommitsEmpty() {
 		changedFile.setCommits(List.of());
-		assertNotNull(changedFile.getUpdatingDate());
+		assertNotNull(changedFile.getLatestUpdatingDate());
 	}
 
 	@Test
