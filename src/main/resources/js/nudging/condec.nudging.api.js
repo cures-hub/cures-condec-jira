@@ -44,7 +44,6 @@
 		var element = document.getElementById(elementId);
 		if (numberOfSmartFeatureTodos <= 0) {
 			element.style.visibility = "visible";
-			element.style.color = "green";
 			AJS.$(element).tooltip({gravity: 'w'});
 		} else {
 			element.style.visibility = "hidden";

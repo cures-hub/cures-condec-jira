@@ -173,8 +173,8 @@ public class DefinitionOfDone {
 	 * @return text explaining required coverage.
 	 */
 	public String getRequiredCoverageExplanation() {
-		return "A minimum of " + minimumDecisionsWithinLinkDistance + " decision"
+		return "A minimum coverage of " + minimumDecisionsWithinLinkDistance + " decision"
 				+ (minimumDecisionsWithinLinkDistance == 1 ? "" : "s") + " within a maximum link distance of "
-				+ maximumLinkDistanceToDecisions + " must be reachable.";
+				+ maximumLinkDistanceToDecisions + " is required.";
 	}
 }

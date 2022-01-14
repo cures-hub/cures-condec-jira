@@ -97,7 +97,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetTitleWithQualityHighlightingDoDViolated() {
-		assertTrue(timeNode.getTitle().contains("decision coverage"));
+		assertTrue(timeNode.getTitle().contains("coverage"));
 	}
 
 	@Test

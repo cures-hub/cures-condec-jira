@@ -189,7 +189,7 @@ public class DefinitionOfDoneChecker {
 
 		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
 			checkResult.appendExplanation(
-					"Only " + minimumCoverage + " decision" + (minimumCoverage > 1 ? "s are" : "is") + " reached.");
+					"Only " + minimumCoverage + " decision" + (minimumCoverage > 1 ? "s are" : " is") + " reached.");
 		} else {
 			checkResult.appendExplanation("No decisions are reached.");
 		}

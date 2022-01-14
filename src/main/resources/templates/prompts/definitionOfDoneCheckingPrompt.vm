@@ -1,7 +1,7 @@
 <div id="definition-of-done-checking-prompt" class="condec-prompt">
     <h3>
     	$i18n.getText("condec.label.quality") 
-    	<span id="definition-of-done-check-icon" class="aui-icon aui-icon-large aui-iconfont-check-circle" 
+    	<span id="definition-of-done-check-icon" class="aui-icon aui-icon-large aui-iconfont-check-circle condec-fine" 
     		style="visibility:hidden" title="Great work!"></span>
     </h3>
     <p id="definition-of-done-checking-summary"></p>
