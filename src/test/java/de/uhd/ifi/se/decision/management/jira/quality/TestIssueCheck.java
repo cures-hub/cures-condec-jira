@@ -106,9 +106,11 @@ public class TestIssueCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.getQualityCheckResult(issue, definitionOfDone).isEmpty());
-		assertFalse(issueCompletenessCheck
-				.getQualityCheckResult(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
+		assertTrue(issueCompletenessCheck.getQualityCheckResult(issue, definitionOfDone).stream()
+				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
+		assertTrue(issueCompletenessCheck
+				.getQualityCheckResult(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).stream()
+				.anyMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
 	@Test
@@ -118,9 +120,11 @@ public class TestIssueCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.getQualityCheckResult(issue, definitionOfDone).isEmpty());
-		assertFalse(issueCompletenessCheck
-				.getQualityCheckResult(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).isEmpty());
+		assertTrue(issueCompletenessCheck.getQualityCheckResult(issue, definitionOfDone).stream()
+				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
+		assertTrue(issueCompletenessCheck
+				.getQualityCheckResult(KnowledgeElements.getUnsolvedDecisionProblem(), definitionOfDone).stream()
+				.anyMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
 	@Test

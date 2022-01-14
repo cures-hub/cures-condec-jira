@@ -202,7 +202,6 @@ public class DefinitionOfDoneChecker {
 	 */
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
-
 		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
 
 		QualityCriterionCheckResult coverageProblem = getCoverageQuality(knowledgeElement, KnowledgeType.DECISION,
@@ -213,6 +212,9 @@ public class DefinitionOfDoneChecker {
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
 			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
+		} else {
+			qualityProblems
+					.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, false));
 		}
 
 		if (knowledgeElementCheckMap.containsKey(knowledgeElement.getType())) {
