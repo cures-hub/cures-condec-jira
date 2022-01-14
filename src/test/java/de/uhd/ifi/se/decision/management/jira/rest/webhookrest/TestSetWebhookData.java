@@ -11,8 +11,10 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.WebhookRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
 public class TestSetWebhookData extends TestSetUp {
 
@@ -73,5 +75,6 @@ public class TestSetWebhookData extends TestSetUp {
 	public void testRequestFilledProjectKeyValidUrlValidSecretValid() {
 		assertEquals(Response.Status.OK.getStatusCode(),
 				webhookRest.setWebhookData(request, "TEST", "http://", "42").getStatus());
+		ConfigPersistenceManager.saveWebhookConfiguration("TEST", new WebhookConfiguration());
 	}
 }
