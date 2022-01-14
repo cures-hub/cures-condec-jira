@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -86,5 +87,10 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	public void testIsCompleteElementRecommendation() {
 		ElementRecommendation recommendation = new ElementRecommendation();
 		assertTrue(DefinitionOfDoneChecker.isComplete(recommendation));
+	}
+
+	@Test
+	public void testConstructor() {
+		assertNotNull(new DefinitionOfDoneChecker());
 	}
 }
