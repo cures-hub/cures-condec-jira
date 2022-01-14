@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 public class TestStopAtSameElementType extends TestSetUp {
 
 	private KnowledgeElement currentElement;
+	private KnowledgeElement target;
 	private Link link;
 	private FilterSettings filterSettings;
 
@@ -23,7 +24,7 @@ public class TestStopAtSameElementType extends TestSetUp {
 	public void setUp() {
 		init();
 		currentElement = new KnowledgeElement();
-		KnowledgeElement target = new KnowledgeElement();
+		target = new KnowledgeElement();
 		currentElement.setType(KnowledgeType.ARGUMENT);
 		target.setType(KnowledgeType.DECISION);
 		link = new Link(currentElement, target, LinkType.RELATE);
@@ -40,13 +41,13 @@ public class TestStopAtSameElementType extends TestSetUp {
 	@Test
 	public void testPropagationFalseSameElementType() {
 		assertEquals(0.0, ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
-				.isChangePropagated(filterSettings, currentElement, link), 0.0);
+				.isChangePropagated(filterSettings, target, link), 0.0);
 	}
 
 	@Test
 	public void testPropagationTrueDifferentElementType() {
 		filterSettings.setSelectedElementObject(currentElement);
 		assertEquals(1.0, ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
-				.isChangePropagated(filterSettings, currentElement, link), 0.0);
+				.isChangePropagated(filterSettings, target, link), 0.0);
 	}
 }

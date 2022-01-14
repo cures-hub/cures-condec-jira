@@ -584,12 +584,12 @@ public class ChangedFile extends KnowledgeElement {
 	 *           code file!
 	 */
 	@Override
-	public Date getUpdatingDate() {
+	public Date getLatestUpdatingDate() {
 		if (commits != null && !commits.isEmpty()) {
 			Date updatingDate = new Date(commits.get(commits.size() - 1).getCommitTime() * 1000L);
 			return updatingDate;
 		}
-		return super.getUpdatingDate();
+		return super.getLatestUpdatingDate();
 	}
 
 	/**

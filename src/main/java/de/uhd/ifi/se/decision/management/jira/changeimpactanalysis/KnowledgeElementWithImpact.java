@@ -29,6 +29,7 @@ public class KnowledgeElementWithImpact extends KnowledgeElement {
 		this.setSummary(element.getSummary());
 		this.documentationLocation = element.getDocumentationLocation();
 		this.type = element.getType();
+        this.setKey(element.getKey());
 
         this.impactValue = impactValue;
         this.parentImpact = parentImpact;
@@ -45,6 +46,7 @@ public class KnowledgeElementWithImpact extends KnowledgeElement {
 		this.setSummary(element.getSummary());
 		this.documentationLocation = element.getDocumentationLocation();
 		this.type = element.getType();
+        this.setKey(element.getKey());
 
         this.impactValue = 1.0;
         this.parentImpact = 1.0;

@@ -352,8 +352,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 	 *         graph. Thus, it is no real subgraph but mutable.
 	 */
 	public KnowledgeGraph getMutableSubgraphFor(KnowledgeElement startElement, int maxLinkDistance) {
-		// this.addVertex(startElement); // =dirty hack to prevent Graph must contain
-		// source vertex error.
 		SingleSourcePaths<KnowledgeElement, Link> paths = getShortestPathAlgorithm(maxLinkDistance)
 				.getPaths(startElement);
 		Set<KnowledgeElement> reachableElements = ((TreeSingleSourcePathsImpl<KnowledgeElement, Link>) paths)

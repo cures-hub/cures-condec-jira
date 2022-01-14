@@ -48,10 +48,10 @@ public class VisTimeLineNode {
 		if (isPlacedAtCreationDate) {
 			start = DATEFORMAT.format(element.getCreationDate());
 		} else {
-			start = DATEFORMAT.format(element.getUpdatingDate());
+			start = DATEFORMAT.format(element.getLatestUpdatingDate());
 		}
 		if (isPlacedAtCreationDate && isPlacedAtUpdatingDate) {
-			end = DATEFORMAT.format(element.getUpdatingDate());
+			end = DATEFORMAT.format(element.getLatestUpdatingDate());
 		}
 		className = element.getTypeAsString().toLowerCase();
 		className += " " + element.getStatusAsString();

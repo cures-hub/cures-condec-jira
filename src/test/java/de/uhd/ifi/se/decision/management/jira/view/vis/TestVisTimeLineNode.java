@@ -63,7 +63,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetEnd() {
-		assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(element.getUpdatingDate()), timeNode.getEnd());
+		assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(element.getLatestUpdatingDate()), timeNode.getEnd());
 	}
 
 	@Test

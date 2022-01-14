@@ -107,7 +107,7 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	@NonTransactional
 	public void testGetUpdatingDateDefault() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
-		assertNotNull(sentence.getUpdatingDate());
+		assertNotNull(sentence.getLatestUpdatingDate());
 	}
 
 	@Test
@@ -115,13 +115,13 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	public void testGetUpdatingDateForSentenceInDescription() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setJiraIssue(1);
-		assertNotNull(sentence.getUpdatingDate());
+		assertNotNull(sentence.getLatestUpdatingDate());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetUpdatingDateForSentenceInComment() {
-		assertNotNull(alternative.getUpdatingDate());
+		assertNotNull(alternative.getLatestUpdatingDate());
 	}
 
 	@Test

@@ -6,7 +6,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Rule that defines that a change impact is not propagated along an incoming
- * link to an element. With this rule activated, impacts are only propagted
+ * link to an element. With this rule activated, impacts are only propagated
  * along outgoing links from an element.
  * 
  * For example, if decision A -> decision B, the change is propageted from
@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class IgnoreIncomingLinks implements ChangePropagationFunction {
 
 	@Override
-	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement currentElement, Link link) {
-		return link.isInwardLinkTo(currentElement) ? 0.0 : 1.0;
+	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
+		return link.isInwardLinkTo(nextElement) ? 1.0 : 0.0;
 	}
 }
