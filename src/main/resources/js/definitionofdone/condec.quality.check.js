@@ -49,30 +49,11 @@
 	 * @param viewIdentifier identifies the html elements of the view
 	 */
 	function fillQualityCheckTab(filterSettings, viewIdentifier) {
-		fillIssueKey(filterSettings.selectedElement, viewIdentifier);
-
 		conDecDoDCheckingAPI.getQualityCheckResults(filterSettings, (qualityCheckResults) => {
 			fillQualityProblems(qualityCheckResults, viewIdentifier);
 			var problems = qualityCheckResults.filter(checkResult => checkResult.criterionViolated);
 			updateTabStatus(problems, viewIdentifier);
 		});
-	}
-
-	/**
-	 * Fills the the tab with the key of the currently selected issue.
-	 *
-	 * @param issueKey the key of the selected issue
-	 * @param viewIdentifier identifies the html elements of the view
-	 */
-	function fillIssueKey(issueKey, viewIdentifier) {
-		var knowledgeTypeLabel = document.getElementById("quality-check-issue-key-" + viewIdentifier)
-
-		if (issueKey === null || issueKey === undefined) {
-			knowledgeTypeLabel.innerText = "This element";
-			return;
-		}
-
-		knowledgeTypeLabel.innerText = issueKey;
 	}
 
 	/**

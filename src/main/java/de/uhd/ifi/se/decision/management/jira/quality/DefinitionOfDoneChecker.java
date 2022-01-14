@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
@@ -202,18 +203,18 @@ public class DefinitionOfDoneChecker {
 	 */
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
-		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		QualityCriterionCheckResult coverageProblem = getCoverageQuality(knowledgeElement, KnowledgeType.DECISION,
 				filterSettings);
 		if (coverageProblem != null) {
-			qualityProblems.add(coverageProblem);
+			qualityCheckResults.add(coverageProblem);
 		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
+			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
 		} else {
-			qualityProblems
+			qualityCheckResults
 					.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, false));
 		}
 
@@ -221,10 +222,20 @@ public class DefinitionOfDoneChecker {
 			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
 			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-			qualityProblems.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
+			qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
 		}
 
-		return qualityProblems;
+		return qualityCheckResults;
+	}
+
+	/**
+	 * @return {@link QualityCriterionCheckResult}s of the {@link KnowledgeElement}
+	 *         that violate the DoD.
+	 */
+	public static List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement knowledgeElement,
+			FilterSettings filterSettings) {
+		return getQualityCheckResults(knowledgeElement, filterSettings).stream()
+				.filter(checkResult -> checkResult.isCriterionViolated()).collect(Collectors.toList());
 	}
 
 	/**
@@ -236,7 +247,7 @@ public class DefinitionOfDoneChecker {
 		if (knowledgeElement.getProject() == null) {
 			return "";
 		}
-		List<QualityCriterionCheckResult> qualityProblems = getQualityCheckResults(knowledgeElement, filterSettings);
+		List<QualityCriterionCheckResult> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityCriterionCheckResult problem : qualityProblems) {
 			if (problem.getType() == QualityCriterionType.DECISION_COVERAGE) {
