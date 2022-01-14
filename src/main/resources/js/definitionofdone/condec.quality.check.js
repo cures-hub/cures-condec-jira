@@ -4,7 +4,8 @@
  * 
  * Requires: condec.api.js, condec.quality.check.api.js
  * 
- * Is required by: condec.knowledge.page.js, condec.rationale.backlog.js
+ * Is required by: condec.knowledge.page.js, condec.rationale.backlog.js, 
+ * templates/tabs/qualityCheck.vm
  */
 (function(global) {
 	const pluralize = (count, noun, suffix = 's') =>
@@ -62,7 +63,8 @@
 
 		conDecDoDCheckingAPI.getQualityProblems(filterSettings, (qualityProblems) => {
 			fillQualityProblems(qualityProblems, viewIdentifier);
-			updateTabStatus(qualityProblems, viewIdentifier);
+			var problems = qualityProblems.filter(checkResult => checkResult.criterionViolated);
+			updateTabStatus(problems, viewIdentifier);
 		});
 	}
 
@@ -110,33 +112,40 @@
 	}
 
 	/**
-	 * Fills the tab with information about the quality problems of the element.
+	 * Fills the table with information about the quality check for a selected knowledge element.
 	 *
-	 * @param qualityProblems a list of the quality problems of the element
+	 * @param checkResults a list of the quality criterion check results for a selected knowledge element
 	 * @param viewIdentifier identifies the html elements of the view
 	 */
-	function fillQualityProblems(qualityProblems, viewIdentifier) {
-		var qualityProblemsTextField = document.getElementById("quality-check-problems-text-" + viewIdentifier);
+	function fillQualityProblems(checkResults, viewIdentifier) {
 		var qualityCheckTableBody = document.getElementById("quality-check-table-body-" + viewIdentifier);
-
-		qualityProblems.forEach(function(criterionCheckResult) {
-			console.log(criterionCheckResult);
-
+		qualityCheckTableBody.innerHTML = "";
+		checkResults.forEach(function(checkResult) {
 			var tableRow = document.createElement("tr");
 			var criterionNameCell = document.createElement("td");
-			criterionNameCell.innerText = criterionCheckResult.name;
+			criterionNameCell.innerText = checkResult.name;
 			tableRow.appendChild(criterionNameCell);
-			var statusCell = document.createElement("td");
-			statusCell.innerText = criterionCheckResult.explanation;
-			if (criterionCheckResult.criterionViolated) {
-				statusCell.style.color = "#FF0000";
-			}
+			var statusCell = document.createElement("td");		
+			var icon;
+			if (checkResult.criterionViolated) {
+				statusCell.classList = "condec-error";
+				icon = createIcon("aui-iconfont-cross-circle");
+			} else {
+				statusCell.classList = "condec-fine";
+				icon = createIcon("aui-iconfont-check-circle");
+			}			
+			statusCell.appendChild(icon);		
+			statusCell.insertAdjacentText('beforeend', " " + checkResult.explanation);
 			tableRow.appendChild(statusCell);
 
 			qualityCheckTableBody.appendChild(tableRow);
 		});
-
-		conDecNudgingAPI.setAmbientFeedback(qualityProblemsTextField, "condec-error");
+	}
+	
+	function createIcon(iconType) {
+		var icon = document.createElement("span");
+		icon.classList = "aui-icon aui-icon-small " + iconType;
+		return icon;
 	}
 
 	/**

@@ -15,22 +15,22 @@ public class TestQualityProblem {
 
 	@Before
 	public void setUp() {
-		qualityProblem = new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE_TOO_LOW);
+		qualityProblem = new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE);
 	}
 
 	@Test
 	public void testName() {
-		assertEquals(QualityCriterionType.DECISION_COVERAGE_TOO_LOW.name(), qualityProblem.getName());
+		assertEquals(QualityCriterionType.DECISION_COVERAGE.name(), qualityProblem.getName());
 	}
 
 	@Test
 	public void testType() {
-		assertEquals(QualityCriterionType.DECISION_COVERAGE_TOO_LOW, qualityProblem.getType());
+		assertEquals(QualityCriterionType.DECISION_COVERAGE, qualityProblem.getType());
 	}
 
 	@Test
 	public void testExplanation() {
-		assertEquals(QualityCriterionType.DECISION_COVERAGE_TOO_LOW.getViolationDescription(), qualityProblem.getExplanation());
+		assertEquals(QualityCriterionType.DECISION_COVERAGE.getViolationDescription(), qualityProblem.getExplanation());
 		String betterExplanation = "This requirement is covered by only 1 decision, 3 decisions are required.";
 		qualityProblem.setExplanation(betterExplanation);
 		assertEquals(betterExplanation, qualityProblem.getExplanation());
@@ -42,7 +42,7 @@ public class TestQualityProblem {
 		assertFalse(qualityProblem.equals((Object) null));
 		assertFalse(qualityProblem.equals(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
 		assertTrue(qualityProblem.equals(qualityProblem));
-		assertTrue(qualityProblem.equals(new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE_TOO_LOW)));
+		assertTrue(qualityProblem.equals(new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE)));
 		assertFalse(qualityProblem.equals(new QualityCriterionCheckResult(QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED)));
 	}
 

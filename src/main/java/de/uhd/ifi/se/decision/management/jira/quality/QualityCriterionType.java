@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Models the quality criteria of knowledge elements. Quality criteria are
  * checked for issues (=decision problems), decisions, alternatives, arguments,
@@ -8,8 +10,7 @@ package de.uhd.ifi.se.decision.management.jira.quality;
  * Used in {@link KnowledgeElementCheck}.
  */
 public enum QualityCriterionType {
-	NO_DECISION_COVERAGE("There are no decisions documented.", ""), //
-	DECISION_COVERAGE_TOO_LOW("Minimum decision coverage is not reached.", "Decision coverage is ok."), //
+	DECISION_COVERAGE("Minimum decision coverage is not reached.", "Decision coverage is ok."), //
 	INCOMPLETE_KNOWLEDGE_LINKED("Linked decision knowledge is incomplete.", "Linked decision knowledge is fine."), //
 	ISSUE_DOESNT_HAVE_DECISION("Issue does not have a valid decision!", "Issue is solved by decision."), //
 	ISSUE_DOESNT_HAVE_ALTERNATIVE("Issue does not have an alternative!",
@@ -40,5 +41,9 @@ public enum QualityCriterionType {
 
 	public String getFulfillmentDescription() {
 		return fulfillmentDescription;
+	}
+
+	public String toString() {
+		return StringUtils.capitalize(name().replaceAll("_", " ").toLowerCase());
 	}
 }

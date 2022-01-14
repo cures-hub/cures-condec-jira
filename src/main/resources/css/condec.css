@@ -174,7 +174,7 @@ a:focus a:hover {
 .text-field.condec-default {
     color: black;
 }
-.text-field.condec-error {
+.condec-error, .text-field.condec-error {
     color: crimson;
 }
 .condec-warning, .text-field.condec-warning {

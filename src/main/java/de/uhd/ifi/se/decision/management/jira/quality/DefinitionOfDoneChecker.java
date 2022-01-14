@@ -163,27 +163,37 @@ public class DefinitionOfDoneChecker {
 
 	private static QualityCriterionCheckResult getCoverageQuality(KnowledgeElement knowledgeElement,
 			KnowledgeType knowledgeType, FilterSettings filterSettings) {
+		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
+				QualityCriterionType.DECISION_COVERAGE, false);
 		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
-			return null;
+			checkResult.setExplanation("Rationale coverage is not checked for this element.");
+			return checkResult;
 		}
 
 		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
 		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
 		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
+		checkResult.setExplanation(knowledgeElement.getKey() + " requires " + minimumCoverage + " decision(s) "
+				+ "within a link distance of " + linkDistance + ".");
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (linkedElement.getType() == knowledgeType) {
 				minimumCoverage--;
 			}
 			if (minimumCoverage <= 0) {
-				return null;
+				checkResult.appendExplanation("This coverage is reached.");
+				return checkResult;
 			}
 		}
 
+		checkResult.setCriterionViolated(true);
+
 		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
-			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE_TOO_LOW);
+			checkResult.appendExplanation("Only " + minimumCoverage + " decision(s) are reached.");
 		} else {
-			return new QualityCriterionCheckResult(QualityCriterionType.NO_DECISION_COVERAGE);
+			checkResult.appendExplanation("No decisions are reached.");
 		}
+
+		return checkResult;
 	}
 
 	/**
@@ -227,9 +237,7 @@ public class DefinitionOfDoneChecker {
 		List<QualityCriterionCheckResult> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityCriterionCheckResult problem : qualityProblems) {
-			if (problem.getType() == QualityCriterionType.NO_DECISION_COVERAGE) {
-				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.getType() == QualityCriterionType.DECISION_COVERAGE_TOO_LOW) {
+			if (problem.getType() == QualityCriterionType.DECISION_COVERAGE) {
 				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
 			} else if (problem.getType() == QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED) {
 				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());

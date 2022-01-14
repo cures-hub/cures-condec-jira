@@ -26,7 +26,7 @@ public class QualityCriterionCheckResult {
 
 	@XmlElement
 	public String getName() {
-		return type.name();
+		return type.toString();
 	}
 
 	@XmlElement
@@ -36,6 +36,10 @@ public class QualityCriterionCheckResult {
 
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
+	}
+
+	public void appendExplanation(String explanation) {
+		this.explanation += " " + explanation;
 	}
 
 	public QualityCriterionType getType() {

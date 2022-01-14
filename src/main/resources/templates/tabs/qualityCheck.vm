@@ -5,9 +5,6 @@
 
     <p>It reaches <label id="quality-check-coverage-$viewIdentifier"></label>.</p>
 
-    <div class="text-field" id="quality-check-problems-text-$viewIdentifier">
-    </div>
-    
     <table class="aui aui-table-list">
 	<thead>
     	<tr>
