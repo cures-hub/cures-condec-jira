@@ -16,9 +16,9 @@ The elements in the graph that violate the DoD are highlighted in red and just-i
         saveDefinitionOfDoneButton.click(event => {
             event.preventDefault();
             let definitionOfDone = {
-                "issueIsLinkedToAlternative": $("#issue-link-alternative-checkbox").prop("checked"),
-                "decisionIsLinkedToPro": $("#decision-link-pro-checkbox").prop("checked"),
-                "alternativeIsLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked"),
+                "issueLinkedToAlternative": $("#issue-link-alternative-checkbox").prop("checked"),
+                "decisionLinkedToPro": $("#decision-link-pro-checkbox").prop("checked"),
+                "alternativeLinkedToArgument": $("#alternative-link-argument-checkbox").prop("checked"),
                 "lineNumbersInCodeFile": $("#line-numbers-in-code-file-number-input").prop("value"),
                 "maximumLinkDistanceToDecisions": $("#link-distance-to-decision-number-input").prop("value"),
                 "minimumDecisionsWithinLinkDistance": $("#minimum-number-of-decisions-input").prop("value"),

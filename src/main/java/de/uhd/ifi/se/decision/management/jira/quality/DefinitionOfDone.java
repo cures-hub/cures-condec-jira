@@ -59,7 +59,7 @@ public class DefinitionOfDone {
 	 *            true if every decision problem (=issue) needs to be linked to at
 	 *            least one alternative.
 	 */
-	@JsonProperty("issueIsLinkedToAlternative")
+	@JsonProperty
 	public void setIssueLinkedToAlternative(boolean issueIsLinkedToAlternative) {
 		this.issueIsLinkedToAlternative = issueIsLinkedToAlternative;
 	}
@@ -78,7 +78,7 @@ public class DefinitionOfDone {
 	 *            true if every decision (=solution for a decision problem) needs to
 	 *            be linked to at least one pro-argument.
 	 */
-	@JsonProperty("decisionIsLinkedToPro")
+	@JsonProperty
 	public void setDecisionLinkedToPro(boolean decisionIsLinkedToPro) {
 		this.decisionIsLinkedToPro = decisionIsLinkedToPro;
 	}
@@ -97,7 +97,7 @@ public class DefinitionOfDone {
 	 *            true if every alternative (=solution option for a decision
 	 *            problem) needs to be linked to at least one pro-argument.
 	 */
-	@JsonProperty("alternativeIsLinkedToArgument")
+	@JsonProperty
 	public void setAlternativeLinkedToArgument(boolean alternativeIsLinkedToArgument) {
 		this.alternativeIsLinkedToArgument = alternativeIsLinkedToArgument;
 	}
@@ -107,7 +107,7 @@ public class DefinitionOfDone {
 		return lineNumbersInCodeFile;
 	}
 
-	@JsonProperty("lineNumbersInCodeFile")
+	@JsonProperty
 	public void setLineNumbersInCodeFile(int lineNumbersInCodeFile) {
 		this.lineNumbersInCodeFile = lineNumbersInCodeFile;
 	}
@@ -138,7 +138,7 @@ public class DefinitionOfDone {
 	 *            documented within a link distance of 2. This defines the minimal
 	 *            rationale/decision coverage for the code file.
 	 */
-	@JsonProperty("maximumLinkDistanceToDecisions")
+	@JsonProperty
 	public void setMaximumLinkDistanceToDecisions(int maximumLinkDistanceToDecisions) {
 		this.maximumLinkDistanceToDecisions = maximumLinkDistanceToDecisions;
 	}
@@ -164,7 +164,7 @@ public class DefinitionOfDone {
 	 *            defines the minimal rationale/decision coverage for the
 	 *            requirement.
 	 */
-	@JsonProperty("minimumDecisionsWithinLinkDistance")
+	@JsonProperty
 	public void setMinimumDecisionsWithinLinkDistance(int minimumDecisionsWithinLinkDistance) {
 		this.minimumDecisionsWithinLinkDistance = minimumDecisionsWithinLinkDistance;
 	}
