@@ -166,7 +166,7 @@ public class DefinitionOfDoneChecker {
 		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
 				QualityCriterionType.DECISION_COVERAGE, false);
 		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
-			checkResult.setExplanation("Rationale coverage is not checked for this element.");
+			checkResult.setExplanation("");
 			return checkResult;
 		}
 

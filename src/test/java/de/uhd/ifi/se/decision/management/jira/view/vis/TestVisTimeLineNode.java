@@ -82,7 +82,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 		element.setProject("TEST");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		timeNode = new VisTimeLineNode(element, true, true, filterSettings);
-		assertEquals(element.getSummary(), timeNode.getTitle());
+		assertEquals("", timeNode.getTitle());
 		assertEquals("other undefined", timeNode.getClassName());
 	}
 

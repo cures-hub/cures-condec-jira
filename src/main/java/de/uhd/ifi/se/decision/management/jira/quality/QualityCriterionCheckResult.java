@@ -16,12 +16,7 @@ public class QualityCriterionCheckResult {
 
 	public QualityCriterionCheckResult(QualityCriterionType qualityProblemType, boolean isCriterionViolated) {
 		this.type = qualityProblemType;
-		this.isCriterionViolated = isCriterionViolated;
-		if (isCriterionViolated) {
-			this.setExplanation(qualityProblemType.getViolationDescription());
-		} else {
-			this.setExplanation(qualityProblemType.getFulfillmentDescription());
-		}
+		setCriterionViolated(isCriterionViolated);
 	}
 
 	@XmlElement
@@ -53,6 +48,11 @@ public class QualityCriterionCheckResult {
 
 	public void setCriterionViolated(boolean isCriterionViolated) {
 		this.isCriterionViolated = isCriterionViolated;
+		if (isCriterionViolated) {
+			this.setExplanation(type.getViolationDescription());
+		} else {
+			this.setExplanation(type.getFulfillmentDescription());
+		}
 	}
 
 	@Override
