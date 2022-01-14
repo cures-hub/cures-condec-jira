@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} is coupled with the source
  * element, i.e. if both have received updates in the same timeframe.
  */
-public class BoostWhenCoupled implements ChangePropagationFunction{
+public class BoostWhenTimelyCoupled implements ChangePropagationFunction{
 
     @Override
     public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {

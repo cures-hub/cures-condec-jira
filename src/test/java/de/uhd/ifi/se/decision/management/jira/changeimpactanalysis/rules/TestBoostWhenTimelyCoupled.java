@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestBoostWhenCoupled extends TestSetUp {
+public class TestBoostWhenTimelyCoupled extends TestSetUp {
     
     protected KnowledgeElement rootElement;
     protected KnowledgeElement nextElement;
@@ -30,8 +30,8 @@ public class TestBoostWhenCoupled extends TestSetUp {
 
     @Test
 	public void testDescription() {
-		assertEquals("Boost when element is coupled to the selected element",
-				ChangePropagationRule.BOOST_WHEN_COUPLED.getDescription());
+		assertEquals("Boost when element is timely coupled to the selected element",
+				ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getDescription());
 	}
 
     @Test
@@ -45,7 +45,7 @@ public class TestBoostWhenCoupled extends TestSetUp {
         updateDateAndAuthorNext.put(new Date(600001), "FooBar");
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
 
-		assertEquals(0.5, ChangePropagationRule.BOOST_WHEN_COUPLED.getFunction()
+		assertEquals(0.5, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
 	}
 
@@ -60,14 +60,14 @@ public class TestBoostWhenCoupled extends TestSetUp {
         updateDateAndAuthorNext.put(new Date(599999), "FooBar");
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
 
-		assertEquals(0.833, ChangePropagationRule.BOOST_WHEN_COUPLED.getFunction()
+		assertEquals(0.833, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
 	}
 
     @Test
 	public void testPropagationDoubleCoupling() {
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
-        updateDateAndAuthor.put(new Date(0), "FooBar");
+        updateDateAndAuthor.put(new Date(1), "FooBar");
         rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		filterSettings.setSelectedElementObject(rootElement);
 
@@ -76,7 +76,7 @@ public class TestBoostWhenCoupled extends TestSetUp {
         updateDateAndAuthorNext.put(new Date(0), "FooBar");
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
 
-		assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_COUPLED.getFunction()
+		assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
 	}
 
@@ -89,7 +89,7 @@ public class TestBoostWhenCoupled extends TestSetUp {
         TreeMap<Date, String> updateDateAndAuthorNext = new TreeMap<Date, String>();
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
 
-		assertEquals(0.5, ChangePropagationRule.BOOST_WHEN_COUPLED.getFunction()
+		assertEquals(0.5, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
 	}
 }

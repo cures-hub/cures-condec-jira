@@ -46,4 +46,14 @@ public class TestBoostWhenMoreOutboundLinks extends TestSetUp {
         assertEquals(0.707, ChangePropagationRule.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND.getFunction()
             .isChangePropagated(null, nextElement, link), 0.005);
     }
+
+    @Test
+    public void testPropagationOneIncomingZeroOutgoingLinks() {
+        currentElement = KnowledgeElements.getTestKnowledgeElements().get(9);
+        nextElement = KnowledgeElements.getTestKnowledgeElements().get(16);
+
+        Link link = currentElement.getLink(nextElement);
+        assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND.getFunction()
+            .isChangePropagated(null, nextElement, link), 0.005);
+    }
 }

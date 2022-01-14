@@ -57,6 +57,7 @@ The following class diagram gives an overview of relevant backend classes for th
 The Java code for the change impact analysis can be found here:
 
 - [Java code for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/changeimpactanalysis)
+- [REST-API for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ConfigRest.java)
 
 The UI code for the change impact analysis can be found here:
 

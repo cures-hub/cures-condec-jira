@@ -33,9 +33,9 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
         currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
 
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
+        updateDateAndAuthor.put(new Date(0), "FooBar");
         updateDateAndAuthor.put(new Date(999999999), "FooBar");
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-        currentElement.setCreationDate(new Date(0));
 
 		assertEquals(0.92, ChangePropagationRule.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
 				.isChangePropagated(null, currentElement, null), 0.05);
@@ -46,8 +46,8 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
         currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
 
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
+        updateDateAndAuthor.put(new Date(5), "FooBar");
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-        currentElement.setCreationDate(new Date(0));
 
 		assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
 				.isChangePropagated(null, currentElement, null), 0.005);

@@ -53,12 +53,10 @@ public class KnowledgeElement {
 	private String description;
 	protected KnowledgeType type;
 	private String key;
-	private Date creationDate;
 	private TreeMap<Date, String> updateDateAndAuthor;
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
 	protected KnowledgeStatus status;
-	protected String authorName;
 
 	public KnowledgeElement() {
 		this.description = "";
@@ -109,12 +107,16 @@ public class KnowledgeElement {
 		}
 		this.key = issue.getKey();
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
-		this.creationDate = issue.getCreated();
+
 		this.updateDateAndAuthor = new TreeMap<Date, String>();
+		if (issue.getCreated() != null) {
+			updateDateAndAuthor.put(issue.getCreated(), "");
+		}
         List<ChangeHistory> changeHistory = ComponentAccessor.getChangeHistoryManager().getChangeHistories(issue);
 		changeHistory.forEach(changeItem -> {
 			updateDateAndAuthor.put(changeItem.getTimePerformed(), changeItem.getAuthorDisplayName());
 		});
+
 		if (issue.getStatus() != null) {
 			this.status = KnowledgeStatus.getKnowledgeStatus(issue.getStatus().getName());
 		}
@@ -414,10 +416,10 @@ public class KnowledgeElement {
 	 */
 	@XmlElement
 	public Date getCreationDate() {
-		if (creationDate == null) {
-			return new Date();
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty()) {
+			return updateDateAndAuthor.firstKey();
 		}
-		return creationDate;
+		return new Date();
 	}
 
 	/**
@@ -425,7 +427,19 @@ public class KnowledgeElement {
 	 *            of creation of the knowledge element.
 	 */
 	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty() && creationDate != null) {
+			String creator = updateDateAndAuthor.firstEntry().getValue();
+
+			// Check whether the new creation date is actually older than the
+			// updates stored inside the TreeMap
+			TreeMap<Date, String> clonedMap = new TreeMap<Date, String>();
+			clonedMap.putAll(updateDateAndAuthor);
+			clonedMap.remove(clonedMap.firstKey());
+			clonedMap.put(creationDate, creator);
+			if (clonedMap.firstKey() == creationDate) {
+				updateDateAndAuthor = clonedMap;
+			}
+		}
 	}
 
 	/**
@@ -503,15 +517,19 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "creator")
 	public String getCreatorName() {
-		if (authorName != null) {
-			return authorName;
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.firstEntry().getValue().isEmpty()) {
+			return updateDateAndAuthor.firstEntry().getValue();
 		}
 		ApplicationUser user = getCreator();
 		return user != null ? user.getDisplayName() : "";
 	}
 
 	public void setCreator(String authorName) {
-		this.authorName = authorName;
+		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty()) {
+			updateDateAndAuthor.replace(this.updateDateAndAuthor.firstKey(), authorName);
+		}
+		this.updateDateAndAuthor = new TreeMap<Date, String>();
+		updateDateAndAuthor.put(new Date(), authorName);
 	}
 
 	/**
