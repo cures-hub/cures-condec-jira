@@ -20,6 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.quality.QualityCriterionCheckResul
 
 /**
  * REST resource for definition of done (DoD) configuration and checking.
+ * 
+ * @see DefinitionOfDone
+ * @see DefinitionOfDoneChecker
  */
 @Path("/quality-checking")
 public class DefinitionOfDoneCheckingRest {
