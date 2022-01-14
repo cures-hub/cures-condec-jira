@@ -43,19 +43,19 @@ public class TestChecks extends TestSetUp {
 		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 
 		settings.setSelectedElementObject((KnowledgeElement) null);
-		response = dodCheckingRest.getQualityProblems(request, settings);
+		response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(400, response.getStatus());
 		settings.setSelectedElementObject(knowledgeElement);
 
-		response = dodCheckingRest.getQualityProblems(request, null);
+		response = dodCheckingRest.getQualityCheckResults(request, null);
 		assertEquals(400, response.getStatus());
 
 		settings.setProjectKey(null);
-		response = dodCheckingRest.getQualityProblems(request, settings);
+		response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(400, response.getStatus());
 	}
 
@@ -66,7 +66,7 @@ public class TestChecks extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 	}
 
@@ -77,7 +77,7 @@ public class TestChecks extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.DECISION);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 	}
 
@@ -88,7 +88,7 @@ public class TestChecks extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 	}
 
@@ -99,7 +99,7 @@ public class TestChecks extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.ARGUMENT);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 	}
 
@@ -110,7 +110,7 @@ public class TestChecks extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.PRO);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 	}
 
@@ -121,7 +121,7 @@ public class TestChecks extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.CON);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 	}
 
@@ -132,7 +132,7 @@ public class TestChecks extends TestSetUp {
 		knowledgeElement.setType(KnowledgeType.CODE);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getQualityProblems(request, settings);
+		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
 	}
 

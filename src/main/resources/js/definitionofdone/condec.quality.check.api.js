@@ -8,7 +8,7 @@
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/quality-checking";
 	};
 
-	/*
+	/**
 	 * external references: settings/definitionofdone/...
 	 */
 	ConDecDoDCheckingAPI.prototype.setDefinitionOfDone = function(projectKey, definitionOfDone) {
@@ -20,7 +20,7 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: settings/definitionofdone/...
 	 * nudging/condec.prompts.js, condec.quality.check.js
 	 */
@@ -30,12 +30,12 @@
 		});
 	};
 
-	/*
+	/**
 	 * external references: nudging/condec.prompts.js,
 	 * condec.quality.check.js
 	 */
 	ConDecDoDCheckingAPI.prototype.getQualityProblems = function(filterSettings, callback) {
-		generalApi.postJSON(this.restPrefix + '/quality-problems', filterSettings, function(
+		generalApi.postJSON(this.restPrefix + '/quality-check-results', filterSettings, function(
 			error, result) {
 			if (error === null) {
 				callback(result);
@@ -43,7 +43,7 @@
 		});
 	};
 
-	/*
+	/**
 	 * external references: condec.quality.check.js,
 	 * nudging/condec.prompts.js,
 	 */

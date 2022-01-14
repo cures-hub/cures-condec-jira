@@ -63,9 +63,9 @@ public class DefinitionOfDoneCheckingRest {
 	 *            {@link FilterSettings} with a selected {@link KnowledgeElement}.
 	 * @return list of {@link QualityCriterionCheckResult}s.
 	 */
-	@Path("/quality-problems")
+	@Path("/quality-check-results")
 	@POST
-	public Response getQualityProblems(@Context HttpServletRequest request, FilterSettings filterSettings) {
+	public Response getQualityCheckResults(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (filterSettings == null || filterSettings.getProjectKey().isBlank()) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Quality check could not be performed due to a bad request."))

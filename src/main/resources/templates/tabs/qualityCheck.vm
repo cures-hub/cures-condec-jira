@@ -7,6 +7,17 @@
 
     <div class="text-field" id="quality-check-problems-text-$viewIdentifier">
     </div>
+    
+    <table class="aui aui-table-list">
+	<thead>
+    	<tr>
+    		<th>DoD Criterion</th>
+    		<th>State (Fulfilled or Violated)</th>
+    	</tr>
+    </thead>
+    <tbody id="quality-check-table-body-$viewIdentifier">
+    </tbody>    
+</table>
 </div>
 
 <script>

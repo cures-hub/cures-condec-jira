@@ -117,14 +117,25 @@
 	 */
 	function fillQualityProblems(qualityProblems, viewIdentifier) {
 		var qualityProblemsTextField = document.getElementById("quality-check-problems-text-" + viewIdentifier);
+		var qualityCheckTableBody = document.getElementById("quality-check-table-body-" + viewIdentifier);
 
-		var text = "";
+		qualityProblems.forEach(function(criterionCheckResult) {
+			console.log(criterionCheckResult);
 
-		qualityProblems.forEach(function(problem) {
-			text += problem.explanation + "\n";
-		})
+			var tableRow = document.createElement("tr");
+			var criterionNameCell = document.createElement("td");
+			criterionNameCell.innerText = criterionCheckResult.name;
+			tableRow.appendChild(criterionNameCell);
+			var statusCell = document.createElement("td");
+			statusCell.innerText = criterionCheckResult.explanation;
+			if (criterionCheckResult.criterionViolated) {
+				statusCell.style.color = "#FF0000";
+			}
+			tableRow.appendChild(statusCell);
 
-		qualityProblemsTextField.innerText = text;
+			qualityCheckTableBody.appendChild(tableRow);
+		});
+
 		conDecNudgingAPI.setAmbientFeedback(qualityProblemsTextField, "condec-error");
 	}
 
