@@ -78,7 +78,6 @@ public class DefinitionOfDoneCheckingRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Quality check could not be performed because the element could not be found.")).build();
 		}
-		return Response.ok().entity(DefinitionOfDoneChecker.getQualityCheckResults(knowledgeElement, filterSettings))
-				.build();
+		return Response.ok(DefinitionOfDoneChecker.getQualityCheckResults(knowledgeElement, filterSettings)).build();
 	}
 }
