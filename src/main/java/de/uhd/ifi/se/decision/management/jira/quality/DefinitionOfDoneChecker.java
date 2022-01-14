@@ -68,9 +68,6 @@ public class DefinitionOfDoneChecker {
 	 *         element, else it returns false.
 	 */
 	public static boolean hasIncompleteKnowledgeLinked(KnowledgeElement knowledgeElement) {
-		if (!isComplete(knowledgeElement)) {
-			return true;
-		}
 		for (Link link : knowledgeElement.getLinks()) {
 			KnowledgeElement oppositeElement = link.getOppositeElement(knowledgeElement);
 			if (!isComplete(oppositeElement)) {

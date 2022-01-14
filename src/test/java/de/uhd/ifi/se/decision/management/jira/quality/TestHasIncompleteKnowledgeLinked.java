@@ -43,13 +43,6 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		anotherWorkItem = elements.get(1);
 	}
 
-	@Test
-	@NonTransactional
-	public void testIncompleteRootElement() {
-		KnowledgeGraph.getInstance("TEST").removeEdge(alternative.getLink(issue));
-		assertTrue(DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(alternative));
-	}
-
 	/**
 	 * Test with complete root element (workItem), that is not linked to other
 	 * elements.
