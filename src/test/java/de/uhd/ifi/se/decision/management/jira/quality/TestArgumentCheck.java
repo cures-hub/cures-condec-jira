@@ -101,7 +101,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
-		assertTrue(argumentCompletenessCheck.getQualityProblems(proArgument, definitionOfDone).isEmpty());
+		assertTrue(argumentCompletenessCheck.getQualityCheckResult(proArgument, definitionOfDone).isEmpty());
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
-		assertTrue(argumentCompletenessCheck.getQualityProblems(proArgument, definitionOfDone).isEmpty());
+		assertTrue(argumentCompletenessCheck.getQualityCheckResult(proArgument, definitionOfDone).isEmpty());
 	}
 
 	@Test
@@ -124,6 +124,6 @@ public class TestArgumentCheck extends TestSetUp {
 		KnowledgeElement decision = KnowledgeElements.getDecision();
 		Link linkToDecision = proArgument.getLink(decision);
 		KnowledgeGraph.getInstance("TEST").removeEdge(linkToDecision);
-		assertFalse(argumentCompletenessCheck.getQualityProblems(proArgument, definitionOfDone).isEmpty());
+		assertFalse(argumentCompletenessCheck.getQualityCheckResult(proArgument, definitionOfDone).isEmpty());
 	}
 }

@@ -27,40 +27,49 @@ public class DecisionCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return hasPro(definitionOfDone);
+		return !definitionOfDone.isDecisionIsLinkedToPro() || hasPro();
 	}
 
 	@Override
-	public List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement decision, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement decision,
+			DefinitionOfDone definitionOfDone) {
 		this.decision = decision;
 
-		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		if (!hasDecisionProblem()) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_DOESNT_HAVE_ISSUE));
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true));
+		} else {
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false));
 		}
 
 		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_IS_CHALLENGED));
+			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, true));
+		} else {
+			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, false));
 		}
 
-		if (!hasPro(definitionOfDone)) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_DOESNT_HAVE_PRO));
+		if (definitionOfDone.isDecisionIsLinkedToPro()) {
+			if (!hasPro()) {
+				qualityCheckResults
+						.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, true));
+			} else {
+				qualityCheckResults
+						.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, false));
+			}
 		}
 
-		return qualityProblems;
+		return qualityCheckResults;
 	}
 
 	private boolean hasDecisionProblem() {
 		return !decision.getLinkedDecisionProblems().isEmpty();
 	}
 
-	private boolean hasPro(DefinitionOfDone definitionOfDone) {
-		boolean hasToBeLinkedToProArgument = definitionOfDone.isDecisionIsLinkedToPro();
-		if (hasToBeLinkedToProArgument) {
-			return decision.hasNeighborOfType(KnowledgeType.PRO);
-		}
-		return true;
+	private boolean hasPro() {
+		return decision.hasNeighborOfType(KnowledgeType.PRO);
 	}
 
 }

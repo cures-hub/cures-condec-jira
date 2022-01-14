@@ -26,38 +26,44 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return hasArgument(definitionOfDone);
+		return !definitionOfDone.isAlternativeIsLinkedToArgument() || hasArgument();
 	}
 
 	@Override
-	public List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement alternative, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement alternative,
+			DefinitionOfDone definitionOfDone) {
 		this.alternative = alternative;
 
-		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		if (!hasDecisionProblem()) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ISSUE));
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, true));
+		} else {
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, false));
 		}
 
-		if (!hasArgument(definitionOfDone)) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
+		if (definitionOfDone.isAlternativeIsLinkedToArgument()) {
+			if (!hasArgument()) {
+				qualityCheckResults.add(
+						new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, true));
+			} else {
+				qualityCheckResults.add(
+						new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, false));
+			}
 		}
 
-		return qualityProblems;
+		return qualityCheckResults;
 	}
 
 	private boolean hasDecisionProblem() {
 		return !alternative.getLinkedDecisionProblems().isEmpty();
 	}
 
-	private boolean hasArgument(DefinitionOfDone definitionOfDone) {
-		boolean hasToBeLinkedToArgument = definitionOfDone.isAlternativeIsLinkedToArgument();
-		if (hasToBeLinkedToArgument) {
-			return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT)
-					|| alternative.hasNeighborOfType(KnowledgeType.PRO)
-					|| alternative.hasNeighborOfType(KnowledgeType.CON);
-		}
-		return true;
+	private boolean hasArgument() {
+		return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT) || alternative.hasNeighborOfType(KnowledgeType.PRO)
+				|| alternative.hasNeighborOfType(KnowledgeType.CON);
 	}
 
 }

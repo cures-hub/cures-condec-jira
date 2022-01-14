@@ -53,17 +53,15 @@ public interface KnowledgeElementCheck {
 	boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone);
 
 	/**
-	 * Executes the completeness check for the given knowledge element and return a
-	 * set of quality problems.
-	 *
 	 * @param knowledgeElement
 	 *            instance of {@link KnowledgeElement} or of a subclass, e.g.
 	 *            {@link ChangedFile}, {@link PartOfJiraIssueText}, or
 	 *            {@link Recommendation}.
 	 * @param definitionOfDone
 	 *            instance of {@link DefinitionOfDone}.
-	 * @return a set of {@link QualityCriterionType} according to the default and
-	 *         configured rules of the {@link DefinitionOfDone}.
+	 * @return a list of {@link QualityCriterionCheckResult}s according to the
+	 *         default and configured rules of the {@link DefinitionOfDone}.
 	 */
-	List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement knowledgeElement, DefinitionOfDone definitionOfDone);
+	List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement knowledgeElement,
+			DefinitionOfDone definitionOfDone);
 }

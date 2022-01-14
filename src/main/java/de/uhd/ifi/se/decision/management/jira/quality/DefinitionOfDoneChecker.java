@@ -198,10 +198,9 @@ public class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * @return a list of {@link QualityCriterionType} of the
-	 *         {@link KnowledgeElement}.
+	 * @return {@link QualityCriterionCheckResult}s of the {@link KnowledgeElement}.
 	 */
-	public static List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement knowledgeElement,
+	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 
 		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
@@ -213,14 +212,14 @@ public class DefinitionOfDoneChecker {
 		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
 		}
 
 		if (knowledgeElementCheckMap.containsKey(knowledgeElement.getType())) {
 			DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 					.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
 			KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-			qualityProblems.addAll(knowledgeElementCheck.getQualityProblems(knowledgeElement, definitionOfDone));
+			qualityProblems.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
 		}
 
 		return qualityProblems;
@@ -235,29 +234,17 @@ public class DefinitionOfDoneChecker {
 		if (knowledgeElement.getProject() == null) {
 			return "";
 		}
-		List<QualityCriterionCheckResult> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
+		List<QualityCriterionCheckResult> qualityProblems = getQualityCheckResults(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityCriterionCheckResult problem : qualityProblems) {
 			if (problem.getType() == QualityCriterionType.DECISION_COVERAGE) {
 				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.getType() == QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED) {
+			} else if (problem.getType() == QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE) {
 				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
 			} else {
 				text.append(problem.getExplanation()).append(System.lineSeparator());
 			}
 		}
 		return text.toString().strip();
-	}
-
-	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
-			FilterSettings filterSettings) {
-		List<QualityCriterionCheckResult> qualityCheckResults = getQualityProblems(knowledgeElement, filterSettings);
-		for (QualityCriterionType type : QualityCriterionType.values()) {
-			QualityCriterionCheckResult fulfilledCriterion = new QualityCriterionCheckResult(type, false);
-			if (!qualityCheckResults.contains(fulfilledCriterion)) {
-				qualityCheckResults.add(fulfilledCriterion);
-			}
-		}
-		return qualityCheckResults;
 	}
 }

@@ -32,28 +32,40 @@ public class IssueCheck implements KnowledgeElementCheck {
 
 	@Override
 	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return hasAlternative(definitionOfDone);
+		return !definitionOfDone.isIssueIsLinkedToAlternative() || hasAlternative();
 	}
 
 	@Override
-	public List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement issue, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement issue,
+			DefinitionOfDone definitionOfDone) {
 		this.issue = issue;
 
-		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		if (!isValidDecisionLinkedToDecisionProblem(issue)) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_DOESNT_HAVE_DECISION));
+			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true));
+		} else {
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, false));
 		}
 
 		if (!isResolved()) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_IS_UNRESOLVED));
+			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_RESOLUTION, true));
+		} else {
+			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_RESOLUTION, false));
 		}
 
-		if (!hasAlternative(definitionOfDone)) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_DOESNT_HAVE_ALTERNATIVE));
+		if (definitionOfDone.isIssueIsLinkedToAlternative()) {
+			if (!hasAlternative()) {
+				qualityCheckResults
+						.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, true));
+			} else {
+				qualityCheckResults.add(
+						new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, false));
+			}
 		}
 
-		return qualityProblems;
+		return qualityCheckResults;
 	}
 
 	/**
@@ -73,12 +85,8 @@ public class IssueCheck implements KnowledgeElementCheck {
 		return issue.getStatus() != KnowledgeStatus.UNRESOLVED;
 	}
 
-	private boolean hasAlternative(DefinitionOfDone definitionOfDone) {
-		boolean hasToBeLinkedToAlternative = definitionOfDone.isIssueIsLinkedToAlternative();
-		if (hasToBeLinkedToAlternative) {
-			return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
-		}
-		return true;
+	private boolean hasAlternative() {
+		return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 	}
 
 }

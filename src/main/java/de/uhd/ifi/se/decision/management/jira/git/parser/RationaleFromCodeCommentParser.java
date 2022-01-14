@@ -104,13 +104,13 @@ public class RationaleFromCodeCommentParser {
 
 		if (elements.stream().noneMatch(element -> element.getType().getSuperType() == KnowledgeType.PROBLEM)) {
 			elements.forEach(element -> {
-				element.getQualityProblems().add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ISSUE));
+				element.getQualityProblems().add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE));
 			});
 		}
 
 		if (elements.stream().noneMatch(element -> element.getType() == KnowledgeType.DECISION)) {
 			elements.forEach(element -> {
-				element.getQualityProblems().add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_DOESNT_HAVE_DECISION));
+				element.getQualityProblems().add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION));
 			});
 		}
 

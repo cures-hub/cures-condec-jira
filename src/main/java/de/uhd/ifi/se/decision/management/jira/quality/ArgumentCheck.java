@@ -27,16 +27,22 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 	}
 
 	@Override
-	public List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement argument, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement argument,
+			DefinitionOfDone definitionOfDone) {
 		this.argument = argument;
 
-		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		if (!hasDecisionOrAlternative()) {
-			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_DOESNT_HAVE_DECISION_OR_ALTERNATIVE));
+			qualityCheckResults.add(new QualityCriterionCheckResult(
+					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, true));
+		} else {
+			qualityCheckResults.add(new QualityCriterionCheckResult(
+					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, false));
+
 		}
 
-		return qualityProblems;
+		return qualityCheckResults;
 	}
 
 	private boolean hasDecisionOrAlternative() {

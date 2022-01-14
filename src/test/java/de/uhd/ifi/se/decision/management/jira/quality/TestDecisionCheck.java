@@ -56,7 +56,7 @@ public class TestDecisionCheck extends TestSetUp {
 		unlinkedDecision.setId(4242);
 		unlinkedDecision.setStatus(KnowledgeStatus.CHALLENGED);
 		assertFalse(decisionCompletenessCheck.execute(unlinkedDecision));
-		assertFalse(decisionCompletenessCheck.getQualityProblems(unlinkedDecision, new DefinitionOfDone()).isEmpty());
+		assertFalse(decisionCompletenessCheck.getQualityCheckResult(unlinkedDecision, new DefinitionOfDone()).isEmpty());
 	}
 
 	@Test
@@ -67,12 +67,12 @@ public class TestDecisionCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertFalse(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
+		assertFalse(decisionCompletenessCheck.getQualityCheckResult(decision, definitionOfDone).isEmpty());
 
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(decision, pro, user);
 
-		assertTrue(decisionCompletenessCheck.getQualityProblems(decision, definitionOfDone).isEmpty());
+		assertTrue(decisionCompletenessCheck.getQualityCheckResult(decision, definitionOfDone).isEmpty());
 
 		// restore default
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());

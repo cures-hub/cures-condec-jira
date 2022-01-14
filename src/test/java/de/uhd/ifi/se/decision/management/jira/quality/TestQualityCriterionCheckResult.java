@@ -67,12 +67,12 @@ public class TestQualityCriterionCheckResult {
 	@Test
 	public void testEquals() {
 		assertFalse(qualityCriterionCheckResult.equals((Object) null));
-		assertFalse(qualityCriterionCheckResult.equals(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
+		assertFalse(qualityCriterionCheckResult.equals(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT));
 		assertTrue(qualityCriterionCheckResult.equals(qualityCriterionCheckResult));
 		assertTrue(qualityCriterionCheckResult
 				.equals(new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE)));
 		assertFalse(qualityCriterionCheckResult
-				.equals(new QualityCriterionCheckResult(QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED)));
+				.equals(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE)));
 	}
 
 	@Test
