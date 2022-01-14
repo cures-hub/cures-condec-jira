@@ -48,10 +48,12 @@ public class QualityCriterionCheckResult {
 
 	public void setCriterionViolated(boolean isCriterionViolated) {
 		this.isCriterionViolated = isCriterionViolated;
-		if (isCriterionViolated) {
-			this.setExplanation(type.getViolationDescription());
-		} else {
-			this.setExplanation(type.getFulfillmentDescription());
+		if (explanation == null) {
+			if (isCriterionViolated) {
+				this.setExplanation(type.getViolationDescription());
+			} else {
+				this.setExplanation(type.getFulfillmentDescription());
+			}
 		}
 	}
 

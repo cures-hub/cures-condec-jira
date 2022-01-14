@@ -123,10 +123,10 @@
 
 		if (!qualityProblems || !qualityProblems.length) {
 			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-fine");
-		} else if (qualityProblems.some(problem => problem.name === "NO_DECISION_COVERAGE")) {
-			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-error");
-		} else {
+		} else if (qualityProblems.length <= 2) {
 			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-warning");
+		} else {
+			conDecNudgingAPI.setAmbientFeedback(qualityCheckTab, "condec-error");
 		}
 	}
 

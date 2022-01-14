@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -47,7 +49,7 @@ public class DefinitionOfDone {
 	 * @return true if every decision problem (=issue) needs to be linked to at
 	 *         least one alternative.
 	 */
-	@JsonProperty("issueIsLinkedToAlternative")
+	@XmlElement
 	public boolean isIssueIsLinkedToAlternative() {
 		return issueIsLinkedToAlternative;
 	}
@@ -66,7 +68,7 @@ public class DefinitionOfDone {
 	 * @return true if every decision (=solution for a decision problem) needs to be
 	 *         linked to at least one pro-argument.
 	 */
-	@JsonProperty("decisionIsLinkedToPro")
+	@XmlElement
 	public boolean isDecisionIsLinkedToPro() {
 		return decisionIsLinkedToPro;
 	}
@@ -85,7 +87,7 @@ public class DefinitionOfDone {
 	 * @return true if every alternative (=solution option for a decision problem)
 	 *         needs to be linked to at least one pro-argument.
 	 */
-	@JsonProperty("alternativeIsLinkedToArgument")
+	@XmlElement
 	public boolean isAlternativeIsLinkedToArgument() {
 		return alternativeIsLinkedToArgument;
 	}
@@ -100,7 +102,7 @@ public class DefinitionOfDone {
 		this.alternativeIsLinkedToArgument = alternativeIsLinkedToArgument;
 	}
 
-	@JsonProperty("lineNumbersInCodeFile")
+	@XmlElement
 	public int getLineNumbersInCodeFile() {
 		return lineNumbersInCodeFile;
 	}
@@ -120,7 +122,7 @@ public class DefinitionOfDone {
 	 *         within a link distance of 2. This defines the minimal
 	 *         rationale/decision coverage for the code file.
 	 */
-	@JsonProperty("maximumLinkDistanceToDecisions")
+	@XmlElement
 	public int getMaximumLinkDistanceToDecisions() {
 		return maximumLinkDistanceToDecisions;
 	}
@@ -148,7 +150,7 @@ public class DefinitionOfDone {
 	 *         one decision documented within a link distance of 3. This defines the
 	 *         minimal rationale/decision coverage for the requirement.
 	 */
-	@JsonProperty("minimumDecisionsWithinLinkDistance")
+	@XmlElement
 	public int getMinimumDecisionsWithinLinkDistance() {
 		return minimumDecisionsWithinLinkDistance;
 	}
@@ -165,5 +167,14 @@ public class DefinitionOfDone {
 	@JsonProperty("minimumDecisionsWithinLinkDistance")
 	public void setMinimumDecisionsWithinLinkDistance(int minimumDecisionsWithinLinkDistance) {
 		this.minimumDecisionsWithinLinkDistance = minimumDecisionsWithinLinkDistance;
+	}
+
+	/**
+	 * @return text explaining required coverage.
+	 */
+	public String getRequiredCoverageExplanation() {
+		return "A minimum of " + minimumDecisionsWithinLinkDistance + " decision"
+				+ (minimumDecisionsWithinLinkDistance == 1 ? "" : "s") + " within a maximum link distance of "
+				+ maximumLinkDistanceToDecisions + " must be reachable.";
 	}
 }
