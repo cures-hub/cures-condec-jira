@@ -85,9 +85,7 @@ public class TestBoostWhenTimelyCoupled extends TestSetUp {
         TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
         rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		filterSettings.setSelectedElementObject(rootElement);
-
-        TreeMap<Date, String> updateDateAndAuthorNext = new TreeMap<Date, String>();
-        nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
+        nextElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		assertEquals(0.5, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
