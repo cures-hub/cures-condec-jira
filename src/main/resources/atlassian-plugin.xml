@@ -135,9 +135,10 @@
 		<resource type="download" name="condec.chronology.js" location="/js/condec.chronology.js" />
 		<resource type="download" name="condec.comparison.js" location="/js/condec.comparison.js" />
 		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
-		<resource type="download" name="condec.quality.check.js" location="/js/definitionofdone/condec.quality.check.js" />
-		<resource type="download" name="condec.definition.of.done.checking.api.js"
-			location="/js/definitionofdone/condec.definition.of.done.checking.api.js" />
+		<resource type="download" name="condec.quality.check.js"
+			location="/js/definitionofdone/condec.quality.check.js" />
+		<resource type="download" name="condec.quality.check.api.js"
+			location="/js/definitionofdone/condec.quality.check.api.js" />
 		<resource type="download" name="condec.rationale.backlog.js" location="/js/condec.rationale.backlog.js" />
 		<resource type="download" name="condec.nudging.api.js" location="/js/nudging/condec.nudging.api.js" />
 		<resource type="download" name="condec.prompts.js" location="/js/nudging/condec.prompts.js" />
@@ -564,8 +565,7 @@
 		</definition>
 		<description key="condec.dashboard.knowledge.in.git.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/featureBranches.vm" />
-		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
+		<context-provider class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/branches</amd-module>
 	</dashboard-item>
 
@@ -584,8 +584,7 @@
 		</definition>
 		<description key="condec.dashboard.generalmetrics.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/generalMetrics.vm" />
-		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
+		<context-provider class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/generalMetrics</amd-module>
 	</dashboard-item>
 
@@ -604,8 +603,7 @@
 		</definition>
 		<description key="condec.dashboard.rationalecompleteness.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCompleteness.vm" />
-		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
+		<context-provider class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/rationaleCompleteness</amd-module>
 	</dashboard-item>
 
@@ -624,8 +622,7 @@
 		</definition>
 		<description key="condec.dashboard.rationalecoverage.description" />
 		<resource name="view" type="velocity" location="/templates/dashboard/rationaleCoverage.vm" />
-		<context-provider
-			class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
+		<context-provider class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/rationaleCoverage</amd-module>
 	</dashboard-item>
 </atlassian-plugin>

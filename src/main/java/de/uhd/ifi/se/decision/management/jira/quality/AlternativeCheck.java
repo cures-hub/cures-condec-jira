@@ -30,17 +30,17 @@ public class AlternativeCheck implements KnowledgeElementCheck {
 	}
 
 	@Override
-	public List<QualityProblem> getQualityProblems(KnowledgeElement alternative, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement alternative, DefinitionOfDone definitionOfDone) {
 		this.alternative = alternative;
 
-		List<QualityProblem> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
 
 		if (!hasDecisionProblem()) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ISSUE));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ISSUE));
 		}
 
 		if (!hasArgument(definitionOfDone)) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
 		}
 
 		return qualityProblems;

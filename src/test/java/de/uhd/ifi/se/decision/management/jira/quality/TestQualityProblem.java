@@ -11,26 +11,26 @@ import org.junit.Test;
 
 public class TestQualityProblem {
 
-	private QualityProblem qualityProblem;
+	private QualityCriterionCheckResult qualityProblem;
 
 	@Before
 	public void setUp() {
-		qualityProblem = new QualityProblem(QualityProblemType.DECISION_COVERAGE_TOO_LOW);
+		qualityProblem = new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE_TOO_LOW);
 	}
 
 	@Test
 	public void testName() {
-		assertEquals(QualityProblemType.DECISION_COVERAGE_TOO_LOW.name(), qualityProblem.getName());
+		assertEquals(QualityCriterionType.DECISION_COVERAGE_TOO_LOW.name(), qualityProblem.getName());
 	}
 
 	@Test
 	public void testType() {
-		assertEquals(QualityProblemType.DECISION_COVERAGE_TOO_LOW, qualityProblem.getType());
+		assertEquals(QualityCriterionType.DECISION_COVERAGE_TOO_LOW, qualityProblem.getType());
 	}
 
 	@Test
 	public void testExplanation() {
-		assertEquals(QualityProblemType.DECISION_COVERAGE_TOO_LOW.getDescription(), qualityProblem.getExplanation());
+		assertEquals(QualityCriterionType.DECISION_COVERAGE_TOO_LOW.getViolationDescription(), qualityProblem.getExplanation());
 		String betterExplanation = "This requirement is covered by only 1 decision, 3 decisions are required.";
 		qualityProblem.setExplanation(betterExplanation);
 		assertEquals(betterExplanation, qualityProblem.getExplanation());
@@ -40,10 +40,10 @@ public class TestQualityProblem {
 	@Test
 	public void testEquals() {
 		assertFalse(qualityProblem.equals((Object) null));
-		assertFalse(qualityProblem.equals(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
+		assertFalse(qualityProblem.equals(QualityCriterionType.ALTERNATIVE_DOESNT_HAVE_ARGUMENT));
 		assertTrue(qualityProblem.equals(qualityProblem));
-		assertTrue(qualityProblem.equals(new QualityProblem(QualityProblemType.DECISION_COVERAGE_TOO_LOW)));
-		assertFalse(qualityProblem.equals(new QualityProblem(QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED)));
+		assertTrue(qualityProblem.equals(new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE_TOO_LOW)));
+		assertFalse(qualityProblem.equals(new QualityCriterionCheckResult(QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED)));
 	}
 
 	@Test

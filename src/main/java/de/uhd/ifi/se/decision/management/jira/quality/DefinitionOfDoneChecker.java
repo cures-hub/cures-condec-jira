@@ -161,8 +161,8 @@ public class DefinitionOfDoneChecker {
 				|| knowledgeElement.getType() != KnowledgeType.OTHER;
 	}
 
-	private static QualityProblem getCoverageQuality(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
-			FilterSettings filterSettings) {
+	private static QualityCriterionCheckResult getCoverageQuality(KnowledgeElement knowledgeElement,
+			KnowledgeType knowledgeType, FilterSettings filterSettings) {
 		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
 			return null;
 		}
@@ -180,27 +180,29 @@ public class DefinitionOfDoneChecker {
 		}
 
 		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
-			return new QualityProblem(QualityProblemType.DECISION_COVERAGE_TOO_LOW);
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_COVERAGE_TOO_LOW);
 		} else {
-			return new QualityProblem(QualityProblemType.NO_DECISION_COVERAGE);
+			return new QualityCriterionCheckResult(QualityCriterionType.NO_DECISION_COVERAGE);
 		}
 	}
 
 	/**
-	 * @return a list of {@link QualityProblemType} of the {@link KnowledgeElement}.
+	 * @return a list of {@link QualityCriterionType} of the
+	 *         {@link KnowledgeElement}.
 	 */
-	public static List<QualityProblem> getQualityProblems(KnowledgeElement knowledgeElement,
+	public static List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 
-		List<QualityProblem> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
 
-		QualityProblem coverageProblem = getCoverageQuality(knowledgeElement, KnowledgeType.DECISION, filterSettings);
+		QualityCriterionCheckResult coverageProblem = getCoverageQuality(knowledgeElement, KnowledgeType.DECISION,
+				filterSettings);
 		if (coverageProblem != null) {
 			qualityProblems.add(coverageProblem);
 		}
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED));
 		}
 
 		if (knowledgeElementCheckMap.containsKey(knowledgeElement.getType())) {
@@ -214,7 +216,7 @@ public class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * @return a string detailing all {@link QualityProblemType} of the
+	 * @return a string detailing all {@link QualityCriterionType} of the
 	 *         {@link KnowledgeElement}.
 	 */
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
@@ -222,19 +224,31 @@ public class DefinitionOfDoneChecker {
 		if (knowledgeElement.getProject() == null) {
 			return "";
 		}
-		List<QualityProblem> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
+		List<QualityCriterionCheckResult> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
-		for (QualityProblem problem : qualityProblems) {
-			if (problem.getType() == QualityProblemType.NO_DECISION_COVERAGE) {
+		for (QualityCriterionCheckResult problem : qualityProblems) {
+			if (problem.getType() == QualityCriterionType.NO_DECISION_COVERAGE) {
 				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.getType() == QualityProblemType.DECISION_COVERAGE_TOO_LOW) {
+			} else if (problem.getType() == QualityCriterionType.DECISION_COVERAGE_TOO_LOW) {
 				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
-			} else if (problem.getType() == QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED) {
+			} else if (problem.getType() == QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED) {
 				text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
 			} else {
 				text.append(problem.getExplanation()).append(System.lineSeparator());
 			}
 		}
 		return text.toString().strip();
+	}
+
+	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
+			FilterSettings filterSettings) {
+		List<QualityCriterionCheckResult> qualityCheckResults = getQualityProblems(knowledgeElement, filterSettings);
+		for (QualityCriterionType type : QualityCriterionType.values()) {
+			QualityCriterionCheckResult fulfilledCriterion = new QualityCriterionCheckResult(type, false);
+			if (!qualityCheckResults.contains(fulfilledCriterion)) {
+				qualityCheckResults.add(fulfilledCriterion);
+			}
+		}
+		return qualityCheckResults;
 	}
 }

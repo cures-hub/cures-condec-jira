@@ -1,3 +1,7 @@
+/**
+ * This module implements the communication with the ConDec Java REST API for definition of done (DoD) 
+ * checking and configuration.
+ */
 (function(global) {
 
 	const ConDecDoDCheckingAPI = function() {

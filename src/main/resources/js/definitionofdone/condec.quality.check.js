@@ -1,7 +1,11 @@
-/*
- *	This view provides a check  of the quality of the decision knowledge of the jira issue.
+/**
+ * This view provides a check of the quality of a knowledge element (e.g., requirement, 
+ * code file, decision knowledge element, or work item).
+ * 
+ * Requires: condec.api.js, condec.quality.check.api.js
+ * 
+ * Is required by: condec.knowledge.page.js, condec.rationale.backlog.js
  */
-
 (function(global) {
 	const pluralize = (count, noun, suffix = 's') =>
 		`${count} ${noun}${count !== 1 ? suffix : ''}`;
@@ -42,7 +46,7 @@
 	/**
 	 * Fills the quality check tab with information by making REST-calls.
 	 *
-	 * @param filterSettings containing the projectKey and the issueKey
+	 * @param filterSettings containing the projectKey and the selected element
 	 * @param viewIdentifier identifies the html elements of the view
 	 */
 	function fillQualityCheckTab(filterSettings, viewIdentifier) {
@@ -117,13 +121,7 @@
 		var text = "";
 
 		qualityProblems.forEach(function(problem) {
-			text += problem.explanation;
-			if (problem.name === "NO_DECISION_COVERAGE" || problem.name === "DECISION_COVERAGE_TOO_LOW" ||
-				problem.name === "INCOMPLETE_KNOWLEDGE_LINKED") {				
-				text += "\n\n";
-			} else {
-				text += "\n";
-			}
+			text += problem.explanation + "\n";
 		})
 
 		qualityProblemsTextField.innerText = text;

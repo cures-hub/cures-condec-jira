@@ -46,9 +46,9 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDefinitionOfDoneCheck() {
-		List<QualityProblem> problems = DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings);
-		assertEquals(QualityProblemType.DECISION_COVERAGE_TOO_LOW, problems.get(0).getType());
-		assertEquals(QualityProblemType.INCOMPLETE_KNOWLEDGE_LINKED, problems.get(1).getType());
+		List<QualityCriterionCheckResult> problems = DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings);
+		assertEquals(QualityCriterionType.DECISION_COVERAGE_TOO_LOW, problems.get(0).getType());
+		assertEquals(QualityCriterionType.INCOMPLETE_KNOWLEDGE_LINKED, problems.get(1).getType());
 	}
 
 	@Test

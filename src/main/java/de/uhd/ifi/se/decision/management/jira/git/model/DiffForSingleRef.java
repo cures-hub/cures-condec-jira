@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.parser.RationaleFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityCriterionCheckResult;
 
 /**
  * Represents changes made in a specific git repository. For example, the diff
@@ -160,7 +160,7 @@ public class DiffForSingleRef {
 	}
 
 	@XmlElement
-	public Set<QualityProblem> getQualityProblems() {
+	public Set<QualityCriterionCheckResult> getQualityProblems() {
 		return codeElements.stream().flatMap(element -> element.getQualityProblems().stream())
 				.collect(Collectors.toSet());
 	}

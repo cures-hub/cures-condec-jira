@@ -31,21 +31,21 @@ public class DecisionCheck implements KnowledgeElementCheck {
 	}
 
 	@Override
-	public List<QualityProblem> getQualityProblems(KnowledgeElement decision, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement decision, DefinitionOfDone definitionOfDone) {
 		this.decision = decision;
 
-		List<QualityProblem> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
 
 		if (!hasDecisionProblem()) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.DECISION_DOESNT_HAVE_ISSUE));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_DOESNT_HAVE_ISSUE));
 		}
 
 		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.DECISION_IS_CHALLENGED));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_IS_CHALLENGED));
 		}
 
 		if (!hasPro(definitionOfDone)) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.DECISION_DOESNT_HAVE_PRO));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_DOESNT_HAVE_PRO));
 		}
 
 		return qualityProblems;

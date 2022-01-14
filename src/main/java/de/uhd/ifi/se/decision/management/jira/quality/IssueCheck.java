@@ -36,21 +36,21 @@ public class IssueCheck implements KnowledgeElementCheck {
 	}
 
 	@Override
-	public List<QualityProblem> getQualityProblems(KnowledgeElement issue, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement issue, DefinitionOfDone definitionOfDone) {
 		this.issue = issue;
 
-		List<QualityProblem> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityProblems = new ArrayList<>();
 
 		if (!isValidDecisionLinkedToDecisionProblem(issue)) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.ISSUE_DOESNT_HAVE_DECISION));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_DOESNT_HAVE_DECISION));
 		}
 
 		if (!isResolved()) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.ISSUE_IS_UNRESOLVED));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_IS_UNRESOLVED));
 		}
 
 		if (!hasAlternative(definitionOfDone)) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.ISSUE_DOESNT_HAVE_ALTERNATIVE));
+			qualityProblems.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_DOESNT_HAVE_ALTERNATIVE));
 		}
 
 		return qualityProblems;

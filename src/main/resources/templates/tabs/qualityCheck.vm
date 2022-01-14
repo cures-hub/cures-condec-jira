@@ -1,13 +1,9 @@
 <div class="quality-check-container">
-    <label id="quality-check-issue-key-$viewIdentifier"></label> requires <label id="quality-check-minimum-coverage-$viewIdentifier"></label>
-    within a link distance of <label id="quality-check-link-distance-$viewIdentifier"></label>.
+    <p><label id="quality-check-issue-key-$viewIdentifier"></label> requires <label id="quality-check-minimum-coverage-$viewIdentifier"></label>
+    within a link distance of <label id="quality-check-link-distance-$viewIdentifier"></label>.</p>
 
-    <br/>
 
-    It reaches <label id="quality-check-coverage-$viewIdentifier"></label>.
-
-    <br/>
-    <br/>
+    <p>It reaches <label id="quality-check-coverage-$viewIdentifier"></label>.</p>
 
     <div class="text-field" id="quality-check-problems-text-$viewIdentifier">
     </div>

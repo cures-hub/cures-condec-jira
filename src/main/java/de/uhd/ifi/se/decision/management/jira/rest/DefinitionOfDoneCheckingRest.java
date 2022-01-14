@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
-import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityCriterionCheckResult;
 
 /**
  * REST resource for definition of done (DoD) configuration and checking.
@@ -61,7 +61,7 @@ public class DefinitionOfDoneCheckingRest {
 	 *            {@link ApplicationUser}.
 	 * @param filterSettings
 	 *            {@link FilterSettings} with a selected {@link KnowledgeElement}.
-	 * @return list of {@link QualityProblem}s.
+	 * @return list of {@link QualityCriterionCheckResult}s.
 	 */
 	@Path("/quality-problems")
 	@POST
@@ -77,7 +77,7 @@ public class DefinitionOfDoneCheckingRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Quality check could not be performed because the element could not be found.")).build();
 		}
-		return Response.ok().entity(DefinitionOfDoneChecker.getQualityProblems(knowledgeElement, filterSettings))
+		return Response.ok().entity(DefinitionOfDoneChecker.getQualityCheckResults(knowledgeElement, filterSettings))
 				.build();
 	}
 
