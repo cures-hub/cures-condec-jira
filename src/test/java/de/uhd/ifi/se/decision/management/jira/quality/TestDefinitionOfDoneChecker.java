@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -46,7 +45,8 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testDefinitionOfDoneCheck() {
-		List<QualityCriterionCheckResult> problems = DefinitionOfDoneChecker.getQualityCheckResults(knowledgeElement, filterSettings);
+		List<QualityCriterionCheckResult> problems = DefinitionOfDoneChecker.getQualityCheckResults(knowledgeElement,
+				filterSettings);
 		assertEquals(QualityCriterionType.DECISION_COVERAGE, problems.get(0).getType());
 		assertEquals(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, problems.get(1).getType());
 	}
@@ -79,20 +79,6 @@ public class TestDefinitionOfDoneChecker extends TestSetUp {
 	@NonTransactional
 	public void testCompleteCodeFile() {
 		assertTrue(DefinitionOfDoneChecker.checkDefinitionOfDone(codeFile, filterSettings));
-	}
-
-	@Test
-	@NonTransactional
-	public void testCoverageHandlerDoesNotHaveMinimumCoverageTrue() {
-		assertTrue(DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(KnowledgeElements.getTestKnowledgeElement(),
-				KnowledgeType.DECISION, filterSettings));
-	}
-
-	@Test
-	@NonTransactional
-	public void testCoverageHandlerDoesNotHaveMinimumCoverageFalse() {
-		assertFalse(DefinitionOfDoneChecker.doesNotHaveMinimumCoverage(KnowledgeElements.getTestKnowledgeElement(),
-				KnowledgeType.OTHER, filterSettings));
 	}
 
 	@Test

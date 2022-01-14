@@ -5,12 +5,9 @@ import static java.util.Map.entry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -46,8 +43,7 @@ public class DefinitionOfDoneChecker {
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
 	public static boolean checkDefinitionOfDone(KnowledgeElement knowledgeElement, FilterSettings filterSettings) {
-		return !hasIncompleteKnowledgeLinked(knowledgeElement)
-				&& !doesNotHaveMinimumCoverage(knowledgeElement, KnowledgeType.DECISION, filterSettings);
+		return getQualityProblems(knowledgeElement, filterSettings).isEmpty();
 	}
 
 	/**
@@ -82,82 +78,6 @@ public class DefinitionOfDoneChecker {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Iterates recursively over the knowledge graph of the {@link KnowledgeElement}
-	 * and checks if it fulfills the minimum coverage. {@link ChangedFile} that are
-	 * test files or with less lines of codes than defined in the
-	 * {@link DefinitionOfDone} don't require any coverage.
-	 *
-	 * @return true if there are at least as many elements of the specified
-	 *         {@link KnowledgeType} as the minimum coverage demands, else it
-	 *         returns false.
-	 */
-	public static boolean doesNotHaveMinimumCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
-			FilterSettings filterSettings) {
-		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
-			return false;
-		}
-
-		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
-		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
-		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
-		for (KnowledgeElement linkedElement : linkedElements) {
-			if (linkedElement.getType() == knowledgeType) {
-				minimumCoverage--;
-			}
-			if (minimumCoverage <= 0) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Iterates recursively over the knowledge graph of the {@link KnowledgeElement}
-	 * and checks if it has any coverage. {@link ChangedFile} that are test files or
-	 * with less lines of codes than defined in the {@link DefinitionOfDone} don't
-	 * require any coverage.
-	 *
-	 * @return true if there is at least one element of the specified
-	 *         {@link KnowledgeType}, else it returns false.
-	 */
-	public static boolean hasNoCoverage(KnowledgeElement knowledgeElement, KnowledgeType knowledgeType,
-			FilterSettings filterSettings) {
-		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
-			return false;
-		}
-
-		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
-		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
-		for (KnowledgeElement linkedElement : linkedElements) {
-			if (linkedElement.getType() == knowledgeType) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * @param knowledgeElement
-	 *            {@link KnowledgeElement}, e.g. code file or decision knowledge
-	 *            element.
-	 * @param filterSettings
-	 *            {@link FilterSettings} with {@link DefinitionOfDone}.
-	 * @return true if the element should be checked, i.e. decision coverage should
-	 *         be measured. Returns false for small code files, test files, and
-	 *         irrelevant parts of text.
-	 */
-	private static boolean shouldCoverageOfKnowledgeElementBeChecked(KnowledgeElement knowledgeElement,
-			FilterSettings filterSettings) {
-		if (knowledgeElement instanceof ChangedFile) {
-			int lineNumbersInCodeFile = filterSettings.getDefinitionOfDone().getLineNumbersInCodeFile();
-			ChangedFile codeFile = (ChangedFile) knowledgeElement;
-			return codeFile.getLineCount() >= lineNumbersInCodeFile && !codeFile.isTestCodeFile();
-		}
-		return knowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT
-				|| knowledgeElement.getType() != KnowledgeType.OTHER;
 	}
 
 	/**
