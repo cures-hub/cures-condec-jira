@@ -166,6 +166,8 @@ public class DefinitionOfDoneChecker {
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
+		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
+		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(knowledgeElement, filterSettings));
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
 			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
@@ -176,8 +178,6 @@ public class DefinitionOfDoneChecker {
 
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 				.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(knowledgeElement, filterSettings));
 		qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
 
 		return qualityCheckResults;
@@ -205,7 +205,7 @@ public class DefinitionOfDoneChecker {
 		List<QualityCriterionCheckResult> qualityProblems = getQualityProblems(knowledgeElement, filterSettings);
 		StringBuilder text = new StringBuilder();
 		for (QualityCriterionCheckResult problem : qualityProblems) {
-			text.append(problem.getExplanation()).append(System.lineSeparator());
+			text.append(problem.getExplanation()).append(System.lineSeparator()).append(System.lineSeparator());
 		}
 		return text.toString().strip();
 	}

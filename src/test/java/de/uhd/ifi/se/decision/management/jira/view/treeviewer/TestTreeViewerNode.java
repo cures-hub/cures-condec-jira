@@ -111,7 +111,6 @@ public class TestTreeViewerNode extends TestSetUp {
 		Map<String, String> attributes = node.getAttr();
 		assertEquals(2L, attributes.size());
 		assertTrue(attributes.get("title").contains("Only 1 decision is reached."));
-		assertTrue(attributes.get("title").contains("Linked decision knowledge is incomplete."));
 		assertEquals("color:crimson", attributes.get("style"));
 		Map<String, String> newAttributes = new HashMap<>();
 		newAttributes.put("title", "test");
