@@ -167,7 +167,7 @@ public class DefinitionOfDoneChecker {
 		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
 				QualityCriterionType.DECISION_COVERAGE, false);
 		if (!shouldCoverageOfKnowledgeElementBeChecked(knowledgeElement, filterSettings)) {
-			checkResult.setExplanation("");
+			checkResult.setExplanation("This element is excluded from coverage measuring.");
 			return checkResult;
 		}
 

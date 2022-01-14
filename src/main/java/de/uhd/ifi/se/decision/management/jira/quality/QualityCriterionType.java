@@ -14,16 +14,16 @@ public enum QualityCriterionType {
 	QUALITY_OF_LINKED_KNOWLEDGE("Linked decision knowledge is incomplete.", "Linked decision knowledge is fine."), //
 	ISSUE_LINKED_TO_DECISION("Issue does not have a valid decision!", "Issue is solved by decision."), //
 	ISSUE_LINKED_TO_ALTERNATIVE("Issue does not have an alternative!",
-			"At least one alternative is documented for issue."), //
+			"At least one alternative is documented for the issue."), //
 	ISSUE_RESOLUTION("Issue is unresolved!", "Issue is resolved."), //
-	DECISION_LINKED_TO_ISSUE("Decision does not have an issue!", "Decision is linked to issue."), //
+	DECISION_LINKED_TO_ISSUE("Decision does not have an issue!", "Decision is linked to an issue."), //
 	DECISION_LINKED_TO_PRO("Decision does not have a pro-argument!",
-			"At least one pro-argument is documented for decision."), //
+			"At least one pro-argument is documented for the decision."), //
 	DECISION_STATUS("Decision is challenged, i.e., it needs more discussion and might be rejected!",
-			"Decision is decided."), //
+			"Decision is not challenged."), //
 	ALTERNATIVE_LINKED_TO_ISSUE("Alternative does not have an issue!", "Alternative is linked to issue."), //
 	ALTERNATIVE_LINKED_TO_ARGUMENT("Alternative does not have an argument!",
-			"At least one argument is documented for alternative."), //
+			"At least one argument is documented for the alternative."), //
 	ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE("Argument does not have a decision or an alternative!",
 			"Argument is linked to a solution option.");
 
