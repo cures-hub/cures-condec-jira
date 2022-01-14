@@ -8,8 +8,6 @@
  * templates/tabs/qualityCheck.vm
  */
 (function(global) {
-	const pluralize = (count, noun, suffix = 's') =>
-		`${count} ${noun}${count !== 1 ? suffix : ''}`;
 
 	var ConDecQualityCheck = function ConDecQualityCheck() {
 	};
@@ -53,17 +51,9 @@
 	function fillQualityCheckTab(filterSettings, viewIdentifier) {
 		fillIssueKey(filterSettings.selectedElement, viewIdentifier);
 
-		conDecDoDCheckingAPI.getDefinitionOfDone(filterSettings.projectKey, (definitionOfDone) => {
-			fillCoverageRequired(definitionOfDone, viewIdentifier);
-		});
-
-		conDecDoDCheckingAPI.getCoverageOfJiraIssue(filterSettings, (coverage) => {
-			fillCoverageReached(coverage, viewIdentifier);
-		});
-
-		conDecDoDCheckingAPI.getQualityProblems(filterSettings, (qualityProblems) => {
-			fillQualityProblems(qualityProblems, viewIdentifier);
-			var problems = qualityProblems.filter(checkResult => checkResult.criterionViolated);
+		conDecDoDCheckingAPI.getQualityCheckResults(filterSettings, (qualityCheckResults) => {
+			fillQualityProblems(qualityCheckResults, viewIdentifier);
+			var problems = qualityCheckResults.filter(checkResult => checkResult.criterionViolated);
 			updateTabStatus(problems, viewIdentifier);
 		});
 	}
@@ -83,32 +73,6 @@
 		}
 
 		knowledgeTypeLabel.innerText = issueKey;
-	}
-
-	/**
-	 * Fills the tab with information about the requirements of the DoD-check.
-	 *
-	 * @param definitionOfDone containing the required coverage and the link distance
-	 * @param viewIdentifier identifies the html elements of the view
-	 */
-	function fillCoverageRequired(definitionOfDone, viewIdentifier) {
-		var minimumCoverageLabel = document.getElementById("quality-check-minimum-coverage-" + viewIdentifier);
-		var linkDistanceLabel = document.getElementById("quality-check-link-distance-" + viewIdentifier);
-
-		minimumCoverageLabel.innerText = pluralize(definitionOfDone.minimumDecisionsWithinLinkDistance, "decision");
-		linkDistanceLabel.innerText = definitionOfDone.maximumLinkDistanceToDecisions;
-	}
-
-	/**
-	 * Fills the tab with the coverage the element reached in the DoD-check.
-	 *
-	 * @param coverage the coverage reached
-	 * @param viewIdentifier identifies the html elements of the view
-	 */
-	function fillCoverageReached(coverage, viewIdentifier) {
-		var coverageLabel = document.getElementById("quality-check-coverage-" + viewIdentifier);
-
-		coverageLabel.innerText = pluralize(coverage, "decision");
 	}
 
 	/**

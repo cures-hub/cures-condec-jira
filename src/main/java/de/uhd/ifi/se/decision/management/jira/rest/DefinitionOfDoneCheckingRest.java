@@ -12,9 +12,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
@@ -78,36 +76,6 @@ public class DefinitionOfDoneCheckingRest {
 					"Quality check could not be performed because the element could not be found.")).build();
 		}
 		return Response.ok().entity(DefinitionOfDoneChecker.getQualityCheckResults(knowledgeElement, filterSettings))
-				.build();
-	}
-
-	/**
-	 * Get the coverage with decisions of the {@link KnowledgeElement} selected in
-	 * the {@link FilterSettings}.
-	 *
-	 * @param request
-	 * @param filterSettings
-	 * @return coverage How many decisions are linked to the selected
-	 *         {@link KnowledgeElement}.
-	 */
-	@Path("/getCoverageOfJiraIssue")
-	@POST
-	public Response getCoverageOfJiraIssue(@Context HttpServletRequest request, FilterSettings filterSettings) {
-		if (filterSettings == null || filterSettings.getProjectKey().isEmpty()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Coverage check could not be performed due to a bad request."))
-					.build();
-		}
-
-		KnowledgeElement knowledgeElement = filterSettings.getSelectedElement();
-		if (knowledgeElement == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Coverage check could not be performed because the element could not be found.")).build();
-		}
-
-		return Response.ok()
-				.entity(RationaleCoverageCalculator
-						.getReachableElementsOfType(knowledgeElement, KnowledgeType.DECISION, filterSettings).size())
 				.build();
 	}
 }

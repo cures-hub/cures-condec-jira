@@ -30,10 +30,9 @@
 	};
 
 	/**
-	 * external references: nudging/condec.prompts.js,
-	 * condec.quality.check.js
+	 * external references: condec.quality.check.js
 	 */
-	ConDecDoDCheckingAPI.prototype.getQualityProblems = function(filterSettings, callback) {
+	ConDecDoDCheckingAPI.prototype.getQualityCheckResults = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + '/quality-check-results', filterSettings, function(
 			error, result) {
 			if (error === null) {
@@ -43,15 +42,12 @@
 	};
 
 	/**
-	 * external references: condec.quality.check.js,
-	 * nudging/condec.prompts.js,
+	 * external references: nudging/condec.prompts.js
 	 */
-	ConDecDoDCheckingAPI.prototype.getCoverageOfJiraIssue = function(filterSettings, callback) {
-		generalApi.postJSON(this.restPrefix + '/getCoverageOfJiraIssue.json', filterSettings, function(
-			error, result) {
-			if (error === null) {
-				callback(result);
-			}
+	ConDecDoDCheckingAPI.prototype.getQualityProblems = function(filterSettings, callback) {
+		this.getQualityCheckResults(filterSettings, (qualityCheckResults) => {
+			var problems = qualityCheckResults.filter(checkResult => checkResult.criterionViolated);
+			callback(problems);
 		});
 	};
 

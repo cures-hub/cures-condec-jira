@@ -5,9 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,8 +12,11 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rest.DefinitionOfDoneCheckingRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.CodeFiles;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -134,41 +134,5 @@ public class TestChecks extends TestSetUp {
 		settings.setSelectedElementObject(knowledgeElement);
 		Response response = dodCheckingRest.getQualityCheckResults(request, settings);
 		assertEquals(200, response.getStatus());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetCoverageOfJiraIssue() {
-		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
-		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
-		assertEquals(200, response.getStatus());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetCoverageOfJiraIssueFilterSettingsInvalid() {
-		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, null);
-		assertEquals(400, response.getStatus());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetCoverageOfJiraIssueProjectKeyInvalid() {
-		KnowledgeElement knowledgeElement = KnowledgeElements.getTestKnowledgeElement();
-		settings = new FilterSettings(null, "");
-		settings.setSelectedElementObject(knowledgeElement);
-		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
-		assertEquals(400, response.getStatus());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetCoverageOfJiraIssueSelectedElementInvalid() {
-		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElementObject((KnowledgeElement) null);
-		Response response = dodCheckingRest.getCoverageOfJiraIssue(request, settings);
-		assertEquals(400, response.getStatus());
 	}
 }

@@ -12,7 +12,7 @@
 	 * @alternative Use only the WorkflowUIDispatcher event and jQuery(document).ready to wait for the page to be loaded.
 	 * @con Does not work: When the REST calls finish, the HTML elements cannot be found.
 	 */
-	const ConDecPrompt = function() {		
+	const ConDecPrompt = function() {
 		jQuery(document).ajaxComplete(function(event, request, settings) {
 			if (settings.url.includes("WorkflowUIDispatcher.jspa")) {
 				const params = new URLSearchParams(settings.url.replaceAll("?", "&"));
@@ -21,7 +21,7 @@
 
 				jQuery(document).ajaxComplete(function(event, request, settings) {
 					if (settings.url.includes("AjaxIssueEditAction")) {
-						
+
 						const jiraIssueKey = conDecAPI.getIssueKey();
 						const projectKey = conDecAPI.getProjectKey();
 						document.getElementById("unified-prompt-header").innerHTML = "Recommendations for " + jiraIssueKey;
@@ -104,21 +104,21 @@
 			"selectedElement": jiraIssueKey,
 		};
 
-		conDecDoDCheckingAPI.getDefinitionOfDone(projectKey, (definitionOfDone) => {
-			document.getElementById("condec-prompt-minimum-coverage").innerHTML = definitionOfDone.minimumDecisionsWithinLinkDistance;
-			document.getElementById("condec-prompt-link-distance").innerHTML = definitionOfDone.maximumLinkDistanceToDecisions;
-		});
-
-		conDecDoDCheckingAPI.getCoverageOfJiraIssue(filterSettings, (coverage) => {
-			document.getElementById("condec-prompt-decision-coverage").innerHTML = coverage;
-			document.getElementById("dod-spinner").style.display = "none";
-		});
-		
 		conDecDoDCheckingAPI.getQualityProblems(filterSettings, (qualityProblems) => {
+			document.getElementById("dod-spinner").style.display = "none";
+			var summary = document.getElementById("definition-of-done-checking-summary");
+			if (!qualityProblems.length) {
+				summary.innerHTML = "Great work! No <b>violations of the definition of done</b> were found.";
+			} else {
+				summary.innerHTML = "The following <b>violations of the definition of done</b> were found:";
+				var problemExplanation = document.getElementById("definition-of-done-checking-results");
+				problemExplanation.innerHTML = "";
+				qualityProblems.forEach(function(problem) {
+					problemExplanation.insertAdjacentHTML("beforeend", "<li>" + problem.explanation + "</li>");
+				});
+			}
 			conDecNudgingAPI.decideCheckIcon(qualityProblems.length, "definition-of-done-check-icon");
 		});
-
-		document.getElementById("definition-of-done-checking-prompt-jira-project-key").innerHTML = projectKey;
 	}
 
 	ConDecPrompt.prototype.promptNonValidatedElements = function(projectKey, jiraIssueKey) {

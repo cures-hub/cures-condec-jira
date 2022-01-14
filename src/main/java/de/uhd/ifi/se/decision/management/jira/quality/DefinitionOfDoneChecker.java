@@ -173,14 +173,15 @@ public class DefinitionOfDoneChecker {
 		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
 		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
 		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
-		checkResult.setExplanation(knowledgeElement.getKey() + " requires " + minimumCoverage + " decision(s) "
-				+ "within a link distance of " + linkDistance + ".");
+		checkResult.setExplanation(
+				"For every " + knowledgeElement.getTypeAsString() + " a minimum of " + minimumCoverage + " decision(s) "
+						+ "within a maximum link distance of " + linkDistance + " need to be documented.");
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (linkedElement.getType() == knowledgeType) {
 				minimumCoverage--;
 			}
 			if (minimumCoverage <= 0) {
-				checkResult.appendExplanation("This coverage is reached.");
+				checkResult.appendExplanation("This coverage or more is reached.");
 				return checkResult;
 			}
 		}
