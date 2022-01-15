@@ -6,35 +6,34 @@ import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
 public class DefinitionOfDoneChecker {
 
-	private static KnowledgeElementCheck getChecker(KnowledgeType type) {
-		switch (type) {
+	private static KnowledgeElementCheck createElementCheck(KnowledgeElement element) {
+		switch (element.getType()) {
 		case DECISION:
-			return new DecisionCheck();
+			return new DecisionCheck(element);
 		case SOLUTION:
-			return new DecisionCheck();
+			return new DecisionCheck(element);
 		case ISSUE:
-			return new IssueCheck();
+			return new IssueCheck(element);
 		case PROBLEM:
-			return new IssueCheck();
+			return new IssueCheck(element);
 		case ALTERNATIVE:
-			return new AlternativeCheck();
+			return new AlternativeCheck(element);
 		case ARGUMENT:
-			return new ArgumentCheck();
+			return new ArgumentCheck(element);
 		case PRO:
-			return new ArgumentCheck();
+			return new ArgumentCheck(element);
 		case CON:
-			return new ArgumentCheck();
+			return new ArgumentCheck(element);
 		case CODE:
-			return new CodeCheck();
+			return new CodeCheck(element);
 		default:
-			return new OtherCheck();
+			return new OtherCheck(element);
 		}
 	}
 
@@ -66,8 +65,8 @@ public class DefinitionOfDoneChecker {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return true;
 		}
-		KnowledgeElementCheck elementChecker = getChecker(knowledgeElement.getType());
-		return elementChecker == null || elementChecker.isDefinitionOfDoneFulfilled(knowledgeElement);
+		KnowledgeElementCheck elementCheck = createElementCheck(knowledgeElement);
+		return elementCheck == null || elementCheck.isDefinitionOfDoneFulfilled();
 	}
 
 	/**
@@ -93,8 +92,8 @@ public class DefinitionOfDoneChecker {
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-		KnowledgeElementCheck knowledgeElementCheck = getChecker(knowledgeElement.getType());
-		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(knowledgeElement, filterSettings));
+		KnowledgeElementCheck knowledgeElementCheck = createElementCheck(knowledgeElement);
+		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(filterSettings));
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
 			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
@@ -105,7 +104,7 @@ public class DefinitionOfDoneChecker {
 
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 				.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
+		qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(definitionOfDone));
 
 		return qualityCheckResults;
 	}

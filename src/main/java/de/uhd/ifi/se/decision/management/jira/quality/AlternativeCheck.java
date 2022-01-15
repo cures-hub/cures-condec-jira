@@ -8,12 +8,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class AlternativeCheck extends KnowledgeElementCheck {
 
-	private KnowledgeElement alternative;
+	public AlternativeCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
+	}
 
 	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement alternative,
-			DefinitionOfDone definitionOfDone) {
-		this.alternative = alternative;
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
@@ -39,12 +39,12 @@ public class AlternativeCheck extends KnowledgeElementCheck {
 	}
 
 	private boolean hasDecisionProblem() {
-		return !alternative.getLinkedDecisionProblems().isEmpty();
+		return !element.getLinkedDecisionProblems().isEmpty();
 	}
 
 	private boolean hasArgument() {
-		return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT) || alternative.hasNeighborOfType(KnowledgeType.PRO)
-				|| alternative.hasNeighborOfType(KnowledgeType.CON);
+		return element.hasNeighborOfType(KnowledgeType.ARGUMENT) || element.hasNeighborOfType(KnowledgeType.PRO)
+				|| element.hasNeighborOfType(KnowledgeType.CON);
 	}
 
 }

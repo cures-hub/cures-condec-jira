@@ -9,12 +9,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class DecisionCheck extends KnowledgeElementCheck {
 
-	private KnowledgeElement decision;
+	public DecisionCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
+	}
 
 	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement decision,
-			DefinitionOfDone definitionOfDone) {
-		this.decision = decision;
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
@@ -26,7 +26,7 @@ public class DecisionCheck extends KnowledgeElementCheck {
 					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false));
 		}
 
-		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
+		if (element.getStatus() == KnowledgeStatus.CHALLENGED) {
 			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, true));
 		} else {
 			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, false));
@@ -46,11 +46,11 @@ public class DecisionCheck extends KnowledgeElementCheck {
 	}
 
 	private boolean hasDecisionProblem() {
-		return !decision.getLinkedDecisionProblems().isEmpty();
+		return !element.getLinkedDecisionProblems().isEmpty();
 	}
 
 	private boolean hasPro() {
-		return decision.hasNeighborOfType(KnowledgeType.PRO);
+		return element.hasNeighborOfType(KnowledgeType.PRO);
 	}
 
 }

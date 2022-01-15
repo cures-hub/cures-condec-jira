@@ -36,7 +36,7 @@ public class TestAlternativeCheck extends TestSetUp {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		alternative = KnowledgeElements.getAlternative();
-		alternativeCompletenessCheck = new AlternativeCheck();
+		alternativeCompletenessCheck = new AlternativeCheck(alternative);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class TestAlternativeCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		assertNotNull(alternative.getLink(issue));
-		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled(alternative));
+		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TestAlternativeCheck extends TestSetUp {
 		assertNull(linkToIssue);
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(alternative.getProject());
 		assertEquals(3, Graphs.neighborSetOf(graph, alternative).size());
-		assertFalse(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled(alternative));
+		assertFalse(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -74,11 +74,12 @@ public class TestAlternativeCheck extends TestSetUp {
 		// set criteria "alternative has to be linked to argument" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
-		assertTrue(alternativeCompletenessCheck.getQualityCheckResult(alternative, definitionOfDone).stream()
+		assertTrue(alternativeCompletenessCheck.getQualityCheckResult(definitionOfDone).stream()
 				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
 
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
-		assertTrue(alternativeCompletenessCheck.getQualityCheckResult(alternative, definitionOfDone).stream()
+		alternativeCompletenessCheck = new AlternativeCheck(alternative);
+		assertTrue(alternativeCompletenessCheck.getQualityCheckResult(definitionOfDone).stream()
 				.anyMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
@@ -89,10 +90,11 @@ public class TestAlternativeCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled(alternative));
+		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled());
 
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
-		assertFalse(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled(alternative));
+		alternativeCompletenessCheck = new AlternativeCheck(alternative);
+		assertFalse(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -105,12 +107,12 @@ public class TestAlternativeCheck extends TestSetUp {
 
 		// link alternative to a pro-argument
 		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
-		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
+		alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement proArgument = JiraIssues.addElementToDataBase(342, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(alternative.getLink(proArgument));
-		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled(alternative));
+		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -123,12 +125,12 @@ public class TestAlternativeCheck extends TestSetUp {
 
 		// link alternative to a con-argument
 		KnowledgeElement issue = KnowledgeElements.getSolvedDecisionProblem();
-		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
+		alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(issue, alternative, user);
 		KnowledgeElement conArgument = JiraIssues.addElementToDataBase(344, KnowledgeType.CON);
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(conArgument, alternative, user);
 		assertNotNull(alternative.getLink(conArgument));
-		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled(alternative));
+		assertTrue(alternativeCompletenessCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@After

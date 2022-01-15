@@ -10,9 +10,12 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class OtherCheck extends KnowledgeElementCheck {
 
+	public OtherCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
+	}
+
 	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement issue,
-			DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 

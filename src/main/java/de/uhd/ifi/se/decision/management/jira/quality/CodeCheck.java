@@ -12,21 +12,23 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
  */
 public class CodeCheck extends KnowledgeElementCheck {
 
+	public CodeCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
+	}
+
 	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement issue,
-			DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 		return qualityCheckResults;
 	}
 
 	@Override
-	public QualityCriterionCheckResult getCoverageQuality(KnowledgeElement knowledgeElement,
-			FilterSettings filterSettings) {
+	public QualityCriterionCheckResult getCoverageQuality(FilterSettings filterSettings) {
 		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
 				QualityCriterionType.DECISION_COVERAGE, false);
-		if (knowledgeElement instanceof ChangedFile) {
+		if (element instanceof ChangedFile) {
 			int lineNumbersInCodeFile = filterSettings.getDefinitionOfDone().getLineNumbersInCodeFile();
-			ChangedFile codeFile = (ChangedFile) knowledgeElement;
+			ChangedFile codeFile = (ChangedFile) element;
 			if (codeFile.getLineCount() < lineNumbersInCodeFile) {
 				checkResult
 						.setExplanation("This code file is excluded from coverage measuring because it is too small.");
@@ -38,6 +40,6 @@ public class CodeCheck extends KnowledgeElementCheck {
 				return checkResult;
 			}
 		}
-		return super.getCoverageQuality(knowledgeElement, filterSettings);
+		return super.getCoverageQuality(filterSettings);
 	}
 }

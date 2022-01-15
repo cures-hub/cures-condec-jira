@@ -21,6 +21,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
  * incomplete, i.e., its documentation needs to be improved.
  */
 public abstract class KnowledgeElementCheck {
+	protected KnowledgeElement element;
+
+	public KnowledgeElementCheck(KnowledgeElement elementToBeChecked) {
+		this.element = elementToBeChecked;
+	}
 
 	/**
 	 * Executes the completeness check for the given knowledge element.
@@ -32,10 +37,10 @@ public abstract class KnowledgeElementCheck {
 	 * @return true if the element is completely documented according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
-	public boolean isDefinitionOfDoneFulfilled(KnowledgeElement element) {
+	public boolean isDefinitionOfDoneFulfilled() {
 		String projectKey = element.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return getQualityCheckResult(element, definitionOfDone).stream()
+		return getQualityCheckResult(definitionOfDone).stream()
 				.noneMatch(checkResult -> checkResult.isCriterionViolated());
 	}
 
@@ -55,17 +60,15 @@ public abstract class KnowledgeElementCheck {
 	 * @return a list of {@link QualityCriterionCheckResult}s according to the
 	 *         default and configured rules of the {@link DefinitionOfDone}.
 	 */
-	abstract List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement knowledgeElement,
-			DefinitionOfDone definitionOfDone);
+	abstract List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone);
 
-	public QualityCriterionCheckResult getCoverageQuality(KnowledgeElement knowledgeElement,
-			FilterSettings filterSettings) {
+	public QualityCriterionCheckResult getCoverageQuality(FilterSettings filterSettings) {
 		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
 				QualityCriterionType.DECISION_COVERAGE, false);
 		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
 		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
 		String requiredCoverage = filterSettings.getDefinitionOfDone().getRequiredCoverageExplanation();
-		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
+		Set<KnowledgeElement> linkedElements = element.getLinkedElements(linkDistance);
 		checkResult.setExplanation(requiredCoverage);
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (linkedElement.getType() == KnowledgeType.DECISION) {

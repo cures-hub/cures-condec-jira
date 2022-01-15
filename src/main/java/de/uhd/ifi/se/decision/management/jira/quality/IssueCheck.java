@@ -14,16 +14,15 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  */
 public class IssueCheck extends KnowledgeElementCheck {
 
-	private KnowledgeElement issue;
+	public IssueCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
+	}
 
 	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement issue,
-			DefinitionOfDone definitionOfDone) {
-		this.issue = issue;
-
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
-		if (!isValidDecisionLinkedToDecisionProblem(issue)) {
+		if (!isValidDecisionLinkedToDecisionProblem(element)) {
 			qualityCheckResults
 					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true));
 		} else {
@@ -66,11 +65,11 @@ public class IssueCheck extends KnowledgeElementCheck {
 	}
 
 	private boolean isResolved() {
-		return issue.getStatus() != KnowledgeStatus.UNRESOLVED;
+		return element.getStatus() != KnowledgeStatus.UNRESOLVED;
 	}
 
 	private boolean hasAlternative() {
-		return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+		return element.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 	}
 
 }

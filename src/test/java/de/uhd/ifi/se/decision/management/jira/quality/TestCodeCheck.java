@@ -19,37 +19,36 @@ public class TestCodeCheck extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		codeCheck = new CodeCheck();
 	}
 
 	@Test
 	@NonTransactional
 	public void testFulfillsDoD() {
-		assertTrue(codeCheck.isDefinitionOfDoneFulfilled(CodeFiles.getTestCodeFileDone()));
-		assertFalse(codeCheck.getCoverageQuality(CodeFiles.getTestCodeFileDone(), new FilterSettings())
-				.isCriterionViolated());
-		assertTrue(codeCheck.getQualityCheckResult(CodeFiles.getTestCodeFileDone(), new DefinitionOfDone()).isEmpty());
+		codeCheck = new CodeCheck(CodeFiles.getTestCodeFileDone());
+		assertTrue(codeCheck.isDefinitionOfDoneFulfilled());
+		assertFalse(codeCheck.getCoverageQuality(new FilterSettings()).isCriterionViolated());
+		assertTrue(codeCheck.getQualityCheckResult(new DefinitionOfDone()).isEmpty());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsLinkedToIssue() {
-		assertTrue(codeCheck.getCoverageQuality(CodeFiles.getCodeFileNotDone(), new FilterSettings())
-				.isCriterionViolated());
+		codeCheck = new CodeCheck(CodeFiles.getCodeFileNotDone());
+		assertTrue(codeCheck.getCoverageQuality(new FilterSettings()).isCriterionViolated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSmallFile() {
-		assertFalse(codeCheck.getCoverageQuality(CodeFiles.getSmallCodeFileDone(), new FilterSettings())
-				.isCriterionViolated());
+		codeCheck = new CodeCheck(CodeFiles.getSmallCodeFileDone());
+		assertFalse(codeCheck.getCoverageQuality(new FilterSettings()).isCriterionViolated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testNoCodeKnowledgeType() {
-		assertTrue(codeCheck.getCoverageQuality(KnowledgeElements.getTestKnowledgeElement(), new FilterSettings())
-				.isCriterionViolated());
+		codeCheck = new CodeCheck(KnowledgeElements.getTestKnowledgeElement());
+		assertTrue(codeCheck.getCoverageQuality(new FilterSettings()).isCriterionViolated());
 	}
 
 }
