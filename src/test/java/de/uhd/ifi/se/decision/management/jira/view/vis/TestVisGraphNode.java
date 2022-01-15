@@ -56,7 +56,7 @@ public class TestVisGraphNode extends TestSetUp {
 	@Test
 	public void testNodeDescription() {
 		VisNode node = new VisNode(element, 1);
-		assertTrue(node.getTitle().contains("Linked knowledge violates the DoD!"));
+		assertTrue(node.getTitle().contains("violates the DoD"));
 	}
 
 	@Test

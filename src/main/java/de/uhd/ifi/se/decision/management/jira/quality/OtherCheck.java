@@ -7,7 +7,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Checks whether a {@link KnowledgeElement} of {@link KnowledgeType#OTHER}
+ * Checks whether a {@link KnowledgeElement} of type {@link KnowledgeType#OTHER}
  * (e.g. Jira issue) fulfills the {@link DefinitionOfDone}.
  */
 public class OtherCheck extends KnowledgeElementCheck {

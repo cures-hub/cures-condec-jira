@@ -104,19 +104,26 @@ public class DefinitionOfDoneChecker {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 		KnowledgeElementCheck elementCheck = createElementCheck(knowledgeElement);
 		qualityCheckResults.add(elementCheck.getCoverageQuality(filterSettings));
-
-		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, false));
-		}
-
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 				.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
 		qualityCheckResults.addAll(elementCheck.getQualityCheckResult(definitionOfDone));
-
+		qualityCheckResults.add(checkLinkKnowledgeQuality(knowledgeElement, qualityCheckResults));
 		return qualityCheckResults;
+	}
+
+	private static QualityCriterionCheckResult checkLinkKnowledgeQuality(KnowledgeElement element,
+			List<QualityCriterionCheckResult> qualityCheckResults) {
+		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
+				QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE);
+		if (!getQualityProblems(qualityCheckResults).isEmpty()) {
+			checkResult.setExplanation("This knowledge element violates the DoD (see criteria above). "
+					+ "You need to fix these violations first, then the linked knowledge will be checked.");
+			return checkResult;
+		}
+		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(element)) {
+			return checkResult;
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, false);
 	}
 
 	/**
@@ -125,8 +132,12 @@ public class DefinitionOfDoneChecker {
 	 */
 	public static List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
-		return getQualityCheckResults(knowledgeElement, filterSettings).stream()
-				.filter(checkResult -> checkResult.isCriterionViolated()).collect(Collectors.toList());
+		return getQualityProblems(getQualityCheckResults(knowledgeElement, filterSettings));
+	}
+
+	public static List<QualityCriterionCheckResult> getQualityProblems(List<QualityCriterionCheckResult> checkResults) {
+		return checkResults.stream().filter(checkResult -> checkResult.isCriterionViolated())
+				.collect(Collectors.toList());
 	}
 
 	/**
