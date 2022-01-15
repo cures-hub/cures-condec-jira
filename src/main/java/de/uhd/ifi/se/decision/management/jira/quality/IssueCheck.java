@@ -7,7 +7,6 @@ import java.util.Set;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Checks whether a decision problem (=issue, question, goal, ...) fulfills the
@@ -15,57 +14,18 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 public class IssueCheck extends KnowledgeElementCheck {
 
-	private KnowledgeElement issue;
-
-	@Override
-	public boolean execute(KnowledgeElement issue) {
-		this.issue = issue;
-		String projectKey = issue.getProject().getProjectKey();
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
+	public IssueCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
 	}
 
 	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return isValidDecisionLinkedToDecisionProblem(issue) && isResolved();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return !definitionOfDone.isIssueIsLinkedToAlternative() || hasAlternative();
-	}
-
-	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement issue,
-			DefinitionOfDone definitionOfDone) {
-		this.issue = issue;
-
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!isValidDecisionLinkedToDecisionProblem(issue)) {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, false));
-		}
-
-		if (!isResolved()) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_RESOLUTION, true));
-		} else {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_RESOLUTION, false));
-		}
-
+		qualityCheckResults.add(checkIssueLinkedToValidDecision(element));
+		qualityCheckResults.add(checkIssueStatus(element));
 		if (definitionOfDone.isIssueIsLinkedToAlternative()) {
-			if (!hasAlternative()) {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, true));
-			} else {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, false));
-			}
+			qualityCheckResults.add(checkIssueLinkedToAlternative(element));
 		}
-
 		return qualityCheckResults;
 	}
 
@@ -82,12 +42,25 @@ public class IssueCheck extends KnowledgeElementCheck {
 						&& decision.getStatus() != KnowledgeStatus.REJECTED);
 	}
 
-	private boolean isResolved() {
-		return issue.getStatus() != KnowledgeStatus.UNRESOLVED;
+	private QualityCriterionCheckResult checkIssueLinkedToValidDecision(KnowledgeElement issue) {
+		if (isValidDecisionLinkedToDecisionProblem(issue)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true);
 	}
 
-	private boolean hasAlternative() {
-		return issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+	private QualityCriterionCheckResult checkIssueStatus(KnowledgeElement issue) {
+		if (issue.getStatus() != KnowledgeStatus.UNRESOLVED) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_STATUS, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_STATUS, true);
+	}
+
+	private QualityCriterionCheckResult checkIssueLinkedToAlternative(KnowledgeElement issue) {
+		if (issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, true);
 	}
 
 }

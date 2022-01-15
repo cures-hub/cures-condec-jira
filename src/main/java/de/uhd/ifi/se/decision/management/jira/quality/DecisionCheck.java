@@ -6,70 +6,46 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
+/**
+ * Checks whether a decision fulfills the {@link DefinitionOfDone}.
+ */
 public class DecisionCheck extends KnowledgeElementCheck {
 
-	private KnowledgeElement decision;
-
-	@Override
-	public boolean execute(KnowledgeElement decision) {
-		this.decision = decision;
-		String projectKey = decision.getProject().getProjectKey();
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
+	public DecisionCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
 	}
 
 	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return hasDecisionProblem();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return !definitionOfDone.isDecisionIsLinkedToPro() || hasPro();
-	}
-
-	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement decision,
-			DefinitionOfDone definitionOfDone) {
-		this.decision = decision;
-
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!hasDecisionProblem()) {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false));
-		}
-
-		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, true));
-		} else {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, false));
-		}
-
+		qualityCheckResults.add(checkDecisionLinkedToIssue(element));
+		qualityCheckResults.add(checkDecisionStatus(element));
 		if (definitionOfDone.isDecisionIsLinkedToPro()) {
-			if (!hasPro()) {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, true));
-			} else {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, false));
-			}
+			qualityCheckResults.add(checkDecisionLinkedToPro(element));
 		}
-
 		return qualityCheckResults;
 	}
 
-	private boolean hasDecisionProblem() {
-		return !decision.getLinkedDecisionProblems().isEmpty();
+	private QualityCriterionCheckResult checkDecisionLinkedToIssue(KnowledgeElement decision) {
+		if (decision.getLinkedDecisionProblems().isEmpty()) {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false);
 	}
 
-	private boolean hasPro() {
-		return decision.hasNeighborOfType(KnowledgeType.PRO);
+	private QualityCriterionCheckResult checkDecisionStatus(KnowledgeElement decision) {
+		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, true);
+		} else {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, false);
+		}
 	}
 
+	private QualityCriterionCheckResult checkDecisionLinkedToPro(KnowledgeElement decision) {
+		if (decision.hasNeighborOfType(KnowledgeType.PRO)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, true);
+	}
 }

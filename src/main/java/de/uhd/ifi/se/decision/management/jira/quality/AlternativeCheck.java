@@ -5,63 +5,41 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
+/**
+ * Checks whether an alternative fulfills the {@link DefinitionOfDone}.
+ */
 public class AlternativeCheck extends KnowledgeElementCheck {
 
-	private KnowledgeElement alternative;
-
-	@Override
-	public boolean execute(KnowledgeElement alternative) {
-		this.alternative = alternative;
-		String projectKey = alternative.getProject().getProjectKey();
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
+	public AlternativeCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
 	}
 
 	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return hasDecisionProblem();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return !definitionOfDone.isAlternativeIsLinkedToArgument() || hasArgument();
-	}
-
-	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement alternative,
-			DefinitionOfDone definitionOfDone) {
-		this.alternative = alternative;
-
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!hasDecisionProblem()) {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, true));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, false));
-		}
-
+		qualityCheckResults.add(checkAlternativeLinkedToIssue(element));
 		if (definitionOfDone.isAlternativeIsLinkedToArgument()) {
-			if (!hasArgument()) {
-				qualityCheckResults.add(
-						new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, true));
-			} else {
-				qualityCheckResults.add(
-						new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, false));
-			}
+			qualityCheckResults.add(checkAlternativeLinkedToArgument(element));
 		}
-
 		return qualityCheckResults;
 	}
 
-	private boolean hasDecisionProblem() {
-		return !alternative.getLinkedDecisionProblems().isEmpty();
+	private QualityCriterionCheckResult checkAlternativeLinkedToIssue(KnowledgeElement alternative) {
+		if (alternative.getLinkedDecisionProblems().isEmpty()) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, true);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, false);
 	}
 
-	private boolean hasArgument() {
+	private QualityCriterionCheckResult checkAlternativeLinkedToArgument(KnowledgeElement alternative) {
+		if (hasArgument(alternative)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, true);
+	}
+
+	private boolean hasArgument(KnowledgeElement alternative) {
 		return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT) || alternative.hasNeighborOfType(KnowledgeType.PRO)
 				|| alternative.hasNeighborOfType(KnowledgeType.CON);
 	}

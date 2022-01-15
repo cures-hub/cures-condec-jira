@@ -112,7 +112,7 @@ public class KnowledgeElement {
 		if (issue.getCreated() != null) {
 			updateDateAndAuthor.put(issue.getCreated(), "");
 		}
-        List<ChangeHistory> changeHistory = ComponentAccessor.getChangeHistoryManager().getChangeHistories(issue);
+		List<ChangeHistory> changeHistory = ComponentAccessor.getChangeHistoryManager().getChangeHistories(issue);
 		changeHistory.forEach(changeItem -> {
 			updateDateAndAuthor.put(changeItem.getTimePerformed(), changeItem.getAuthorDisplayName());
 		});
@@ -443,7 +443,8 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @return sorted map of all update dates and their corresponding authors of the knowledge element.
+	 * @return sorted map of all update dates and their corresponding authors of the
+	 *         knowledge element.
 	 */
 	public TreeMap<Date, String> getUpdateDateAndAuthor() {
 		if (updateDateAndAuthor != null) {
@@ -467,7 +468,8 @@ public class KnowledgeElement {
 
 	/**
 	 * @param updateDateAndAuthor
-	 *            map containing the update dates of the knowledge element and their corresponding authors.
+	 *            map containing the update dates of the knowledge element and their
+	 *            corresponding authors.
 	 */
 	public void setUpdateDateAndAuthor(TreeMap<Date, String> updateDateAndAuthor) {
 		this.updateDateAndAuthor = updateDateAndAuthor;

@@ -25,14 +25,14 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestDecisionCheck extends TestSetUp {
 	private KnowledgeElement decision;
 	private ApplicationUser user;
-	private DecisionCheck decisionCompletenessCheck;
+	private DecisionCheck decisionCheck;
 
 	@Before
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		decision = KnowledgeElements.getDecision();
-		decisionCompletenessCheck = new DecisionCheck();
+		decisionCheck = new DecisionCheck(decision);
 	}
 
 	@Test
@@ -44,7 +44,7 @@ public class TestDecisionCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ISSUE, issue.getType());
 		assertEquals(2, issue.getId());
 		assertNotNull(decision.getLink(issue));
-		assertTrue(decisionCompletenessCheck.execute(decision));
+		assertTrue(decisionCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -55,8 +55,9 @@ public class TestDecisionCheck extends TestSetUp {
 		unlinkedDecision.setProject("TEST");
 		unlinkedDecision.setId(4242);
 		unlinkedDecision.setStatus(KnowledgeStatus.CHALLENGED);
-		assertFalse(decisionCompletenessCheck.execute(unlinkedDecision));
-		assertTrue(decisionCompletenessCheck.getQualityCheckResult(unlinkedDecision, new DefinitionOfDone()).stream()
+		decisionCheck = new DecisionCheck(unlinkedDecision);
+		assertFalse(decisionCheck.isDefinitionOfDoneFulfilled());
+		assertTrue(decisionCheck.getQualityCheckResult(new DefinitionOfDone()).stream()
 				.anyMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
@@ -68,13 +69,13 @@ public class TestDecisionCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertTrue(decisionCompletenessCheck.getQualityCheckResult(decision, definitionOfDone).stream()
+		assertTrue(decisionCheck.getQualityCheckResult(definitionOfDone).stream()
 				.anyMatch(checkResult -> checkResult.isCriterionViolated()));
 
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(decision, pro, user);
 
-		assertTrue(decisionCompletenessCheck.getQualityCheckResult(decision, definitionOfDone).stream()
+		assertTrue(decisionCheck.getQualityCheckResult(definitionOfDone).stream()
 				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
 
 		// restore default
@@ -87,7 +88,7 @@ public class TestDecisionCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setDecisionLinkedToPro(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
-		assertFalse(decisionCompletenessCheck.execute(decision));
+		assertFalse(decisionCheck.isDefinitionOfDoneFulfilled());
 
 		// restore default
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", new DefinitionOfDone());
@@ -102,7 +103,7 @@ public class TestDecisionCheck extends TestSetUp {
 		KnowledgeElement pro = JiraIssues.addElementToDataBase(123, KnowledgeType.PRO);
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(decision, pro, user);
 
-		assertTrue(decisionCompletenessCheck.execute(decision));
+		assertTrue(decisionCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@After

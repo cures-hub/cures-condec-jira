@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 
 /**
- * Checks whether a given {@link KnowledgeElement} is documented completely
+ * Checks whether a given {@link KnowledgeElement} is documented correctly
  * according to the {@link DefinitionOfDone} (DoD).
  *
  * For example, an argument needs to be linked to at least one solution option
@@ -21,6 +21,12 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
  * incomplete, i.e., its documentation needs to be improved.
  */
 public abstract class KnowledgeElementCheck {
+
+	protected KnowledgeElement element;
+
+	public KnowledgeElementCheck(KnowledgeElement elementToBeChecked) {
+		this.element = elementToBeChecked;
+	}
 
 	/**
 	 * Executes the completeness check for the given knowledge element.
@@ -32,39 +38,20 @@ public abstract class KnowledgeElementCheck {
 	 * @return true if the element is completely documented according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
-	public boolean execute(KnowledgeElement element) {
+	public boolean isDefinitionOfDoneFulfilled() {
 		String projectKey = element.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
+		return getQualityCheckResult(definitionOfDone).stream()
+				.noneMatch(checkResult -> checkResult.isCriterionViolated());
 	}
 
 	/**
-	 * Checks the default rules that a knowledge element needs to fulfill to be
-	 * completely documented. For example, a default rule is that each decision
-	 * problem (=issue) needs to be linked to a decision to be complete.
+	 * Checks the default and configurable rules that a knowledge element needs to
+	 * fulfill to be correctly documented according to the {@link DefinitionOfDone}.
+	 * For example, a default rule is that each decision problem (=issue) needs to
+	 * be linked to a decision to be complete. A configurable rule is that each
+	 * decision needs to be linked to at least one pro-argument to be complete.
 	 * 
-	 * @return true if all defaults rules are fulfilled.
-	 */
-	public boolean isCompleteAccordingToDefault() {
-		return true;
-	}
-
-	/**
-	 * Checks the configurable rules that a knowledge element needs to fulfill to be
-	 * completely documented according to the {@link DefinitionOfDone}. For example,
-	 * a configurable rule is that each decision needs to be linked to at least one
-	 * pro-argument to be complete.
-	 * 
-	 * @param definitionOfDone
-	 *            instance of {@link DefinitionOfDone}.
-	 * 
-	 * @return true if all configured rules are fulfilled.
-	 */
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return true;
-	}
-
-	/**
 	 * @param knowledgeElement
 	 *            instance of {@link KnowledgeElement} or of a subclass, e.g.
 	 *            {@link ChangedFile}, {@link PartOfJiraIssueText}, or
@@ -74,17 +61,15 @@ public abstract class KnowledgeElementCheck {
 	 * @return a list of {@link QualityCriterionCheckResult}s according to the
 	 *         default and configured rules of the {@link DefinitionOfDone}.
 	 */
-	abstract List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement knowledgeElement,
-			DefinitionOfDone definitionOfDone);
+	abstract List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone);
 
-	public QualityCriterionCheckResult getCoverageQuality(KnowledgeElement knowledgeElement,
-			FilterSettings filterSettings) {
+	public QualityCriterionCheckResult getCoverageQuality(FilterSettings filterSettings) {
 		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
 				QualityCriterionType.DECISION_COVERAGE, false);
 		int linkDistance = filterSettings.getDefinitionOfDone().getMaximumLinkDistanceToDecisions();
 		int minimumCoverage = filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance();
 		String requiredCoverage = filterSettings.getDefinitionOfDone().getRequiredCoverageExplanation();
-		Set<KnowledgeElement> linkedElements = knowledgeElement.getLinkedElements(linkDistance);
+		Set<KnowledgeElement> linkedElements = element.getLinkedElements(linkDistance);
 		checkResult.setExplanation(requiredCoverage);
 		for (KnowledgeElement linkedElement : linkedElements) {
 			if (linkedElement.getType() == KnowledgeType.DECISION) {
@@ -99,12 +84,15 @@ public abstract class KnowledgeElementCheck {
 		checkResult.setCriterionViolated(true);
 
 		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
-			checkResult.appendExplanation(
-					"Only " + minimumCoverage + " decision" + (minimumCoverage > 1 ? "s are" : " is") + " reached.");
+			checkResult.appendExplanation(createCoverageExplanation(minimumCoverage));
 		} else {
 			checkResult.appendExplanation("No decisions are reached.");
 		}
 
 		return checkResult;
+	}
+
+	public static String createCoverageExplanation(int coverage) {
+		return "Only " + coverage + " decision" + (coverage > 1 ? "s are" : " is") + " reached.";
 	}
 }

@@ -6,48 +6,33 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+/**
+ * Checks whether an argument ({@link KnowledgeType#ARGUMENT},
+ * {@link KnowledgeType#PRO}, or {@link KnowledgeType#CON}) fulfills the
+ * {@link DefinitionOfDone}.
+ */
 public class ArgumentCheck extends KnowledgeElementCheck {
 
-	private KnowledgeElement argument;
-
-	@Override
-	public boolean execute(KnowledgeElement argument) {
-		this.argument = argument;
-		return isCompleteAccordingToDefault();
+	public ArgumentCheck(KnowledgeElement elementToBeChecked) {
+		super(elementToBeChecked);
 	}
 
 	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return hasDecisionOrAlternative();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return true;
-	}
-
-	@Override
-	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement argument,
-			DefinitionOfDone definitionOfDone) {
-		this.argument = argument;
-
+	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!hasDecisionOrAlternative()) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(
-					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, true));
-		} else {
-			qualityCheckResults.add(new QualityCriterionCheckResult(
-					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, false));
-
-		}
-
+		qualityCheckResults.add(checkArgumentLinkedToSolutionOption(element));
 		return qualityCheckResults;
 	}
 
-	private boolean hasDecisionOrAlternative() {
+	private QualityCriterionCheckResult checkArgumentLinkedToSolutionOption(KnowledgeElement argument) {
+		if (hasDecisionOrAlternative(argument)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, true);
+	}
+
+	private boolean hasDecisionOrAlternative(KnowledgeElement argument) {
 		return argument.hasNeighborOfType(KnowledgeType.DECISION)
 				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
 	}
-
 }

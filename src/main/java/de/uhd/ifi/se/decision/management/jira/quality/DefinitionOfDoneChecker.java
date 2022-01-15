@@ -1,35 +1,54 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
-import static java.util.Map.entry;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
+/**
+ * 
+ */
 public class DefinitionOfDoneChecker {
 
-	private static final Map<KnowledgeType, KnowledgeElementCheck> knowledgeElementCheckMap = Map.ofEntries(
-			entry(KnowledgeType.DECISION, new DecisionCheck()), //
-			entry(KnowledgeType.SOLUTION, new DecisionCheck()), //
-			entry(KnowledgeType.ISSUE, new IssueCheck()), //
-			entry(KnowledgeType.PROBLEM, new IssueCheck()), //
-			entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()), //
-			entry(KnowledgeType.ARGUMENT, new ArgumentCheck()), //
-			entry(KnowledgeType.PRO, new ArgumentCheck()), //
-			entry(KnowledgeType.CON, new ArgumentCheck()), //
-			entry(KnowledgeType.CODE, new CodeCheck()), //
-			entry(KnowledgeType.OTHER, new OtherCheck()));
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} to be checked.
+	 * @return {@link KnowledgeElementCheck} object that offers operations for
+	 *         assessing whether the element fulfills or violates the
+	 *         {@link DefinitionOfDone}.
+	 */
+	private static KnowledgeElementCheck createElementCheck(KnowledgeElement element) {
+		switch (element.getType()) {
+		case DECISION:
+			return new DecisionCheck(element);
+		case SOLUTION:
+			return new DecisionCheck(element);
+		case ISSUE:
+			return new IssueCheck(element);
+		case PROBLEM:
+			return new IssueCheck(element);
+		case ALTERNATIVE:
+			return new AlternativeCheck(element);
+		case ARGUMENT:
+			return new ArgumentCheck(element);
+		case PRO:
+			return new ArgumentCheck(element);
+		case CON:
+			return new ArgumentCheck(element);
+		case CODE:
+			return new CodeCheck(element);
+		default:
+			return new OtherCheck(element);
+		}
+	}
 
 	/**
-	 * Checks if the definition of done has been violated for a
+	 * Checks if the definition of done has been violated or fulfilled for a
 	 * {@link KnowledgeElement}.
 	 *
 	 * @issue Should knowledge elements without definition of done be assumed to be
@@ -56,8 +75,8 @@ public class DefinitionOfDoneChecker {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return true;
 		}
-		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-		return knowledgeElementCheck == null || knowledgeElementCheck.execute(knowledgeElement);
+		KnowledgeElementCheck elementCheck = createElementCheck(knowledgeElement);
+		return elementCheck == null || elementCheck.isDefinitionOfDoneFulfilled();
 	}
 
 	/**
@@ -83,21 +102,28 @@ public class DefinitionOfDoneChecker {
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
-		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(knowledgeElement, filterSettings));
-
-		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, false));
-		}
-
+		KnowledgeElementCheck elementCheck = createElementCheck(knowledgeElement);
+		qualityCheckResults.add(elementCheck.getCoverageQuality(filterSettings));
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 				.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(knowledgeElement, definitionOfDone));
-
+		qualityCheckResults.addAll(elementCheck.getQualityCheckResult(definitionOfDone));
+		qualityCheckResults.add(checkLinkKnowledgeQuality(knowledgeElement, qualityCheckResults));
 		return qualityCheckResults;
+	}
+
+	private static QualityCriterionCheckResult checkLinkKnowledgeQuality(KnowledgeElement element,
+			List<QualityCriterionCheckResult> qualityCheckResults) {
+		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
+				QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE);
+		if (!getQualityProblems(qualityCheckResults).isEmpty()) {
+			checkResult.setExplanation("This knowledge element violates the DoD (see criteria above). "
+					+ "You need to fix these violations first, then the linked knowledge will be checked.");
+			return checkResult;
+		}
+		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(element)) {
+			return checkResult;
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE, false);
 	}
 
 	/**
@@ -106,13 +132,17 @@ public class DefinitionOfDoneChecker {
 	 */
 	public static List<QualityCriterionCheckResult> getQualityProblems(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
-		return getQualityCheckResults(knowledgeElement, filterSettings).stream()
-				.filter(checkResult -> checkResult.isCriterionViolated()).collect(Collectors.toList());
+		return getQualityProblems(getQualityCheckResults(knowledgeElement, filterSettings));
+	}
+
+	public static List<QualityCriterionCheckResult> getQualityProblems(List<QualityCriterionCheckResult> checkResults) {
+		return checkResults.stream().filter(checkResult -> checkResult.isCriterionViolated())
+				.collect(Collectors.toList());
 	}
 
 	/**
-	 * @return a string detailing all {@link QualityCriterionType} of the
-	 *         {@link KnowledgeElement}.
+	 * @return a string detailing all failed {@link QualityCriterionCheckResult}s of
+	 *         the {@link KnowledgeElement}, i.e. the quality problems.
 	 */
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
