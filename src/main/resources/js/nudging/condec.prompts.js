@@ -110,7 +110,7 @@
 			if (!qualityProblems.length) {
 				summary.innerHTML = "Great work! No <b>violations of the definition of done</b> were found.";
 			} else {
-				summary.innerHTML = "The following <b>violations of the definition of done</b> were found:";
+				summary.innerHTML = "Please improve the knowledge documentation. The following <b>violations of the definition of done</b> were found:";
 				var problemExplanation = document.getElementById("definition-of-done-checking-results");
 				problemExplanation.innerHTML = "";
 				qualityProblems.forEach(function(problem) {
