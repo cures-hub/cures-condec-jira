@@ -130,8 +130,8 @@ public class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * @return a string detailing all {@link QualityCriterionType} of the
-	 *         {@link KnowledgeElement}.
+	 * @return a string detailing all failed {@link QualityCriterionCheckResult}s of
+	 *         the {@link KnowledgeElement}, i.e. the quality problems.
 	 */
 	public static String getQualityProblemExplanation(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
