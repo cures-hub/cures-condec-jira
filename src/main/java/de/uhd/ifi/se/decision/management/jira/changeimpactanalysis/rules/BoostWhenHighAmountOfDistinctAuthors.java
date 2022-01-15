@@ -30,6 +30,5 @@ public class BoostWhenHighAmountOfDistinctAuthors implements ChangePropagationFu
         } else {
             return 1.0;
         }
-        
     }
 }

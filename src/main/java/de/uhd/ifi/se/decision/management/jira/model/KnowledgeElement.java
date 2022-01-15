@@ -53,7 +53,7 @@ public class KnowledgeElement {
 	private String description;
 	protected KnowledgeType type;
 	private String key;
-	private TreeMap<Date, String> updateDateAndAuthor;
+	protected TreeMap<Date, String> updateDateAndAuthor;
 	protected DocumentationLocation documentationLocation;
 	protected Origin origin;
 	protected KnowledgeStatus status;
@@ -445,7 +445,12 @@ public class KnowledgeElement {
 	/**
 	 * @return sorted map of all update dates and their corresponding authors of the knowledge element.
 	 */
-	public Map<Date, String> getUpdateDateAndAuthor() {
+	public TreeMap<Date, String> getUpdateDateAndAuthor() {
+		if (updateDateAndAuthor != null) {
+			return updateDateAndAuthor;
+		} 
+		this.updateDateAndAuthor = new TreeMap<Date, String>();
+		updateDateAndAuthor.put(new Date(), "");
 		return updateDateAndAuthor;
 	}
 
