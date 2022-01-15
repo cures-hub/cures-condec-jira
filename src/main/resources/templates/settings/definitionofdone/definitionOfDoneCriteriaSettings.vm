@@ -1,9 +1,9 @@
 <h3>Settings for the criteria of the definition of done</h4>
 
 <p>Set the <i>definition of done</i> for each type of decision knowledge.</p>
-<p>All elements that do <strong>not</strong> match the definition of done are shown in the
-    Rationale Backlog View. Some of these Criteria are default and can not be changed, others can be configured.</p>
-<p>Criteria to match the definition of done:</p>
+<p>All elements that do <strong>not</strong> fulfill the definition of done are shown in the
+    Rationale Backlog view. Some of these criteria are default and cannot be changed, others can be configured.</p>
+<p>Criteria to fulfill the definition of done:</p>
 
 <div class="field-group">
     <label>Issue (Decision Problem):</label>

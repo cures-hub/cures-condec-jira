@@ -113,9 +113,8 @@ public class GeneralMetricCalculator {
 			String decisionKnowledgeTypeName = element.getType().toString();
 			if (!distributionMap.containsKey(decisionKnowledgeTypeName)) {
 				distributionMap.put(decisionKnowledgeTypeName, new ArrayList<>());
-			} else {
-				distributionMap.get(decisionKnowledgeTypeName).add(element);
 			}
+			distributionMap.get(decisionKnowledgeTypeName).add(element);
 		}
 		return distributionMap;
 	}

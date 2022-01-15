@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
  * incomplete, i.e., its documentation needs to be improved.
  */
 public abstract class KnowledgeElementCheck {
+
 	protected KnowledgeElement element;
 
 	public KnowledgeElementCheck(KnowledgeElement elementToBeChecked) {

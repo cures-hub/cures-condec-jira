@@ -10,8 +10,18 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
+/**
+ * 
+ */
 public class DefinitionOfDoneChecker {
 
+	/**
+	 * @param element
+	 *            {@link KnowledgeElement} to be checked.
+	 * @return {@link KnowledgeElementCheck} object that offers operations for
+	 *         assessing whether the element fulfills or violates the
+	 *         {@link DefinitionOfDone}.
+	 */
 	private static KnowledgeElementCheck createElementCheck(KnowledgeElement element) {
 		switch (element.getType()) {
 		case DECISION:
@@ -38,7 +48,7 @@ public class DefinitionOfDoneChecker {
 	}
 
 	/**
-	 * Checks if the definition of done has been violated for a
+	 * Checks if the definition of done has been violated or fulfilled for a
 	 * {@link KnowledgeElement}.
 	 *
 	 * @issue Should knowledge elements without definition of done be assumed to be
@@ -92,8 +102,8 @@ public class DefinitionOfDoneChecker {
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-		KnowledgeElementCheck knowledgeElementCheck = createElementCheck(knowledgeElement);
-		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(filterSettings));
+		KnowledgeElementCheck elementCheck = createElementCheck(knowledgeElement);
+		qualityCheckResults.add(elementCheck.getCoverageQuality(filterSettings));
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
 			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.QUALITY_OF_LINKED_KNOWLEDGE));
@@ -104,7 +114,7 @@ public class DefinitionOfDoneChecker {
 
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager
 				.getDefinitionOfDone(knowledgeElement.getProject().getProjectKey());
-		qualityCheckResults.addAll(knowledgeElementCheck.getQualityCheckResult(definitionOfDone));
+		qualityCheckResults.addAll(elementCheck.getQualityCheckResult(definitionOfDone));
 
 		return qualityCheckResults;
 	}
