@@ -5,29 +5,10 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class AlternativeCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement alternative;
-
-	@Override
-	public boolean execute(KnowledgeElement alternative) {
-		this.alternative = alternative;
-		String projectKey = alternative.getProject().getProjectKey();
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
-	}
-
-	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return hasDecisionProblem();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return !definitionOfDone.isAlternativeIsLinkedToArgument() || hasArgument();
-	}
 
 	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement alternative,

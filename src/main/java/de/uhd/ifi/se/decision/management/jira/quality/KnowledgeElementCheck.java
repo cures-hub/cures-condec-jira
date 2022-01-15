@@ -32,39 +32,20 @@ public abstract class KnowledgeElementCheck {
 	 * @return true if the element is completely documented according to the default
 	 *         and configured rules of the {@link DefinitionOfDone}.
 	 */
-	public boolean execute(KnowledgeElement element) {
+	public boolean isDefinitionOfDoneFulfilled(KnowledgeElement element) {
 		String projectKey = element.getProject().getProjectKey();
 		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
+		return getQualityCheckResult(element, definitionOfDone).stream()
+				.noneMatch(checkResult -> checkResult.isCriterionViolated());
 	}
 
 	/**
-	 * Checks the default rules that a knowledge element needs to fulfill to be
-	 * completely documented. For example, a default rule is that each decision
-	 * problem (=issue) needs to be linked to a decision to be complete.
+	 * Checks the default and configurable rules that a knowledge element needs to
+	 * fulfill to be correctly documented according to the {@link DefinitionOfDone}.
+	 * For example, a default rule is that each decision problem (=issue) needs to
+	 * be linked to a decision to be complete. A configurable rule is that each
+	 * decision needs to be linked to at least one pro-argument to be complete.
 	 * 
-	 * @return true if all defaults rules are fulfilled.
-	 */
-	public boolean isCompleteAccordingToDefault() {
-		return true;
-	}
-
-	/**
-	 * Checks the configurable rules that a knowledge element needs to fulfill to be
-	 * completely documented according to the {@link DefinitionOfDone}. For example,
-	 * a configurable rule is that each decision needs to be linked to at least one
-	 * pro-argument to be complete.
-	 * 
-	 * @param definitionOfDone
-	 *            instance of {@link DefinitionOfDone}.
-	 * 
-	 * @return true if all configured rules are fulfilled.
-	 */
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return true;
-	}
-
-	/**
 	 * @param knowledgeElement
 	 *            instance of {@link KnowledgeElement} or of a subclass, e.g.
 	 *            {@link ChangedFile}, {@link PartOfJiraIssueText}, or

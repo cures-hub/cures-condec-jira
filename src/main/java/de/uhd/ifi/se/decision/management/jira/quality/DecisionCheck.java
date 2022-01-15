@@ -6,29 +6,10 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class DecisionCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement decision;
-
-	@Override
-	public boolean execute(KnowledgeElement decision) {
-		this.decision = decision;
-		String projectKey = decision.getProject().getProjectKey();
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
-	}
-
-	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return hasDecisionProblem();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return !definitionOfDone.isDecisionIsLinkedToPro() || hasPro();
-	}
 
 	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement decision,

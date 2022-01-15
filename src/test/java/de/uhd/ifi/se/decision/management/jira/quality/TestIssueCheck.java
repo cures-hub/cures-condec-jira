@@ -43,7 +43,7 @@ public class TestIssueCheck extends TestSetUp {
 		assertEquals(4, decision.getId());
 		assertNotNull(issue.getLink(decision));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.execute(issue));
+		assertTrue(issueCompletenessCheck.isDefinitionOfDoneFulfilled(issue));
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class TestIssueCheck extends TestSetUp {
 		assertEquals(3, alternative.getId());
 		assertNotNull(issue.getLink(alternative));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(new IssueCheck().execute(issue));
+		assertTrue(new IssueCheck().isDefinitionOfDoneFulfilled(issue));
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class TestIssueCheck extends TestSetUp {
 
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(issue.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
-		assertFalse(issueCompletenessCheck.execute(KnowledgeElements.getUnsolvedDecisionProblem()));
+		assertFalse(issueCompletenessCheck.isDefinitionOfDoneFulfilled(KnowledgeElements.getUnsolvedDecisionProblem()));
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class TestIssueCheck extends TestSetUp {
 		knowledgeElement.setProject(new DecisionKnowledgeProject("TEST"));
 		knowledgeElement.setType(KnowledgeType.ISSUE);
 
-		assertFalse(issueCompletenessCheck.execute(knowledgeElement));
+		assertFalse(issueCompletenessCheck.isDefinitionOfDoneFulfilled(knowledgeElement));
 	}
 
 	@Test
@@ -95,8 +95,8 @@ public class TestIssueCheck extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.execute(issue));
-		assertFalse(issueCompletenessCheck.execute(KnowledgeElements.getUnsolvedDecisionProblem()));
+		assertTrue(issueCompletenessCheck.isDefinitionOfDoneFulfilled(issue));
+		assertFalse(issueCompletenessCheck.isDefinitionOfDoneFulfilled(KnowledgeElements.getUnsolvedDecisionProblem()));
 	}
 
 	@Test

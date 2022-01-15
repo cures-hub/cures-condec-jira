@@ -11,22 +11,6 @@ public class ArgumentCheck extends KnowledgeElementCheck {
 	private KnowledgeElement argument;
 
 	@Override
-	public boolean execute(KnowledgeElement argument) {
-		this.argument = argument;
-		return isCompleteAccordingToDefault();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return hasDecisionOrAlternative();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return true;
-	}
-
-	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement argument,
 			DefinitionOfDone definitionOfDone) {
 		this.argument = argument;
@@ -34,11 +18,11 @@ public class ArgumentCheck extends KnowledgeElementCheck {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		if (!hasDecisionOrAlternative()) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(
-					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, true));
+			qualityCheckResults.add(
+					new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, true));
 		} else {
-			qualityCheckResults.add(new QualityCriterionCheckResult(
-					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, false));
+			qualityCheckResults.add(
+					new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, false));
 
 		}
 

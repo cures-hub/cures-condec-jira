@@ -66,8 +66,8 @@ public class DefinitionOfDoneChecker {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return true;
 		}
-		KnowledgeElementCheck knowledgeElementCheck = getChecker(knowledgeElement.getType());
-		return knowledgeElementCheck == null || knowledgeElementCheck.execute(knowledgeElement);
+		KnowledgeElementCheck elementChecker = getChecker(knowledgeElement.getType());
+		return elementChecker == null || elementChecker.isDefinitionOfDoneFulfilled(knowledgeElement);
 	}
 
 	/**

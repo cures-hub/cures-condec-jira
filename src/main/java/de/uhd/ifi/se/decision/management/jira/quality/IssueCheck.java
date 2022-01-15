@@ -7,7 +7,6 @@ import java.util.Set;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Checks whether a decision problem (=issue, question, goal, ...) fulfills the
@@ -16,24 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class IssueCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement issue;
-
-	@Override
-	public boolean execute(KnowledgeElement issue) {
-		this.issue = issue;
-		String projectKey = issue.getProject().getProjectKey();
-		DefinitionOfDone definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
-		return isCompleteAccordingToDefault() && isCompleteAccordingToSettings(definitionOfDone);
-	}
-
-	@Override
-	public boolean isCompleteAccordingToDefault() {
-		return isValidDecisionLinkedToDecisionProblem(issue) && isResolved();
-	}
-
-	@Override
-	public boolean isCompleteAccordingToSettings(DefinitionOfDone definitionOfDone) {
-		return !definitionOfDone.isIssueIsLinkedToAlternative() || hasAlternative();
-	}
 
 	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement issue,
@@ -51,9 +32,11 @@ public class IssueCheck extends KnowledgeElementCheck {
 		}
 
 		if (!isResolved()) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_RESOLUTION, true));
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, true));
 		} else {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_RESOLUTION, false));
+			qualityCheckResults
+					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, false));
 		}
 
 		if (definitionOfDone.isIssueIsLinkedToAlternative()) {

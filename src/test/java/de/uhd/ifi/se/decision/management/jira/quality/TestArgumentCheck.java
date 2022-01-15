@@ -47,7 +47,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
-		assertTrue(argumentCompletenessCheck.execute(proArgument));
+		assertTrue(argumentCompletenessCheck.isDefinitionOfDoneFulfilled(proArgument));
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
-		assertTrue(argumentCompletenessCheck.execute(proArgument));
+		assertTrue(argumentCompletenessCheck.isDefinitionOfDoneFulfilled(proArgument));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class TestArgumentCheck extends TestSetUp {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(proArgument.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
 		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
-		assertFalse(argumentCompletenessCheck.execute(proArgument));
+		assertFalse(argumentCompletenessCheck.isDefinitionOfDoneFulfilled(proArgument));
 	}
 
 	@Test

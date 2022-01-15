@@ -17,7 +17,7 @@ public enum QualityCriterionType {
 	ISSUE_LINKED_TO_DECISION("Issue does not have a valid decision!", "Issue is solved by decision."), //
 	ISSUE_LINKED_TO_ALTERNATIVE("Issue does not have an alternative!",
 			"At least one alternative is documented for the issue."), //
-	ISSUE_RESOLUTION("Issue is unresolved!", "Issue is resolved."), //
+	DECISION_PROBLEM_STATUS("Issue is unresolved!", "Issue is resolved."), //
 	DECISION_LINKED_TO_ISSUE("Decision does not have an issue!", "Decision is linked to an issue."), //
 	DECISION_LINKED_TO_PRO("Decision does not have a pro-argument!",
 			"At least one pro-argument is documented for the decision."), //
@@ -26,7 +26,7 @@ public enum QualityCriterionType {
 	ALTERNATIVE_LINKED_TO_ISSUE("Alternative does not have an issue!", "Alternative is linked to issue."), //
 	ALTERNATIVE_LINKED_TO_ARGUMENT("Alternative does not have an argument!",
 			"At least one argument is documented for the alternative."), //
-	ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE("Argument does not have a decision or an alternative!",
+	ARGUMENT_LINKED_TO_SOLUTION_OPTION("Argument does not have a decision or an alternative!",
 			"Argument is linked to a solution option.");
 
 	private String violationDescription;
@@ -37,10 +37,16 @@ public enum QualityCriterionType {
 		this.fulfillmentDescription = fulfillmentDescription;
 	}
 
+	/**
+	 * @return default text describing the quality criterion if it is violated.
+	 */
 	public String getViolationDescription() {
 		return violationDescription;
 	}
 
+	/**
+	 * @return default text describing the quality criterion if it is fulfilled.
+	 */
 	public String getFulfillmentDescription() {
 		return fulfillmentDescription;
 	}

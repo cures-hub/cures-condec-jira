@@ -25,7 +25,7 @@ public class TestCodeCheck extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testFulfillsDoD() {
-		assertTrue(codeCheck.execute(CodeFiles.getTestCodeFileDone()));
+		assertTrue(codeCheck.isDefinitionOfDoneFulfilled(CodeFiles.getTestCodeFileDone()));
 		assertFalse(codeCheck.getCoverageQuality(CodeFiles.getTestCodeFileDone(), new FilterSettings())
 				.isCriterionViolated());
 		assertTrue(codeCheck.getQualityCheckResult(CodeFiles.getTestCodeFileDone(), new DefinitionOfDone()).isEmpty());
