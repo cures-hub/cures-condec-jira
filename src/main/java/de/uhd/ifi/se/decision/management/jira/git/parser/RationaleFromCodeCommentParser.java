@@ -13,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.CodeComment;
 import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCodeComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
-import de.uhd.ifi.se.decision.management.jira.quality.QualityProblemType;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityCriterionCheckResult;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityCriterionType;
 
 /**
  * Extracts decision knowledge elements from {@link CodeComment}s of a
@@ -104,13 +104,13 @@ public class RationaleFromCodeCommentParser {
 
 		if (elements.stream().noneMatch(element -> element.getType().getSuperType() == KnowledgeType.PROBLEM)) {
 			elements.forEach(element -> {
-				element.getQualityProblems().add(new QualityProblem(QualityProblemType.ALTERNATIVE_DOESNT_HAVE_ISSUE));
+				element.getQualityProblems().add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE));
 			});
 		}
 
 		if (elements.stream().noneMatch(element -> element.getType() == KnowledgeType.DECISION)) {
 			elements.forEach(element -> {
-				element.getQualityProblems().add(new QualityProblem(QualityProblemType.ISSUE_DOESNT_HAVE_DECISION));
+				element.getQualityProblems().add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION));
 			});
 		}
 

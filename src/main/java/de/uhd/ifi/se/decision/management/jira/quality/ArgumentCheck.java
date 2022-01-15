@@ -6,7 +6,7 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class ArgumentCheck implements KnowledgeElementCheck {
+public class ArgumentCheck extends KnowledgeElementCheck {
 
 	private KnowledgeElement argument;
 
@@ -27,16 +27,22 @@ public class ArgumentCheck implements KnowledgeElementCheck {
 	}
 
 	@Override
-	public List<QualityProblem> getQualityProblems(KnowledgeElement argument, DefinitionOfDone definitionOfDone) {
+	public List<QualityCriterionCheckResult> getQualityCheckResult(KnowledgeElement argument,
+			DefinitionOfDone definitionOfDone) {
 		this.argument = argument;
 
-		List<QualityProblem> qualityProblems = new ArrayList<>();
+		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
 
 		if (!hasDecisionOrAlternative()) {
-			qualityProblems.add(new QualityProblem(QualityProblemType.ARGUMENT_DOESNT_HAVE_DECISION_OR_ALTERNATIVE));
+			qualityCheckResults.add(new QualityCriterionCheckResult(
+					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, true));
+		} else {
+			qualityCheckResults.add(new QualityCriterionCheckResult(
+					QualityCriterionType.ARGUMENT_LINKED_TO_DECISION_OR_ALTERNATIVE, false));
+
 		}
 
-		return qualityProblems;
+		return qualityCheckResults;
 	}
 
 	private boolean hasDecisionOrAlternative() {

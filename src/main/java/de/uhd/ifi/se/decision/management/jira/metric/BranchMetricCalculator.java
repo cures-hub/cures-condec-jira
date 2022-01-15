@@ -12,8 +12,8 @@ import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.quality.QualityProblem;
-import de.uhd.ifi.se.decision.management.jira.quality.QualityProblemType;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityCriterionCheckResult;
+import de.uhd.ifi.se.decision.management.jira.quality.QualityCriterionType;
 
 /**
  * Calculates decision knowledge-related and general metrics on the git branches
@@ -71,7 +71,7 @@ public class BranchMetricCalculator {
 	}
 
 	/**
-	 * @return map with {@link QualityProblemType}s as keys and the respective
+	 * @return map with {@link QualityCriterionType}s as keys and the respective
 	 *         branches as map values. Branches are represented as a {@link Diff}
 	 *         object.
 	 */
@@ -79,7 +79,7 @@ public class BranchMetricCalculator {
 	public Map<String, Diff> getQualityProblemMap() {
 		Map<String, Diff> qualityProblemMap = new LinkedHashMap<>();
 		for (DiffForSingleRef branch : branchesForProject) {
-			for (QualityProblem problem : branch.getQualityProblems()) {
+			for (QualityCriterionCheckResult problem : branch.getQualityProblems()) {
 				if (!qualityProblemMap.containsKey(problem.getExplanation())) {
 					qualityProblemMap.put(problem.getExplanation(), new Diff());
 				}

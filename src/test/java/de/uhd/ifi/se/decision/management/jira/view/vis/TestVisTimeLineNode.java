@@ -82,7 +82,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 		element.setProject("TEST");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		timeNode = new VisTimeLineNode(element, true, true, filterSettings);
-		assertEquals(element.getSummary(), timeNode.getTitle());
+		assertEquals("", timeNode.getTitle());
 		assertEquals("other undefined", timeNode.getClassName());
 	}
 
@@ -97,7 +97,7 @@ public class TestVisTimeLineNode extends TestSetUp {
 
 	@Test
 	public void testGetTitleWithQualityHighlightingDoDViolated() {
-		assertTrue(timeNode.getTitle().contains("decision coverage"));
+		assertTrue(timeNode.getTitle().contains("coverage"));
 	}
 
 	@Test

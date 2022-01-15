@@ -1,16 +1,14 @@
 <div class="quality-check-container">
-    <label id="quality-check-issue-key-$viewIdentifier"></label> requires <label id="quality-check-minimum-coverage-$viewIdentifier"></label>
-    within a link distance of <label id="quality-check-link-distance-$viewIdentifier"></label>.
-
-    <br/>
-
-    It reaches <label id="quality-check-coverage-$viewIdentifier"></label>.
-
-    <br/>
-    <br/>
-
-    <div class="text-field" id="quality-check-problems-text-$viewIdentifier">
-    </div>
+    <table class="aui aui-table-list">
+	<thead>
+    	<tr>
+    		<th>DoD Criterion</th>
+    		<th>State (Fulfilled or Violated)</th>
+    	</tr>
+    </thead>
+    <tbody id="quality-check-table-body-$viewIdentifier">
+    </tbody>    
+</table>
 </div>
 
 <script>

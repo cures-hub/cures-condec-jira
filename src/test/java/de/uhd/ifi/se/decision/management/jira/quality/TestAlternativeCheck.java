@@ -74,10 +74,12 @@ public class TestAlternativeCheck extends TestSetUp {
 		// set criteria "alternative has to be linked to argument" in definition of done
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setAlternativeLinkedToArgument(true);
-		assertTrue(alternativeCompletenessCheck.getQualityProblems(alternative, definitionOfDone).isEmpty());
+		assertTrue(alternativeCompletenessCheck.getQualityCheckResult(alternative, definitionOfDone).stream()
+				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
 
 		KnowledgeElement alternative = JiraIssues.addElementToDataBase(42, KnowledgeType.ALTERNATIVE);
-		assertFalse(alternativeCompletenessCheck.getQualityProblems(alternative, definitionOfDone).isEmpty());
+		assertTrue(alternativeCompletenessCheck.getQualityCheckResult(alternative, definitionOfDone).stream()
+				.anyMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
 	@Test
