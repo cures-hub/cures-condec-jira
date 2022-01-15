@@ -26,9 +26,9 @@ public class DecisionCheck extends KnowledgeElementCheck {
 
 	private QualityCriterionCheckResult checkDecisionLinkedToIssue(KnowledgeElement decision) {
 		if (decision.getLinkedDecisionProblems().isEmpty()) {
-			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false);
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true);
 		}
-		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true);
+		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false);
 	}
 
 	private QualityCriterionCheckResult checkDecisionStatus(KnowledgeElement decision) {

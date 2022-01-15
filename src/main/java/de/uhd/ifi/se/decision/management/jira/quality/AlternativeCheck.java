@@ -24,9 +24,9 @@ public class AlternativeCheck extends KnowledgeElementCheck {
 
 	private QualityCriterionCheckResult checkAlternativeLinkedToIssue(KnowledgeElement alternative) {
 		if (alternative.getLinkedDecisionProblems().isEmpty()) {
-			return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, false);
+			return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, true);
 		}
-		return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, true);
+		return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, false);
 	}
 
 	private QualityCriterionCheckResult checkAlternativeLinkedToArgument(KnowledgeElement alternative) {
