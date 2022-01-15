@@ -27,14 +27,14 @@ public class TestArgumentCheck extends TestSetUp {
 
 	private KnowledgeElement proArgument;
 	private ApplicationUser user;
-	private ArgumentCheck argumentCompletenessCheck;
+	private ArgumentCheck argumentCheck;
 
 	@Before
 	public void setUp() {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		proArgument = KnowledgeElements.getProArgument();
-		argumentCompletenessCheck = new ArgumentCheck(proArgument);
+		argumentCheck = new ArgumentCheck(proArgument);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
-		assertTrue(argumentCompletenessCheck.isDefinitionOfDoneFulfilled());
+		assertTrue(argumentCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
-		assertTrue(argumentCompletenessCheck.isDefinitionOfDoneFulfilled());
+		assertTrue(argumentCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class TestArgumentCheck extends TestSetUp {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(proArgument.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
 		assertEquals(2, Graphs.neighborSetOf(graph, proArgument).size());
-		assertFalse(argumentCompletenessCheck.isDefinitionOfDoneFulfilled());
+		assertFalse(argumentCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.DECISION, decision.getType());
 		assertEquals(4, decision.getId());
 		assertNotNull(proArgument.getLink(decision));
-		assertTrue(argumentCompletenessCheck.getQualityCheckResult(definitionOfDone).stream()
+		assertTrue(argumentCheck.getQualityCheckResult(definitionOfDone).stream()
 				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
@@ -107,7 +107,7 @@ public class TestArgumentCheck extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, alternative.getType());
 		KnowledgePersistenceManager.getInstance("TEST").insertLink(proArgument, alternative, user);
 		assertNotNull(proArgument.getLink(alternative));
-		assertTrue(argumentCompletenessCheck.getQualityCheckResult(definitionOfDone).stream()
+		assertTrue(argumentCheck.getQualityCheckResult(definitionOfDone).stream()
 				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
@@ -118,7 +118,7 @@ public class TestArgumentCheck extends TestSetUp {
 		KnowledgeElement decision = KnowledgeElements.getDecision();
 		Link linkToDecision = proArgument.getLink(decision);
 		KnowledgeGraph.getInstance("TEST").removeEdge(linkToDecision);
-		assertTrue(argumentCompletenessCheck.getQualityCheckResult(definitionOfDone).stream()
+		assertTrue(argumentCheck.getQualityCheckResult(definitionOfDone).stream()
 				.anyMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 }

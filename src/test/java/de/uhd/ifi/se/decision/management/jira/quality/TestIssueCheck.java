@@ -24,13 +24,13 @@ import net.java.ao.test.jdbc.NonTransactional;
 public class TestIssueCheck extends TestSetUp {
 
 	private KnowledgeElement issue;
-	private IssueCheck issueCompletenessCheck;
+	private IssueCheck issueCheck;
 
 	@Before
 	public void setUp() {
 		init();
 		issue = KnowledgeElements.getSolvedDecisionProblem();
-		issueCompletenessCheck = new IssueCheck(issue);
+		issueCheck = new IssueCheck(issue);
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class TestIssueCheck extends TestSetUp {
 		assertEquals(4, decision.getId());
 		assertNotNull(issue.getLink(decision));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.isDefinitionOfDoneFulfilled());
+		assertTrue(issueCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class TestIssueCheck extends TestSetUp {
 		assertEquals(3, alternative.getId());
 		assertNotNull(issue.getLink(alternative));
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.isDefinitionOfDoneFulfilled());
+		assertTrue(issueCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -74,8 +74,8 @@ public class TestIssueCheck extends TestSetUp {
 
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(issue.getProject());
 		assertFalse(graph.containsEdge(linkToDecision));
-		issueCompletenessCheck = new IssueCheck(KnowledgeElements.getUnsolvedDecisionProblem());
-		assertFalse(issueCompletenessCheck.isDefinitionOfDoneFulfilled());
+		issueCheck = new IssueCheck(KnowledgeElements.getUnsolvedDecisionProblem());
+		assertFalse(issueCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -84,8 +84,8 @@ public class TestIssueCheck extends TestSetUp {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setProject(new DecisionKnowledgeProject("TEST"));
 		knowledgeElement.setType(KnowledgeType.ISSUE);
-		issueCompletenessCheck = new IssueCheck(knowledgeElement);
-		assertFalse(issueCompletenessCheck.isDefinitionOfDoneFulfilled());
+		issueCheck = new IssueCheck(knowledgeElement);
+		assertFalse(issueCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -96,7 +96,7 @@ public class TestIssueCheck extends TestSetUp {
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		ConfigPersistenceManager.saveDefinitionOfDone("TEST", definitionOfDone);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.isDefinitionOfDoneFulfilled());
+		assertTrue(issueCheck.isDefinitionOfDoneFulfilled());
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class TestIssueCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.getQualityCheckResult(definitionOfDone).stream()
+		assertTrue(issueCheck.getQualityCheckResult(definitionOfDone).stream()
 				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
@@ -117,7 +117,7 @@ public class TestIssueCheck extends TestSetUp {
 		DefinitionOfDone definitionOfDone = new DefinitionOfDone();
 		definitionOfDone.setIssueLinkedToAlternative(true);
 		issue.setStatus(KnowledgeStatus.RESOLVED);
-		assertTrue(issueCompletenessCheck.getQualityCheckResult(definitionOfDone).stream()
+		assertTrue(issueCheck.getQualityCheckResult(definitionOfDone).stream()
 				.noneMatch(checkResult -> checkResult.isCriterionViolated()));
 	}
 
@@ -131,8 +131,8 @@ public class TestIssueCheck extends TestSetUp {
 		KnowledgeElement knowledgeElement = new KnowledgeElement();
 		knowledgeElement.setProject(new DecisionKnowledgeProject("TEST"));
 		knowledgeElement.setType(KnowledgeType.ISSUE);
-		issueCompletenessCheck = new IssueCheck(knowledgeElement);
-		assertFalse(issueCompletenessCheck.getQualityCheckResult(definitionOfDone).isEmpty());
+		issueCheck = new IssueCheck(knowledgeElement);
+		assertFalse(issueCheck.getQualityCheckResult(definitionOfDone).isEmpty());
 	}
 
 	@After
