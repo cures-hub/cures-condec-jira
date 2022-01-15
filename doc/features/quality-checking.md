@@ -1,7 +1,7 @@
 # Quality Checking
 
 The ConDec Jira plugin offers the possibility to configure a **Definition of Done (DoD)** for decision knowledge.
-The definition of done is checked and the status of the quality can be viewed continuously in the Quality Check tab.
+The definition of done is checked.
 
 ConDec supports the fulfillment of the definition of done with the help of a [knowledge dashboard](dashboard.md) and automated quality checks integrated into the development workflow, e.g., when finishing a requirement. 
 For example, the developer can only finish the log-in requirement if all the decision problems that are documented in a certain link distance in the knowledge graph are solved.
@@ -12,6 +12,23 @@ The result of the quality checking is displayed in the following ways:
 - in a [just-in-time prompt](nudging.md) that is shown during status changes
 - in the [rationale backlog](rationale-backlog.md)
 - in a metric plot in the [knowledge dashboard](dashboard.md)
+
+## Quality Check View
+
+The status of the quality can be viewed continuously in the **Quality Check** view.
+Developers can access the Quality Check view from the Jira issue view and from the rationale backlog and overview.
+
+![Rationale backlog showing the quality check results for the selected issue](../screenshots/rationale_backlog_quality_check_issue.png)
+
+*Rationale backlog showing the quality check results for the selected issue*
+
+![Decision overview showing the quality check results for the selected decision](../screenshots/quality_check_view_decision_ok.png)
+
+*Decision overview showing the quality check results for the selected decision*
+
+![Alternative overview showing the quality check results for the selected alternative](../screenshots/quality_check_view_decision_violation.png)
+
+*Alternative overview showing the quality check results for the selected alternative*
 
 ## Configuration
 The rationale manager can configure the criteria for the DoD.
