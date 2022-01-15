@@ -1,10 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.quality;
 
-import static java.util.Map.entry;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -16,17 +13,30 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.El
 
 public class DefinitionOfDoneChecker {
 
-	private static final Map<KnowledgeType, KnowledgeElementCheck> knowledgeElementCheckMap = Map.ofEntries(
-			entry(KnowledgeType.DECISION, new DecisionCheck()), //
-			entry(KnowledgeType.SOLUTION, new DecisionCheck()), //
-			entry(KnowledgeType.ISSUE, new IssueCheck()), //
-			entry(KnowledgeType.PROBLEM, new IssueCheck()), //
-			entry(KnowledgeType.ALTERNATIVE, new AlternativeCheck()), //
-			entry(KnowledgeType.ARGUMENT, new ArgumentCheck()), //
-			entry(KnowledgeType.PRO, new ArgumentCheck()), //
-			entry(KnowledgeType.CON, new ArgumentCheck()), //
-			entry(KnowledgeType.CODE, new CodeCheck()), //
-			entry(KnowledgeType.OTHER, new OtherCheck()));
+	private static KnowledgeElementCheck getChecker(KnowledgeType type) {
+		switch (type) {
+		case DECISION:
+			return new DecisionCheck();
+		case SOLUTION:
+			return new DecisionCheck();
+		case ISSUE:
+			return new IssueCheck();
+		case PROBLEM:
+			return new IssueCheck();
+		case ALTERNATIVE:
+			return new AlternativeCheck();
+		case ARGUMENT:
+			return new ArgumentCheck();
+		case PRO:
+			return new ArgumentCheck();
+		case CON:
+			return new ArgumentCheck();
+		case CODE:
+			return new CodeCheck();
+		default:
+			return new OtherCheck();
+		}
+	}
 
 	/**
 	 * Checks if the definition of done has been violated for a
@@ -56,7 +66,7 @@ public class DefinitionOfDoneChecker {
 		if (knowledgeElement instanceof ElementRecommendation) {
 			return true;
 		}
-		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
+		KnowledgeElementCheck knowledgeElementCheck = getChecker(knowledgeElement.getType());
 		return knowledgeElementCheck == null || knowledgeElementCheck.execute(knowledgeElement);
 	}
 
@@ -83,7 +93,7 @@ public class DefinitionOfDoneChecker {
 	public static List<QualityCriterionCheckResult> getQualityCheckResults(KnowledgeElement knowledgeElement,
 			FilterSettings filterSettings) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-		KnowledgeElementCheck knowledgeElementCheck = knowledgeElementCheckMap.get(knowledgeElement.getType());
+		KnowledgeElementCheck knowledgeElementCheck = getChecker(knowledgeElement.getType());
 		qualityCheckResults.add(knowledgeElementCheck.getCoverageQuality(knowledgeElement, filterSettings));
 
 		if (DefinitionOfDoneChecker.hasIncompleteKnowledgeLinked(knowledgeElement)) {
