@@ -17,7 +17,7 @@ public enum QualityCriterionType {
 	ISSUE_LINKED_TO_DECISION("Issue does not have a valid decision!", "Issue is solved by decision."), //
 	ISSUE_LINKED_TO_ALTERNATIVE("Issue does not have an alternative!",
 			"At least one alternative is documented for the issue."), //
-	DECISION_PROBLEM_STATUS("Issue is unresolved!", "Issue is resolved."), //
+	ISSUE_STATUS("Issue status is unresolved!", "Issue status is resolved."), //
 	DECISION_LINKED_TO_ISSUE("Decision does not have an issue!", "Decision is linked to an issue."), //
 	DECISION_LINKED_TO_PRO("Decision does not have a pro-argument!",
 			"At least one pro-argument is documented for the decision."), //

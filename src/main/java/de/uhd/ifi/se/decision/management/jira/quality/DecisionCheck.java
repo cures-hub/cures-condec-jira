@@ -7,6 +7,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+/**
+ * Checks whether a decision fulfills the {@link DefinitionOfDone}.
+ */
 public class DecisionCheck extends KnowledgeElementCheck {
 
 	public DecisionCheck(KnowledgeElement elementToBeChecked) {

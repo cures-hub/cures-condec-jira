@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 
 /**
- * Checks whether a given {@link KnowledgeElement} is documented completely
+ * Checks whether a given {@link KnowledgeElement} is documented correctly
  * according to the {@link DefinitionOfDone} (DoD).
  *
  * For example, an argument needs to be linked to at least one solution option
@@ -84,12 +84,15 @@ public abstract class KnowledgeElementCheck {
 		checkResult.setCriterionViolated(true);
 
 		if (minimumCoverage < filterSettings.getDefinitionOfDone().getMinimumDecisionsWithinLinkDistance()) {
-			checkResult.appendExplanation(
-					"Only " + minimumCoverage + " decision" + (minimumCoverage > 1 ? "s are" : " is") + " reached.");
+			checkResult.appendExplanation(createCoverageExplanation(minimumCoverage));
 		} else {
 			checkResult.appendExplanation("No decisions are reached.");
 		}
 
 		return checkResult;
+	}
+
+	public static String createCoverageExplanation(int coverage) {
+		return "Only " + coverage + " decision" + (coverage > 1 ? "s are" : " is") + " reached.";
 	}
 }

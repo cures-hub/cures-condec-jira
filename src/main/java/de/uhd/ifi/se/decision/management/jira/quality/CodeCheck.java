@@ -8,7 +8,8 @@ import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 /**
- * Checks whether a code file fulfills the {@link DefinitionOfDone}.
+ * Checks whether a code file ({@link ChangedFile} fulfills the
+ * {@link DefinitionOfDone}.
  */
 public class CodeCheck extends KnowledgeElementCheck {
 

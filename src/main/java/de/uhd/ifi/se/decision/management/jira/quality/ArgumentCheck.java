@@ -6,6 +6,11 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+/**
+ * Checks whether an argument ({@link KnowledgeType#ARGUMENT},
+ * {@link KnowledgeType#PRO}, or {@link KnowledgeType#CON}) fulfills the
+ * {@link DefinitionOfDone}.
+ */
 public class ArgumentCheck extends KnowledgeElementCheck {
 
 	public ArgumentCheck(KnowledgeElement elementToBeChecked) {

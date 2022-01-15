@@ -6,6 +6,9 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+/**
+ * Checks whether an alternative fulfills the {@link DefinitionOfDone}.
+ */
 public class AlternativeCheck extends KnowledgeElementCheck {
 
 	public AlternativeCheck(KnowledgeElement elementToBeChecked) {

@@ -51,9 +51,9 @@ public class IssueCheck extends KnowledgeElementCheck {
 
 	private QualityCriterionCheckResult checkIssueStatus(KnowledgeElement issue) {
 		if (issue.getStatus() != KnowledgeStatus.UNRESOLVED) {
-			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, false);
+			return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_STATUS, false);
 		}
-		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, true);
+		return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_STATUS, true);
 	}
 
 	private QualityCriterionCheckResult checkIssueLinkedToAlternative(KnowledgeElement issue) {
