@@ -15,42 +15,34 @@ public class DecisionCheck extends KnowledgeElementCheck {
 
 	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
-
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!hasDecisionProblem()) {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false));
-		}
-
-		if (element.getStatus() == KnowledgeStatus.CHALLENGED) {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, true));
-		} else {
-			qualityCheckResults.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, false));
-		}
-
+		qualityCheckResults.add(checkDecisionLinkedToIssue(element));
+		qualityCheckResults.add(checkDecisionStatus(element));
 		if (definitionOfDone.isDecisionIsLinkedToPro()) {
-			if (!hasPro()) {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, true));
-			} else {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, false));
-			}
+			qualityCheckResults.add(checkDecisionLinkedToPro(element));
 		}
-
 		return qualityCheckResults;
 	}
 
-	private boolean hasDecisionProblem() {
-		return !element.getLinkedDecisionProblems().isEmpty();
+	private QualityCriterionCheckResult checkDecisionLinkedToIssue(KnowledgeElement decision) {
+		if (decision.getLinkedDecisionProblems().isEmpty()) {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true);
 	}
 
-	private boolean hasPro() {
-		return element.hasNeighborOfType(KnowledgeType.PRO);
+	private QualityCriterionCheckResult checkDecisionStatus(KnowledgeElement decision) {
+		if (decision.getStatus() == KnowledgeStatus.CHALLENGED) {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, true);
+		} else {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_STATUS, false);
+		}
 	}
 
+	private QualityCriterionCheckResult checkDecisionLinkedToPro(KnowledgeElement decision) {
+		if (decision.hasNeighborOfType(KnowledgeType.PRO)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, true);
+	}
 }

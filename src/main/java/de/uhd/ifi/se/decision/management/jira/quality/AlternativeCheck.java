@@ -14,37 +14,31 @@ public class AlternativeCheck extends KnowledgeElementCheck {
 
 	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
-
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!hasDecisionProblem()) {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, true));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, false));
-		}
-
+		qualityCheckResults.add(checkAlternativeLinkedToIssue(element));
 		if (definitionOfDone.isAlternativeIsLinkedToArgument()) {
-			if (!hasArgument()) {
-				qualityCheckResults.add(
-						new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, true));
-			} else {
-				qualityCheckResults.add(
-						new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, false));
-			}
+			qualityCheckResults.add(checkAlternativeLinkedToArgument(element));
 		}
-
 		return qualityCheckResults;
 	}
 
-	private boolean hasDecisionProblem() {
-		return !element.getLinkedDecisionProblems().isEmpty();
+	private QualityCriterionCheckResult checkAlternativeLinkedToIssue(KnowledgeElement alternative) {
+		if (alternative.getLinkedDecisionProblems().isEmpty()) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ISSUE, true);
 	}
 
-	private boolean hasArgument() {
-		return element.hasNeighborOfType(KnowledgeType.ARGUMENT) || element.hasNeighborOfType(KnowledgeType.PRO)
-				|| element.hasNeighborOfType(KnowledgeType.CON);
+	private QualityCriterionCheckResult checkAlternativeLinkedToArgument(KnowledgeElement alternative) {
+		if (hasArgument(alternative)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ALTERNATIVE_LINKED_TO_ARGUMENT, true);
+	}
+
+	private boolean hasArgument(KnowledgeElement alternative) {
+		return alternative.hasNeighborOfType(KnowledgeType.ARGUMENT) || alternative.hasNeighborOfType(KnowledgeType.PRO)
+				|| alternative.hasNeighborOfType(KnowledgeType.CON);
 	}
 
 }

@@ -14,24 +14,20 @@ public class ArgumentCheck extends KnowledgeElementCheck {
 
 	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
-
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!hasDecisionOrAlternative()) {
-			qualityCheckResults.add(
-					new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, true));
-		} else {
-			qualityCheckResults.add(
-					new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, false));
-
-		}
-
+		qualityCheckResults.add(checkArgumentLinkedToSolutionOption(element));
 		return qualityCheckResults;
 	}
 
-	private boolean hasDecisionOrAlternative() {
-		return element.hasNeighborOfType(KnowledgeType.DECISION)
-				|| element.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+	private QualityCriterionCheckResult checkArgumentLinkedToSolutionOption(KnowledgeElement argument) {
+		if (hasDecisionOrAlternative(argument)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ARGUMENT_LINKED_TO_SOLUTION_OPTION, true);
 	}
 
+	private boolean hasDecisionOrAlternative(KnowledgeElement argument) {
+		return argument.hasNeighborOfType(KnowledgeType.DECISION)
+				|| argument.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+	}
 }

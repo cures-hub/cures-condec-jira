@@ -21,33 +21,11 @@ public class IssueCheck extends KnowledgeElementCheck {
 	@Override
 	public List<QualityCriterionCheckResult> getQualityCheckResult(DefinitionOfDone definitionOfDone) {
 		List<QualityCriterionCheckResult> qualityCheckResults = new ArrayList<>();
-
-		if (!isValidDecisionLinkedToDecisionProblem(element)) {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, false));
-		}
-
-		if (!isResolved()) {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, true));
-		} else {
-			qualityCheckResults
-					.add(new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, false));
-		}
-
+		qualityCheckResults.add(checkIssueLinkedToValidDecision(element));
+		qualityCheckResults.add(checkIssueStatus(element));
 		if (definitionOfDone.isIssueIsLinkedToAlternative()) {
-			if (!hasAlternative()) {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, true));
-			} else {
-				qualityCheckResults
-						.add(new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, false));
-			}
+			qualityCheckResults.add(checkIssueLinkedToAlternative(element));
 		}
-
 		return qualityCheckResults;
 	}
 
@@ -64,12 +42,25 @@ public class IssueCheck extends KnowledgeElementCheck {
 						&& decision.getStatus() != KnowledgeStatus.REJECTED);
 	}
 
-	private boolean isResolved() {
-		return element.getStatus() != KnowledgeStatus.UNRESOLVED;
+	private QualityCriterionCheckResult checkIssueLinkedToValidDecision(KnowledgeElement issue) {
+		if (isValidDecisionLinkedToDecisionProblem(issue)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_DECISION, true);
 	}
 
-	private boolean hasAlternative() {
-		return element.hasNeighborOfType(KnowledgeType.ALTERNATIVE);
+	private QualityCriterionCheckResult checkIssueStatus(KnowledgeElement issue) {
+		if (issue.getStatus() != KnowledgeStatus.UNRESOLVED) {
+			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_PROBLEM_STATUS, true);
+	}
+
+	private QualityCriterionCheckResult checkIssueLinkedToAlternative(KnowledgeElement issue) {
+		if (issue.hasNeighborOfType(KnowledgeType.ALTERNATIVE)) {
+			return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, false);
+		}
+		return new QualityCriterionCheckResult(QualityCriterionType.ISSUE_LINKED_TO_ALTERNATIVE, true);
 	}
 
 }
