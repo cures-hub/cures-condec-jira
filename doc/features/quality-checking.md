@@ -2,8 +2,12 @@
 
 The ConDec Jira plugin offers the possibility to configure and check a **Definition of Done (DoD)** for the knowledge documentation.
 The following **criteria of the DoD** are checked:
-- the **decision coverage** (i.e. a type of rationale coverage) for every knowledge element
-- criteria of the **intra-rationale completeness** for decision knowledge elements
+- the **decision coverage** (i.e. a type of rationale coverage) for every knowledge element, 
+i.e. if a certain amount of decisions are linked within a certain link distance 
+(amount and link distance can be configured by the rationale manager)
+- criteria of the **intra-rationale completeness** for decision knowledge elements, 
+e.g. if a pro-argument is linked to the decision 
+(criteria for intra-rationale completeness can be configured by the rationale manager)
 - specific aspects (*is test file?*, *number of lines of code*) for code files
 - the **quality of the directly linked knowledge elements** in the knowlegde graph, 
 i.e. if a neighbor knowledge element of the checked element violates the DoD the checked element will also violate the DoD.
@@ -13,15 +17,15 @@ ConDec displays the result of the quality/DoD checking in the following ways:
 - in a **quality check view** accessable from every knowledge element in the knowledge graph (see section below)
 - using **[red text color](nudging.md) in knowledge graph views** if the DoD is violated. An explanation is given using a tooltip.
 - in a **[just-in-time prompt](nudging.md)** that is shown during status changes (as automated quality checks integrated into the development workflow, e.g., when finishing a requirement)
-- in the **[rationale backlog](rationale-backlog.md)**
-- in a metric plot in the **[knowledge dashboard](dashboard.md)**
+- in the **[rationale backlog](rationale-backlog.md)**, which is a dedicated view for knowledge elements that violate the DoD
+- in metric plots in the **[knowledge dashboard](dashboard.md)**
 - in **[pull requests](https://github.com/cures-hub/cures-condec-bitbucket)** in the form of a **merge check**: 
 For example, the developers can only accept a pull request if the decision coverage is high enough and 
 if all the decision problems that are documented in a certain link distance from the changed code in the knowledge graph are solved.
 
 ## Quality Check View
 The status of the quality check can be viewed continuously in the **quality check view**.
-Developers can access the quality check view from the Jira issue view as well as from the rationale backlog and rationale overview.
+Developers can access the quality check view from the Jira issue view as well as from the [rationale backlog](rationale-backlog.md) and knowledge overview.
 
 The [color of the menu item](nudging.md) to access the quality check view is:
 - green if all criteria of the DoD are fulfilled
@@ -33,12 +37,14 @@ The following screenshots show the quality check view for different selected kno
 ![Rationale backlog showing the quality check results for the selected issue](../screenshots/rationale_backlog_quality_check_issue.png)
 
 *[Rationale backlog] showing the quality check results for the selected issue (=decision problem).
-The issue violates the DoD criterion that at least one alternative need to be documented (this is a configurable criterion, see below).*
+The issue violates the DoD criterion that at least one alternative needs to be documented (this is a configurable criterion, see below).*
 
 ![Rationale backlog showing the quality check results for the selected issue](../screenshots/rationale_backlog_quality_check_issue_linked_knowledge_fails.png)
 
 *[Rationale backlog] showing the quality check results for the selected issue. 
-The issue fulfills the criteria of the DoD but the linked alternatives violate the DoD.*
+The issue fulfills the criteria of the DoD but the linked alternatives violate the DoD.
+An explanation of the quality problem of the alternatives is shown in the tooltip.
+The DoD criterion that at least one argument needs to be documented for an alternative is a configurable criterion (see below).*
 
 ![Rationale backlog showing the quality check results for the selected code file](../screenshots/rationale_backlog_quality_check_code.png)
 
@@ -53,24 +59,28 @@ Both the decision and the knowledge elements linked to the decision fulfill the 
 ![Alternative overview showing the quality check results for the selected alternative](../screenshots/quality_check_view_decision_violation.png)
 
 *Alternative overview showing the quality check results for the selected alternative.
-The alternative violates the DoD criterion that at least one argument needs to be documented.*
+The alternative violates the DoD criterion that at least one argument needs to be documented (this is a configurable criterion, see below).*
 
 ![Jira issue view showing the quality check results for the selected epic](../screenshots/quality_check_view_epic_ok.png)
 
 *Jira issue view showing the quality check results for the selected epic. 
 Both the epic and the knowledge elements linked to the epic fulfill the DoD.*
 
+The DoD for code files is fulfilled if ANY of the following statements is true:
+- the code file does contain a test class
+- the number of code lines is smaller than a given threshold
+
 ![Code overview showing the quality check results for the selected test code file](../screenshots/quality_check_view_test_code_ok.png)
 
 *Code overview showing the quality check results for the selected code file.
 The code file is not checked because it is a test code file (which can be configured by the rationale manager, see configuration below).
-The knowledge elements directly linked to the code file fulfill the DoD.*
+The [knowledge elements directly linked to the code file](knowledge-in-git-presentation.md) fulfill the DoD.*
 
 ![Code overview showing the quality check results for the selected code file](../screenshots/quality_check_view_small_code_file_ok.png)
 
 *Code overview showing the quality check results for the selected code file.
 The code file is not checked because it is small with less than 50 lines of code (which can be configured by the rationale manager, see configuration below).
-The knowledge elements directly linked to the code file fulfill the DoD.*
+The [knowledge elements directly linked to the code file](knowledge-in-git-presentation.md) fulfill the DoD.*
 
 ## Configuration
 The rationale manager can configure the criteria for the DoD.
@@ -102,4 +112,4 @@ The UI code for quality checking can be found here:
 - [Velocity template for quality checking](../../src/main/resources/templates/tabs/qualityCheck.vm)
 - [JavaScript code for quality checking](../../src/main/resources/js/definitionofdone)
 
-[Rationale backlog]: ../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/model
+[Rationale backlog]: rationale-backlog.md
