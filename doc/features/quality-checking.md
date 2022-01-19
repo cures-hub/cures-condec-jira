@@ -32,17 +32,17 @@ The following screenshots show the quality check view for different selected kno
 
 ![Rationale backlog showing the quality check results for the selected issue](../screenshots/rationale_backlog_quality_check_issue.png)
 
-*Rationale backlog showing the quality check results for the selected issue (=decision problem).
+*[Rationale backlog] showing the quality check results for the selected issue (=decision problem).
 The issue violates the DoD criterion that at least one alternative need to be documented (this is a configurable criterion, see below).*
 
 ![Rationale backlog showing the quality check results for the selected issue](../screenshots/rationale_backlog_quality_check_issue_linked_knowledge_fails.png)
 
-*Rationale backlog showing the quality check results for the selected issue. 
+*[Rationale backlog] showing the quality check results for the selected issue. 
 The issue fulfills the criteria of the DoD but the linked alternatives violate the DoD.*
 
 ![Rationale backlog showing the quality check results for the selected code file](../screenshots/rationale_backlog_quality_check_code.png)
 
-*Rationale backlog showing the quality check results for the selected code file.
+*[Rationale backlog] showing the quality check results for the selected code file.
 The code file violates the DoD criterion that at least 2 decisions need to be reachable in the knowledge graph within a link distance (number of hops) of 3.*
 
 ![Decision overview showing the quality check results for the selected decision](../screenshots/quality_check_view_decision_ok.png)
@@ -59,6 +59,18 @@ The alternative violates the DoD criterion that at least one argument needs to b
 
 *Jira issue view showing the quality check results for the selected epic. 
 Both the epic and the knowledge elements linked to the epic fulfill the DoD.*
+
+![Code overview showing the quality check results for the selected test code file](../screenshots/quality_check_view_test_code_ok.png)
+
+*Code overview showing the quality check results for the selected code file.
+The code file is not checked because it is a test code file (which can be configured by the rationale manager, see configuration below).
+The knowledge elements directly linked to the code file fulfill the DoD.*
+
+![Code overview showing the quality check results for the selected code file](../screenshots/quality_check_view_small_code_file_ok.png)
+
+*Code overview showing the quality check results for the selected code file.
+The code file is not checked because it is small with less than 50 lines of code (which can be configured by the rationale manager, see configuration below).
+The knowledge elements directly linked to the code file fulfill the DoD.*
 
 ## Configuration
 The rationale manager can configure the criteria for the DoD.
@@ -89,3 +101,5 @@ The UI code for quality checking can be found here:
 - [Velocity templates for configuration](../../src/main/resources/templates/settings/definitionofdone)
 - [Velocity template for quality checking](../../src/main/resources/templates/tabs/qualityCheck.vm)
 - [JavaScript code for quality checking](../../src/main/resources/js/definitionofdone)
+
+[Rationale backlog]: ../../src/main/java/de/uhd/ifi/se/decision/management/jira/git/model
