@@ -1,8 +1,7 @@
 <div id="decision-guidance-prompt" class="condec-prompt">
     <h3>
     	$i18n.getText("condec.decision.guidance") 
-    	<span id="decision-guidance-check-icon" class="aui-icon aui-icon-large aui-iconfont-check-circle condec-fine" 
-    		style="visibility:hidden" title="Great work!"></span>
+    	<span id="decision-guidance-check-icon" class="aui-icon aui-iconfont-question-circle"></span>
     </h3>
     <p>This Jira issue is linked to <strong id="num-decision-problems"></strong> decision problems, which altogether have <strong id="num-recommendations">...</strong> recommendations.
     The number of recommendations per decision problem is listed below.</p>

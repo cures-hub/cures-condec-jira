@@ -1,8 +1,7 @@
 <div id="non-validated-elements-prompt" class="condec-prompt">
     <h3>
     	$i18n.getText("condec.label.text.classification") 
-    	<span id="text-classification-check-icon" class="aui-icon aui-icon-large aui-iconfont-check-circle condec-fine" 
-    		style="visibility:hidden" title="Great work!"></span>
+    	<span id="text-classification-check-icon" class="aui-icon aui-iconfont-question-circle"></span>
     </h3>
     <p>This Jira issue contains 
     <strong id="num-non-validated-elements"></strong> 

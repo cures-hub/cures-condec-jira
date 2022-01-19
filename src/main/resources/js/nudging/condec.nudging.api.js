@@ -42,11 +42,13 @@
 	
 	ConDecNudgingAPI.prototype.decideCheckIcon = function(numberOfSmartFeatureTodos, elementId) {
 		var element = document.getElementById(elementId);
+		AJS.$(element).tooltip({gravity: 'w'});
 		if (numberOfSmartFeatureTodos <= 0) {
-			element.style.visibility = "visible";
-			AJS.$(element).tooltip({gravity: 'w'});
+			element.classList = "aui-icon aui-icon-large aui-iconfont-check-circle condec-fine";
+			element.title = "Great work!";
 		} else {
-			element.style.visibility = "hidden";
+			element.classList = "aui-icon aui-icon-large aui-iconfont-cross-circle condec-error";
+			element.title = "Please do something.";
 		}
 	};
 
