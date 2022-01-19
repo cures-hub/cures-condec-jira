@@ -13,6 +13,19 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.El
 /**
  * Checks the quality of the knowledge documentation according to the
  * {@link DefinitionOfDone}.
+ * 
+ * @issue How to determine the responsible check class for a knowledge element?
+ * @alternative We could use the chain of responsibility pattern to determine
+ *              the responsible check class for a knowledge element.
+ * @pro Well-known GoF design pattern, helps to decouple the sender of a request
+ *      from its receiver.
+ * @con The type of the element needs to passed to the check methods. This would
+ *      be one parameter more than with the current solution.
+ * @decision We use a simple switch case statement to determine the responsible
+ *           check class for a knowledge element in the DoDChecker!
+ * @pro We can pass the element as a parameter for the check class constructor.
+ *      This saves a parameter when requiring the check results for the
+ *      different DoD criteria.
  */
 public class DefinitionOfDoneChecker {
 
