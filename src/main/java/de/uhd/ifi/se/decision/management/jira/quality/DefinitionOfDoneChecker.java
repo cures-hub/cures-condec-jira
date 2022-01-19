@@ -11,7 +11,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
 /**
- * 
+ * Checks the quality of the knowledge documentation according to the
+ * {@link DefinitionOfDone}.
  */
 public class DefinitionOfDoneChecker {
 
