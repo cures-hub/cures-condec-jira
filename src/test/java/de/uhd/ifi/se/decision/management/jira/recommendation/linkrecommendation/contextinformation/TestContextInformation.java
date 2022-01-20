@@ -39,7 +39,7 @@ public class TestContextInformation extends TestSetUp {
 	public void testFilterLinkRecommendationsByScore() {
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration("TEST");
-		linkSuggestionConfiguration.setMinProbability(0.9);
+		linkSuggestionConfiguration.setMinProbability(0.8);
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", linkSuggestionConfiguration);
 
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
