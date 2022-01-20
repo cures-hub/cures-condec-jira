@@ -10,6 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -27,6 +28,15 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 @Path("/link-recommendation")
 public class LinkRecommendationRest {
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            including the selected knowledge element for that link
+	 *            recommendations should be made.
+	 * @return {@link LinkRecommendation}s for the selected knowledge element.
+	 */
 	@Path("/recommendations")
 	@POST
 	public Response getLinkRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
@@ -40,15 +50,21 @@ public class LinkRecommendationRest {
 		return Response.ok(linkRecommendations).build();
 	}
 
-	@Path("/discardRecommendation")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param recommendation
+	 *            {@link LinkRecommendation} to be discarded.
+	 * @return ok if {@link LinkRecommendation} was successfully discarded.
+	 */
+	@Path("/discard")
 	@POST
-	public Response discardRecommendation(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, LinkRecommendation recommendation) {
+	public Response discardRecommendation(@Context HttpServletRequest request, LinkRecommendation recommendation) {
 		if (recommendation == null || recommendation.getBothElements().contains(null)) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
 		}
-		recommendation.setProject(projectKey);
 
 		long databaseId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 

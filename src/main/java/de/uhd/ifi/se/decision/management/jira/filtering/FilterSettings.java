@@ -434,9 +434,13 @@ public class FilterSettings implements Cloneable {
 	 */
 	@JsonProperty
 	public void setSelectedElementObject(KnowledgeElement selectedElement) {
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-				.getInstance(selectedElement.getProject());
-		this.selectedElement = persistenceManager.getKnowledgeElement(selectedElement);
+		if (selectedElement.getProject() == null) {
+			KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+					.getInstance(selectedElement.getProject());
+			this.selectedElement = persistenceManager.getKnowledgeElement(selectedElement);
+		} else {
+			this.selectedElement = selectedElement;
+		}
 	}
 
 	/**

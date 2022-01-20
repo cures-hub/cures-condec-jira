@@ -33,8 +33,8 @@
 
 	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
 		recommendation.isDiscarded = true;
-		return generalApi.postJSONReturnPromise(this.restPrefix + `/discardRecommendation.json
-				?projectKey=${projectKey}`, recommendation);
+		recommendation.projectKey = projectKey;
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/discard", recommendation);
 	};
 
 	ConDecLinkRecommendationAPI.prototype.undoDiscardRecommendation = function(projectKey, recommendation) {
