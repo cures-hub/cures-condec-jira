@@ -15,7 +15,6 @@
 		this.resultsTableContentElement = document.getElementById("table-content");
 
 		this.loadData();
-		this.loadDuplicateData();
 	}
 
 	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {		
@@ -110,7 +109,7 @@
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
 
-		Promise.resolve(conDecLinkRecommendationAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i'))
+		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(this.projectKey, this.issueId, 'i'))
 			.then((relatedIssues) => this.displayRelatedElements(relatedIssues))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));

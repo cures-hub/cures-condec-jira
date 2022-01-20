@@ -321,14 +321,11 @@ public class DecisionGuidanceRest {
 			return response;
 		}
 
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
-		KnowledgeElement selectedElementFromDatabase = persistenceManager
-				.getKnowledgeElement(filterSettings.getSelectedElement());
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
-				selectedElementFromDatabase, filterSettings.getSearchTerm());
+				filterSettings.getSelectedElement(), filterSettings.getSearchTerm());
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
-			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request),
+			Recommender.addToKnowledgeGraph(filterSettings.getSelectedElement(), AuthenticationManager.getUser(request),
 					recommendations);
 		}
 		return Response.ok(recommendations).build();

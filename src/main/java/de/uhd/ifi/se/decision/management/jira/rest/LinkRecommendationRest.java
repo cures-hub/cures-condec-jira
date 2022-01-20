@@ -1,10 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -12,15 +10,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.jira.component.ComponentAccessor;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
@@ -31,22 +24,20 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * REST resource for link recommendation and duplicate recognition (including
  * its configuration).
  */
-@Path("/linkrecommendation")
+@Path("/link-recommendation")
 public class LinkRecommendationRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(LinkRecommendationRest.class);
 
-	@Path("/getRelatedKnowledgeElements")
-	@GET
-	public Response getRelatedKnowledgeElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
-			@QueryParam("elementLocation") String elementLocation) {
-		Optional<KnowledgeElement> knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
-		if (knowledgeElement.isPresent()) {
-			ContextInformation ci = new ContextInformation(knowledgeElement.get());
-			Collection<Recommendation> linkRecommendations = ci.getLinkRecommendations();
-			return Response.ok(linkRecommendations).build();
+	@Path("/recommendations")
+	@POST
+	public Response getLinkRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Invalid filter settings given. Link recommendations cannot be made."))
+					.build();
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No such element exists!")).build();
+		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElement());
+		Collection<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		return Response.ok(linkRecommendations).build();
 	}
 
 	@Path("/discardRecommendation")
@@ -81,23 +72,6 @@ public class LinkRecommendationRest {
 		recommendation.setProject(projectKey);
 		DiscardedRecommendationPersistenceManager.removeDiscardedRecommendation(recommendation);
 		return Response.status(Status.OK).build();
-	}
-
-	private Optional<KnowledgeElement> isKnowledgeElementValid(String projectKey, Long elementId,
-			String elementLocation) {
-		KnowledgeElement knowledgeElement = null;
-		try {
-			// we do not want to create a new project here!
-			if (ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey) != null) {
-				KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
-				knowledgeElement = persistenceManager.getKnowledgeElement(elementId, elementLocation);
-			}
-
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
-
-		return Optional.ofNullable(knowledgeElement);
 	}
 
 	// --------------------
