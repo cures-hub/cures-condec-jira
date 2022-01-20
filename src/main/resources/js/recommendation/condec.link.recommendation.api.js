@@ -28,30 +28,13 @@
 			});
 	};
 
-	ConDecLinkRecommendationAPI.prototype.getDuplicateKnowledgeElement = function(projectKey, elementId, location) {
-		if (this.currentLinkDuplicates.has(elementId)) {
-			return this.currentLinkDuplicates.get(elementId);
-		}
-		return generalApi.getJSONReturnPromise(
-			`${this.restPrefix}/getDuplicateKnowledgeElement.json
-				?projectKey=${projectKey}
-				&elementId=${elementId}
-				&location=${location}`)
-			.then(recommendations => {
-				conDecLinkRecommendationAPI.currentLinkDuplicates.set(elementId, recommendations);
-				return recommendations;
-			});
-	};
-
 	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
-		recommendation["@type"] = recommendation.recommendationType;
 		recommendation.isDiscarded = true;
 		return generalApi.postJSONReturnPromise(this.restPrefix + `/discardRecommendation.json
 				?projectKey=${projectKey}`, recommendation);
 	};
 
 	ConDecLinkRecommendationAPI.prototype.undoDiscardRecommendation = function(projectKey, recommendation) {
-		recommendation["@type"] = recommendation.recommendationType;
 		recommendation.isDiscarded = false;
 		return generalApi.postJSONReturnPromise(this.restPrefix + `/undoDiscardRecommendation.json
 				?projectKey=${projectKey}`, recommendation);

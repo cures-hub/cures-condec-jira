@@ -21,24 +21,6 @@
 	</button> 
 </div>
 
-<b>Potential duplicates</b>
-<table class="aui aui-table-list" id="duplicate-results-table">
-    <thead>
-	    <tr>
-	        <th id="th-key-duplicate">$i18n.getText("condec.label.knowledge.type")</th>
-	        <th id="th-text-fragment-duplicate">$i18n.getText("condec.duplicate")</th>
-	        <th id="th-options-duplicate">$i18n.getText("condec.recommendation.manage")</th>
-	    <tr>
-    </thead>
-    <tbody id="table-content-duplicate"></tbody>
-</table>
-<div style="float:right;"> 
-	<button class="aui-button aui-button-link" id="discard-all-duplicate-recommendations">
-		<span class="aui-icon aui-icon-small aui-iconfont-trash"></span> 
-		$i18n.getText('condec.recommendation.discard.all')
-	</button> 
-</div>
-
 <script>
 /* Adds the on click listener on tab opening */
 $(document).ready(function () {

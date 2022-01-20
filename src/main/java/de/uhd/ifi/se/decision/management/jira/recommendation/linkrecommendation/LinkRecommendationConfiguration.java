@@ -15,7 +15,7 @@ public class LinkRecommendationConfiguration {
 	 * Constructs an object with default values.
 	 */
 	public LinkRecommendationConfiguration() {
-		this.minProbability = 0.8;
+		this.minProbability = 0.85;
 	}
 
 	/**
