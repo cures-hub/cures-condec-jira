@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
@@ -432,7 +431,7 @@ public class FilterSettings implements Cloneable {
 	 *         element in the knowlegde tree view) freshly received from database so
 	 *         that all attributes are set as in database.
 	 */
-	@JsonIgnore
+	@com.fasterxml.jackson.annotation.JsonIgnore
 	public KnowledgeElement getSelectedElementFromDatabase() {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getInstance(selectedElement.getProject());

@@ -98,22 +98,34 @@ public class LinkRecommendationRest {
 		return Response.status(Status.OK).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param threshold
+	 *            minimum similarity necessary to create a recommendation.
+	 *            Recommendations need to be more similar to the original element(s)
+	 *            than this threshold.
+	 * @return ok if the threshold was successfully saved.
+	 */
 	@Path("/configuration/{projectKey}/threshold")
 	@POST
 	public Response setMinimumRecommendationScore(@Context HttpServletRequest request,
-			@PathParam("projectKey") String projectKey, double minLinkSuggestionProbability) {
+			@PathParam("projectKey") String projectKey, double threshold) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (1. < minLinkSuggestionProbability || minLinkSuggestionProbability < 0.) {
+		if (1. < threshold || threshold < 0.) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
 		}
 
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
-		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
+		linkSuggestionConfiguration.setMinProbability(threshold);
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}
