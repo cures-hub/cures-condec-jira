@@ -65,15 +65,8 @@ public class LinkRecommendationRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
 		}
-
-		long databaseId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
-
-		if (databaseId == -1) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The recommendation could not be discarded.")).build();
-		}
-
-		return Response.status(Status.OK).build();
+		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
+		return Response.ok().build();
 	}
 
 	/**
@@ -95,7 +88,7 @@ public class LinkRecommendationRest {
 					.build();
 		}
 		DiscardedRecommendationPersistenceManager.removeDiscardedRecommendation(recommendation);
-		return Response.status(Status.OK).build();
+		return Response.ok().build();
 	}
 
 	/**
