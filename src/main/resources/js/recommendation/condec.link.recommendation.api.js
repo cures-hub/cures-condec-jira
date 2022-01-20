@@ -6,9 +6,8 @@
 		this.currentLinkDuplicates = new Map();
 	};
 
-	ConDecLinkRecommendationAPI.prototype.setMinimumLinkSuggestionProbability = function(projectKey, minLinkSuggestionProbability) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumLinkSuggestionProbability.json?
-			projectKey=${projectKey}&minLinkSuggestionProbability=${minLinkSuggestionProbability}`, null)
+	ConDecLinkRecommendationAPI.prototype.setThreshold = function(projectKey, threshold) {
+		generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/threshold", threshold)
 			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
 	}
 

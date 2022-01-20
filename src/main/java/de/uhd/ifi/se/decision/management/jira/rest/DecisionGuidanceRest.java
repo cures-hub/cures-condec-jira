@@ -321,11 +321,12 @@ public class DecisionGuidanceRest {
 			return response;
 		}
 
+		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
-				filterSettings.getSelectedElement(), filterSettings.getSearchTerm());
+				selectedElementFromDatabase, filterSettings.getSearchTerm());
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
-			Recommender.addToKnowledgeGraph(filterSettings.getSelectedElement(), AuthenticationManager.getUser(request),
+			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request),
 					recommendations);
 		}
 		return Response.ok(recommendations).build();

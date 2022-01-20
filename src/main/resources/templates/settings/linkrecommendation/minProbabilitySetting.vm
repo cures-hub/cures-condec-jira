@@ -19,6 +19,6 @@
 <script>
 	$("#save-min-probability-link-btn").click(event => {
 		event.preventDefault();
-		conDecLinkRecommendationAPI.setMinimumLinkSuggestionProbability("$projectKey", $("#min-probability-link").val());
+		conDecLinkRecommendationAPI.setThreshold("$projectKey", $("#min-probability-link").val());
     })
 </script>

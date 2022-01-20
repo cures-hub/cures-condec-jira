@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
@@ -427,6 +428,18 @@ public class FilterSettings implements Cloneable {
 	}
 
 	/**
+	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root
+	 *         element in the knowlegde tree view) freshly received from database so
+	 *         that all attributes are set as in database.
+	 */
+	@JsonIgnore
+	public KnowledgeElement getSelectedElementFromDatabase() {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getInstance(selectedElement.getProject());
+		return persistenceManager.getKnowledgeElement(selectedElement);
+	}
+
+	/**
 	 * @param selectedElement
 	 *            {@link KnowledgeElement} that is currently selected (e.g. as root
 	 *            element in the knowlegde tree view). For example, this can be a
@@ -434,13 +447,7 @@ public class FilterSettings implements Cloneable {
 	 */
 	@JsonProperty
 	public void setSelectedElementObject(KnowledgeElement selectedElement) {
-		if (selectedElement.getProject() != null) {
-			KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
-					.getInstance(selectedElement.getProject());
-			this.selectedElement = persistenceManager.getKnowledgeElement(selectedElement);
-		} else {
-			this.selectedElement = selectedElement;
-		}
+		this.selectedElement = selectedElement;
 	}
 
 	/**

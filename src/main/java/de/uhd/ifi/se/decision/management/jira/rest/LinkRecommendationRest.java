@@ -5,7 +5,7 @@ import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -45,7 +45,7 @@ public class LinkRecommendationRest {
 					ImmutableMap.of("error", "Invalid filter settings given. Link recommendations cannot be made."))
 					.build();
 		}
-		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElement());
+		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElementFromDatabase());
 		Collection<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		return Response.ok(linkRecommendations).build();
 	}
@@ -76,6 +76,16 @@ public class LinkRecommendationRest {
 		return Response.status(Status.OK).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param recommendation
+	 *            discarded {@link LinkRecommendation} that should not be discarded
+	 *            anymore.
+	 * @return ok if discarding the {@link LinkRecommendation} was successfully
+	 *         undone.
+	 */
 	@Path("/undo-discard")
 	@POST
 	public Response undoDiscardRecommendation(@Context HttpServletRequest request, LinkRecommendation recommendation) {
@@ -88,15 +98,10 @@ public class LinkRecommendationRest {
 		return Response.status(Status.OK).build();
 	}
 
-	// --------------------
-	// Configuration
-	// --------------------
-
-	@Path("/setMinimumLinkSuggestionProbability")
+	@Path("/configuration/{projectKey}/threshold")
 	@POST
 	public Response setMinimumRecommendationScore(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
-			@QueryParam("minLinkSuggestionProbability") double minLinkSuggestionProbability) {
+			@PathParam("projectKey") String projectKey, double minLinkSuggestionProbability) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
