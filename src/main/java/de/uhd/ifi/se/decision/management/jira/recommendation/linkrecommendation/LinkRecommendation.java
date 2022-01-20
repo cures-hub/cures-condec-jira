@@ -3,10 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
-import org.codehaus.jackson.annotate.JsonTypeInfo.As;
-import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -21,9 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
  * the recommendation is represented by the {@link RecommendationScore}.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = Id.NAME, include = As.PROPERTY)
-@JsonSubTypes({ @JsonSubTypes.Type(value = LinkRecommendation.class, name = "LINK"),
-		@JsonSubTypes.Type(value = DuplicateRecommendation.class, name = "DUPLICATE") })
 public class LinkRecommendation extends Link implements Recommendation {
 
 	private static final long serialVersionUID = 1L;

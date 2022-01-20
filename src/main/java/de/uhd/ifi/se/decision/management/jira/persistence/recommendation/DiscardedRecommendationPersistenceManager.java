@@ -37,17 +37,6 @@ public class DiscardedRecommendationPersistenceManager {
 	}
 
 	// ------------------
-	// Duplicates
-	// ------------------
-
-	public static List<KnowledgeElement> getDiscardedDuplicateRecommendations(KnowledgeElement base) {
-		if (base == null || base.getProject() == null) {
-			return new ArrayList<>();
-		}
-		return getDiscardedRecommendations(base, RecommendationType.DUPLICATE);
-	}
-
-	// ------------------
 	// General Suggestion
 	// ------------------
 

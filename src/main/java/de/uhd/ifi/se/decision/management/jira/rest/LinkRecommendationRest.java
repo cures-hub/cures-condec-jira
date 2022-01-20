@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +19,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
@@ -28,8 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateDetectionManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.duplicatedetection.DuplicateTextDetector;
 
 /**
  * REST resource for link recommendation and duplicate recognition (including
@@ -52,37 +48,6 @@ public class LinkRecommendationRest {
 			return Response.ok(linkRecommendations).build();
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "No such element exists!")).build();
-	}
-
-	// --------------------
-	// Duplicate issue detection
-	// --------------------
-
-	@Path("/getDuplicateKnowledgeElement")
-	@GET
-	public Response getDuplicateKnowledgeElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("elementId") Long elementId,
-			@QueryParam("location") String elementLocation) {
-		Optional<KnowledgeElement> knowledgeElement;
-
-		knowledgeElement = isKnowledgeElementValid(projectKey, elementId, elementLocation);
-
-		if (knowledgeElement.isPresent()) {
-			LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-					.getLinkRecommendationConfiguration(projectKey);
-			DuplicateDetectionManager manager = new DuplicateDetectionManager(knowledgeElement.get(),
-					new DuplicateTextDetector(linkSuggestionConfiguration.getMinTextLength()));
-
-			KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
-			List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElements(knowledgeElement.get());
-
-			// detect duplicates
-			List<Recommendation> foundDuplicateSuggestions = manager.findAllDuplicates(unlinkedElements);
-
-			return Response.ok(foundDuplicateSuggestions).build();
-		} else {
-			return Response.status(400).entity(ImmutableMap.of("error", "No such element exists!")).build();
-		}
 	}
 
 	@Path("/discardRecommendation")
