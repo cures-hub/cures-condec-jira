@@ -39,8 +39,8 @@
 
 	ConDecLinkRecommendationAPI.prototype.undoDiscardRecommendation = function(projectKey, recommendation) {
 		recommendation.isDiscarded = false;
-		return generalApi.postJSONReturnPromise(this.restPrefix + `/undoDiscardRecommendation.json
-				?projectKey=${projectKey}`, recommendation);
+		recommendation.projectKey = projectKey;
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/undo-discard", recommendation);
 	};
 
 	global.conDecLinkRecommendationAPI = new ConDecLinkRecommendationAPI();

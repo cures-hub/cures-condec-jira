@@ -20,8 +20,8 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestDiscardRecommendation extends TestSetUp {
 
-	protected HttpServletRequest request;
-	protected LinkRecommendationRest linkRecommendationRest;
+	private HttpServletRequest request;
+	private LinkRecommendationRest linkRecommendationRest;
 
 	@Before
 	public void setUp() {
