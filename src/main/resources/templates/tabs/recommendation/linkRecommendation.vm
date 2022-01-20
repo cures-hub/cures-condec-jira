@@ -1,8 +1,7 @@
+<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
 <div>
     <aui-spinner id="loading-spinner"></aui-spinner>
 </div>
-
-<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
 <table class="aui aui-table-list" id="results-table">
     <thead>
 	    <tr>

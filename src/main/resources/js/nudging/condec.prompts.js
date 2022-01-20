@@ -85,8 +85,13 @@
 		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(projectKey, issueId, "i"))
 			.then(recommendations => {
 				let numRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations);
-				if (numRecommendations > 0) {
-					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerText = numRecommendations;
+				var summary = document.getElementById("link-recommendation-summary");
+				if (!numRecommendations) {
+					summary.innerHTML = "Great work! No <b>link recommendations</b> were found.";
+				} else {
+					summary.innerHTML = "There are <b>" + numRecommendations + "</b> "
+						+ "possibly related knowledge elements that are currently not linked. "
+						+ "Please check that the links are complete and that there are no duplicates.";
 				}
 				conDecNudgingAPI.decideAmbientFeedbackForTab(numRecommendations, "menu-item-link-recommendation");
 				conDecNudgingAPI.decideCheckIcon(numRecommendations, "link-recommendation-check-icon");

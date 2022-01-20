@@ -3,10 +3,7 @@
     	$i18n.getText("condec.link.recommendation") 
     	<span id="link-recommendation-check-icon" class="aui-icon aui-iconfont-question-circle"></span>
     </h3>
-    <p>This Jira issue might be incompletely linked. There are 
-    <strong id="link-recommendation-prompt-num-link-recommendations">0</strong> 
-    possibly related knowledge elements that are currently not linked. 
-    Please check that the links are complete and that there are no duplicates.</p>
+    <p id="link-recommendation-summary"></p>
     <aui-spinner id="link-recommendation-spinner"></aui-spinner>
 	<div class="right-aligned">  
     	<button id="go-to-link-recomendation-tab" class="aui-button aui-button-link">
