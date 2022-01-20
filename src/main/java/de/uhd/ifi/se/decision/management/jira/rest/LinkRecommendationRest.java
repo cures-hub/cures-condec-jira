@@ -35,7 +35,6 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class LinkRecommendationRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LinkRecommendationRest.class);
 
-	// TODO Add duplicates here
 	@Path("/getRelatedKnowledgeElements")
 	@GET
 	public Response getRelatedKnowledgeElements(@Context HttpServletRequest request,
@@ -122,25 +121,6 @@ public class LinkRecommendationRest {
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
 		linkSuggestionConfiguration.setMinProbability(minLinkSuggestionProbability);
-		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkSuggestionConfiguration);
-		return Response.ok().build();
-	}
-
-	@Path("/setMinimumDuplicateLength")
-	@POST
-	public Response setMinimumDuplicateLength(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("fragmentLength") int fragmentLength) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-		if (fragmentLength < 3) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The minimum length for the duplicates is invalid.")).build();
-		}
-		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkRecommendationConfiguration(projectKey);
-		linkSuggestionConfiguration.setMinTextLength(fragmentLength);
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkSuggestionConfiguration);
 		return Response.ok().build();
 	}

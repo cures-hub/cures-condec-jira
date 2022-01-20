@@ -6,12 +6,6 @@
 		this.currentLinkDuplicates = new Map();
 	};
 
-	ConDecLinkRecommendationAPI.prototype.setMinimumDuplicateLength = function(projectKey, fragmentLength) {
-		generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumDuplicateLength.json?
-			projectKey=${projectKey}&fragmentLength=${fragmentLength}`, null)
-			.then(() => conDecAPI.showFlag("success", "Minimum length was successfully updated!"));
-	}
-
 	ConDecLinkRecommendationAPI.prototype.setMinimumLinkSuggestionProbability = function(projectKey, minLinkSuggestionProbability) {
 		generalApi.postJSONReturnPromise(this.restPrefix + `/setMinimumLinkSuggestionProbability.json?
 			projectKey=${projectKey}&minLinkSuggestionProbability=${minLinkSuggestionProbability}`, null)
