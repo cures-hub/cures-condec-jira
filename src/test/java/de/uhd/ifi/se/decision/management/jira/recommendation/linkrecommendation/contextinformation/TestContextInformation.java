@@ -32,14 +32,14 @@ public class TestContextInformation extends TestSetUp {
 	public void testGetLinkRecommendations() {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertTrue(linkRecommendations.size() > 10);
+		assertTrue(linkRecommendations.size() > 7);
 	}
 
 	@Test
 	public void testFilterLinkRecommendationsByScore() {
 		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration("TEST");
-		linkSuggestionConfiguration.setMinProbability(0.9);
+		linkSuggestionConfiguration.setMinProbability(0.8);
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", linkSuggestionConfiguration);
 
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
@@ -53,7 +53,7 @@ public class TestContextInformation extends TestSetUp {
 		JiraIssues.getIrrelevantSentence();
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertTrue(linkRecommendations.size() >= 12);
+		assertTrue(linkRecommendations.size() > 7);
 	}
 
 	@Test

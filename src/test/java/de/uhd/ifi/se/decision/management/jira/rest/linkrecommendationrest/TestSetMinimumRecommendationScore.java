@@ -16,13 +16,13 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestSetMinimumRecommendationScore extends TestSetUp {
 
-	protected HttpServletRequest request;
-	protected LinkRecommendationRest configRest;
+	private HttpServletRequest request;
+	private LinkRecommendationRest linkRecommendationRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new LinkRecommendationRest();
+		linkRecommendationRest = new LinkRecommendationRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -30,36 +30,36 @@ public class TestSetMinimumRecommendationScore extends TestSetUp {
 	@Test
 	public void testNegativeValue() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setMinimumRecommendationScore(request, "TEST", -1).getStatus());
+				linkRecommendationRest.setMinimumRecommendationScore(request, "TEST", -1).getStatus());
 	}
 
 	@Test
 	public void testEdgeCaseZero() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setMinimumRecommendationScore(request, "TEST", 0).getStatus());
+				linkRecommendationRest.setMinimumRecommendationScore(request, "TEST", 0).getStatus());
 	}
 
 	@Test
 	public void testEdgeCaseOne() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setMinimumRecommendationScore(request, "TEST", 0.3).getStatus());
+				linkRecommendationRest.setMinimumRecommendationScore(request, "TEST", 0.3).getStatus());
 	}
 
 	@Test
 	public void testValidValue() {
 		assertEquals(Status.OK.getStatusCode(),
-				configRest.setMinimumRecommendationScore(request, "TEST", 1).getStatus());
+				linkRecommendationRest.setMinimumRecommendationScore(request, "TEST", 1).getStatus());
 	}
 
 	@Test
 	public void testValueGreaterOne() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setMinimumRecommendationScore(request, "TEST", 2).getStatus());
+				linkRecommendationRest.setMinimumRecommendationScore(request, "TEST", 2).getStatus());
 	}
 
 	@Test
 	public void testInvalidProjectKey() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				configRest.setMinimumRecommendationScore(request, "", 0).getStatus());
+				linkRecommendationRest.setMinimumRecommendationScore(request, "", 0).getStatus());
 	}
 }

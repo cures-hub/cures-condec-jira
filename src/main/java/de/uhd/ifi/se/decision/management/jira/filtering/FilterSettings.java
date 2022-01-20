@@ -427,6 +427,18 @@ public class FilterSettings implements Cloneable {
 	}
 
 	/**
+	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root
+	 *         element in the knowlegde tree view) freshly received from database so
+	 *         that all attributes are set as in database.
+	 */
+	@com.fasterxml.jackson.annotation.JsonIgnore
+	public KnowledgeElement getSelectedElementFromDatabase() {
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
+				.getInstance(selectedElement.getProject());
+		return persistenceManager.getKnowledgeElement(selectedElement);
+	}
+
+	/**
 	 * @param selectedElement
 	 *            {@link KnowledgeElement} that is currently selected (e.g. as root
 	 *            element in the knowlegde tree view). For example, this can be a

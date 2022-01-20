@@ -63,6 +63,21 @@ public interface Recommendation extends Comparable<Recommendation> {
 	 */
 	static List<Recommendation> normalizeRecommendationScore(List<Recommendation> recommendations) {
 		float maxValue = getMaxScoreValue(recommendations);
+		return normalizeRecommendationScore(maxValue, recommendations);
+	}
+
+	/**
+	 * Normalizes the score values of all recommendations to a given max value and
+	 * sets this score to 100%.
+	 * 
+	 * @param maxValue
+	 *            is set to 100%.
+	 * @param recommendations
+	 *            list of {@link Recommendation}s.
+	 * @return recommendations with normalized scores against the max value in the
+	 *         range of [0%, 100%].
+	 */
+	static List<Recommendation> normalizeRecommendationScore(float maxValue, List<Recommendation> recommendations) {
 		for (Recommendation recommendation : recommendations) {
 			recommendation.getScore().normalizeTo(maxValue);
 		}

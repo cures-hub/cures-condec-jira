@@ -20,7 +20,7 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 
 	@Test
 	public void testSameElement() {
-		assertEquals(0.5,
+		assertEquals(1,
 				tracingContextInformationProvider
 						.assessRelation(KnowledgeElements.getDecision(), KnowledgeElements.getDecision()).getValue(),
 				0);

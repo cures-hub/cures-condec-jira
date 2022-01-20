@@ -10,14 +10,12 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 public class LinkRecommendationConfiguration {
 
 	private double minProbability;
-	private int minTextLength;
 
 	/**
 	 * Constructs an object with default values.
 	 */
 	public LinkRecommendationConfiguration() {
-		this.minProbability = 0.3;
-		this.minTextLength = 21;
+		this.minProbability = 0.85;
 	}
 
 	/**
@@ -47,34 +45,5 @@ public class LinkRecommendationConfiguration {
 	 */
 	public void setMinProbability(double minProbability) {
 		this.minProbability = minProbability;
-	}
-
-	/**
-	 * @return minimum length of similar text for duplication detection. To
-	 *         calculate duplicates, the description of two knowledge elements is
-	 *         preprocessed an then compared. If both knowledge elements have at
-	 *         least one fragment of text that has at least X To calculate
-	 *         duplicates, the description of two knowledge elements is preprocessed
-	 *         an then compared. If both knowledge elements have at least one
-	 *         fragment of text that has at least X identical words in the same
-	 *         order, they are shown as duplicates.
-	 */
-	public int getMinTextLength() {
-		return minTextLength;
-	}
-
-	/**
-	 * @param minTextLength
-	 *            minimum length of similar text for duplication detection. To
-	 *            calculate duplicates, the description of two knowledge elements is
-	 *            preprocessed an then compared. If both knowledge elements have at
-	 *            least one fragment of text that has at least X To calculate
-	 *            duplicates, the description of two knowledge elements is
-	 *            preprocessed an then compared. If both knowledge elements have at
-	 *            least one fragment of text that has at least X identical words in
-	 *            the same order, they are shown as duplicates.
-	 */
-	public void setMinTextLength(int minTextLength) {
-		this.minTextLength = minTextLength;
 	}
 }

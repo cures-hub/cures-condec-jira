@@ -8,16 +8,17 @@
            step="0.25" min="0" max="1"
            id="min-probability-link" />
     <button id="save-min-probability-link-btn" class='aui-button'>Save</button>
-    <div class="description">To calculate the link suggestions, the knowledge elements of a project are used as a basis. Currently four context indicators are used for the calculation: User, Time, Links and Text.
+    <div class="description">To calculate the link suggestions, the knowledge elements of a project are used as a basis. 
+    	Currently four context indicators are used for the calculation: User, Time, Links and Text.
         <br/>
-        For each indicator the values are scaled from 0.0 to 1.0 with 1.0 indication the most similar with regards to the current context.
-        Lastly the values are divided by the number of examined contexts to get scores between 0.0 and 1.0.
+        Each context indicator is scaled from 0.0 to 1.0 with 1.0 indicating the most similar with regards to the current context.
+        Lastly, the context indicators are divided by the number of examined contexts to get scores between 0.0 and 1.0.
     </div>
 </div>
 
 <script>
 	$("#save-min-probability-link-btn").click(event => {
 		event.preventDefault();
-		conDecLinkRecommendationAPI.setMinimumLinkSuggestionProbability("$projectKey", $("#min-probability-link").val());
+		conDecLinkRecommendationAPI.setThreshold("$projectKey", $("#min-probability-link").val());
     })
 </script>

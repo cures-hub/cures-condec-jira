@@ -10,27 +10,12 @@
 	ConDecLinkRecommendation.prototype.init = function() {
 		this.issueId = JIRA.Issue.getIssueId();
 
-		// Duplicates
-		this.duplicateResultsTableElement = document.getElementById("duplicate-results-table");
-		this.duplicateResultsTableContentElement = document.getElementById("table-content-duplicate");
-
-		// Related
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
 
 		this.loadData();
-		this.loadDuplicateData();
 	}
-
-	ConDecLinkRecommendation.prototype.discardDuplicateRecommendation = function(index) {
-		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkDuplicates.get(this.issueId)[index])
-			.then((data) => {
-				conDecAPI.showFlag("success", "Discarded duplicate recommendation sucessfully!");
-				this.loadDuplicateData();
-			})
-			.catch((error) => displayErrorMessage(error));
-	};
 
 	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {		
 		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.issueId)[index])
@@ -48,22 +33,6 @@
 				this.loadData();
 			})
 			.catch((error) => displayErrorMessage(error));
-	};
-
-	ConDecLinkRecommendation.prototype.undoDiscardDuplicateRecommendation = function(index) {
-		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkDuplicates.get(this.issueId)[index])
-			.then((data) => {
-				conDecAPI.showFlag("success", "Discarding duplicate recommendation successfully undone!");
-				this.loadDuplicateData();
-			})
-			.catch((error) => displayErrorMessage(error));
-	};
-
-	ConDecLinkRecommendation.prototype.markAsDuplicate = function(index) {
-		let duplicateElement = conDecLinkRecommendationAPI.currentDuplicates[index].target;
-
-		let self = this;
-		conDecAPI.createLink(this.issueId, duplicateElement.id, "i", duplicateElement.documentationLocation, "duplicate", () => self.loadDuplicateData());
 	};
 
 	//-----------------------------------------
@@ -137,90 +106,10 @@
 		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
 	};
 
-	//-----------------------------------------
-	//            Generate table (Duplicates)
-	//-----------------------------------------
-	ConDecLinkRecommendation.prototype.displayDuplicateIssues = function(duplicates) {
-		if (duplicates.length === 0) {
-			//reset table content to empty
-			this.duplicateResultsTableContentElement.innerHTML = "<i>No duplicates found!</i>";
-		} else {
-			//reset table content to empty
-			this.duplicateResultsTableContentElement.innerHTML = "";
-			//append table rows with duplicates
-			for (let index in duplicates) {
-				let row = generateDuplicateTableRow(duplicates[index], index);
-				this.duplicateResultsTableContentElement.appendChild(row);
-			}
-			AJS.tabs.setup();
-			document.getElementById("discard-all-duplicate-recommendations").addEventListener("click", function(event) {
-				for (i in duplicates) {
-					if (!(duplicates[i].isDiscarded)) {
-						conDecLinkRecommendation.discardDuplicateRecommendation(i);
-					}
-				}
-			});
-		}
-	};
-
-	let generateDuplicateTableRow = function(duplicateRecommendation, index) {
-		let row = document.createElement("tr");
-		row.appendChild(generateDuplicateTableCell(`<a href="${duplicateRecommendation.target.url}">${duplicateRecommendation.target.type}</a>`, "th-key-duplicate", {}));
-
-		//TODO: visualize the duplicate fragment
-		let scoreCell = generateDuplicateTableCell(duplicateRecommendation.preprocessedSummary.slice(duplicateRecommendation.startDuplicate, duplicateRecommendation.startDuplicate + duplicateRecommendation.length), "th-text-fragment-duplicate", { title: "Length:" + duplicateRecommendation.length });
-		AJS.$(scoreCell).tooltip();
-		row.appendChild(scoreCell);
-
-		if (duplicateRecommendation.isDiscarded) {
-			row.classList.add("discarded");
-			row.appendChild(generateDuplicateTableCell(generateUndoDiscardDuplicateButton(index), "th-options-duplicate", {}));
-		} else {
-			row.appendChild(generateDuplicateTableCell(generateDuplicateOptionButtons(index), "th-options-duplicate", {}));
-		}
-
-		return row;
-	};
-
-	let generateDuplicateTableCell = function(content, headersId, attributes) {
-		let tableCell = document.createElement("td");
-		tableCell.headers = headersId;
-		tableCell.innerHTML = content;
-		for (let key in attributes) {
-			tableCell[key] = attributes[key];
-		}
-		return tableCell
-	};
-
-	let generateDuplicateOptionButtons = function(index) {
-		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.markAsDuplicate(${index})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link as duplicate </button>` +
-			`<button class='aui-button aui-button-removed' onclick="conDecLinkRecommendation.discardDuplicateRecommendation(${index})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard</button>`;
-	};
-
-	let generateUndoDiscardDuplicateButton = function(suggestionIndex) {
-		return `<button class='aui-button' onclick="conDecLinkRecommendation.undoDiscardDuplicateRecommendation(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-undo"></span> Undo Discard</button>`;
-	};
-
-	let processDuplicateIssuesResponse = function(duplicates) {
-		return duplicates.sort((a, b) => b.length - a.length);
-	};
-
-	//-----------------------------------------
-	// Load data and call display logic.
-	//-----------------------------------------
-	ConDecLinkRecommendation.prototype.loadDuplicateData = function() {
-		startLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement);
-
-		Promise.resolve(conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(this.projectKey, this.issueId, "i"))
-			.then((duplicates) => this.displayDuplicateIssues(processDuplicateIssuesResponse(duplicates)))
-			.catch((error) => displayErrorMessage(error))
-			.finally(() => stopLoadingVisualization(this.duplicateResultsTableElement, this.loadingSpinnerElement));
-	}
-
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
 
-		Promise.resolve(conDecLinkRecommendationAPI.getRelatedKnowledgeElements(this.projectKey, this.issueId, 'i'))
+		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(this.projectKey, this.issueId, 'i'))
 			.then((relatedIssues) => this.displayRelatedElements(relatedIssues))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));

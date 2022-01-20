@@ -20,8 +20,8 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestUndoDiscardRecommendation extends TestSetUp {
 
-	protected HttpServletRequest request;
-	protected LinkRecommendationRest linkRecommendationRest;
+	private HttpServletRequest request;
+	private LinkRecommendationRest linkRecommendationRest;
 
 	@Before
 	public void setUp() {
@@ -36,25 +36,24 @@ public class TestUndoDiscardRecommendation extends TestSetUp {
 	public void testValidRecommendation() {
 		KnowledgeElement knowledgeElement0 = KnowledgeElements.getTestKnowledgeElement();
 		KnowledgeElement knowledgeElement1 = KnowledgeElements.getSolvedDecisionProblem();
-		assertEquals(Status.OK.getStatusCode(), linkRecommendationRest.undoDiscardRecommendation(request, "TEST",
-				new LinkRecommendation(knowledgeElement0, knowledgeElement1)).getStatus());
+		assertEquals(Status.OK.getStatusCode(), linkRecommendationRest
+				.undoDiscardRecommendation(request, new LinkRecommendation(knowledgeElement0, knowledgeElement1))
+				.getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRecommendationNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				linkRecommendationRest.undoDiscardRecommendation(request, "TEST", null).getStatus());
+				linkRecommendationRest.undoDiscardRecommendation(request, null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testInvalidRecommendation() {
 		KnowledgeElement knowledgeElement1 = KnowledgeElements.getSolvedDecisionProblem();
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				linkRecommendationRest
-						.undoDiscardRecommendation(request, "TEST", new LinkRecommendation(null, knowledgeElement1))
-						.getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), linkRecommendationRest
+				.undoDiscardRecommendation(request, new LinkRecommendation(null, knowledgeElement1)).getStatus());
 	}
 
 }

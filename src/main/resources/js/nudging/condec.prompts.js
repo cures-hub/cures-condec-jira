@@ -82,15 +82,16 @@
 	ConDecPrompt.prototype.promptLinkSuggestion = function(projectKey) {
 		const issueId = JIRA.Issue.getIssueId();
 
-		Promise.all([conDecLinkRecommendationAPI.getDuplicateKnowledgeElement(projectKey, issueId, "i"),
-		conDecLinkRecommendationAPI.getRelatedKnowledgeElements(projectKey, issueId, "i")])
-			.then((recommendations) => {
-				let numDuplicates = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[0]);
-				let numLinkRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations[1]);
-				let numRecommendations = numDuplicates + numLinkRecommendations;
-				if (numRecommendations > 0) {
-					document.getElementById("link-recommendation-prompt-num-link-recommendations").innerText = numLinkRecommendations;
-					document.getElementById("link-recommendation-prompt-num-duplicate-recommendations").innerText = numDuplicates;
+		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(projectKey, issueId, "i"))
+			.then(recommendations => {
+				let numRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations);
+				var summary = document.getElementById("link-recommendation-summary");
+				if (!numRecommendations) {
+					summary.innerHTML = "Great work! No <b>link recommendations</b> were found.";
+				} else {
+					summary.innerHTML = "There are <b>" + numRecommendations + "</b> "
+						+ "possibly related knowledge elements that are currently not linked. "
+						+ "Please check that the links are complete and that there are no duplicates.";
 				}
 				conDecNudgingAPI.decideAmbientFeedbackForTab(numRecommendations, "menu-item-link-recommendation");
 				conDecNudgingAPI.decideCheckIcon(numRecommendations, "link-recommendation-check-icon");

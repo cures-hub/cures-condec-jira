@@ -1,8 +1,7 @@
+<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
 <div>
     <aui-spinner id="loading-spinner"></aui-spinner>
 </div>
-
-<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
 <table class="aui aui-table-list" id="results-table">
     <thead>
 	    <tr>
@@ -16,24 +15,6 @@
 </table>
 <div style="float:right;"> 
 	<button class="aui-button aui-button-link" id="discard-all-link-recommendations">
-		<span class="aui-icon aui-icon-small aui-iconfont-trash"></span> 
-		$i18n.getText('condec.recommendation.discard.all')
-	</button> 
-</div>
-
-<b>Potential duplicates</b>
-<table class="aui aui-table-list" id="duplicate-results-table">
-    <thead>
-	    <tr>
-	        <th id="th-key-duplicate">$i18n.getText("condec.label.knowledge.type")</th>
-	        <th id="th-text-fragment-duplicate">$i18n.getText("condec.duplicate")</th>
-	        <th id="th-options-duplicate">$i18n.getText("condec.recommendation.manage")</th>
-	    <tr>
-    </thead>
-    <tbody id="table-content-duplicate"></tbody>
-</table>
-<div style="float:right;"> 
-	<button class="aui-button aui-button-link" id="discard-all-duplicate-recommendations">
 		<span class="aui-icon aui-icon-small aui-iconfont-trash"></span> 
 		$i18n.getText('condec.recommendation.discard.all')
 	</button> 

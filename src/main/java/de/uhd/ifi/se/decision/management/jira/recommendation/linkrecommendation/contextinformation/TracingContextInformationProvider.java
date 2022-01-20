@@ -13,10 +13,13 @@ public class TracingContextInformationProvider implements ContextInformationProv
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
-		int distance = baseElement.getLinkDistance(knowledgeElement, 5);
-		// Prevent a division by zero exception
-		// Unlinked elements (with distance -1) get the highest score
-		double value = 1. / (distance + 2);
+		double value = 1;
+		if (!baseElement.equals(knowledgeElement)) {
+			int distance = baseElement.getLinkDistance(knowledgeElement, 5);
+			// Prevent a division by zero exception
+			// Unlinked elements (with distance -1) get the highest score
+			value = 1. / (distance + 2);
+		}
 		return new RecommendationScore((float) value, getName());
 	}
 }

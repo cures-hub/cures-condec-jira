@@ -321,9 +321,7 @@ public class DecisionGuidanceRest {
 			return response;
 		}
 
-		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
-		KnowledgeElement selectedElementFromDatabase = persistenceManager
-				.getKnowledgeElement(filterSettings.getSelectedElement());
+		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
 				selectedElementFromDatabase, filterSettings.getSearchTerm());
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
