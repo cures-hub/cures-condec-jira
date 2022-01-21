@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.changeimpactanalysisrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,20 +12,20 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.ChangeImpactAnalysisRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public class TestSetChangeImpactAnalysisConfiguration extends TestSetUp {
 
 	protected HttpServletRequest request;
-	protected ConfigRest configRest;
+	protected ChangeImpactAnalysisRest ciaRest;
 	protected ChangeImpactAnalysisConfiguration ciaConfig;
 
 	@Before
 	public void setUp() {
 		init();
 		ciaConfig = new ChangeImpactAnalysisConfiguration();
-		configRest = new ConfigRest();
+		ciaRest = new ChangeImpactAnalysisRest();
 		request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
@@ -33,30 +33,30 @@ public class TestSetChangeImpactAnalysisConfiguration extends TestSetUp {
 	@Test
 	public void testProjectKeyNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setChangeImpactAnalysisConfiguration(request, null, ciaConfig).getStatus());
+				ciaRest.setChangeImpactAnalysisConfiguration(request, null, ciaConfig).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmpty() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setChangeImpactAnalysisConfiguration(request, "", ciaConfig).getStatus());
+				ciaRest.setChangeImpactAnalysisConfiguration(request, "", ciaConfig).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyInvalid() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setChangeImpactAnalysisConfiguration(request, "InvalidKey", ciaConfig).getStatus());
+				ciaRest.setChangeImpactAnalysisConfiguration(request, "InvalidKey", ciaConfig).getStatus());
 	}
 
 	@Test
 	public void testProjectCiaConfigInvalid() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.setChangeImpactAnalysisConfiguration(request, "TEST", null).getStatus());
+				ciaRest.setChangeImpactAnalysisConfiguration(request, "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyValid() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.setChangeImpactAnalysisConfiguration(request, "TEST", ciaConfig).getStatus());
+				ciaRest.setChangeImpactAnalysisConfiguration(request, "TEST", ciaConfig).getStatus());
 	}
 }

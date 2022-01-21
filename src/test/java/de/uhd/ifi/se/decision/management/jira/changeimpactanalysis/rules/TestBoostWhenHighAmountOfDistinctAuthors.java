@@ -10,16 +10,19 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
     
     private KnowledgeElement currentElement;
+	private FilterSettings filterSettings;
 
     @Before
 	public void setUp() {
 		init();
+		filterSettings = new FilterSettings();
 	}
 
     @Test
@@ -36,7 +39,7 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		assertEquals(0.9, ChangePropagationRule.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
-				.isChangePropagated(null, currentElement, null), 0.2);
+				.isChangePropagated(filterSettings, currentElement, null), 0.2);
 	}
 
     @Test
@@ -49,6 +52,6 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		assertEquals(0.98, ChangePropagationRule.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
-				.isChangePropagated(null, currentElement, null), 0.005);
+				.isChangePropagated(filterSettings, currentElement, null), 0.005);
 	}
 }

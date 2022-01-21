@@ -43,14 +43,18 @@
 		// quality highlighting	
 		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.projectKey);
 
-		// change impact highlighting	
+		// change impact highlighting
+		var selectedRules = [];
+		conDecAPI.getActiveChangeImpactAnalysisRules(conDecAPI.getProjectKey(), (error, rules) => {
+			selectedRules = rules;
+		});
 		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
 			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
 			$("#threshold-input-" + viewIdentifier)[0].value = config["threshold"];
 			conDecFiltering.initDropdown("propagation-rule-dropdown-" + viewIdentifier,
-				config["propagationRules"], []);
+				config["propagationRules"], selectedRules);
 		});
-
+		
 		window.onbeforeunload = null;
 	};
 

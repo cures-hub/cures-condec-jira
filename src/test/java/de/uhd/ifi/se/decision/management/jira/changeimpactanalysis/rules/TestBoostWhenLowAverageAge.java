@@ -10,16 +10,19 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestBoostWhenLowAverageAge extends TestSetUp {
     
     private KnowledgeElement currentElement;
+    private FilterSettings filterSettings;
 
     @Before
 	public void setUp() {
 		init();
+        filterSettings = new FilterSettings();
 	}
 
     @Test
@@ -37,8 +40,8 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
         updateDateAndAuthor.put(new Date(999999999), "FooBar");
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
-		assertEquals(0.92, ChangePropagationRule.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
-				.isChangePropagated(null, currentElement, null), 0.05);
+		assertEquals(0.926, ChangePropagationRule.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
+				.isChangePropagated(filterSettings, currentElement, null), 0.005);
     }
 
     @Test
@@ -50,6 +53,6 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
         currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
-				.isChangePropagated(null, currentElement, null), 0.005);
+				.isChangePropagated(filterSettings, currentElement, null), 0.005);
     }
 }

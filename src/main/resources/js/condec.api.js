@@ -632,7 +632,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setChangeImpactAnalysisConfiguration = function(projectKey, ciaConfig) {
-		generalApi.postJSON(this.restPrefix + "/config/setChangeImpactAnalysisConfiguration?projectKey="
+		generalApi.postJSON(this.restPrefix + "/change-impact-analysis/setChangeImpactAnalysisConfiguration?projectKey="
 			+ projectKey, ciaConfig, function(error, response) {
 				if (error === null) {
 					showFlag("success", "The change impact analysis configuration is updated.");
@@ -644,7 +644,15 @@
 	 * external references: condec.filtering
 	 */
 	ConDecAPI.prototype.getChangeImpactAnalysisConfiguration = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/config/getChangeImpactAnalysisConfiguration?projectKey="
+		generalApi.getJSON(this.restPrefix + "/change-impact-analysis/getChangeImpactAnalysisConfiguration?projectKey="
+			+ projectKey, callback);
+	};
+
+	/*
+	 * external references: condec.filtering
+	 */
+	ConDecAPI.prototype.getActiveChangeImpactAnalysisRules = function(projectKey, callback) {
+		generalApi.getJSON(this.restPrefix + "/change-impact-analysis/getActiveChangeImpactAnalysisRules?projectKey="
 			+ projectKey, callback);
 	};
 

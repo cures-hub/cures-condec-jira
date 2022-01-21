@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -19,8 +20,15 @@ public class BoostWhenTextualSimilar implements ChangePropagationFunction {
 
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
+		float ruleWeight = filterSettings.getChangeImpactAnalysisConfig().getPropagationRules()
+			.get(filterSettings.getChangeImpactAnalysisConfig().getPropagationRules()
+				.indexOf(ChangePropagationRule.BOOST_WHEN_TEXTUAL_SIMILAR))
+			.getWeightValue();
+
 		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
 				.getValue();
-		return similarityScore;
+		return similarityScore * (2 - ruleWeight) >= 1.0
+			? 1.0
+			: similarityScore * (2 - ruleWeight);
 	}
 }

@@ -60,7 +60,7 @@ public class TestBoostWhenTimelyCoupled extends TestSetUp {
         updateDateAndAuthorNext.put(new Date(599999), "FooBar");
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
 
-		assertEquals(0.833, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
+		assertEquals(0.666, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
 	}
 
@@ -76,7 +76,7 @@ public class TestBoostWhenTimelyCoupled extends TestSetUp {
         updateDateAndAuthorNext.put(new Date(0), "FooBar");
         nextElement.setUpdateDateAndAuthor(updateDateAndAuthorNext);
 
-		assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
+		assertEquals(0.888, ChangePropagationRule.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
 	}
 

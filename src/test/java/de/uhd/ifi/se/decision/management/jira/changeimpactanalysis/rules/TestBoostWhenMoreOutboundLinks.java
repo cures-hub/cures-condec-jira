@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -15,10 +16,12 @@ public class TestBoostWhenMoreOutboundLinks extends TestSetUp {
 
     private KnowledgeElement currentElement;
 	private KnowledgeElement nextElement;
+    private FilterSettings filterSettings;
 
     @Before
 	public void setUp() {
 		init();
+        filterSettings = new FilterSettings();
 	}
 
     @Test
@@ -34,7 +37,7 @@ public class TestBoostWhenMoreOutboundLinks extends TestSetUp {
 
         Link link = currentElement.getLink(nextElement);
         assertEquals(0.666, ChangePropagationRule.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND.getFunction()
-            .isChangePropagated(null, nextElement, link), 0.005);
+            .isChangePropagated(filterSettings, nextElement, link), 0.005);
     }
 
     @Test
@@ -44,7 +47,7 @@ public class TestBoostWhenMoreOutboundLinks extends TestSetUp {
 
         Link link = currentElement.getLink(nextElement);
         assertEquals(0.707, ChangePropagationRule.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND.getFunction()
-            .isChangePropagated(null, nextElement, link), 0.005);
+            .isChangePropagated(filterSettings, nextElement, link), 0.005);
     }
 
     @Test
@@ -54,6 +57,6 @@ public class TestBoostWhenMoreOutboundLinks extends TestSetUp {
 
         Link link = currentElement.getLink(nextElement);
         assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND.getFunction()
-            .isChangePropagated(null, nextElement, link), 0.005);
+            .isChangePropagated(filterSettings, nextElement, link), 0.005);
     }
 }
