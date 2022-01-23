@@ -60,8 +60,6 @@ public class TestChangeImpactAnalysisConfiguration extends TestSetUp {
 		config.setPropagationRules(
 				Set.of(new ChangePropagationRule(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE)));
 		assertEquals(1, config.getPropagationRules().size());
-		config.setPropagationRules(null);
-		assertEquals(0, config.getPropagationRules().size());
 	}
 
 	@Test

@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -17,8 +19,8 @@ public class BoostWhenEqualDecisionGroup implements ChangePropagationFunction {
 
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
-		// TODO
-		float ruleWeight = 1;
+		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
+				ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP);
 		double weightFactor = (0.75 * (2 - ruleWeight)) >= 1.0 ? 1.0 : (0.75 * (2 - ruleWeight));
 
 		if (!filterSettings.getSelectedElement().getDecisionGroups().isEmpty()) {

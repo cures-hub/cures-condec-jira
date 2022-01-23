@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -8,11 +8,24 @@ import javax.xml.bind.annotation.XmlElement;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+
 /**
  * Represents one propagation rule of a specific
  * {@link ChangePropagationRuleType} for rule-based change impact analysis.
  * 
  * @see ChangePropagationRuleType
+ * 
+ * @issue How can we model different change propagation rules for CIA?
+ * @decision We create both a class ChangePropagationRule and an enum
+ *           ChangePropagationRuleType!
+ * @pro Enables to deserialize JSON objects passed via the REST API. Seems to be
+ *      the only way to enable the rationale manager to configure the change
+ *      propagation rules in the project setting view.
+ * @con More code than only having the enum.
+ * @alternative We used to have only the enum.
+ * @con It is not possible (at least we do not how) to deserialize JSON objects
+ *      passed via the REST API into enums.
  */
 public class ChangePropagationRule {
 
@@ -74,10 +87,19 @@ public class ChangePropagationRule {
 	}
 
 	public static Set<ChangePropagationRule> getDefaultRules() {
-		Set<ChangePropagationRule> defaultRules = new HashSet<>();
+		Set<ChangePropagationRule> defaultRules = new LinkedHashSet<>();
 		for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {
 			defaultRules.add(new ChangePropagationRule(type));
 		}
 		return defaultRules;
+	}
+
+	public static float getWeightForRule(Set<ChangePropagationRule> allRules, ChangePropagationRuleType type) {
+		float ruleWeight = allRules.stream().filter(rule -> rule.getType() == type).findAny().get().getWeightValue();
+		return ruleWeight;
+	}
+
+	public static float getWeightForRule(FilterSettings filterSettings, ChangePropagationRuleType type) {
+		return getWeightForRule(filterSettings.getChangeImpactAnalysisConfig().getPropagationRules(), type);
 	}
 }
