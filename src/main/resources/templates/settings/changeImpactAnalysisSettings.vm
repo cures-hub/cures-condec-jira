@@ -62,19 +62,25 @@ Select the default ruleset and weights for individual rules.
     	</tr>
     </thead>
     <tbody>
+    <script>
+    	var changePropagationRuleNames = [];
+    </script>
     #foreach($propagationRule in $ciaConfig.getPropagationRules())
+    	<script>
+    		changePropagationRuleNames.push("$propagationRule.name()");
+    	</script>
         <tr>
 		    <td>
                 $propagationRule.getDescription()
-        	<a data-aui-trigger aria-controls='$propagationRule.getDescription()-help'>     
+        	<a data-aui-trigger aria-controls='$propagationRule.name()-help'>     
         		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
         	</a>
-        	<aui-inline-dialog id='$propagationRule.getDescription()-help' responds-to='hover'>
+        	<aui-inline-dialog id='$propagationRule.name()-help' responds-to='hover'>
         		$propagationRule.getExplanation()
         	</aui-inline-dialog>
             </td>
             <td>
-                <aui-toggle class="$propagationRule.getDescription()-toggle" label="$propagationRule.getDescription()-toggle"
+                <aui-toggle id="$propagationRule.name()-toggle" label="$propagationRule.name()-toggle"
                 #if ($propagationRule.isActive())
                     checked
                 #end
@@ -89,8 +95,7 @@ Select the default ruleset and weights for individual rules.
                         step="0.1"
                         min="0.0"
                         max="2.0"
-                        id="$propagationRule.getDescription()-weight"
-                        name="$propagationRule.getDescription()-weight"/>
+                        id="$propagationRule.name()-weight"/>
                 #end
             </td>
         </tr>
@@ -130,23 +135,26 @@ Select the default ruleset and weights for individual rules.
 		for (i in linkTypes) {
 			linkImpact[linkTypes[i]] = document.getElementById(linkTypes[i]).value;
 		}
-        var ChangePropagationRuleset = [];
-        for (ciaRule in $ciaConfig.getPropagationRules()) {
-            ChangePropagationRuleset.push(ciaRule = {
-                "description": ciaRule.getDescription(),
-                "function": ciaRule.getFunction(),
-                "explanation": ciaRule.getExplanation(),
-                "isActive": document.getElementById(ciaRule.getDescription() + "-toggle").checked,
-                "weightValue": document.getElementById(ciaRule.getDescription() + "-weight").value
+        var changePropagationRuleset = [];
+        for (var ruleName of changePropagationRuleNames) {
+        	var weight = 0;
+        	var weightInput = document.getElementById(ruleName + "-weight");
+        	if (weightInput) {
+        		weight = weightInput.value;
+        	}
+            changePropagationRuleset.push({
+            	"name": ruleName,
+                "isActive": document.getElementById(ruleName + "-toggle").checked,
+                "weightValue": weight
             });
-        };
+        }
 		let ciaConfig = {
 			"decayValue": $("#cia-decay-value")[0].value,
 			"threshold": $("#cia-threshold")[0].value,
 			"linkImpact": linkImpact,
-            "propagationRules": ChangePropagationRuleset
+            "propagationRules": changePropagationRuleset
 		}
-	conDecAPI.setChangeImpactAnalysisConfiguration("$projectKey", ciaConfig);
+		conDecAPI.setChangeImpactAnalysisConfiguration("$projectKey", ciaConfig);
     });
 </script>
 

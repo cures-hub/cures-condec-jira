@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
@@ -85,7 +86,16 @@ public class ChangeImpactAnalysisConfiguration {
 	}
 
 	@JsonProperty
-	public void setPropagationRules(List<String> propagationRules) {
+	public void setPropagationRules(List<ChangePropagationRule> propagationRules) {
+		System.out.println(propagationRules.size());
+		this.propagationRules = new ArrayList<>();
+		for (ChangePropagationRule rule : ChangePropagationRule.values()) {
+			this.propagationRules.add(rule);
+		}
+	}
+
+	@JsonIgnore
+	public void setPropagationRulesAsStrings(List<String> propagationRules) {
 		this.propagationRules = new LinkedList<>();
 		if (propagationRules == null) {
 			return;
