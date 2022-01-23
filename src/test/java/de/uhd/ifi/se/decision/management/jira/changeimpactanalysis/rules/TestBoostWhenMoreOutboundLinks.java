@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,12 @@ public class TestBoostWhenMoreOutboundLinks extends TestSetUp {
 	public void testDescription() {
 		assertEquals("Boost when element has more outbound than inbound links",
 				ChangePropagationRuleType.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND
+			.getExplanation().contains("has more outbound links than inbound links"));
 	}
 
 	@Test

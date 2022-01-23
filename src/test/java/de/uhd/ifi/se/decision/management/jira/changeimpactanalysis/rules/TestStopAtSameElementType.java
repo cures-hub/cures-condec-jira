@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,12 @@ public class TestStopAtSameElementType extends TestSetUp {
 	public void testDescription() {
 		assertEquals("Stop at elements with the same type as the selected element",
 				ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE
+			.getExplanation().contains("is not propagated after a element with the same knowledge type was reached"));
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -29,6 +30,12 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
 	public void testDescription() {
 		assertEquals("Boost when element has a large number of distinct update authors",
 				ChangePropagationRuleType.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS
+			.getExplanation().contains("has a large number of distinct update authors"));
 	}
 
 	@Test

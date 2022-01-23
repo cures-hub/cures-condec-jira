@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,12 @@ public class TestBoostWhenTextualSimilar extends TestSetUp {
 	public void testDescription() {
 		assertEquals("Boost when element is textual similar to the selected element",
 				ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR
+			.getExplanation().contains("is textual similar to the selected element"));
 	}
 
 	@Test

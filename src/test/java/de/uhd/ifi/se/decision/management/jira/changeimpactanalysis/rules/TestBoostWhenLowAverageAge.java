@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -29,6 +30,12 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
 	public void testDescription() {
 		assertEquals("Boost when element has a low average age",
 				ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE
+			.getExplanation().contains("average age is determined by"));
 	}
 
 	@Test

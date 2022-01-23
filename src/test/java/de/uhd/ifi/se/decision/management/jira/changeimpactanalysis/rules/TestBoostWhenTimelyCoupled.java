@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -32,6 +33,12 @@ public class TestBoostWhenTimelyCoupled extends TestSetUp {
 	public void testDescription() {
 		assertEquals("Boost when element is timely coupled to the selected element",
 				ChangePropagationRuleType.BOOST_WHEN_TIMELY_COUPLED.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.BOOST_WHEN_TIMELY_COUPLED
+			.getExplanation().contains("is timely coupled to the source element"));
 	}
 
 	@Test

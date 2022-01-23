@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,12 @@ public class TestIgnoreIncomingLinks extends TestSetUp {
 	@Test
 	public void testDescription() {
 		assertEquals("Outward links only", ChangePropagationRuleType.IGNORE_INCOMING_LINKS.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.IGNORE_INCOMING_LINKS
+			.getExplanation().contains("is not propagated along an incoming link"));
 	}
 
 	@Test
