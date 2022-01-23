@@ -23,8 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  */
 @Path("/change-impact-analysis")
 public class ChangeImpactAnalysisRest {
-    
-    @Path("/setChangeImpactAnalysisConfiguration")
+
+	@Path("/setChangeImpactAnalysisConfiguration")
 	@POST
 	public Response setChangeImpactAnalysisConfiguration(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, ChangeImpactAnalysisConfiguration ciaConfig) {
@@ -58,9 +58,10 @@ public class ChangeImpactAnalysisRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		List<String> activeRules = new ArrayList<String>();
-		for (ChangePropagationRule rule : ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey).getPropagationRules()) {
+		for (ChangePropagationRule rule : ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)
+				.getPropagationRules()) {
 			if (rule.isActive()) {
-				activeRules.add(rule.getDescription());
+				activeRules.add(rule.getType().getDescription());
 			}
 		}
 		return Response.ok(activeRules).build();

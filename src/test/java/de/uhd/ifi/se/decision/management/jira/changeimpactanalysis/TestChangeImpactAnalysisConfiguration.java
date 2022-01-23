@@ -3,8 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +57,8 @@ public class TestChangeImpactAnalysisConfiguration extends TestSetUp {
 	public void testPropagationRules() {
 		// default value
 		assertEquals(9, config.getPropagationRules().size());
-		config.setPropagationRulesAsStrings(List.of(ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getDescription()));
+		config.setPropagationRules(
+				Set.of(new ChangePropagationRule(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE)));
 		assertEquals(1, config.getPropagationRules().size());
 		config.setPropagationRules(null);
 		assertEquals(0, config.getPropagationRules().size());

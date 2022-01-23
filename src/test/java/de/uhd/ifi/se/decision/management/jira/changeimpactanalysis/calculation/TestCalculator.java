@@ -50,7 +50,7 @@ public class TestCalculator extends TestSetUp {
 		config.setContext(1);
 		List<String> propagationRules = new ArrayList<String>();
 		propagationRules.add("Boost when element is textual similar to the selected element");
-		config.setPropagationRulesAsStrings(propagationRules);
+		// config.setPropagationRulesAsStrings(propagationRules);
 		settings.setChangeImpactAnalysisConfig(config);
 
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();

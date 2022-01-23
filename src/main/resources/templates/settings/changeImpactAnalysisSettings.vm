@@ -67,27 +67,27 @@ Select the default ruleset and weights for individual rules.
     </script>
     #foreach($propagationRule in $ciaConfig.getPropagationRules())
     	<script>
-    		changePropagationRuleNames.push("$propagationRule.name()");
+    		changePropagationRuleNames.push("$propagationRule.getType().name()");
     	</script>
         <tr>
 		    <td>
-                $propagationRule.getDescription()
-        	<a data-aui-trigger aria-controls='$propagationRule.name()-help'>     
+                $propagationRule.getType().getDescription()
+        	<a data-aui-trigger aria-controls='$propagationRule.getType().name()-help'>     
         		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
         	</a>
-        	<aui-inline-dialog id='$propagationRule.name()-help' responds-to='hover'>
-        		$propagationRule.getExplanation()
+        	<aui-inline-dialog id='$propagationRule.getType().name()-help' responds-to='hover'>
+        		$propagationRule.getType().getExplanation()
         	</aui-inline-dialog>
             </td>
             <td>
-                <aui-toggle id="$propagationRule.name()-toggle" label="$propagationRule.name()-toggle"
+                <aui-toggle id="$propagationRule.getType().name()-toggle"
                 #if ($propagationRule.isActive())
                     checked
                 #end
                 ></aui-toggle>
             </td>
             <td>
-                #if ($propagationRule.getDescription().contains("Boost"))
+                #if ($propagationRule.getType().getDescription().contains("Boost"))
                     <input class="text short-field"
                         type="number"
                         data-aui-validation-field
@@ -95,7 +95,7 @@ Select the default ruleset and weights for individual rules.
                         step="0.1"
                         min="0.0"
                         max="2.0"
-                        id="$propagationRule.name()-weight"/>
+                        id="$propagationRule.getType().name()-weight"/>
                 #end
             </td>
         </tr>
