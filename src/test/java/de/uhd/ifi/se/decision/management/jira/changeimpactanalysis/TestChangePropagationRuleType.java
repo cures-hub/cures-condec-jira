@@ -1,11 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
+package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 
 public class TestChangePropagationRuleType extends TestSetUp {
 

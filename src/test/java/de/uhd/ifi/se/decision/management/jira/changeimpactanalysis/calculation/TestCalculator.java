@@ -4,13 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -48,9 +52,10 @@ public class TestCalculator extends TestSetUp {
 	public void testCalculateChangeImpactContext() {
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
 		config.setContext(1);
-		List<String> propagationRules = new ArrayList<String>();
-		propagationRules.add("Boost when element is textual similar to the selected element");
-		// config.setPropagationRulesAsStrings(propagationRules);
+		Set<ChangePropagationRule> propagationRules = new HashSet<ChangePropagationRule>();
+		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
+		propagationRules.add(rule);
+		config.setPropagationRules(propagationRules);
 		settings.setChangeImpactAnalysisConfig(config);
 
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
