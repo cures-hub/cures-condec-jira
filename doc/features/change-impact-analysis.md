@@ -44,8 +44,12 @@ Developers can see an **explanation for the impact factor** of each node via a t
 *JSTree diagram with change impact hightlighting*
 
 ## Configuration
-The rationale manager can set default parameters for the change impact analysis.
-Besides, the developer can change the default values during the usage of change impact analysis.
+The rationale manager can set the default parameters for the change impact analysis, e.g. the decay value, threshold and default ruleset. In addition, they can set a weight value for each rule.
+Furthermore, the developer can change the default values during the usage of change impact analysis.
+
+![Change impact analysis configuration page](../screenshots/change_impact_analysis_configuration.png)
+
+*Change impact analysis configuration page*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for the change impact analysis.
@@ -57,7 +61,7 @@ The following class diagram gives an overview of relevant backend classes for th
 The Java code for the change impact analysis can be found here:
 
 - [Java code for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/changeimpactanalysis)
-- [REST-API for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ConfigRest.java)
+- [REST-API for the change impact analysis](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ChangeImpactAnalysisRest.java)
 
 The UI code for the change impact analysis can be found here:
 

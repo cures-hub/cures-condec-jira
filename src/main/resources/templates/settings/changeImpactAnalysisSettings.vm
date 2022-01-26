@@ -80,7 +80,7 @@ Select the default ruleset and weights for individual rules.
         	</aui-inline-dialog>
             </td>
             <td>
-                <aui-toggle id="$propagationRule.getType().name()-toggle"
+                <aui-toggle id="$propagationRule.getType().name()-toggle" label=""
                 #if ($propagationRule.isActive())
                     checked
                 #end

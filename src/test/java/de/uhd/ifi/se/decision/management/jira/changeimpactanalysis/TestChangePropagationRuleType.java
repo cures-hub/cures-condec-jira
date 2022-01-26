@@ -14,4 +14,11 @@ public class TestChangePropagationRuleType extends TestSetUp {
 		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE,
 				ChangePropagationRuleType.valueOf(propagationRuleName));
 	}
+
+	@Test
+	public void testFromString() {
+		String propagationRuleDescription = "Stop at elements with the same type as the selected element";
+		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE,
+			ChangePropagationRuleType.fromString(propagationRuleDescription));
+	}
 }

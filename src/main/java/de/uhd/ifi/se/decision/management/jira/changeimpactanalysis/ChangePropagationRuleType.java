@@ -93,4 +93,18 @@ public enum ChangePropagationRuleType {
 	public ChangePropagationFunction getFunction() {
 		return function;
 	}
+
+	/**
+	 * @param ruleType
+	 * 			description of a rule type.
+	 * @return {@link ChangePropagationRuleType} which matches the given description.
+	 */
+	public static ChangePropagationRuleType fromString(String ruleType) {
+        for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {
+            if (type.description.equalsIgnoreCase(ruleType)) {
+                return type;
+            }
+        }
+        return null;
+    }
 }
