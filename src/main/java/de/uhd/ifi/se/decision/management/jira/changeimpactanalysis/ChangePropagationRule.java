@@ -34,20 +34,20 @@ public class ChangePropagationRule {
 	private float weightValue;
 
 	@JsonCreator
-	public ChangePropagationRule(String typeName) {
-		this(ChangePropagationRuleType.fromString(typeName));
+	public ChangePropagationRule(String ruleDescription) {
+		this(ChangePropagationRuleType.fromString(ruleDescription));
 	}
 
 	@JsonCreator
-	public ChangePropagationRule(@JsonProperty("name") String typeName, @JsonProperty("isActive") Boolean isActive,
+	public ChangePropagationRule(@JsonProperty("name") String ruleTypeName, @JsonProperty("isActive") Boolean isActive,
 			@JsonProperty("weightValue") float weightValue) {
-		this.type = ChangePropagationRuleType.valueOf(typeName);
+		this.type = ChangePropagationRuleType.valueOf(ruleTypeName);
 		this.weightValue = weightValue;
 		this.isActive = isActive;
 	}
 
-	public ChangePropagationRule(ChangePropagationRuleType type) {
-		this.type = type;
+	public ChangePropagationRule(ChangePropagationRuleType ruleType) {
+		this.type = ruleType;
 		this.weightValue = 1.0f;
 		this.isActive = false;
 	}

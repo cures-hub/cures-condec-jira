@@ -44,7 +44,7 @@
 		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.projectKey);
 
 		// change impact highlighting
-		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
+		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
 			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
 			$("#threshold-input-" + viewIdentifier)[0].value = config["threshold"];
 			console.log(config["propagationRules"]);

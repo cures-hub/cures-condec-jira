@@ -99,9 +99,9 @@ public enum ChangePropagationRuleType {
 	 * 			description of a rule type.
 	 * @return {@link ChangePropagationRuleType} which matches the given description.
 	 */
-	public static ChangePropagationRuleType fromString(String ruleType) {
+	public static ChangePropagationRuleType fromString(String ruleDescription) {
         for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {
-            if (type.description.equalsIgnoreCase(ruleType)) {
+            if (type.description.equalsIgnoreCase(ruleDescription)) {
                 return type;
             }
         }

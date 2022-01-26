@@ -1,10 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -76,11 +74,6 @@ public class ChangeImpactAnalysisConfiguration {
 	@XmlElement
 	public Set<ChangePropagationRule> getPropagationRules() {
 		return propagationRules;
-	}
-
-	// TODO Delete Methode
-	public List<String> getPropagationRulesAsStrings() {
-		return propagationRules.stream().map(rule -> rule.getType().getDescription()).collect(Collectors.toList());
 	}
 
 	@JsonProperty

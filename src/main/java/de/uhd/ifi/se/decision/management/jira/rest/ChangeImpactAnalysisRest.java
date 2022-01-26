@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -15,7 +12,6 @@ import javax.ws.rs.core.Response.Status;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -48,23 +44,5 @@ public class ChangeImpactAnalysisRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		return Response.ok(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
-	}
-
-	// TODO Delete method
-	@GET
-	@Path("/getActiveChangeImpactAnalysisRules")
-	public Response getActiveChangeImpactAnalysisRules(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<String> activeRules = new ArrayList<String>();
-		for (ChangePropagationRule rule : ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)
-				.getPropagationRules()) {
-			if (rule.isActive()) {
-				activeRules.add(rule.getType().getDescription());
-			}
-		}
-		return Response.ok(activeRules).build();
 	}
 }

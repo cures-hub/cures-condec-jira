@@ -71,8 +71,8 @@ Select the default ruleset and weights for individual rules.
     	</script>
         <tr>
 		    <td>
-                $propagationRule.getType().getDescription()
-        	<a data-aui-trigger aria-controls='$propagationRule.getType().name()-help'>     
+                $propagationRule.getDescription()
+        	<a data-aui-trigger aria-controls='$propagationRule.getType().name()-help'>
         		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
         	</a>
         	<aui-inline-dialog id='$propagationRule.getType().name()-help' responds-to='hover'>
@@ -87,7 +87,7 @@ Select the default ruleset and weights for individual rules.
                 ></aui-toggle>
             </td>
             <td>
-                #if ($propagationRule.getType().getDescription().contains("Boost"))
+                #if ($propagationRule.getDescription().contains("Boost"))
                     <input class="text short-field"
                         type="number"
                         data-aui-validation-field
@@ -154,7 +154,7 @@ Select the default ruleset and weights for individual rules.
 			"linkImpact": linkImpact,
             "propagationRules": changePropagationRuleset
 		}
-		conDecAPI.setChangeImpactAnalysisConfiguration("$projectKey", ciaConfig);
+		conDecChangeImpactAnalysisAPI.setChangeImpactAnalysisConfiguration("$projectKey", ciaConfig);
     });
 </script>
 

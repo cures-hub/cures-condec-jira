@@ -35,4 +35,14 @@ public class TestChangePropagationRule extends TestSetUp {
         rule.setActive(true);
 		assertTrue(rule.isActive());
 	}
+
+	@Test
+	public void testGetDescription() {
+		assertEquals("Stop at elements with the same type as the selected element", rule.getDescription());
+	}
+
+	@Test
+	public void testGetDefaultRules() {
+        assertEquals(9, ChangePropagationRule.getDefaultRules().size());
+	}
 }

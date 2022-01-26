@@ -629,37 +629,6 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	// TODO Please move to own api file 
-	ConDecAPI.prototype.setChangeImpactAnalysisConfiguration = function(projectKey, ciaConfig) {
-		generalApi.postJSON(this.restPrefix + "/change-impact-analysis/setChangeImpactAnalysisConfiguration?projectKey="
-			+ projectKey, ciaConfig, function(error, response) {
-				if (error === null) {
-					showFlag("success", "The change impact analysis configuration is updated.");
-				}
-			});
-	};
-
-	/*
-	 * external references: condec.filtering
-	 */
-	// TODO Please move to own api file 
-	ConDecAPI.prototype.getChangeImpactAnalysisConfiguration = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/change-impact-analysis/getChangeImpactAnalysisConfiguration?projectKey="
-			+ projectKey, callback);
-	};
-
-	/*
-	 * external references: condec.filtering
-	 */
-	// TODO Delete function
-	ConDecAPI.prototype.getActiveChangeImpactAnalysisRules = function(projectKey, callback) {
-		generalApi.getJSON(this.restPrefix + "/change-impact-analysis/getActiveChangeImpactAnalysisRules?projectKey="
-			+ projectKey, callback);
-	};
-
-	/*
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
