@@ -15,7 +15,7 @@ public class TestChangePropagationRule extends TestSetUp {
     @Before
     public void setUp() {
 		init();
-		String propagationRuleName = "STOP_AT_SAME_ELEMENT_TYPE";
+		String propagationRuleName = "Stop at elements with the same type as the selected element";
         rule = new ChangePropagationRule(propagationRuleName);
 	}
 
