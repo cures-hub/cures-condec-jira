@@ -50,6 +50,7 @@ public class ChangeImpactAnalysisRest {
 		return Response.ok(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
 	}
 
+	// TODO Delete method
 	@GET
 	@Path("/getActiveChangeImpactAnalysisRules")
 	public Response getActiveChangeImpactAnalysisRules(@QueryParam("projectKey") String projectKey) {

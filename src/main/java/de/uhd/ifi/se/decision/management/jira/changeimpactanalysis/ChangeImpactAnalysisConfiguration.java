@@ -73,11 +73,12 @@ public class ChangeImpactAnalysisConfiguration {
 		this.context = context;
 	}
 
+	@XmlElement
 	public Set<ChangePropagationRule> getPropagationRules() {
 		return propagationRules;
 	}
 
-	@XmlElement(name = "propagationRules")
+	// TODO Delete Methode
 	public List<String> getPropagationRulesAsStrings() {
 		return propagationRules.stream().map(rule -> rule.getType().getDescription()).collect(Collectors.toList());
 	}

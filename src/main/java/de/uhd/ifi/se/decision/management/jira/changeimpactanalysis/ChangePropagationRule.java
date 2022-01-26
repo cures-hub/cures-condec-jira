@@ -39,12 +39,11 @@ public class ChangePropagationRule {
 	}
 
 	@JsonCreator
-	public ChangePropagationRule(@JsonProperty("name") String typeName,
-		@JsonProperty("isActive") Boolean isActive,
-		@JsonProperty("weightValue") float weightValue) {
-			this.type = ChangePropagationRuleType.valueOf(typeName);
-			this.weightValue = weightValue;
-			this.isActive = isActive;
+	public ChangePropagationRule(@JsonProperty("name") String typeName, @JsonProperty("isActive") Boolean isActive,
+			@JsonProperty("weightValue") float weightValue) {
+		this.type = ChangePropagationRuleType.valueOf(typeName);
+		this.weightValue = weightValue;
+		this.isActive = isActive;
 	}
 
 	public ChangePropagationRule(ChangePropagationRuleType type) {
@@ -93,6 +92,14 @@ public class ChangePropagationRule {
 	@XmlElement
 	public ChangePropagationRuleType getType() {
 		return type;
+	}
+
+	/**
+	 * @return description of the change propagation rule.
+	 */
+	@XmlElement
+	public String getDescription() {
+		return type.getDescription();
 	}
 
 	public static Set<ChangePropagationRule> getDefaultRules() {
