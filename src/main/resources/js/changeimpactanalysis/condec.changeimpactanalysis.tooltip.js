@@ -1,3 +1,11 @@
+/**
+ * This module implements the tooltip that appears when hovering over
+ * an element inside a JSTreeViewer.
+ *
+ * Requires: Nothing
+ *
+ * Is required by: conDecTreeViewer
+ */
 (function(global) {
 
     var ConDecCIATooltip = function() {

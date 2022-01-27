@@ -1,16 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 
@@ -36,8 +33,18 @@ public class ChangeImpactAnalysisConfiguration {
 			linkImpact.put(entry, 1.0f);
 		});
 		context = 0;
-		propagationRules = new LinkedList<>();
-		propagationRules.addAll(List.of(ChangePropagationRule.values()));
+		propagationRules = ChangePropagationRule.getDefaultRules();
+	}
+
+	public ChangeImpactAnalysisConfiguration(float decayValue, float threshold, long context, List<ChangePropagationRule> propagationRules) {
+		this.decayValue = decayValue;
+		this.threshold = threshold;
+		this.linkImpact = new HashMap<>();
+		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
+			linkImpact.put(entry, 1.0f);
+		});
+		this.context = context;
+		this.propagationRules = propagationRules;
 	}
 
 	@XmlElement
@@ -75,23 +82,13 @@ public class ChangeImpactAnalysisConfiguration {
 		this.context = context;
 	}
 
+	@XmlElement
 	public List<ChangePropagationRule> getPropagationRules() {
 		return propagationRules;
 	}
 
-	@XmlElement(name = "propagationRules")
-	public List<String> getPropagationRulesAsStrings() {
-		return propagationRules.stream().map(ChangePropagationRule::getDescription).collect(Collectors.toList());
-	}
-
 	@JsonProperty
-	public void setPropagationRules(List<String> propagationRules) {
-		this.propagationRules = new LinkedList<>();
-		if (propagationRules == null) {
-			return;
-		}
-		for (String stringRule : propagationRules) {
-			this.propagationRules.add(ChangePropagationRule.getPropagationRule(stringRule));
-		}
+	public void setPropagationRules(List<ChangePropagationRule> propagationRules) {
+		this.propagationRules = propagationRules;
 	}
 }

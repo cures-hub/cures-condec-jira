@@ -23,7 +23,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
@@ -279,32 +278,6 @@ public class ConfigRest {
 	public Response getAllLinkTypes(@QueryParam("projectKey") String projectKey) {
 		Set<String> linkTypes = DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes();
 		return Response.ok(linkTypes).build();
-	}
-
-	@Path("/setChangeImpactAnalysisConfiguration")
-	@POST
-	public Response setChangeImpactAnalysisConfiguration(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, ChangeImpactAnalysisConfiguration ciaConfig) {
-		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
-		if (response.getStatus() != Status.OK.getStatusCode()) {
-			return response;
-		}
-		if (ciaConfig == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The CIA config must not be null!")).build();
-		}
-		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaConfig);
-		return Response.ok().build();
-	}
-
-	@GET
-	@Path("/getChangeImpactAnalysisConfiguration")
-	public Response getChangeImpactAnalysisConfiguration(@QueryParam("projectKey") String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		return Response.ok(ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey)).build();
 	}
 
 	/**

@@ -23,14 +23,7 @@ public class KnowledgeElementWithImpact extends KnowledgeElement {
     public KnowledgeElementWithImpact(KnowledgeElement element, double impactValue,
             double parentImpact, double linkTypeWeight, double propagationRuleValue,
             Map<String, Double> propagationRule, String impactExplanation) {
-        this.project = element.getProject();
-		this.id = element.getId();
-        this.setDescription(element.getDescription());
-		this.setSummary(element.getSummary());
-		this.documentationLocation = element.getDocumentationLocation();
-		this.type = element.getType();
-        this.setKey(element.getKey());
-
+        this(element);
         this.impactValue = impactValue;
         this.parentImpact = parentImpact;
         this.linkTypeWeight = linkTypeWeight;

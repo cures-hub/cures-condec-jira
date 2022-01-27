@@ -164,6 +164,8 @@
 			location="/js/grouping/condec.decision.grouping.dialogs.js" />
 		<resource type="download" name="condec.changeimpactanalysis.tooltip.js"
 			location="/js/changeimpactanalysis/condec.changeimpactanalysis.tooltip.js" />
+		<resource type="download" name="condec.changeimpactanalysis.api.js"
+			location="/js/changeimpactanalysis/condec.changeimpactanalysis.api.js" />
 
 	</web-resource>
 

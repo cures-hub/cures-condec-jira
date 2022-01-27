@@ -1,80 +1,121 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenHighAmountOfDistinctAuthors;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTimelyCoupled;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenLowAverageAge;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenMoreOutboundLinks;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTextualSimilar;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualComponent;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualDecisionGroup;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtSameElementType;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 
 /**
- * Gathers propagation rules for rule-based change impact analysis.
+ * Represents one propagation rule of a specific
+ * {@link ChangePropagationRuleType} for rule-based change impact analysis.
  * 
- * The implementing classes of {@link ChangePropagationFunction} encode the
- * rules.
+ * @see ChangePropagationRuleType
+ * 
+ * @issue How can we model different change propagation rules for CIA?
+ * @decision We create both a class ChangePropagationRule and an enum
+ *           ChangePropagationRuleType!
+ * @pro Enables to deserialize JSON objects passed via the REST API. Seems to be
+ *      the only way to enable the rationale manager to configure the change
+ *      propagation rules in the project setting view.
+ * @con More code than only having the enum.
+ * @alternative We used to have only the enum.
+ * @con It is not possible (at least we do not how) to deserialize JSON objects
+ *      passed via the REST API into enums.
  */
-public enum ChangePropagationRule {
+public class ChangePropagationRule {
 
-	STOP_AT_SAME_ELEMENT_TYPE("Stop at elements with the same type as the selected element",
-			new StopAtSameElementType()),
-	IGNORE_INCOMING_LINKS("Outward links only", new IgnoreIncomingLinks()),
-	BOOST_WHEN_TEXTUAL_SIMILAR("Boost when element is textual similar to the selected element",
-			new BoostWhenTextualSimilar()),
-	BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS("Boost when element has a large number of distinct update authors",
-			new BoostWhenHighAmountOfDistinctAuthors()),
-	BOOST_WHEN_EQUAL_COMPONENT("Boost when element is assigned the same component",
-			new BoostWhenEqualComponent()),
-	BOOST_WHEN_EQUAL_DECISION_GROUP("Boost when element is assigned the same decision group",
-			new BoostWhenEqualDecisionGroup()),
-	BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND("Boost when element has more outbound than inbound links",
-			new BoostWhenMoreOutboundLinks()),
-	BOOST_WHEN_LOW_AVERAGE_AGE("Boost when element has a low average age",
-			new BoostWhenLowAverageAge()),
-	BOOST_WHEN_TIMELY_COUPLED("Boost when element is timely coupled to the selected element",
-			new BoostWhenTimelyCoupled());
+	private ChangePropagationRuleType type;
+	private boolean isActive;
+	private float weightValue;
 
-	private String description;
-	private ChangePropagationFunction function;
+	@JsonCreator
+	public ChangePropagationRule(String ruleDescription) {
+		this(ChangePropagationRuleType.fromString(ruleDescription));
+	}
 
-	private ChangePropagationRule(String description, ChangePropagationFunction predicate) {
-		this.description = description;
-		this.function = predicate;
+	@JsonCreator
+	public ChangePropagationRule(@JsonProperty("name") String ruleTypeName, @JsonProperty("isActive") Boolean isActive,
+			@JsonProperty("weightValue") float weightValue) {
+		this.type = ChangePropagationRuleType.valueOf(ruleTypeName);
+		this.weightValue = weightValue;
+		this.isActive = isActive;
+	}
+
+	public ChangePropagationRule(ChangePropagationRuleType ruleType) {
+		this.type = ruleType;
+		this.weightValue = 1.0f;
+		this.isActive = false;
+	}
+
+	/**
+	 * @return the activation status of the change propagation rule.
+	 */
+	@XmlElement
+	public boolean isActive() {
+		return isActive;
+	}
+
+	/**
+	 * @param isActive
+	 *            activation status of the change propagation rule.
+	 */
+	@JsonProperty("isActive")
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	/**
+	 * @return the weight value of the change propagation rule.
+	 */
+	@XmlElement
+	public float getWeightValue() {
+		return weightValue;
+	}
+
+	/**
+	 * @param weightValue
+	 *            of the change propagation rule.
+	 */
+	@JsonProperty
+	public void setWeightValue(float weightValue) {
+		this.weightValue = weightValue;
+	}
+
+	/**
+	 * @return {@link ChangePropagationRuleType} of this rule.
+	 */
+	@XmlElement
+	public ChangePropagationRuleType getType() {
+		return type;
 	}
 
 	/**
 	 * @return description of the change propagation rule.
 	 */
+	@XmlElement
 	public String getDescription() {
-		return description;
+		return type.getDescription();
 	}
 
-	/**
-	 * @return method with a double return value between 0 and 1 that encodes the
-	 *         propagation rule.
-	 * @see ChangePropagationFunction#isChangePropagated
-	 */
-	public ChangePropagationFunction getFunction() {
-		return function;
+	public static List<ChangePropagationRule> getDefaultRules() {
+		List<ChangePropagationRule> defaultRules = new LinkedList<>();
+		for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {
+			defaultRules.add(new ChangePropagationRule(type));
+		}
+		return defaultRules;
 	}
 
-	/**
-	 * @param propagationRuleName
-	 *            title of the {@link ChangePropagationRule}.
-	 * @return {@link ChangePropagationRule} object or null if unknown.
-	 */
-	public static ChangePropagationRule getPropagationRule(String propagationRuleName) {
-		if (propagationRuleName == null || propagationRuleName.isEmpty()) {
-			return null;
-		}
-		for (ChangePropagationRule rule : ChangePropagationRule.values()) {
-			if (rule.getDescription().matches(propagationRuleName)) {
-				return rule;
-			}
-		}
-		return null;
+	public static float getWeightForRule(List<ChangePropagationRule> allRules, ChangePropagationRuleType type) {
+		float ruleWeight = allRules.stream().filter(rule -> rule.getType() == type).findAny().get().getWeightValue();
+		return ruleWeight;
+	}
+
+	public static float getWeightForRule(FilterSettings filterSettings, ChangePropagationRuleType type) {
+		return getWeightForRule(filterSettings.getChangeImpactAnalysisConfig().getPropagationRules(), type);
 	}
 }

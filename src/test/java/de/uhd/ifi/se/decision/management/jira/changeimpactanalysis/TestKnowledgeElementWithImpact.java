@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
@@ -14,10 +15,18 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
 public class TestKnowledgeElementWithImpact extends TestSetUp {
     
+    private KnowledgeElement element;
+    private KnowledgeElementWithImpact elementWithImpact;
+
+	@Before
+	public void setUp() {
+		init();
+        element = new KnowledgeElement();
+        elementWithImpact = new KnowledgeElementWithImpact(element);
+	}
+    
     @Test
 	public void testEqualsUsingSameKnowledgeElement() {
-        KnowledgeElement element = new KnowledgeElement();
-        KnowledgeElementWithImpact elementWithImpact = new KnowledgeElementWithImpact(element);
         Map<String, Double> ruleMap = new HashMap<>();
 
         KnowledgeElementWithImpact elementWithImpactChild = new KnowledgeElementWithImpact(
@@ -29,9 +38,6 @@ public class TestKnowledgeElementWithImpact extends TestSetUp {
 
     @Test
     public void testEqualsUsingSameObjects() {
-        KnowledgeElement element = new KnowledgeElement();
-        KnowledgeElementWithImpact elementWithImpact = new KnowledgeElementWithImpact(element);
-
         assertTrue(elementWithImpact.equals(elementWithImpact));
     }
 
@@ -39,17 +45,11 @@ public class TestKnowledgeElementWithImpact extends TestSetUp {
     @Test
     public void testEqualsUsingDifferentObjects() {
         String string = "This is a test string!";
-        KnowledgeElement element = new KnowledgeElement();
-        KnowledgeElementWithImpact elementWithImpact = new KnowledgeElementWithImpact(element);
-
         assertFalse(elementWithImpact.equals(string));
     }
 
     @Test
     public void testSettersAndGetters() {
-        KnowledgeElement element = new KnowledgeElement();
-        KnowledgeElementWithImpact elementWithImpact = new KnowledgeElementWithImpact(element);
-
         elementWithImpact.setImpactValue(0.72);
         assertEquals(0.72, elementWithImpact.getImpactValue(), 0.05);
 

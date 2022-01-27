@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.configrest;
+package de.uhd.ifi.se.decision.management.jira.rest.changeimpactanalysisrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,39 +8,39 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
+import de.uhd.ifi.se.decision.management.jira.rest.ChangeImpactAnalysisRest;
 
 public class TestGetChangeImpactAnalysisConfiguration extends TestSetUp {
 
-	protected ConfigRest configRest;
+	protected ChangeImpactAnalysisRest ciaRest;
 
 	@Before
 	public void setUp() {
 		init();
-		configRest = new ConfigRest();
+		ciaRest = new ChangeImpactAnalysisRest();
 	}
 
 	@Test
 	public void testProjectKeyNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.getChangeImpactAnalysisConfiguration(null).getStatus());
+				ciaRest.getChangeImpactAnalysisConfiguration(null).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmpty() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.getChangeImpactAnalysisConfiguration("").getStatus());
+				ciaRest.getChangeImpactAnalysisConfiguration("").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyInvalid() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				configRest.getChangeImpactAnalysisConfiguration("InvalidKey").getStatus());
+				ciaRest.getChangeImpactAnalysisConfiguration("InvalidKey").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyValid() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				configRest.getChangeImpactAnalysisConfiguration("TEST").getStatus());
+				ciaRest.getChangeImpactAnalysisConfiguration("TEST").getStatus());
 	}
 }
