@@ -24,6 +24,7 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
 	public void setUp() {
 		init();
 		filterSettings = new FilterSettings();
+		currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
 	}
 
 	@Test
@@ -39,8 +40,16 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
 	}
 
 	@Test
+	public void testPropagationNoAuthor() {
+		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<>();
+		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
+
+		assertEquals(1.0, ChangePropagationRuleType.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
+				.isChangePropagated(filterSettings, currentElement, null), 0.00);
+	}
+
+	@Test
 	public void testPropagationOneAuthor() {
-		currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<>();
 		updateDateAndAuthor.put(new Date(), "FooBar");
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
@@ -51,8 +60,7 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
 
 	@Test
 	public void testPropagationFiveDifferentAuthors() {
-		currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
-		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
+		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<>();
 		for (int i = 0; i < 5; i++) {
 			updateDateAndAuthor.put(new Date(i), "FooBar" + i);
 		}

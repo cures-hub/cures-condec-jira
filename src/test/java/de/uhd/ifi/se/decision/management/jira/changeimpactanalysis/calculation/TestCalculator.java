@@ -4,9 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class TestCalculator extends TestSetUp {
 	public void testCalculateChangeImpactContext() {
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
 		config.setContext(1);
-		Set<ChangePropagationRule> propagationRules = new HashSet<ChangePropagationRule>();
+		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		propagationRules.add(rule);
 		config.setPropagationRules(propagationRules);

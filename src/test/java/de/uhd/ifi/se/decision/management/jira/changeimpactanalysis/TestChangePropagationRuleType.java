@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -21,6 +22,12 @@ public class TestChangePropagationRuleType extends TestSetUp {
 		ChangePropagationRule propagationRule = new ChangePropagationRule("Stop at elements with the same type as the selected element");
 		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE,
 			propagationRule.getType());
+	}
+
+	@Test
+	public void testConstructorFromStringNoMatch() {
+		ChangePropagationRule propagationRule = new ChangePropagationRule("FooBar");
+		assertNull(propagationRule.getType());
 	}
 
 	@Test

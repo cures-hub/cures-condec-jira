@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -102,15 +102,15 @@ public class ChangePropagationRule {
 		return type.getDescription();
 	}
 
-	public static Set<ChangePropagationRule> getDefaultRules() {
-		Set<ChangePropagationRule> defaultRules = new LinkedHashSet<>();
+	public static List<ChangePropagationRule> getDefaultRules() {
+		List<ChangePropagationRule> defaultRules = new LinkedList<>();
 		for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {
 			defaultRules.add(new ChangePropagationRule(type));
 		}
 		return defaultRules;
 	}
 
-	public static float getWeightForRule(Set<ChangePropagationRule> allRules, ChangePropagationRuleType type) {
+	public static float getWeightForRule(List<ChangePropagationRule> allRules, ChangePropagationRuleType type) {
 		float ruleWeight = allRules.stream().filter(rule -> rule.getType() == type).findAny().get().getWeightValue();
 		return ruleWeight;
 	}

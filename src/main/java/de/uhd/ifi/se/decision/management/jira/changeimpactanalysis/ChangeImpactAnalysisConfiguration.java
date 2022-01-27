@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -22,7 +22,7 @@ public class ChangeImpactAnalysisConfiguration {
 	private float threshold;
 	private Map<String, Float> linkImpact;
 	private long context;
-	private Set<ChangePropagationRule> propagationRules;
+	private List<ChangePropagationRule> propagationRules;
 
 	@JsonCreator
 	public ChangeImpactAnalysisConfiguration() {
@@ -72,12 +72,12 @@ public class ChangeImpactAnalysisConfiguration {
 	}
 
 	@XmlElement
-	public Set<ChangePropagationRule> getPropagationRules() {
+	public List<ChangePropagationRule> getPropagationRules() {
 		return propagationRules;
 	}
 
 	@JsonProperty
-	public void setPropagationRules(Set<ChangePropagationRule> propagationRules) {
+	public void setPropagationRules(List<ChangePropagationRule> propagationRules) {
 		this.propagationRules = propagationRules;
 	}
 }
