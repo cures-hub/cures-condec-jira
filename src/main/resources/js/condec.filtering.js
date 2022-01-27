@@ -266,6 +266,12 @@
 		if (propagationRules) {
 			filterSettings["changeImpactAnalysisConfig"]["propagationRules"] = propagationRules;
 		}
+		
+		// Read whether link recommendations should be shown
+		var isLinkRecommendationShownInput = document.getElementById("is-link-recommendation-input-" + viewIdentifier);
+		if (isLinkRecommendationShownInput !== null) {
+			filterSettings["areLinksRecommended"] = isLinkRecommendationShownInput.checked;
+		}
 
 		// Read specific filter settings for knowledge dashboard
 		var projectKeyDropdown = document.getElementById("project-dropdown-" + viewIdentifier);

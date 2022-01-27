@@ -36,6 +36,8 @@
 	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.label.link.types')
 </a>
 
+#parse("templates/filter/isLinkRecommendation.vm")  
+
 <input type="button" id="cia-button-$viewIdentifier" class="aui-button aui-button-primary" 
 	value="$i18n.getText('condec.cia.button')"/>
 

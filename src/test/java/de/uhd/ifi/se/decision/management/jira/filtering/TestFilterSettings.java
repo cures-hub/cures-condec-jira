@@ -330,6 +330,14 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testLinkRecommendation() {
+		// default value
+		assertFalse(filterSettings.areLinksRecommended());
+		filterSettings.recommendLinks(true);
+		assertTrue(filterSettings.areLinksRecommended());
+	}
+
+	@Test
 	public void testQualityProblemHighlighting() {
 		// default value
 		assertTrue(filterSettings.areQualityProblemHighlighted());

@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.KnowledgeElementCheck;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
@@ -73,6 +74,7 @@ public class FilterSettings implements Cloneable {
 	private Set<String> knowledgeTypesToBeCoveredWithRationale;
 	private boolean areChangeImpactsHighlighted;
 	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
+	private boolean areLinksRecommended;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
@@ -686,6 +688,24 @@ public class FilterSettings implements Cloneable {
 		this.changeImpactAnalysisConfig.setPropagationRules(changeImpactAnalysisConfig.getPropagationRulesAsStrings());
 	}
 
+	/**
+	 * @return true if {@link LinkRecommendation}s should be integrated into the
+	 *         filtered {@link KnowledgeGraph}.
+	 */
+	public boolean areLinksRecommended() {
+		return areLinksRecommended;
+	}
+
+	/**
+	 * @param areLinksRecommended
+	 *            true if {@link LinkRecommendation}s should be integrated into the
+	 *            filtered {@link KnowledgeGraph}.
+	 */
+	@JsonProperty("areLinksRecommended")
+	public void recommendLinks(boolean areLinksRecommended) {
+		this.areLinksRecommended = areLinksRecommended;
+	}
+
 	@Override
 	public String toString() {
 		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
@@ -714,5 +734,4 @@ public class FilterSettings implements Cloneable {
 		}
 		return clonedFilterSettings;
 	}
-
 }
