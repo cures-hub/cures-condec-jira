@@ -72,13 +72,4 @@ public class TestBoostWhenEqualDecisionGroup extends TestSetUp {
 		assertEquals(1.0, ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP.getFunction()
 				.isChangePropagated(filterSettings, currentElement, null), 0.005);
 	}
-
-	@Test
-	public void testPropagationNonEqualDecisionGroups() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup", rootElement);
-		DecisionGroupPersistenceManager.insertGroup("SecondTestGroup", currentElement);
-
-		assertEquals(0.75, ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP.getFunction()
-				.isChangePropagated(filterSettings, currentElement, null), 0.005);
-	}
 }

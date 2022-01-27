@@ -17,7 +17,7 @@ public class BoostWhenHighAmountOfDistinctAuthors implements ChangePropagationFu
 	/**
 	 * @issue Should the amount of distinct authors for the purpose of CIA be
 	 *        filtered?
-	 * @alternative Don't filter the authors, use all authors who applied any kind
+	 * @decision Don't filter the authors, use all authors who applied any kind
 	 *              of update onto an artifact.
 	 * @pro Low implementation effort.
 	 * @con Authors who only applied minor updates and thereby shouldn't be
