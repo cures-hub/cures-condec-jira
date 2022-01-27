@@ -1,3 +1,12 @@
+/**
+ * This module implements the communication with the ConDec Java Change Impact Analysis API.
+ *
+ * Requires: conDecAPI
+ *
+ * Is required by: conDecFiltering
+ * 
+ * Is referenced in HTML by changeImpactAnalysisSettings.vm
+ */
 (function(global) {
 
     var ConDecChangeImpactAnalysisAPI = function() {
@@ -5,7 +14,7 @@
 	};
 
     /*
-	 * external references: settingsForSingleProject.vm
+	 * external references: changeImpactAnalysisSettings.vm
 	 */
 	ConDecChangeImpactAnalysisAPI.prototype.setChangeImpactAnalysisConfiguration = function(projectKey, ciaConfig) {
 		generalApi.postJSON(this.restPrefix + "/setChangeImpactAnalysisConfiguration?projectKey="

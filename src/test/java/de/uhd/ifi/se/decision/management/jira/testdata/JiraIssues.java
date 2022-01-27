@@ -62,9 +62,10 @@ public class JiraIssues {
 		jiraIssue = createJiraIssue(14, jiraIssueTypes.get(0), project, "WI: Yet another work item", user);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(30, jiraIssueTypes.get(0), project, "WI: Do an interesting task", user);
-		jiraIssue = addTestComponentToIssue(jiraIssue);
+		jiraIssue = addTestComponentToIssue(jiraIssue, (long) 1);
 		jiraIssues.add(jiraIssue);
 		jiraIssue = createJiraIssue(31, jiraIssueTypes.get(0), project, "WI: Deal with the drunken sailor", user);
+		jiraIssue = addTestComponentToIssue(jiraIssue, (long) 2);
 		jiraIssues.add(jiraIssue);
 
 		// Issues (= decision problems)
@@ -233,8 +234,8 @@ public class JiraIssues {
 		return sentences.get(0).isValidated();
 	}
 
-	public static MutableIssue addTestComponentToIssue(MutableIssue issue) {
-		MutableProjectComponent component = new MutableProjectComponent((long) 0, "Feature", "Do something", "FEATURE", (long) 0, issue.getProjectId(), false);
+	public static MutableIssue addTestComponentToIssue(MutableIssue issue, long id) {
+		MutableProjectComponent component = new MutableProjectComponent(id, "Feature", "Do something", "FEATURE", (long) 0, issue.getProjectId(), false);
 		Collection<ProjectComponent> components = new ArrayList<ProjectComponent>();
 		components.add(component);
 		issue.setComponent(components);

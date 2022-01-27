@@ -28,8 +28,8 @@ public class BoostWhenEqualComponent implements ChangePropagationFunction {
 		if (filterSettings.getSelectedElement().getJiraIssue() != null && nextElement.getJiraIssue() != null
 				&& filterSettings.getSelectedElement().getJiraIssue().getComponents() != null
 				&& !filterSettings.getSelectedElement().getJiraIssue().getComponents().isEmpty()) {
-			if (nextElement.getJiraIssue().getComponents() != null
-					&& nextElement.getJiraIssue().getComponents().isEmpty()) {
+			if (nextElement.getJiraIssue().getComponents() == null
+					|| nextElement.getJiraIssue().getComponents().isEmpty()) {
 				return weightFactor;
 			}
 

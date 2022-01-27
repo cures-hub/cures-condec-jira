@@ -22,19 +22,20 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 
 	protected static KnowledgeElement element;
 	protected KnowledgeGraph graph;
+	private FilterSettings settings;
 
 	@Before
 	public void setUp() {
 		init();
 		graph = KnowledgeGraph.getInstance("TEST");
 		element = JiraIssues.addElementToDataBase();
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-1");
 	}
 
 	@Test
 	@NonTransactional
 	public void testCalculateGraphImpact() {
-		FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
 		VisGraph graph = ChangeImpactAnalysisService.calculateGraphImpact(settings);
 		assertTrue(graph.getNodes().size() > 0);
 	}
@@ -42,8 +43,6 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCalculateMatrixImpact() {
-		FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
 		Matrix matrix = ChangeImpactAnalysisService.calculateMatrixImpact(settings);
 		assertTrue(matrix.getHeaderElementsWithHighlighting().size() > 0);
 	}
@@ -51,17 +50,12 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testCalculateTreeImpact() {
-		FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
 		TreeViewer tree = ChangeImpactAnalysisService.calculateTreeImpact(settings);
 		assertTrue(tree.getNodes().size() > 0);
 	}
 
 	@Test
 	public void testCalculateImpactedKnowledgeElements() {
-		FilterSettings settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
-
 		List<KnowledgeElementWithImpact> impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(settings);
 		assertTrue(impactedElements.size() > 0);
 		assertEquals(settings.getSelectedElement(), impactedElements.get(0));
