@@ -24,6 +24,9 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.KnowledgeElementCheck;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
 /**
  * Filters the {@link KnowledgeGraph}. The filter criteria are specified in the
@@ -45,7 +48,7 @@ public class FilteringManager {
 		this(new FilterSettings(projectKey, query, user));
 	}
 
-    /**
+	/**
 	 * @return all knowledge elements that match the {@link FilterSettings}.
 	 */
 	public Set<KnowledgeElement> getElementsMatchingFilterSettings() {
@@ -73,8 +76,7 @@ public class FilteringManager {
 		}
 
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = filteredGraph.vertexSet().stream()
-				.filter(element -> !isElementMatchingFilterSettings(element))
-				.collect(Collectors.toSet());
+				.filter(element -> !isElementMatchingFilterSettings(element)).collect(Collectors.toSet());
 		if (filterSettings.getSelectedElement() != null) {
 			// the selected element is never filtered out
 			elementsNotMatchingFilterSettings.remove(filterSettings.getSelectedElement());
@@ -88,6 +90,13 @@ public class FilteringManager {
 				filteredGraph = filteredGraph.getMutableSubgraphFor(filterSettings.getSelectedElement(),
 						filterSettings.getLinkDistance());
 			}
+			if (filterSettings.areLinksRecommended()) {
+				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
+				List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
+				for (Recommendation recommendation : linkRecommendations) {
+					filteredGraph.addEdge((LinkRecommendation) recommendation);
+				}
+			}
 		}
 
 		removeLinksWithTypesNotInFilterSettings(filteredGraph);
@@ -96,13 +105,13 @@ public class FilteringManager {
 
 	/**
 	 * @param impactedElements
-	 *         List of {@link KnowledgeElementWithImpact}.
+	 *            List of {@link KnowledgeElementWithImpact}.
 	 * @return new {@link KnowledgeGraph} that matches the {@link FilterSettings}.
-	 * 		   Removes all vertices that are not included in the supplied list of
-	 *         {@link KnowledgeElementWithImpact}.
-	 *         If no transitive links are created, a subgraph of the original graph
-	 *         is returned. If transitive links are created, the returned graph
-	 *         contains new {@link Link}s (and is thus no subgraph).
+	 *         Removes all vertices that are not included in the supplied list of
+	 *         {@link KnowledgeElementWithImpact}. If no transitive links are
+	 *         created, a subgraph of the original graph is returned. If transitive
+	 *         links are created, the returned graph contains new {@link Link}s (and
+	 *         is thus no subgraph).
 	 */
 	public KnowledgeGraph getFilteredGraph(List<KnowledgeElementWithImpact> impactedElements) {
 		KnowledgeGraph filteredGraph = getFilteredGraph();
