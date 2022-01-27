@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.filtering.filteringmanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,9 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
 public class TestGetFilteredGraph extends TestSetUp {
 
@@ -121,7 +125,18 @@ public class TestGetFilteredGraph extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
-		
+
 		assertTrue(filteringManager.getFilteredGraph(impactedElements).vertexSet().size() > 0);
+	}
+
+	@Test
+	public void testLinkRecommendationEnabled() {
+		filterSettings.recommendLinks(true);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();
+		List<Recommendation> recommendations = new ContextInformation(filterSettings.getSelectedElement())
+				.getLinkRecommendations();
+		assertFalse(recommendations.isEmpty());
+		assertTrue(subgraph.containsEdge((LinkRecommendation) recommendations.get(0)));
 	}
 }
