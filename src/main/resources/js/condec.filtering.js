@@ -43,12 +43,22 @@
 		// quality highlighting	
 		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.projectKey);
 
-		// change impact highlighting	
-		conDecAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
+		// change impact highlighting
+		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
 			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
 			$("#threshold-input-" + viewIdentifier)[0].value = config["threshold"];
+			console.log(config["propagationRules"]);
+			var propagationRuleNames = [];
+			var selectedRules = [];
+			for (var propagationRule of config["propagationRules"]) {
+				var description = propagationRule.description;
+				propagationRuleNames.push(description);
+				if (propagationRule.isActive) {
+					selectedRules.push(description);
+				}
+			}
 			conDecFiltering.initDropdown("propagation-rule-dropdown-" + viewIdentifier,
-				config["propagationRules"], []);
+				propagationRuleNames, selectedRules);
 		});
 
 		window.onbeforeunload = null;

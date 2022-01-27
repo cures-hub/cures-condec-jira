@@ -23,7 +23,7 @@ public interface ChangePropagationFunction {
 	/**
 	 * @param filterSettings
 	 *            including the selected element that is changed (see
-	 *            {@link FilterSettings#getSelectedElement()}.
+	 *            {@link FilterSettings#getSelectedElement()}).
 	 * @param nextElement
 	 *            next {@link KnowledgeElement} in the {@link KnowledgeGraph}
 	 *            that is traversed and that is affected by the change.

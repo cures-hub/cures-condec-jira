@@ -1,12 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -32,19 +33,25 @@ public class TestBoostWhenTextualSimilar extends TestSetUp {
 	@Test
 	public void testDescription() {
 		assertEquals("Boost when element is textual similar to the selected element",
-				ChangePropagationRule.BOOST_WHEN_TEXTUAL_SIMILAR.getDescription());
+				ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR
+			.getExplanation().contains("is textual similar to the selected element"));
 	}
 
 	@Test
 	public void testPropagationFalseSameElementType() {
-		assertEquals(0.47, ChangePropagationRule.BOOST_WHEN_TEXTUAL_SIMILAR.getFunction()
+		assertEquals(0.47, ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR.getFunction()
 				.isChangePropagated(filterSettings, currentElement, null), 0.2);
 	}
 
 	@Test
 	public void testPropagationTrueDifferentElementType() {
 		filterSettings.setSelectedElementObject(currentElement);
-		assertEquals(1.0, ChangePropagationRule.BOOST_WHEN_TEXTUAL_SIMILAR.getFunction()
+		assertEquals(1.0, ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR.getFunction()
 				.isChangePropagated(filterSettings, currentElement, null), 0.0);
 	}
 }

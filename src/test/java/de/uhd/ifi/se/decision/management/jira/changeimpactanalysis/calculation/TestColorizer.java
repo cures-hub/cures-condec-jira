@@ -35,6 +35,10 @@ public class TestColorizer extends TestSetUp {
 		impactedElements.add(element);
 
         TreeViewerNode node = new TreeViewerNode(settings.getSelectedElement(), settings);
+        TreeViewerNode childNode = new TreeViewerNode(KnowledgeElements.getTestKnowledgeElements().get(1), settings);
+        List<TreeViewerNode> children = new ArrayList<>();
+        children.add(childNode);
+        node.setChildren(children);
         node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
 
         assertEquals("background-color:#FFFFFF", node.getLiAttr().get("style"));

@@ -1,12 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -35,19 +36,25 @@ public class TestStopAtSameElementType extends TestSetUp {
 	@Test
 	public void testDescription() {
 		assertEquals("Stop at elements with the same type as the selected element",
-				ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getDescription());
+				ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE.getDescription());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertTrue(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE
+			.getExplanation().contains("is not propagated after a element with the same knowledge type was reached"));
 	}
 
 	@Test
 	public void testPropagationFalseSameElementType() {
-		assertEquals(0.0, ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
+		assertEquals(0.0, ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
 				.isChangePropagated(filterSettings, target, link), 0.0);
 	}
 
 	@Test
 	public void testPropagationTrueDifferentElementType() {
 		filterSettings.setSelectedElementObject(currentElement);
-		assertEquals(1.0, ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
+		assertEquals(1.0, ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE.getFunction()
 				.isChangePropagated(filterSettings, target, link), 0.0);
 	}
 }

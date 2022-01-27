@@ -12,12 +12,7 @@ The impact value of an element (<var>elementImpact</var>) is calculated using th
 <var>decayValue</var> is the decay per iteration step, 
 <var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the 
 parent/ancestor element and the current element, and
-<var>ruleBasedValue</var> is calculated based on rules. For example, rules are.</p>
-<ul>
-	<li>Stop at elements with the same type as the selected element (e.g. at requirements with same type)</li>
-	<li>Outward links only</li>
-	<li>Boost when element is textual similar to the selected element</li>
-</ul>
+<var>ruleBasedValue</var> is calculated based on rules.
 
 <p>The element is included in the impact graph if <b><code>elementImpact >= threshold</code></b>.</p>
 
@@ -55,6 +50,59 @@ parent/ancestor element and the current element, and
     </div>
 </div>
 
+<h3>Ruleset Parameters</h3>
+Select the default ruleset and weights for individual rules.
+
+<table class="aui aui-table-list aui-table-sortable">
+	<thead>
+		<tr>
+		<th>Rule Name</th>
+    		<th>Enabled by Default?</th>
+    		<th>Weight</th>
+    	</tr>
+    </thead>
+    <tbody>
+    <script>
+    	var changePropagationRuleNames = [];
+    </script>
+    #foreach($propagationRule in $ciaConfig.getPropagationRules())
+    	<script>
+    		changePropagationRuleNames.push("$propagationRule.getType().name()");
+    	</script>
+        <tr>
+		    <td>
+                $propagationRule.getDescription()
+        	<a data-aui-trigger aria-controls='$propagationRule.getType().name()-help'>
+        		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
+        	</a>
+        	<aui-inline-dialog id='$propagationRule.getType().name()-help' responds-to='hover'>
+        		$propagationRule.getType().getExplanation()
+        	</aui-inline-dialog>
+            </td>
+            <td>
+                <aui-toggle id="$propagationRule.getType().name()-toggle" label=""
+                #if ($propagationRule.isActive())
+                    checked
+                #end
+                ></aui-toggle>
+            </td>
+            <td>
+                #if ($propagationRule.getDescription().contains("Boost"))
+                    <input class="text short-field"
+                        type="number"
+                        data-aui-validation-field
+                        value="$propagationRule.getWeightValue()"
+                        step="0.1"
+                        min="0.0"
+                        max="2.0"
+                        id="$propagationRule.getType().name()-weight"/>
+                #end
+            </td>
+        </tr>
+    #end
+    </tbody>
+</table>
+
 <h3>Link Type Weights</h3>
 <p id="cia-link-type-settings">
 	Set the link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element.
@@ -87,12 +135,26 @@ parent/ancestor element and the current element, and
 		for (i in linkTypes) {
 			linkImpact[linkTypes[i]] = document.getElementById(linkTypes[i]).value;
 		}
+        var changePropagationRuleset = [];
+        for (var ruleName of changePropagationRuleNames) {
+        	var weight = 0;
+        	var weightInput = document.getElementById(ruleName + "-weight");
+        	if (weightInput) {
+        		weight = weightInput.value;
+        	}
+            changePropagationRuleset.push({
+            	"name": ruleName,
+                "isActive": document.getElementById(ruleName + "-toggle").checked,
+                "weightValue": weight
+            });
+        }
 		let ciaConfig = {
 			"decayValue": $("#cia-decay-value")[0].value,
 			"threshold": $("#cia-threshold")[0].value,
-			"linkImpact": linkImpact
+			"linkImpact": linkImpact,
+            "propagationRules": changePropagationRuleset
 		}
-	conDecAPI.setChangeImpactAnalysisConfiguration("$projectKey", ciaConfig);
+		conDecChangeImpactAnalysisAPI.setChangeImpactAnalysisConfiguration("$projectKey", ciaConfig);
     });
 </script>
 

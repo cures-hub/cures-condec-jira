@@ -3,33 +3,46 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 
 public class TestChangePropagationRule extends TestSetUp {
     
-    @Test
-    public void testGetPropagationRuleInputNull() {
-        String propagationRuleName = null;
-        assertTrue(ChangePropagationRule.getPropagationRule(propagationRuleName) == null);
-    }
+    private ChangePropagationRule rule;
+
+    @Before
+    public void setUp() {
+		init();
+		String propagationRuleName = "Stop at elements with the same type as the selected element";
+        rule = new ChangePropagationRule(propagationRuleName);
+	}
 
     @Test
-    public void testGetPropagationRuleInputEmpty() {
-        String propagationRuleName = "";
-        assertTrue(ChangePropagationRule.getPropagationRule(propagationRuleName) == null);
-    }
+	public void testGetType() {
+		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE, rule.getType());
+	}
 
     @Test
-    public void testGetPropagationRuleNoRuleMatch() {
-        String propagationRuleName = "FooBar";
-        assertTrue(ChangePropagationRule.getPropagationRule(propagationRuleName) == null);
-    }
+	public void testWeightValue() {
+        rule.setWeightValue(1.0f);
+		assertEquals(1.0f, rule.getWeightValue(), 0.00);
+	}
 
     @Test
-    public void testGetPropagationRule() {
-        String propagationRuleName = "Stop at elements with the same type as the selected element";
-        assertEquals(ChangePropagationRule.STOP_AT_SAME_ELEMENT_TYPE, ChangePropagationRule.getPropagationRule(propagationRuleName));
-    }
+	public void testIsActive() {
+        rule.setActive(true);
+		assertTrue(rule.isActive());
+	}
+
+	@Test
+	public void testGetDescription() {
+		assertEquals("Stop at elements with the same type as the selected element", rule.getDescription());
+	}
+
+	@Test
+	public void testGetDefaultRules() {
+        assertEquals(9, ChangePropagationRule.getDefaultRules().size());
+	}
 }
