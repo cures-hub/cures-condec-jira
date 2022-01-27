@@ -36,6 +36,17 @@ public class ChangeImpactAnalysisConfiguration {
 		propagationRules = ChangePropagationRule.getDefaultRules();
 	}
 
+	public ChangeImpactAnalysisConfiguration(float decayValue, float threshold, long context, List<ChangePropagationRule> propagationRules) {
+		this.decayValue = decayValue;
+		this.threshold = threshold;
+		this.linkImpact = new HashMap<>();
+		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
+			linkImpact.put(entry, 1.0f);
+		});
+		this.context = context;
+		this.propagationRules = propagationRules;
+	}
+
 	@XmlElement
 	public float getDecayValue() {
 		return decayValue;

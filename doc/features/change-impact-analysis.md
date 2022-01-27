@@ -66,3 +66,4 @@ The Java code for the change impact analysis can be found here:
 The UI code for the change impact analysis can be found here:
 
 - [JavaScript code for the change impact analysis](../../src/main/resources/js/changeimpactanalysis)
+- [Velocity template for configuration](../../src/main/resources/templates/settings/changeImpactAnalysisSettings.vm)
