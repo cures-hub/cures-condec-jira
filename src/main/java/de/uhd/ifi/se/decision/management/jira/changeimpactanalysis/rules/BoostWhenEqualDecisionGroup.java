@@ -27,9 +27,9 @@ public class BoostWhenEqualDecisionGroup implements ChangePropagationFunction {
 			if (nextElement.getDecisionGroups().isEmpty()) {
 				return weightFactor;
 			}
-			Set<String> setOfMatchingComponents = filterSettings.getSelectedElement().getDecisionGroups().stream()
+			Set<String> setOfMatchingDecisionGroups = filterSettings.getSelectedElement().getDecisionGroups().stream()
 					.filter(item -> nextElement.getDecisionGroups().contains(item)).collect(Collectors.toSet());
-			return setOfMatchingComponents.isEmpty() ? weightFactor : 1.0;
+			return setOfMatchingDecisionGroups.isEmpty() ? weightFactor : 1.0;
 		}
 		return 1.0;
 	}
