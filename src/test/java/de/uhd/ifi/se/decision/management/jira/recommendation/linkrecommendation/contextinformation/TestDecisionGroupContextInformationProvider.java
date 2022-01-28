@@ -34,14 +34,6 @@ public class TestDecisionGroupContextInformationProvider extends TestSetUp{
 	}
 
 	@Test
-	public void testPropagationRootOnlyDecisionGroup() {
-		DecisionGroupPersistenceManager.insertGroup("TestGroup", rootElement);
-        RecommendationScore score = decisionGroupContextInformationProvider.assessRelation(rootElement, currentElement);
-
-		assertEquals(0.75, score.getValue(), 0.00);
-	}
-
-	@Test
 	public void testPropagationEqualDecisionGroups() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", rootElement);
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", currentElement);
