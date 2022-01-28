@@ -1,15 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
-import java.util.Date;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.TimeContextInformationProvider;
 
 /**
  * Rule that defines that a change impact is stronger propagated if the
@@ -19,26 +16,15 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public class BoostWhenTimelyCoupled implements ChangePropagationFunction {
 
+	private static final TimeContextInformationProvider similarityProvider = new TimeContextInformationProvider();
+
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
 		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
 				ChangePropagationRuleType.BOOST_WHEN_TIMELY_COUPLED);
 
-		Set<Date> coupledUpdates = null;
-		for (Date rootElementUpdate : filterSettings.getSelectedElement().getUpdateDateAndAuthor().keySet()) {
-			// 600000ms equals 10 minutes, as such when an element was updated either 10
-			// minutes before or
-			// after the source node coupling will be assumed
-			coupledUpdates = nextElement.getUpdateDateAndAuthor().keySet().stream()
-					.filter(updateDate -> updateDate.getTime() > (rootElementUpdate.getTime() - 600000)
-							&& updateDate.getTime() < (rootElementUpdate.getTime() + 600000))
-					.collect(Collectors.toSet());
-		}
-		if (coupledUpdates != null && !coupledUpdates.isEmpty()) {
-			return (1 - Math.pow(3, (-1 * coupledUpdates.size()))) * ruleWeight >= 1.0 ? 1.0
-					: (1 - Math.pow(3, (-1 * coupledUpdates.size()))) * ruleWeight;
-		} else {
-			return 0.5 * (2 - ruleWeight) >= 1.0 ? 1.0 : 0.5 * (2 - ruleWeight);
-		}
+		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
+			.getValue();
+		return similarityScore * (2 - ruleWeight) >= 1.0 ? 1.0 : similarityScore * (2 - ruleWeight);
 	}
 }

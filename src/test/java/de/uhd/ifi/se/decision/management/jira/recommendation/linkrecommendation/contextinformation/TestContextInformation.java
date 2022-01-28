@@ -44,7 +44,7 @@ public class TestContextInformation extends TestSetUp {
 
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertEquals(9, linkRecommendations.size());
+		assertEquals(10, linkRecommendations.size());
 	}
 
 	@Test

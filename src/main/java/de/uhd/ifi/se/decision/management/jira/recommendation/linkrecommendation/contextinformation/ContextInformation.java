@@ -31,6 +31,8 @@ public class ContextInformation implements ContextInformationProvider {
 		contextInformationProviders.add(new TracingContextInformationProvider());
 		contextInformationProviders.add(new TimeContextInformationProvider());
 		contextInformationProviders.add(new UserContextInformationProvider());
+		contextInformationProviders.add(new ComponentContextInformationProvider());
+		contextInformationProviders.add(new DecisionGroupContextInformationProvider());
 		// contextInformationProviders.add(new
 		// ActiveElementsContextInformationProvider());
 	}
