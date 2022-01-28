@@ -37,6 +37,7 @@
 			#if ($viewsWithTreeViewer.contains($viewIdentifier))
 				#parse("templates/filter/isOnlyFlatListShown.vm")
 			#end
+			#parse("templates/filter/isLinkRecommendation.vm")  
 		</div>
 		<div id="quality-filter-$viewIdentifier" class="aui-expander-content condec-filter">        
 		    #parse("templates/filter/qualityHighlightingCriteria.vm")	

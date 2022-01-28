@@ -1,0 +1,4 @@
+<div class="condec-filter-criterion">
+    <label for="is-link-recommendation-input-$viewIdentifier">$i18n.getText('condec.label.is.link.recommendation')</label>
+    <input type="checkbox" type="checkbox" id="is-link-recommendation-input-$viewIdentifier"/>
+</div>

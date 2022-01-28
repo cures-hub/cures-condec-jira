@@ -7,6 +7,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
@@ -28,6 +29,7 @@ public class LinkRecommendation extends Link implements Recommendation {
 			@JsonProperty("target") KnowledgeElement targetElement) {
 		super(baseElement, targetElement);
 		score = new RecommendationScore();
+		setType(LinkType.RECOMMENDED);
 	}
 
 	@Override
