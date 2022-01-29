@@ -45,8 +45,8 @@
 
 		// change impact highlighting
 		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
-			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
-			$("#threshold-input-" + viewIdentifier)[0].value = config["threshold"];
+			document.getElementById("decay-input-" + viewIdentifier).value = config["decayValue"];
+			document.getElementById("threshold-input-" + viewIdentifier).value = config["threshold"];
 			console.log(config["propagationRules"]);
 			var propagationRuleNames = [];
 			var selectedRules = [];

@@ -46,7 +46,8 @@ public class LinkRecommendationRest {
 					ImmutableMap.of("error", "Invalid filter settings given. Link recommendations cannot be made."))
 					.build();
 		}
-		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElementFromDatabase());
+		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElementFromDatabase(),
+				filterSettings.getLinkRecommendationConfig());
 		Collection<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		return Response.ok(linkRecommendations).build();
 	}

@@ -23,18 +23,10 @@ public class ContextInformation extends ContextInformationProvider {
 	private KnowledgeElement element;
 	private List<ContextInformationProvider> contextInformationProviders;
 
-	public ContextInformation(KnowledgeElement element) {
+	public ContextInformation(KnowledgeElement element, LinkRecommendationConfiguration linkRecommendationConfig) {
 		this.element = element;
 		// Add context information providers as concrete decorators
-		contextInformationProviders = new ArrayList<>();
-		contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
-		contextInformationProviders.add(new TracingContextInformationProvider());
-		contextInformationProviders.add(new TimeContextInformationProvider());
-		contextInformationProviders.add(new UserContextInformationProvider());
-		contextInformationProviders.add(new ComponentContextInformationProvider());
-		contextInformationProviders.add(new DecisionGroupContextInformationProvider());
-		// contextInformationProviders.add(new
-		// ActiveElementsContextInformationProvider());
+		contextInformationProviders = linkRecommendationConfig.getContextInformationProviders();
 	}
 
 	public List<Recommendation> getLinkRecommendations() {

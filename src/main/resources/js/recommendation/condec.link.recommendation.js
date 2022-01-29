@@ -22,7 +22,7 @@
 
 		conDecLinkRecommendationAPI.getLinkRecommendationConfig().then(config => {
 			console.log(config);
-			$("#threshold-input-link-recommendation")[0].value = config["minProbability"];
+			document.getElementById("threshold-input-link-recommendation").value = config["minProbability"];
 			var ruleNames = [];
 			var selectedRules = [];
 			for (var rule of config["contextInformationProviders"]) {

@@ -32,13 +32,20 @@ public class LinkRecommendationConfiguration {
 	@JsonCreator
 	public LinkRecommendationConfiguration() {
 		this.minProbability = 0.85;
-		this.contextInformationProviders = new ArrayList<>();
+		this.contextInformationProviders = getAllContextInformationProviders();
+	}
+
+	public static List<ContextInformationProvider> getAllContextInformationProviders() {
+		List<ContextInformationProvider> contextInformationProviders = new ArrayList<>();
 		contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
 		contextInformationProviders.add(new TracingContextInformationProvider());
 		contextInformationProviders.add(new TimeContextInformationProvider());
 		contextInformationProviders.add(new UserContextInformationProvider());
 		contextInformationProviders.add(new ComponentContextInformationProvider());
 		contextInformationProviders.add(new DecisionGroupContextInformationProvider());
+		// contextInformationProviders.add(new
+		// ActiveElementsContextInformationProvider());
+		return contextInformationProviders;
 	}
 
 	/**
@@ -76,7 +83,14 @@ public class LinkRecommendationConfiguration {
 		return contextInformationProviders;
 	}
 
-	public void setContextInformationProviders(List<ContextInformationProvider> contextInformationProviders) {
-		this.contextInformationProviders = contextInformationProviders;
+	public void setContextInformationProviders(List<String> contextInformationProviderNames) {
+		this.contextInformationProviders = new ArrayList<>();
+		for (ContextInformationProvider provider : getAllContextInformationProviders()) {
+			for (String name : contextInformationProviderNames) {
+				if (provider.getName().equals(name)) {
+					this.contextInformationProviders.add(provider);
+				}
+			}
+		}
 	}
 }

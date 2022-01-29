@@ -91,7 +91,8 @@ public class FilteringManager {
 						filterSettings.getLinkDistance());
 			}
 			if (filterSettings.areLinksRecommended()) {
-				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
+				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
+						filterSettings.getLinkRecommendationConfig());
 				List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
 				for (Recommendation recommendation : linkRecommendations) {
 					filteredGraph.addEdge((LinkRecommendation) recommendation);

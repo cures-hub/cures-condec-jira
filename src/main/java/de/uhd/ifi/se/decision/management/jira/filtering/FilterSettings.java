@@ -37,6 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.Abstra
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.KnowledgeElementCheck;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
@@ -75,6 +76,7 @@ public class FilterSettings implements Cloneable {
 	private boolean areChangeImpactsHighlighted;
 	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
 	private boolean areLinksRecommended;
+	private LinkRecommendationConfiguration linkRecommendationConfig;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
@@ -98,6 +100,7 @@ public class FilterSettings implements Cloneable {
 		this.definitionOfDone = new DefinitionOfDone();
 		this.areChangeImpactsHighlighted = false;
 		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfiguration();
+		this.linkRecommendationConfig = new LinkRecommendationConfiguration();
 	}
 
 	@JsonCreator
@@ -704,6 +707,15 @@ public class FilterSettings implements Cloneable {
 	@JsonProperty("areLinksRecommended")
 	public void recommendLinks(boolean areLinksRecommended) {
 		this.areLinksRecommended = areLinksRecommended;
+	}
+
+	public LinkRecommendationConfiguration getLinkRecommendationConfig() {
+		return linkRecommendationConfig;
+	}
+
+	@JsonProperty
+	public void setLinkRecommendationConfig(LinkRecommendationConfiguration linkRecommendationConfig) {
+		this.linkRecommendationConfig = linkRecommendationConfig;
 	}
 
 	@Override

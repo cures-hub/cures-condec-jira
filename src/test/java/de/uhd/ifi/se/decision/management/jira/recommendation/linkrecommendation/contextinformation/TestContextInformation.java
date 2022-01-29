@@ -29,7 +29,8 @@ public class TestContextInformation extends TestSetUp {
 
 	@Test
 	public void testGetLinkRecommendations() {
-		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				new LinkRecommendationConfiguration());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 7);
 	}
@@ -41,7 +42,8 @@ public class TestContextInformation extends TestSetUp {
 		linkSuggestionConfiguration.setMinProbability(0.8);
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", linkSuggestionConfiguration);
 
-		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				new LinkRecommendationConfiguration());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 8);
 	}
@@ -50,7 +52,8 @@ public class TestContextInformation extends TestSetUp {
 	@NonTransactional
 	public void testLinkRecommendationsNotGeneratedForIrrelevantPartsOfText() {
 		JiraIssues.getIrrelevantSentence();
-		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				new LinkRecommendationConfiguration());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 7);
 	}
@@ -61,7 +64,8 @@ public class TestContextInformation extends TestSetUp {
 		LinkRecommendation recommendation = new LinkRecommendation(KnowledgeElements.getDecision(),
 				KnowledgeElements.getOtherWorkItem());
 		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
-		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision());
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				new LinkRecommendationConfiguration());
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count();
 		assertTrue(linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count() > 0);

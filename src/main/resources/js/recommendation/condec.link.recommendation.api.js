@@ -20,7 +20,8 @@
 				"id": elementId,
 				"documentationLocation": elementLocation,
 				"projectKey": projectKey
-			}
+			},
+			"linkRecommendationConfig": getLinkRecommendationConfig()
 		}
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations", filterSettings)
 			.then(recommendations => {
@@ -29,6 +30,13 @@
 				return recommendations;
 			});
 	};
+
+	function getLinkRecommendationConfig() {
+		return {
+			"minProbability": document.getElementById("threshold-input-link-recommendation").value,
+			"contextInformationProviders": conDecFiltering.getSelectedItems("rule-dropdown-link-recommendation")
+		};
+	}
 
 	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
 		recommendation.isDiscarded = true;
@@ -41,7 +49,7 @@
 		recommendation.projectKey = projectKey;
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/undo-discard", recommendation);
 	};
-	
+
 	ConDecLinkRecommendationAPI.prototype.getLinkRecommendationConfig = function() {
 		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration/" + conDecAPI.projectKey);
 	};
