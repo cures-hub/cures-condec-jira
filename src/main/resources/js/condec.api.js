@@ -68,7 +68,7 @@
 		}
 		return this.extendedKnowledgeTypes;
 	};
-	
+
 	ConDecAPI.prototype.getKnowledgeTypesWithoutDecisionKnowledge = function() {
 		var decisionKnowledgeTypes = ["Issue", "Decision", "Alternative", "Argument", "Goal"];
 		return this.getKnowledgeTypes().filter(function(value, index, arr) {
@@ -107,9 +107,7 @@
 		generalApi.getJSON(this.restPrefix + "/knowledge/knowledgeElement?projectKey="
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
 				knowledgeElement) {
-			if (error === null) {
-				callback(knowledgeElement);
-			}
+			callback(knowledgeElement);
 		});
 	};
 

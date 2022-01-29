@@ -1,7 +1,8 @@
 <b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
-<div>
+<form class="aui">
+    <select id="link-recommendation-dropdown" class="select long-field"></select>
     <aui-spinner id="loading-spinner"></aui-spinner>
-</div>
+</form>
 <table class="aui aui-table-list" id="results-table">
     <thead>
 	    <tr>
@@ -27,6 +28,12 @@ $(document).ready(function () {
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#link-recommendation-tab")) {
     		conDecLinkRecommendation.init();
+			isOnceClicked = true;
+		}
+	});
+	AJS.$("#knowledge-page-tabs").on("tabSelect", function(event) {
+		if (!isOnceClicked && event.target.href.includes("#link-recommendation-tab")) {
+			conDecLinkRecommendation.init();
 			isOnceClicked = true;
 		}
 	});

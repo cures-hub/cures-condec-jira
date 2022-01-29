@@ -14,10 +14,24 @@
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
 
-		this.loadData();
-	}
+		let dropdown = document.getElementById("link-recommendation-dropdown");
+		conDecAPI.getKnowledgeElement(this.issueId, 'i',
+			(element) => {
+				filterSettings = {};
+				if (element) {
+					conDecLinkRecommendation.selectedElement = element;
+					filterSettings.selectedElementObject = element;
+				}
+				conDecAPI.getKnowledgeElements(filterSettings, (elements) =>
+					conDecFiltering.initKnowledgeElementDropdown(dropdown, elements, conDecLinkRecommendation.selectedElement,
+						"link-recommendation", (selectedElement) => {
+							conDecLinkRecommendation.selectedElement = selectedElement;
+							conDecLinkRecommendation.loadData();
+						}))
+			});
+	};
 
-	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {		
+	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {
 		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.issueId)[index])
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarded link recommendation successfully!");
@@ -109,7 +123,7 @@
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
 
-		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(this.projectKey, this.issueId, 'i'))
+		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(this.projectKey, this.selectedElement.id, this.selectedElement.documentationLocation))
 			.then((relatedIssues) => this.displayRelatedElements(relatedIssues))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));
