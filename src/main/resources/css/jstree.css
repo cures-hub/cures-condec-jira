@@ -11,6 +11,10 @@
 .jstree-node {
   white-space: nowrap;
 }
+.jstree-default a {
+  white-space:normal !important;
+  height: auto;
+}
 .jstree-anchor {
   display: inline-block;
   color: black;
@@ -18,6 +22,16 @@
   padding: 0 4px 0 1px;
   margin: 0;
   vertical-align: top;
+  height: auto !important;
+}
+.jstree-default li > ins {
+  vertical-align: top;
+}
+.jstree-leaf {
+  height: auto;
+}
+.jstree-leaf a{
+  height: auto !important;
 }
 .jstree-anchor:focus {
   outline: 0;

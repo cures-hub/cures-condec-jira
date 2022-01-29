@@ -277,6 +277,12 @@
 			filterSettings["changeImpactAnalysisConfig"]["propagationRules"] = propagationRules;
 		}
 		
+		// Read whether link recommendations should be included in the CIA calculation
+		var isCIACalculationIncludingLinkRecommendations = document.getElementById("recommended-links-in-cia-input-" + viewIdentifier);
+		if (isCIACalculationIncludingLinkRecommendations !== null) {
+			filterSettings["changeImpactAnalysisConfig"]["areLinkRecommendationsIncludedInCalculation"] = isCIACalculationIncludingLinkRecommendations.checked;
+		}
+
 		// Read whether link recommendations should be shown
 		var isLinkRecommendationShownInput = document.getElementById("is-link-recommendation-input-" + viewIdentifier);
 		if (isLinkRecommendationShownInput !== null) {

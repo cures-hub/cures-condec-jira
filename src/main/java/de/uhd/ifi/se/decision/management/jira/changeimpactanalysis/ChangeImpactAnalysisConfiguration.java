@@ -23,6 +23,7 @@ public class ChangeImpactAnalysisConfiguration {
 	private Map<String, Float> linkImpact;
 	private long context;
 	private List<ChangePropagationRule> propagationRules;
+	private Boolean areLinkRecommendationsIncludedInCalculation;
 
 	@JsonCreator
 	public ChangeImpactAnalysisConfiguration() {
@@ -34,6 +35,7 @@ public class ChangeImpactAnalysisConfiguration {
 		});
 		context = 0;
 		propagationRules = ChangePropagationRule.getDefaultRules();
+		areLinkRecommendationsIncludedInCalculation = false;
 	}
 
 	public ChangeImpactAnalysisConfiguration(float decayValue, float threshold, long context, List<ChangePropagationRule> propagationRules) {
@@ -45,6 +47,7 @@ public class ChangeImpactAnalysisConfiguration {
 		});
 		this.context = context;
 		this.propagationRules = propagationRules;
+		this.areLinkRecommendationsIncludedInCalculation = false;
 	}
 
 	@XmlElement
@@ -91,4 +94,14 @@ public class ChangeImpactAnalysisConfiguration {
 	public void setPropagationRules(List<ChangePropagationRule> propagationRules) {
 		this.propagationRules = propagationRules;
 	}
+
+	@XmlElement
+	public Boolean getAreLinkRecommendationsIncludedInCalculation() {
+		return areLinkRecommendationsIncludedInCalculation;
+	}
+
+	public void setAreLinkRecommendationsIncludedInCalculation(Boolean areLinkRecommendationsIncludedInCalculation) {
+		this.areLinkRecommendationsIncludedInCalculation = areLinkRecommendationsIncludedInCalculation;
+	}
+
 }

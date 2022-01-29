@@ -91,11 +91,7 @@ public class FilteringManager {
 						filterSettings.getLinkDistance());
 			}
 			if (filterSettings.areLinksRecommended()) {
-				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
-				List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
-				for (Recommendation recommendation : linkRecommendations) {
-					filteredGraph.addEdge((LinkRecommendation) recommendation);
-				}
+				filteredGraph = addLinkRecommendations(filteredGraph);
 			}
 		}
 
@@ -115,9 +111,15 @@ public class FilteringManager {
 	 */
 	public KnowledgeGraph getFilteredGraph(List<KnowledgeElementWithImpact> impactedElements) {
 		KnowledgeGraph filteredGraph = getFilteredGraph();
+		if (filterSettings.areLinksRecommended() && filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
+			filteredGraph = addLinkRecommendations(filteredGraph);
+		}
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = filteredGraph.vertexSet().stream()
 				.filter(element -> !impactedElements.contains(element)).collect(Collectors.toSet());
 		filteredGraph.removeAllVertices(elementsNotMatchingFilterSettings);
+		if (filterSettings.areLinksRecommended() && !filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
+			filteredGraph = addLinkRecommendations(filteredGraph);
+		}
 		return filteredGraph;
 	}
 
@@ -380,5 +382,20 @@ public class FilteringManager {
 	 */
 	public void setFilterSettings(FilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
+	}
+
+	/**
+	 * @param filteredGraph
+	 * 		{@link KnowledgeGraph} object that will receive the recommendations.
+	 * @return 
+	 * 		{@link KnowledgeGraph} with added link recommendations.
+	 */
+	private KnowledgeGraph addLinkRecommendations(KnowledgeGraph filteredGraph) {
+		ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
+		List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
+		for (Recommendation recommendation : linkRecommendations) {
+			filteredGraph.addEdge((LinkRecommendation) recommendation);
+		}
+		return filteredGraph;
 	}
 }

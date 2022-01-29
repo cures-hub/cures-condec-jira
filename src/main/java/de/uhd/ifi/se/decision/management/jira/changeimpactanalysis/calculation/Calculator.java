@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.calculation;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,10 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElem
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
 /**
  * Calculates the change impact scores of a {@link KnowledgeElementWithImpact}.
@@ -32,9 +38,18 @@ public class Calculator {
 			double parentImpact, FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements,
 			long context) {
 		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
-
+		
+		// Add link recommmendations to root element if setting has been selected
+		Set<Link> currentElementLinks = new HashSet<>(currentElement.getLinks());
+		if (filterSettings.getSelectedElement() == currentElement && filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
+			ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
+			List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
+			for (Recommendation recommendation : linkRecommendations) {
+				currentElementLinks.add((LinkRecommendation) recommendation);
+			}
+		}
 		// Iterating through all outgoing and incoming links of the current element
-		for (Link link : currentElement.getLinks()) {
+		for (Link link : currentElementLinks) {
 			String linkTypeName;
 			KnowledgeElement nextElementInPath;
 
@@ -57,7 +72,7 @@ public class Calculator {
 			double decayValue = ciaConfig.getDecayValue();
 			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, nextElementInPath, link);
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
-			String impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue);
+			String impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue, linkTypeName);
 
 			// Add calculated impact values to new KnowledgeElementWithImpact
 			KnowledgeElementWithImpact nextElement = new KnowledgeElementWithImpact(nextElementInPath, impactValue,
@@ -111,11 +126,12 @@ public class Calculator {
 	 * Generates the impact explanation by checking the minimum of each calculated
 	 * impact score. The minimum impacts the score the most, therefore the
 	 * explanation aims to give a textual reason why.
+	 * @param linkTypeName
 	 * 
 	 * @return String containing the the impact value explanation
 	 */
 	public static String generateImpactExplanation(double parentImpact, double ruleBasedValue, double decayValue,
-			double impactValue) {
+			double impactValue, String linkTypeName) {
 		String impactExplanation = "";
 		if (Math.min(parentImpact, ruleBasedValue) == parentImpact && ((1 - parentImpact) >= decayValue)) {
 			impactExplanation = "This element has a lowered chance of being affected"
@@ -133,6 +149,10 @@ public class Calculator {
 		} else {
 			impactExplanation += "A low impact value generally indicates that the element is less likely to be affected "
 					+ "by the change and probably doesn't need to be changed as well.\n";
+		}
+		if (linkTypeName.equalsIgnoreCase(LinkType.RECOMMENDED.getName())) {
+			impactExplanation += "\nThis element is not implicitly linked to the source element but has been "
+					+ "included as a result of the link recommendation.";
 		}
 		return impactExplanation;
 	}

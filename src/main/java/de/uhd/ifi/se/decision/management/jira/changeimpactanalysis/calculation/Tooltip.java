@@ -14,7 +14,7 @@ public class Tooltip {
     public static String createTooltip(KnowledgeElementWithImpact element, FilterSettings filterSettings) {
         // Root node
         if (filterSettings.getSelectedElement().getId() == element.getId()) {
-            return "This is the source node from which the Change Impact Analysis was calculated.";
+            return "This is the source element from which the Change Impact Analysis was calculated.";
         }
 
         // Propagation Rules 
@@ -38,5 +38,9 @@ public class Tooltip {
         "\n" + element.getImpactExplanation();
 
         return tooltip;
+    }
+
+    public static String createLinkRecommendationTooltip() {
+        return "This element is not implicitly linked to the source element but has been included as a result of the link recommendation.";
     }
 }

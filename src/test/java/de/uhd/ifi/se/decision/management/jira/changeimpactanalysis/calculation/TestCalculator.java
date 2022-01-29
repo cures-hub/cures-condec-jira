@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElem
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 public class TestCalculator extends TestSetUp {
 
@@ -45,6 +46,25 @@ public class TestCalculator extends TestSetUp {
 		assertEquals(1.0, impactedElements.get(0).getLinkTypeWeight(), 0.05);
 		assertEquals(1.0, impactedElements.get(0).getRuleBasedValue(), 0.05);
 		assertEquals(0, impactedElements.get(0).getPropagationRules().size());
+	}
+
+	@Test
+	public void testCalculateChangeImpactLinkRecommendations() {
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
+		config.setAreLinkRecommendationsIncludedInCalculation(true);
+	 	List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
+		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
+		propagationRules.add(rule);
+		config.setPropagationRules(propagationRules);
+		settings.setChangeImpactAnalysisConfig(config);
+
+		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
+		impactedElements.add(rootElement);
+
+		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
+				impactedElements, (long) settings.getLinkDistance());
+
+		assertTrue(impactedElements.size() > 0);
 	}
 
 	@Test
@@ -83,7 +103,7 @@ public class TestCalculator extends TestSetUp {
 		double decayValue = 0.25;
 
 		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
-				impactValue);
+				impactValue, "");
 
 		assertTrue(explanation.contains("mainly due to a used propagation rule."));
 	}
@@ -96,7 +116,7 @@ public class TestCalculator extends TestSetUp {
 		double decayValue = 0.25;
 
 		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
-				impactValue);
+				impactValue, "");
 
 		assertTrue(explanation.contains("mainly due to its parent having a lowered impact score."));
 	}
@@ -109,8 +129,21 @@ public class TestCalculator extends TestSetUp {
 		double decayValue = 0.75;
 
 		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
-				impactValue);
+				impactValue, "");
 
 		assertTrue(explanation.contains("mainly due to the decay value."));
+	}
+
+	@Test
+	public void testGenerateImpactExplanationLinkRecommendation() {
+		double impactValue = 0.25;
+		double parentImpact = 1.0;
+		double ruleBasedValue = 1.0;
+		double decayValue = 1.0;
+
+		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
+				impactValue, LinkType.RECOMMENDED.getName());
+
+		assertTrue(explanation.contains("link recommendation"));
 	}
 }
