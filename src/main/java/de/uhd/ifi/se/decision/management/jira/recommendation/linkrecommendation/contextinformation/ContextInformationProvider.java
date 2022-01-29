@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
@@ -27,6 +29,7 @@ public interface ContextInformationProvider {
 	 * @return name of the context information provider. Used as the explanation in
 	 *         the {@link RecommendationScore}.
 	 */
+	@XmlElement
 	default String getName() {
 		return getClass().getSimpleName();
 	}

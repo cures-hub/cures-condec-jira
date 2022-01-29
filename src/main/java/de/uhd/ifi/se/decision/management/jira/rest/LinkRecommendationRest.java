@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -116,10 +117,23 @@ public class LinkRecommendationRest {
 					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
 		}
 
-		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
-		linkSuggestionConfiguration.setMinProbability(threshold);
-		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkSuggestionConfiguration);
+		linkRecommendationConfiguration.setMinProbability(threshold);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
 		return Response.ok().build();
+	}
+
+	@Path("/configuration/{projectKey}")
+	@GET
+	public Response getLinkRecommendationConfiguration(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
+				.getLinkRecommendationConfiguration(projectKey);
+		return Response.ok(linkRecommendationConfiguration).build();
 	}
 }

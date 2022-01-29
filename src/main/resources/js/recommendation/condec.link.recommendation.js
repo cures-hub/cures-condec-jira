@@ -19,6 +19,21 @@
 		} else {
 			initKnowledgeElementDropdown();
 		}
+
+		conDecLinkRecommendationAPI.getLinkRecommendationConfig().then(config => {
+			console.log(config);
+			$("#threshold-input-link-recommendation")[0].value = config["minProbability"];
+			var ruleNames = [];
+			var selectedRules = [];
+			for (var rule of config["contextInformationProviders"]) {
+				var name = rule.name;
+				ruleNames.push(name);
+				if (rule.isActive) {
+					selectedRules.push(name);
+				}
+			}
+			conDecFiltering.initDropdown("rule-dropdown-link-recommendation", ruleNames, selectedRules);
+		});
 	};
 
 	function initKnowledgeElementDropdown(selectedElement) {

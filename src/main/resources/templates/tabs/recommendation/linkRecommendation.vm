@@ -1,6 +1,23 @@
-<b>Recommendation of knowledge elements to be linked to the current Jira issue</b>
+#set ($viewIdentifier = "link-recommendation")
+<b>Recommendation of knowledge elements to be linked to the current selected knowledge element</b>
 <form class="aui">
+<div class="condec-filter">
     <select id="link-recommendation-dropdown" class="select long-field"></select>
+    <div class="condec-filter-criterion"
+		title="A recommendation is created if elementScore >= threshold.">
+		<label for="threshold-input-$viewIdentifier" id="threshold-input-label-$viewIdentifier">
+			$i18n.getText("condec.threshold.label")
+		</label>
+		<input type="number" id="threshold-input-$viewIdentifier" value="0.25" min="0" step='0.01'
+			class="text short-field" placeholder="Enter threshold">
+	</div>
+
+	<button aria-controls="rule-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger"
+        aria-haspopup="true">
+    $i18n.getText("condec.label.link.recommendation.rule")
+	</button>
+	<aui-dropdown-menu id="rule-dropdown-$viewIdentifier"></aui-dropdown-menu>
+</div>
     <aui-spinner id="loading-spinner"></aui-spinner>
 </form>
 <table class="aui aui-table-list" id="results-table">
