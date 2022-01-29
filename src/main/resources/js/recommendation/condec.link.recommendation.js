@@ -1,5 +1,5 @@
 /**
- * This module implements the link suggestion and duplicate detection.
+ * This module implements the link recommendation and duplicate detection.
  */
 (function(global) {
 
@@ -8,31 +8,35 @@
 	};
 
 	ConDecLinkRecommendation.prototype.init = function() {
-		this.issueId = JIRA.Issue.getIssueId();
-
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
 
-		let dropdown = document.getElementById("link-recommendation-dropdown");
-		conDecAPI.getKnowledgeElement(this.issueId, 'i',
-			(element) => {
-				filterSettings = {};
-				if (element) {
-					conDecLinkRecommendation.selectedElement = element;
-					filterSettings.selectedElementObject = element;
-				}
-				conDecAPI.getKnowledgeElements(filterSettings, (elements) =>
-					conDecFiltering.initKnowledgeElementDropdown(dropdown, elements, conDecLinkRecommendation.selectedElement,
-						"link-recommendation", (selectedElement) => {
-							conDecLinkRecommendation.selectedElement = selectedElement;
-							conDecLinkRecommendation.loadData();
-						}))
-			});
+		var jiraIssueId = JIRA.Issue.getIssueId();
+		if (jiraIssueId) {
+			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i',
+				(element) => initKnowledgeElementDropdown(element));
+		} else {
+			initKnowledgeElementDropdown();
+		}
 	};
 
+	function initKnowledgeElementDropdown(selectedElement) {
+		filterSettings = {};
+		if (selectedElement) {
+			filterSettings.selectedElementObject = selectedElement;
+		}
+		let dropdown = document.getElementById("link-recommendation-dropdown");
+		conDecAPI.getKnowledgeElements(filterSettings, (elements) =>
+			conDecFiltering.initKnowledgeElementDropdown(dropdown, elements, selectedElement,
+				"link-recommendation", (selectedElement) => {
+					conDecLinkRecommendation.selectedElement = selectedElement;
+					conDecLinkRecommendation.loadData();
+				}));
+	}
+
 	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {
-		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.issueId)[index])
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarded link recommendation successfully!");
 				this.loadData();
@@ -41,7 +45,7 @@
 	};
 
 	ConDecLinkRecommendation.prototype.undoDiscardRecommendation = function(index) {
-		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.issueId)[index])
+		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarding link recommendation successfully undone!");
 				this.loadData();
@@ -117,7 +121,7 @@
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {
 		let target = conDecLinkRecommendationAPI.currentLinkRecommendations[index].target;
 		let self = this;
-		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
+		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation, () => self.loadData());
 	};
 
 	ConDecLinkRecommendation.prototype.loadData = function() {
