@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * Assumes that the {@link KnowledgeElement}s within the active sprint are
  * related.
  */
-public class ActiveElementsContextInformationProvider implements ContextInformationProvider {
+public class ActiveElementsContextInformationProvider extends ContextInformationProvider {
 
 	private List<Long> activeIssueIds;
 

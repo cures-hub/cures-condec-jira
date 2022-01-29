@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * It assumes a strong relation if they have a similar textual content (summary
  * and description).
  */
-public class TextualSimilarityContextInformationProvider implements ContextInformationProvider {
+public class TextualSimilarityContextInformationProvider extends ContextInformationProvider {
 
 	private static final SimilarityScore<Double> similarityScore = new JaroWinklerDistance();
 

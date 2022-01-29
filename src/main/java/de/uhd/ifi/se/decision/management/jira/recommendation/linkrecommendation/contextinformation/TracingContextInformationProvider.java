@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * to another element has a close relation to this element. (Miesbauer and
  * Weinreich, 2012)
  */
-public class TracingContextInformationProvider implements ContextInformationProvider {
+public class TracingContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {

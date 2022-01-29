@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * Provides Component in decorator pattern.
  *
  */
-public class ContextInformation implements ContextInformationProvider {
+public class ContextInformation extends ContextInformationProvider {
 
 	private KnowledgeElement element;
 	private List<ContextInformationProvider> contextInformationProviders;

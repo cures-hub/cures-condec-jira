@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * Elements with a similar creation or modification time are stronger related
  * than elements with a quite different modification or creation time.
  */
-public class TimeContextInformationProvider implements ContextInformationProvider {
+public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {

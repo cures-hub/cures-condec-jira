@@ -2,13 +2,15 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
- * Interface for different context information providers to realize context
+ * Abstract class for different context information providers to realize context
  * utility functions. For example, the {@link TimeContextInformationProvider}
  * rates relations based on time of creation or modifications of elements.
  * 
@@ -18,19 +20,21 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * {@link UserContextInformationProvider}, and
  * {@link TextualSimilarityContextInformationProvider}.
  *
- * @implSpec C. Miesbauer and R. Weinreich, "Capturing and Maintaining
- *           Architectural Knowledge Using Context Information", 2012 Joint
- *           Working IEEE/IFIP Conference on Software Architecture and European
- *           Conference on Software Architecture
+ * Is inspired by the following publication: C. Miesbauer and R. Weinreich,
+ * "Capturing and Maintaining Architectural Knowledge Using Context
+ * Information", 2012 Joint Working IEEE/IFIP Conference on Software
+ * Architecture and European Conference on Software Architecture
  */
-public interface ContextInformationProvider {
+public abstract class ContextInformationProvider {
+
+	private boolean isActive = true;
 
 	/**
 	 * @return name of the context information provider. Used as the explanation in
 	 *         the {@link RecommendationScore}.
 	 */
 	@XmlElement
-	default String getName() {
+	public String getName() {
 		return getClass().getSimpleName();
 	}
 
@@ -51,4 +55,20 @@ public interface ContextInformationProvider {
 	 */
 	public abstract RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement);
 
+	/**
+	 * @return the activation status of the link recommendation rule.
+	 */
+	@XmlElement
+	public boolean isActive() {
+		return isActive;
+	}
+
+	/**
+	 * @param isActive
+	 *            activation status of the link recommendation rule.
+	 */
+	@JsonProperty("isActive")
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
 }
