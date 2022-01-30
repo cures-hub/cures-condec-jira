@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProviderCreator;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.InterfaceAndAbstractClassAdapter;
 import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
@@ -84,7 +84,7 @@ public class ConfigPersistenceManager {
 	 */
 	private static void saveObject(String projectKey, String parameter, Object value, Type type) {
 		GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(ContextInformationProvider.class, new ContextInformationProviderCreator());
+		builder.registerTypeAdapter(ContextInformationProvider.class, new InterfaceAndAbstractClassAdapter());
 		Gson gson = builder.create();
 		saveValue(projectKey, parameter, gson.toJson(value, type));
 	}
@@ -126,14 +126,13 @@ public class ConfigPersistenceManager {
 	 */
 	private static Object getSavedObject(String projectKey, String parameter, Type type) {
 		GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(ContextInformationProvider.class, new ContextInformationProviderCreator());
+		builder.registerTypeAdapter(ContextInformationProvider.class, new InterfaceAndAbstractClassAdapter());
 		Gson gson = builder.create();
 		Object object = null;
 		try {
 			object = gson.fromJson(getValue(projectKey, parameter), type);
 		} catch (Exception e) {
 			LOGGER.error("Saved config could not be read: " + e.getMessage());
-			System.out.println("Saved config could not be read: " + e.getMessage());
 		}
 		return object;
 	}
