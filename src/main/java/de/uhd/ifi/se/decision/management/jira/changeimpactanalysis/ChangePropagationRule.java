@@ -49,7 +49,7 @@ public class ChangePropagationRule {
 	public ChangePropagationRule(ChangePropagationRuleType ruleType) {
 		this.type = ruleType;
 		this.weightValue = 1.0f;
-		this.isActive = false;
+		this.isActive = true;
 	}
 
 	/**

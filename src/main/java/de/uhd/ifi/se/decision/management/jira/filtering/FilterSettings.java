@@ -39,6 +39,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.KnowledgeElementCheck;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 
 /**
@@ -685,8 +686,8 @@ public class FilterSettings implements Cloneable {
 	 *            true.
 	 */
 	public void setChangeImpactAnalysisConfig(ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig) {
-		// only these criteria can be set during filtering currently, all other
-		// criteria are fixed
+		// only the following criteria can be set during filtering currently, all other
+		// criteria are fixed, thus, not the entire object can be overwritten
 		this.changeImpactAnalysisConfig.setContext(changeImpactAnalysisConfig.getContext());
 		this.changeImpactAnalysisConfig.setDecayValue(changeImpactAnalysisConfig.getDecayValue());
 		this.changeImpactAnalysisConfig.setThreshold(changeImpactAnalysisConfig.getThreshold());
@@ -724,7 +725,17 @@ public class FilterSettings implements Cloneable {
 
 	@JsonProperty
 	public void setLinkRecommendationConfig(LinkRecommendationConfiguration linkRecommendationConfig) {
-		this.linkRecommendationConfig = linkRecommendationConfig;
+		// only the following criteria can be set during filtering currently, all other
+		// criteria are fixed, thus, not the entire object can be overwritten
+		this.linkRecommendationConfig.setMinProbability(linkRecommendationConfig.getMinProbability());
+		// only the activation can be set for the rules
+		for (ContextInformationProvider rule : this.linkRecommendationConfig.getContextInformationProviders()) {
+			if (linkRecommendationConfig.getContextInformationProviders().contains(rule)) {
+				rule.setActive(true);
+			} else {
+				rule.setActive(false);
+			}
+		}
 	}
 
 	@Override
