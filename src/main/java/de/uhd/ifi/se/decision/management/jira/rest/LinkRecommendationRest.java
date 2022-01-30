@@ -127,6 +127,17 @@ public class LinkRecommendationRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rules
+	 *            {@link ContextInformationProvider}s representing the rules for
+	 *            link recommendation.
+	 * @return ok if the rule configuration were successfully saved.
+	 */
 	@Path("/configuration/{projectKey}/rules")
 	@POST
 	public Response setLinkRecommendationRules(@Context HttpServletRequest request,
@@ -135,6 +146,10 @@ public class LinkRecommendationRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
+		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
+				.getLinkRecommendationConfiguration(projectKey);
+		linkRecommendationConfiguration.setContextInformationProviders(rules);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
 		return Response.ok().build();
 	}
 
