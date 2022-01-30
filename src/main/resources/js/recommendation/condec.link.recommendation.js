@@ -38,7 +38,7 @@
 		});
 
 		linkConfigPage();
-		
+
 		// add button listener
 		addOnClickListenerOnRecommendationButton();
 	};
@@ -55,14 +55,14 @@
 					conDecLinkRecommendation.selectedElement = selectedElement;
 				}));
 	}
-	
+
 	function linkConfigPage() {
 		var configLink = document.getElementById("config-link-link-recommendation");
 		configLink.href = AJS.contextPath() + "/plugins/servlet/condec/settings?projectKey="
 			+ conDecAPI.projectKey + "&category=linkRecommendation";
 		AJS.$(configLink).tooltip();
 	}
-	
+
 	function addOnClickListenerOnRecommendationButton() {
 		$("#link-recommendation-button").click(function(event) {
 			event.preventDefault();
@@ -162,11 +162,12 @@
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
 		this.selectedElement.projectKey = this.projectKey;
-		
+
 		var filterSettings = {
 			"selectedElementObject": this.selectedElement,
 			"projectKey": this.projectKey,
-			"linkRecommendationConfig": getLinkRecommendationConfig()
+			"linkRecommendationConfig": getLinkRecommendationConfig(),
+			"isCacheCleared": document.getElementById("clear-link-recommendation-cache-input").checked
 		}
 
 		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(filterSettings))

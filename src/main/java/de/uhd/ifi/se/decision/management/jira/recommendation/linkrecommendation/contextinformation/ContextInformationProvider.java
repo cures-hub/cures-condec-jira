@@ -27,7 +27,16 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  */
 public abstract class ContextInformationProvider {
 
-	private boolean isActive = true;
+	/**
+	 * Default activation of link recommendation rule
+	 */
+	protected boolean isActive;
+	protected float weightValue;
+
+	public ContextInformationProvider() {
+		isActive = true;
+		weightValue = 1;
+	}
 
 	/**
 	 * @return name of the context information provider. Used as the explanation in
@@ -70,5 +79,27 @@ public abstract class ContextInformationProvider {
 	@JsonProperty("isActive")
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	/**
+	 * @return the weight value of the link recommendation rule.
+	 */
+	@XmlElement
+	public float getWeightValue() {
+		return weightValue;
+	}
+
+	/**
+	 * @param weightValue
+	 *            of the link recommendation rule.
+	 */
+	@JsonProperty
+	public void setWeightValue(float weightValue) {
+		this.weightValue = weightValue;
+	}
+
+	@XmlElement
+	public String getExplanation() {
+		return getName();
 	}
 }

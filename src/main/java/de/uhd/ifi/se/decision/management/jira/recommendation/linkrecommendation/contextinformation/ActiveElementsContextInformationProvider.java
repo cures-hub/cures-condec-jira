@@ -19,6 +19,7 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	public ActiveElementsContextInformationProvider() {
 		super();
+		isActive = false;
 		activeIssueIds = new PlanningModeService.CurrentSprints().getSprintsToIssues().keySet().parallelStream()
 				.map(sprintPlanEntry -> sprintPlanEntry.issuesIds).flatMap(Collection::stream)
 				.collect(Collectors.toList());
@@ -28,5 +29,10 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
 		return new RecommendationScore((float) isActive, getName() + " (same Sprint)");
+	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that the knowledge elementss within the active sprint are related.";
 	}
 }

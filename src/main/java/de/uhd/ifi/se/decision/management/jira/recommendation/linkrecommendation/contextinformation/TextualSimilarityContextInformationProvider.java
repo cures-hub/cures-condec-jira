@@ -52,4 +52,9 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 		String[] tokens = Preprocessor.getInstance().getStemmedTokensWithoutStopWords(input);
 		return Arrays.toString(tokens);
 	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that textual similar knowledge elements are related.";
+	}
 }

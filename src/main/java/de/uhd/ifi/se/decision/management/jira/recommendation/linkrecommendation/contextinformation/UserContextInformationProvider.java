@@ -13,6 +13,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class UserContextInformationProvider extends ContextInformationProvider {
 
+	public UserContextInformationProvider() {
+		super();
+		isActive = false;
+	}
+
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		double score = isApplicationUserEqual(baseElement.getCreator(), elementToTest.getCreator());
@@ -30,5 +35,10 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 			return 0.3;
 		}
 		return 0;
+	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that knowledge elements created or modified by the same user are related.";
 	}
 }

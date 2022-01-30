@@ -1,0 +1,50 @@
+<h3>Ruleset Parameters</h3>
+Select the default ruleset and weights for individual rules.
+
+<table class="aui aui-table-list aui-table-sortable">
+	<thead>
+		<tr>
+		<th>Rule Name</th>
+    		<th>Enabled by Default?</th>
+    		<th>Weight</th>
+    	</tr>
+    </thead>
+    <tbody>
+    <script>
+    	var changePropagationRuleNames = [];
+    </script>
+    #foreach($rule in $linkRecommendationConfig.getContextInformationProviders())
+    	<script>
+    		changePropagationRuleNames.push("$rule.getName()");
+    	</script>
+        <tr>
+		    <td>
+                $rule.getName()
+        	<a data-aui-trigger aria-controls='$rule.getName()-help'>
+        		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
+        	</a>
+        	<aui-inline-dialog id='$rule.getName()-help' responds-to='hover'>
+        		$rule.getExplanation()
+        	</aui-inline-dialog>
+            </td>
+            <td>
+                <aui-toggle id="$rule.getName()-toggle" label=""
+                #if ($rule.isActive())
+                    checked
+                #end
+                ></aui-toggle>
+            </td>
+            <td>            
+                <input class="text short-field"
+                    type="number"
+                    data-aui-validation-field
+                    value="$rule.getWeightValue()"
+                    step="0.1"
+                    min="0.0"
+                    max="2.0"
+                    id="$rule.getName()-weight"/>
+            </td>
+        </tr>
+    #end
+    </tbody>
+</table>

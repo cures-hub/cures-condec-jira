@@ -15,6 +15,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class TimeContextInformationProvider extends ContextInformationProvider {
 
+	public TimeContextInformationProvider() {
+		super();
+		isActive = false;
+	}
+
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		Set<Date> coupledUpdates = new HashSet<>();
@@ -31,5 +36,10 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 			score = 1 - Math.pow(3, (-1 * coupledUpdates.size()));
 		}
 		return new RecommendationScore((float) score, getName() + " (ms)");
+	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that knowledge elements created/updated during a similar time are related.";
 	}
 }

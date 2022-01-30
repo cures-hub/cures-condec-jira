@@ -22,11 +22,14 @@
 		title="Rule weights and the default values for the link recommendation parameters can be changed by the rationale manager." target="_blank">
 		<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> Configuration
 	</a>
+	<div class="condec-filter-criterion">
+    	<label for="clear-link-recommendation-cache-input">Clear cache?</label>
+    	<input class="checkbox" type="checkbox" id="clear-link-recommendation-cache-input"/>
+    </div>
 	<br/>
-    <br/>
+    <br/>    
     <button class="aui-button aui-button-primary" id="link-recommendation-button" 
-    	title="Recommends new links to related knowledge elements or potential duplicates. "
-    	+ "The results are cached, so you need to empty the browser cache when changing parameters.">
+    	title="Recommends new links to related knowledge elements or potential duplicates. The results are cached, so you need to empty the browser cache when changing parameters.">
         <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
         $i18n.getText("condec.label.is.link.recommendation")
     </button>

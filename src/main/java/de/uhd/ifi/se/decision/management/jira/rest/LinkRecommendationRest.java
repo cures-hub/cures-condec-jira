@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -21,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
 
 /**
  * REST resource for link recommendation and duplicate recognition (including
@@ -122,6 +124,17 @@ public class LinkRecommendationRest {
 				.getLinkRecommendationConfiguration(projectKey);
 		linkRecommendationConfiguration.setMinProbability(threshold);
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
+		return Response.ok().build();
+	}
+
+	@Path("/configuration/{projectKey}/rules")
+	@POST
+	public Response setLinkRecommendationRules(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey, List<ContextInformationProvider> rules) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
 		return Response.ok().build();
 	}
 

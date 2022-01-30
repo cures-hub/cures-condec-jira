@@ -6,17 +6,12 @@
 		this.currentLinkDuplicates = new Map();
 	};
 
-	ConDecLinkRecommendationAPI.prototype.setThreshold = function(projectKey, threshold) {
-		generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/threshold", threshold)
-			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
-	}
-
 	/**
 	 * external usage: condec.link.recommendation.js, condec.prompts.js
 	 */
 	ConDecLinkRecommendationAPI.prototype.getLinkRecommendations = function(filterSettings) {
 		var elementId = filterSettings.selectedElementObject.id;
-		if (this.currentLinkRecommendations.has(elementId)) {
+		if (!filterSettings.isCacheCleared && this.currentLinkRecommendations.has(elementId)) {
 			return this.currentLinkRecommendations.get(elementId);
 		}
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations", filterSettings)
@@ -41,6 +36,16 @@
 
 	ConDecLinkRecommendationAPI.prototype.getLinkRecommendationConfig = function() {
 		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration/" + conDecAPI.projectKey);
+	};
+
+	ConDecLinkRecommendationAPI.prototype.setThreshold = function(projectKey, threshold) {
+		generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/threshold", threshold)
+			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
+	};
+
+	ConDecLinkRecommendationAPI.prototype.saveRules = function(projectKey, linkRecommendationRules) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/rules", linkRecommendationRules)
+			.then(() => conDecAPI.showFlag("success", "Link recommendation rules were successfully updated!"));
 	};
 
 	global.conDecLinkRecommendationAPI = new ConDecLinkRecommendationAPI();

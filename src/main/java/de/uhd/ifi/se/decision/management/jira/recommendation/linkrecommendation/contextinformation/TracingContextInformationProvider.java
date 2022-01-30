@@ -22,4 +22,9 @@ public class TracingContextInformationProvider extends ContextInformationProvide
 		}
 		return new RecommendationScore((float) value, getName());
 	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that knowledge elements that can be traced within a certain number of hops are related.";
+	}
 }

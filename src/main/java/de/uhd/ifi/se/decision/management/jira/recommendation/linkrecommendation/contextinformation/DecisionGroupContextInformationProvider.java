@@ -13,6 +13,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class DecisionGroupContextInformationProvider extends ContextInformationProvider {
 
+	public DecisionGroupContextInformationProvider() {
+		super();
+		isActive = true;
+	}
+
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		if (!baseElement.getDecisionGroups().isEmpty()) {
@@ -25,5 +30,10 @@ public class DecisionGroupContextInformationProvider extends ContextInformationP
 			return new RecommendationScore((float) score, getName());
 		}
 		return new RecommendationScore(1.0f, getName());
+	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that knowledge elements belonging the same decision groups/level are related.";
 	}
 }
