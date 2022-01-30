@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -30,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * Knowledge Using Context Information", 2012 Joint Working IEEE/IFIP Conference
  * on Software Architecture and European Conference on Software Architecture
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY)
 @JsonSubTypes({ @JsonSubTypes.Type(value = ActiveElementsContextInformationProvider.class),
 		@JsonSubTypes.Type(value = ComponentContextInformationProvider.class),

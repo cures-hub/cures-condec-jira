@@ -11,6 +11,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -22,6 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProviderCreator;
 import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
@@ -80,7 +83,9 @@ public class ConfigPersistenceManager {
 	 *            {@code new TypeToken<TextClassificationConfiguration>()}.
 	 */
 	private static void saveObject(String projectKey, String parameter, Object value, Type type) {
-		Gson gson = new Gson();
+		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(ContextInformationProvider.class, new ContextInformationProviderCreator());
+		Gson gson = builder.create();
 		saveValue(projectKey, parameter, gson.toJson(value, type));
 	}
 
@@ -120,12 +125,15 @@ public class ConfigPersistenceManager {
 	 *         {@link TextClassificationConfiguration}.
 	 */
 	private static Object getSavedObject(String projectKey, String parameter, Type type) {
-		Gson gson = new Gson();
+		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(ContextInformationProvider.class, new ContextInformationProviderCreator());
+		Gson gson = builder.create();
 		Object object = null;
 		try {
 			object = gson.fromJson(getValue(projectKey, parameter), type);
 		} catch (Exception e) {
 			LOGGER.error("Saved config could not be read: " + e.getMessage());
+			System.out.println("Saved config could not be read: " + e.getMessage());
 		}
 		return object;
 	}
@@ -267,15 +275,15 @@ public class ConfigPersistenceManager {
 	/**
 	 * @param projectKey
 	 *            of the Jira project (see {@link DecisionKnowledgeProject}).
-	 * @param linkSuggestionConfiguration
+	 * @param linkRecommendationConfiguration
 	 *            settings for link recommendation and duplicate recognition as a
 	 *            {@link LinkRecommendationConfiguration} object.
 	 */
 	public static void saveLinkRecommendationConfiguration(String projectKey,
-			LinkRecommendationConfiguration linkSuggestionConfiguration) {
+			LinkRecommendationConfiguration linkRecommendationConfiguration) {
 		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
-		saveObject(projectKey, "linkRecommendationConfiguration", linkSuggestionConfiguration, type);
+		saveObject(projectKey, "linkRecommendationConfiguration", linkRecommendationConfiguration, type);
 	}
 
 	/**
@@ -287,12 +295,12 @@ public class ConfigPersistenceManager {
 	public static LinkRecommendationConfiguration getLinkRecommendationConfiguration(String projectKey) {
 		Type type = new TypeToken<LinkRecommendationConfiguration>() {
 		}.getType();
-		LinkRecommendationConfiguration linkSuggestionConfiguration = (LinkRecommendationConfiguration) getSavedObject(
+		LinkRecommendationConfiguration linkRecommendationConfiguration = (LinkRecommendationConfiguration) getSavedObject(
 				projectKey, "linkRecommendationConfiguration", type);
-		if (linkSuggestionConfiguration == null) {
+		if (linkRecommendationConfiguration == null) {
 			return new LinkRecommendationConfiguration();
 		}
-		return linkSuggestionConfiguration;
+		return linkRecommendationConfiguration;
 	}
 
 	/**

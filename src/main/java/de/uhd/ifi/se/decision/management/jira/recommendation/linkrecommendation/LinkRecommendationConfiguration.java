@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -22,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * Contains the configuration details for the link recommendation and duplicate
  * recognition for one Jira project (see {@link DecisionKnowledgeProject}).
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LinkRecommendationConfiguration {
 
 	private double minProbability;
