@@ -107,4 +107,11 @@ public abstract class ContextInformationProvider {
 	public String getExplanation() {
 		return getName();
 	}
+
+	/**
+	 * @return true if the name of this and the other object is the same.
+	 */
+	public boolean equals(Object otherRule) {
+		return ((ContextInformationProvider) otherRule).getName().equals(this.getName());
+	}
 }

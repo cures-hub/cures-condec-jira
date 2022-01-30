@@ -65,6 +65,9 @@ public class ContextInformation extends ContextInformationProvider {
 		RecommendationScore score = new RecommendationScore(0, getName());
 		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
 				.getContextInformationProviders()) {
+			if (!contextInformationProvider.isActive()) {
+				continue;
+			}
 			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, otherElement);
 			score.addSubScore(scoreValue);
 		}

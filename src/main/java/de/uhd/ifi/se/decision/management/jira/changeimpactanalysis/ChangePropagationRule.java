@@ -119,6 +119,10 @@ public class ChangePropagationRule {
 		return getWeightForRule(filterSettings.getChangeImpactAnalysisConfig().getPropagationRules(), type);
 	}
 
+	/**
+	 * @return true if the {@link ChangePropagationRuleType} of this and the other
+	 *         object is the same.
+	 */
 	public boolean equals(Object otherRule) {
 		return ((ChangePropagationRule) otherRule).getType() == this.getType();
 	}
