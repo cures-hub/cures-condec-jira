@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestContextInformation extends TestSetUp {
 
-	LinkRecommendationConfiguration linkRecommendationConfiguration;
+	private LinkRecommendationConfiguration linkRecommendationConfiguration;
 
 	@Before
 	public void setUp() {
@@ -67,6 +68,13 @@ public class TestContextInformation extends TestSetUp {
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count();
 		assertTrue(linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count() > 0);
+	}
+
+	@Test
+	public void testDefaultExplanation() {
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				linkRecommendationConfiguration);
+		assertNotNull(contextInformation.getExplanation());
 	}
 
 	@After

@@ -33,6 +33,6 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public String getExplanation() {
-		return "Assumes that the knowledge elementss within the active sprint are related.";
+		return "Assumes that the knowledge elements within the active sprint are related.";
 	}
 }
