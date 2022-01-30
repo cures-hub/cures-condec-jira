@@ -18,9 +18,10 @@ import com.google.gson.JsonSerializer;
  * @issue How can we serialize and deserialize an object with the type of an
  *        interface or abstract class (e.g. a list of
  *        ContextInformationProvider)?
- * @decision We write an adapter to serialize and deserialized an object with
- *           the type of an interface or abstract class!
- * @pro Seems to be the only way to do it.
+ * @decision We write an adapter to serialize and deserialize an object with the
+ *           type of an interface or abstract class!
+ * @pro Seems to be the only way to do it. JsonTypeInfo and JsonSubTypes
+ *      annotations are only working for the REST API.
  * @con Needs a lot of helper/util code.
  * @alternative We could change the link recommendation rules (context
  *              information providers) to work the same way as the change
