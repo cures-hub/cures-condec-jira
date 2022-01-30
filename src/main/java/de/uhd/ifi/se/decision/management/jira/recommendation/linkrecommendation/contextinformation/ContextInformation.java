@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
@@ -15,18 +14,17 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
- * Provides Component in decorator pattern.
- *
+ * Provides Component in decorator pattern. Context information providers are
+ * concrete decorators
  */
 public class ContextInformation extends ContextInformationProvider {
 
 	private KnowledgeElement element;
-	private List<ContextInformationProvider> contextInformationProviders;
+	private LinkRecommendationConfiguration linkRecommendationConfig;
 
 	public ContextInformation(KnowledgeElement element, LinkRecommendationConfiguration linkRecommendationConfig) {
 		this.element = element;
-		// Add context information providers as concrete decorators
-		contextInformationProviders = linkRecommendationConfig.getContextInformationProviders();
+		this.linkRecommendationConfig = linkRecommendationConfig;
 	}
 
 	public List<Recommendation> getLinkRecommendations() {
@@ -58,17 +56,15 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {
-		LinkRecommendationConfiguration config = ConfigPersistenceManager
-				.getLinkRecommendationConfiguration(element.getProject().getProjectKey());
-		return recommendations.stream()
-				.filter(recommendation -> recommendation.getScore().getValue() >= config.getMinProbability() * 100)
-				.collect(Collectors.toList());
+		return recommendations.stream().filter(recommendation -> recommendation.getScore()
+				.getValue() >= linkRecommendationConfig.getMinProbability() * 100).collect(Collectors.toList());
 	}
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		RecommendationScore score = new RecommendationScore(0, getName());
-		for (ContextInformationProvider contextInformationProvider : contextInformationProviders) {
+		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
+				.getContextInformationProviders()) {
 			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, otherElement);
 			score.addSubScore(scoreValue);
 		}

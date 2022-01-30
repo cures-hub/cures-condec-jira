@@ -5,7 +5,7 @@
     <input class="text short-field" type="number"
            data-aui-validation-field
            value="$project.getLinkSuggestionConfiguration().getMinProbability()"
-           step="0.25" min="0" max="1"
+           step="0.05" min="0" max="1"
            id="min-probability-link" />
     <button id="save-min-probability-link-btn" class='aui-button'>Save</button>
     <div class="description">To calculate the link suggestions, the knowledge elements of a project are used as a basis. 
