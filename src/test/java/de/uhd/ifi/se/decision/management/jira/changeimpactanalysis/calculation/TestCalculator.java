@@ -57,6 +57,7 @@ public class TestCalculator extends TestSetUp {
 		propagationRules.add(rule);
 		config.setPropagationRules(propagationRules);
 		settings.setChangeImpactAnalysisConfig(config);
+		settings.recommendLinks(true);
 
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
@@ -64,7 +65,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertTrue(impactedElements.size() > 0);
+		assertEquals(12, impactedElements.size());
 	}
 
 	@Test
@@ -103,7 +104,7 @@ public class TestCalculator extends TestSetUp {
 		double decayValue = 0.25;
 
 		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
-				impactValue, "");
+				impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to a used propagation rule."));
 	}
@@ -116,7 +117,7 @@ public class TestCalculator extends TestSetUp {
 		double decayValue = 0.25;
 
 		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
-				impactValue, "");
+				impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to its parent having a lowered impact score."));
 	}
@@ -129,7 +130,7 @@ public class TestCalculator extends TestSetUp {
 		double decayValue = 0.75;
 
 		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
-				impactValue, "");
+				impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to the decay value."));
 	}
@@ -142,8 +143,8 @@ public class TestCalculator extends TestSetUp {
 		double decayValue = 1.0;
 
 		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue,
-				impactValue, LinkType.RECOMMENDED.getName());
+				impactValue, LinkType.RECOMMENDED.getName(), 0.8);
 
-		assertTrue(explanation.contains("link recommendation"));
+		assertTrue(explanation.contains("Link Recommendation Score: 0.8"));
 	}
 }

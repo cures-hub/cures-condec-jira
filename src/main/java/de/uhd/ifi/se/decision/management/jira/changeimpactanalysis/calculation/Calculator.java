@@ -41,12 +41,14 @@ public class Calculator {
 		
 		// Add link recommmendations to root element if setting has been selected
 		Set<Link> currentElementLinks = new HashSet<>(currentElement.getLinks());
-		if (filterSettings.getSelectedElement() == currentElement && filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
-			ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
-			List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
-			for (Recommendation recommendation : linkRecommendations) {
-				currentElementLinks.add((LinkRecommendation) recommendation);
-			}
+		if (filterSettings.getSelectedElement() == currentElement
+			&& filterSettings.areLinksRecommended() 
+			&& filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
+				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
+				List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
+				for (Recommendation recommendation : linkRecommendations) {
+					currentElementLinks.add((LinkRecommendation) recommendation);
+				}
 		}
 		// Iterating through all outgoing and incoming links of the current element
 		for (Link link : currentElementLinks) {
@@ -72,7 +74,17 @@ public class Calculator {
 			double decayValue = ciaConfig.getDecayValue();
 			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, nextElementInPath, link);
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
-			String impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue, linkTypeName);
+			String impactExplanation = "";
+			if (link.getClass() == LinkRecommendation.class) {
+				LinkRecommendation recommendation = (LinkRecommendation) link;
+				double linkRecommendationScore = recommendation.getScore().getValue() / 100;
+				impactValue = impactValue * linkRecommendationScore;
+				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue,
+					decayValue, impactValue, linkTypeName, linkRecommendationScore);
+			} else {
+				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue,
+					decayValue, impactValue, linkTypeName, 0);
+			}
 
 			// Add calculated impact values to new KnowledgeElementWithImpact
 			KnowledgeElementWithImpact nextElement = new KnowledgeElementWithImpact(nextElementInPath, impactValue,
@@ -131,7 +143,7 @@ public class Calculator {
 	 * @return String containing the the impact value explanation
 	 */
 	public static String generateImpactExplanation(double parentImpact, double ruleBasedValue, double decayValue,
-			double impactValue, String linkTypeName) {
+			double impactValue, String linkTypeName, double linkRecommendationScore) {
 		String impactExplanation = "";
 		if (Math.min(parentImpact, ruleBasedValue) == parentImpact && ((1 - parentImpact) >= decayValue)) {
 			impactExplanation = "This element has a lowered chance of being affected"
@@ -151,8 +163,10 @@ public class Calculator {
 					+ "by the change and probably doesn't need to be changed as well.\n";
 		}
 		if (linkTypeName.equalsIgnoreCase(LinkType.RECOMMENDED.getName())) {
-			impactExplanation += "\nThis element is not implicitly linked to the source element but has been "
-					+ "included as a result of the link recommendation.";
+			impactExplanation += "\n--- --- --- --- --- --- --- --- ---"
+				+ "\nThis element is not implicitly linked to the source element but has been "
+				+ "included as a result of the link recommendation.\nLink Recommendation Score: "
+				+ String.format("%.2f", linkRecommendationScore);
 		}
 		return impactExplanation;
 	}
