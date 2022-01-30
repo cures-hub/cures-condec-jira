@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
@@ -74,6 +75,7 @@ public class LinkRecommendationConfiguration {
 	 *            divided by the number of examined contexts to get scores between
 	 *            0.0 and 1.0.
 	 */
+	@JsonProperty
 	public void setMinProbability(double minProbability) {
 		this.minProbability = minProbability;
 	}
@@ -83,14 +85,8 @@ public class LinkRecommendationConfiguration {
 		return contextInformationProviders;
 	}
 
-	public void setContextInformationProviders(List<String> contextInformationProviderNames) {
-		this.contextInformationProviders = new ArrayList<>();
-		for (ContextInformationProvider provider : getAllContextInformationProviders()) {
-			for (String name : contextInformationProviderNames) {
-				if (provider.getName().equals(name)) {
-					this.contextInformationProviders.add(provider);
-				}
-			}
-		}
+	@JsonProperty
+	public void setContextInformationProviders(List<ContextInformationProvider> contextInformationProviders) {
+		this.contextInformationProviders = contextInformationProviders;
 	}
 }

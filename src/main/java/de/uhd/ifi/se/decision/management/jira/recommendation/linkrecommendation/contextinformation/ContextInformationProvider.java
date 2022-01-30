@@ -3,6 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.annotate.JsonTypeInfo.As;
+import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -26,6 +30,14 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * Knowledge Using Context Information", 2012 Joint Working IEEE/IFIP Conference
  * on Software Architecture and European Conference on Software Architecture
  */
+@JsonTypeInfo(use = Id.NAME, include = As.PROPERTY)
+@JsonSubTypes({ @JsonSubTypes.Type(value = ActiveElementsContextInformationProvider.class),
+		@JsonSubTypes.Type(value = ComponentContextInformationProvider.class),
+		@JsonSubTypes.Type(value = DecisionGroupContextInformationProvider.class),
+		@JsonSubTypes.Type(value = TextualSimilarityContextInformationProvider.class),
+		@JsonSubTypes.Type(value = TimeContextInformationProvider.class),
+		@JsonSubTypes.Type(value = TracingContextInformationProvider.class),
+		@JsonSubTypes.Type(value = UserContextInformationProvider.class) })
 public abstract class ContextInformationProvider {
 
 	/**

@@ -177,9 +177,16 @@
 	}
 
 	function getLinkRecommendationConfig() {
+		var selectedRuleNames = conDecFiltering.getSelectedItems("rule-dropdown-link-recommendation");
+		var selectedRules = [];
+		for (ruleName of selectedRuleNames) {
+			selectedRules.push({
+				"@type": ruleName
+			});
+		}
 		return {
 			"minProbability": document.getElementById("threshold-input-link-recommendation").value,
-			"contextInformationProviders": conDecFiltering.getSelectedItems("rule-dropdown-link-recommendation")
+			"contextInformationProviders": selectedRules
 		};
 	}
 

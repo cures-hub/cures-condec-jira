@@ -28,8 +28,7 @@ public class TestLinkRecommendationConfiguration extends TestSetUp {
 
 	@Test
 	public void testSetAndGetContextInformationProviders() {
-		config.setContextInformationProviders(
-				List.of(TextualSimilarityContextInformationProvider.class.getSimpleName()));
+		config.setContextInformationProviders(List.of(new TextualSimilarityContextInformationProvider()));
 		assertEquals(1, config.getContextInformationProviders().size());
 	}
 
