@@ -1,5 +1,5 @@
 #set ($viewIdentifier = "link-recommendation")
-<b>Recommendation of knowledge elements to be linked to the current selected knowledge element</b>
+<b>Recommendation of knowledge elements to be linked to the selected knowledge element</b>
 <form class="aui">
 <div class="condec-filter">
     <select id="link-recommendation-dropdown" class="select long-field"></select>
@@ -17,8 +17,21 @@
     $i18n.getText("condec.label.link.recommendation.rule")
 	</button>
 	<aui-dropdown-menu id="rule-dropdown-$viewIdentifier"></aui-dropdown-menu>
+	
+	<a id="config-link-$viewIdentifier" 
+		title="Rule weights and the default values for the link recommendation parameters can be changed by the rationale manager." target="_blank">
+		<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> Configuration
+	</a>
+	<br/>
+    <br/>
+    <button class="aui-button aui-button-primary" id="link-recommendation-button" 
+    	title="Recommends new links to related knowledge elements or potential duplicates. "
+    	+ "The results are cached, so you need to empty the browser cache when changing parameters.">
+        <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
+        $i18n.getText("condec.label.is.link.recommendation")
+    </button>
 </div>
-    <aui-spinner id="loading-spinner"></aui-spinner>
+    <aui-spinner id="loading-spinner" style="display:none"></aui-spinner>
 </form>
 <table class="aui aui-table-list" id="results-table">
     <thead>

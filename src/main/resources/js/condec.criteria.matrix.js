@@ -110,7 +110,7 @@
 					+ `<td headers="criterion-name">${summary}</td>`;
 			}
 
-			document.getElementById("link-to-settings").href = "../../../plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey()
+			document.getElementById("link-to-settings").href = AJS.contextPath() + "/plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey()
 				+ "&category=rationaleModel";
 
 			submitButton.onclick = function() {

@@ -113,6 +113,7 @@ public class FilterSettings implements Cloneable {
 		this.linkTypes = DecisionKnowledgeProject.getNamesOfLinkTypes();
 		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		this.changeImpactAnalysisConfig = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey);
+		this.linkRecommendationConfig = ConfigPersistenceManager.getLinkRecommendationConfiguration(projectKey);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {

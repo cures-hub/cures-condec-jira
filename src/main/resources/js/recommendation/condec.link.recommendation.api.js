@@ -11,17 +11,13 @@
 			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
 	}
 
-	ConDecLinkRecommendationAPI.prototype.getLinkRecommendations = function(projectKey, elementId, elementLocation) {
+	/**
+	 * external usage: condec.link.recommendation.js, condec.prompts.js
+	 */
+	ConDecLinkRecommendationAPI.prototype.getLinkRecommendations = function(filterSettings) {
+		var elementId = filterSettings.selectedElementObject.id;
 		if (this.currentLinkRecommendations.has(elementId)) {
 			return this.currentLinkRecommendations.get(elementId);
-		}
-		var filterSettings = {
-			"selectedElementObject": {
-				"id": elementId,
-				"documentationLocation": elementLocation,
-				"projectKey": projectKey
-			},
-			"linkRecommendationConfig": getLinkRecommendationConfig()
 		}
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations", filterSettings)
 			.then(recommendations => {
@@ -30,13 +26,6 @@
 				return recommendations;
 			});
 	};
-
-	function getLinkRecommendationConfig() {
-		return {
-			"minProbability": document.getElementById("threshold-input-link-recommendation").value,
-			"contextInformationProviders": conDecFiltering.getSelectedItems("rule-dropdown-link-recommendation")
-		};
-	}
 
 	ConDecLinkRecommendationAPI.prototype.discardRecommendation = function(projectKey, recommendation) {
 		recommendation.isDiscarded = true;

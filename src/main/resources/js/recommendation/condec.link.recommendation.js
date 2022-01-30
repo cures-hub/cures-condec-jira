@@ -12,6 +12,7 @@
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
 
+		// fill dropdown to select a knowledge element
 		var jiraIssueId = JIRA.Issue.getIssueId();
 		if (jiraIssueId) {
 			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i',
@@ -20,6 +21,7 @@
 			initKnowledgeElementDropdown();
 		}
 
+		// fill link recommendation parameters from current configuration
 		conDecLinkRecommendationAPI.getLinkRecommendationConfig().then(config => {
 			console.log(config);
 			document.getElementById("threshold-input-link-recommendation").value = config["minProbability"];
@@ -34,6 +36,11 @@
 			}
 			conDecFiltering.initDropdown("rule-dropdown-link-recommendation", ruleNames, selectedRules);
 		});
+
+		linkConfigPage();
+		
+		// add button listener
+		addOnClickListenerOnRecommendationButton();
 	};
 
 	function initKnowledgeElementDropdown(selectedElement) {
@@ -46,8 +53,21 @@
 			conDecFiltering.initKnowledgeElementDropdown(dropdown, elements, selectedElement,
 				"link-recommendation", (selectedElement) => {
 					conDecLinkRecommendation.selectedElement = selectedElement;
-					conDecLinkRecommendation.loadData();
 				}));
+	}
+	
+	function linkConfigPage() {
+		var configLink = document.getElementById("config-link-link-recommendation");
+		configLink.href = AJS.contextPath() + "/plugins/servlet/condec/settings?projectKey="
+			+ conDecAPI.projectKey + "&category=linkRecommendation";
+		AJS.$(configLink).tooltip();
+	}
+	
+	function addOnClickListenerOnRecommendationButton() {
+		$("#link-recommendation-button").click(function(event) {
+			event.preventDefault();
+			conDecLinkRecommendation.loadData();
+		});
 	}
 
 	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {
@@ -141,11 +161,25 @@
 
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
+		this.selectedElement.projectKey = this.projectKey;
+		
+		var filterSettings = {
+			"selectedElementObject": this.selectedElement,
+			"projectKey": this.projectKey,
+			"linkRecommendationConfig": getLinkRecommendationConfig()
+		}
 
-		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(this.projectKey, this.selectedElement.id, this.selectedElement.documentationLocation))
+		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(filterSettings))
 			.then((relatedIssues) => this.displayRelatedElements(relatedIssues))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));
+	}
+
+	function getLinkRecommendationConfig() {
+		return {
+			"minProbability": document.getElementById("threshold-input-link-recommendation").value,
+			"contextInformationProviders": conDecFiltering.getSelectedItems("rule-dropdown-link-recommendation")
+		};
 	}
 
 	//-----------------------------------------
