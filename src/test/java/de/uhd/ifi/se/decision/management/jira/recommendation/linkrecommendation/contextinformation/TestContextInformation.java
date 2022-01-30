@@ -9,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
@@ -22,28 +20,28 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestContextInformation extends TestSetUp {
 
+	LinkRecommendationConfiguration linkRecommendationConfiguration;
+
 	@Before
 	public void setUp() {
+		linkRecommendationConfiguration = new LinkRecommendationConfiguration();
+		linkRecommendationConfiguration.getContextInformationProviders().stream().forEach(rule -> rule.setActive(true));
 		init();
 	}
 
 	@Test
 	public void testGetLinkRecommendations() {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
-				new LinkRecommendationConfiguration());
+				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertTrue(linkRecommendations.size() > 7);
+		assertTrue(linkRecommendations.size() > 2);
 	}
 
 	@Test
 	public void testFilterLinkRecommendationsByScore() {
-		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
-				.getLinkRecommendationConfiguration("TEST");
-		linkSuggestionConfiguration.setMinProbability(0.8);
-		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", linkSuggestionConfiguration);
-
+		linkRecommendationConfiguration.setMinProbability(0.8);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
-				new LinkRecommendationConfiguration());
+				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 8);
 	}
@@ -53,7 +51,7 @@ public class TestContextInformation extends TestSetUp {
 	public void testLinkRecommendationsNotGeneratedForIrrelevantPartsOfText() {
 		JiraIssues.getIrrelevantSentence();
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
-				new LinkRecommendationConfiguration());
+				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 7);
 	}
@@ -65,7 +63,7 @@ public class TestContextInformation extends TestSetUp {
 				KnowledgeElements.getOtherWorkItem());
 		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
-				new LinkRecommendationConfiguration());
+				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count();
 		assertTrue(linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count() > 0);
@@ -74,6 +72,6 @@ public class TestContextInformation extends TestSetUp {
 	@After
 	public void tearDown() {
 		// reset plugin settings to default settings
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", new LinkRecommendationConfiguration());
 	}
 }
