@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
+package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.lang.reflect.Type;
 
@@ -11,6 +11,22 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+/**
+ * Helper class to support serialization and deserialization with GSON in the
+ * {@link ConfigPersistenceManager}.
+ * 
+ * @issue How can we serialize and deserialize an object with the type of an
+ *        interface or abstract class (e.g. a list of
+ *        ContextInformationProvider)?
+ * @decision We write an adapter to serialize and deserialized an object with
+ *           the type of an interface or abstract class!
+ * @pro Seems to be the only way to do it.
+ * @con Needs a lot of helper/util code.
+ * @alternative We could change the link recommendation rules (context
+ *              information providers) to work the same way as the change
+ *              propagation rules.
+ * @pro The code would be easier to understand if both features work the same.
+ */
 public class InterfaceAndAbstractClassAdapter implements JsonSerializer<Object>, JsonDeserializer<Object> {
 	private static final String CLASSNAME = "CLASSNAME";
 	private static final String DATA = "DATA";
@@ -37,7 +53,6 @@ public class InterfaceAndAbstractClassAdapter implements JsonSerializer<Object>,
 		try {
 			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
-			// e.printStackTrace();
 			throw new JsonParseException(e.getMessage());
 		}
 	}

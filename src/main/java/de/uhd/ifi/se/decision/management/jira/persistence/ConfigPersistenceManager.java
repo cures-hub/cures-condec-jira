@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.InterfaceAndAbstractClassAdapter;
 import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
