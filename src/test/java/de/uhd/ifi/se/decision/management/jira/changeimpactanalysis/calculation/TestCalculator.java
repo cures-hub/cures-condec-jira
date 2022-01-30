@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElem
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class TestCalculator extends TestSetUp {
 
@@ -55,7 +57,9 @@ public class TestCalculator extends TestSetUp {
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		propagationRules.add(rule);
 		config.setPropagationRules(propagationRules);
-		settings.setChangeImpactAnalysisConfig(config);
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-1");
 
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
@@ -112,5 +116,10 @@ public class TestCalculator extends TestSetUp {
 				impactValue);
 
 		assertTrue(explanation.contains("mainly due to the decay value."));
+	}
+
+	@After
+	public void tearDown() {
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", new ChangeImpactAnalysisConfiguration());
 	}
 }

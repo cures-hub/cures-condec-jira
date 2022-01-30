@@ -5,14 +5,20 @@
  */
 (function(global) {
 
+	var selectedDecisionProblem;
+
 	let ConDecDecisionGuidance = function() {
 
 	};
 
 	ConDecDecisionGuidance.prototype.initView = function() {
-
 		// get all the decision problems for the dropdown and fill the dropdown
-		conDecAPI.getDecisionProblems({}, fillDecisionProblemDropDown);
+		let dropdown = document.getElementById("decision-guidance-dropdown");
+		conDecAPI.getDecisionProblems({}, (decisionProblems) =>
+			conDecFiltering.initKnowledgeElementDropdown(dropdown, decisionProblems, this.selectedDecisionProblem,
+				"decision-guidance", (selectedElement) => {
+					conDecDecisionGuidance.selectedDecisionProblem = selectedElement;
+				}));
 
 		// add button listener
 		this.addOnClickListenerForRecommendations();
@@ -28,20 +34,15 @@
 		var tableBody = document.getElementById("recommendation-container-table-body");
 		$("#recommendation-button").click(function(event) {
 			event.preventDefault();
-			let dropDownElement = document.getElementById("decision-guidance-dropdown-items");
-			let selectedElement = {
-				id: Number(dropDownElement.value.split(":")[0]),
-				documentationLocation: dropDownElement.value.split(":")[1],
-				projectKey: conDecAPI.getProjectKey()
-			};
 			tableBody.innerHTML = "";
 			const spinner = $("#loading-spinner-recommendation");
 			const keywords = document.getElementById("recommendation-keywords").value;
 			spinner.show();
-			Promise.resolve(conDecDecisionGuidanceAPI.getRecommendations(selectedElement, keywords))
+			conDecDecisionGuidance.selectedDecisionProblem.projectKey = conDecAPI.projectKey;
+			Promise.resolve(conDecDecisionGuidanceAPI.getRecommendations(conDecDecisionGuidance.selectedDecisionProblem, keywords))
 				.then((recommendations) => {
 					if (recommendations.length > 0) {
-						buildRecommendationTable(recommendations, selectedElement);
+						buildRecommendationTable(recommendations, conDecDecisionGuidance.selectedDecisionProblem);
 					} else {
 						tableBody.innerHTML = "<i>No recommendations found!</i>";
 					}
@@ -96,22 +97,5 @@
 		});
 	}
 
-	/**
-	 * @param issues
-	 *            all decision problems found.
-	 */
-	function fillDecisionProblemDropDown(issues) {
-		let dropDown = document.getElementById("decision-guidance-dropdown-items");
-		dropDown.innerHTML = "";
-
-		if (!issues.length) {
-			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create a new issue!</option>";
-			return;
-		}
-
-		for (let issue of issues) {
-			dropDown.innerHTML += "<option value='" + issue.id + ":" + issue.documentationLocation + "'>" + issue.summary + "</option>";
-		}
-	}
 	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);

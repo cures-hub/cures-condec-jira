@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -335,6 +336,16 @@ public class TestFilterSettings extends TestSetUp {
 		assertFalse(filterSettings.areLinksRecommended());
 		filterSettings.recommendLinks(true);
 		assertTrue(filterSettings.areLinksRecommended());
+	}
+
+	@Test
+	public void testCLinkRecommendationConfig() {
+		LinkRecommendationConfiguration config = filterSettings.getLinkRecommendationConfig();
+		// default value
+		assertEquals(0.85, config.getMinProbability(), 0.0);
+		config.setMinProbability(0.42);
+		filterSettings.setLinkRecommendationConfig(config);
+		assertEquals(0.42, filterSettings.getLinkRecommendationConfig().getMinProbability(), 0.0);
 	}
 
 	@Test

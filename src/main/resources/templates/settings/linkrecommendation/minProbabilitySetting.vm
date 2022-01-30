@@ -1,11 +1,11 @@
 <h3>Settings for the suggested related knowledge elements</h3>
 
 <div class="field-group top-label">
-    <label for="min-probability-link">Minimum score for link suggestion</label>
+    <label for="min-probability-link">Minimum score for link recommendation (threshold)</label>
     <input class="text short-field" type="number"
            data-aui-validation-field
-           value="$project.getLinkSuggestionConfiguration().getMinProbability()"
-           step="0.25" min="0" max="1"
+           value="$linkRecommendationConfig.getMinProbability()"
+           step="0.05" min="0" max="1"
            id="min-probability-link" />
     <button id="save-min-probability-link-btn" class='aui-button'>Save</button>
     <div class="description">To calculate the link suggestions, the knowledge elements of a project are used as a basis. 

@@ -1,14 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.annotate.JsonTypeInfo.As;
+import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
- * Interface for different context information providers to realize context
- * utility functions. For example, the {@link TimeContextInformationProvider}
- * rates relations based on time of creation or modifications of elements.
+ * Abstract class for different context information providers (=link
+ * recommendation rules) to realize context utility functions. For example, the
+ * {@link TimeContextInformationProvider} rates relations based on time of
+ * creation or modifications of elements.
  * 
  * This abstract class is part of the Decorator design pattern. It is the
  * abstract decorator and the concrete decorators are the subclasses, such as
@@ -16,18 +26,40 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * {@link UserContextInformationProvider}, and
  * {@link TextualSimilarityContextInformationProvider}.
  *
- * @implSpec C. Miesbauer and R. Weinreich, "Capturing and Maintaining
- *           Architectural Knowledge Using Context Information", 2012 Joint
- *           Working IEEE/IFIP Conference on Software Architecture and European
- *           Conference on Software Architecture
+ * ConDec's link recommendation is inspired by the following publication: C.
+ * Miesbauer and R. Weinreich, "Capturing and Maintaining Architectural
+ * Knowledge Using Context Information", 2012 Joint Working IEEE/IFIP Conference
+ * on Software Architecture and European Conference on Software Architecture
  */
-public interface ContextInformationProvider {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = Id.NAME, include = As.PROPERTY)
+@JsonSubTypes({ @JsonSubTypes.Type(value = ActiveElementsContextInformationProvider.class),
+		@JsonSubTypes.Type(value = ComponentContextInformationProvider.class),
+		@JsonSubTypes.Type(value = DecisionGroupContextInformationProvider.class),
+		@JsonSubTypes.Type(value = TextualSimilarityContextInformationProvider.class),
+		@JsonSubTypes.Type(value = TimeContextInformationProvider.class),
+		@JsonSubTypes.Type(value = TracingContextInformationProvider.class),
+		@JsonSubTypes.Type(value = UserContextInformationProvider.class) })
+public abstract class ContextInformationProvider {
+
+	/**
+	 * Default activation of link recommendation rule (=context information
+	 * provider)
+	 */
+	protected boolean isActive;
+	protected float weightValue;
+
+	public ContextInformationProvider() {
+		isActive = true;
+		weightValue = 1;
+	}
 
 	/**
 	 * @return name of the context information provider. Used as the explanation in
 	 *         the {@link RecommendationScore}.
 	 */
-	default String getName() {
+	@XmlElement
+	public String getName() {
 		return getClass().getSimpleName();
 	}
 
@@ -48,4 +80,52 @@ public interface ContextInformationProvider {
 	 */
 	public abstract RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement);
 
+	/**
+	 * @return the activation status of the link recommendation rule.
+	 */
+	@XmlElement
+	public boolean isActive() {
+		return isActive;
+	}
+
+	/**
+	 * @param isActive
+	 *            activation status of the link recommendation rule.
+	 */
+	@JsonProperty("isActive")
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	/**
+	 * @return the weight value of the link recommendation rule.
+	 */
+	@XmlElement
+	public float getWeightValue() {
+		return weightValue;
+	}
+
+	/**
+	 * @param weightValue
+	 *            of the link recommendation rule.
+	 */
+	@JsonProperty
+	public void setWeightValue(float weightValue) {
+		this.weightValue = weightValue;
+	}
+
+	/**
+	 * @return explanation for the link recommendation rule.
+	 */
+	@XmlElement
+	public String getExplanation() {
+		return getName();
+	}
+
+	/**
+	 * @return true if the name of this and the other object is the same.
+	 */
+	public boolean equals(Object otherRule) {
+		return ((ContextInformationProvider) otherRule).getName().equals(this.getName());
+	}
 }

@@ -1,5 +1,7 @@
 <h2>Settings for the link recommendation and duplicate recognition within one project</h2>
+#set($linkRecommendationConfig = $project.getLinkSuggestionConfiguration())
 
 <form class="aui">
     #parse("templates/settings/linkrecommendation/minProbabilitySetting.vm")
+    #parse("templates/settings/linkrecommendation/rules.vm")
 </form>

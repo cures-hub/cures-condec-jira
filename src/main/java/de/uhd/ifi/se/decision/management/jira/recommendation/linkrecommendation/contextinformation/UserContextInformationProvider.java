@@ -11,7 +11,12 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * person last modifying an element for rating relations. A relation is assumed
  * if an element have been implemented or modified by the same user.
  */
-public class UserContextInformationProvider implements ContextInformationProvider {
+public class UserContextInformationProvider extends ContextInformationProvider {
+
+	public UserContextInformationProvider() {
+		super();
+		isActive = false;
+	}
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
@@ -30,5 +35,10 @@ public class UserContextInformationProvider implements ContextInformationProvide
 			return 0.3;
 		}
 		return 0;
+	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that knowledge elements created or modified by the same user are related.";
 	}
 }

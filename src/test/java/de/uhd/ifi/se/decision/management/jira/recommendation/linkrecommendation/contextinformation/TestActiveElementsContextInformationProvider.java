@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,5 +26,10 @@ public class TestActiveElementsContextInformationProvider extends TestSetUp {
 				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
 		assertEquals(0.0, score.getValue(), 0);
 		assertEquals("ActiveElementsContextInformationProvider (same Sprint)", score.getExplanation());
+	}
+
+	@Test
+	public void testExplanation() {
+		assertNotNull(activeElementsContextInformationProvider.getExplanation());
 	}
 }

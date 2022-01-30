@@ -3,10 +3,8 @@
 	const viewIdentifier = "criteria-matrix";
 
 	let ConDecDecisionTable = function ConDecDecisionTable() {
+		this.selectedDecisionProblem;
 	};
-
-	let issues = [];
-	let currentIssue;
 
 	ConDecDecisionTable.prototype.initView = function(isJiraIssueView = false) {
 		// Fill HTML elements for filter criteria
@@ -33,10 +31,6 @@
 		conDecDecisionTable.loadDecisionProblems();
 	};
 
-	ConDecDecisionTable.prototype.getCurrentIssue = function() {
-		return currentIssue;
-	};
-
 	ConDecDecisionTable.prototype.addOnClickEventToDecisionTableButtons = function(viewIdentifier = "criteria-matrix") {
 		document.getElementById("add-criterion-button-" + viewIdentifier).addEventListener("click", function(event) {
 			conDecDecisionTable.showAddCriteriaToDecisionTableDialog(viewIdentifier);
@@ -47,63 +41,27 @@
 	};
 
 	/**
-   * external references: none, called in updateView function
-   */
+     * external references: none, called in updateView function
+     */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function() {
 		console.log("conDecDecisionTable loadDecisionProblems");
 		var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
+		let dropdown = document.getElementById("decision-problem-dropdown");
 		conDecAPI.getDecisionProblems(filterSettings, (decisionProblems) =>
-			fillDecisionProblemDropDown(decisionProblems, viewIdentifier));
+			conDecFiltering.initKnowledgeElementDropdown(dropdown, decisionProblems, this.selectedDecisionProblem,
+				viewIdentifier, conDecDecisionTable.build));
 	};
 
-	/**
-	 * @param issues
-	 *            all decision problems found.
-	 */
-	function fillDecisionProblemDropDown(issues, viewIdentifier) {
-		let dropDown = document.getElementById("decision-problem-dropdown");
-		dropDown.innerHTML = "";
-
-		if (!issues.length) {
-			enableButtons(false, viewIdentifier);
-			dropDown.innerHTML += "<option disabled>Could not find any issue. Please create a new issue!</option>";
-			return;
+	ConDecDecisionTable.prototype.build = function(decisionProblem, viewIdentifier = "decision-table") {
+		const filterSettings = {
+			"selectedElement": decisionProblem.key
 		}
-
-		enableButtons(true, viewIdentifier);
-		for (let issue of issues) {
-			dropDown.innerHTML += "<option value='" + issue.id + "'>" + issue.summary + "</option>";
-		}
-
-		function selectDecisionProblem() {
-			currentIssue = issues.find(issue => (dropDown.value).match(issue.id));
-			const filterSettings = {
-				"selectedElement": currentIssue.key
-			}
-			conDecDecisionTable.build(filterSettings, viewIdentifier, currentIssue);
-		}
-
-		dropDown.addEventListener("change", selectDecisionProblem);
-
-		if (currentIssue !== undefined && issues.find(issue => currentIssue.id === issue.id)) {
-			dropDown.value = currentIssue.id;
-		}
-		selectDecisionProblem();
-	}
-
-	function enableButtons(areButtonsEnabled, viewIdentifier) {
-		document.getElementById("add-criterion-button-" + viewIdentifier).disabled = !areButtonsEnabled;
-		document.getElementById("add-alternative-button-" + viewIdentifier).disabled = !areButtonsEnabled;
-		document.getElementById("add-argument-button-" + viewIdentifier).disabled = !areButtonsEnabled;
-	}
-
-	ConDecDecisionTable.prototype.build = function(filterSettings, viewIdentifier = "decision-table", decisionProblem) {
-		this.viewIdentifier = viewIdentifier;
-		currentIssue = decisionProblem;
+		conDecDecisionTable.viewIdentifier = viewIdentifier;
+		conDecDecisionTable.selectedDecisionProblem = decisionProblem;
 		conDecAPI.getDecisionTable(filterSettings, function(decisionTable) {
 			buildDecisionTable(decisionTable, viewIdentifier);
 		});
-	}
+	};
 
 	ConDecDecisionTable.prototype.showAddCriteriaToDecisionTableDialog = function(viewIdentifier) {
 		showAddCriterionToDecisionTableDialog(decisionTableData.criteria, function(selectedCriteria) {
@@ -152,7 +110,7 @@
 					+ `<td headers="criterion-name">${summary}</td>`;
 			}
 
-			document.getElementById("link-to-settings").href = "../../../plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey()
+			document.getElementById("link-to-settings").href = AJS.contextPath() + "/plugins/servlet/condec/settings?projectKey=" + conDecAPI.getProjectKey()
 				+ "&category=rationaleModel";
 
 			submitButton.onclick = function() {
@@ -173,8 +131,8 @@
 	}
 
 	ConDecDecisionTable.prototype.showCreateDialogForIssue = function() {
-		if (currentIssue) {
-			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative");
+		if (selectedDecisionProblem) {
+			conDecDialog.showCreateDialog(selectedDecisionProblem.id, selectedDecisionProblem.documentationLocation, "Alternative");
 		}
 	}
 

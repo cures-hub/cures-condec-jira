@@ -134,8 +134,8 @@ public class TestGetFilteredGraph extends TestSetUp {
 		filterSettings.recommendLinks(true);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();
-		List<Recommendation> recommendations = new ContextInformation(filterSettings.getSelectedElement())
-				.getLinkRecommendations();
+		List<Recommendation> recommendations = new ContextInformation(filterSettings.getSelectedElement(),
+				filterSettings.getLinkRecommendationConfig()).getLinkRecommendations();
 		assertFalse(recommendations.isEmpty());
 		assertTrue(subgraph.containsEdge((LinkRecommendation) recommendations.get(0)));
 	}

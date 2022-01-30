@@ -75,7 +75,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #parse("templates/tabs/qualityCheck.vm")
     </div>
     <div class="tabs-pane" id="text-classification-tab">
-        #set ($viewIdentifier = "jira-issue-module")
         #parse("templates/tabs/textClassification.vm")
     </div>
     <div class="tabs-pane" id="link-recommendation-tab">

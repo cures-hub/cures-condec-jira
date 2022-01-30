@@ -5,7 +5,7 @@
  * Requires no other module
  *
  * Is required by: conDecJiraIssueModule, conDecEvolutionPage,
- * ConDecRelationshipPage, conDecMatrix, conDecRationaleBacklog,
+ * conDecRelationshipPage, conDecMatrix, conDecRationaleBacklog,
  * conDecKnowledgePage
  *
  * @issue Should filters change all views or only the current view?
@@ -45,8 +45,8 @@
 
 		// change impact highlighting
 		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
-			$("#decay-input-" + viewIdentifier)[0].value = config["decayValue"];
-			$("#threshold-input-" + viewIdentifier)[0].value = config["threshold"];
+			document.getElementById("decay-input-" + viewIdentifier).value = config["decayValue"];
+			document.getElementById("threshold-input-" + viewIdentifier).value = config["threshold"];
 			console.log(config["propagationRules"]);
 			var propagationRuleNames = [];
 			var selectedRules = [];
@@ -530,6 +530,35 @@
 			}
 		});
 	};
+	
+	/**
+	 * external usage: condec.criteria.matrix.js, condec.decision.guidance.js, condec.link.recommedations.js
+	 */
+	ConDecFiltering.prototype.initKnowledgeElementDropdown = function(dropdown, elements, selectedElement, viewIdentifier, callback) {
+		dropdown.innerHTML = "";
+
+		if (!elements.length) {
+			dropdown.innerHTML += "<option disabled>Could not find any element.</option>";
+			return;
+		}
+
+		for (let element of elements) {
+			dropdown.innerHTML += "<option value='" + element.id + "'>" + element.summary + "</option>";
+		}
+
+		function selectElement() {
+			selectedElement = elements.find(element => (dropdown.value).match(element.id));
+			callback(selectedElement, viewIdentifier);
+		}
+		
+		$(dropdown).on("change", selectElement);
+
+		if (selectedElement && elements.find(element => selectedElement.id === element.id)) {
+			dropdown.value = selectedElement.id;
+		}
+		selectElement();
+		AJS.$(dropdown).auiSelect2();
+	}
 
 	global.conDecFiltering = new ConDecFiltering();
 })(window);

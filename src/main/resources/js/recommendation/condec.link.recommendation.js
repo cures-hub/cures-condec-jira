@@ -1,5 +1,5 @@
 /**
- * This module implements the link suggestion and duplicate detection.
+ * This module implements the link recommendation and duplicate detection.
  */
 (function(global) {
 
@@ -8,17 +8,70 @@
 	};
 
 	ConDecLinkRecommendation.prototype.init = function() {
-		this.issueId = JIRA.Issue.getIssueId();
-
 		this.loadingSpinnerElement = document.getElementById("loading-spinner");
 		this.resultsTableElement = document.getElementById("results-table");
 		this.resultsTableContentElement = document.getElementById("table-content");
 
-		this.loadData();
+		// fill dropdown to select a knowledge element
+		var jiraIssueId = JIRA.Issue.getIssueId();
+		if (jiraIssueId) {
+			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i',
+				(element) => initKnowledgeElementDropdown(element));
+		} else {
+			initKnowledgeElementDropdown();
+		}
+
+		// fill link recommendation parameters from current configuration
+		conDecLinkRecommendationAPI.getLinkRecommendationConfig().then(config => {
+			console.log(config);
+			document.getElementById("threshold-input-link-recommendation").value = config["minProbability"];
+			var ruleNames = [];
+			var selectedRules = [];
+			for (var rule of config["contextInformationProviders"]) {
+				var name = rule.name;
+				ruleNames.push(name);
+				if (rule.isActive) {
+					selectedRules.push(name);
+				}
+			}
+			conDecFiltering.initDropdown("rule-dropdown-link-recommendation", ruleNames, selectedRules);
+		});
+
+		linkConfigPage();
+
+		// add button listener
+		addOnClickListenerOnRecommendationButton();
+	};
+
+	function initKnowledgeElementDropdown(selectedElement) {
+		filterSettings = {};
+		if (selectedElement) {
+			filterSettings.selectedElementObject = selectedElement;
+		}
+		let dropdown = document.getElementById("link-recommendation-dropdown");
+		conDecAPI.getKnowledgeElements(filterSettings, (elements) =>
+			conDecFiltering.initKnowledgeElementDropdown(dropdown, elements, selectedElement,
+				"link-recommendation", (selectedElement) => {
+					conDecLinkRecommendation.selectedElement = selectedElement;
+				}));
 	}
 
-	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {		
-		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.issueId)[index])
+	function linkConfigPage() {
+		var configLink = document.getElementById("config-link-link-recommendation");
+		configLink.href = AJS.contextPath() + "/plugins/servlet/condec/settings?projectKey="
+			+ conDecAPI.projectKey + "&category=linkRecommendation";
+		AJS.$(configLink).tooltip();
+	}
+
+	function addOnClickListenerOnRecommendationButton() {
+		$("#link-recommendation-button").click(function(event) {
+			event.preventDefault();
+			conDecLinkRecommendation.loadData();
+		});
+	}
+
+	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarded link recommendation successfully!");
 				this.loadData();
@@ -27,7 +80,7 @@
 	};
 
 	ConDecLinkRecommendation.prototype.undoDiscardRecommendation = function(index) {
-		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.issueId)[index])
+		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarding link recommendation successfully undone!");
 				this.loadData();
@@ -103,16 +156,38 @@
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {
 		let target = conDecLinkRecommendationAPI.currentLinkRecommendations[index].target;
 		let self = this;
-		conDecDialog.showLinkDialog(this.issueId, "i", target.id, target.documentationLocation, () => self.loadData());
+		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation, () => self.loadData());
 	};
 
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
+		this.selectedElement.projectKey = this.projectKey;
 
-		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(this.projectKey, this.issueId, 'i'))
+		var filterSettings = {
+			"selectedElementObject": this.selectedElement,
+			"projectKey": this.projectKey,
+			"linkRecommendationConfig": getLinkRecommendationConfig(),
+			"isCacheCleared": document.getElementById("clear-link-recommendation-cache-input").checked
+		}
+
+		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(filterSettings))
 			.then((relatedIssues) => this.displayRelatedElements(relatedIssues))
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement));
+	}
+
+	function getLinkRecommendationConfig() {
+		var selectedRuleNames = conDecFiltering.getSelectedItems("rule-dropdown-link-recommendation");
+		var selectedRules = [];
+		for (ruleName of selectedRuleNames) {
+			selectedRules.push({
+				"@type": ruleName
+			});
+		}
+		return {
+			"minProbability": document.getElementById("threshold-input-link-recommendation").value,
+			"contextInformationProviders": selectedRules
+		};
 	}
 
 	//-----------------------------------------
