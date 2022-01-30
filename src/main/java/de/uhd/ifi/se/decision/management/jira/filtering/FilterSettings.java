@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
 import de.uhd.ifi.se.decision.management.jira.metric.RationaleCoverageCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -689,7 +690,14 @@ public class FilterSettings implements Cloneable {
 		this.changeImpactAnalysisConfig.setContext(changeImpactAnalysisConfig.getContext());
 		this.changeImpactAnalysisConfig.setDecayValue(changeImpactAnalysisConfig.getDecayValue());
 		this.changeImpactAnalysisConfig.setThreshold(changeImpactAnalysisConfig.getThreshold());
-		this.changeImpactAnalysisConfig.setPropagationRules(changeImpactAnalysisConfig.getPropagationRules());
+		// only the activation can be set for the rules
+		for (ChangePropagationRule rule : this.changeImpactAnalysisConfig.getPropagationRules()) {
+			if (changeImpactAnalysisConfig.getPropagationRules().contains(rule)) {
+				rule.setActive(true);
+			} else {
+				rule.setActive(false);
+			}
+		}
 	}
 
 	/**

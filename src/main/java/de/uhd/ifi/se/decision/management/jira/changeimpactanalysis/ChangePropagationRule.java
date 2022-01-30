@@ -118,4 +118,8 @@ public class ChangePropagationRule {
 	public static float getWeightForRule(FilterSettings filterSettings, ChangePropagationRuleType type) {
 		return getWeightForRule(filterSettings.getChangeImpactAnalysisConfig().getPropagationRules(), type);
 	}
+
+	public boolean equals(Object otherRule) {
+		return ((ChangePropagationRule) otherRule).getType() == this.getType();
+	}
 }

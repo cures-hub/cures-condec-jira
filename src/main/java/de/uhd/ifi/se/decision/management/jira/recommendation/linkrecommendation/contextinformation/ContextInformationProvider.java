@@ -10,9 +10,10 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
- * Abstract class for different context information providers to realize context
- * utility functions. For example, the {@link TimeContextInformationProvider}
- * rates relations based on time of creation or modifications of elements.
+ * Abstract class for different context information providers (=link
+ * recommendation rules) to realize context utility functions. For example, the
+ * {@link TimeContextInformationProvider} rates relations based on time of
+ * creation or modifications of elements.
  * 
  * This abstract class is part of the Decorator design pattern. It is the
  * abstract decorator and the concrete decorators are the subclasses, such as
@@ -20,15 +21,16 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * {@link UserContextInformationProvider}, and
  * {@link TextualSimilarityContextInformationProvider}.
  *
- * Is inspired by the following publication: C. Miesbauer and R. Weinreich,
- * "Capturing and Maintaining Architectural Knowledge Using Context
- * Information", 2012 Joint Working IEEE/IFIP Conference on Software
- * Architecture and European Conference on Software Architecture
+ * ConDec's link recommendation is inspired by the following publication: C.
+ * Miesbauer and R. Weinreich, "Capturing and Maintaining Architectural
+ * Knowledge Using Context Information", 2012 Joint Working IEEE/IFIP Conference
+ * on Software Architecture and European Conference on Software Architecture
  */
 public abstract class ContextInformationProvider {
 
 	/**
-	 * Default activation of link recommendation rule
+	 * Default activation of link recommendation rule (=context information
+	 * provider)
 	 */
 	protected boolean isActive;
 	protected float weightValue;
@@ -98,6 +100,9 @@ public abstract class ContextInformationProvider {
 		this.weightValue = weightValue;
 	}
 
+	/**
+	 * @return explanation for the link recommendation rule.
+	 */
 	@XmlElement
 	public String getExplanation() {
 		return getName();
