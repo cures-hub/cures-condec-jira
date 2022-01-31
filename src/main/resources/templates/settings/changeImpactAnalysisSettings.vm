@@ -51,7 +51,7 @@ parent/ancestor element and the current element, and
 </div>
 
 <h3>Ruleset Parameters</h3>
-Select the default ruleset and weights for individual rules.
+<p>Select the default ruleset and weights for individual rules.</p>
 
 <table class="aui aui-table-list aui-table-sortable">
 	<thead>

@@ -124,6 +124,9 @@ public class Calculator {
 		// Each rule is individually mapped with its description and corresponding
 		// impact score
 		for (ChangePropagationRule rule : filterSettings.getChangeImpactAnalysisConfig().getPropagationRules()) {
+			if (!rule.isActive()) {
+				continue;
+			}
 			double ruleCalculationValue = rule.getType().getFunction().isChangePropagated(filterSettings,
 					currentElement, link);
 			ruleBasedValue = ruleBasedValue * ruleCalculationValue;

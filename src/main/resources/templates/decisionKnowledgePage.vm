@@ -25,18 +25,21 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         </li>
         <li class="menu-item" id="menu-item-adjacency-matrix">
         	<a href="#adjacency-matrix-tab">$i18n.getText('condec.label.adjacency.matrix')</a>
-        </li>
-        <li class="menu-item" id="menu-item-decision-guidance">
-            <a href="#decision-guidance-tab">$i18n.getText('condec.decision.guidance')</a>
+        </li>        
+        <li class="menu-item" id="menu-item-git">
+            <a href="#git-tab">$i18n.getText('condec.knowledge.in.git')</a>
         </li>
         <li class="menu-item" id="menu-item-groups">
         	<a href="#decision-groups-tab">Decision Groups</a>
         </li>
         <li class="menu-item" id="menu-item-text-classification">
             <a href="#text-classification-tab">$i18n.getText('condec.project.settings.menu.item.classification')</a>
-        </li>
-        <li class="menu-item" id="menu-item-git">
-            <a href="#git-tab">$i18n.getText('condec.knowledge.in.git')</a>
+        </li>        
+        <li class="menu-item" id="menu-item-link-recommendation">
+			<a href="#link-recommendation-tab">$i18n.getText('condec.link.recommendation')</a>
+		</li>
+		<li class="menu-item" id="menu-item-decision-guidance">
+            <a href="#decision-guidance-tab">$i18n.getText('condec.decision.guidance')</a>
         </li>
 	</ul>
 	<div #if(!$codeFileName && !$knowledgeType) class="tabs-pane active-pane" #else class="tabs-pane" #end id="rationale-backlog-tab">
@@ -60,8 +63,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div class="tabs-pane" id="adjacency-matrix-tab">
         #parse("templates/tabs/matrix/view.vm")
     </div>
-    <div class="tabs-pane" id="decision-guidance-tab">
-        #parse("templates/tabs/recommendation/decisionGuidance.vm")
+    <div class="tabs-pane" id="git-tab">
+        #parse("templates/tabs/knowledgeInGit.vm")
     </div>
     <div class="tabs-pane" id="decision-groups-tab">
         #parse("templates/tabs/decisionGroups.vm")
@@ -70,8 +73,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
         #set ($viewIdentifier = "decision-knowledge-page")
         #parse("templates/tabs/textClassification.vm")
     </div>
-    <div class="tabs-pane" id="git-tab">
-        #parse("templates/tabs/knowledgeInGit.vm")
+    <div class="tabs-pane" id="link-recommendation-tab">
+		#parse("templates/tabs/recommendation/linkRecommendation.vm")
+	</div>
+	<div class="tabs-pane" id="decision-guidance-tab">
+        #parse("templates/tabs/recommendation/decisionGuidance.vm")
     </div>
 </div>
 #parse("templates/contextMenu.vm")

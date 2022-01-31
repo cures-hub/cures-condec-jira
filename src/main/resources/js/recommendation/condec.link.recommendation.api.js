@@ -6,21 +6,13 @@
 		this.currentLinkDuplicates = new Map();
 	};
 
-	ConDecLinkRecommendationAPI.prototype.setThreshold = function(projectKey, threshold) {
-		generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/threshold", threshold)
-			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
-	}
-
-	ConDecLinkRecommendationAPI.prototype.getLinkRecommendations = function(projectKey, elementId, elementLocation) {
-		if (this.currentLinkRecommendations.has(elementId)) {
+	/**
+	 * external usage: condec.link.recommendation.js, condec.prompts.js
+	 */
+	ConDecLinkRecommendationAPI.prototype.getLinkRecommendations = function(filterSettings) {
+		var elementId = filterSettings.selectedElementObject.id;
+		if (!filterSettings.isCacheCleared && this.currentLinkRecommendations.has(elementId)) {
 			return this.currentLinkRecommendations.get(elementId);
-		}
-		var filterSettings = {
-			"selectedElementObject": {
-				"id": elementId,
-				"documentationLocation": elementLocation,
-				"projectKey": projectKey
-			}
 		}
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations", filterSettings)
 			.then(recommendations => {
@@ -40,6 +32,20 @@
 		recommendation.isDiscarded = false;
 		recommendation.projectKey = projectKey;
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/undo-discard", recommendation);
+	};
+
+	ConDecLinkRecommendationAPI.prototype.getLinkRecommendationConfig = function() {
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration/" + conDecAPI.projectKey);
+	};
+
+	ConDecLinkRecommendationAPI.prototype.setThreshold = function(projectKey, threshold) {
+		generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/threshold", threshold)
+			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
+	};
+
+	ConDecLinkRecommendationAPI.prototype.saveRules = function(projectKey, linkRecommendationRules) {
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/rules", linkRecommendationRules)
+			.then(() => conDecAPI.showFlag("success", "Link recommendation rules were successfully updated!"));
 	};
 
 	global.conDecLinkRecommendationAPI = new ConDecLinkRecommendationAPI();

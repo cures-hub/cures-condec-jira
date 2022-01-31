@@ -49,7 +49,7 @@ public class ChangePropagationRule {
 	public ChangePropagationRule(ChangePropagationRuleType ruleType) {
 		this.type = ruleType;
 		this.weightValue = 1.0f;
-		this.isActive = false;
+		this.isActive = true;
 	}
 
 	/**
@@ -117,5 +117,13 @@ public class ChangePropagationRule {
 
 	public static float getWeightForRule(FilterSettings filterSettings, ChangePropagationRuleType type) {
 		return getWeightForRule(filterSettings.getChangeImpactAnalysisConfig().getPropagationRules(), type);
+	}
+
+	/**
+	 * @return true if the {@link ChangePropagationRuleType} of this and the other
+	 *         object is the same.
+	 */
+	public boolean equals(Object otherRule) {
+		return ((ChangePropagationRule) otherRule).getType() == this.getType();
 	}
 }

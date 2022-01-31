@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * to another element has a close relation to this element. (Miesbauer and
  * Weinreich, 2012)
  */
-public class TracingContextInformationProvider implements ContextInformationProvider {
+public class TracingContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement knowledgeElement) {
@@ -21,5 +21,10 @@ public class TracingContextInformationProvider implements ContextInformationProv
 			value = 1. / (distance + 2);
 		}
 		return new RecommendationScore((float) value, getName());
+	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that knowledge elements that can be traced within a certain number of hops are related.";
 	}
 }

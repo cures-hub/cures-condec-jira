@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
@@ -16,26 +15,17 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
- * Provides Component in decorator pattern.
- *
+ * Provides Component in decorator pattern. Context information providers are
+ * concrete decorators
  */
-public class ContextInformation implements ContextInformationProvider {
+public class ContextInformation extends ContextInformationProvider {
 
 	private KnowledgeElement element;
-	private List<ContextInformationProvider> contextInformationProviders;
+	private LinkRecommendationConfiguration linkRecommendationConfig;
 
-	public ContextInformation(KnowledgeElement element) {
+	public ContextInformation(KnowledgeElement element, LinkRecommendationConfiguration linkRecommendationConfig) {
 		this.element = element;
-		// Add context information providers as concrete decorators
-		contextInformationProviders = new ArrayList<>();
-		contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
-		contextInformationProviders.add(new TracingContextInformationProvider());
-		contextInformationProviders.add(new TimeContextInformationProvider());
-		contextInformationProviders.add(new UserContextInformationProvider());
-		contextInformationProviders.add(new ComponentContextInformationProvider());
-		contextInformationProviders.add(new DecisionGroupContextInformationProvider());
-		// contextInformationProviders.add(new
-		// ActiveElementsContextInformationProvider());
+		this.linkRecommendationConfig = linkRecommendationConfig;
 	}
 
 	public List<Recommendation> getLinkRecommendations() {
@@ -67,15 +57,13 @@ public class ContextInformation implements ContextInformationProvider {
 	}
 
 	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {
-		LinkRecommendationConfiguration config = ConfigPersistenceManager
-				.getLinkRecommendationConfiguration(element.getProject().getProjectKey());
-		TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>();
+    TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>();
 		recommendations.stream().forEach(recommendation -> {
-				if (recommendation.getScore().getValue() >= config.getMinProbability() * 100) {
-					sortedRecommendations.add(recommendation);
-				}
-			});
-		int i = 0;
+        if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability() * 100) {
+          sortedRecommendations.add(recommendation);
+        }
+    });
+    int i = 0;
 		recommendations.clear();
 		// Only the top-5 recommendations are recommended
 		for (Recommendation recommendation : sortedRecommendations) {
@@ -92,7 +80,11 @@ public class ContextInformation implements ContextInformationProvider {
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		RecommendationScore score = new RecommendationScore(0, getName());
-		for (ContextInformationProvider contextInformationProvider : contextInformationProviders) {
+		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
+				.getContextInformationProviders()) {
+			if (!contextInformationProvider.isActive()) {
+				continue;
+			}
 			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, otherElement);
 			score.addSubScore(scoreValue);
 		}

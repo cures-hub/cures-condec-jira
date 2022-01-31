@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -20,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
 
 /**
  * REST resource for link recommendation and duplicate recognition (including
@@ -45,7 +48,8 @@ public class LinkRecommendationRest {
 					ImmutableMap.of("error", "Invalid filter settings given. Link recommendations cannot be made."))
 					.build();
 		}
-		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElementFromDatabase());
+		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElementFromDatabase(),
+				filterSettings.getLinkRecommendationConfig());
 		Collection<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		return Response.ok(linkRecommendations).build();
 	}
@@ -116,10 +120,49 @@ public class LinkRecommendationRest {
 					.entity(ImmutableMap.of("error", "The minimum of the score value is invalid.")).build();
 		}
 
-		LinkRecommendationConfiguration linkSuggestionConfiguration = ConfigPersistenceManager
+		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
-		linkSuggestionConfiguration.setMinProbability(threshold);
-		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkSuggestionConfiguration);
+		linkRecommendationConfiguration.setMinProbability(threshold);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
 		return Response.ok().build();
+	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param rules
+	 *            {@link ContextInformationProvider}s representing the rules for
+	 *            link recommendation.
+	 * @return ok if the rule configuration were successfully saved.
+	 */
+	@Path("/configuration/{projectKey}/rules")
+	@POST
+	public Response setLinkRecommendationRules(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey, List<ContextInformationProvider> rules) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
+				.getLinkRecommendationConfiguration(projectKey);
+		linkRecommendationConfiguration.setContextInformationProviders(rules);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
+		return Response.ok().build();
+	}
+
+	@Path("/configuration/{projectKey}")
+	@GET
+	public Response getLinkRecommendationConfiguration(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
+				.getLinkRecommendationConfiguration(projectKey);
+		return Response.ok(linkRecommendationConfiguration).build();
 	}
 }

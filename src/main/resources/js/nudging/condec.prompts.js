@@ -81,8 +81,15 @@
 
 	ConDecPrompt.prototype.promptLinkSuggestion = function(projectKey) {
 		const issueId = JIRA.Issue.getIssueId();
-
-		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(projectKey, issueId, "i"))
+		var filterSettings = {
+			"selectedElementObject": {
+				"id": issueId,
+				"documentationLocation": "i",
+				"projectKey": projectKey
+			},
+			"projectKey": projectKey
+		}
+		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(filterSettings))
 			.then(recommendations => {
 				let numRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations);
 				var summary = document.getElementById("link-recommendation-summary");

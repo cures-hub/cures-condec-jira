@@ -37,7 +37,7 @@
 </div>
 
 <a id="link-impact-input-$viewIdentifier" 
-	title="Link type weights can be changed by the rationale manager.">
+	title="Link type and rule weights can be changed by the rationale manager." target="_blank">
 	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.label.link.types')
 </a>
 
@@ -46,7 +46,7 @@
 
 <script>
 	var linkImpactLink = document.getElementById("link-impact-input-$viewIdentifier");
-	linkImpactLink.href = "../../../plugins/servlet/condec/settings?projectKey=" 
+	linkImpactLink.href = AJS.contextPath() + "/plugins/servlet/condec/settings?projectKey=" 
 		+ conDecAPI.getProjectKey() + "&category=cia";
 	AJS.$(linkImpactLink).tooltip();
 </script>

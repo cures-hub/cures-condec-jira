@@ -13,12 +13,13 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * Assumes that the {@link KnowledgeElement}s within the active sprint are
  * related.
  */
-public class ActiveElementsContextInformationProvider implements ContextInformationProvider {
+public class ActiveElementsContextInformationProvider extends ContextInformationProvider {
 
 	private List<Long> activeIssueIds;
 
 	public ActiveElementsContextInformationProvider() {
 		super();
+		isActive = false;
 		activeIssueIds = new PlanningModeService.CurrentSprints().getSprintsToIssues().keySet().parallelStream()
 				.map(sprintPlanEntry -> sprintPlanEntry.issuesIds).flatMap(Collection::stream)
 				.collect(Collectors.toList());
@@ -28,5 +29,10 @@ public class ActiveElementsContextInformationProvider implements ContextInformat
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
 		return new RecommendationScore((float) isActive, getName() + " (same Sprint)");
+	}
+
+	@Override
+	public String getExplanation() {
+		return "Assumes that the knowledge elements within the active sprint are related.";
 	}
 }
