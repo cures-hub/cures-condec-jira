@@ -14,17 +14,17 @@ red elements are probably more impacted by a change than green elements.*
 
 ## Calculation of the Estimated Impact Set (EIS)
 
-During change impact analysis, each knowledge element (i.e. node/vertex) in the knowledge graph is given an **impact value** (i.e. impact factor). 
+During change impact analysis, each knowledge element (i.e. node/vertex) in the knowledge graph is given an **impact value** (i.e. impact factor). If [new links are being recommended](link-recommendation.md), developers can choose to also include these new elements in the CIA calculation.
 High impact values indicate that the element is highly affected by the change and needs to be changed as well. 
 The impact value of an element (`elementImpact`) is calculated using the following equation:
 
 ```
-elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue
+elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore
 ```
 
 where `parentImpact` is the element impact of the ancestor node in the knowledge graph, 
 `decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, 
-and `ruleBasedValue` is calculated based on rules. The following rules are available:
+`ruleBasedValue` is calculated based on the selected rules, and `recommendationScore` is the link recommendation score of the current element, if the element was recommended. The following rules are available:
 
 1. Stop at elements with the same type as the selected element (e.g. at requirements with same type)
 2. Outward links only
@@ -45,7 +45,7 @@ Developers can see an **explanation for the impact factor** of each node via a t
 
 ## Configuration
 The rationale manager can set the default parameters for the change impact analysis, e.g. the decay value, threshold and default ruleset. In addition, they can set a weight value for each rule.
-Furthermore, the developer can change the default values during the usage of change impact analysis.
+Furthermore, the developer can change the default values during the usage of change impact analysis. If [new links are being recommended](link-recommendation.md), developers can further adjust whether recommendations are being included in CIA.
 
 ![Change impact analysis configuration page](../screenshots/change_impact_analysis_configuration.png)
 
