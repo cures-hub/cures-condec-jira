@@ -44,7 +44,8 @@ public class Calculator {
 		if (filterSettings.getSelectedElement() == currentElement
 			&& filterSettings.areLinksRecommended() 
 			&& filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
-				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement());
+				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
+					filterSettings.getLinkRecommendationConfig());
 				List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
 				for (Recommendation recommendation : linkRecommendations) {
 					currentElementLinks.add((LinkRecommendation) recommendation);

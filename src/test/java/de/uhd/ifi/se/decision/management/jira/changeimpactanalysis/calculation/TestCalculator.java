@@ -89,7 +89,7 @@ public class TestCalculator extends TestSetUp {
 				impactedElements, (long) settings.getLinkDistance());
 
 		assertEquals(10, impactedElements.size());
-		assertTrue(impactedElements.get(9).getImpactExplanation().contains("context"));
+		assertTrue(impactedElements.get(3).getImpactExplanation().contains("context"));
 	}
 
 	@Test
@@ -150,9 +150,9 @@ public class TestCalculator extends TestSetUp {
 				impactValue, LinkType.RECOMMENDED.getName(), 0.8);
 
 		assertTrue(explanation.contains("Link Recommendation Score: 0.8"));
-  }
+  	}
   
-  @After
+  	@After
 	public void tearDown() {
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", new ChangeImpactAnalysisConfiguration());
 	}

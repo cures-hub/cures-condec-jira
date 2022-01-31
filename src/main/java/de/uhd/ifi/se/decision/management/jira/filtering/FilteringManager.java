@@ -391,12 +391,12 @@ public class FilteringManager {
 	 * 		{@link KnowledgeGraph} with added link recommendations.
 	 */
 	private KnowledgeGraph addLinkRecommendations(KnowledgeGraph filteredGraph) {
-		ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
-						filterSettings.getLinkRecommendationConfig());
+	ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
+		filterSettings.getLinkRecommendationConfig());
     List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
     for (Recommendation recommendation : linkRecommendations) {
-      filteredGraph.addEdge((LinkRecommendation) recommendation);
+      	filteredGraph.addEdge((LinkRecommendation) recommendation);
     }
-		return filteredGraph;
+	return filteredGraph;
 	}
 }

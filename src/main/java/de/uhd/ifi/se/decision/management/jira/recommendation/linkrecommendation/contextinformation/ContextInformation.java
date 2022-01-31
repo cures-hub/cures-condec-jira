@@ -58,23 +58,23 @@ public class ContextInformation extends ContextInformationProvider {
 
 	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {
     TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>();
-		recommendations.stream().forEach(recommendation -> {
+	recommendations.stream().forEach(recommendation -> {
         if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability() * 100) {
           sortedRecommendations.add(recommendation);
         }
     });
     int i = 0;
-		recommendations.clear();
-		// Only the top-5 recommendations are recommended
-		for (Recommendation recommendation : sortedRecommendations) {
-			recommendations.add(recommendation);
-			if (i == 4) {
-				break;
-			} else {
-				i = i + 1;
-			}
+	recommendations.clear();
+	// Only the top-5 recommendations are recommended
+	for (Recommendation recommendation : sortedRecommendations) {
+		recommendations.add(recommendation);
+		if (i == 4) {
+			break;
+		} else {
+			i = i + 1;
 		}
-		return recommendations;
+	}
+	return recommendations;
 	}
 
 	@Override
