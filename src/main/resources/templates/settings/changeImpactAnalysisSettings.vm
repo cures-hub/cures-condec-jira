@@ -8,12 +8,12 @@ The impact value of an element (<var>elementImpact</var>) is calculated using th
 
 <p><b><code>elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore</code></b>, </p>
 
-<p>where <var>parentImpact</var> is the element impact of the ancestor node in the knowledge graph, 
-<var>decayValue</var> is the decay per iteration step, 
-<var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the 
-parent/ancestor element and the current element, 
-<var>ruleBasedValue</var> is calculated based on the selected rules, and 
-<var>recommendationScore</var> is the link recommendation score of the current element, if the element was recommended.</p>
+<p>where <var>parentImpact</var> is the element impact of the ancestor node in the knowledge graph,</p>
+<p><var>decayValue</var> is the decay per iteration step,</p>
+<p><var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the</p>
+parent/ancestor element and the current element,</p>
+<p><var>ruleBasedValue</var> is calculated based on the selected rules, and</p>
+<p><var>recommendationScore</var> is the link recommendation score of the current element, if the element was recommended.</p>
 
 <p>The element is included in the impact graph if <b><code>elementImpact >= threshold</code></b>.</p>
 
@@ -65,9 +65,9 @@ parent/ancestor element and the current element,
         		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
         	</a>
         	<aui-inline-dialog id='Weight-help' responds-to='hover'>
-                Value designating the importance of a rule. A higher value indicates a rule being more important than usual and increases the impact of that rule accordingly, i.e. a value of 1.2 indicates a rule being 20% more important.\n
-                ruleBasedValue = result of rule calculation * (2 - weightValue)
-        	</aui-inline-dialog>    
+                <p>Value designating the importance of a rule. A higher value indicates a rule being more important than usual and increases the impact of that rule accordingly, i.e. a value of 1.2 indicates a rule being 20% more important.</p>
+                <p>ruleBasedValue = result of rule calculation * (2 - weightValue)</p>
+        	</aui-inline-dialog>
             </th>
     	</tr>
     </thead>

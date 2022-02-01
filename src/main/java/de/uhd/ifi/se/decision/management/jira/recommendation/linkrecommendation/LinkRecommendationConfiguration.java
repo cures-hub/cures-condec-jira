@@ -14,6 +14,9 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ComponentContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.DecisionGroupContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.DecisionProblemContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.KnowledgeTypeContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.SolutionOptionContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.TextualSimilarityContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.TimeContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.TracingContextInformationProvider;
@@ -43,6 +46,9 @@ public class LinkRecommendationConfiguration {
 		contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
 		contextInformationProviders.add(new TracingContextInformationProvider());
 		contextInformationProviders.add(new TimeContextInformationProvider());
+		contextInformationProviders.add(new KnowledgeTypeContextInformationProvider());
+		contextInformationProviders.add(new DecisionProblemContextInformationProvider());
+		contextInformationProviders.add(new SolutionOptionContextInformationProvider());
 		contextInformationProviders.add(new UserContextInformationProvider());
 		contextInformationProviders.add(new ComponentContextInformationProvider());
 		contextInformationProviders.add(new DecisionGroupContextInformationProvider());

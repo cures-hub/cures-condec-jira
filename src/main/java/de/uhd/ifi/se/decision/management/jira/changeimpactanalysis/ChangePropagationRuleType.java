@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostIfDecisionProblem;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostIfSolutionOption;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualComponent;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualDecisionGroup;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualKnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenHighAmountOfDistinctAuthors;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenLowAverageAge;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenMoreOutboundLinks;
@@ -49,6 +52,18 @@ public enum ChangePropagationRuleType {
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph has more outbound links than inbound links.",
 			new BoostWhenMoreOutboundLinks()), //
+	BOOST_WHEN_EQUAL_KNOWLEDGE_TYPE("Boost when element has the same knowledge type",
+			"Rule that defines that a change impact is stronger propagated if the traversed element "
+					+ "in the knowledge graph has the same knowledge type, e.g. decision, argument, code.",
+			new BoostWhenEqualKnowledgeType()), //
+	BOOST_IF_DECISION_PROBLEM("Boost when element is a decision problem",
+			"Rule that defines that a change impact is stronger propagated if the traversed element "
+					+ "in the knowledge graph is a decision problem.",
+			new BoostIfDecisionProblem()), //
+	BOOST_IF_SOLUTION_OPTION("Boost when element is a solution option",
+			"Rule that defines that a change impact is stronger propagated if the traversed element "
+					+ "in the knowledge graph is a solution option.",
+			new BoostIfSolutionOption()), //
 	BOOST_WHEN_LOW_AVERAGE_AGE("Boost when element has a low average age",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph has a low average age. The average age is determined by deducing "
