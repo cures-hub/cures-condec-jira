@@ -35,6 +35,9 @@ where `parentImpact` is the element impact of the ancestor node in the knowledge
 7. Boost when element has more outbound than inbound links 
 8. Boost when element has a large amount of distinct update authors
 9. Boost when element received updates in the same timeframe (i.e. is timely coupled)
+10. Boost when element has the same knowledge type
+11. Boost when element is a decision problem
+12. Boost when element is a solution option
 
 The element is included in the **estimated impact set (EIS)** if `elementImpact >= threshold`.
 Developers can see an **explanation for the impact factor** of each node via a tooltip.
