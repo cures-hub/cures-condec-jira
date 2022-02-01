@@ -46,12 +46,12 @@ public class LinkRecommendationConfiguration {
 		contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
 		contextInformationProviders.add(new TracingContextInformationProvider());
 		contextInformationProviders.add(new TimeContextInformationProvider());
-		contextInformationProviders.add(new KnowledgeTypeContextInformationProvider());
-		contextInformationProviders.add(new DecisionProblemContextInformationProvider());
-		contextInformationProviders.add(new SolutionOptionContextInformationProvider());
 		contextInformationProviders.add(new UserContextInformationProvider());
 		contextInformationProviders.add(new ComponentContextInformationProvider());
 		contextInformationProviders.add(new DecisionGroupContextInformationProvider());
+		contextInformationProviders.add(new KnowledgeTypeContextInformationProvider());
+		contextInformationProviders.add(new DecisionProblemContextInformationProvider());
+		contextInformationProviders.add(new SolutionOptionContextInformationProvider());
 		// contextInformationProviders.add(new
 		// ActiveElementsContextInformationProvider());
 		return contextInformationProviders;

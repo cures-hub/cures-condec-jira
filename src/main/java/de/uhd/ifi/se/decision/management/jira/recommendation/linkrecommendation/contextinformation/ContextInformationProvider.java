@@ -38,11 +38,12 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 		@JsonSubTypes.Type(value = DecisionGroupContextInformationProvider.class),
 		@JsonSubTypes.Type(value = TextualSimilarityContextInformationProvider.class),
 		@JsonSubTypes.Type(value = TimeContextInformationProvider.class),
+		@JsonSubTypes.Type(value = TracingContextInformationProvider.class),
+		@JsonSubTypes.Type(value = UserContextInformationProvider.class),
 		@JsonSubTypes.Type(value = KnowledgeTypeContextInformationProvider.class),
 		@JsonSubTypes.Type(value = DecisionProblemContextInformationProvider.class),
-		@JsonSubTypes.Type(value = SolutionOptionContextInformationProvider.class),
-		@JsonSubTypes.Type(value = TracingContextInformationProvider.class),
-		@JsonSubTypes.Type(value = UserContextInformationProvider.class) })
+		@JsonSubTypes.Type(value = SolutionOptionContextInformationProvider.class)
+})
 public abstract class ContextInformationProvider {
 
 	/**
