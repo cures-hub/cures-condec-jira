@@ -571,7 +571,7 @@
 	};
 
 	/*
-	 * external references: condec.decision.table
+	 * external references: condec.criteria.matrix
 	 */
 	ConDecAPI.prototype.getDecisionTable = function(filterSettings, callback) {
 		filterSettings["projectKey"] = projectKey;

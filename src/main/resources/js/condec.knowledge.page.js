@@ -89,7 +89,7 @@
 			});
 			conDecVis.buildVis(filterSettings, "graph-overview");
 			conDecMatrix.buildMatrix(filterSettings, "overview");
-			conDecDecisionTable.build(filterSettings, "overview", node);
+			conDecDecisionTable.build(filterSettings, "overview");
 			conDecQualityCheck.initView("overview", node);
 		});
 	}

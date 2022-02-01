@@ -41,23 +41,30 @@
 	};
 
 	/**
-     * external references: none, called in updateView function
-     */
+	 * external references: none, called in updateView function
+	 */
 	ConDecDecisionTable.prototype.loadDecisionProblems = function() {
 		console.log("conDecDecisionTable loadDecisionProblems");
 		var filterSettings = conDecFiltering.getFilterSettings(viewIdentifier);
 		let dropdown = document.getElementById("decision-problem-dropdown");
 		conDecAPI.getDecisionProblems(filterSettings, (decisionProblems) =>
 			conDecFiltering.initKnowledgeElementDropdown(dropdown, decisionProblems, this.selectedDecisionProblem,
-				viewIdentifier, conDecDecisionTable.build));
+				viewIdentifier, selectedElement => {					
+					selectedElement.projectKey = conDecAPI.projectKey;
+					const filterSettings = {
+						"selectedElementObject": selectedElement
+					}
+					conDecDecisionTable.build(filterSettings);
+					conDecDecisionTable.selectedDecisionProblem = selectedElement;
+				}));
 	};
 
-	ConDecDecisionTable.prototype.build = function(decisionProblem, viewIdentifier = "decision-table") {
-		const filterSettings = {
-			"selectedElement": decisionProblem.key
-		}
+	/**
+	 * external usage: condec.knowledge.page, condec.rationale.backlog
+	 */
+	ConDecDecisionTable.prototype.build = function(filterSettings, viewIdentifier = "criteria-matrix") {
 		conDecDecisionTable.viewIdentifier = viewIdentifier;
-		conDecDecisionTable.selectedDecisionProblem = decisionProblem;
+		conDecDecisionTable.selectedDecisionProblem = filterSettings.selectedElementObject;
 		conDecAPI.getDecisionTable(filterSettings, function(decisionTable) {
 			buildDecisionTable(decisionTable, viewIdentifier);
 		});
@@ -131,12 +138,12 @@
 	}
 
 	ConDecDecisionTable.prototype.showCreateDialogForIssue = function() {
-		if (selectedDecisionProblem) {
-			conDecDialog.showCreateDialog(selectedDecisionProblem.id, selectedDecisionProblem.documentationLocation, "Alternative");
+		if (this.selectedDecisionProblem) {
+			conDecDialog.showCreateDialog(this.selectedDecisionProblem.id, this.selectedDecisionProblem.documentationLocation, "Alternative");
 		}
 	}
 
-	function buildDecisionTable(decisionTable, viewIdentifier = "decision-table") {
+	function buildDecisionTable(decisionTable, viewIdentifier = "criteria-matrix") {
 		decisionTableData = decisionTable;
 
 		addCriteriaToToDecisionTable(decisionTable.criteria, viewIdentifier);
@@ -212,6 +219,7 @@
 	 *            array of criteria as knowledge element objects.
 	 */
 	function addCriteriaToToDecisionTable(criteria, viewIdentifier) {
+		console.log(viewIdentifier);
 		let header = document.getElementById("decision-table-header-row-" + viewIdentifier);
 		header.innerHTML = "";
 
