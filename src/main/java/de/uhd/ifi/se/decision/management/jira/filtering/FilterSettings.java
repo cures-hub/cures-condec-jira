@@ -691,6 +691,7 @@ public class FilterSettings implements Cloneable {
 		this.changeImpactAnalysisConfig.setContext(changeImpactAnalysisConfig.getContext());
 		this.changeImpactAnalysisConfig.setDecayValue(changeImpactAnalysisConfig.getDecayValue());
 		this.changeImpactAnalysisConfig.setThreshold(changeImpactAnalysisConfig.getThreshold());
+		this.changeImpactAnalysisConfig.setAreLinkRecommendationsIncludedInCalculation(changeImpactAnalysisConfig.getAreLinkRecommendationsIncludedInCalculation());
 		// only the activation can be set for the rules
 		for (ChangePropagationRule rule : this.changeImpactAnalysisConfig.getPropagationRules()) {
 			if (changeImpactAnalysisConfig.getPropagationRules().contains(rule)) {

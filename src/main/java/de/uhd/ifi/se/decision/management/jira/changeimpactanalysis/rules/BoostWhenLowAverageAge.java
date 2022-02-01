@@ -21,7 +21,13 @@ public class BoostWhenLowAverageAge implements ChangePropagationFunction {
 
 		double differenceInDays = (nextElement.getCreationDate().getTime()
 				- nextElement.getLatestUpdatingDate().getTime()) / (1000 * 60 * 60 * 24);
-		return Math.pow(2, (differenceInDays / 100)) * (2 - ruleWeight) < 0.75 ? 0.75
-				: Math.pow(2, (differenceInDays / 100)) * (2 - ruleWeight);
+		double result = Math.pow(2, (differenceInDays / 100)) * (2 - ruleWeight);
+		if (result <= 0.75) {
+			return 0.75;
+		} 
+		if (result >= 1.0) {
+			return 1.0;
+		}
+		return result;
 	}
 }

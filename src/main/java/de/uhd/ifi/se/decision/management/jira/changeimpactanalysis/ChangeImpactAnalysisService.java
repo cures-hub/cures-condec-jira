@@ -60,13 +60,9 @@ public class ChangeImpactAnalysisService {
 		
 		// Colorize individual nodes
 		graphVis.getNodes().forEach(node -> {
-			for (KnowledgeElementWithImpact element : impactedElements) {
-				if (node.getElement().getId() == element.getId()) {
-					node = Colorizer.colorizeVisNode(element, node, filterSettings);
-					break;
-				}
+			node = Colorizer.colorizeVisNode(impactedElements, node, filterSettings);
 			}
-		});
+		);
 		return graphVis;
 	}
 
@@ -79,13 +75,9 @@ public class ChangeImpactAnalysisService {
 		
 		// Colorize individual nodes
 		matrix.getHeaderElementsWithHighlighting().forEach(node -> {
-			for (KnowledgeElementWithImpact element : impactedElements) {
-				if (node.getElement().getId() == element.getId()) {
-					Colorizer.colorizeMatrixNode(element, node, filterSettings);
-					break;
-				}
+			Colorizer.colorizeMatrixNode(impactedElements, node, filterSettings);
 			}
-		});
+		);
 		return matrix;
 	}
 	

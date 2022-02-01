@@ -35,7 +35,7 @@ public class TestTooltip extends TestSetUp {
     public void testCreateTooltipSourceElement() {
         KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(rootElement);
 
-        assertEquals("This is the source node from which the Change Impact Analysis was calculated.",
+        assertEquals("This is the source element from which the Change Impact Analysis was calculated.",
             Tooltip.createTooltip(element, settings));
     }
 
@@ -57,5 +57,11 @@ public class TestTooltip extends TestSetUp {
 
         String tooltip = Tooltip.createTooltip(nextElementWithImpact, settings);
         assertFalse(tooltip.contains("Propagation Rule Value"));
+    }
+
+    @Test
+    public void testCreateTooltipLinkRecommendationElement() {
+        assertEquals("This element is not implicitly linked to the source element but has been included as a result of the link recommendation.",
+            Tooltip.createLinkRecommendationTooltip());
     }
 }

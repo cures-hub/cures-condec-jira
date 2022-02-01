@@ -14,17 +14,18 @@ red elements are probably more impacted by a change than green elements.*
 
 ## Calculation of the Estimated Impact Set (EIS)
 
-During change impact analysis, each knowledge element (i.e. node/vertex) in the knowledge graph is given an **impact value** (i.e. impact factor). 
+During change impact analysis, each knowledge element (i.e. node/vertex) in the knowledge graph is given an **impact value** (i.e. impact factor). If [new links are being recommended](link-recommendation.md), developers can choose to also include these new elements in the CIA calculation.
 High impact values indicate that the element is highly affected by the change and needs to be changed as well. 
 The impact value of an element (`elementImpact`) is calculated using the following equation:
 
 ```
-elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue
+elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore
 ```
 
 where `parentImpact` is the element impact of the ancestor node in the knowledge graph, 
 `decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, 
-and `ruleBasedValue` is calculated based on rules. The following rules are available:
+`ruleBasedValue` is calculated based on the selected rules, and `recommendationScore` is the link recommendation score of the current element, if the element was recommended.
+The following rules are available:
 
 1. Stop at elements with the same type as the selected element (e.g. at requirements with same type)
 2. Outward links only
@@ -35,6 +36,9 @@ and `ruleBasedValue` is calculated based on rules. The following rules are avail
 7. Boost when element has more outbound than inbound links 
 8. Boost when element has a large amount of distinct update authors
 9. Boost when element received updates in the same timeframe (i.e. is timely coupled)
+10. Boost when element has the same knowledge type
+11. Boost when element is a decision problem
+12. Boost when element is a solution option
 
 The element is included in the **estimated impact set (EIS)** if `elementImpact >= threshold`.
 Developers can see an **explanation for the impact factor** of each node via a tooltip.
@@ -44,8 +48,8 @@ Developers can see an **explanation for the impact factor** of each node via a t
 *JSTree diagram with change impact hightlighting*
 
 ## Configuration
-The rationale manager can set the default parameters for the change impact analysis, e.g. the decay value, threshold and default ruleset. In addition, they can set a weight value for each rule.
-Furthermore, the developer can change the default values during the usage of change impact analysis.
+The rationale manager can set the default parameters for the change impact analysis, e.g. the decay value, threshold and default ruleset. In addition, they can set a weight value for each rule. A high weight value indicates a rule being more important than usual and increases the impact of that rule accordingly.
+Furthermore, the developer can change the default values during the usage of change impact analysis. If [new links are being recommended](link-recommendation.md), developers can further adjust whether recommendations are being included in CIA.
 
 ![Change impact analysis configuration page](../screenshots/change_impact_analysis_configuration.png)
 

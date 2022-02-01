@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -56,8 +57,24 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {
-		return recommendations.stream().filter(recommendation -> recommendation.getScore()
-				.getValue() >= linkRecommendationConfig.getMinProbability() * 100).collect(Collectors.toList());
+    TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>();
+	recommendations.stream().forEach(recommendation -> {
+        if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability() * 100) {
+          sortedRecommendations.add(recommendation);
+        }
+    });
+    int i = 0;
+	recommendations.clear();
+	// Only the top-5 recommendations are recommended
+	for (Recommendation recommendation : sortedRecommendations) {
+		recommendations.add(recommendation);
+		if (i == 4) {
+			break;
+		} else {
+			i = i + 1;
+		}
+	}
+	return recommendations;
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class TestChangePropagationRule extends TestSetUp {
 
 	@Test
 	public void testGetDefaultRules() {
-		assertEquals(9, ChangePropagationRule.getDefaultRules().size());
+		assertEquals(12, ChangePropagationRule.getDefaultRules().size());
 	}
 
 	@Test

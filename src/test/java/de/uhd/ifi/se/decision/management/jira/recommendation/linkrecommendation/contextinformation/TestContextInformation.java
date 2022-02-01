@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -44,7 +45,7 @@ public class TestContextInformation extends TestSetUp {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertTrue(linkRecommendations.size() > 8);
+		assertEquals(5, linkRecommendations.size());
 	}
 
 	@Test
@@ -54,19 +55,18 @@ public class TestContextInformation extends TestSetUp {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertTrue(linkRecommendations.size() > 7);
+		assertTrue(linkRecommendations.size() > 4);
 	}
 
 	@Test
 	@NonTransactional
 	public void testMarkRecommendationAsDiscarded() {
 		LinkRecommendation recommendation = new LinkRecommendation(KnowledgeElements.getDecision(),
-				KnowledgeElements.getOtherWorkItem());
+				KnowledgeElements.getAlternative());
 		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count();
 		assertTrue(linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count() > 0);
 	}
 
