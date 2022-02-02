@@ -95,6 +95,9 @@ public class LinkRecommendationConfiguration {
 
 	@JsonProperty
 	public void setContextInformationProviders(List<ContextInformationProvider> contextInformationProviders) {
+		if (contextInformationProviders.size() != getAllContextInformationProviders().size()) {
+			this.contextInformationProviders = getAllContextInformationProviders();
+		}
 		this.contextInformationProviders = contextInformationProviders;
 	}
 }
