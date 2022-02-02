@@ -547,28 +547,35 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	/**
+	 * @param commits
+	 *            all commits that the code file was changed in (as a list of
+	 *            {@link RevCommit}s).
+	 */
+	public void setCommits(List<RevCommit> commits) {
+		for (RevCommit commit : commits) {
+			addCommit(commit);
+		}
+	}
+
+	/**
 	 * @issue How can we get the creation/update time and author of a code file?
 	 * @decision We use the method RevCommit::getCommitTime() and
 	 *           RevCommit::getAuthorIdent() of each commit to get the commit times
 	 *           and authors of a code file!
 	 * 
-	 * @param commits
+	 * @param revCommit
+	 *            commits that the code file was changed in as a {@link RevCommit}).
+	 * @return true if the commit was successfully added to the list of commits.
 	 */
-	public void setCommits(List<RevCommit> commits) {
-		this.commits = commits;
-		for (RevCommit commit : commits) {
-			String author = commit.getAuthorIdent().getName();
-			Date date = new Date(commit.getCommitTime() * 1000L);
-			updateDateAndAuthor.put(date, author);
-		}
-	}
-
 	public boolean addCommit(RevCommit revCommit) {
+		String author = revCommit.getAuthorIdent().getName();
+		Date date = new Date(revCommit.getCommitTime() * 1000L);
+		updateDateAndAuthor.put(date, author);
 		return commits.add(revCommit);
 	}
 
 	public int getLineCount() {
-		return this.lineCount;
+		return lineCount;
 	}
 
 	public void setLineCount(int lineCount) {
