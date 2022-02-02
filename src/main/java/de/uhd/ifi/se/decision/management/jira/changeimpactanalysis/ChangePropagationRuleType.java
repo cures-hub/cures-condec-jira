@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostIfDecisionProblem;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostIfSolutionOption;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualComponent;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualCreator;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualDecisionGroup;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualKnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenHighAmountOfDistinctAuthors;
@@ -12,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWh
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTimelyCoupled;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtSameElementType;
 
 /**
  * Gathers propagation rules for rule-based change impact analysis.
@@ -22,11 +22,10 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtS
  */
 public enum ChangePropagationRuleType {
 
-	STOP_AT_SAME_ELEMENT_TYPE("Stop at elements with the same type as the selected element",
-			"Rule that defines that a change impact is not propagated after a element with the same "
-					+ "knowledge type was reached. For example, if a change is made in an epic, the change is "
-					+ "not propagated beyond other epics",
-			new StopAtSameElementType()), //
+	BOOST_WHEN_EQUAL_CREATOR("Boost when element has the same creator as the selected element",
+			"Rule that defines that a change impact is stronger propagated if the traversed element "
+					+ "in the knowledge graph has the same creator, i.e. assignee, creator, reporter.",
+			new BoostWhenEqualCreator()), //
 	IGNORE_INCOMING_LINKS("Outward links only",
 			"Rule that defines that a change impact is not propagated along an incoming link to an "
 					+ "element. With this rule activated, impacts are only propagated along outgoing links from "

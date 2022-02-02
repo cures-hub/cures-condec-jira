@@ -16,13 +16,13 @@ public class TestChangePropagationRule extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		String propagationRuleName = "Stop at elements with the same type as the selected element";
+		String propagationRuleName = "Boost when element has the same creator as the selected element";
 		rule = new ChangePropagationRule(propagationRuleName);
 	}
 
 	@Test
 	public void testGetType() {
-		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE, rule.getType());
+		assertEquals(ChangePropagationRuleType.BOOST_WHEN_EQUAL_CREATOR, rule.getType());
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class TestChangePropagationRule extends TestSetUp {
 
 	@Test
 	public void testGetDescription() {
-		assertEquals("Stop at elements with the same type as the selected element", rule.getDescription());
+		assertEquals("Boost when element has the same creator as the selected element", rule.getDescription());
 	}
 
 	@Test
@@ -50,6 +50,6 @@ public class TestChangePropagationRule extends TestSetUp {
 	@Test
 	public void testEquals() {
 		assertFalse(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP).equals(rule));
-		assertTrue(new ChangePropagationRule(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE).equals(rule));
+		assertTrue(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_EQUAL_CREATOR).equals(rule));
 	}
 }
