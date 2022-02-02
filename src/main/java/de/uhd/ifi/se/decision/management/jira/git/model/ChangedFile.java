@@ -121,6 +121,7 @@ public class ChangedFile extends KnowledgeElement {
 	private int lineCount;
 
 	public ChangedFile() {
+		super();
 		packageDistance = 0;
 		setCorrect(true);
 		documentationLocation = DocumentationLocation.CODE;

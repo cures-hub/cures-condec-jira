@@ -64,6 +64,7 @@ public class KnowledgeElement {
 		this.type = KnowledgeType.OTHER;
 		// the origin is the same as the documentation location per default
 		this.origin = Origin.DOCUMENTATION_LOCATION;
+		this.updateDateAndAuthor = new TreeMap<Date, String>();
 	}
 
 	public KnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey,
@@ -93,6 +94,7 @@ public class KnowledgeElement {
 	}
 
 	public KnowledgeElement(Issue issue) {
+		this();
 		if (issue == null) {
 			return;
 		}
@@ -107,8 +109,6 @@ public class KnowledgeElement {
 		}
 		this.key = issue.getKey();
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
-
-		this.updateDateAndAuthor = new TreeMap<Date, String>();
 		if (issue.getCreated() != null) {
 			updateDateAndAuthor.put(issue.getCreated(), "");
 		}
@@ -416,7 +416,7 @@ public class KnowledgeElement {
 	 */
 	@XmlElement
 	public Date getCreationDate() {
-		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty()) {
+		if (!updateDateAndAuthor.isEmpty()) {
 			return updateDateAndAuthor.firstKey();
 		}
 		return new Date();
@@ -427,7 +427,7 @@ public class KnowledgeElement {
 	 *            of creation of the knowledge element.
 	 */
 	public void setCreationDate(Date creationDate) {
-		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty() && creationDate != null) {
+		if (!updateDateAndAuthor.isEmpty() && creationDate != null) {
 			String creator = updateDateAndAuthor.firstEntry().getValue();
 
 			// Check whether the new creation date is actually older than the
@@ -447,11 +447,6 @@ public class KnowledgeElement {
 	 *         knowledge element.
 	 */
 	public TreeMap<Date, String> getUpdateDateAndAuthor() {
-		if (updateDateAndAuthor != null) {
-			return updateDateAndAuthor;
-		} 
-		this.updateDateAndAuthor = new TreeMap<Date, String>();
-		updateDateAndAuthor.put(new Date(), "");
 		return updateDateAndAuthor;
 	}
 
@@ -460,7 +455,7 @@ public class KnowledgeElement {
 	 */
 	@XmlElement
 	public Date getLatestUpdatingDate() {
-		if (updateDateAndAuthor == null || updateDateAndAuthor.isEmpty()) {
+		if (updateDateAndAuthor.isEmpty()) {
 			return getCreationDate();
 		}
 		return updateDateAndAuthor.lastKey();
@@ -524,7 +519,7 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "creator")
 	public String getCreatorName() {
-		if (updateDateAndAuthor != null && !updateDateAndAuthor.firstEntry().getValue().isEmpty()) {
+		if (updateDateAndAuthor.firstEntry() != null && !updateDateAndAuthor.firstEntry().getValue().isEmpty()) {
 			return updateDateAndAuthor.firstEntry().getValue();
 		}
 		ApplicationUser user = getCreator();
@@ -532,11 +527,11 @@ public class KnowledgeElement {
 	}
 
 	public void setCreator(String authorName) {
-		if (updateDateAndAuthor != null && !updateDateAndAuthor.isEmpty()) {
+		if (!updateDateAndAuthor.isEmpty()) {
 			updateDateAndAuthor.replace(this.updateDateAndAuthor.firstKey(), authorName);
+		} else {
+			updateDateAndAuthor.put(new Date(), authorName);
 		}
-		this.updateDateAndAuthor = new TreeMap<Date, String>();
-		updateDateAndAuthor.put(new Date(), authorName);
 	}
 
 	/**
