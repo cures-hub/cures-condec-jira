@@ -99,9 +99,6 @@ public class LinkRecommendationConfiguration {
 	 */
 	@XmlElement
 	public List<ContextInformationProvider> getContextInformationProviders() {
-		if (contextInformationProviders.size() != getAllContextInformationProviders().size()) {
-			return getAllContextInformationProviders();
-		}
 		return contextInformationProviders;
 	}
 

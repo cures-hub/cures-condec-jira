@@ -96,9 +96,6 @@ public class ChangeImpactAnalysisConfiguration {
 	 */
 	@XmlElement
 	public List<ChangePropagationRule> getPropagationRules() {
-		if (propagationRules.size() != ChangePropagationRule.getDefaultRules().size()) {
-			return ChangePropagationRule.getDefaultRules();
-		}
 		return propagationRules;
 	}
 

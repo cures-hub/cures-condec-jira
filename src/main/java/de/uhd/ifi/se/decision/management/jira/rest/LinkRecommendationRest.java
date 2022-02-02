@@ -148,7 +148,13 @@ public class LinkRecommendationRest {
 		}
 		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
-		linkRecommendationConfiguration.setContextInformationProviders(rules);
+		List<ContextInformationProvider> allRules = LinkRecommendationConfiguration.getAllContextInformationProviders();
+		if (rules.size() != allRules.size()) {
+			// e.g. because new rules were added to the backend
+			linkRecommendationConfiguration.setContextInformationProviders(allRules);
+		} else {
+			linkRecommendationConfiguration.setContextInformationProviders(rules);
+		}
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
 		return Response.ok().build();
 	}

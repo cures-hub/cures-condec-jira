@@ -28,12 +28,8 @@ public class TestLinkRecommendationConfiguration extends TestSetUp {
 
 	@Test
 	public void testSetAndGetContextInformationProviders() {
-		config.setContextInformationProviders(LinkRecommendationConfiguration.getAllContextInformationProviders());
-		assertEquals(9, config.getContextInformationProviders().size());
-
 		config.setContextInformationProviders(List.of(new TextualSimilarityContextInformationProvider()));
-		// All rules are returned
-		assertEquals(9, config.getContextInformationProviders().size());
+		assertEquals(1, config.getContextInformationProviders().size());
 	}
 
 }
