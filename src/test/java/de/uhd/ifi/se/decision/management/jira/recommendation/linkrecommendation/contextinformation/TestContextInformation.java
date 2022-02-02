@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -27,7 +26,7 @@ public class TestContextInformation extends TestSetUp {
 	@Before
 	public void setUp() {
 		linkRecommendationConfiguration = new LinkRecommendationConfiguration();
-		linkRecommendationConfiguration.getContextInformationProviders().stream().forEach(rule -> rule.setActive(true));
+		linkRecommendationConfiguration.setMinProbability(0.3);
 		init();
 	}
 
@@ -41,11 +40,11 @@ public class TestContextInformation extends TestSetUp {
 
 	@Test
 	public void testFilterLinkRecommendationsByScore() {
-		linkRecommendationConfiguration.setMinProbability(0.8);
+		linkRecommendationConfiguration.setMinProbability(0.7);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertEquals(5, linkRecommendations.size());
+		assertTrue(linkRecommendations.size() > 2);
 	}
 
 	@Test
@@ -61,11 +60,10 @@ public class TestContextInformation extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testMarkRecommendationAsDiscarded() {
-		LinkRecommendation recommendation = new LinkRecommendation(KnowledgeElements.getDecision(),
-				KnowledgeElements.getAlternative());
-		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
+		LinkRecommendation recommendation = (LinkRecommendation) contextInformation.getLinkRecommendations().get(0);
+		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count() > 0);
 	}

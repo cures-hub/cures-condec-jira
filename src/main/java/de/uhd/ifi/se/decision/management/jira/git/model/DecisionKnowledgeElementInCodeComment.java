@@ -3,9 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.git.model;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -64,11 +62,7 @@ public class DecisionKnowledgeElementInCodeComment extends KnowledgeElement
 	public void setCodeFile(ChangedFile codeFile) {
 		this.codeFile = codeFile;
 		setProject(codeFile.getProject());
-		setCreationDate(codeFile.getCreationDate());
-		TreeMap<Date, String> updateMap = new TreeMap<Date, String>();
-		updateMap.put(codeFile.getLatestUpdatingDate(), codeFile.getCreatorName());
-		setUpdateDateAndAuthor(updateMap);
-		setCreator(codeFile.getCreatorName());
+		setUpdateDateAndAuthor(codeFile.getUpdateDateAndAuthor());
 	}
 
 	@XmlElement(name = "source")

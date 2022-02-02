@@ -56,25 +56,26 @@ public class ContextInformation extends ContextInformationProvider {
 		return recommendations;
 	}
 
+	/**
+	 * @param recommendations
+	 *            all recommendations as an unsorted collection.
+	 * @return
+	 */
 	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {
-    TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>();
-	recommendations.stream().forEach(recommendation -> {
-        if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability() * 100) {
-          sortedRecommendations.add(recommendation);
-        }
-    });
-    int i = 0;
-	recommendations.clear();
-	// Only the top-5 recommendations are recommended
-	for (Recommendation recommendation : sortedRecommendations) {
-		recommendations.add(recommendation);
-		if (i == 4) {
-			break;
-		} else {
-			i = i + 1;
+		TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>(recommendations);
+		recommendations.clear();
+		int i = 0;
+		int k = 5; // top k
+		for (Recommendation recommendation : sortedRecommendations) {
+			if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability() * 100) {
+				recommendations.add(recommendation);
+			}
+			++i;
+			if (i == k) {
+				break;
+			}
 		}
-	}
-	return recommendations;
+		return recommendations;
 	}
 
 	@Override
@@ -85,8 +86,9 @@ public class ContextInformation extends ContextInformationProvider {
 			if (!contextInformationProvider.isActive()) {
 				continue;
 			}
-			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, otherElement);
-			score.addSubScore(scoreValue);
+			RecommendationScore subScore = contextInformationProvider.assessRelation(baseElement, otherElement);
+			subScore.weighValue(contextInformationProvider.getWeightValue());
+			score.addSubScore(subScore);
 		}
 		return score;
 	}

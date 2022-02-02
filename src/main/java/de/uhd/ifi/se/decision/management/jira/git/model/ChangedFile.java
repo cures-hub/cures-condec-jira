@@ -121,6 +121,7 @@ public class ChangedFile extends KnowledgeElement {
 	private int lineCount;
 
 	public ChangedFile() {
+		super();
 		packageDistance = 0;
 		setCorrect(true);
 		documentationLocation = DocumentationLocation.CODE;
@@ -545,66 +546,40 @@ public class ChangedFile extends KnowledgeElement {
 		return commits;
 	}
 
+	/**
+	 * @param commits
+	 *            all commits that the code file was changed in (as a list of
+	 *            {@link RevCommit}s).
+	 */
 	public void setCommits(List<RevCommit> commits) {
-		this.commits = commits;
+		for (RevCommit commit : commits) {
+			addCommit(commit);
+		}
 	}
 
+	/**
+	 * @issue How can we get the creation/update time and author of a code file?
+	 * @decision We use the method RevCommit::getCommitTime() and
+	 *           RevCommit::getAuthorIdent() of each commit to get the commit times
+	 *           and authors of a code file!
+	 * 
+	 * @param revCommit
+	 *            commits that the code file was changed in as a {@link RevCommit}).
+	 * @return true if the commit was successfully added to the list of commits.
+	 */
 	public boolean addCommit(RevCommit revCommit) {
+		String author = revCommit.getAuthorIdent().getName();
+		Date date = new Date(revCommit.getCommitTime() * 1000L);
+		updateDateAndAuthor.put(date, author);
 		return commits.add(revCommit);
 	}
 
 	public int getLineCount() {
-		return this.lineCount;
+		return lineCount;
 	}
 
 	public void setLineCount(int lineCount) {
 		this.lineCount = lineCount;
-	}
-
-	/**
-	 * @issue How can we get the creation time of a code file?
-	 * @decision We store all commits that changed a code file as an attribute of
-	 *           the ChangedFile class! We use the method RevCommit::getCommitTime()
-	 *           of the first commit to get the creation time of a code file!
-	 */
-	@Override
-	public Date getCreationDate() {
-		if (commits != null && !commits.isEmpty()) {
-			Date creatingDate = new Date(commits.get(0).getCommitTime() * 1000L);
-			return creatingDate;
-		}
-		return super.getCreationDate();
-	}
-
-	/**
-	 * @issue How can we get the time of last update of a code file?
-	 * @decision We store all commits that changed a code file as an attribute of
-	 *           the ChangedFile class! We use the method RevCommit::getCommitTime()
-	 *           of the last (i.e. most recent) commit to get the creation time of a
-	 *           code file!
-	 */
-	@Override
-	public Date getLatestUpdatingDate() {
-		if (commits != null && !commits.isEmpty()) {
-			Date updatingDate = new Date(commits.get(commits.size() - 1).getCommitTime() * 1000L);
-			return updatingDate;
-		}
-		return super.getLatestUpdatingDate();
-	}
-
-	/**
-	 * @issue How can we get the author of a code file?
-	 * @decision We store all commits that changed a code file as an attribute of
-	 *           the ChangedFile class! We use the method
-	 *           RevCommit::getAuthorIdent() of the last (i.e. most recent) commit
-	 *           to get the author of a code file!
-	 */
-	@Override
-	public String getCreatorName() {
-		if (commits != null && !commits.isEmpty()) {
-			return commits.get(commits.size() - 1).getAuthorIdent().getName();
-		}
-		return super.getCreatorName();
 	}
 
 	@Override

@@ -38,7 +38,8 @@ public class ChangeImpactAnalysisConfiguration {
 		areLinkRecommendationsIncludedInCalculation = false;
 	}
 
-	public ChangeImpactAnalysisConfiguration(float decayValue, float threshold, long context, List<ChangePropagationRule> propagationRules) {
+	public ChangeImpactAnalysisConfiguration(float decayValue, float threshold, long context,
+			List<ChangePropagationRule> propagationRules) {
 		this.decayValue = decayValue;
 		this.threshold = threshold;
 		this.linkImpact = new HashMap<>();
@@ -85,11 +86,18 @@ public class ChangeImpactAnalysisConfiguration {
 		this.context = context;
 	}
 
+	/**
+	 * @return CIA rules as {@link ChangePropagationRule} objects.
+	 */
 	@XmlElement
 	public List<ChangePropagationRule> getPropagationRules() {
 		return propagationRules;
 	}
 
+	/**
+	 * @param propagationRules
+	 *            CIA rules as {@link ChangePropagationRule} objects.
+	 */
 	@JsonProperty
 	public void setPropagationRules(List<ChangePropagationRule> propagationRules) {
 		this.propagationRules = propagationRules;

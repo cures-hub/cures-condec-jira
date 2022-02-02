@@ -148,7 +148,19 @@ public class LinkRecommendationRest {
 		}
 		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
 				.getLinkRecommendationConfiguration(projectKey);
-		linkRecommendationConfiguration.setContextInformationProviders(rules);
+		/**
+		 * @issue How can we make sure that a new number of link recommendation rules in
+		 *        the backend is available to the users?
+		 * @decision We store all link recommendation rules if the number stored in the
+		 *           settings is different to them to fix inconsistency between stored
+		 *           config and new code!
+		 */
+		List<ContextInformationProvider> allRules = LinkRecommendationConfiguration.getAllContextInformationProviders();
+		if (rules.size() != allRules.size()) {
+			linkRecommendationConfiguration.setContextInformationProviders(allRules);
+		} else {
+			linkRecommendationConfiguration.setContextInformationProviders(rules);
+		}
 		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
 		return Response.ok().build();
 	}

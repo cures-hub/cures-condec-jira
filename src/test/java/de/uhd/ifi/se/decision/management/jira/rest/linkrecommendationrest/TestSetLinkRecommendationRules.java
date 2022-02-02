@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.rest.linkrecommendationrest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
@@ -44,5 +46,11 @@ public class TestSetLinkRecommendationRules extends TestSetUp {
 	public void testRequestValidProjectKeyValidRulesValid() {
 		assertEquals(Status.OK.getStatusCode(), linkRecommendationRest.setLinkRecommendationRules(request, "TEST",
 				LinkRecommendationConfiguration.getAllContextInformationProviders()).getStatus());
+	}
+
+	@Test
+	public void testRequestValidProjectKeyValidRulesEmpty() {
+		assertEquals(Status.OK.getStatusCode(),
+				linkRecommendationRest.setLinkRecommendationRules(request, "TEST", List.of()).getStatus());
 	}
 }

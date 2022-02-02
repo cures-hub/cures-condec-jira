@@ -88,11 +88,20 @@ public class LinkRecommendationConfiguration {
 		this.minProbability = minProbability;
 	}
 
+	/**
+	 * @return link recommendation rules as {@link ContextInformationProvider}
+	 *         objects.
+	 */
 	@XmlElement
 	public List<ContextInformationProvider> getContextInformationProviders() {
 		return contextInformationProviders;
 	}
 
+	/**
+	 * @param contextInformationProviders
+	 *            link recommendation rules as {@link ContextInformationProvider}
+	 *            objects.
+	 */
 	@JsonProperty
 	public void setContextInformationProviders(List<ContextInformationProvider> contextInformationProviders) {
 		this.contextInformationProviders = contextInformationProviders;

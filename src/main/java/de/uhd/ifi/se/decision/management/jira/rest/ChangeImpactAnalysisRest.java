@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,6 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -31,6 +34,17 @@ public class ChangeImpactAnalysisRest {
 		if (ciaConfig == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The CIA config must not be null!")).build();
+		}
+		/**
+		 * @issue How can we make sure that a new number of CIA rules in the backend is
+		 *        available to the users?
+		 * @decision We store all CIA rules if the number stored in the settings is
+		 *           different to them to fix inconsistency between stored config and
+		 *           new code!
+		 */
+		List<ChangePropagationRule> allRules = ChangePropagationRule.getDefaultRules();
+		if (ciaConfig.getPropagationRules().size() != allRules.size()) {
+			ciaConfig.setPropagationRules(allRules);
 		}
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaConfig);
 		return Response.ok().build();
