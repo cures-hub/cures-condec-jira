@@ -90,14 +90,14 @@ public class LinkRecommendationConfiguration {
 
 	@XmlElement
 	public List<ContextInformationProvider> getContextInformationProviders() {
+		if (contextInformationProviders.size() != getAllContextInformationProviders().size()) {
+			return getAllContextInformationProviders();
+		}
 		return contextInformationProviders;
 	}
 
 	@JsonProperty
 	public void setContextInformationProviders(List<ContextInformationProvider> contextInformationProviders) {
-		if (contextInformationProviders.size() != getAllContextInformationProviders().size()) {
-			this.contextInformationProviders = getAllContextInformationProviders();
-		}
 		this.contextInformationProviders = contextInformationProviders;
 	}
 }

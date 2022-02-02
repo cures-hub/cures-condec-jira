@@ -25,9 +25,9 @@ public class RecommendationScore {
 		this.subScores = new ArrayList<>();
 	}
 
-	public RecommendationScore(float totalScore, String explanation) {
+	public RecommendationScore(float value, String explanation) {
 		this();
-		this.value = totalScore;
+		this.value = value;
 		this.explanation = explanation;
 	}
 
