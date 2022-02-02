@@ -89,11 +89,6 @@ public class LinkRecommendationConfiguration {
 	}
 
 	/**
-	 * @issue How can we make sure that changing the number of link recommendation
-	 *        rules results in a changed number in the frontend?
-	 * @decision We return the default rules if the number stored in the settings is
-	 *           different to them!
-	 * 
 	 * @return link recommendation rules as {@link ContextInformationProvider}
 	 *         objects.
 	 */
