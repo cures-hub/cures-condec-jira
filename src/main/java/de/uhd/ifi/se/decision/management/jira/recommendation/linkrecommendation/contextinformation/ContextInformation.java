@@ -86,7 +86,7 @@ public class ContextInformation extends ContextInformationProvider {
 				continue;
 			}
 			RecommendationScore scoreValue = contextInformationProvider.assessRelation(baseElement, otherElement);
-			scoreValue.setValue(scoreValue.getValue() * contextInformationProvider.getWeightValue());
+			scoreValue.weighValue(contextInformationProvider.getWeightValue());
 			score.addSubScore(scoreValue);
 		}
 		return score;

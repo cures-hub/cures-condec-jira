@@ -52,6 +52,14 @@ public class RecommendationScore {
 	}
 
 	/**
+	 * @param weightValue
+	 *            of the recommendation rule.
+	 */
+	public void weighValue(float weightValue) {
+		setValue(getValue() * weightValue);
+	}
+
+	/**
 	 * @return sum of all the sub-score values.
 	 */
 	public float getSumOfSubScores() {
