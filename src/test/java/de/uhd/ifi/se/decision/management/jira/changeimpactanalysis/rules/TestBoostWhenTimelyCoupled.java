@@ -46,7 +46,7 @@ public class TestBoostWhenTimelyCoupled extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationScoreMaximum() {
+	public void testPropagationRuleWeightMaximum() {
 		List<ChangePropagationRule> propagationRules = new LinkedList<>();
 		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_TIMELY_COUPLED", false, 0.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
@@ -60,7 +60,7 @@ public class TestBoostWhenTimelyCoupled extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationScoreMinimum() {
+	public void testPropagationRuleWeightMinimum() {
 		List<ChangePropagationRule> propagationRules = new LinkedList<>();
 		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_TIMELY_COUPLED", false, 2.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
@@ -70,6 +70,20 @@ public class TestBoostWhenTimelyCoupled extends TestSetUp {
 		filterSettings.setSelectedElementObject(rootElement);
 
 		assertEquals(0.0, ChangePropagationRuleType.BOOST_WHEN_TIMELY_COUPLED.getFunction()
+				.isChangePropagated(filterSettings, nextElement, null), 0.005);
+	}
+
+	@Test
+	public void testPropagationRuleWeightNegative() {
+		List<ChangePropagationRule> propagationRules = new LinkedList<>();
+		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_TIMELY_COUPLED", false, -1.0f));
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
+				propagationRules);
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElementObject(rootElement);
+
+		assertEquals(1.0, ChangePropagationRuleType.BOOST_WHEN_TIMELY_COUPLED.getFunction()
 				.isChangePropagated(filterSettings, nextElement, null), 0.005);
 	}
 }
