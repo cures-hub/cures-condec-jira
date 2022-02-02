@@ -26,7 +26,9 @@ public class TestChangedFile extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		changedFile = gitClient.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(mockJiraIssueForGitTestsTangledSingleCommit).getChangedFiles().get(0);
+		changedFile = gitClient
+				.getDiffForJiraIssueOnDefaultBranchAndFeatureBranches(mockJiraIssueForGitTestsTangledSingleCommit)
+				.getChangedFiles().get(0);
 	}
 
 	@Test
@@ -179,12 +181,6 @@ public class TestChangedFile extends TestSetUpGit {
 	}
 
 	@Test
-	public void testCreationDateCommitsNull() {
-		changedFile.setCommits(null);
-		assertNotNull(changedFile.getCreationDate());
-	}
-
-	@Test
 	public void testCreationDateCommitsEmpty() {
 		changedFile.setCommits(List.of());
 		assertNotNull(changedFile.getCreationDate());
@@ -192,12 +188,6 @@ public class TestChangedFile extends TestSetUpGit {
 
 	@Test
 	public void testUpdatingDate() {
-		assertNotNull(changedFile.getLatestUpdatingDate());
-	}
-
-	@Test
-	public void testUpdatingDateCommitsNull() {
-		changedFile.setCommits(null);
 		assertNotNull(changedFile.getLatestUpdatingDate());
 	}
 
@@ -221,7 +211,6 @@ public class TestChangedFile extends TestSetUpGit {
 
 	@Test
 	public void testCreatorNameCommitsNullButAuthorManuallySet() {
-		changedFile.setCommits(null);
 		changedFile.setCreator("42");
 		assertEquals("42", changedFile.getCreatorName());
 	}

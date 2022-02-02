@@ -38,7 +38,8 @@ public class ChangeImpactAnalysisConfiguration {
 		areLinkRecommendationsIncludedInCalculation = false;
 	}
 
-	public ChangeImpactAnalysisConfiguration(float decayValue, float threshold, long context, List<ChangePropagationRule> propagationRules) {
+	public ChangeImpactAnalysisConfiguration(float decayValue, float threshold, long context,
+			List<ChangePropagationRule> propagationRules) {
 		this.decayValue = decayValue;
 		this.threshold = threshold;
 		this.linkImpact = new HashMap<>();
@@ -85,11 +86,26 @@ public class ChangeImpactAnalysisConfiguration {
 		this.context = context;
 	}
 
+	/**
+	 * @issue How can we make sure that changing the number of link recommendation
+	 *        rules results in a changed number in the frontend?
+	 * @decision We return the default rules if the number stored in the settings is
+	 *           different to them!
+	 * 
+	 * @return CIA rules as {@link ChangePropagationRule} objects.
+	 */
 	@XmlElement
 	public List<ChangePropagationRule> getPropagationRules() {
+		if (propagationRules.size() != ChangePropagationRule.getDefaultRules().size()) {
+			return ChangePropagationRule.getDefaultRules();
+		}
 		return propagationRules;
 	}
 
+	/**
+	 * @param propagationRules
+	 *            CIA rules as {@link ChangePropagationRule} objects.
+	 */
 	@JsonProperty
 	public void setPropagationRules(List<ChangePropagationRule> propagationRules) {
 		this.propagationRules = propagationRules;

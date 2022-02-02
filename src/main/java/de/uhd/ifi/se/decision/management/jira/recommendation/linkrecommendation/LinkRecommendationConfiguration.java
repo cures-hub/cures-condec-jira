@@ -88,6 +88,15 @@ public class LinkRecommendationConfiguration {
 		this.minProbability = minProbability;
 	}
 
+	/**
+	 * @issue How can we make sure that changing the number of link recommendation
+	 *        rules results in a changed number in the frontend?
+	 * @decision We return the default rules if the number stored in the settings is
+	 *           different to them!
+	 * 
+	 * @return link recommendation rules as {@link ContextInformationProvider}
+	 *         objects.
+	 */
 	@XmlElement
 	public List<ContextInformationProvider> getContextInformationProviders() {
 		if (contextInformationProviders.size() != getAllContextInformationProviders().size()) {
@@ -96,6 +105,11 @@ public class LinkRecommendationConfiguration {
 		return contextInformationProviders;
 	}
 
+	/**
+	 * @param contextInformationProviders
+	 *            link recommendation rules as {@link ContextInformationProvider}
+	 *            objects.
+	 */
 	@JsonProperty
 	public void setContextInformationProviders(List<ContextInformationProvider> contextInformationProviders) {
 		this.contextInformationProviders = contextInformationProviders;
