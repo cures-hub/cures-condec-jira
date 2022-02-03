@@ -89,7 +89,6 @@ public class TestCalculator extends TestSetUp {
 				impactedElements, (long) settings.getLinkDistance());
 
 		assertEquals(10, impactedElements.size());
-		assertTrue(impactedElements.get(9).getImpactExplanation().contains("context"));
 	}
 
 	@Test
