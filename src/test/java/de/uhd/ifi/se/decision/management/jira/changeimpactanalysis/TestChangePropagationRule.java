@@ -48,6 +48,14 @@ public class TestChangePropagationRule extends TestSetUp {
 	}
 
 	@Test
+	public void testDoesRuleExist() {
+		ChangePropagationRule rule = new ChangePropagationRule("FooBar");
+
+		assertTrue(ChangePropagationRule.getDefaultRules().get(0).doesRuleExist());
+		assertFalse(rule.doesRuleExist());
+	}
+
+	@Test
 	public void testEquals() {
 		assertFalse(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP).equals(rule));
 		assertTrue(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_EQUAL_CREATOR).equals(rule));

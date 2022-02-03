@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestKnowledgeElementWithImpact extends TestSetUp {
     
@@ -39,6 +40,18 @@ public class TestKnowledgeElementWithImpact extends TestSetUp {
     @Test
     public void testEqualsUsingSameObjects() {
         assertTrue(elementWithImpact.equals(elementWithImpact));
+    }
+
+    @Test
+    public void testEqualsDifferentIds() {
+        KnowledgeElement element = KnowledgeElements.getDecision();
+        element.setId((long) 1);
+        KnowledgeElementWithImpact elementWithImpact = new KnowledgeElementWithImpact(element);
+        element = KnowledgeElements.getAlternative();
+        element.setId((long) 1);
+        KnowledgeElementWithImpact anotherElementWithImpact = new KnowledgeElementWithImpact(element);
+
+        assertTrue(elementWithImpact.equals(anotherElementWithImpact));
     }
 
     @SuppressWarnings("unlikely-arg-type")
