@@ -451,17 +451,6 @@ public class KnowledgeElement {
 	}
 
 	/**
-	 * @return date of last update of the knowledge element.
-	 */
-	@XmlElement
-	public Date getLatestUpdatingDate() {
-		if (updateDateAndAuthor.isEmpty()) {
-			return getCreationDate();
-		}
-		return updateDateAndAuthor.lastKey();
-	}
-
-	/**
 	 * @param updateDateAndAuthor
 	 *            map containing the update dates of the knowledge element and their
 	 *            corresponding authors.
@@ -526,12 +515,26 @@ public class KnowledgeElement {
 		return user != null ? user.getDisplayName() : "";
 	}
 
-	public void setCreator(String authorName) {
-		if (!updateDateAndAuthor.isEmpty()) {
-			updateDateAndAuthor.replace(this.updateDateAndAuthor.firstKey(), authorName);
-		} else {
-			updateDateAndAuthor.put(new Date(), authorName);
+	/**
+	 * @return date of last update of the knowledge element.
+	 */
+	@XmlElement
+	public Date getLatestUpdatingDate() {
+		if (updateDateAndAuthor.isEmpty()) {
+			return getCreationDate();
 		}
+		return updateDateAndAuthor.lastKey();
+	}
+
+	/**
+	 * @return name of the person who did latest changes to the element as a String.
+	 */
+	@XmlElement(name = "latestAuthor")
+	public String getLatestAuthorName() {
+		if (updateDateAndAuthor.lastEntry() != null && !updateDateAndAuthor.lastEntry().getValue().isEmpty()) {
+			return updateDateAndAuthor.lastEntry().getValue();
+		}
+		return getCreatorName();
 	}
 
 	/**
