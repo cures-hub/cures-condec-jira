@@ -31,11 +31,11 @@ public class BoostWhenMoreOutboundLinks implements ChangePropagationFunction {
 		if (inwardLinks == 1 && outwardLinks == 0) {
 			return 1.0;
 		} else if (outwardLinks == 0) {
-			return Math.pow(2, ((-1 * (double) inwardLinks) / 4)) * (2 - ruleWeight) >= 1.0 ? 1.0
-					: Math.pow(2, ((-1 * (double) inwardLinks) / 4)) * (2 - ruleWeight);
+			return Math.pow(2, ((-1 * (double) inwardLinks) / 4)) * (2 - Math.abs(ruleWeight)) >= 1.0 ? 1.0
+					: Math.pow(2, ((-1 * (double) inwardLinks) / 4)) * (2 - Math.abs(ruleWeight));
 		} else {
-			return (double) outwardLinks / (inwardLinks + outwardLinks) * (2 - ruleWeight) >= 1.0 ? 1.0
-					: (double) outwardLinks / (inwardLinks + outwardLinks) * (2 - ruleWeight);
+			return (double) outwardLinks / (inwardLinks + outwardLinks) * (2 - Math.abs(ruleWeight)) >= 1.0 ? 1.0
+					: (double) outwardLinks / (inwardLinks + outwardLinks) * (2 - Math.abs(ruleWeight));
 		}
 	}
 }

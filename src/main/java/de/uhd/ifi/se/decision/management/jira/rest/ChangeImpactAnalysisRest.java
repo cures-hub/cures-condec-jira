@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -38,13 +36,14 @@ public class ChangeImpactAnalysisRest {
 		/**
 		 * @issue How can we make sure that a new number of CIA rules in the backend is
 		 *        available to the users?
-		 * @decision We store all CIA rules if the number stored in the settings is
-		 *           different to them to fix inconsistency between stored config and
+		 * @decision Check whether the rules stored in the settings is equal to the 
+		 *           provided ruleset to fix inconsistency between stored config and 
 		 *           new code!
 		 */
-		List<ChangePropagationRule> allRules = ChangePropagationRule.getDefaultRules();
-		if (ciaConfig.getPropagationRules().size() != allRules.size()) {
-			ciaConfig.setPropagationRules(allRules);
+		for(ChangePropagationRule rule : ChangePropagationRule.getDefaultRules()) {
+			if (!ciaConfig.getPropagationRules().contains(rule)) {
+				ciaConfig.setPropagationRules(ChangePropagationRule.getDefaultRules());
+			}
 		}
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaConfig);
 		return Response.ok().build();

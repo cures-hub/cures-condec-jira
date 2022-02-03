@@ -102,6 +102,34 @@ public class ChangePropagationRule {
 		return type.getDescription();
 	}
 
+	/**
+	 * @return explanation of the change propagation rule.
+	 */
+	@XmlElement
+	public String getExplanation() {
+		return type.getExplanation();
+	}
+
+	/**
+	 * @issue How can we make sure that the CIA configuration Velocity page doesn't crash when
+	 * 		a CIA rule is deleted and the stored ChangePropagationRule in the database
+	 * 		no longer exists?
+	 * @decision Check whether any given rule exists by implementing a method that tries
+	 * 		to invoke a rule-specific method and utilize it in the Velocity template.
+	 * 
+	 * @return true if the rule exists, false otherwise.
+	 */
+	@XmlElement
+	public boolean doesRuleExist() {
+		try {
+			type.getDescription();
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+	}
+
 	public static List<ChangePropagationRule> getDefaultRules() {
 		List<ChangePropagationRule> defaultRules = new LinkedList<>();
 		for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {

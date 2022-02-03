@@ -24,6 +24,6 @@ public class BoostWhenEqualComponent implements ChangePropagationFunction {
 		
 		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
 			.getValue();
-		return similarityScore * (2 - ruleWeight) >= 1.0 ? 1.0 : similarityScore * (2 - ruleWeight);
+		return similarityScore * (2 - Math.abs(ruleWeight)) >= 1.0 ? 1.0 : similarityScore * (2 - Math.abs(ruleWeight));
 	}
 }

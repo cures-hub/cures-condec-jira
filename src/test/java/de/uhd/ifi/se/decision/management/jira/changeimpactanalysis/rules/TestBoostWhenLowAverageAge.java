@@ -52,8 +52,8 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
 		updateDateAndAuthor.put(new Date(999999999), "FooBar");
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
-		assertEquals(0.926, ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
-				.isChangePropagated(filterSettings, currentElement, null), 0.005);
+		assertEquals(0.986, ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
+				.isChangePropagated(filterSettings, currentElement, null), 0.0005);
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
 		filterSettings = new FilterSettings("TEST", "");
 
 		assertEquals(0.75, ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
-				.isChangePropagated(filterSettings, currentElement, null), 0.005);
+				.isChangePropagated(filterSettings, currentElement, null), 0.0005);
 	}
 
 	@Test
@@ -90,6 +90,24 @@ public class TestBoostWhenLowAverageAge extends TestSetUp {
 		filterSettings = new FilterSettings("TEST", "");
 
 		assertEquals(1.0, ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
-				.isChangePropagated(filterSettings, currentElement, null), 0.005);
+				.isChangePropagated(filterSettings, currentElement, null), 0.0005);
+	}
+
+	@Test
+	public void testPropagationNegativeRuleWeight() {
+		currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
+
+		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
+		updateDateAndAuthor.put(new Date(5), "FooBar");
+		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
+		List<ChangePropagationRule> propagationRules = new LinkedList<>();
+		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_LOW_AVERAGE_AGE", false, -1.0f));
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
+				propagationRules);
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		filterSettings = new FilterSettings("TEST", "");
+
+		assertEquals(0.75, ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
+				.isChangePropagated(filterSettings, currentElement, null), 0.0005);
 	}
 }
