@@ -133,6 +133,37 @@ public class LinkRecommendationRest {
 	 *            {@link ApplicationUser}.
 	 * @param projectKey
 	 *            of a Jira project.
+	 * @param maxRecommendations
+	 *            maximum amount of recommendations that should be received.
+	 * 
+	 * @return ok if maxRecommendations was successfully saved.
+	 */
+	@Path("/configuration/{projectKey}/recommendationmaximum")
+	@POST
+	public Response setMaximumRecommendations(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey, int maxRecommendations) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		if (maxRecommendations < 0) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The maximum has to be a number above 0.")).build();
+		}
+
+		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager
+				.getLinkRecommendationConfiguration(projectKey);
+		linkRecommendationConfiguration.setMaxRecommendations(maxRecommendations);
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration(projectKey, linkRecommendationConfiguration);
+		return Response.ok().build();
+	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
 	 * @param rules
 	 *            {@link ContextInformationProvider}s representing the rules for
 	 *            link recommendation.

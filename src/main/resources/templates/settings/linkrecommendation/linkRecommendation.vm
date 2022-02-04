@@ -4,4 +4,5 @@
 <form class="aui">
     #parse("templates/settings/linkrecommendation/minProbabilitySetting.vm")
     #parse("templates/settings/linkrecommendation/rules.vm")
+    #parse("templates/settings/linkrecommendation/maxAmountSetting.vm")
 </form>

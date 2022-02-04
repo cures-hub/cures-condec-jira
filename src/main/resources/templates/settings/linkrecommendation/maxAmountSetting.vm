@@ -1,0 +1,17 @@
+<h3>Settings regarding the amount of received recommendations</h3>
+
+<div class="field-group top-label">
+    <label for="max-recommendations">Maximum amount of received recommendations (top-k)</label>
+    <input type="number"
+           value="$linkRecommendationConfig.getMaxRecommendations()"
+           step="1" min="0" max="100"
+           id="max-recommendations" />
+    <button id="save-max-recommendations-btn" class='aui-button'>Save</button>
+</div>
+
+<script>
+	$("#save-max-recommendations-btn").click(event => {
+		event.preventDefault();
+		conDecLinkRecommendationAPI.setMaxRecommendations("$projectKey", $("#max-recommendations").val());
+    })
+</script>

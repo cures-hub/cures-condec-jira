@@ -36,6 +36,13 @@ public class TestContextInformation extends TestSetUp {
 				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 2);
+		
+		linkRecommendationConfiguration.setMaxRecommendations(1);
+		contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				linkRecommendationConfiguration);
+		linkRecommendations = contextInformation.getLinkRecommendations();
+
+		assertTrue(linkRecommendations.size() == 1);
 	}
 
 	@Test

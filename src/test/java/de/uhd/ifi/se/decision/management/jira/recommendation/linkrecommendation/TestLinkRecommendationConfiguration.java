@@ -32,4 +32,9 @@ public class TestLinkRecommendationConfiguration extends TestSetUp {
 		assertEquals(1, config.getContextInformationProviders().size());
 	}
 
+	@Test
+	public void testSetAndGetMaximumRecommendations() {
+		config.setMaxRecommendations(15);
+		assertEquals(15, config.getMaxRecommendations());
+	}
 }
