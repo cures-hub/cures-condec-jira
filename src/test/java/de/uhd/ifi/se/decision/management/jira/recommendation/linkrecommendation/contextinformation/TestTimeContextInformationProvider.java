@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -66,5 +67,15 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
         assertEquals(0.75, score.getValue(), 0.00);
+	}
+
+	@Test
+	public void testExplanation() {
+		assertNotNull(timeContextInformationProvider.getExplanation());
+	}
+
+	@Test
+	public void testDescription() {
+		assertNotNull(timeContextInformationProvider.getDescription());
 	}
 }

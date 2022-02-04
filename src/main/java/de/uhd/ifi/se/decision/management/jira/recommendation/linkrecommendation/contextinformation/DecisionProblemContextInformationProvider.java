@@ -27,4 +27,9 @@ public class DecisionProblemContextInformationProvider extends ContextInformatio
 	public String getExplanation() {
 		return "Recommends knowledge elements that are decision problems.";
 	}
+
+    @Override
+    public String getDescription() {
+		return "Recommend elements that are decision problems.";
+	}
 }

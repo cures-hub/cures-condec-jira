@@ -43,4 +43,9 @@ public class ComponentContextInformationProvider extends ContextInformationProvi
 	public String getExplanation() {
 		return "Assumes that knowledge elements belonging the same component are related.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that are assigned to the same component as the source element.";
+	}
 }

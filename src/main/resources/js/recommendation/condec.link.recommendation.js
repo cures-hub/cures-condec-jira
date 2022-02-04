@@ -28,7 +28,7 @@
 			var ruleNames = [];
 			var selectedRules = [];
 			for (var rule of config["contextInformationProviders"]) {
-				var name = rule.name;
+				var name = rule.description;
 				ruleNames.push(name);
 				if (rule.isActive) {
 					selectedRules.push(name);

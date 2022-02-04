@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,5 +52,15 @@ public class TestUserContextInformationProvider extends TestSetUp {
 				JiraUsers.SYS_ADMIN.getApplicationUser(), JiraUsers.SYS_ADMIN.getApplicationUser()), 0);
 		assertEquals(0., UserContextInformationProvider.isApplicationUserEqual(JiraUsers.SYS_ADMIN.getApplicationUser(),
 				JiraUsers.BLACK_HEAD.getApplicationUser()), 0);
+	}
+
+	@Test
+	public void testExplanation() {
+		assertNotNull(userContextInformationProvider.getExplanation());
+	}
+
+	@Test
+	public void testDescription() {
+		assertNotNull(userContextInformationProvider.getDescription());
 	}
 }

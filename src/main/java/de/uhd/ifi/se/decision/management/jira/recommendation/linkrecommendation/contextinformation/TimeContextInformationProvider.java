@@ -42,4 +42,9 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 	public String getExplanation() {
 		return "Assumes that knowledge elements created/updated during a similar time are related.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that are timely coupled to the source element.";
+	}
 }

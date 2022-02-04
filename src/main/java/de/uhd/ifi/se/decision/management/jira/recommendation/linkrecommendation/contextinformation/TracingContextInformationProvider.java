@@ -27,4 +27,9 @@ public class TracingContextInformationProvider extends ContextInformationProvide
 	public String getExplanation() {
 		return "Assumes that knowledge elements that can be traced within a certain number of hops are related.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that can be traced to the source element.";
+	}
 }

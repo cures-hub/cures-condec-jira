@@ -42,4 +42,9 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 	public String getExplanation() {
 		return "Assumes that knowledge elements created or modified by the same user are related.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that have the same author as the source element.";
+	}
 }
