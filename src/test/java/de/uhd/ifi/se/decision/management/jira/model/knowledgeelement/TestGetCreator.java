@@ -31,12 +31,16 @@ public class TestGetCreator extends TestSetUp {
 
 	@Test
 	public void testGetCreatorOfJiraIssueComment() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		assertNull(element.getCreator());
 	}
 
 	@Test
 	public void testGetCreatorOfCodeElement() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
 		element.setDocumentationLocation(DocumentationLocation.CODE);
 		assertNull(element.getCreator());
 	}
