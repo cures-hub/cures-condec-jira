@@ -36,7 +36,8 @@
     <input type="checkbox" type="checkbox" id="recommended-links-in-cia-input-$viewIdentifier" style="display:none"/>
 </div>
 
-<div class="condec-filter-criterion">
+<div class="condec-filter-criterion"
+	title="Include elements that are not explicitly linked to the source element.">
     <label for="is-link-recommendation-input-$viewIdentifier">$i18n.getText('condec.label.is.link.recommendation')</label>
     <input type="checkbox" type="checkbox" id="is-link-recommendation-input-$viewIdentifier"/>
 </div>
@@ -55,7 +56,7 @@
 </script>
 
 <a id="link-impact-input-$viewIdentifier" 
-	title="Link type and rule weights can be changed by the rationale manager." target="_blank">
+	title="Link type, rule weights and default ruleset can be changed by the rationale manager." target="_blank">
 	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.label.configuration')
 </a>
 

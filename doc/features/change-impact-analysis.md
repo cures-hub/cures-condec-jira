@@ -24,11 +24,11 @@ elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValu
 
 where `parentImpact` is the element impact of the ancestor node in the knowledge graph, 
 `decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, 
-`ruleBasedValue` is calculated based on the selected rules, and `recommendationScore` is the link recommendation score of the current element, if the element was recommended.
+`ruleBasedValue` is the product of the calculated rule value of each selected rule, and `recommendationScore` is the link recommendation score of the current element, if the element was recommended.
 The following rules are available:
 
-1. Stop at elements with the same type as the selected element (e.g. at requirements with same type)
-2. Outward links only
+1. Outward links only
+2. Boost when element has the same creator as the selected element
 3. Boost when element is textual similar to the selected element
 4. Boost when element is assigned to the same component
 5. Boost when element is assigned to the same decision group
