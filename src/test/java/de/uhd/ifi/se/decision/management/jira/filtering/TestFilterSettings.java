@@ -267,6 +267,14 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
+	public void testGetSelectedElementFromDatabaseIfNotInDatabase() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
+		filterSettings.setSelectedElementObject(element);
+		assertEquals(element, filterSettings.getSelectedElementFromDatabase());
+	}
+
+	@Test
 	public void testSetSelectedElement() {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
 		Set<KnowledgeElement> vertexSet = new HashSet<KnowledgeElement>();

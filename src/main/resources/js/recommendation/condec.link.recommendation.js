@@ -15,10 +15,10 @@
 		// fill dropdown to select a knowledge element
 		var jiraIssueId = JIRA.Issue.getIssueId();
 		if (jiraIssueId) {
-			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i',
-				(element) => initKnowledgeElementDropdown(element));
+			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i', 
+					conDecLinkRecommendation.initKnowledgeElementDropdown);
 		} else {
-			initKnowledgeElementDropdown();
+			conDecLinkRecommendation.initKnowledgeElementDropdown();
 		}
 
 		// fill link recommendation parameters from current configuration
@@ -43,18 +43,19 @@
 		addOnClickListenerOnRecommendationButton();
 	};
 
-	function initKnowledgeElementDropdown(selectedElement) {
+	ConDecLinkRecommendation.prototype.initKnowledgeElementDropdown = function(selectedElement) {
 		filterSettings = {};
 		if (selectedElement) {
 			filterSettings.selectedElementObject = selectedElement;
 		}
 		let dropdown = document.getElementById("link-recommendation-dropdown");
-		conDecAPI.getKnowledgeElements(filterSettings, (elements) =>
+		conDecAPI.getKnowledgeElements(filterSettings, (elements) => {
 			conDecFiltering.initKnowledgeElementDropdown(dropdown, elements, selectedElement,
 				"link-recommendation", (selectedElement) => {
 					conDecLinkRecommendation.selectedElement = selectedElement;
-				}));
-	}
+				});
+			});
+	};
 
 	function linkConfigPage() {
 		var configLink = document.getElementById("config-link-link-recommendation");
@@ -71,7 +72,7 @@
 	}
 
 	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {
-		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, getSelectedLinkRecommendation(index))
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarded link recommendation successfully!");
 				this.loadData();
@@ -80,7 +81,7 @@
 	};
 
 	ConDecLinkRecommendation.prototype.undoDiscardRecommendation = function(index) {
-		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
+		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, getSelectedLinkRecommendation(index))
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarding link recommendation successfully undone!");
 				this.loadData();
@@ -154,10 +155,15 @@
 	};
 
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {
-		let target = conDecLinkRecommendationAPI.currentLinkRecommendations[index].target;
-		let self = this;
-		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation, () => self.loadData());
+		let target = getSelectedLinkRecommendation(index).target;
+		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation);
 	};
+	
+	function getSelectedLinkRecommendation(index) {
+		var idOfSourceElement = conDecLinkRecommendation.selectedElement.id;
+		var allRecommendationsForSourceElement = conDecLinkRecommendationAPI.currentLinkRecommendations.get(idOfSourceElement);
+		return allRecommendationsForSourceElement[index];
+	}
 
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);

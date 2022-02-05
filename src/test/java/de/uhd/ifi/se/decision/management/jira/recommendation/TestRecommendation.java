@@ -38,13 +38,13 @@ public class TestRecommendation extends TestSetUp {
 		Recommendation otherRecommendation = new LinkRecommendation(KnowledgeElements.getOtherWorkItem(),
 				KnowledgeElements.getAlternative());
 		otherRecommendation.addToScore(0.5, "explanation for score");
-		assertEquals(-1, recommendation.compareTo(otherRecommendation));
+		assertEquals(1, recommendation.compareTo(otherRecommendation));
 
 		otherRecommendation.addToScore(0.5, "explanation for score");
-		assertEquals(-1, recommendation.compareTo(otherRecommendation));
+		assertEquals(1, recommendation.compareTo(otherRecommendation));
 
 		recommendation.addToScore(1., "explanation for score");
-		assertEquals(1, recommendation.compareTo(otherRecommendation));
+		assertEquals(-1, recommendation.compareTo(otherRecommendation));
 	}
 
 	@Test
