@@ -201,17 +201,4 @@ public class TestChangedFile extends TestSetUpGit {
 	public void testCreatorName() {
 		assertEquals("", changedFile.getCreatorName());
 	}
-
-	@Test
-	public void testCreatorNameCommitsEmptyButAuthorManuallySet() {
-		changedFile.setCommits(List.of());
-		changedFile.setCreator("42");
-		assertEquals("42", changedFile.getCreatorName());
-	}
-
-	@Test
-	public void testCreatorNameCommitsNullButAuthorManuallySet() {
-		changedFile.setCreator("42");
-		assertEquals("42", changedFile.getCreatorName());
-	}
 }

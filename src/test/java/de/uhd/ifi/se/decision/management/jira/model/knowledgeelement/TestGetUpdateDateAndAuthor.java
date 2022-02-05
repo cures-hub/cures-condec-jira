@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -29,5 +31,19 @@ public class TestGetUpdateDateAndAuthor extends TestSetUp {
 		element.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		assertEquals(updateDateAndAuthor, element.getUpdateDateAndAuthor());
+	}
+
+	@Test
+	public void testGetLatestAuthorName() {
+		assertFalse(element.getUpdateDateAndAuthor().isEmpty());
+		assertEquals("", element.getLatestAuthorName());
+	}
+
+	@Test
+	public void testGetLatestAuthorNameWithEmptyUpdateAndAuthorMap() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
+		assertTrue(element.getUpdateDateAndAuthor().isEmpty());
+		assertEquals("", element.getLatestAuthorName());
 	}
 }

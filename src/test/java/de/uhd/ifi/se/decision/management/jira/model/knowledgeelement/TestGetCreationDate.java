@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.model.knowledgeelement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -13,8 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestGetCreationDate extends TestSetUp {
-    
-    private KnowledgeElement element;
+
+	private KnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -24,32 +26,40 @@ public class TestGetCreationDate extends TestSetUp {
 
 	@Test
 	public void testGetCreationDate() {
-        Date date = new Date(0);
-        element.setCreationDate(date);
+		Date date = new Date(0);
+		element.setCreationDate(date);
 
 		assertEquals(date, element.getCreationDate());
 	}
 
-    @Test
+	@Test
 	public void testGetCreationDateNewDateNewerThanOldestUpdate() {
-        TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
-        updateDateAndAuthor.put(new Date(5), "FooBar");
-        updateDateAndAuthor.put(new Date(15), "FooBar");
+		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
+		updateDateAndAuthor.put(new Date(5), "FooBar");
+		updateDateAndAuthor.put(new Date(15), "FooBar");
 
-        element.setUpdateDateAndAuthor(updateDateAndAuthor);
-        element.setCreationDate(new Date(120));
-        
+		element.setUpdateDateAndAuthor(updateDateAndAuthor);
+		element.setCreationDate(new Date(120));
+
 		assertEquals(new Date(5), element.getCreationDate());
 	}
 
-    @Test
+	@Test
 	public void testGetCreationDateNewDateOlderThanUpdates() {
-        TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
-        updateDateAndAuthor.put(new Date(5), "FooBar");
-        updateDateAndAuthor.put(new Date(15), "FooBar");
-        element.setUpdateDateAndAuthor(updateDateAndAuthor);
-        element.setCreationDate(new Date(0));
-        
+		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
+		updateDateAndAuthor.put(new Date(5), "FooBar");
+		updateDateAndAuthor.put(new Date(15), "FooBar");
+		element.setUpdateDateAndAuthor(updateDateAndAuthor);
+		element.setCreationDate(new Date(0));
+
 		assertEquals(new Date(0), element.getCreationDate());
+	}
+
+	@Test
+	public void testGetCreatorNameWithEmptyUpdateAndAuthorMap() {
+		KnowledgeElement element = new KnowledgeElement();
+		element.setProject("TEST");
+		assertTrue(element.getUpdateDateAndAuthor().isEmpty());
+		assertNotNull(element.getCreationDate());
 	}
 }
