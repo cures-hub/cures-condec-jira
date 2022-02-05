@@ -193,10 +193,7 @@ public class KnowledgeElement {
 	 *         alternative, issue, and argument.
 	 */
 	public KnowledgeType getType() {
-		if (type != null) {
-			return type;
-		}
-		return KnowledgeType.OTHER;
+		return type;
 	}
 
 	/**
@@ -207,13 +204,12 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "type")
 	public String getTypeAsString() {
-		if (this.getType() == KnowledgeType.OTHER
-				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+		if (getType() == KnowledgeType.OTHER && getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
-			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
+			Issue issue = issueManager.getIssueByCurrentKey(getKey());
 			return issue != null ? issue.getIssueType().getName() : "";
 		}
-		return this.getType().toString();
+		return getType().toString();
 	}
 
 	/**
@@ -248,7 +244,7 @@ public class KnowledgeElement {
 	@JsonProperty("type")
 	public void setType(String typeAsString) {
 		KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
-		this.setType(type);
+		setType(type);
 	}
 
 	/**
@@ -307,7 +303,7 @@ public class KnowledgeElement {
 	 */
 	@JsonProperty("projectKey")
 	public void setProject(String projectKey) {
-		this.project = new DecisionKnowledgeProject(projectKey);
+		project = new DecisionKnowledgeProject(projectKey);
 	}
 
 	/**
@@ -316,10 +312,10 @@ public class KnowledgeElement {
 	 */
 	@XmlElement
 	public String getKey() {
-		if (this.key == null && this.project != null) {
-			return this.project.getProjectKey() + "-" + this.id;
+		if (key == null && project != null) {
+			return project.getProjectKey() + "-" + id;
 		}
-		return this.key;
+		return key;
 	}
 
 	/**
@@ -338,7 +334,7 @@ public class KnowledgeElement {
 	 *         a Jira issue.
 	 */
 	public DocumentationLocation getDocumentationLocation() {
-		return this.documentationLocation;
+		return documentationLocation;
 	}
 
 	/**
@@ -360,7 +356,7 @@ public class KnowledgeElement {
 	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocationAsString() {
 		if (documentationLocation != null) {
-			return this.documentationLocation.getIdentifier();
+			return documentationLocation.getIdentifier();
 		}
 		return "";
 	}
@@ -508,7 +504,7 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "creator")
 	public String getCreatorName() {
-		if (updateDateAndAuthor.firstEntry() != null && !updateDateAndAuthor.firstEntry().getValue().isEmpty()) {
+		if (!updateDateAndAuthor.isEmpty()) {
 			return updateDateAndAuthor.firstEntry().getValue();
 		}
 		ApplicationUser user = getCreator();
@@ -531,7 +527,7 @@ public class KnowledgeElement {
 	 */
 	@XmlElement(name = "latestAuthor")
 	public String getLatestAuthorName() {
-		if (updateDateAndAuthor.lastEntry() != null && !updateDateAndAuthor.lastEntry().getValue().isEmpty()) {
+		if (!updateDateAndAuthor.isEmpty()) {
 			return updateDateAndAuthor.lastEntry().getValue();
 		}
 		return getCreatorName();
