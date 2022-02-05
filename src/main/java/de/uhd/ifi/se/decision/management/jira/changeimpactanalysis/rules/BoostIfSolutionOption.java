@@ -20,10 +20,9 @@ public class BoostIfSolutionOption implements ChangePropagationFunction {
     @Override
     public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
         float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
-            ChangePropagationRuleType.BOOST_IF_SOLUTION_OPTION);
-
+                ChangePropagationRuleType.BOOST_IF_SOLUTION_OPTION);
         float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
-            .getValue();
-        return similarityScore * (2 - Math.abs(ruleWeight)) >= 1.0 ? 1.0 : similarityScore * (2 - Math.abs(ruleWeight));
+                .getValue();
+        return ChangePropagationRule.addWeightValue(ruleWeight, similarityScore);
     }
 }

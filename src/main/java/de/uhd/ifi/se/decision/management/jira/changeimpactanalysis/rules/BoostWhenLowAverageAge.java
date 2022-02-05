@@ -21,19 +21,10 @@ public class BoostWhenLowAverageAge implements ChangePropagationFunction {
 
 		double differenceInWeeks = Math.abs((nextElement.getCreationDate().getTime()
 				- nextElement.getLatestUpdatingDate().getTime()) / (1000 * 60 * 60 * 24) / 7);
-		double result;
-		// Reverse effects of rule result for negative weights
-		if (ruleWeight < 0) {
-			result = (differenceInWeeks / 100) + 0.75;
-		} else {
-			result = Math.pow(2, ((-1 * differenceInWeeks) / 50));
+		double result = Math.pow(2, ((-1 * differenceInWeeks) / 50));
+		if (result < 0.75) {
+			result = 0.75;
 		}
-		if (result <= 0.75) {
-			return 0.75;
-		} 
-		if (result >= 1.0) {
-			return 1.0;
-		}
-		return result;
+		return ChangePropagationRule.addWeightValue(ruleWeight, result);
 	}
 }

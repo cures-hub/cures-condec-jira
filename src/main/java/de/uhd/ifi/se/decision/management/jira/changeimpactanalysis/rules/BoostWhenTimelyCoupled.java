@@ -22,14 +22,8 @@ public class BoostWhenTimelyCoupled implements ChangePropagationFunction {
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
 		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
 				ChangePropagationRuleType.BOOST_WHEN_TIMELY_COUPLED);
-
 		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
-			.getValue();
-		// Reverse effects of rule result for negative weights, 0.75 -> 1.0 | 1.0 -> 0.75
-		// Works best for values between 0.75 and 1.0
-		if (ruleWeight < 0) {
-			similarityScore = (float) (Math.pow(2, (-1 * Math.pow(similarityScore, 3))) + 0.25);
-		}		
-		return similarityScore * (2 - Math.abs(ruleWeight)) >= 1.0 ? 1.0 : similarityScore * (2 - Math.abs(ruleWeight));
+				.getValue();
+		return ChangePropagationRule.addWeightValue(ruleWeight, similarityScore);
 	}
 }

@@ -33,18 +33,11 @@ public class BoostWhenHighAmountOfDistinctAuthors implements ChangePropagationFu
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
 		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
 				ChangePropagationRuleType.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS);
-
 		double amountOfDistinctAuthors = nextElement.getUpdateDateAndAuthor().values().stream().distinct().count();
 		if (amountOfDistinctAuthors > 0) {
-			double score = 0;
-			// Reverse effects of rule result for negative weights
-			if (ruleWeight < 0) {
-				score = Math.pow(1.05, (-1 * amountOfDistinctAuthors));
-			} else {
-				score = 1.0 - (0.2 / amountOfDistinctAuthors);
-			}
-			return score * Math.abs(ruleWeight) >= 1.0 ? 1.0 : score * Math.abs(ruleWeight);
+			double similarityScore = 1.0 - (0.3 / amountOfDistinctAuthors);
+			return ChangePropagationRule.addWeightValue(ruleWeight, similarityScore);
 		}
-		return 1.0;
+		return ChangePropagationRule.addWeightValue(ruleWeight, 0.75);
 	}
 }
