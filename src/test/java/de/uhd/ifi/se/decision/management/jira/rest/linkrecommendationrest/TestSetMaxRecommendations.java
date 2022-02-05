@@ -28,6 +28,12 @@ public class TestSetMaxRecommendations extends TestSetUp {
 	}
 
 	@Test
+	public void testInvalidRequest() {
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
+				linkRecommendationRest.setMaximumRecommendations(new MockHttpServletRequest(), "TEST", -1).getStatus());
+	}
+
+	@Test
 	public void testNegativeValueMinusOne() {
 		assertEquals(Status.OK.getStatusCode(),
 				linkRecommendationRest.setMaximumRecommendations(request, "TEST", -1).getStatus());

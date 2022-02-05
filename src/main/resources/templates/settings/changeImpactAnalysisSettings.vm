@@ -103,26 +103,14 @@ parent/ancestor element and the current element,</p>
                 </td>
                 <td>
                     #if ($propagationRule.getDescription().contains("Boost"))
-                        #if($propagationRule.getExplanation().contains("negative weights"))
-                            <input class="text short-field"
-                                type="number"
-                                data-aui-validation-field
-                                value="$propagationRule.getWeightValue()"
-                                step="0.1"
-                                min="-2.0"
-                                max="2.0"
-                                id="$propagationRule.getType().name()-weight"/>
-                        #else
-                            <input class="text short-field"
-                                type="number"
-                                data-aui-validation-field
-                                value="$propagationRule.getWeightValue()"
-                                step="0.1"
-                                min="0.0"
-                                max="2.0"
-                                id="$propagationRule.getType().name()-weight"
-                                oninput="validity.valid||(value='');"/>
-                        #end
+                        <input class="text short-field"
+                            type="number"
+                            data-aui-validation-field
+                            value="$propagationRule.getWeightValue()"
+                            step="0.1"
+                            min="-2.0"
+                            max="2.0"
+                            id="$propagationRule.getType().name()-weight"/>
                     #end
                 </td>
             </tr>

@@ -82,6 +82,13 @@ public class TestContextInformation extends TestSetUp {
 		assertNotNull(contextInformation.getExplanation());
 	}
 
+	@Test
+	public void testDefaultDescription() {
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				linkRecommendationConfiguration);
+		assertNotNull(contextInformation.getDescription());
+	}
+
 	@After
 	public void tearDown() {
 		// reset plugin settings to default settings

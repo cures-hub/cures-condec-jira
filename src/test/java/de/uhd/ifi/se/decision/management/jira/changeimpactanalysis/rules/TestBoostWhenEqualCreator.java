@@ -23,7 +23,6 @@ public class TestBoostWhenEqualCreator extends TestSetUp {
 
 	private KnowledgeElement currentElement;
 	private KnowledgeElement rootElement;
-	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
@@ -51,7 +50,7 @@ public class TestBoostWhenEqualCreator extends TestSetUp {
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
 				propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
-		filterSettings = new FilterSettings("TEST", "");
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
         filterSettings.setSelectedElementObject(rootElement);
 
 		assertNotNull(ChangePropagationRuleType.BOOST_WHEN_EQUAL_CREATOR.getFunction()
