@@ -130,6 +130,28 @@ public class TestGetFilteredGraph extends TestSetUp {
 	}
 
 	@Test
+	public void testCIAThresholdFilteringWithRecommendationsIncluded() {
+		filterSettings.recommendLinks(true);
+		filterSettings.getChangeImpactAnalysisConfig().setAreLinkRecommendationsIncludedInCalculation(true);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
+		impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+
+		assertTrue(filteringManager.getFilteredGraph(impactedElements).vertexSet().size() > 0);
+	}
+
+	@Test
+	public void testCIAThresholdFilteringWithoutRecommendationsIncluded() {
+		filterSettings.recommendLinks(true);
+		filterSettings.getChangeImpactAnalysisConfig().setAreLinkRecommendationsIncludedInCalculation(false);
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
+		impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
+
+		assertTrue(filteringManager.getFilteredGraph(impactedElements).vertexSet().size() > 0);
+	}
+
+	@Test
 	public void testLinkRecommendationEnabled() {
 		filterSettings.recommendLinks(true);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
