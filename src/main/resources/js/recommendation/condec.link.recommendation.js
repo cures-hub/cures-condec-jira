@@ -15,10 +15,10 @@
 		// fill dropdown to select a knowledge element
 		var jiraIssueId = JIRA.Issue.getIssueId();
 		if (jiraIssueId) {
-			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i',
-				(element) => initKnowledgeElementDropdown(element));
+			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i', 
+					conDecLinkRecommendation.initKnowledgeElementDropdown);
 		} else {
-			initKnowledgeElementDropdown();
+			conDecLinkRecommendation.initKnowledgeElementDropdown();
 		}
 
 		// fill link recommendation parameters from current configuration
@@ -43,18 +43,19 @@
 		addOnClickListenerOnRecommendationButton();
 	};
 
-	function initKnowledgeElementDropdown(selectedElement) {
+	ConDecLinkRecommendation.prototype.initKnowledgeElementDropdown = function(selectedElement) {
 		filterSettings = {};
 		if (selectedElement) {
 			filterSettings.selectedElementObject = selectedElement;
 		}
 		let dropdown = document.getElementById("link-recommendation-dropdown");
-		conDecAPI.getKnowledgeElements(filterSettings, (elements) =>
+		conDecAPI.getKnowledgeElements(filterSettings, (elements) => {
 			conDecFiltering.initKnowledgeElementDropdown(dropdown, elements, selectedElement,
 				"link-recommendation", (selectedElement) => {
 					conDecLinkRecommendation.selectedElement = selectedElement;
-				}));
-	}
+				});
+			});
+	};
 
 	function linkConfigPage() {
 		var configLink = document.getElementById("config-link-link-recommendation");

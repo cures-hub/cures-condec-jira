@@ -116,9 +116,9 @@ public interface Recommendation extends Comparable<Recommendation> {
 		}
 		int compareValue = 0;
 		if (this.getScore().getValue() > o.getScore().getValue()) {
-			compareValue = 1;
-		} else {
 			compareValue = -1;
+		} else {
+			compareValue = 1;
 		}
 		return compareValue;
 	}
