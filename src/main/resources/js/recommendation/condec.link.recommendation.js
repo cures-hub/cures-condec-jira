@@ -156,8 +156,7 @@
 
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {
 		let target = getSelectedLinkRecommendation(index).target;
-		let self = this;
-		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation, () => self.loadData());
+		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation);
 	};
 	
 	function getSelectedLinkRecommendation(index) {
