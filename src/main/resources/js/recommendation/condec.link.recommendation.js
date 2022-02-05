@@ -72,7 +72,7 @@
 	}
 
 	ConDecLinkRecommendation.prototype.discardRecommendation = function(index) {
-		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
+		conDecLinkRecommendationAPI.discardRecommendation(this.projectKey, getSelectedLinkRecommendation(index))
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarded link recommendation successfully!");
 				this.loadData();
@@ -81,7 +81,7 @@
 	};
 
 	ConDecLinkRecommendation.prototype.undoDiscardRecommendation = function(index) {
-		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, conDecLinkRecommendationAPI.currentLinkRecommendations.get(this.selectedElement.id)[index])
+		conDecLinkRecommendationAPI.undoDiscardRecommendation(this.projectKey, getSelectedLinkRecommendation(index))
 			.then((data) => {
 				conDecAPI.showFlag("success", "Discarding link recommendation successfully undone!");
 				this.loadData();
@@ -155,10 +155,16 @@
 	};
 
 	ConDecLinkRecommendation.prototype.showDialog = function(index) {
-		let target = conDecLinkRecommendationAPI.currentLinkRecommendations[index].target;
+		let target = getSelectedLinkRecommendation(index).target;
 		let self = this;
 		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation, () => self.loadData());
 	};
+	
+	function getSelectedLinkRecommendation(index) {
+		var idOfSourceElement = conDecLinkRecommendation.selectedElement.id;
+		var allRecommendationsForSourceElement = conDecLinkRecommendationAPI.currentLinkRecommendations.get(idOfSourceElement);
+		return allRecommendationsForSourceElement[index];
+	}
 
 	ConDecLinkRecommendation.prototype.loadData = function() {
 		startLoadingVisualization(this.resultsTableElement, this.loadingSpinnerElement);
