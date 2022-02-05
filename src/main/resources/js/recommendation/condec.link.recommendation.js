@@ -145,8 +145,10 @@
 	};
 
 	let generateOptionButtons = function(suggestionIndex) {
-		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span> Link </button>` +
-			`<button class='aui-button' onclick="conDecLinkRecommendation.discardRecommendation(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span> Discard</button>`;
+		return `<button class='aui-button aui-button-primary' onclick="conDecLinkRecommendation.showDialog(${suggestionIndex})"> <span class='aui-icon aui-icon-small aui-iconfont-link'></span>` +
+		`${conDecLinkRecommendation.LINK_TITLE}</button>` +
+			`<button class='aui-button' onclick="conDecLinkRecommendation.discardRecommendation(${suggestionIndex})"> <span class="aui-icon aui-icon-small aui-iconfont-trash"></span>` +
+			`${conDecLinkRecommendation.DISCARD_TITLE}</button>`;
 	};
 
 	let generateUndoDiscardButton = function(suggestionIndex) {

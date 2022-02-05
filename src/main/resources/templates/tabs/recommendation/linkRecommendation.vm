@@ -60,7 +60,9 @@ $(document).ready(function () {
 	var isOnceClicked = false;
     AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
     	if (!isOnceClicked && event.target.href.includes("#link-recommendation-tab")) {
-    		conDecLinkRecommendation.init();
+    		conDecLinkRecommendation.DISCARD_TITLE = "$i18n.getText('condec.recommendation.discard')";
+            conDecLinkRecommendation.LINK_TITLE = "$i18n.getText('condec.recommendation.link')";
+            conDecLinkRecommendation.init();
 			isOnceClicked = true;
 		}
 	});
