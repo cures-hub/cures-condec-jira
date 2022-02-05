@@ -729,6 +729,7 @@ public class FilterSettings implements Cloneable {
 		// only the following criteria can be set during filtering currently, all other
 		// criteria are fixed, thus, not the entire object can be overwritten
 		this.linkRecommendationConfig.setMinProbability(linkRecommendationConfig.getMinProbability());
+		this.linkRecommendationConfig.setMaxRecommendations(linkRecommendationConfig.getMaxRecommendations());
 		// only the activation can be set for the rules
 		for (ContextInformationProvider rule : this.linkRecommendationConfig.getContextInformationProviders()) {
 			if (linkRecommendationConfig.getContextInformationProviders().contains(rule)) {

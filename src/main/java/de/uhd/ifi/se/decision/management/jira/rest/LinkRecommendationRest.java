@@ -146,9 +146,9 @@ public class LinkRecommendationRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-		if (maxRecommendations < 0) {
+		if (maxRecommendations < -1) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The maximum has to be a number above 0.")).build();
+					.entity(ImmutableMap.of("error", "The maximum has to be a number -1 or above.")).build();
 		}
 
 		LinkRecommendationConfiguration linkRecommendationConfiguration = ConfigPersistenceManager

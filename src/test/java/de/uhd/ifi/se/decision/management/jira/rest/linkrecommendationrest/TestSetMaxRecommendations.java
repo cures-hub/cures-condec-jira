@@ -28,9 +28,15 @@ public class TestSetMaxRecommendations extends TestSetUp {
 	}
 
 	@Test
-	public void testNegativeValue() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+	public void testNegativeValueMinusOne() {
+		assertEquals(Status.OK.getStatusCode(),
 				linkRecommendationRest.setMaximumRecommendations(request, "TEST", -1).getStatus());
+	}
+
+	@Test
+	public void testNegativeValueLessThanMinusOne() {
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),
+				linkRecommendationRest.setMaximumRecommendations(request, "TEST", -2).getStatus());
 	}
 
     @Test

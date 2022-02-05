@@ -25,6 +25,7 @@
 		conDecLinkRecommendationAPI.getLinkRecommendationConfig().then(config => {
 			console.log(config);
 			document.getElementById("threshold-input-link-recommendation").value = config["minProbability"];
+			document.getElementById("max-amount-input-link-recommendation").value = config["maxRecommendations"];
 			var ruleNames = [];
 			var selectedRules = [];
 			for (var rule of config["contextInformationProviders"]) {
@@ -186,6 +187,7 @@
 		}
 		return {
 			"minProbability": document.getElementById("threshold-input-link-recommendation").value,
+			"maxRecommendations": document.getElementById("max-amount-input-link-recommendation").value,
 			"contextInformationProviders": selectedRules
 		};
 	}

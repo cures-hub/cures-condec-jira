@@ -15,7 +15,7 @@ The impact value of an element (<var>elementImpact</var>) is calculated using th
 parent/ancestor element and the current element,</p>
 <p><var>productOfAllRuleBasedValues</var> is the product of the calculated rule value of each select rule, and</p>
 <p><var>recommendationScore</var> is the link recommendation score of the current element, if the element was recommended.</p>
-<p> </p>
+
 <p>The element is included in the impact graph if <b><code>elementImpact >= threshold</code></b>.</p>
 
 <h3>Decay Value and Threshold</h3>
