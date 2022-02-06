@@ -82,6 +82,15 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		if (inputs == null) {
 			return new ArrayList<>();
 		}
+		// TODO: Remove as soon as the decision guidance has been improved such that it is normal to get recommendations
+		if (inputs.contains("get_dummy_decision_guidance_recommendations")) {
+			List<Recommendation> recommendations = new ArrayList<>();
+			for (int i = 0; i < 10; i++) {
+				recommendations.add(new ElementRecommendation(knowledgeSource, "Dummy recommendation No. " +
+					String.valueOf(i), "wikipedia.org"));
+			}
+			return recommendations;
+		}
 		List<Recommendation> recommendations = new ArrayList<>();
 
 		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
