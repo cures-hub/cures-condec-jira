@@ -336,6 +336,12 @@ public class KnowledgeRest {
 
 		if (isDeleted) {
 			LOGGER.info("Link " + link + " was deleted.");
+			// Create new link to power wrong_link feature for code files
+			if (link.getSource().getDocumentationLocation().getIdentifier() == "c" && link.getType() != LinkType.IGNORES) {
+				createLink(request, projectKey, link.getSource().getId(),
+					link.getSource().getDocumentationLocation().getIdentifier(), link.getTarget().getId(),
+					link.getTarget().getDocumentationLocation().getIdentifier(), LinkType.IGNORES.getName());
+			}
 			return Response.ok().build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

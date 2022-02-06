@@ -134,7 +134,7 @@ public class TestFilterSettings extends TestSetUp {
 
 	@Test
 	public void testGetNamesOfLinkTypes() {
-		assertEquals(3, filterSettings.getLinkTypes().size());
+		assertEquals(4, filterSettings.getLinkTypes().size());
 		Set<String> selectedLinkTypes = new HashSet<>();
 		selectedLinkTypes.add("Forbids");
 		selectedLinkTypes.add("Relates");
@@ -146,7 +146,7 @@ public class TestFilterSettings extends TestSetUp {
 	@Test
 	public void testSetLinkTypes() {
 		filterSettings.setKnowledgeTypes(null);
-		assertEquals(3, filterSettings.getLinkTypes().size());
+		assertEquals(4, filterSettings.getLinkTypes().size());
 	}
 
 	@Test

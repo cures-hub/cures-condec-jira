@@ -44,7 +44,7 @@ public class TestMatrix extends TestSetUp {
 	@Test
 	public void testGetLinkTypesWithColors() {
 		Map<String, String> linkTypesWithColors = matrix.getLinkTypesWithColor();
-		assertEquals(3, linkTypesWithColors.size());
+		assertEquals(4, linkTypesWithColors.size());
 		assertEquals("#80c9ff", linkTypesWithColors.get("relate"));
 	}
 }

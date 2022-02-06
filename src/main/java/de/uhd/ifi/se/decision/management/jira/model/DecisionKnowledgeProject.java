@@ -207,6 +207,7 @@ public class DecisionKnowledgeProject {
 		Set<String> allLinkTypes = namesOfJiraIssueLinkTypes;
 		allLinkTypes.add("Other");
 		allLinkTypes.add("Transitive");
+		allLinkTypes.add("Ignores");
 		return allLinkTypes;
 	}
 

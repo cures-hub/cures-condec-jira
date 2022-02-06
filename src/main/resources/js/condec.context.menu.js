@@ -232,8 +232,8 @@
 		if (documentationLocation === "c") {
 			document.getElementById("condec-context-menu-create-item").style.display = "none";
 			document.getElementById("condec-context-menu-edit-item").style.display = "none";
-			document.getElementById("condec-context-menu-link-item").style.display = "none";
-			document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
+			//document.getElementById("condec-context-menu-link-item").style.display = "none";
+			//document.getElementById("condec-context-menu-delete-link-item").style.display = "none";
 			document.getElementById("second-context-section").style.display = "none";
 			document.getElementById("third-context-section").style.display = "none";
 			document.getElementById("fourth-context-section").style.display = "none";
