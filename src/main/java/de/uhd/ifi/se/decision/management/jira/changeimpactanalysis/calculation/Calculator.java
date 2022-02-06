@@ -48,7 +48,9 @@ public class Calculator {
 					filterSettings.getLinkRecommendationConfig());
 				List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
 				for (Recommendation recommendation : linkRecommendations) {
-					currentElementLinks.add((LinkRecommendation) recommendation);
+					if (!recommendation.isDiscarded()) {
+						currentElementLinks.add((LinkRecommendation) recommendation);
+					}
 				}
 		}
 		// Iterating through all outgoing and incoming links of the current element

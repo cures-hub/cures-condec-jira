@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostIfDecisionProblem;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostIfSolutionOption;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualComponent;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualCreator;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualDecisionGroup;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualKnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenHighAmountOfDistinctAuthors;
@@ -12,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWh
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTimelyCoupled;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtSameElementType;
 
 /**
  * Gathers propagation rules for rule-based change impact analysis.
@@ -22,11 +22,11 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.StopAtS
  */
 public enum ChangePropagationRuleType {
 
-	STOP_AT_SAME_ELEMENT_TYPE("Stop at elements with the same type as the selected element",
-			"Rule that defines that a change impact is not propagated after a element with the same "
-					+ "knowledge type was reached. For example, if a change is made in an epic, the change is "
-					+ "not propagated beyond other epics",
-			new StopAtSameElementType()), //
+	BOOST_WHEN_EQUAL_CREATOR("Boost when element has the same creator as the selected element",
+			"Rule that defines that a change impact is stronger propagated if the traversed element "
+					+ "in the knowledge graph has the same creator, i.e. assignee, creator, reporter.\n"
+					+ "Allows negative weights that reverse the effects of the rule.",
+			new BoostWhenEqualCreator()), //
 	IGNORE_INCOMING_LINKS("Outward links only",
 			"Rule that defines that a change impact is not propagated along an incoming link to an "
 					+ "element. With this rule activated, impacts are only propagated along outgoing links from "
@@ -38,7 +38,8 @@ public enum ChangePropagationRuleType {
 			new BoostWhenTextualSimilar()), //
 	BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS("Boost when element has a large number of distinct update authors",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
-					+ "in the knowledge graph has a large number of distinct update authors.",
+					+ "in the knowledge graph has a large number of distinct update authors.\n"
+					+ "Allows negative weights that reverse the effects of the rule.",
 			new BoostWhenHighAmountOfDistinctAuthors()), //
 	BOOST_WHEN_EQUAL_COMPONENT("Boost when element is assigned the same component",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
@@ -68,12 +69,14 @@ public enum ChangePropagationRuleType {
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph has a low average age. The average age is determined by deducing "
 					+ "the creation date from the latest update date. A high difference "
-					+ "indicates a high average age.",
+					+ "indicates a high average age.\n"
+					+ "Allows negative weights that reverse the effects of the rule.",
 			new BoostWhenLowAverageAge()), //
 	BOOST_WHEN_TIMELY_COUPLED("Boost when element is timely coupled to the selected element",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph is timely coupled to the source element. Elements are assumed "
-					+ "to be timely coupled if they have received updates in the same timeframe, i.e. within 10 minutes.",
+					+ "to be timely coupled if they have received updates in the same timeframe, i.e. within 10 minutes.\n"
+					+ "Allows negative weights that reverse the effects of the rule.",
 			new BoostWhenTimelyCoupled());
 
 	private String description;

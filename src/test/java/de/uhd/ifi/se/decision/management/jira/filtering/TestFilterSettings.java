@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +28,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.DecisionGroupContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -352,8 +355,14 @@ public class TestFilterSettings extends TestSetUp {
 		// default value
 		assertEquals(0.85, config.getMinProbability(), 0.0);
 		config.setMinProbability(0.42);
+		config.setMaxRecommendations(3);
+		List<ContextInformationProvider> contextInformationProviders = new LinkedList<>();
+		contextInformationProviders.add(new DecisionGroupContextInformationProvider());
+		config.setContextInformationProviders(contextInformationProviders);
 		filterSettings.setLinkRecommendationConfig(config);
 		assertEquals(0.42, filterSettings.getLinkRecommendationConfig().getMinProbability(), 0.0);
+		assertEquals(3, filterSettings.getLinkRecommendationConfig().getMaxRecommendations(), 0.0);
+		assertTrue(filterSettings.getLinkRecommendationConfig().getContextInformationProviders().size() == 1);
 	}
 
 	@Test

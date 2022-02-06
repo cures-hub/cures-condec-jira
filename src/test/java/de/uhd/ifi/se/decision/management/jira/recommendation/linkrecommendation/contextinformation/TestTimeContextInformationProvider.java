@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -38,7 +39,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
         RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.5, score.getValue(), 0.00);
+        assertEquals(0.75, score.getValue(), 0.00);
         assertEquals("TimeContextInformationProvider (ms)", score.getExplanation());
 	}
 
@@ -55,7 +56,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.888, score.getValue(), 0.005);
+        assertEquals(0.9375, score.getValue(), 0.005);
 	}
 
 	@Test
@@ -65,6 +66,16 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.5, score.getValue(), 0.00);
+        assertEquals(0.75, score.getValue(), 0.00);
+	}
+
+	@Test
+	public void testExplanation() {
+		assertNotNull(timeContextInformationProvider.getExplanation());
+	}
+
+	@Test
+	public void testDescription() {
+		assertNotNull(timeContextInformationProvider.getDescription());
 	}
 }

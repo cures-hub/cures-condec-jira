@@ -65,15 +65,15 @@ public class ContextInformation extends ContextInformationProvider {
 		TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>(recommendations);
 		recommendations.clear();
 		int i = 0;
-		int k = 5; // top k
+		int k = linkRecommendationConfig.getMaxRecommendations(); // top k
 		for (Recommendation recommendation : sortedRecommendations) {
+			if (i == k) {
+				break;
+			}
 			if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability() * 100) {
 				recommendations.add(recommendation);
 			}
 			++i;
-			if (i == k) {
-				break;
-			}
 		}
 		return recommendations;
 	}

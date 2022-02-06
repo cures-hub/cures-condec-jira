@@ -31,6 +31,7 @@ public class LinkRecommendationConfiguration {
 
 	private double minProbability;
 	private List<ContextInformationProvider> contextInformationProviders;
+	private int maxRecommendations;
 
 	/**
 	 * Constructs an object with default values.
@@ -39,6 +40,7 @@ public class LinkRecommendationConfiguration {
 	public LinkRecommendationConfiguration() {
 		this.minProbability = 0.85;
 		this.contextInformationProviders = getAllContextInformationProviders();
+		this.maxRecommendations = 5;
 	}
 
 	public static List<ContextInformationProvider> getAllContextInformationProviders() {
@@ -105,5 +107,15 @@ public class LinkRecommendationConfiguration {
 	@JsonProperty
 	public void setContextInformationProviders(List<ContextInformationProvider> contextInformationProviders) {
 		this.contextInformationProviders = contextInformationProviders;
+	}
+
+	@XmlElement
+	public int getMaxRecommendations() {
+		return maxRecommendations;
+	}
+
+	@JsonProperty
+	public void setMaxRecommendations(int maxRecommendations) {
+		this.maxRecommendations = maxRecommendations;
 	}
 }

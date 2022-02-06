@@ -36,4 +36,9 @@ public class DecisionGroupContextInformationProvider extends ContextInformationP
 	public String getExplanation() {
 		return "Assumes that knowledge elements belonging the same decision groups/level are related.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that are assigned to the same decision group as the source element.";
+	}
 }

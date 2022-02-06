@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,5 +46,15 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 		assertEquals(1, textualSimilarityContextInformationProvider.getWeightValue(), 0.0);
 		textualSimilarityContextInformationProvider.setWeightValue(42);
 		assertEquals(42, textualSimilarityContextInformationProvider.getWeightValue(), 0.0);
+	}
+
+	@Test
+	public void testExplanation() {
+		assertNotNull(textualSimilarityContextInformationProvider.getExplanation());
+	}
+
+	@Test
+	public void testDescription() {
+		assertNotNull(textualSimilarityContextInformationProvider.getDescription());
 	}
 }

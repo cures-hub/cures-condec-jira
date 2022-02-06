@@ -12,15 +12,15 @@ public class TestChangePropagationRuleType extends TestSetUp {
 
 	@Test
 	public void testGetPropagationRuleValidInput() {
-		String propagationRuleName = "STOP_AT_SAME_ELEMENT_TYPE";
-		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE,
+		String propagationRuleName = "BOOST_IF_SOLUTION_OPTION";
+		assertEquals(ChangePropagationRuleType.BOOST_IF_SOLUTION_OPTION,
 				ChangePropagationRuleType.valueOf(propagationRuleName));
 	}
 
 	@Test
 	public void testConstructorFromString() {
-		ChangePropagationRule propagationRule = new ChangePropagationRule("Stop at elements with the same type as the selected element");
-		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE,
+		ChangePropagationRule propagationRule = new ChangePropagationRule("Boost when element is a solution option");
+		assertEquals(ChangePropagationRuleType.BOOST_IF_SOLUTION_OPTION,
 			propagationRule.getType());
 	}
 
@@ -32,9 +32,9 @@ public class TestChangePropagationRuleType extends TestSetUp {
 
 	@Test
 	public void testConstructorFromJSON() {
-		ChangePropagationRule propagationRule = new ChangePropagationRule("STOP_AT_SAME_ELEMENT_TYPE", true, 1.6f);
+		ChangePropagationRule propagationRule = new ChangePropagationRule("BOOST_IF_SOLUTION_OPTION", true, 1.6f);
 		
-		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE, propagationRule.getType());
+		assertEquals(ChangePropagationRuleType.BOOST_IF_SOLUTION_OPTION, propagationRule.getType());
 		assertTrue(propagationRule.isActive());
 		assertEquals(1.6f, propagationRule.getWeightValue(), 0.0);
 	}

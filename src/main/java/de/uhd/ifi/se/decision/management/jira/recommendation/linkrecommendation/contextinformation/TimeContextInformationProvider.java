@@ -31,9 +31,9 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 							&& updateDate.getTime() < (rootElementUpdate.getTime() + 600000))
 					.collect(Collectors.toSet());
 		}
-		double score = 0.5;
+		double score = 0.75;
 		if (!coupledUpdates.isEmpty()) {
-			score = 1 - Math.pow(3, (-1 * coupledUpdates.size()));
+			score = 1 - Math.pow(4, (-1 * coupledUpdates.size()));
 		}
 		return new RecommendationScore((float) score, getName() + " (ms)");
 	}
@@ -41,5 +41,10 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 	@Override
 	public String getExplanation() {
 		return "Assumes that knowledge elements created/updated during a similar time are related.";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that are timely coupled to the source element.";
 	}
 }

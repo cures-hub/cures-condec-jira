@@ -27,4 +27,9 @@ public class SolutionOptionContextInformationProvider extends ContextInformation
 	public String getExplanation() {
 		return "Recommends knowledge elements that are solution options.";
 	}    
+
+    @Override
+    public String getDescription() {
+		return "Recommend elements that are solution options.";
+	}
 }

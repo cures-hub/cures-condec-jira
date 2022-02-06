@@ -21,9 +21,8 @@ public class BoostWhenEqualDecisionGroup implements ChangePropagationFunction {
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
 		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
 				ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP);
-
 		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
-			.getValue();
-		return similarityScore * (2 - ruleWeight) >= 1.0 ? 1.0 : similarityScore * (2 - ruleWeight);
+				.getValue();
+		return ChangePropagationRule.addWeightValue(ruleWeight, similarityScore);
 	}
 }
