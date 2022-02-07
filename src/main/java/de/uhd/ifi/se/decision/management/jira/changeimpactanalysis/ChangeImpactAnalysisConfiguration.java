@@ -31,6 +31,9 @@ public class ChangeImpactAnalysisConfiguration {
 		threshold = 0.25f;
 		linkImpact = new HashMap<>();
 		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
+			if (entry == "wrongly linked to") {
+				linkImpact.put(entry, 0.0f);
+			}
 			linkImpact.put(entry, 1.0f);
 		});
 		context = 0;

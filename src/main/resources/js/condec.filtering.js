@@ -387,7 +387,7 @@
 		this.initSingleSelect("select-single-element-type-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), ["Issue"]);
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
-		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes(), null, ["Ignores"]);
+		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes(), null, ["Wrong"]);
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier, conDecGroupingAPI.getAllDecisionGroups());
 		this.initDropdown("rationale-covered-knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypesWithoutDecisionKnowledge());
 	}
