@@ -30,6 +30,8 @@ public class TestCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		@SuppressWarnings("unused")
+		Calculator calculator = new Calculator();
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());

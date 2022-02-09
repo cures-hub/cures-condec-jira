@@ -24,6 +24,8 @@ public class TestColorizer extends TestSetUp {
     @Before
 	public void setUp() {
         init();
+        @SuppressWarnings("unused")
+        Colorizer colorizer = new Colorizer();
         settings = new FilterSettings("TEST", "");
         settings.setSelectedElement("TEST-1");
         impactedElements = new ArrayList<>();

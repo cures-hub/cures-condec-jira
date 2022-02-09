@@ -163,13 +163,6 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 		if (link.containsUnknownDocumentationLocation()) {
 			return null;
 		}
-		
-		// Prevent new link from being inserted into database if a already
-		// existing link with type "ignores" exists
-		if (link.getSource().getLink(link.getTarget()) != null 
-			&& link.getSource().getLink(link.getTarget()).getType() == LinkType.WRONG_LINK) {
-				return null;
-		}
 		link.setId(--nextLinkId);
 		addEdge(link);
 		return link;
