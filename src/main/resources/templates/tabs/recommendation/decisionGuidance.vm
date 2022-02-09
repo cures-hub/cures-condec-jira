@@ -37,6 +37,10 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
     /* Adds the on click listener on tab opening */
     $(document).ready(function () {
         var isOnceClicked = false;
+        conDecDecisionGuidance.ACCEPT_DESCRIPTION = "$i18n.getText('condec.recommendation.discard')";
+        conDecDecisionGuidance.ACCEPT_TITLE = "$i18n.getText('condec.recommendation.discard')";
+        conDecDecisionGuidance.DISCARD_DESCRIPTION = "$i18n.getText('condec.recommendation.discard')";
+        conDecDecisionGuidance.DISCARD_TITLE = "$i18n.getText('condec.recommendation.discard')";
         AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
             if (!isOnceClicked && event.target.href.includes("#decision-guidance-tab")) {
                 conDecDecisionGuidance.initView();
