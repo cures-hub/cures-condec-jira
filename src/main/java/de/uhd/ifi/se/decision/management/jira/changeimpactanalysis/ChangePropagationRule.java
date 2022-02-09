@@ -143,7 +143,7 @@ public class ChangePropagationRule {
 		double lowerScoreBorder = 0.75;
 		double result = 0;
 
-		// Reverse effects of rule result for negative weights, 0.75 -> 1.0 | 1.0 -> 0.75
+		// Reverse effects of rule result for negative weights, i.e. 0.75 -> 1.0 | 1.0 -> 0.75
 		// Works best for values between 0.75 and 1.0
 		if (ruleWeightValue < 0) {
 			similarityScore = Math.pow(2, (-1 * Math.pow(score, 3))) + 0.25;

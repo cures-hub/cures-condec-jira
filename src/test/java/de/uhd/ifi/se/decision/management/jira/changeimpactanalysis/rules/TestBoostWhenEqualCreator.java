@@ -21,14 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestBoostWhenEqualCreator extends TestSetUp {
 
-	private KnowledgeElement currentElement;
-	private KnowledgeElement rootElement;
-
 	@Before
 	public void setUp() {
 		init();
-		currentElement = KnowledgeElements.getProArgument();
-		rootElement = KnowledgeElements.getDecision();
 	}
 
 	@Test
@@ -44,12 +39,16 @@ public class TestBoostWhenEqualCreator extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationMinRuleWeight() {
+	public void testPropagation() {
+		KnowledgeElement currentElement = KnowledgeElements.getProArgument();
+		KnowledgeElement rootElement = KnowledgeElements.getDecision();
+
         List<ChangePropagationRule> propagationRules = new LinkedList<>();
-		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_EQUAL_CREATOR", false, 0.0f));
+		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_EQUAL_CREATOR", false, 1.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
 				propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
         filterSettings.setSelectedElementObject(rootElement);
 

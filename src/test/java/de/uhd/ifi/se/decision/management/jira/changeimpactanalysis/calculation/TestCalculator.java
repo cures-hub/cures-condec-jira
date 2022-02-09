@@ -67,7 +67,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertTrue(impactedElements.size() > 7);
+		assertTrue(impactedElements.size() > 10);
 	}
 
 	@Test

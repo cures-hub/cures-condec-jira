@@ -1,5 +1,5 @@
 <div class="condec-filter-criterion"
-	title="Set the decay per iteration step. When the decay value is set to 1, no decay happens.">
+	title="$i18n.getText('condec.decay.title')">
 	<label for="decay-input-$viewIdentifier" id="decay-input-label-$viewIdentifier">
 		$i18n.getText("condec.decay.label")
 	</label>
@@ -8,7 +8,7 @@
 </div>
 
 <div class="condec-filter-criterion"
-	title="The element is included in the impact graph if elementImpact >= threshold.">
+	title="$i18n.getText('condec.threshold.title')">
 	<label for="threshold-input-$viewIdentifier" id="threshold-input-label-$viewIdentifier">
 		$i18n.getText("condec.threshold.label")
 	</label>
@@ -17,7 +17,7 @@
 </div>
 
 <div class="condec-filter-criterion"
-	title="Enables to show elements that are not impacted by the change (i.e. below the threshold) but that surround the impacted elements.">
+	title="$i18n.getText('condec.context.title')">
     <label for="context-input-$viewIdentifier" id="context-input-label-$viewIdentifier">
         $i18n.getText("condec.context.label")
     </label>
@@ -27,7 +27,7 @@
 
 <button aria-controls="propagation-rule-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger"
         aria-haspopup="true">
-    $i18n.getText("condec.label.propagation.rule")
+    $i18n.getText("condec.propagation.rule.label")
 </button>
 <aui-dropdown-menu id="propagation-rule-dropdown-$viewIdentifier" name="passRule"></aui-dropdown-menu>
 
@@ -37,8 +37,8 @@
 </div>
 
 <div class="condec-filter-criterion"
-	title="Include elements that are not explicitly linked to the source element.">
-    <label for="is-link-recommendation-input-$viewIdentifier">$i18n.getText('condec.label.is.link.recommendation')</label>
+	title="$i18n.getText('condec.is.link.recommendation.title')">
+    <label for="is-link-recommendation-input-$viewIdentifier">$i18n.getText('condec.is.link.recommendation.label')</label>
     <input type="checkbox" type="checkbox" id="is-link-recommendation-input-$viewIdentifier"/>
 </div>
 <script>
@@ -56,8 +56,8 @@
 </script>
 
 <a id="link-impact-input-$viewIdentifier" 
-	title="Link type, rule weights and default ruleset can be changed by the rationale manager." target="_blank">
-	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.label.configuration')
+	title="$i18n.getText('condec.configuration.title')" target="_blank">
+	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.configuration.label')
 </a>
 
 <input type="button" id="cia-button-$viewIdentifier" class="aui-button aui-button-primary" 
@@ -67,5 +67,4 @@
 	var linkImpactLink = document.getElementById("link-impact-input-$viewIdentifier");
 	linkImpactLink.href = AJS.contextPath() + "/plugins/servlet/condec/settings?projectKey=" 
 		+ conDecAPI.getProjectKey() + "&category=cia";
-	AJS.$(linkImpactLink).tooltip();
 </script>

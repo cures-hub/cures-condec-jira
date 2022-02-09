@@ -21,17 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestBoostWhenEqualDecisionGroup extends TestSetUp {
 
-	private KnowledgeElement currentElement;
-	private KnowledgeElement rootElement;
-	private FilterSettings filterSettings;
-
 	@Before
 	public void setUp() {
 		init();
-		currentElement = KnowledgeElements.getDecision();
-		rootElement = KnowledgeElements.getAlternative();
-		filterSettings = new FilterSettings();
-		filterSettings.setSelectedElementObject(rootElement);
 	}
 
 	@Test
@@ -47,13 +39,17 @@ public class TestBoostWhenEqualDecisionGroup extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationScoreMaximum() {
+	public void testPropagation() {
+		KnowledgeElement currentElement = KnowledgeElements.getDecision();
+		KnowledgeElement rootElement = KnowledgeElements.getAlternative();
+
 		List<ChangePropagationRule> propagationRules = new LinkedList<>();
-		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_EQUAL_DECISION_GROUP", false, 0.0f));
+		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_EQUAL_DECISION_GROUP", false, 1.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
 				propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
-		filterSettings = new FilterSettings("TEST", "");
+
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setSelectedElementObject(rootElement);
 		
 		assertNotNull(ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP.getFunction()
