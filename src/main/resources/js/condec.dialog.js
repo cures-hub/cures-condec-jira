@@ -124,6 +124,7 @@
 		// Disable the submit button in case no target link element exists
 		if (document.getElementById("delete-link-dialog-target-element").style.display = "none") {
 			document.getElementById("delete-link-dialog-submit-button").disabled = true;
+			document.getElementById("delete-link-dialog-submit-button").title = "This element has no links!";
 		}
 
 		// Set onclick listener on buttons
