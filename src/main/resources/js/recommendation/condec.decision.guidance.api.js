@@ -150,5 +150,12 @@
 			});
 	};
 
+	ConDecDecisionGuidanceAPI.prototype.discardRecommendation = function(recommendation) {
+		console.log("Running ConDecDecisionGuidanceAPI.prototype.discardRecommendation");
+		recommendation.isDiscarded = true;
+		console.log("Calling generalApi.postJSONReturnPromise(this.restPrefix + \"/discard\", recommendation);...");
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/discard", recommendation);
+	};
+
 	global.conDecDecisionGuidanceAPI = new ConDecDecisionGuidanceAPI();
 })(window);
