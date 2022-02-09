@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.calculation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -183,5 +185,11 @@ public class TestColorizer extends TestSetUp {
         impactValue = 0.99;
         color = Colorizer.colorForImpact(impactValue);
         assertEquals("#fc0200", color);
+    }
+    
+    @Test
+    public void testBlend() {
+        assertNotNull(Colorizer.blend(Color.RED, Color.BLUE, 2.0f));
+        assertNotNull(Colorizer.blend(Color.RED, Color.BLUE, -0.2f));
     }
 }
