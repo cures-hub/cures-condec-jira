@@ -32,7 +32,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	private KnowledgeSource knowledgeSource;
 	private String url;
 	private List<Argument> arguments;
-	private RecommendationScore score;
+	private RecommendationScore score = new RecommendationScore(0, "not scored");
 	private boolean isDiscarded;
 
 	public ElementRecommendation() {
