@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DiscardedRecommendationInDatabase;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import net.java.ao.Query;
 
@@ -34,6 +35,18 @@ public class DiscardedRecommendationPersistenceManager {
 			return new ArrayList<>();
 		}
 		return getDiscardedRecommendations(baseElement, RecommendationType.LINK);
+	}
+
+	/**
+	 * @param baseElement
+	 *            {@link KnowledgeElement} with discarded decision guidance recommendations.
+	 * @return list of discarded decision guidance recommendations for the base element.
+	 */
+	public static List<KnowledgeElement> getDiscardedDecisionGuidanceRecommendations(KnowledgeElement baseElement) {
+		if (baseElement == null || baseElement.getProject() == null) {
+			return new ArrayList<>();
+		}
+		return getDiscardedRecommendations(baseElement, RecommendationType.EXTERNAL);
 	}
 
 	// ------------------
@@ -66,6 +79,14 @@ public class DiscardedRecommendationPersistenceManager {
 						recommendation.getSource().getProject().getProjectKey(), recommendation.getSource().getId(),
 						recommendation.getTarget().getId(), recommendation.getRecommendationType()));
 
+		return discardedRecommendationsInDatabase;
+	}
+
+	public static DiscardedRecommendationInDatabase[] getDiscardedElementRecommendation(ElementRecommendation recommendation) {
+		DiscardedRecommendationInDatabase[] discardedRecommendationsInDatabase = ACTIVE_OBJECTS.find(
+			DiscardedRecommendationInDatabase.class,
+			Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND DISCARDED_ELEMENT_ID = ? AND TYPE = ?",
+				recommendation.getSummary(), recommendation.getRecommendationType()));
 		return discardedRecommendationsInDatabase;
 	}
 
@@ -106,5 +127,25 @@ public class DiscardedRecommendationPersistenceManager {
 
 		discardedLinkSuggestionInDatabase.save();
 		return discardedLinkSuggestionInDatabase.getId();
+	}
+
+	public static long saveDiscardedElementRecommendation(ElementRecommendation recommendation) {
+		if (recommendation.getSummary() == null) {
+			return -1;
+		}
+
+		DiscardedRecommendationInDatabase[] discardedLinkSuggestionsInDatabase = getDiscardedElementRecommendation(
+			recommendation);
+		if (discardedLinkSuggestionsInDatabase.length > 0) {
+			return discardedLinkSuggestionsInDatabase[0].getId();
+		}
+
+		// not null parameter and does not already exist -> create new
+		final DiscardedRecommendationInDatabase discardedElementSuggestionInDatabase = ACTIVE_OBJECTS
+			.create(DiscardedRecommendationInDatabase.class);
+		discardedElementSuggestionInDatabase.setContents(recommendation.getSummary());
+		discardedElementSuggestionInDatabase.setType(RecommendationType.EXTERNAL);
+		discardedElementSuggestionInDatabase.save();
+		return discardedElementSuggestionInDatabase.getId();
 	}
 }

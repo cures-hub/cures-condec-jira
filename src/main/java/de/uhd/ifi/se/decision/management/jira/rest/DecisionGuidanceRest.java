@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
@@ -31,6 +32,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import org.apache.jena.base.Sys;
 
 /**
  * REST resource for configuration and usage of decision guidance
@@ -382,4 +385,29 @@ public class DecisionGuidanceRest {
 
 		return Response.ok(recommendationEvaluation).build();
 	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param recommendation
+	 *            {@link ElementRecommendation} to be discarded.
+	 * @return ok if {@link ElementRecommendation} was successfully discarded.
+	 */
+	@Path("/discard")
+	@POST
+	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {
+		System.out.println("Running public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
+		if (recommendation == null) {
+			System.out.println("Recommendation is null :/");
+			return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
+		}
+		System.out.println("Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);
+		System.out.println("Done. Calling Response.ok().build();");
+		return Response.ok().build();
+	}
+
+
 }
