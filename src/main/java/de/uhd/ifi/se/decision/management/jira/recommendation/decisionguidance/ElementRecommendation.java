@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -27,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * support or attack this recommended solution option. The relevance of the
  * recommendation is represented by the {@link RecommendationScore}.
  */
+@JsonIgnoreProperties(ignoreUnknown = true, value = "knowledgeSource")
 public class ElementRecommendation extends KnowledgeElement implements Recommendation {
 
 	private KnowledgeSource knowledgeSource;
@@ -35,6 +40,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	private RecommendationScore score = new RecommendationScore(0, "not scored");
 	private boolean isDiscarded = false;
 
+	@JsonCreator
 	public ElementRecommendation() {
 		this.arguments = new ArrayList<>();
 		this.status = KnowledgeStatus.RECOMMENDED;
@@ -72,6 +78,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 * @see ProjectSource
 	 * @see RDFSource
 	 */
+	@JsonIgnore
 	public void setKnowledgeSource(KnowledgeSource knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
 	}
