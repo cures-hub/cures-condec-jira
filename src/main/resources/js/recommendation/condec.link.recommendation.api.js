@@ -43,6 +43,11 @@
 			.then(() => conDecAPI.showFlag("success", "Minimum probability was successfully updated!"));
 	};
 
+	ConDecLinkRecommendationAPI.prototype.setMaxRecommendations = function(projectKey, maxRecommendations) {
+		generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/recommendationmaximum", maxRecommendations)
+			.then(() => conDecAPI.showFlag("success", "Maximum number of recommendations was successfully updated!"));
+	};
+
 	ConDecLinkRecommendationAPI.prototype.saveRules = function(projectKey, linkRecommendationRules) {
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/rules", linkRecommendationRules)
 			.then(() => conDecAPI.showFlag("success", "Link recommendation rules were successfully updated!"));

@@ -27,4 +27,9 @@ public class KnowledgeTypeContextInformationProvider extends ContextInformationP
 	public String getExplanation() {
 		return "Assumes that knowledge elements having the same knowledge type are related, e.g. decisions, arguments, code.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that are the same knowledge type as the source element.";
+	}
 }

@@ -16,13 +16,13 @@ public class TestChangePropagationRule extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		String propagationRuleName = "Stop at elements with the same type as the selected element";
+		String propagationRuleName = "Boost when element has the same creator as the selected element";
 		rule = new ChangePropagationRule(propagationRuleName);
 	}
 
 	@Test
 	public void testGetType() {
-		assertEquals(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE, rule.getType());
+		assertEquals(ChangePropagationRuleType.BOOST_WHEN_EQUAL_CREATOR, rule.getType());
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class TestChangePropagationRule extends TestSetUp {
 
 	@Test
 	public void testGetDescription() {
-		assertEquals("Stop at elements with the same type as the selected element", rule.getDescription());
+		assertEquals("Boost when element has the same creator as the selected element", rule.getDescription());
 	}
 
 	@Test
@@ -48,8 +48,56 @@ public class TestChangePropagationRule extends TestSetUp {
 	}
 
 	@Test
+	public void testDoesRuleExist() {
+		ChangePropagationRule rule = new ChangePropagationRule("FooBar");
+
+		assertTrue(ChangePropagationRule.getDefaultRules().get(0).doesRuleExist());
+		assertFalse(rule.doesRuleExist());
+	}
+
+	@Test
+	public void testAddWeightValueMinPosRuleWeightMinScore() {
+		float ruleWeightValue = 0.1f;
+		double score = 0.75;
+
+		assertEquals(1.0, ChangePropagationRule.addWeightValue(ruleWeightValue, score), 0.0005);
+	}
+
+	@Test
+	public void testAddWeightValueMaxPosRuleWeightMaxScore() {
+		float ruleWeightValue = 2.0f;
+		double score = 1.0;
+
+		assertEquals(1.0, ChangePropagationRule.addWeightValue(ruleWeightValue, score), 0.0005);
+	}
+
+	@Test
+	public void testAddWeightValueMinNegRuleWeightMinScore() {
+		float ruleWeightValue = -0.1f;
+		double score = 0.75;
+
+		assertEquals(0.75, ChangePropagationRule.addWeightValue(ruleWeightValue, score), 0.0005);
+	}
+
+	@Test
+	public void testAddWeightValueMaxNegRuleWeightMaxScore() {
+		float ruleWeightValue = -2.0f;
+		double score = 1.0;
+
+		assertEquals(0.75, ChangePropagationRule.addWeightValue(ruleWeightValue, score), 0.0005);
+	}
+
+	@Test
+	public void testAddWeightValueZeroScore() {
+		float ruleWeightValue = 0.0f;
+		double score = 1.0;
+
+		assertEquals(0.75, ChangePropagationRule.addWeightValue(ruleWeightValue, score), 0.0005);
+	}
+
+	@Test
 	public void testEquals() {
 		assertFalse(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_EQUAL_DECISION_GROUP).equals(rule));
-		assertTrue(new ChangePropagationRule(ChangePropagationRuleType.STOP_AT_SAME_ELEMENT_TYPE).equals(rule));
+		assertTrue(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_EQUAL_CREATOR).equals(rule));
 	}
 }

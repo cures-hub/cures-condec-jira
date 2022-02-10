@@ -35,4 +35,9 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 	public String getExplanation() {
 		return "Assumes that the knowledge elements within the active sprint are related.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that are assigned to the same decision group as the source element.";
+	}
 }

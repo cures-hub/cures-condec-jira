@@ -437,13 +437,17 @@ public class FilterSettings implements Cloneable {
 	/**
 	 * @return {@link KnowledgeElement} that is currently selected (e.g. as root
 	 *         element in the knowlegde tree view) freshly received from database so
-	 *         that all attributes are set as in database.
+	 *         that all attributes are set as in database. If the element does not
+	 *         exist in database (e.g. because it is a decision knowledge element
+	 *         documented in a code comment), the original selected element is
+	 *         returned.
 	 */
 	@com.fasterxml.jackson.annotation.JsonIgnore
 	public KnowledgeElement getSelectedElementFromDatabase() {
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager
 				.getInstance(selectedElement.getProject());
-		return persistenceManager.getKnowledgeElement(selectedElement);
+		KnowledgeElement elementFromDatabase = persistenceManager.getKnowledgeElement(selectedElement);
+		return elementFromDatabase != null ? elementFromDatabase : selectedElement;
 	}
 
 	/**
@@ -691,7 +695,8 @@ public class FilterSettings implements Cloneable {
 		this.changeImpactAnalysisConfig.setContext(changeImpactAnalysisConfig.getContext());
 		this.changeImpactAnalysisConfig.setDecayValue(changeImpactAnalysisConfig.getDecayValue());
 		this.changeImpactAnalysisConfig.setThreshold(changeImpactAnalysisConfig.getThreshold());
-		this.changeImpactAnalysisConfig.setAreLinkRecommendationsIncludedInCalculation(changeImpactAnalysisConfig.getAreLinkRecommendationsIncludedInCalculation());
+		this.changeImpactAnalysisConfig.setAreLinkRecommendationsIncludedInCalculation(
+				changeImpactAnalysisConfig.getAreLinkRecommendationsIncludedInCalculation());
 		// only the activation can be set for the rules
 		for (ChangePropagationRule rule : this.changeImpactAnalysisConfig.getPropagationRules()) {
 			if (changeImpactAnalysisConfig.getPropagationRules().contains(rule)) {
@@ -729,6 +734,7 @@ public class FilterSettings implements Cloneable {
 		// only the following criteria can be set during filtering currently, all other
 		// criteria are fixed, thus, not the entire object can be overwritten
 		this.linkRecommendationConfig.setMinProbability(linkRecommendationConfig.getMinProbability());
+		this.linkRecommendationConfig.setMaxRecommendations(linkRecommendationConfig.getMaxRecommendations());
 		// only the activation can be set for the rules
 		for (ContextInformationProvider rule : this.linkRecommendationConfig.getContextInformationProviders()) {
 			if (linkRecommendationConfig.getContextInformationProviders().contains(rule)) {

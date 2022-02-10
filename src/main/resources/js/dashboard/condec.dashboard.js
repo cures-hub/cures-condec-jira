@@ -296,14 +296,14 @@
 		var dialogContent = document.getElementById("navigate-dialog-content-" + viewIdentifier);
 		dialogContent.innerHTML = "";
 		return dialogContent;
-	}
+	};
 
 	function createLinkToElement(element) {
 		var link = document.createElement("a");
 		link.classList = "navigationLink";
 		link.innerText = element.type + ": " + element.summary;
 		link.title = element.key;
-		link.href = element.url;
+		link.href = decodeURIComponent(element.url);
 		link.target = "_blank";
 		return link;
 	}

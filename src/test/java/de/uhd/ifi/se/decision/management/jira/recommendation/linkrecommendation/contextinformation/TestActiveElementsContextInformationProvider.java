@@ -32,4 +32,9 @@ public class TestActiveElementsContextInformationProvider extends TestSetUp {
 	public void testExplanation() {
 		assertNotNull(activeElementsContextInformationProvider.getExplanation());
 	}
+
+	@Test
+	public void testDescription() {
+		assertNotNull(activeElementsContextInformationProvider.getDescription());
+	}
 }

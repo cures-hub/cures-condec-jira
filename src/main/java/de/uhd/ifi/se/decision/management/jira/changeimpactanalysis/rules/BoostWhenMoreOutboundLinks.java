@@ -18,7 +18,7 @@ public class BoostWhenMoreOutboundLinks implements ChangePropagationFunction {
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
 		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
 				ChangePropagationRuleType.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND);
-
+		double result;
 		int outwardLinks = 0;
 		int inwardLinks = 0;
 		for (Link elementLink : nextElement.getLinks()) {
@@ -29,13 +29,15 @@ public class BoostWhenMoreOutboundLinks implements ChangePropagationFunction {
 			}
 		}
 		if (inwardLinks == 1 && outwardLinks == 0) {
-			return 1.0;
+			result = 1.0;
 		} else if (outwardLinks == 0) {
-			return Math.pow(2, ((-1 * (double) inwardLinks) / 4)) * (2 - ruleWeight) >= 1.0 ? 1.0
-					: Math.pow(2, ((-1 * (double) inwardLinks) / 4)) * (2 - ruleWeight);
+			result = Math.pow(2, ((-1 * (double) inwardLinks) / 8));
 		} else {
-			return (double) outwardLinks / (inwardLinks + outwardLinks) * (2 - ruleWeight) >= 1.0 ? 1.0
-					: (double) outwardLinks / (inwardLinks + outwardLinks) * (2 - ruleWeight);
+			result = (double) (outwardLinks + 10) / ((inwardLinks + 10) + (outwardLinks + 10));
 		}
+		if (result < 0.75) {
+			result = 0.75;
+		} 
+		return ChangePropagationRule.addWeightValue(ruleWeight, result);
 	}
 }

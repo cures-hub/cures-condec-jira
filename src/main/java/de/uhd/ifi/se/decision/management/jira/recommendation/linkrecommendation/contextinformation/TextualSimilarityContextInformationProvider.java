@@ -57,4 +57,9 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	public String getExplanation() {
 		return "Assumes that textual similar knowledge elements are related.";
 	}
+
+	@Override
+	public String getDescription() {
+		return "Recommend elements that are textual similar to the source element.";
+	}
 }

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,5 +39,15 @@ public class TestSolutionOptionContextInformationProvider extends TestSetUp {
         RecommendationScore score = solutionOptionContextInformationProvider.assessRelation(rootElement, currentElement);
 
 		assertEquals(1.0, score.getValue(), 0.00);
+	}
+
+	@Test
+	public void testExplanation() {
+		assertNotNull(solutionOptionContextInformationProvider.getExplanation());
+	}
+
+	@Test
+	public void testDescription() {
+		assertNotNull(solutionOptionContextInformationProvider.getDescription());
 	}
 }

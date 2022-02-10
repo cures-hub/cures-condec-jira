@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,5 +41,15 @@ public class TestTracingContextInformationProvider extends TestSetUp {
 		assertEquals(1, tracingContextInformationProvider
 				.assessRelation(KnowledgeElements.getOtherWorkItem(), KnowledgeElements.getProArgument()).getValue(),
 				0.1);
+	}
+
+	@Test
+	public void testExplanation() {
+		assertNotNull(tracingContextInformationProvider.getExplanation());
+	}
+
+	@Test
+	public void testDescription() {
+		assertNotNull(tracingContextInformationProvider.getDescription());
 	}
 }

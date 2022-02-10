@@ -32,13 +32,32 @@
 <aui-dropdown-menu id="propagation-rule-dropdown-$viewIdentifier" name="passRule"></aui-dropdown-menu>
 
 <div class="condec-filter-criterion">
-    <label for="recommended-links-in-cia-input-$viewIdentifier">$i18n.getText('condec.recommendation.in.cia.label')</label>
-    <input type="checkbox" type="checkbox" id="recommended-links-in-cia-input-$viewIdentifier"/>
+    <label for="recommended-links-in-cia-input-$viewIdentifier" style="display:none" id="recommended-links-in-cia-label-$viewIdentifier">$i18n.getText('condec.recommendation.in.cia.label')</label>
+    <input type="checkbox" type="checkbox" id="recommended-links-in-cia-input-$viewIdentifier" style="display:none"/>
 </div>
 
+<div class="condec-filter-criterion"
+	title="Include elements that are not explicitly linked to the source element.">
+    <label for="is-link-recommendation-input-$viewIdentifier">$i18n.getText('condec.label.is.link.recommendation')</label>
+    <input type="checkbox" type="checkbox" id="is-link-recommendation-input-$viewIdentifier"/>
+</div>
+<script>
+	$("#is-link-recommendation-input-$viewIdentifier").change(function() {
+	var isChecked = document.getElementById("is-link-recommendation-input-$viewIdentifier").checked;
+		if(isChecked) {
+			document.getElementById("recommended-links-in-cia-input-$viewIdentifier").style.display="";
+			document.getElementById("recommended-links-in-cia-label-$viewIdentifier").style.display="";
+		} else {
+			document.getElementById("recommended-links-in-cia-input-$viewIdentifier").checked=false;
+			document.getElementById("recommended-links-in-cia-input-$viewIdentifier").style.display="none";
+			document.getElementById("recommended-links-in-cia-label-$viewIdentifier").style.display="none";
+		}
+	});
+</script>
+
 <a id="link-impact-input-$viewIdentifier" 
-	title="Link type and rule weights can be changed by the rationale manager." target="_blank">
-	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.label.link.types')
+	title="Link type, rule weights and default ruleset can be changed by the rationale manager." target="_blank">
+	<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.label.configuration')
 </a>
 
 <input type="button" id="cia-button-$viewIdentifier" class="aui-button aui-button-primary" 

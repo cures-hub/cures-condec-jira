@@ -108,6 +108,7 @@
 			+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
 				knowledgeElement) {
 			if (error === null) {
+				knowledgeElement.projectKey = projectKey;
 				callback(knowledgeElement);
 			}
 		});

@@ -12,6 +12,15 @@
 			class="text short-field" placeholder="Enter threshold">
 	</div>
 
+	<div class="condec-filter-criterion"
+		title="Only the given amount of recommendations are provided.">
+		<label for="max-amount-input-$viewIdentifier">
+			$i18n.getText("condec.max.recommendation.label")
+		</label>
+		<input type="number" id="max-amount-input-$viewIdentifier" value="5" min="-1" step="1" max="1000"
+			class="text short-field">
+	</div>
+
 	<button aria-controls="rule-dropdown-$viewIdentifier" class="aui-button aui-dropdown2-trigger"
         aria-haspopup="true">
     $i18n.getText("condec.label.link.recommendation.rule")

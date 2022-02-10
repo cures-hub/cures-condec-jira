@@ -395,7 +395,9 @@ public class FilteringManager {
 		filterSettings.getLinkRecommendationConfig());
     List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
     for (Recommendation recommendation : linkRecommendations) {
-      	filteredGraph.addEdge((LinkRecommendation) recommendation);
+		if (!recommendation.isDiscarded()) {
+			filteredGraph.addEdge((LinkRecommendation) recommendation);
+		}
     }
 	return filteredGraph;
 	}

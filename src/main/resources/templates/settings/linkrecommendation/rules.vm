@@ -15,11 +15,11 @@
     </script>
     #foreach($rule in $linkRecommendationConfig.getContextInformationProviders())
     	<script>
-    		linkRecommendationRuleNames.push("$rule.getName()");
+    		linkRecommendationRuleNames.push("$rule.getDescription()");
     	</script>
         <tr>
 		    <td>
-                $rule.getName()
+                $rule.getDescription()
         	<a data-aui-trigger aria-controls='$rule.getName()-help'>
         		<span class='aui-icon aui-icon-small aui-iconfont-question-circle'></span>
         	</a>

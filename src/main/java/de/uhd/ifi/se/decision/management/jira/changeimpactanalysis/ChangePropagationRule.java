@@ -102,6 +102,72 @@ public class ChangePropagationRule {
 		return type.getDescription();
 	}
 
+	/**
+	 * @return explanation of the change propagation rule.
+	 */
+	@XmlElement
+	public String getExplanation() {
+		return type.getExplanation();
+	}
+
+	/**
+	 * @issue How can we make sure that the CIA configuration Velocity page doesn't crash when
+	 * 		a CIA rule is deleted and the stored ChangePropagationRule in the database
+	 * 		no longer exists?
+	 * @decision Check whether any given rule exists by implementing a method that tries
+	 * 		to invoke a rule-specific method and utilize it in the Velocity template.
+	 * 
+	 * @return true if the rule exists, false otherwise.
+	 */
+	@XmlElement
+	public boolean doesRuleExist() {
+		try {
+			type.getDescription();
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+	}
+
+	/**
+	 * @param ruleWeightValue
+	 * 		the weight value of a specific rule.
+	 * @param score 
+	 * 		the similarity score prior to having weights being applied.
+	 * @return score with weights being applied.
+	 */
+	public static double addWeightValue(float ruleWeightValue, double score) {
+		double similarityScore = score;
+		double upperScoreBorder = 1.00;
+		double lowerScoreBorder = 0.75;
+		double result = 0;
+
+		// Reverse effects of rule result for negative weights, 0.75 -> 1.0 | 1.0 -> 0.75
+		// Works best for values between 0.75 and 1.0
+		if (ruleWeightValue < 0) {
+			similarityScore = Math.pow(2, (-1 * Math.pow(score, 3))) + 0.25;
+		}
+
+		// Increase the supplied score if equal or over the arithmetic mean, otherwise reduce it
+		if (similarityScore >= (upperScoreBorder + lowerScoreBorder) / 2) {
+			result = similarityScore * Math.abs(ruleWeightValue);
+		} else {
+			result = similarityScore * (2 - Math.abs(ruleWeightValue));
+		}
+
+		// Result has to be within the specified borders, otherwise a single rule would
+		// impact the score too much
+		if (result >= upperScoreBorder) {
+			return upperScoreBorder;
+		}
+		if (result <= lowerScoreBorder) {
+			return lowerScoreBorder;
+		}
+
+		return result;
+	}
+
 	public static List<ChangePropagationRule> getDefaultRules() {
 		List<ChangePropagationRule> defaultRules = new LinkedList<>();
 		for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {

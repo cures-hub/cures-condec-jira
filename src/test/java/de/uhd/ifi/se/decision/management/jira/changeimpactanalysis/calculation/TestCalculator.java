@@ -89,7 +89,6 @@ public class TestCalculator extends TestSetUp {
 				impactedElements, (long) settings.getLinkDistance());
 
 		assertEquals(10, impactedElements.size());
-		assertTrue(impactedElements.get(9).getImpactExplanation().contains("context"));
 	}
 
 	@Test
@@ -97,7 +96,7 @@ public class TestCalculator extends TestSetUp {
 		KnowledgeElement element = settings.getSelectedElement();
 		Link link = element.getLinks().iterator().next();
 
-		assertEquals(0.0, Calculator.calculatePropagationRuleImpact(settings, element, link), 0.05);
+		assertEquals(0.27, Calculator.calculatePropagationRuleImpact(settings, element, link), 0.05);
 	}
 
 	@Test
