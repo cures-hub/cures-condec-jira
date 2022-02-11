@@ -121,10 +121,13 @@
 		}
 		fillElementField("delete-link-dialog-target-element", idOfParent, documentationLocationOfParent);
 		
+		var targetElementDiv = document.getElementById("delete-link-dialog-target-element-group");
 		// Disable the submit button in case no target link element exists
-		if (document.getElementById("delete-link-dialog-target-element").style.display = "none") {
+		if (targetElementDiv.style.display === "none") {
 			document.getElementById("delete-link-dialog-submit-button").disabled = true;
-			document.getElementById("delete-link-dialog-submit-button").title = "This element has no links!";
+			document.getElementById("delete-link-dialog-submit-button").title = "No target element found";
+		} else {
+			document.getElementById("delete-link-dialog-submit-button").disabled = false;
 		}
 
 		// Set onclick listener on buttons
