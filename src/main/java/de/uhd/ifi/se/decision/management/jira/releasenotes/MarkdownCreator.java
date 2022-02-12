@@ -18,8 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Generate the markdown string for the {@link ReleaseNotes} content based on
- * the {@link ReleaseNotesEntry release note entries}.
+ * Generates a markdown string from the given {@link FilterSettings} to export
+ * it or for the {@link ReleaseNotes} content based on the
+ * {@link ReleaseNotesEntry release note entries}.
  */
 public class MarkdownCreator {
 
@@ -32,7 +33,7 @@ public class MarkdownCreator {
 
 		if (filterSettings.getSelectedElement() != null) {
 			// only one tree is shown in markdown
-			markDownString = getMarkdownString(filterSettings.getSelectedElement(), graph);
+			return getMarkdownString(filterSettings.getSelectedElement(), graph);
 		}
 
 		// many trees are shown in markdown
