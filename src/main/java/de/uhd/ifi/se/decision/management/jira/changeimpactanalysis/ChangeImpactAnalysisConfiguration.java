@@ -10,6 +10,7 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Contains the configuration details for change impact analysis (CIA) for one
@@ -33,7 +34,8 @@ public class ChangeImpactAnalysisConfiguration {
 		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
 			linkImpact.put(entry, 1.0f);
 		});
-		linkImpact.put("wrongly linked to", 0.0f);
+		linkImpact.put(LinkType.WRONG_LINK.getInwardName(), 0.0f);
+		linkImpact.put(LinkType.WRONG_LINK.getOutwardName(), 0.0f);
 		context = 0;
 		propagationRules = ChangePropagationRule.getDefaultRules();
 		areLinkRecommendationsIncludedInCalculation = false;
