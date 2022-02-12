@@ -29,7 +29,6 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		filterSettings = new FilterSettings();
 		currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
 	}
 
@@ -49,11 +48,13 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
 	public void testPropagationNoAuthor() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<>();
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
+
 		List<ChangePropagationRule> propagationRules = new LinkedList<>();
 		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS", false, 1.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
 				propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+
 		filterSettings = new FilterSettings("TEST", "");
 
 		assertNotNull(ChangePropagationRuleType.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getFunction()
@@ -65,11 +66,13 @@ public class TestBoostWhenHighAmountOfDistinctAuthors extends TestSetUp {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<>();
 		updateDateAndAuthor.put(new Date(), "FooBar");
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
+		
 		List<ChangePropagationRule> propagationRules = new LinkedList<>();
 		propagationRules.add(new ChangePropagationRule("BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS", false, 1.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
 				propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+
 		filterSettings = new FilterSettings("TEST", "");
 
 		assertNotNull(ChangePropagationRuleType.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS.getFunction()

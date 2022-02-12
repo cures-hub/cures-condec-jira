@@ -13,7 +13,7 @@ public class TestLinkType {
 
 	@Test
 	public void testToStringSet() {
-		assertEquals(14, LinkType.toStringSet().size());
+		assertEquals(15, LinkType.toStringSet().size());
 	}
 
 	@Test

@@ -30,6 +30,8 @@ public class TestCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		@SuppressWarnings("unused")
+		Calculator calculator = new Calculator();
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
@@ -67,7 +69,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertTrue(impactedElements.size() > 7);
+		assertTrue(impactedElements.size() > 10);
 	}
 
 	@Test

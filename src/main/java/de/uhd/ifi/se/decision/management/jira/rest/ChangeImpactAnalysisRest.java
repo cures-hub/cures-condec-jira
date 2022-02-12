@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,6 +17,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -21,7 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 @Path("/change-impact-analysis")
 public class ChangeImpactAnalysisRest {
 
-	@Path("/setChangeImpactAnalysisConfiguration")
+	@Path("/cia-configuration")
 	@POST
 	public Response setChangeImpactAnalysisConfiguration(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey, ChangeImpactAnalysisConfiguration ciaConfig) {
@@ -40,9 +46,28 @@ public class ChangeImpactAnalysisRest {
 		 *           provided ruleset to fix inconsistency between stored config and 
 		 *           new code!
 		 */
-		for(ChangePropagationRule rule : ChangePropagationRule.getDefaultRules()) {
+		for (ChangePropagationRule rule : ChangePropagationRule.getDefaultRules()) {
 			if (!ciaConfig.getPropagationRules().contains(rule)) {
 				ciaConfig.setPropagationRules(ChangePropagationRule.getDefaultRules());
+			}
+		}
+		// Ensuring that linkTypeImpact is always up to date in case new linkTypes
+		// are added, same reasoning/problem as with the ChangePropagationRules above
+		Set<String> defaultLinkTypes = DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes();
+		defaultLinkTypes.add(LinkType.WRONG_LINK.getInwardName());
+		defaultLinkTypes.add(LinkType.WRONG_LINK.getOutwardName());
+		for (String linkType : defaultLinkTypes) {
+			if (!ciaConfig.getLinkImpact().containsKey(linkType)) {
+				Map<String, Float> linkImpact = new HashMap<>();
+				defaultLinkTypes.forEach(entry -> {
+					if (entry == LinkType.WRONG_LINK.getInwardName() || entry == LinkType.WRONG_LINK.getOutwardName()) {
+						linkImpact.put(entry, 0.0f);
+					} else {
+						linkImpact.put(entry, 1.0f);
+					}
+				});
+				ciaConfig.setLinkImpact(linkImpact);
+				break;
 			}
 		}
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration(projectKey, ciaConfig);
@@ -50,7 +75,7 @@ public class ChangeImpactAnalysisRest {
 	}
 
 	@GET
-	@Path("/getChangeImpactAnalysisConfiguration")
+	@Path("/cia-configuration")
 	public Response getChangeImpactAnalysisConfiguration(@QueryParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {

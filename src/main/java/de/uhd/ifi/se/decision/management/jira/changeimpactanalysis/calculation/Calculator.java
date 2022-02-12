@@ -78,6 +78,8 @@ public class Calculator {
 			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, nextElementInPath, link);
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
 			String impactExplanation = "";
+			
+			// Add LinkRecommendationScore to impactExplanation if the element was a recommendation
 			if (link.getClass() == LinkRecommendation.class) {
 				LinkRecommendation recommendation = (LinkRecommendation) link;
 				double linkRecommendationScore = recommendation.getScore().getValue() / 100;

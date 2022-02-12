@@ -134,7 +134,13 @@
 			var parentElement = parentNode.data;
 
 			if (parentElement === undefined) {
-				conDecContextMenu.createContextMenu(element.id, element.documentationLocation, event, container);
+				if (jQuery(treeId).jstree(true).is_parent(node) === true) {
+					childNode = getTreeViewerNodeById(node.children[0], treeId);
+					conDecContextMenu.createContextMenu(element.id, element.documentationLocation, event, container,
+						childNode.data.id, childNode.data.documentationLocation);
+				} else {
+					conDecContextMenu.createContextMenu(element.id, element.documentationLocation, event, container);
+				}
 			} else {
 				conDecContextMenu.createContextMenu(element.id, element.documentationLocation, event, container, 
 					parentElement.id, parentElement.documentationLocation);

@@ -20,15 +20,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestBoostIfSolutionOption extends TestSetUp {
-    
-    private KnowledgeElement currentElement;
-    private KnowledgeElement rootElement;
-	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
-        rootElement = KnowledgeElements.getProArgument();
 	}
 
 	@Test
@@ -45,13 +40,16 @@ public class TestBoostIfSolutionOption extends TestSetUp {
 
     @Test
 	public void testPropagation() {
-		currentElement = KnowledgeElements.getOtherWorkItem();
+		KnowledgeElement currentElement = KnowledgeElements.getOtherWorkItem();
+		KnowledgeElement rootElement = KnowledgeElements.getProArgument();
+
         List<ChangePropagationRule> propagationRules = new LinkedList<>();
 		propagationRules.add(new ChangePropagationRule("BOOST_IF_SOLUTION_OPTION", false, 1.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.25f, 0.25f, (long) 0,
 				propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
-		filterSettings = new FilterSettings("TEST", "");
+		
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
         filterSettings.setSelectedElementObject(rootElement);
 		
 		assertNotNull(ChangePropagationRuleType.BOOST_IF_SOLUTION_OPTION.getFunction()
