@@ -23,12 +23,12 @@ public class TestMarkdownCreator extends TestSetUp {
 		releaseNotes = new ReleaseNotes();
 		releaseNotes.setTitle("Great release");
 		releaseNotes.setProjectKey("TEST");
-		markdownCreator = new MarkdownCreator(releaseNotes);
+		markdownCreator = new MarkdownCreator();
 	}
 
 	@Test
 	public void testEmptyOnlyTitle() {
-		assertEquals("# Great release\n", markdownCreator.getMarkdownString());
+		assertEquals("# Great release\n", markdownCreator.getMarkdownString(releaseNotes));
 	}
 
 	@Test
@@ -38,6 +38,6 @@ public class TestMarkdownCreator extends TestSetUp {
 		assertTrue(entry.getElement().hasNeighborOfType(KnowledgeType.ISSUE));
 
 		releaseNotes.setNewFeatures(List.of(entry));
-		assertTrue(markdownCreator.getMarkdownString().contains("## New Features"));
+		assertTrue(markdownCreator.getMarkdownString(releaseNotes).contains("## New Features"));
 	}
 }

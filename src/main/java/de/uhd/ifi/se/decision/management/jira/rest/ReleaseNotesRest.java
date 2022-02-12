@@ -192,8 +192,8 @@ public class ReleaseNotesRest {
 	@Path("/create-content")
 	@POST
 	public Response createReleaseNotesContent(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
-		MarkdownCreator markdownCreator = new MarkdownCreator(releaseNotes);
-		String markDownString = markdownCreator.getMarkdownString();
+		MarkdownCreator markdownCreator = new MarkdownCreator();
+		String markDownString = markdownCreator.getMarkdownString(releaseNotes);
 		return Response.ok(ImmutableMap.of("markdown", markDownString)).build();
 	}
 

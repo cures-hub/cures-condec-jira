@@ -22,20 +22,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class MarkdownCreator {
 
 	private final static String ICON_PATH = "https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/";
-	private ReleaseNotes releaseNotes;
-
-	public MarkdownCreator(ReleaseNotes releaseNotes) {
-		this.releaseNotes = releaseNotes;
-	}
-
-	public MarkdownCreator(KnowledgeGraph graph) {
-		this.releaseNotes = new ReleaseNotes();
-	}
 
 	public String getMarkdownString(KnowledgeElement rootElement, KnowledgeGraph graph) {
-		if (rootElement == null || rootElement.getProject() == null) {
-			return "";
-		}
 		StringBuilder stringBuilder = new StringBuilder();
 		addElementWithIcon(stringBuilder, rootElement, 0);
 
@@ -58,6 +46,18 @@ public class MarkdownCreator {
 				continue;
 			}
 
+			/**
+			 * @issue How can we get the depth of an element in the markdown tree?
+			 * @decision We use the BreadthFirstIterator::getDepth method to get the depth
+			 *           of an element!
+			 * @con We build the markdown with a DepthFirstIterator which does not offer a
+			 *      method getDepth. We currently traverse the graph twice: first, with a
+			 *      breadth first and second, with a depth first iterator, which is not very
+			 *      efficient.
+			 * @alternative We could use a shortest path algorithm (e.g. Dijkstra) to
+			 *              determine the link distance.
+			 * @con Might also not be very efficient.
+			 */
 			int depth = breadthFirstIterator.getDepth(childElement);
 			addElementWithIcon(stringBuilder, childElement, depth);
 		}
@@ -65,25 +65,26 @@ public class MarkdownCreator {
 		return stringBuilder.toString();
 	}
 
-	public String getMarkdownString() {
+	public String getMarkdownString(ReleaseNotes releaseNotes) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("# ").append(releaseNotes.getTitle()).append("\n");
+		String projectKey = releaseNotes.getProjectKey();
 
-		addCategory(stringBuilder, ReleaseNotesCategory.NEW_FEATURES, releaseNotes.getNewFeatures());
-		addCategory(stringBuilder, ReleaseNotesCategory.IMPROVEMENTS, releaseNotes.getImprovements());
-		addCategory(stringBuilder, ReleaseNotesCategory.BUG_FIXES, releaseNotes.getBugFixes());
+		addCategory(stringBuilder, ReleaseNotesCategory.NEW_FEATURES, releaseNotes.getNewFeatures(), projectKey);
+		addCategory(stringBuilder, ReleaseNotesCategory.IMPROVEMENTS, releaseNotes.getImprovements(), projectKey);
+		addCategory(stringBuilder, ReleaseNotesCategory.BUG_FIXES, releaseNotes.getBugFixes(), projectKey);
 
 		return stringBuilder.toString();
 	}
 
 	private void addCategory(StringBuilder stringBuilder, ReleaseNotesCategory category,
-			List<ReleaseNotesEntry> entries) {
+			List<ReleaseNotesEntry> entries, String projectKey) {
 		if (entries.isEmpty()) {
 			return;
 		}
 		stringBuilder.append("\n## ").append(category.getName()).append("\n");
 
-		FilterSettings filterSettings = new FilterSettings(releaseNotes.getProjectKey(), "");
+		FilterSettings filterSettings = new FilterSettings(projectKey, "");
 		filterSettings.setOnlyDecisionKnowledgeShown(true);
 
 		for (ReleaseNotesEntry entry : entries) {

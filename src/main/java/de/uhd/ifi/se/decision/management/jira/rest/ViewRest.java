@@ -227,7 +227,7 @@ public class ViewRest {
 		}
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		KnowledgeGraph graph = filteringManager.getFilteredGraph();
-		MarkdownCreator markdownCreator = new MarkdownCreator(graph);
+		MarkdownCreator markdownCreator = new MarkdownCreator();
 		String markDownString = markdownCreator.getMarkdownString(filterSettings.getSelectedElement(), graph);
 		return Response.ok(ImmutableMap.of("markdown", markDownString)).build();
 	}
