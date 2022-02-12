@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.AsUndirectedGraph;
@@ -22,6 +23,29 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public class MarkdownCreator {
 
 	private final static String ICON_PATH = "https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/";
+
+	public String getMarkdownString(FilterSettings filterSettings) {
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		KnowledgeGraph graph = filteringManager.getFilteredGraph();
+		String markDownString = "";
+
+		if (filterSettings.getSelectedElement() != null) {
+			// only one tree is shown in markdown
+			markDownString = getMarkdownString(filterSettings.getSelectedElement(), graph);
+		}
+
+		// many trees are shown in markdown
+		Set<KnowledgeElement> rootElements = graph.vertexSet();
+		filteringManager.getFilterSettings().setKnowledgeTypes(null);
+		filteringManager.getFilterSettings().setStatus(null);
+
+		for (KnowledgeElement element : rootElements) {
+			filteringManager.getFilterSettings().setSelectedElementObject(element);
+			graph = filteringManager.getFilteredGraph();
+			markDownString += getMarkdownString(element, graph);
+		}
+		return markDownString;
+	}
 
 	public String getMarkdownString(KnowledgeElement rootElement, KnowledgeGraph graph) {
 		StringBuilder stringBuilder = new StringBuilder();

@@ -39,16 +39,24 @@ public class TestGetMarkdown extends TestSetUp {
 	}
 
 	@Test
-	public void testProjectKeyInvalid() {
+	public void testRequestValidFilterSettingsProjectKeyInvalid() {
 		FilterSettings filterSettings = new FilterSettings(null, "");
 		Response response = viewRest.getMarkdown(request, filterSettings);
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 	}
 
 	@Test
-	public void testFilled() {
+	public void testRequestValidFilterSettingsValidWithSelectedElement() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setSelectedElement("TEST-1");
+		Response response = viewRest.getMarkdown(request, filterSettings);
+		assertEquals(Status.OK.getStatusCode(), response.getStatus());
+	}
+
+	@Test
+	public void testRequestValidFilterSettingsValidWithoutSelectedElement() {
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setLinkDistance(0);
 		Response response = viewRest.getMarkdown(request, filterSettings);
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}

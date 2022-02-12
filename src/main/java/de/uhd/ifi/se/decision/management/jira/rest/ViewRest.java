@@ -225,10 +225,8 @@ public class ViewRest {
 					"Getting elements as markdown text failed due to a bad request. You need to provide the filter settings."))
 					.build();
 		}
-		FilteringManager filteringManager = new FilteringManager(filterSettings);
-		KnowledgeGraph graph = filteringManager.getFilteredGraph();
 		MarkdownCreator markdownCreator = new MarkdownCreator();
-		String markDownString = markdownCreator.getMarkdownString(filterSettings.getSelectedElement(), graph);
+		String markDownString = markdownCreator.getMarkdownString(filterSettings);
 		return Response.ok(ImmutableMap.of("markdown", markDownString)).build();
 	}
 }
