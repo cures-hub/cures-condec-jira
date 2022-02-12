@@ -10,6 +10,7 @@ import org.jgrapht.traverse.DepthFirstIterator;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -49,7 +50,7 @@ public class MarkdownCreator {
 
 	public String getMarkdownString(KnowledgeElement rootElement, KnowledgeGraph graph) {
 		StringBuilder stringBuilder = new StringBuilder();
-		addElementWithIcon(stringBuilder, rootElement, 0);
+		addElement(stringBuilder, rootElement, 0);
 
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
 
@@ -83,7 +84,7 @@ public class MarkdownCreator {
 			 * @con Might also not be very efficient.
 			 */
 			int depth = breadthFirstIterator.getDepth(childElement);
-			addElementWithIcon(stringBuilder, childElement, depth);
+			addElement(stringBuilder, childElement, depth);
 		}
 
 		return stringBuilder.toString();
@@ -113,7 +114,6 @@ public class MarkdownCreator {
 
 		for (ReleaseNotesEntry entry : entries) {
 			KnowledgeElement rootElement = entry.getElement();
-			addJiraIssue(stringBuilder, rootElement);
 			filterSettings.setSelectedElementObject(rootElement);
 			FilteringManager filteringManager = new FilteringManager(filterSettings);
 			KnowledgeGraph filteredGraph = filteringManager.getFilteredGraph();
@@ -121,12 +121,7 @@ public class MarkdownCreator {
 		}
 	}
 
-	private void addJiraIssue(StringBuilder stringBuilder, KnowledgeElement issue) {
-		stringBuilder.append("- ").append(issue.getSummary()).append(" ([").append(issue.getKey()).append("](")
-				.append(issue.getUrl()).append("))\n");
-	}
-
-	private void addElementWithIcon(StringBuilder stringBuilder, KnowledgeElement element, int depth) {
+	private void addElement(StringBuilder stringBuilder, KnowledgeElement element, int depth) {
 		for (int i = 0; i < depth; i++) {
 			stringBuilder.append("\t");
 		}
@@ -135,7 +130,11 @@ public class MarkdownCreator {
 		if (!status.getColor().isBlank()) {
 			stringBuilder.append(status.toString()).append(": ");
 		}
-		stringBuilder.append(element.getSummary()).append("\n");
+		stringBuilder.append(element.getSummary());
+		if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
+			stringBuilder.append(" ([").append(element.getKey()).append("](").append(element.getUrl()).append("))");
+		}
+		stringBuilder.append("\n");
 	}
 
 	private String getIconMarkup(KnowledgeElement element) {

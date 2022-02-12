@@ -86,6 +86,7 @@ ConDec offers the following features:
 - [Decision grouping](doc/features/decision-grouping.md)
 - [Creation of release notes with explicit decision knowledge](doc/features/release-notes-creation.md)
 - [Metrics presentation in a knowledge dashboard](doc/features/dashboard.md)
+- [Knowledge export](doc/features/knowledge-export.md)
 - [Webhook to inform a receiver system about changed knowledge](doc/features/webhook.md)
 
 ## Implementation Details
