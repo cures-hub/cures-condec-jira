@@ -54,14 +54,18 @@
 			--- <a data-replace-text="$i18n.getText('condec.dialog.create')" class="aui-expander-trigger" 
 				aria-controls="element-creation-$viewIdentifier">$i18n.getText('condec.dialog.create')</a> 
 			#end
+			#if($viewIdentifier != "export")
 			--- <a data-replace-text="$i18n.getText('condec.label.hide.quality.highlighting.options')" class="aui-expander-trigger" 
 				aria-controls="quality-filter-$viewIdentifier">$i18n.getText('condec.label.show.quality.highlighting.options')</a>  
+			#end
 			#if ($viewsWithChangeImpactHighlighting.contains($viewIdentifier))
 			--- <a data-replace-text="$i18n.getText('condec.label.hide.cia.highlighting.options')" class="aui-expander-trigger" 
 				aria-controls="change-impact-filter-$viewIdentifier">$i18n.getText('condec.label.show.cia.highlighting.options')</a> 
 			#end 
 			&nbsp; 
+			#if($viewIdentifier != "export")
 			#parse("templates/filter/filterButton.vm")
+			#end
 		</div>
 	</form>
 </div>

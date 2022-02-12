@@ -4,7 +4,9 @@
 		<button class="aui-close-button" type="button" id="export-dialog-cancel-icon" aria-label="close"></button>
 	</header>
 	<div id="export-dialog-content" class="aui-dialog2-content">
-		<form class="aui">
+		#set ($viewIdentifier = "export")
+		#parse("templates/filter/allCriteria.vm")
+		<form class="aui">			
 			<div class="field-group">
 				<label for="form-radio-export-format">$i18n.getText("condec.label.export.format"):</label>
 				<div class="radio">

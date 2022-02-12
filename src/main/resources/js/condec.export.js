@@ -12,7 +12,7 @@
 
 	ConDecExport.prototype.addOnClickEventToExportAsTable = function() {
 		console.log("ConDecExport addOnClickEventToExportAsTable");
-
+		
 		var exportMenuItem = document.getElementById("export-as-table-link");
 
 		exportMenuItem.addEventListener("click", function(event) {
@@ -27,9 +27,7 @@
 	 */
 	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
 		conDecAPI.getKnowledgeElement(id, documentationLocation, function(element) {
-			const filterSettings = {
-				"selectedElementObject": element
-			};
+			var filterSettings = conDecFiltering.getFilterSettings("export");
 			conDecAPI.getKnowledgeElements(filterSettings, function(elements) {
 				if (elements && elements.length > 0 && elements[0] !== null) {
 					download(elements, "decisionKnowledge", exportFormat);
