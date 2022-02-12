@@ -483,7 +483,7 @@
 		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			var exportFormat = $('input[name=form-radio-export-format]:checked').val();
-			conDecExport.exportLinkedElements(exportFormat, id, documentationLocation);
+			conDecExport.exportLinkedElements(exportFormat);
 			AJS.dialog2(exportDialog).hide();
 		};
 

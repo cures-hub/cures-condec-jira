@@ -12,7 +12,7 @@
 
 	ConDecExport.prototype.addOnClickEventToExportAsTable = function() {
 		console.log("ConDecExport addOnClickEventToExportAsTable");
-		
+
 		var exportMenuItem = document.getElementById("export-as-table-link");
 
 		exportMenuItem.addEventListener("click", function(event) {
@@ -25,15 +25,17 @@
 	/**
 	 * external references: condec.dialog
 	 */
-	ConDecExport.prototype.exportLinkedElements = function exportLinkedElements(exportFormat, id, documentationLocation) {
-		conDecAPI.getKnowledgeElement(id, documentationLocation, function(element) {
-			var filterSettings = conDecFiltering.getFilterSettings("export");
-			conDecAPI.getKnowledgeElements(filterSettings, function(elements) {
-				if (elements && elements.length > 0 && elements[0] !== null) {
-					download(elements, "decisionKnowledge", exportFormat);
-				}
+	ConDecExport.prototype.exportLinkedElements = function(exportFormat) {
+		var filterSettings = conDecFiltering.getFilterSettings("export");
+		if (exportFormat === "markdown") {
+			conDecAPI.getMarkdown(filterSettings).then(response => {
+				download(response.markdown, "decisionKnowledge", exportFormat);
 			});
-		});
+		} else {
+			conDecAPI.getKnowledgeElements(filterSettings, function(elements) {
+				download(elements, "decisionKnowledge", exportFormat);
+			});
+		}
 	};
 
 	function download(elements, filename, exportType) {
@@ -47,6 +49,10 @@
 			case "json":
 				filename += ".json";
 				dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
+				break;
+			case "markdown":
+				filename += ".md";
+				dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(elements);
 				break;
 		}
 

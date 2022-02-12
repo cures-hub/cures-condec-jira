@@ -2,6 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.releasenotes;
 
 import java.util.List;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsUndirectedGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.DepthFirstIterator;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -22,6 +25,43 @@ public class MarkdownCreator {
 
 	public MarkdownCreator(ReleaseNotes releaseNotes) {
 		this.releaseNotes = releaseNotes;
+	}
+
+	public MarkdownCreator(KnowledgeGraph graph) {
+		this.releaseNotes = new ReleaseNotes();
+	}
+
+	public String getMarkdownString(KnowledgeElement rootElement, KnowledgeGraph graph) {
+		if (rootElement == null || rootElement.getProject() == null) {
+			return "";
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		addElement(stringBuilder, rootElement, 0);
+
+		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
+
+		BreadthFirstIterator<KnowledgeElement, Link> breadthFirstIterator = new BreadthFirstIterator<>(undirectedGraph,
+				rootElement);
+		DepthFirstIterator<KnowledgeElement, Link> depthFirstIterator = new DepthFirstIterator<>(undirectedGraph,
+				rootElement);
+
+		while (breadthFirstIterator.hasNext()) {
+			breadthFirstIterator.next();
+		}
+
+		while (depthFirstIterator.hasNext()) {
+			KnowledgeElement childElement = depthFirstIterator.next();
+
+			KnowledgeElement parentElement = breadthFirstIterator.getParent(childElement);
+			if (parentElement == null) {
+				continue;
+			}
+
+			int depth = breadthFirstIterator.getDepth(childElement);
+			addElement(stringBuilder, childElement, depth);
+		}
+
+		return stringBuilder.toString();
 	}
 
 	public String getMarkdownString() {

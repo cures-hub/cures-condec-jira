@@ -68,7 +68,7 @@
 		}
 		return this.extendedKnowledgeTypes;
 	};
-	
+
 	ConDecAPI.prototype.getKnowledgeTypesWithoutDecisionKnowledge = function() {
 		var decisionKnowledgeTypes = ["Issue", "Decision", "Alternative", "Argument", "Goal"];
 		return this.getKnowledgeTypes().filter(function(value, index, arr) {
@@ -264,7 +264,7 @@
 		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, status, callback);
 	};
 
-	/*
+	/**
 	 * external references: condec.export, condec.decision.table
 	 */
 	ConDecAPI.prototype.getKnowledgeElements = function(filterSettings, callback) {
@@ -276,6 +276,14 @@
 		});
 	};
 
+	/**
+	 * external references: condec.export
+	 */
+	ConDecAPI.prototype.getMarkdown = function(filterSettings) {
+		filterSettings["projectKey"] = projectKey;
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/view/markdown", filterSettings);
+	};
+	
 	/*
 	 * external references: condec.decision.table, condec.decision.guidance, condec.prompts
 	 */
