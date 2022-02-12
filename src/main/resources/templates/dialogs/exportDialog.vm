@@ -15,6 +15,10 @@
 					<input class="radio" type="radio" name="form-radio-export-format" id="form-radio-export-format-json" value="json">
 					<label for="form-radio-export-format-json">JSON</label>
 				</div>
+				<div class="radio">
+					<input class="radio" type="radio" name="form-radio-export-format" id="form-radio-export-format-markdown" value="markdown">
+					<label for="form-radio-export-format-markdown">Markdown</label>
+				</div>
             </div>
        </form>
     </div>
