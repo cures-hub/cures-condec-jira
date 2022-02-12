@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.releasenotes.MarkdownCreator;
 import de.uhd.ifi.se.decision.management.jira.view.decisiontable.DecisionTable;
 import de.uhd.ifi.se.decision.management.jira.view.matrix.Matrix;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
@@ -205,5 +206,27 @@ public class ViewRest {
 		}
 
 		return Response.ok(matrix).build();
+	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            object of the {@link FilterSettings} class.
+	 * @return knowledge subgraph that matches the {@link FilterSettings} as a
+	 *         String in markdown format.
+	 */
+	@Path("/markdown")
+	@POST
+	public Response getMarkdown(@Context HttpServletRequest request, FilterSettings filterSettings) {
+		if (request == null || filterSettings == null || filterSettings.getProjectKey().isBlank()) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Getting elements as markdown text failed due to a bad request. You need to provide the filter settings."))
+					.build();
+		}
+		MarkdownCreator markdownCreator = new MarkdownCreator();
+		String markDownString = markdownCreator.getMarkdownString(filterSettings);
+		return Response.ok(ImmutableMap.of("markdown", markDownString)).build();
 	}
 }

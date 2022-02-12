@@ -133,7 +133,7 @@ public class ReleaseNotesRest {
 	 *            of {@link ReleaseNotes#getId()}.
 	 * @return ok if the release notes were successfully deleted.
 	 */
-	@Path("/delete/{id}")
+	@Path("/{id}")
 	@DELETE
 	public Response deleteReleaseNotes(@Context HttpServletRequest request, @PathParam("id") long id) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -157,9 +157,9 @@ public class ReleaseNotesRest {
 	 * @return {@link ReleaseNotes} with suggested Jira issues for each
 	 *         {@link ReleaseNotesCategory}. The content field is not filled yet.
 	 */
-	@Path("/propose-elements")
+	@Path("/propose-elements/{projectKey}")
 	@POST
-	public Response proposeElements(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response proposeElements(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			ReleaseNotesConfiguration releaseNoteConfiguration) {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<Issue> jiraIssuesMatchingQuery = JiraQueryHandler.getJiraIssuesResolvedDuringTimeRange(user, projectKey,
@@ -192,8 +192,8 @@ public class ReleaseNotesRest {
 	@Path("/create-content")
 	@POST
 	public Response createReleaseNotesContent(@Context HttpServletRequest request, ReleaseNotes releaseNotes) {
-		MarkdownCreator markdownCreator = new MarkdownCreator(releaseNotes);
-		String markDownString = markdownCreator.getMarkdownString();
+		MarkdownCreator markdownCreator = new MarkdownCreator();
+		String markDownString = markdownCreator.getMarkdownString(releaseNotes);
 		return Response.ok(ImmutableMap.of("markdown", markDownString)).build();
 	}
 
@@ -208,10 +208,10 @@ public class ReleaseNotesRest {
 	 *            creating new {@link ReleaseNotes}.
 	 * @return ok if saving was successful.
 	 */
-	@Path("/save-configuration")
+	@Path("/configuration/{projectKey}")
 	@POST
 	public Response saveReleaseNotesConfiguration(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, ReleaseNotesConfiguration releaseNotesConfiguration) {
+			@PathParam("projectKey") String projectKey, ReleaseNotesConfiguration releaseNotesConfiguration) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -226,9 +226,9 @@ public class ReleaseNotesRest {
 	 * @return {@link ReleaseNotesConfiguration} to be used as the default when
 	 *         creating new {@link ReleaseNotes}.
 	 */
-	@Path("/configuration")
+	@Path("/configuration/{projectKey}")
 	@GET
-	public Response getReleaseNotesConfiguration(@QueryParam("projectKey") String projectKey) {
+	public Response getReleaseNotesConfiguration(@PathParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
