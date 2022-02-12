@@ -48,6 +48,7 @@ public class TestGetMarkdown extends TestSetUp {
 	@Test
 	public void testFilled() {
 		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElement("TEST-1");
 		Response response = viewRest.getMarkdown(request, filterSettings);
 		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 	}
