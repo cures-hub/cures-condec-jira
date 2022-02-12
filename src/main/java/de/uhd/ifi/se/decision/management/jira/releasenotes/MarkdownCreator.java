@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -36,7 +37,7 @@ public class MarkdownCreator {
 			return "";
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		addElement(stringBuilder, rootElement, 0);
+		addElementWithIcon(stringBuilder, rootElement, 0);
 
 		Graph<KnowledgeElement, Link> undirectedGraph = new AsUndirectedGraph<KnowledgeElement, Link>(graph);
 
@@ -58,7 +59,7 @@ public class MarkdownCreator {
 			}
 
 			int depth = breadthFirstIterator.getDepth(childElement);
-			addElement(stringBuilder, childElement, depth);
+			addElementWithIcon(stringBuilder, childElement, depth);
 		}
 
 		return stringBuilder.toString();
@@ -91,17 +92,7 @@ public class MarkdownCreator {
 			filterSettings.setSelectedElementObject(rootElement);
 			FilteringManager filteringManager = new FilteringManager(filterSettings);
 			KnowledgeGraph filteredGraph = filteringManager.getFilteredGraph();
-			DepthFirstIterator<KnowledgeElement, Link> iterator = new DepthFirstIterator<>(
-					filteredGraph.toUndirectedGraph(), rootElement);
-
-			while (iterator.hasNext()) {
-				KnowledgeElement childElement = iterator.next();
-				if (childElement.equals(rootElement)) {
-					continue;
-				}
-				int currentDepth = rootElement.getLinkDistance(childElement, 3);
-				addElement(stringBuilder, childElement, currentDepth);
-			}
+			stringBuilder.append(getMarkdownString(rootElement, filteredGraph));
 		}
 	}
 
@@ -110,17 +101,23 @@ public class MarkdownCreator {
 				.append(issue.getUrl()).append("))\n");
 	}
 
-	private void addElement(StringBuilder stringBuilder, KnowledgeElement element, int depth) {
+	private void addElementWithIcon(StringBuilder stringBuilder, KnowledgeElement element, int depth) {
 		for (int i = 0; i < depth; i++) {
 			stringBuilder.append("\t");
 		}
-		stringBuilder.append("- ").append("![").append(element.getTypeAsString()).append("](")
-				.append(getIconUrl(element)).append(") ");
+		stringBuilder.append("- ").append(getIconMarkup(element));
 		KnowledgeStatus status = element.getStatus();
 		if (!status.getColor().isBlank()) {
 			stringBuilder.append(status.toString()).append(": ");
 		}
 		stringBuilder.append(element.getSummary()).append("\n");
+	}
+
+	private String getIconMarkup(KnowledgeElement element) {
+		if (element.getType() == KnowledgeType.OTHER) {
+			return "";
+		}
+		return "![" + element.getTypeAsString() + "](" + getIconUrl(element) + ") ";
 	}
 
 	/**

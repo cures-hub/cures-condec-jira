@@ -20,6 +20,9 @@
 				<div class="radio">
 					<input class="radio" type="radio" name="form-radio-export-format" id="form-radio-export-format-markdown" value="markdown">
 					<label for="form-radio-export-format-markdown">Markdown</label>
+					<a href="https://markdown-editor.github.io" target="_blank" >
+						<span class="aui-icon aui-icon-small aui-iconfont-shortcut"></span> Online Editor
+					</a>
 				</div>
             </div>
        </form>
