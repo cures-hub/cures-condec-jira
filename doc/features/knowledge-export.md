@@ -8,7 +8,8 @@ ConDec enables to export decision knowledge and related knowledge elements, such
 
 ![Dialog to export the knowledge subgraph](../screenshots/export_dialog.png)
 
-*Dialog to export the knowledge subgraph*
+*Dialog to export the knowledge subgraph. The user can filter the exported knowledge using the same filter settings 
+as in the [knowledge graph views](knowledge-visualization.md).*
 
 
 ## Design Details
@@ -26,15 +27,6 @@ The UI code for knowledge export can be found here:
 The following knowledge is exported via the knowledge export feature for the system function (SF) Export knowledge from Jira:
 
 - SF: Export knowledge from Jira ([CONDEC-484](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-484))
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which word files should be supported?
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Word Docs should be supported, as it was well documented!
-	- ![Code](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/code.png) MarkdownCreator.java
-		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we include icon images into the release notes?
-			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the icon URL of github to include icon images into the release notes!
-			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could the icon URL on the Jira server.
-		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we get the depth of an element in the markdown tree?
-			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the BreadthFirstIterator::getDepth method to get the depth of an element!
-			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could use a shortest path algorithm (e.g. Dijkstra) to determine the link distance.
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which format do we support for exporting the knowledge documentation?
 		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) CSV
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Use Word to export the decision knowledge documentation!
@@ -44,6 +36,8 @@ The following knowledge is exported via the knowledge export feature for the sys
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Use Markdown format to enable the export of the knowledge subgraph!
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Markdown text can be imported into github release notes and .md files for feature documentation.
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Is also used for relase notes creation with explicit decision knowledge, thus, the code can be reused for general export.
+	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which word files should be supported?
+		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Word Docs should be supported, as it was well documented!
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How do we deal with irrelevant sentences/parts of text when exporting knowledge elements from Jira?
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) The user is offered the same filter settings as in the knowledge graph views during export! Thus, the user can decide whether irrelevant text wrt. decision knowledge can be exported!
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Flexible solution because of same filtering possibilities in all views
@@ -52,12 +46,9 @@ The following knowledge is exported via the knowledge export feature for the sys
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) rejected: The knowledge-elements REST API method used to return a list of lists of elements belonging to a connected graph!
 			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) This is hard to understand/low abstraction level.
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) The knowledge-elements REST API method returns only one list of all elements matching the query!
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which context menu functionality should the DecXtract tree viewer items support?  ([CONDEC-219](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-219))
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How should classified decision knowledge be edited? ([CONDEC-223](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-223))
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We try to use the same context menu in every view! ([CONDEC-220](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-220))
-	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We add a possibility to export decision knowledge to the context menu! ([CONDEC-480](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-480))
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How to export and present decision knowledge from Jira into Confluence? ([CONDEC-271](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-271))
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Create a Confluence plugin with a new macro to import decision knowledge from Jira into Confluence! ([CONDEC-298](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-298))
+	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We add a possibility to export decision knowledge to the context menu! ([CONDEC-480](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-480))
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which machine readable format should be implemented?
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) JSON should be used as machine readable format to export the knowledge documentation! ([CONDEC-487](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-487))
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) web standard, easily parsable, many libraries that can handle the JSON format
@@ -70,3 +61,10 @@ lightwight
 Extensive markup language
 			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) Created for document markup, not for data exchange
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Full Data hierarchies, old standard for Documents
+- ![Code](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/code.png) MarkdownCreator.java
+		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we include icon images into the release notes?
+			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the icon URL of github to include icon images into the release notes!
+			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could the icon URL on the Jira server.
+		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we get the depth of an element in the markdown tree?
+			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the BreadthFirstIterator::getDepth method to get the depth of an element!
+			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could use a shortest path algorithm (e.g. Dijkstra) to determine the link distance.		
