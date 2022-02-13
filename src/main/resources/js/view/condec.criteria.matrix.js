@@ -1,3 +1,8 @@
+/**
+ * Creates a criteria matrix (=decision table) for a selected decision problem.
+ * 
+ * Requires: conDecAPI, conDecViewAPI, conDecContextMenu, conDecFiltering, conDecObservable
+ */
 (function(global) {
 
 	const viewIdentifier = "criteria-matrix";

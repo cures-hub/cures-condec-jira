@@ -5,7 +5,7 @@
  * Requires: conDecAPI
  *
  * Is required by: conDecEvolutionPage
- * conDecTreant conDecTreeViewer conDecKnowledgePage conDecVis
+ * conDecTreant conDecTreeViewer conDecKnowledgePage conDecVis, conDecAdjacencyMatrix, conDecCriteriaMatrix
  *
  * Is referenced in HTML by none
  */

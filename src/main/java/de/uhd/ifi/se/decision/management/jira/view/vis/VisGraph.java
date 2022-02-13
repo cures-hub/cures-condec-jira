@@ -24,8 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Creates the vis graph content. The vis graph is rendered with the vis.js
- * library.
+ * Creates the node-link diagram (vis graph) content. The node-link diagram is
+ * rendered with the vis.js library.
  * 
  * Iterates over the filtered {@link KnowledgeGraph} provided by the
  * {@link FilteringManager}.
@@ -72,15 +72,16 @@ public class VisGraph {
 	}
 
 	/**
-	 * A specialized constructor for a visgraph that matches the {@link FilterSettings}.
-	 * Vertices that are not included in the supplied list of {@link KnowledgeElementWithImpact} are removed.
+	 * A specialized constructor for a visgraph that matches the
+	 * {@link FilterSettings}. Vertices that are not included in the supplied list
+	 * of {@link KnowledgeElementWithImpact} are removed.
 	 *
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings} cover the selected element
-	 *            and the knowledge types to be shown. The selected element cannot be
-	 *            null.
+	 *            and the knowledge types to be shown. The selected element cannot
+	 *            be null.
 	 * @param impactedElements
-	 * 			  A list of {@link KnowledgeElementWithImpact}.
+	 *            A list of {@link KnowledgeElementWithImpact}.
 	 */
 	public VisGraph(FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements) {
 		this();
@@ -93,9 +94,9 @@ public class VisGraph {
 		subgraph = filteringManager.getFilteredGraph(impactedElements);
 		selectedElement = filterSettings.getSelectedElement();
 		addNodesAndEdges();
-    }
+	}
 
-    /**
+	/**
 	 * @param isHierarchical
 	 *            true if the {@link KnowledgeGraph} or a respective subgraph
 	 *            provided by the {@link FilteringManager} should be shown with a

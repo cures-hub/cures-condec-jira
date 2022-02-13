@@ -1,3 +1,6 @@
+/**
+ * Creates a node-link diagram rendered with the vis.js library.
+ */
 (function(global) {
 
 	var ConDecVis = function() {

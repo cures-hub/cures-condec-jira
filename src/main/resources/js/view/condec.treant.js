@@ -1,3 +1,6 @@
+/**
+ * Creates a node-link diagram rendered with the treant.js library.
+ */
 (function(global) {
 
     // closure locals variable for DnD

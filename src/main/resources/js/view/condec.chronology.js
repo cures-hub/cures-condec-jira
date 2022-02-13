@@ -1,3 +1,6 @@
+/**
+ * Creates a chronology view rendered with the vis-timeline library.
+ */
 (function (global) {
 
     /* private vars */
