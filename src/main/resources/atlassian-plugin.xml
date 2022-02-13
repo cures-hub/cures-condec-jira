@@ -128,14 +128,14 @@
 		<resource type="download" name="condec.filtering.js" location="/js/condec.filtering.js" />
 		<resource type="download" name="condec.knowledge.page.js" location="/js/condec.knowledge.page.js" />
 		<resource type="download" name="condec.git.js" location="/js/git/condec.git.js" />
-		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
-		<resource type="download" name="condec.tree.viewer.js" location="/js/condec.tree.viewer.js" />
-		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
-		<resource type="download" name="condec.criteria.matrix.js" location="/js/condec.criteria.matrix.js" />
+		<resource type="download" name="condec.treant.js" location="/js/view/condec.treant.js" />
+		<resource type="download" name="condec.tree.viewer.js" location="/js/view/condec.tree.viewer.js" />
+		<resource type="download" name="condec.vis.js" location="/js/view/condec.vis.js" />
+		<resource type="download" name="condec.criteria.matrix.js" location="/js/view/condec.criteria.matrix.js" />
 		<resource type="download" name="condec.export.js" location="/js/condec.export.js" />
-		<resource type="download" name="condec.chronology.js" location="/js/condec.chronology.js" />
+		<resource type="download" name="condec.chronology.js" location="/js/view/condec.chronology.js" />
 		<resource type="download" name="condec.comparison.js" location="/js/condec.comparison.js" />
-		<resource type="download" name="condec.matrix.js" location="/js/condec.matrix.js" />
+		<resource type="download" name="condec.adjacency.matrix.js" location="/js/view/condec.adjacency.matrix.js" />
 		<resource type="download" name="condec.quality.check.js"
 			location="/js/definitionofdone/condec.quality.check.js" />
 		<resource type="download" name="condec.quality.check.api.js"

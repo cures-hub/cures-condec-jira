@@ -1,5 +1,5 @@
 /**
- * This module is responsible for filling the filter HTML elements and for
+ * Responsible for filling the filter HTML elements and for
  * filtering functionality.
  *
  * Requires no other module
