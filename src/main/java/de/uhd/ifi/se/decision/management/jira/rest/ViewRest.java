@@ -28,10 +28,11 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 
 /**
- * REST resource for creating views on the {@link KnowledgeGraph}: node-link
- * diagram, tree views (indented outline and node-link tree diagram), adjacency
- * matrix, criteria matrix (decision table), and chronology view. Also
- * responsible for exporting the {@link KnowledgeGraph} in markdown format.
+ * REST resource for creating the following views on the {@link KnowledgeGraph}:
+ * 1) node-link diagram, 2) tree views (indented outline and node-link tree
+ * diagram), 3) adjacency matrix, 4) criteria matrix (decision table), and 5)
+ * chronology view. Also responsible for exporting the {@link KnowledgeGraph} in
+ * markdown format.
  */
 @Path("/view")
 public class ViewRest {
@@ -76,8 +77,8 @@ public class ViewRest {
 	 * @param filterSettings
 	 * @param isPlacedAtCreationDate
 	 * @param isPlacedAtUpdatingDate
-	 * @return content for the chronology view. The chronology view is rendered with
-	 *         the vis timeline library.
+	 * @return content for the chronology/evolution/timeline view. The chronology
+	 *         view is rendered with the vis timeline library.
 	 */
 	@Path("/evolution")
 	@POST
@@ -200,7 +201,7 @@ public class ViewRest {
 	 * @return adjacency matrix of the {@link KnowledgeGraph} or a filtered subgraph
 	 *         provided by the {@link FilteringManager}.
 	 */
-	@Path("/matrix")
+	@Path("/adjacency-matrix")
 	@POST
 	public Response getMatrix(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {

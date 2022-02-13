@@ -103,7 +103,7 @@
 	 */
 	ConDecViewAPI.prototype.getMatrix = function(filterSettings, callback) {
 		filterSettings["projectKey"] = conDecAPI.projectKey;
-		generalApi.postJSON(this.restPrefix + "/matrix", filterSettings, function(error, matrix) {
+		generalApi.postJSON(this.restPrefix + "/adjacency-matrix", filterSettings, function(error, matrix) {
 			if (error == null) {
 				callback(matrix);
 			}

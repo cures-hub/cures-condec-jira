@@ -1,6 +1,5 @@
 /**
- * Responsible for filling the filter HTML elements and for
- * filtering functionality.
+ * Responsible for filling the filter HTML elements and for filtering functionality.
  *
  * Requires no other module
  *
@@ -44,10 +43,9 @@
 		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.projectKey);
 
 		// change impact highlighting
-		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
+		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.projectKey, (error, config) => {
 			document.getElementById("decay-input-" + viewIdentifier).value = config["decayValue"];
 			document.getElementById("threshold-input-" + viewIdentifier).value = config["threshold"];
-			console.log(config["propagationRules"]);
 			var propagationRuleNames = [];
 			var selectedRules = [];
 			for (var propagationRule of config["propagationRules"]) {
