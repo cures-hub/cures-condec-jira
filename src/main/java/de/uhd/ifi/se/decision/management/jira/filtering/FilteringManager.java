@@ -111,13 +111,15 @@ public class FilteringManager {
 	 */
 	public KnowledgeGraph getFilteredGraph(List<KnowledgeElementWithImpact> impactedElements) {
 		KnowledgeGraph filteredGraph = getFilteredGraph();
-		if (filterSettings.areLinksRecommended() && filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
+		if (filterSettings.areLinksRecommended()
+				&& filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
 			filteredGraph = addLinkRecommendations(filteredGraph);
 		}
 		Set<KnowledgeElement> elementsNotMatchingFilterSettings = filteredGraph.vertexSet().stream()
 				.filter(element -> !impactedElements.contains(element)).collect(Collectors.toSet());
 		filteredGraph.removeAllVertices(elementsNotMatchingFilterSettings);
-		if (filterSettings.areLinksRecommended() && !filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
+		if (filterSettings.areLinksRecommended()
+				&& !filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
 			filteredGraph = addLinkRecommendations(filteredGraph);
 		}
 		return filteredGraph;
@@ -179,8 +181,8 @@ public class FilteringManager {
 	public Set<Link> getLinksNotMatchingFilterSettings(Set<Link> links) {
 		Set<Link> linksNotMatchingFilterSettings = new HashSet<>();
 		for (Link link : links) {
-			if (filterSettings.getLinkTypes().stream()
-					.noneMatch(selectedType -> selectedType.toLowerCase().startsWith(link.getTypeAsString()))) {
+			if (filterSettings.getLinkTypes().stream().noneMatch(
+					selectedType -> selectedType.toLowerCase().startsWith(link.getTypeAsString().toLowerCase()))) {
 				linksNotMatchingFilterSettings.add(link);
 			}
 		}
@@ -386,19 +388,19 @@ public class FilteringManager {
 
 	/**
 	 * @param filteredGraph
-	 * 		{@link KnowledgeGraph} object that will receive the recommendations.
-	 * @return 
-	 * 		{@link KnowledgeGraph} with added link recommendations.
+	 *            {@link KnowledgeGraph} object that will receive the
+	 *            recommendations.
+	 * @return {@link KnowledgeGraph} with added link recommendations.
 	 */
 	private KnowledgeGraph addLinkRecommendations(KnowledgeGraph filteredGraph) {
-	ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
-		filterSettings.getLinkRecommendationConfig());
-    List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
-    for (Recommendation recommendation : linkRecommendations) {
-		if (!recommendation.isDiscarded()) {
-			filteredGraph.addEdge((LinkRecommendation) recommendation);
+		ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
+				filterSettings.getLinkRecommendationConfig());
+		List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
+		for (Recommendation recommendation : linkRecommendations) {
+			if (!recommendation.isDiscarded()) {
+				filteredGraph.addEdge((LinkRecommendation) recommendation);
+			}
 		}
-    }
-	return filteredGraph;
+		return filteredGraph;
 	}
 }
