@@ -26,17 +26,17 @@ Meeting managers can use the JSON export to create a
 **[meeting agenda using the ConDec Confluence plug-in](https://github.com/cures-hub/cures-condec-confluence)**.
 
 ## Design Details
-The Java code for knowledge export can be found here:
+The Java code for the knowledge export feature can be found here:
 
 - [Java REST API for export of list of knowledge elements used for Word and JSON export](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/KnowledgeRest.java)
 - [Java REST API for markdown export](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ViewRest.java)
 
-The UI code for knowledge export can be found here:
+The UI code for the knowledge export feature can be found here:
 
 - [Velocity template for export dialog](../../src/main/resources/templates/dialogs/exportDialog.vm)
 - [JavaScript code for knowledge export](../../src/main/resources/js/condec.export.js)
 
-The following knowledge is exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*.
+The following knowledge is exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*, which specifies the export feature.
 In particular, the following filter criteria were used for the export:
 
 1) Selected element: system function *SF: Export knowledge from Jira* (CONDEC-484), which is a requirement for ConDec
