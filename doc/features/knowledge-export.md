@@ -6,11 +6,14 @@ ConDec enables to export decision knowledge and related knowledge elements, such
 
 *Context menu item to export the knowledge subgraph*
 
+![Jira issue *More* menu item to export the knowledge subgraph](../screenshots/export_more_menu.png)
+
+*Jira issue *More* menu item to export the knowledge subgraph*
+
 ![Dialog to export the knowledge subgraph](../screenshots/export_dialog.png)
 
 *Dialog to export the knowledge subgraph. The user can filter the exported knowledge using the same filter settings 
 as in the [knowledge graph views](knowledge-visualization.md).*
-
 
 ## Design Details
 
@@ -24,7 +27,17 @@ The UI code for knowledge export can be found here:
 - [Velocity template for export dialog](../../src/main/resources/templates/dialogs/exportDialog.vm)
 - [JavaScript code for knowledge export](../../src/main/resources/js/condec.export.js)
 
-The following knowledge is exported via the knowledge export feature for the system function (SF) Export knowledge from Jira:
+The following knowledge is exported via the knowledge export feature for the system function (SF) Export knowledge from Jira.
+In particular, the following filter criteria were used for the export:
+
+- selected element system function *SF: Export knowledge from Jira (CONDEC-484)*, which is a requirement for ConDec
+- link distance 5 from the selected element
+- [decision group](decision-grouping.md) *export*
+- [transitive links](knowledge-visualization.md) should be established. 
+For example, the code file *MarkdownCreator.java* is only indirectly linked to the system via a work item. 
+The work item is not part of the *export* decision group, but the code file *MarkdownCreator.java* is part of the decision group.
+The code file is included in the knowledge graph because of transitive linking.
+The code file contains decision knowledge documented in its code comments.
 
 - SF: Export knowledge from Jira ([CONDEC-484](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-484))
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which format do we support for exporting the knowledge documentation?
@@ -64,7 +77,11 @@ Extensive markup language
 	- ![Code](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/code.png) MarkdownCreator.java
 		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we include icon images into the markdown used for release notes and general knowledge export?
 			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the icon URL of github to include icon images into the markdown used for release notes and general knowledge export!
+				- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) The icons can be seen also by non Jira users. Thus, the markdown text could be excluded in external systems such as release page on github.
 			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could the icon URL on the Jira server.
+				- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) The icons could not be seen by non Jira users.
 		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we get the depth of an element in the markdown tree?
 			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the BreadthFirstIterator::getDepth method to get the depth of an element!
-			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could use a shortest path algorithm (e.g. Dijkstra) to determine the link distance.		
+				- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) We build the markdown with a DepthFirstIterator which does not offer a method getDepth. We currently traverse the graph twice: first, with a breadth first and second, with a depth first iterator, which is not very efficient.
+			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could use a shortest path algorithm (e.g. Dijkstra) to determine the link distance.
+				- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) Might also not be very efficient.
