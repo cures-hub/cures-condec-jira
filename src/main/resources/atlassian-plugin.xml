@@ -119,6 +119,7 @@
 		<!-- ConDec JavaScript files -->
 		<resource type="download" name="general.api.js" location="/js/general.api.js" />
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+		<resource type="download" name="condec.view.api.js" location="/js/view/condec.view.api.js" />
 		<resource type="download" name="condec.git.api.js" location="/js/git/condec.git.api.js" />
 		<resource type="download" name="condec.webhook.api.js" location="/js/condec.webhook.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />

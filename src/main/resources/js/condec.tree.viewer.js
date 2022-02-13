@@ -66,7 +66,7 @@
 	ConDecTreeViewer.prototype.buildTreeViewer = function (filterSettings, treeId, searchInputId, container) {
 		console.log("conDecTreeViewer buildTreeViewer");
 		resetTreeViewer(treeId);
-		conDecAPI.getTreeViewer(filterSettings, function (core) {
+		conDecViewAPI.getTreeViewer(filterSettings, function (core) {
 			jQuery(treeId).jstree({
 			    "core" : core,
 			    "plugins" : [ "dnd", "wholerow", "sort", "search", "state" ],

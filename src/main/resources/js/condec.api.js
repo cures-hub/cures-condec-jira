@@ -276,14 +276,6 @@
 		});
 	};
 
-	/**
-	 * external references: condec.export
-	 */
-	ConDecAPI.prototype.getMarkdown = function(filterSettings) {
-		filterSettings["projectKey"] = projectKey;
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/view/markdown", filterSettings);
-	};
-	
 	/*
 	 * external references: condec.decision.table, condec.decision.guidance, condec.prompts
 	 */
@@ -349,92 +341,6 @@
 					callback();
 				}
 			});
-	};
-
-	/*
-	 * external references: condec.tree.viewer
-	 */
-	ConDecAPI.prototype.getTreeViewer = function(filterSettings, callback) {
-		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getTreeViewer", filterSettings, function(error, core) {
-			if (error === null) {
-				callback(core);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.treant
-	 */
-	ConDecAPI.prototype.getTreant = function(filterSettings, callback) {
-		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getTreant", filterSettings, function(error, treant) {
-			if (error === null) {
-				callback(treant);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.vis, condec.relationship.page
-	 */
-	ConDecAPI.prototype.getVis = function(filterSettings, callback) {
-		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getVis", filterSettings, function(error, vis) {
-			if (error === null) {
-				callback(vis);
-			}
-		});
-	};
-
-	/**
-	 * If the search term is a Jira query in JQL, this function provides the
-	 * filter settings matching the JQL. Otherwise it provides the default
-	 * filter settings (e.g. link distance 3, all knowledge types, all link
-	 * types, ...).
-	 *
-	 * external reference: currently not used, used to be used in
-	 * Jira issue view to fill the HTML filter elements
-	 */
-	ConDecAPI.prototype.getFilterSettings = function(projectKey, searchTerm, callback) {
-		generalApi.getJSON(this.restPrefix + "/view/getFilterSettings?projectKey=" + projectKey
-			+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
-				if (error === null) {
-					callback(filterSettings);
-				}
-			});
-	};
-
-	/**
-	 * @param isPlacedAtCreationDate elements will be placed at their creation date.
-	 * @param isPlacedAtUpdatingDate elements will be placed at the date of their last update.
-	 *
-	 * If both isPlacedAtCreationDate and isPlacedAtUpdatingDate are true, a bar connecting
-	 * both dates is shown in chronology view.
-	 *
-	 * external references: condec.evolution.page
-	 */
-	ConDecAPI.prototype.getEvolutionData = function(filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, callback) {
-		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getEvolutionData?isPlacedAtCreationDate=" + isPlacedAtCreationDate
-			+ "&isPlacedAtUpdatingDate=" + isPlacedAtUpdatingDate, filterSettings, function(
-				error, evolutionData) {
-			if (error === null) {
-				callback(evolutionData);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.matrix
-	 */
-	ConDecAPI.prototype.getMatrix = function(filterSettings, callback) {
-		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/getMatrix", filterSettings, function(error, matrix) {
-			if (error == null) {
-				callback(matrix);
-			}
-		});
 	};
 
 	/*
@@ -577,31 +483,6 @@
 			this.allLinkTypes = generalApi.getResponseAsReturnValue(AJS.contextPath() + "/rest/condec/latest/config/getAllLinkTypes.json?projectKey=" + conDecAPI.projectKey);
 		}
 		return this.allLinkTypes;
-	};
-
-	/*
-	 * external references: condec.criteria.matrix
-	 */
-	ConDecAPI.prototype.getDecisionTable = function(filterSettings, callback) {
-		filterSettings["projectKey"] = projectKey;
-		generalApi.postJSON(this.restPrefix + "/view/decisionTable", filterSettings,
-			function(error, issues) {
-				if (error === null) {
-					callback(issues);
-				}
-			});
-	};
-
-	/*
-	 * external references: condec.decision.table
-	 */
-	ConDecAPI.prototype.getDecisionTableCriteria = function(callback) {
-		generalApi.getJSON(this.restPrefix + `/view/decisionTableCriteria?projectKey=${projectKey}`,
-			function(error, query) {
-				if (error === null) {
-					callback(query);
-				}
-			});
 	};
 
 	/*

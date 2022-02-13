@@ -28,23 +28,29 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
 import de.uhd.ifi.se.decision.management.jira.view.vis.VisTimeLine;
 
 /**
- * REST resource for creating views (e.g. tree and graph view)
+ * REST resource for creating views on the {@link KnowledgeGraph}: node-link
+ * diagram, tree views (indented outline and node-link tree diagram), adjacency
+ * matrix, criteria matrix (decision table), and chronology view. Also
+ * responsible for exporting the {@link KnowledgeGraph} in markdown format.
  */
 @Path("/view")
 public class ViewRest {
 
 	/**
-	 * Returns a jstree tree viewer that matches the {@link FilterSettings}. If a
-	 * knowledge element is selected in the {@link FilterSettings}, the tree viewer
-	 * comprises only one tree with the selected element as the root element. If no
-	 * element is selected, the tree viewer contains a list of trees.
-	 *
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings} cover the selected element
 	 *            and the knowledge types to be shown. The selected element can be
 	 *            null.
+	 * @return intended outline (jstree tree viewer) that matches the
+	 *         {@link FilterSettings}. If a knowledge element is selected in the
+	 *         {@link FilterSettings}, the tree viewer comprises only one tree with
+	 *         the selected element as the root element. If no element is selected,
+	 *         the tree viewer contains a list of trees.
 	 */
-	@Path("/getTreeViewer")
+	@Path("/indented-outline")
 	@POST
 	public Response getTreeViewer(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
@@ -63,7 +69,17 @@ public class ViewRest {
 		}
 	}
 
-	@Path("/getEvolutionData")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 * @param isPlacedAtCreationDate
+	 * @param isPlacedAtUpdatingDate
+	 * @return content for the chronology view. The chronology view is rendered with
+	 *         the vis timeline library.
+	 */
+	@Path("/evolution")
 	@POST
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings,
 			@QueryParam("isPlacedAtCreationDate") boolean isPlacedAtCreationDate,
@@ -184,7 +200,7 @@ public class ViewRest {
 	 * @return adjacency matrix of the {@link KnowledgeGraph} or a filtered subgraph
 	 *         provided by the {@link FilteringManager}.
 	 */
-	@Path("/getMatrix")
+	@Path("/matrix")
 	@POST
 	public Response getMatrix(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {

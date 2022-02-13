@@ -65,7 +65,7 @@
 	ConDecDecisionTable.prototype.build = function(filterSettings, viewIdentifier = "criteria-matrix") {
 		conDecDecisionTable.viewIdentifier = viewIdentifier;
 		conDecDecisionTable.selectedDecisionProblem = filterSettings.selectedElementObject;
-		conDecAPI.getDecisionTable(filterSettings, function(decisionTable) {
+		conDecViewAPI.getDecisionTable(filterSettings, function(decisionTable) {
 			buildDecisionTable(decisionTable, viewIdentifier);
 		});
 	};
@@ -104,7 +104,7 @@
 		let tableBody = document.getElementById("criteria-table-body");
 		tableBody.innerHTML = "";
 
-		conDecAPI.getDecisionTableCriteria(function(allCriteria) {
+		conDecViewAPI.getDecisionTableCriteria(function(allCriteria) {
 			for (let criterion of allCriteria) {
 				let tableRow = document.createElement("tr");
 				tableBody.appendChild(tableRow);

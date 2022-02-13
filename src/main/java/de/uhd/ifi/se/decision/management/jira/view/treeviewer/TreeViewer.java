@@ -29,8 +29,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Creates tree viewer content. The tree viewer is rendered with the jstree
- * library.
+ * Creates indented outline (tree viewer) content. The indented outline is
+ * rendered with the jstree library.
  * 
  * Iterates over the filtered {@link KnowledgeGraph} provided by the
  * {@link FilteringManager}.
@@ -70,10 +70,11 @@ public class TreeViewer {
 	}
 
 	/**
-	 * Constructor for a jstree tree viewer that matches the {@link FilterSettings}.
-	 * If a knowledge element is selected in the {@link FilterSettings}, the tree
-	 * viewer comprises only one tree with the selected element as the root element.
-	 * If no element is selected, the tree viewer contains a list of trees.
+	 * Constructor for an indented outline (jstree tree viewer) that matches the
+	 * {@link FilterSettings}. If a knowledge element is selected in the
+	 * {@link FilterSettings}, the tree viewer comprises only one tree with the
+	 * selected element as the root element. If no element is selected, the tree
+	 * viewer contains a list of trees.
 	 *
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings} cover the selected element
@@ -119,16 +120,18 @@ public class TreeViewer {
 	}
 
 	/**
-	 * A specialized constructor for a jstree tree viewer that matches the {@link FilterSettings}.
-	 * The tree viewer comprises only one tree with the selected element as the root element. Vertices
-	 * that are not included in the supplied list of {@link KnowledgeElementWithImpact} are removed.
+	 * A specialized constructor for an indented outline (jstree tree viewer) that
+	 * matches the {@link FilterSettings}. The indented outline comprises only one
+	 * tree with the selected element as the root element. Vertices that are not
+	 * included in the supplied list of {@link KnowledgeElementWithImpact} are
+	 * removed.
 	 *
 	 * @param filterSettings
 	 *            For example, the {@link FilterSettings} cover the selected element
-	 *            and the knowledge types to be shown. The selected element cannot be
-	 *            null.
+	 *            and the knowledge types to be shown. The selected element cannot
+	 *            be null.
 	 * @param impactedElements
-	 * 			  A list of {@link KnowledgeElementWithImpact}.
+	 *            A list of {@link KnowledgeElementWithImpact}.
 	 */
 	public TreeViewer(FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements) {
 		this();
