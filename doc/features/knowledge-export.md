@@ -1,6 +1,12 @@
 # Knowledge Export
 
-ConDec enables to export decision knowledge and related knowledge elements, such as requirements, code, and work items.
+ConDec enables to **export decision knowledge and related knowledge elements**, such as requirements, code, and work items.
+Three export formats are supported: Word, JSON, and Markdown.
+The user can filter the knowledge to be esported using the **same filter criteria 
+as in the [knowledge graph views](knowledge-visualization.md)**, e.g. by knowledge type, status, [decision groups](decision-grouping.md), and many other criteria.
+
+The user can export knowledge either via the **context menu in a [knowledge graph view](knowledge-visualization.md)** or
+via the **More menu in the Jira issue view**.
 
 ![Context menu item to export the knowledge subgraph](../screenshots/export_context_menu.png)
 
@@ -10,13 +16,13 @@ ConDec enables to export decision knowledge and related knowledge elements, such
 
 *Jira issue *More* menu item to export the knowledge subgraph*
 
+The user customizes the export e.g. by choosing the export format in the **export dialog**.
+
 ![Dialog to export the knowledge subgraph](../screenshots/export_dialog.png)
 
-*Dialog to export the knowledge subgraph. The user can filter the exported knowledge using the same filter settings 
-as in the [knowledge graph views](knowledge-visualization.md).*
+*Dialog to export the knowledge subgraph.*
 
 ## Design Details
-
 The Java code for knowledge export can be found here:
 
 - [Java REST API for export of list of knowledge elements used for Word and JSON export](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/KnowledgeRest.java)
@@ -27,15 +33,15 @@ The UI code for knowledge export can be found here:
 - [Velocity template for export dialog](../../src/main/resources/templates/dialogs/exportDialog.vm)
 - [JavaScript code for knowledge export](../../src/main/resources/js/condec.export.js)
 
-The following knowledge is exported via the knowledge export feature for the system function (SF) Export knowledge from Jira.
+The following knowledge is exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*.
 In particular, the following filter criteria were used for the export:
 
-- selected element system function *SF: Export knowledge from Jira (CONDEC-484)*, which is a requirement for ConDec
-- link distance 5 from the selected element
-- [decision group](decision-grouping.md) *export*
-- [transitive links](knowledge-visualization.md) should be established. 
+- Selected element: system function *SF: Export knowledge from Jira* (CONDEC-484), which is a requirement for ConDec
+- Link distance: 5 from the selected element
+- [Decision group](decision-grouping.md): export
+- [Transitive links](knowledge-visualization.md) should be established. 
 For example, the code file *MarkdownCreator.java* is only indirectly linked to the system via a work item. 
-The work item is not part of the *export* decision group, but the code file *MarkdownCreator.java* is part of the decision group.
+The work item is not part of the *export* decision group, but the code file *MarkdownCreator.java* is part of this decision group.
 The code file is included in the knowledge graph because of transitive linking.
 The code file contains decision knowledge documented in its code comments.
 
