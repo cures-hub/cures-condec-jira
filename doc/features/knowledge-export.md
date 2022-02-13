@@ -2,7 +2,7 @@
 
 ConDec enables to **export decision knowledge and related knowledge elements**, such as requirements, code, and work items.
 Three export formats are supported: Word, JSON, and Markdown.
-The user can filter the knowledge to be esported using the **same filter criteria 
+The user can filter the knowledge to be exported using the **same filter criteria 
 as in the [knowledge graph views](knowledge-visualization.md)**, e.g. by knowledge type, status, [decision groups](decision-grouping.md), and many other criteria.
 
 The user can export knowledge either via the **context menu in a [knowledge graph view](knowledge-visualization.md)** or
@@ -59,7 +59,7 @@ Jira issue description and comments, commit messages, and code comments**.
 			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) PDF files cannot be edited.
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Use Markdown format to enable the export of the knowledge subgraph!
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Markdown text can be imported into github release notes and .md files for feature documentation.
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Is also used for relase notes creation with explicit decision knowledge, thus, the code can be reused for general export.
+			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Is also used for release notes creation with explicit decision knowledge, thus, the code can be reused for general export.
 		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) CSV
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which word files should be supported?
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Word Docs should be supported, as it was well documented!
@@ -77,13 +77,10 @@ Jira issue description and comments, commit messages, and code comments**.
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which machine readable format should be implemented?
 		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) JSON should be used as machine readable format to export the knowledge documentation! ([CONDEC-487](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-487))
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) web standard, easily parsable, many libraries that can handle the JSON format
-		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) CSV
-comma separated values
+		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) CSV comma separated values
 			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) hard to parse, not very flexible own parser has to be build, no data hierarchies
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Also readable by humans with excel
-lightwight
-		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) XML
-Extensive markup language
+			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Also readable by humans with excel, lightweight
+		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) XML Extensive markup language
 			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) Created for document markup, not for data exchange
 			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Full Data hierarchies, old standard for Documents
 	- ![Code](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/code.png) MarkdownCreator.java
