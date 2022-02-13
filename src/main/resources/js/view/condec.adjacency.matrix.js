@@ -41,7 +41,7 @@
 	 * external references: condec.knowledge.page.js and condec.rationale.backlog.js
 	 */
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "adjacency-matrix") {
-		conDecViewAPI.getMatrix(filterSettings, function(matrix) {
+		conDecViewAPI.getAdjacencyMatrix(filterSettings, function(matrix) {
 			conDecMatrix.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
 			let headerRow = document.getElementById("matrix-header-row-" + viewIdentifier);
 			headerRow.innerHTML = "";

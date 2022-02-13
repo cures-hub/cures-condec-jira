@@ -1,12 +1,15 @@
 # Knowledge Export
 
-Requirements engineers and developers use the integrated knowledge visualization 
-to understand the requirements of a software system along with decisions related to 
-their elicitation or implementation.
-All the views use the same knowledge graph data structure underneath, which enables to easily add new views.
+ConDec enables to export decision knowledge and related knowledge elements, such as requirements, code, and work items.
 
-## Publication
+## Design Details
 
-Kleebaum, A., Paech, B., Johanssen, J. O., & Bruegge, B. (2021). Continuous Rationale Visualization. 
-In 2021 Working Conference on Software Visualization (VISSOFT) (pp. 33-43). 
-Luxembourg: IEEE. https://doi.org/10.1109/VISSOFT52517.2021.00013
+The Java code for knowledge export can be found here:
+
+- [Java REST API for export of list of knowledge elements](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/KnowledgeRest.java)
+- [Java REST API for markdown export](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ViewRest.java)
+
+The UI code for knowledge export can be found here:
+
+- [Velocity template for export dialog](../../src/main/resources/templates/dialogs/exportDialog.vm)
+- [JavaScript code for knowledge export](../../src/main/resources/js/condec.export.js)

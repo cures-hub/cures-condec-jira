@@ -11,8 +11,6 @@
  */
 (function(global) {
 
-	var projectKey = null;
-
 	var ConDecViewAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/view";
 	};
@@ -101,10 +99,10 @@
 	/**
 	 * external references: condec.adjacency.matrix
 	 */
-	ConDecViewAPI.prototype.getMatrix = function(filterSettings, callback) {
+	ConDecViewAPI.prototype.getAdjacencyMatrix = function(filterSettings, callback) {
 		filterSettings["projectKey"] = conDecAPI.projectKey;
 		generalApi.postJSON(this.restPrefix + "/adjacency-matrix", filterSettings, function(error, matrix) {
-			if (error == null) {
+			if (error === null) {
 				callback(matrix);
 			}
 		});
