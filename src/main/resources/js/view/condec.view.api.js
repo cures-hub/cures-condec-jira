@@ -70,8 +70,8 @@
 	 * external reference: condec.quality.check.api
 	 */
 	ConDecViewAPI.prototype.getFilterSettings = function(projectKey, searchTerm, callback) {
-		generalApi.getJSON(this.restPrefix + "/filter-settings?projectKey=" + projectKey
-			+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
+		generalApi.getJSON(this.restPrefix + "/filter-settings/" + projectKey
+			+ "?searchTerm=" + searchTerm, function(error, filterSettings) {
 				if (error === null) {
 					callback(filterSettings);
 				}
@@ -99,7 +99,7 @@
 	};
 
 	/**
-	 * external references: condec.matrix
+	 * external references: condec.adjacency.matrix
 	 */
 	ConDecViewAPI.prototype.getMatrix = function(filterSettings, callback) {
 		filterSettings["projectKey"] = conDecAPI.projectKey;
@@ -124,10 +124,10 @@
 	};
 
 	/**
-	 * external references: condec.decision.table
+	 * external references: condec.criteria.matrix
 	 */
 	ConDecViewAPI.prototype.getDecisionTableCriteria = function(callback) {
-		generalApi.getJSON(this.restPrefix + `/decision-making-criteria?projectKey=${conDecAPI.projectKey}`,
+		generalApi.getJSON(this.restPrefix + "/decision-making-criteria/" + conDecAPI.projectKey,
 			function(error, query) {
 				if (error === null) {
 					callback(query);

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -147,10 +148,10 @@ public class ViewRest {
 	 *         {@link KnowledgeElement}s. The criteria are the columns in the
 	 *         {@link DecisionTable}.
 	 */
-	@Path("/decision-making-criteria")
+	@Path("/decision-making-criteria/{projectKey}")
 	@GET
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+			@PathParam("projectKey") String projectKey) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Decision Table cannot be shown due to missing or invalid parameters."))
@@ -274,9 +275,9 @@ public class ViewRest {
 	 *         default filter settings (e.g. link distance 3, all knowledge types,
 	 *         all link types, ...).
 	 */
-	@Path("/filter-settings")
+	@Path("/filter-settings/{projectKey}")
 	@GET
-	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response getFilterSettings(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			@QueryParam("searchTerm") String searchTerm) {
 		if (request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST)
