@@ -44,8 +44,8 @@ For example, the code file *MarkdownCreator.java* is only indirectly linked to t
 The work item is not part of the *export* decision group, but the code file *MarkdownCreator.java* is part of this decision group.
 The code file is included in the filtered knowledge graph because of transitive linking.
 The code file contains decision knowledge documented in its code comments.
-5) All other filter criteria were the default filter criteria.
-The **exported decision knowledge is documented in different documentation locations: entire Jira issues, 
+5) All other filter criteria were the default filter criteria used in ConDec.
+For example, this means that the **exported decision knowledge is taken from different [documentation locations](documentation.md): entire Jira issues, 
 Jira issue description and comments, commit messages, and code comments**.
 
 - SF: Export knowledge from Jira ([CONDEC-484](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-484))
