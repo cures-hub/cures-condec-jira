@@ -42,7 +42,7 @@ public class ViewRest {
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
 	 * @param filterSettings
-	 *            For example, the {@link FilterSettings} cover the selected element
+	 *            for example, the {@link FilterSettings} cover the selected element
 	 *            and the knowledge types to be shown. The selected element can be
 	 *            null.
 	 * @return intended outline (jstree tree viewer) that matches the
@@ -50,6 +50,7 @@ public class ViewRest {
 	 *         {@link FilterSettings}, the tree viewer comprises only one tree with
 	 *         the selected element as the root element. If no element is selected,
 	 *         the tree viewer contains a list of trees.
+	 * @see TreeViewer
 	 */
 	@Path("/indented-outline")
 	@POST
@@ -75,12 +76,20 @@ public class ViewRest {
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
 	 * @param filterSettings
+	 *            for example, the {@link FilterSettings} cover the knowledge types
+	 *            to be shown. The selected element will be ignored for the
+	 *            chronology view.
 	 * @param isPlacedAtCreationDate
+	 *            elements will be placed at their creation date
+	 *            ({@link KnowledgeElement#getCreationDate()}).
 	 * @param isPlacedAtUpdatingDate
+	 *            elements will be placed at their last modification date
+	 *            ({@link KnowledgeElement#getLatestUpdatingDate()}).
 	 * @return content for the chronology/evolution/timeline view. The chronology
 	 *         view is rendered with the vis timeline library.
+	 * @see VisTimeLine
 	 */
-	@Path("/evolution")
+	@Path("/chronology")
 	@POST
 	public Response getEvolutionData(@Context HttpServletRequest request, FilterSettings filterSettings,
 			@QueryParam("isPlacedAtCreationDate") boolean isPlacedAtCreationDate,
@@ -100,7 +109,17 @@ public class ViewRest {
 		return Response.ok(timeLine).build();
 	}
 
-	@Path("/decisionTable")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            for example, the {@link FilterSettings} cover the selected
+	 *            decision problem as the selected element.
+	 * @return criteria matrix/decision table for one selected decision problem.
+	 * @see DecisionTable
+	 */
+	@Path("/criteria-matrix")
 	@POST
 	public Response getDecisionTable(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null) {
@@ -118,10 +137,17 @@ public class ViewRest {
 	}
 
 	/**
-	 * @return all available criteria (e.g. quality attributes, non-functional
-	 *         requirements) for a project.
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return all available decision-making criteria (e.g. quality attributes,
+	 *         non-functional requirements) for a project as a list of
+	 *         {@link KnowledgeElement}s. The criteria are the columns in the
+	 *         {@link DecisionTable}.
 	 */
-	@Path("/decisionTableCriteria")
+	@Path("/decision-making-criteria")
 	@GET
 	public Response getDecisionTableCriteria(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey) {
@@ -139,7 +165,17 @@ public class ViewRest {
 		return Response.ok(decisionTable.getAllDecisionTableCriteriaForProject(user)).build();
 	}
 
-	@Path("/getTreant")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            for example, the {@link FilterSettings} cover the selected element
+	 *            which is the root of the node-link tree diagram.
+	 * @return node-link tree diagram rendered with the treant.js library.
+	 * @see Treant
+	 */
+	@Path("/treant")
 	@POST
 	public Response getTreant(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null || filterSettings.getSelectedElement() == null
@@ -157,7 +193,17 @@ public class ViewRest {
 		return Response.ok(treant).build();
 	}
 
-	@Path("/getVis")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            for example, the {@link FilterSettings} cover the selected element
+	 *            and knowledge types to be shown.
+	 * @return node-link diagram rendered with the treant.js library.
+	 * @see VisGraph
+	 */
+	@Path("/node-link-diagram")
 	@POST
 	public Response getVis(@Context HttpServletRequest request, FilterSettings filterSettings) {
 		if (request == null || filterSettings == null) {
@@ -180,26 +226,16 @@ public class ViewRest {
 		return Response.ok(visGraph).build();
 	}
 
-	@Path("/getFilterSettings")
-	@GET
-	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("searchTerm") String searchTerm) {
-		if (request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"The HttpServletRequest or the projectKey are null. FilterSettings could not be created."))
-					.build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		return Response.ok(new FilterSettings(projectKey, searchTerm, user)).build();
-	}
-
 	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param filterSettings
-	 *            For example, the {@link FilterSettings} cover the
+	 *            for example, the {@link FilterSettings} cover the
 	 *            {@link KnowledgeType}s to be shown.
 	 * @return adjacency matrix of the {@link KnowledgeGraph} or a filtered subgraph
 	 *         provided by the {@link FilteringManager}.
+	 * @see Matrix
 	 */
 	@Path("/adjacency-matrix")
 	@POST
@@ -229,8 +265,36 @@ public class ViewRest {
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param searchTerm
+	 *            can contain a Jira query in JQL.
+	 * @return if the search term is a Jira query in JQL, this function provides the
+	 *         {@link FilterSettings} matching the JQL. Otherwise it provides the
+	 *         default filter settings (e.g. link distance 3, all knowledge types,
+	 *         all link types, ...).
+	 */
+	@Path("/filter-settings")
+	@GET
+	public Response getFilterSettings(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("searchTerm") String searchTerm) {
+		if (request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error",
+							"The HttpServletRequest or the projectKey are null. FilterSettings could not be created."))
+					.build();
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		return Response.ok(new FilterSettings(projectKey, searchTerm, user)).build();
+	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param filterSettings
-	 *            object of the {@link FilterSettings} class.
+	 *            For example, the {@link FilterSettings} cover the
+	 *            {@link KnowledgeType}s to be shown.
 	 * @return knowledge subgraph that matches the {@link FilterSettings} as a
 	 *         String in markdown format.
 	 */

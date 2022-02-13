@@ -37,24 +37,24 @@
 		});
 	};
 
-	/*
+	/**
 	 * external references: condec.treant
 	 */
 	ConDecViewAPI.prototype.getTreant = function(filterSettings, callback) {
 		filterSettings["projectKey"] = conDecAPI.projectKey;
-		generalApi.postJSON(this.restPrefix + "/getTreant", filterSettings, function(error, treant) {
+		generalApi.postJSON(this.restPrefix + "/treant", filterSettings, function(error, treant) {
 			if (error === null) {
 				callback(treant);
 			}
 		});
 	};
 
-	/*
+	/**
 	 * external references: condec.vis
 	 */
 	ConDecViewAPI.prototype.getVis = function(filterSettings, callback) {
 		filterSettings["projectKey"] = conDecAPI.projectKey;
-		generalApi.postJSON(this.restPrefix + "/getVis", filterSettings, function(error, vis) {
+		generalApi.postJSON(this.restPrefix + "/node-link-diagram", filterSettings, function(error, vis) {
 			if (error === null) {
 				callback(vis);
 			}
@@ -70,7 +70,7 @@
 	 * external reference: condec.quality.check.api
 	 */
 	ConDecViewAPI.prototype.getFilterSettings = function(projectKey, searchTerm, callback) {
-		generalApi.getJSON(this.restPrefix + "/getFilterSettings?projectKey=" + projectKey
+		generalApi.getJSON(this.restPrefix + "/filter-settings?projectKey=" + projectKey
 			+ "&searchTerm=" + searchTerm, function(error, filterSettings) {
 				if (error === null) {
 					callback(filterSettings);
@@ -89,7 +89,7 @@
 	 */
 	ConDecViewAPI.prototype.getEvolutionData = function(filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, callback) {
 		filterSettings["projectKey"] = conDecAPI.projectKey;
-		generalApi.postJSON(this.restPrefix + "/evolution?isPlacedAtCreationDate=" + isPlacedAtCreationDate
+		generalApi.postJSON(this.restPrefix + "/chronology?isPlacedAtCreationDate=" + isPlacedAtCreationDate
 			+ "&isPlacedAtUpdatingDate=" + isPlacedAtUpdatingDate, filterSettings, function(
 				error, evolutionData) {
 			if (error === null) {
@@ -110,12 +110,12 @@
 		});
 	};
 
-	/*
+	/**
 	 * external references: condec.criteria.matrix
 	 */
 	ConDecViewAPI.prototype.getDecisionTable = function(filterSettings, callback) {
 		filterSettings["projectKey"] = conDecAPI.projectKey;
-		generalApi.postJSON(this.restPrefix + "/decisionTable", filterSettings,
+		generalApi.postJSON(this.restPrefix + "/criteria-matrix", filterSettings,
 			function(error, issues) {
 				if (error === null) {
 					callback(issues);
@@ -123,11 +123,11 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.decision.table
 	 */
 	ConDecViewAPI.prototype.getDecisionTableCriteria = function(callback) {
-		generalApi.getJSON(this.restPrefix + `/decisionTableCriteria?projectKey=${conDecAPI.projectKey}`,
+		generalApi.getJSON(this.restPrefix + `/decision-making-criteria?projectKey=${conDecAPI.projectKey}`,
 			function(error, query) {
 				if (error === null) {
 					callback(query);
