@@ -1,3 +1,6 @@
+/**
+ * Creates a node-link diagram rendered with the vis.js library.
+ */
 (function(global) {
 
 	var ConDecVis = function() {
@@ -37,7 +40,7 @@
 	 */
 	ConDecVis.prototype.buildVis = function(filterSettings, container) {
 		console.log("conDecVis buildVis");
-		conDecAPI.getVis(filterSettings, function(visData) {
+		conDecViewAPI.getVis(filterSettings, function(visData) {
 			options = conDecVis.getOptions(visData, filterSettings["isHierarchical"]);
 
 			var graphContainer = document.getElementById(container);

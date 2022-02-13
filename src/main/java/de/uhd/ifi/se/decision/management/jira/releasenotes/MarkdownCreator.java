@@ -146,10 +146,11 @@ public class MarkdownCreator {
 	}
 
 	/**
-	 * @issue How can we include icon images into the release notes?
+	 * @issue How can we include icon images into the markdown used for release
+	 *        notes and general knowledge export?
 	 * @decision We use the icon URL of github to include icon images into the
-	 *           release notes!
-	 * @pro The icons can be seen also by non Jira users. Thus, the release notes
+	 *           markdown used for release notes and general knowledge export!
+	 * @pro The icons can be seen also by non Jira users. Thus, the markdown text
 	 *      could be excluded in external systems such as release page on github.
 	 * @alternative We could the icon URL on the Jira server.
 	 * @con The icons could not be seen by non Jira users.

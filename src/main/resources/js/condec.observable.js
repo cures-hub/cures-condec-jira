@@ -1,28 +1,23 @@
 /**
- This module provides the notification method for the ConDec views. This module is the subject/observable 
- according to the observer design pattern. The views/observers subscribe/register to this observable. 
- The views need to implement an updateView function. 
- The updateView functions of the subscribed views are called in the notify function.
- 
- Registered/subscribed views/observers can be
- * conDecKnowledgePage
- * conDecTabPanel
- * and many other views that implement an updateView() function
-    
- Is required by
- * condec.knowledge.page
- * condec.tab.panel
- * and many other views that implement an updateView() function
+ * Provides the notification method for the ConDec views. This module is the subject/observable 
+ * according to the observer design pattern. The views/observers subscribe/register to this observable. 
+ * The views need to implement an updateView function. 
+ * The updateView functions of the subscribed views are called in the notify function.
+ *
+ * Registered/subscribed views/observers e.g. are conDecKnowledgePage, conDecChronology, 
+ * and many other views that implement an updateView() function.
+ *   
+ * Is required by all views that are registered/subscribed as observers.
  */
 (function(global) {
 
 	var observers = null;
 
-	var ConDecObservable = function () {
+	var ConDecObservable = function() {
 		this.observers = [];
 	};
 
-	ConDecObservable.prototype.notify = function () {
+	ConDecObservable.prototype.notify = function() {
 		this.observers.forEach(function(observer) {
 			if (typeof observer.updateView === "function") {
 				observer.updateView();
@@ -32,7 +27,7 @@
 		});
 	};
 
-	ConDecObservable.prototype.subscribe = function (observer) {
+	ConDecObservable.prototype.subscribe = function(observer) {
 		this.observers.push(observer);
 	};
 

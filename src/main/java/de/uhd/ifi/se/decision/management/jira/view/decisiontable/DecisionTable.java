@@ -19,10 +19,11 @@ import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
- * Builds a table for one selected decision problem. The rows of the table are
- * the {@link SolutionOption}s for the decision problem. The columns of the
- * table are criteria, e.g. non-functional requirements such as performance. The
- * cells of the table comprise {@link Argument}s.
+ * Builds a criteria matrix/decision table for one selected decision problem.
+ * The rows of the table are the {@link SolutionOption}s for the decision
+ * problem. The columns of the table are criteria, e.g. non-functional
+ * requirements such as performance. The cells of the table comprise
+ * {@link Argument}s.
  */
 public class DecisionTable {
 

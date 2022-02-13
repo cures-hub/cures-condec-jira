@@ -1,3 +1,6 @@
+/**
+ * Creates a chronology view rendered with the vis-timeline library.
+ */
 (function (global) {
 
     /* private vars */
@@ -39,7 +42,7 @@
         conDecFiltering.addOnClickEventToFilterButton("chronology", function(filterSettings) {
             var isPlacedAtCreationDate = document.getElementById("is-placed-at-creation-date-input").checked;
             var isPlacedAtUpdatingDate = document.getElementById("is-placed-at-update-date-input").checked;
-            conDecAPI.getEvolutionData(filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, function (visData) {
+            conDecViewAPI.getEvolutionData(filterSettings, isPlacedAtCreationDate, isPlacedAtUpdatingDate, function (visData) {
                 var data = visData.dataSet;
                 var groups = visData.groupSet;
                 var item = new vis.DataSet(data);

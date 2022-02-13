@@ -28,7 +28,7 @@
 	ConDecExport.prototype.exportLinkedElements = function(exportFormat) {
 		var filterSettings = conDecFiltering.getFilterSettings("export");
 		if (exportFormat === "markdown") {
-			conDecAPI.getMarkdown(filterSettings).then(response => {
+			conDecViewAPI.getMarkdown(filterSettings).then(response => {
 				download(response.markdown, "decisionKnowledge", exportFormat);
 			});
 		} else {

@@ -1,3 +1,6 @@
+/**
+ * Creates a node-link diagram rendered with the treant.js library.
+ */
 (function(global) {
 
     // closure locals variable for DnD
@@ -44,7 +47,7 @@
      */
     ConDecTreant.prototype.buildTreant = function(filterSettings, isInteractive, treantIdParam) {
         console.log("conDecTreant buildTreant");
-        conDecAPI.getTreant(filterSettings, function(treeStructure) {
+        conDecViewAPI.getTreant(filterSettings, function(treeStructure) {
             if (treantIdParam !== undefined) {
                 treantId = treantIdParam;
                 treeStructure.chart.container = "#" + treantIdParam;

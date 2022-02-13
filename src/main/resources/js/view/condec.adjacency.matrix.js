@@ -1,15 +1,10 @@
 /**
- * Creates an adjancency matrix from the knowledge graph or its respective
- * filtered subgraph.
- *
- * Requires: conDecAPI, conDecContextMenu, conDecFiltering, conDecObservable
- *
- * Is required by: no other module
- *
- * Is referenced in HTML by: matrix.vm
+ * Creates an adjancency matrix from the knowledge graph or its respective filtered subgraph.
+ * 
+ * Requires: conDecAPI, conDecViewAPI, conDecContextMenu, conDecFiltering, conDecObservable
  */
 (function(global) {
-	
+
 	const viewIdentifier = "adjacency-matrix";
 
 	var ConDecMatrix = function ConDecMatrix() {
@@ -17,6 +12,9 @@
 		this.emptyColumns = [];
 	};
 
+	/**
+	 * external references: templates/tabs/matrix/view.vm
+	 */
 	ConDecMatrix.prototype.initView = function(isJiraIssueView = false) {
 		console.log("ConDecMatrix initView");
 
@@ -39,11 +37,11 @@
 		this.updateView();
 	};
 
-	/*
+	/**
 	 * external references: condec.knowledge.page.js and condec.rationale.backlog.js
 	 */
 	ConDecMatrix.prototype.buildMatrix = function(filterSettings, viewIdentifier = "adjacency-matrix") {
-		conDecAPI.getMatrix(filterSettings, function(matrix) {
+		conDecViewAPI.getAdjacencyMatrix(filterSettings, function(matrix) {
 			conDecMatrix.headerElementsWithHighlighting = matrix.headerElementsWithHighlighting;
 			let headerRow = document.getElementById("matrix-header-row-" + viewIdentifier);
 			headerRow.innerHTML = "";
@@ -127,7 +125,7 @@
 			headerCell.style.color = "black";
 			headerCell.title = knowledgeElementWithColors.changeImpactExplanation;
 		}
-		
+
 		// AJS.$(headerCell).tooltip();
 		headerCell.appendChild(div);
 		return headerCell;
