@@ -20,7 +20,7 @@ The user customizes the export e.g. by choosing the export format in the **expor
 
 ![Dialog to export the knowledge subgraph](../screenshots/export_dialog.png)
 
-*Dialog to export the knowledge subgraph.*
+*Dialog to export the knowledge subgraph offering the same filter criteria as in the views on the knowledge graph*
 
 ## Design Details
 The Java code for knowledge export can be found here:
@@ -36,10 +36,10 @@ The UI code for knowledge export can be found here:
 The following knowledge is exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*.
 In particular, the following filter criteria were used for the export:
 
-- Selected element: system function *SF: Export knowledge from Jira* (CONDEC-484), which is a requirement for ConDec
-- Link distance: 5 from the selected element
-- [Decision group](decision-grouping.md): export
-- [Transitive links](knowledge-visualization.md) should be established. 
+1) Selected element: system function *SF: Export knowledge from Jira* (CONDEC-484), which is a requirement for ConDec
+2) Link distance: 5 from the selected element
+3) [Decision group](decision-grouping.md): export
+4) [Transitive links](knowledge-visualization.md) should be established. 
 For example, the code file *MarkdownCreator.java* is only indirectly linked to the system via a work item. 
 The work item is not part of the *export* decision group, but the code file *MarkdownCreator.java* is part of this decision group.
 The code file is included in the knowledge graph because of transitive linking.
