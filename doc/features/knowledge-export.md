@@ -40,10 +40,13 @@ In particular, the following filter criteria were used for the export:
 2) Link distance: 5 from the selected element
 3) [Decision group](decision-grouping.md): export
 4) [Transitive links](knowledge-visualization.md) should be established. 
-For example, the code file *MarkdownCreator.java* is only indirectly linked to the system via a work item. 
+For example, the code file *MarkdownCreator.java* is only indirectly linked to the system function via a work item. 
 The work item is not part of the *export* decision group, but the code file *MarkdownCreator.java* is part of this decision group.
-The code file is included in the knowledge graph because of transitive linking.
+The code file is included in the filtered knowledge graph because of transitive linking.
 The code file contains decision knowledge documented in its code comments.
+5) All other filter criteria were the default filter criteria.
+The **exported decision knowledge is documented in different documentation locations: entire Jira issues, 
+Jira issue description and comments, commit messages, and code comments**.
 
 - SF: Export knowledge from Jira ([CONDEC-484](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-484))
 	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which format do we support for exporting the knowledge documentation?
