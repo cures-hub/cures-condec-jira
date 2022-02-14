@@ -64,7 +64,7 @@
 			counter++;
 			let tableRow = "<tr>";
 			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></td>";
-			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.url + "<span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span></div></td>";
+			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.url+"</div></td>";
 			tableRow += "<td>" + conDecRecommendation.buildScore(recommendation.score, "score_" + counter) + "</td>";
 			tableRow += `<td><button title='${conDecDecisionGuidance.ACCEPT_DESCRIPTION}' id='row_${counter}' class='aui-button-primary aui-button accept-solution-button'>${conDecDecisionGuidance.ACCEPT_TITLE}</button>`;
 			tableRow += `<button title='${conDecDecisionGuidance.DISCARD_DESCRIPTION}' id='discard_${counter}' class='aui-button-primary aui-button accept-solution-button'>${conDecDecisionGuidance.DISCARD_TITLE}</button></td>`;
