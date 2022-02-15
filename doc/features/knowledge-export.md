@@ -36,7 +36,8 @@ The UI code for the knowledge export feature can be found here:
 - [Velocity template for export dialog](../../src/main/resources/templates/dialogs/exportDialog.vm)
 - [JavaScript code for knowledge export](../../src/main/resources/js/condec.export.js)
 
-The following knowledge is exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*, which specifies the export feature.
+## Important Decisions
+The knowledge elements listed below were exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*, which specifies the export feature.
 In particular, the following filter criteria were used for the export:
 
 1) Selected element: system function *SF: Export knowledge from Jira* (CONDEC-484), which is a requirement for ConDec
@@ -87,7 +88,7 @@ Jira issue description and comments, commit messages, and code comments**.
 		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we include icon images into the markdown used for release notes and general knowledge export?
 			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the icon URL of github to include icon images into the markdown used for release notes and general knowledge export!
 				- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) The icons can be seen also by non Jira users. Thus, the markdown text could be excluded in external systems such as release page on github.
-			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could the icon URL on the Jira server.
+			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could use the icon URL on the Jira server.
 				- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) The icons could not be seen by non Jira users.
 		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we get the depth of an element in the markdown tree?
 			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the BreadthFirstIterator::getDepth method to get the depth of an element!

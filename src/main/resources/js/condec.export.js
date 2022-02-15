@@ -1,7 +1,7 @@
 /**
  * Enables to export decision knowledge and related knowledge elements, such as requirements, code, and work items.
  *
- * Requires: conDecAPI
+ * Requires: conDecAPI, conDecViewAPI
  *
  * Is required by: conDecDialog
  */
@@ -33,6 +33,7 @@
 			});
 		} else {
 			conDecAPI.getKnowledgeElements(filterSettings, function(elements) {
+				elements = elements.sort((a, b) => a["key"].localeCompare(b["key"]));
 				download(elements, "decisionKnowledge", exportFormat);
 			});
 		}
@@ -66,19 +67,25 @@
 	}
 
 	function createHtmlStringForWordDocument(elements) {
-		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		elements.map(function(element) {
-			var summary = element["summary"] === undefined ? "" : element["summary"];
-			var description = element["description"] === undefined ? "" : element["description"];
-			var type = element["type"] === undefined ? "" : element["type"];
-
-			table += "<tr>";
+		var table = "<table><tr>";
+		table += "<th>Type</th><th>Summary</th><th>Description</th><th>Decision Groups</th><th>Status</th>";
+		table += "<th>Creator</th><th>Creation Date</th><th>Latest Author</th><th>Latest Update</th>";
+		table += "<th>Key</th></tr>";
+		for (element of elements) {
+			table += "<tr color='#FF0000'>";
+			table += "<td>" + element["type"] + "</td>";
+			table += "<td>" + element["summary"] + "</td>";
+			table += "<td>" + element["description"] + "</td>";
+			table += "<td>" + element["groups"] + "</td>";
+			var status = element["status"] !== "undefined" ? element["status"] : "";
+			table += "<td>" + status + "</td>";
+			table += "<td>" + element["creator"] + "</td>";
+			table += "<td>" + new Date(element["creationDate"]) + "</td>";
+			table += "<td>" + element["latestAuthor"] + "</td>";
+			table += "<td>" + new Date(element["latestUpdatingDate"]) + "</td>";
 			table += "<td><a href='" + element["url"] + "'>" + element["key"] + "</a></td>";
-			table += "<td>" + summary + "</td>";
-			table += "<td>" + description + "</td>";
-			table += "<td>" + type + "</td>";
 			table += "</tr>";
-		});
+		}
 		table += "</table>";
 
 		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";

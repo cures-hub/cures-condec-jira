@@ -91,3 +91,18 @@ The UI code for decision guidance can be found here:
 - [Velocity templates for configuration and evaluation](../../src/main/resources/templates/settings/decisionguidance)
 - [Velocity templates for usage during development](../../src/main/resources/templates/tabs/recommendation)
 - [JavaScript code for decision guidance](../../src/main/resources/js/recommendation)
+
+## Important Decisions
+In the following, important decision knowledge regarding the decision guidance feature is listed.
+The knowledge was exported via [ConDec's knowledge export feature](knowledge-export.md).
+
+- SF: Discard recommended solution option ([CONDEC-997](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-997))
+	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) What information do we store for discarded recommendations from external knowledge sources?
+		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could store the text contents and knowledge source ID for discarded recommendations.
+			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) If the developer decides to discard a recommendation, we can expect him to have thought about this recommendation and decided that it does not fit for the given issue. Thus, it is unnecessary and even an annoyance to show the same recommendation (-text) again, just from another source
+			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) If a recommendation from e.g. DBPedia without pro & con data is discarded, but later a recommendation with the same text from another project with pro & con data can be given, this might offer additional information
+			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Perhaps a recommendation is displayed twice from two different sources and one of them should be discarded to have a better overview
+		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Discard recommendations by text contents only, i.e. all recommendations with the same text are discarded no matter where they are from!
+			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) The user might overlook additional data like pro & con arguments from a different source
+			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Saves the user the work of discarding a recommendation with the same contents multiple times if different sources yield the same recommendation
+			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Easier to solve

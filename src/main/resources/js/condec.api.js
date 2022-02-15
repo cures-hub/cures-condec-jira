@@ -1,6 +1,6 @@
 /**
- * This module implements the communication with the ConDec Java REST API and
- * the Jira API.
+ * This module implements the communication with the ConDec Java REST API for general knowledge management 
+ * and configuration as well as with the Jira API.
  *
  * Requires: conDecTreant.findParentElement
  *
