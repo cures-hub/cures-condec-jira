@@ -37,7 +37,7 @@ The UI code for the knowledge export feature can be found here:
 - [JavaScript code for knowledge export](../../src/main/resources/js/condec.export.js)
 
 ## Important Decisions
-The following knowledge is exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*, which specifies the export feature.
+The knowledge elements listed below were exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*, which specifies the export feature.
 In particular, the following filter criteria were used for the export:
 
 1) Selected element: system function *SF: Export knowledge from Jira* (CONDEC-484), which is a requirement for ConDec
