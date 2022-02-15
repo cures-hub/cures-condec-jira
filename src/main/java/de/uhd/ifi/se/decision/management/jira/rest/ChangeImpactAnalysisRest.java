@@ -55,12 +55,11 @@ public class ChangeImpactAnalysisRest {
 		// are added, same reasoning/problem as with the ChangePropagationRules above
 		Set<String> defaultLinkTypes = DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes();
 		defaultLinkTypes.add(LinkType.WRONG_LINK.getInwardName());
-		defaultLinkTypes.add(LinkType.WRONG_LINK.getOutwardName());
 		for (String linkType : defaultLinkTypes) {
 			if (!ciaConfig.getLinkImpact().containsKey(linkType)) {
 				Map<String, Float> linkImpact = new HashMap<>();
 				defaultLinkTypes.forEach(entry -> {
-					if (entry == LinkType.WRONG_LINK.getInwardName() || entry == LinkType.WRONG_LINK.getOutwardName()) {
+					if (entry == LinkType.WRONG_LINK.getInwardName()) {
 						linkImpact.put(entry, 0.0f);
 					} else {
 						linkImpact.put(entry, 1.0f);

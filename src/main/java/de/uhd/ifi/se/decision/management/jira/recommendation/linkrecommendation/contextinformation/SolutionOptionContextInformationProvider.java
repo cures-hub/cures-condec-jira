@@ -20,7 +20,7 @@ public class SolutionOptionContextInformationProvider extends ContextInformation
         if (otherElement.getType().getSuperType().equals(KnowledgeType.SOLUTION)) {
             return new RecommendationScore(1.0f, getName());
         }
-        return new RecommendationScore(0.75f, getName());
+        return new RecommendationScore(0.0f, getName());
     }
 
     @Override

@@ -124,7 +124,8 @@ public class Calculator {
 	public static double calculatePropagationRuleImpact(FilterSettings filterSettings, KnowledgeElement currentElement,
 			Link link) {
 		Map<String, Double> mapOfRules = new HashMap<>();
-		double ruleBasedValue = 1.0;
+		double ruleValueResult = 0.0;
+		double maxAchievableScore = 0.0;
 
 		// Each rule is individually mapped with its description and corresponding
 		// impact score
@@ -132,14 +133,21 @@ public class Calculator {
 			if (!rule.isActive()) {
 				continue;
 			}
+			double ruleWeightValue = ChangePropagationRule.getWeightForRule(filterSettings, rule.getType());
+			maxAchievableScore += ruleWeightValue;
 			double ruleCalculationValue = rule.getType().getFunction().isChangePropagated(filterSettings,
 					currentElement, link);
-			ruleBasedValue = ruleBasedValue * ruleCalculationValue;
-
+			// Reverse rule effect if weight is negative
+			if (ruleWeightValue < 0) {
+				ruleCalculationValue = 1.0 - ruleCalculationValue;
+			}
+			// Apply weight onto rule impact
+			ruleCalculationValue *= Math.abs(ruleWeightValue);
+			ruleValueResult += ruleCalculationValue;
 			mapOfRules.put(rule.getType().getDescription(), ruleCalculationValue);
 		}
 		propagationRuleResult = mapOfRules;
-		return ruleBasedValue;
+		return ruleValueResult / maxAchievableScore;
 	}
 
 	/**

@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -16,15 +14,8 @@ public class BoostWhenLowAverageAge implements ChangePropagationFunction {
 
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
-		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
-				ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE);
-
-		double differenceInWeeks = Math.abs((nextElement.getCreationDate().getTime()
-				- nextElement.getLatestUpdatingDate().getTime()) / (1000 * 60 * 60 * 24) / 7);
-		double result = Math.pow(2, ((-1 * differenceInWeeks) / 50));
-		if (result < 0.75) {
-			result = 0.75;
-		}
-		return ChangePropagationRule.addWeightValue(ruleWeight, result);
+		double differenceInWeeks = (nextElement.getCreationDate().getTime()
+				- nextElement.getLatestUpdatingDate().getTime()) / (1000 * 60 * 60 * 24) / 7;
+		return Math.pow(2, (differenceInWeeks / 8));
 	}
 }

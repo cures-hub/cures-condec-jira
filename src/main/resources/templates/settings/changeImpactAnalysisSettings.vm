@@ -7,13 +7,13 @@ links are being recommended, these elements are also included in the used knowle
 High impact values indicate that the element is highly affected by the change and needs to be changed as well.
 The impact value of an element (<var>elementImpact</var>) is calculated using the following equation:</p>
 
-<p><b><code>elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * productOfAllRuleBasedValues * recommendationScore</code></b>, </p>
+<p><b><code>elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore</code></b>, </p>
 
 <p>where <var>parentImpact</var> is the element impact of the ancestor node in the knowledge graph,</p>
 <p><var>decayValue</var> is the decay per iteration step,</p>
 <p><var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the
 parent/ancestor element and the current element,</p>
-<p><var>productOfAllRuleBasedValues</var> is the product of the calculated rule value of each selected rule, and</p>
+<p><var>ruleBasedValue</var> is the normalized sum of all selected rule values, and</p>
 <p><var>recommendationScore</var> is the link recommendation score of the current element, if the element was recommended.</p>
 
 <p>The element is included in the impact graph if <b><code>elementImpact >= threshold</code></b>.</p>
@@ -68,12 +68,8 @@ parent/ancestor element and the current element,</p>
         	<aui-inline-dialog id='Weight-help' responds-to='hover'>
                 <p>Value designating the importance of a rule. A higher value indicates a rule being more important than usual 
                 and increases the impact of that rule accordingly, i.e. a value of 1.2 indicates a rule is 20% more important.
-                Each rule impact value (RIV) lies between 0.75 and 1.0. Whether the rule weight increases or decreases the RIV
-                depends on the given RIV. The score is increased if the impact value is equal to or higher than the arithmetic mean:</p>
+                The calculation is as follows:</p>
                 <p>ruleBasedValue = result of rule calculation * weightValue</p>
-                <p>Similarly, the score is decreased if the impact value is less than the arithmetic mean:</p>
-                <p>ruleBasedValue = result of rule calculation * (2 - weightValue)</p>
-                <p>E.g.for a rule with weightValue = 1.2 and RIV = 0.9 for a given element: 0.9 * 1.2 = 1.08 > 1.0 = 1.0
                 <p>Rules can also receive negative weights that reverse the effect of the rule, e.g. for BoostWhenTimelyCoupled: 
                 Elements that are not timely coupled are assigned a higher score.</p>
         	</aui-inline-dialog>
@@ -135,6 +131,7 @@ parent/ancestor element and the current element,</p>
 
 <script>    
 	var linkTypes = conDecAPI.getAllLinkTypes().sort();
+    linkTypes.push("wrongly linked to");
     let html = "";
     html += "";
     for (i in linkTypes) {
@@ -152,6 +149,7 @@ parent/ancestor element and the current element,</p>
     
 	$("#save-cia-settings-btn").click((event) => {
 		var linkTypes = conDecAPI.getAllLinkTypes().sort();
+        linkTypes.push("wrongly linked to");
 		var linkImpact = {};
 		for (i in linkTypes) {
 			linkImpact[linkTypes[i]] = document.getElementById(linkTypes[i]).value;

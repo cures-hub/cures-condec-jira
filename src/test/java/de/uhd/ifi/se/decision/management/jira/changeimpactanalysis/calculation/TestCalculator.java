@@ -78,6 +78,7 @@ public class TestCalculator extends TestSetUp {
 		config.setContext(1);
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
+		rule.setWeightValue(-1.0f);
 		propagationRules.add(rule);
 		config.setPropagationRules(propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
@@ -98,7 +99,7 @@ public class TestCalculator extends TestSetUp {
 		KnowledgeElement element = settings.getSelectedElement();
 		Link link = element.getLinks().iterator().next();
 
-		assertEquals(0.27, Calculator.calculatePropagationRuleImpact(settings, element, link), 0.05);
+		assertEquals(0.72, Calculator.calculatePropagationRuleImpact(settings, element, link), 0.05);
 	}
 
 	@Test

@@ -39,7 +39,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
         RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.75, score.getValue(), 0.00);
+        assertEquals(0.0, score.getValue(), 0.00);
         assertEquals("TimeContextInformationProvider (ms)", score.getExplanation());
 	}
 
@@ -66,7 +66,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.75, score.getValue(), 0.00);
+        assertEquals(0.0, score.getValue(), 0.00);
 	}
 
 	@Test
