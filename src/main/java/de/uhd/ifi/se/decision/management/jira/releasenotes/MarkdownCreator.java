@@ -152,7 +152,7 @@ public class MarkdownCreator {
 	 *           markdown used for release notes and general knowledge export!
 	 * @pro The icons can be seen also by non Jira users. Thus, the markdown text
 	 *      could be excluded in external systems such as release page on github.
-	 * @alternative We could the icon URL on the Jira server.
+	 * @alternative We could use the icon URL on the Jira server.
 	 * @con The icons could not be seen by non Jira users.
 	 * 
 	 * @param element
