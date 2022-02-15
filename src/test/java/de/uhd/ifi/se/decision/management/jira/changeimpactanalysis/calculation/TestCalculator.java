@@ -54,12 +54,11 @@ public class TestCalculator extends TestSetUp {
 
 	@Test
 	public void testCalculateChangeImpactLinkRecommendations() {
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
-		config.setAreLinkRecommendationsIncludedInCalculation(true);
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		propagationRules.add(rule);
-		config.setPropagationRules(propagationRules);
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
+		config.setAreLinkRecommendationsIncludedInCalculation(true);
 		settings.setChangeImpactAnalysisConfig(config);
 		settings.recommendLinks(true);
 
@@ -74,13 +73,11 @@ public class TestCalculator extends TestSetUp {
 
 	@Test
 	public void testCalculateChangeImpactContext() {
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
-		config.setContext(1);
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		rule.setWeightValue(-1.0f);
 		propagationRules.add(rule);
-		config.setPropagationRules(propagationRules);
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");

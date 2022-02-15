@@ -33,9 +33,10 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 		}
 		double score = 0.0;
 		if (!coupledUpdates.isEmpty()) {
-			score = 1 - Math.pow(4, (-1 * coupledUpdates.size()));
+			score = 0.3 * coupledUpdates.size();
 		}
-		return new RecommendationScore((float) score, getName() + " (ms)");
+		return score >= 1.0 ? new RecommendationScore((float) 1.0, getName() + " (ms)")
+			: new RecommendationScore((float) score, getName() + " (ms)");
 	}
 
 	@Override
