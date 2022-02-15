@@ -36,6 +36,7 @@ The UI code for the knowledge export feature can be found here:
 - [Velocity template for export dialog](../../src/main/resources/templates/dialogs/exportDialog.vm)
 - [JavaScript code for knowledge export](../../src/main/resources/js/condec.export.js)
 
+## Important Decisions
 The following knowledge is exported via the knowledge export feature for the system function *SF: Export knowledge from Jira*, which specifies the export feature.
 In particular, the following filter criteria were used for the export:
 

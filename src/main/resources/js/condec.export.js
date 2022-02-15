@@ -1,7 +1,7 @@
 /**
  * Enables to export decision knowledge and related knowledge elements, such as requirements, code, and work items.
  *
- * Requires: conDecAPI
+ * Requires: conDecAPI, conDecViewAPI
  *
  * Is required by: conDecDialog
  */
