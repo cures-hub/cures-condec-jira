@@ -63,8 +63,8 @@ public class TestCalculator extends TestSetUp {
 	public void testCalculateChangeImpactLinkRecommendationsWithDiscardedRecommendations() {
 		// ChangeImpactAnalysisConfiguration
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
-		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
-		propagationRules.add(rule);
+		propagationRules.add(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR));
+		propagationRules.add(new ChangePropagationRule("BOOST_IF_SOLUTION_OPTION", false, 1.0f));
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
 		config.setAreLinkRecommendationsIncludedInCalculation(true);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);

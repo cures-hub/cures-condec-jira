@@ -172,7 +172,7 @@ public class Calculator {
 		if (Math.min(parentImpact, ruleBasedValue) == parentImpact && ((1 - parentImpact) >= decayValue)) {
 			impactExplanation = "This element has a lowered chance of being affected"
 					+ " by a change introduced in the source node, mainly due to its parent having a lowered impact score.\n";
-		} else if (Math.min(ruleBasedValue, parentImpact) == ruleBasedValue && ((1 - ruleBasedValue) >= decayValue)) {
+		} else if ((1 - ruleBasedValue) >= decayValue) {
 			impactExplanation = "This element has a lowered chance of being affected"
 					+ " by a change introduced in the source node, mainly due to a used propagation rule.\n";
 		} else {
