@@ -41,7 +41,7 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 		RecommendationScore score = new RecommendationScore((float) similarity, explanation);
 		if (similarity > 0.94) {
 			score.setPotentialDuplicate(true);
-			score.setExplanation(score.getExplanation() + " Is duplicate?");
+			score.setExplanation(score.getExplanation() + " This element might be a potential duplicate!");
 		}
 		return score;
 	}
