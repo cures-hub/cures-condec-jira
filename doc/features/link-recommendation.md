@@ -5,14 +5,16 @@ that tries to **identify duplicated knowledge elements**.
 
 ![Link recommendation view showing a potential duplicate](../screenshots/link_recommendation_duplicate_tooltip.png)
 
-*Link recommendation view showing a potential duplicate*
+*Link recommendation view as part of the Jira issue view showing a potential duplicated alternative*
 
 Developers and the rationale manager can inspect the potential duplicates in the [knowledge graph views](knowledge-visualization.md), 
 e.g. in the [node-link diagram](../screenshots/link_recommendation_duplicates_node-link_diagram.png) or in the [indented outline](../screenshots/link_recommendation_duplicates_indented_outline.png).
 
 ![Node-link diagram showing the context of the duplicated alternative](../screenshots/link_recommendation_duplicates_node-link_diagram.png)
 
-*Node-link diagram showing the context of the duplicated alternative*
+*Node-link diagram showing the context of a user story.
+Directly and transitively linked decision problems (issues) and solution options (alternatives) are shown that match the "export" filter string. 
+The alternatives are duplicated.*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
