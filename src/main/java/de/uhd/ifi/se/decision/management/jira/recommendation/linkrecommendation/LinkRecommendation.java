@@ -16,6 +16,9 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
  * Models a recommendation of a new link in the {@link KnowledgeGraph} between
  * two {@link KnowledgeElement}s that are currently not linked. The relevance of
  * the recommendation is represented by the {@link RecommendationScore}.
+ * 
+ * Can also represent a potential duplicate relationship if
+ * {@link #recommendationType} is {@link RecommendationType#DUPLICATE}.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LinkRecommendation extends Link implements Recommendation {
@@ -44,6 +47,11 @@ public class LinkRecommendation extends Link implements Recommendation {
 		return recommendationType;
 	}
 
+	/**
+	 * @param recommendationType
+	 *            either {@link RecommendationType#LINK} or
+	 *            {@link RecommendationType#DUPLICATE}.
+	 */
 	@JsonProperty
 	public void setRecommendationType(RecommendationType recommendationType) {
 		this.recommendationType = recommendationType;
