@@ -33,7 +33,9 @@ public class DiscardedRecommendationPersistenceManager {
 		if (baseElement == null || baseElement.getProject() == null) {
 			return new ArrayList<>();
 		}
-		return getDiscardedRecommendations(baseElement, RecommendationType.LINK);
+		List<KnowledgeElement> discardedElements = getDiscardedRecommendations(baseElement, RecommendationType.LINK);
+		discardedElements.addAll(getDiscardedRecommendations(baseElement, RecommendationType.DUPLICATE));
+		return discardedElements;
 	}
 
 	// ------------------

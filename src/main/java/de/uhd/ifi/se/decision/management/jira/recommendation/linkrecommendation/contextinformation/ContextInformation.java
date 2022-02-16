@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -48,12 +47,11 @@ public class ContextInformation extends ContextInformationProvider {
 
 	public static List<Recommendation> markDiscardedRecommendations(List<Recommendation> recommendations,
 			List<KnowledgeElement> discardedElements) {
-		recommendations.stream()
-				.filter(recommendation -> discardedElements.contains(((LinkRecommendation) recommendation).getTarget()))
-				.map(recommendation -> {
-					recommendation.setDiscarded(true);
-					return recommendation;
-				}).collect(Collectors.toList());
+		for (Recommendation recommendation : recommendations) {
+			if (discardedElements.contains(((LinkRecommendation) recommendation).getTarget())) {
+				recommendation.setDiscarded(true);
+			}
+		}
 		return recommendations;
 	}
 
