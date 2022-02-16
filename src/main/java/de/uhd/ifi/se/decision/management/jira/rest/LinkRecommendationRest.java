@@ -196,6 +196,14 @@ public class LinkRecommendationRest {
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return saved {@link LinkRecommendationConfiguration} object for the project.
+	 */
 	@Path("/configuration/{projectKey}")
 	@GET
 	public Response getLinkRecommendationConfiguration(@Context HttpServletRequest request,

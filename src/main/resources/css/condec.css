@@ -94,7 +94,7 @@ a:focus a:hover {
 }
 
 .discarded td {
-  background: #e8e8e8;
+  	background: #e8e8e8;
 }
 
 .dodViolation {
@@ -114,8 +114,8 @@ a:focus a:hover {
 }
 
 .right-aligned {
-  display: flex; 
-  justify-content: flex-end;
+	display: flex; 
+	justify-content: flex-end;
 }
 
 .condec-box {

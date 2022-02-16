@@ -39,10 +39,10 @@
 			this.setAmbientFeedback(element, "condec-error");
 		}
 	};
-	
+
 	ConDecNudgingAPI.prototype.decideCheckIcon = function(numberOfSmartFeatureTodos, elementId) {
 		var element = document.getElementById(elementId);
-		AJS.$(element).tooltip({gravity: 'w'});
+		AJS.$(element).tooltip({ gravity: 'w' });
 		if (numberOfSmartFeatureTodos <= 0) {
 			element.classList = "aui-icon aui-icon-large aui-iconfont-check-circle condec-fine";
 			element.title = "Great work!";
@@ -67,6 +67,19 @@
 		element.classList.remove("condec-fine");
 		element.classList.add(cssClass);
 	};
+
+	/**
+	 * Creates an AUI icon.
+	 * 
+	 * @param iconType e.g. "aui-iconfont-check-circle" or "aui-iconfont-cross-circle".
+	 * 
+	 * external usage: condec.quality.check.js, condec.link.recommendation.js
+	 */
+	ConDecNudgingAPI.prototype.createIcon = function(iconType) {
+		var icon = document.createElement("span");
+		icon.classList = "aui-icon aui-icon-small " + iconType;
+		return icon;
+	}
 
 	global.conDecNudgingAPI = new ConDecNudgingAPI();
 })(window);

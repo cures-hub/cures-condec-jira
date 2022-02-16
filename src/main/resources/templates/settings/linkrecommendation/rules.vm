@@ -28,7 +28,7 @@
         	</aui-inline-dialog>
             </td>
             <td>
-                <aui-toggle id="$rule.getName()-toggle" label=""
+                <aui-toggle id="$rule.getDescription()-toggle" label=""
                 #if ($rule.isActive())
                     checked
                 #end
@@ -42,7 +42,7 @@
                     step="0.1"
                     min="0.0"
                     max="2.0"
-                    id="$rule.getName()-weight"/>
+                    id="$rule.getDescription()-weight"/>
             </td>
         </tr>
     #end
@@ -70,5 +70,5 @@
             });
         }
 		conDecLinkRecommendationAPI.saveRules("$projectKey", rules);
-    })
+    });
 </script>

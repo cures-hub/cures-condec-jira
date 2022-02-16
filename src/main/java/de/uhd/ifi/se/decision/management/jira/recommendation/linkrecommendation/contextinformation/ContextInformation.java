@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -11,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
+import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
@@ -47,12 +47,11 @@ public class ContextInformation extends ContextInformationProvider {
 
 	public static List<Recommendation> markDiscardedRecommendations(List<Recommendation> recommendations,
 			List<KnowledgeElement> discardedElements) {
-		recommendations.stream()
-				.filter(recommendation -> discardedElements.contains(((LinkRecommendation) recommendation).getTarget()))
-				.map(recommendation -> {
-					recommendation.setDiscarded(true);
-					return recommendation;
-				}).collect(Collectors.toList());
+		for (Recommendation recommendation : recommendations) {
+			if (discardedElements.contains(((LinkRecommendation) recommendation).getTarget())) {
+				recommendation.setDiscarded(true);
+			}
+		}
 		return recommendations;
 	}
 
@@ -116,9 +115,12 @@ public class ContextInformation extends ContextInformationProvider {
 				// only recommend relevant decision, project, or system knowledge elements
 				continue;
 			}
-			Recommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
+			LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 			RecommendationScore score = assessRelation(baseElement, elementToTest);
 			linkSuggestion.setScore(score);
+			if (score.isPotentialDuplicate()) {
+				linkSuggestion.setRecommendationType(RecommendationType.DUPLICATE);
+			}
 			linkRecommendations.add(linkSuggestion);
 		}
 		return linkRecommendations;

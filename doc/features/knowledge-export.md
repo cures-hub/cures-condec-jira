@@ -53,45 +53,51 @@ For example, this means that the **exported decision knowledge is taken from dif
 Jira issue description and comments, commit messages, and code comments**.
 
 - SF: Export knowledge from Jira ([CONDEC-484](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-484))
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which format do we support for exporting the knowledge documentation?
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Use Word to export the decision knowledge documentation!
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Word files can be edited.
-		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) PDF
-			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) PDF files cannot be edited.
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Use Markdown format to enable the export of the knowledge subgraph!
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Markdown text can be imported into github release notes and .md files for feature documentation.
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Is also used for release notes creation with explicit decision knowledge, thus, the code can be reused for general export.
-		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) CSV
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which word files should be supported?
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Word Docs should be supported, as it was well documented!
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How do we deal with irrelevant sentences/parts of text when exporting knowledge elements from Jira?
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) The user is offered the same filter settings as in the knowledge graph views during export! Thus, the user can decide whether irrelevant text wrt. decision knowledge can be exported!
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Flexible solution because of same filtering possibilities in all views
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) rejected: Irrelevant sentences are not included in the exported list of decision knowledge elements!
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How should disconnected sub-graphs be handled in the getElements REST API method?
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) rejected: The knowledge-elements REST API method used to return a list of lists of elements belonging to a connected graph!
-			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) This is hard to understand/low abstraction level.
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) The knowledge-elements REST API method returns only one list of all elements matching the query!
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How to export and present decision knowledge from Jira into Confluence? ([CONDEC-271](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-271))
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Create a Confluence plugin with a new macro to import decision knowledge from Jira into Confluence! ([CONDEC-298](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-298))
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We add a possibility to export decision knowledge to the context menu! ([CONDEC-480](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-480))
-	- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which machine readable format should be implemented?
-		- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) JSON should be used as machine readable format to export the knowledge documentation! ([CONDEC-487](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-487))
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) web standard, easily parsable, many libraries that can handle the JSON format
-		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) CSV comma separated values
-			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) hard to parse, not very flexible own parser has to be build, no data hierarchies
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Also readable by humans with excel, lightweight
-		- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) XML Extensive markup language
-			- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) Created for document markup, not for data exchange
-			- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) Full Data hierarchies, old standard for Documents
-	- ![Code](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/code.png) MarkdownCreator.java
-		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we include icon images into the markdown used for release notes and general knowledge export?
-			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the icon URL of github to include icon images into the markdown used for release notes and general knowledge export!
-				- ![Pro](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_pro.png) The icons can be seen also by non Jira users. Thus, the markdown text could be excluded in external systems such as release page on github.
-			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could use the icon URL on the Jira server.
-				- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) The icons could not be seen by non Jira users.
-		- ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) How can we get the depth of an element in the markdown tree?
-			- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) We use the BreadthFirstIterator::getDepth method to get the depth of an element!
-				- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) We build the markdown with a DepthFirstIterator which does not offer a method getDepth. We currently traverse the graph twice: first, with a breadth first and second, with a depth first iterator, which is not very efficient.
-			- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) We could use a shortest path algorithm (e.g. Dijkstra) to determine the link distance.
-				- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) Might also not be very efficient.
+	- ![Issue](../../src/main/resources/images/issue.png) Which format do we support for exporting the knowledge documentation?
+		- ![Decision](../../src/main/resources/images/decision.png) Use Word to export the decision knowledge documentation!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Word files can be edited.
+		- ![Alternative](../../src/main/resources/images/alternative.png) PDF
+			- ![Con](../../src/main/resources/images/argument_con.png) PDF files cannot be edited.
+		- ![Decision](../../src/main/resources/images/decision.png) Use Markdown format to enable the export of the knowledge subgraph!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Markdown text can be imported into github release notes and .md files for feature documentation.
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Is also used for release notes creation with explicit decision knowledge, thus, the code can be reused for general export.
+		- ![Alternative](../../src/main/resources/images/alternative.png) CSV
+	- ![Issue](../../src/main/resources/images/issue.png) Which word files should be supported?
+		- ![Decision](../../src/main/resources/images/decision.png) Word Docs should be supported, as it was well documented!
+	- ![Issue](../../src/main/resources/images/issue.png) How do we deal with irrelevant sentences/parts of text when exporting knowledge elements from Jira?
+		- ![Decision](../../src/main/resources/images/decision.png) The user is offered the same filter settings as in the knowledge graph views during export! Thus, the user can decide whether irrelevant text wrt. decision knowledge can be exported!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Flexible solution because of same filtering possibilities in all views
+		- ![Decision](../../src/main/resources/images/decision.png) rejected: Irrelevant sentences are not included in the exported list of decision knowledge elements!
+	- ![Issue](../../src/main/resources/images/issue.png) How should disconnected sub-graphs be handled in the getElements REST API method?
+		- ![Decision](../../src/main/resources/images/decision.png) rejected: The knowledge-elements REST API method used to return a list of lists of elements belonging to a connected graph!
+			- ![Con](../../src/main/resources/images/argument_con.png) This is hard to understand/low abstraction level.
+		- ![Decision](../../src/main/resources/images/decision.png) The knowledge-elements REST API method returns only one list of all elements matching the query!
+	- ![Issue](../../src/main/resources/images/issue.png) How to export and present decision knowledge from Jira into Confluence? ([CONDEC-271](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-271))
+		- ![Decision](../../src/main/resources/images/decision.png) Create a Confluence plugin with a new macro to import decision knowledge from Jira into Confluence! ([CONDEC-298](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-298))
+		- ![Decision](../../src/main/resources/images/decision.png) We add a possibility to export decision knowledge to the context menu! ([CONDEC-480](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-480))
+	- ![Issue](../../src/main/resources/images/issue.png) Which machine readable format should be implemented?
+		- ![Decision](../../src/main/resources/images/decision.png) JSON should be used as machine readable format to export the knowledge documentation! ([CONDEC-487](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-487))
+			- ![Pro](../../src/main/resources/images/argument_pro.png) web standard, easily parsable, many libraries that can handle the JSON format
+		- ![Alternative](../../src/main/resources/images/alternative.png) CSV comma separated values
+			- ![Con](../../src/main/resources/images/argument_con.png) hard to parse, not very flexible own parser has to be build, no data hierarchies
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Also readable by humans with excel, lightweight
+		- ![Alternative](../../src/main/resources/images/alternative.png) XML Extensive markup language
+			- ![Con](../../src/main/resources/images/argument_con.png) Created for document markup, not for data exchange
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Full Data hierarchies, old standard for Documents
+	- ![Code](../../src/main/resources/images/code.png) MarkdownCreator.java
+		- ![Issue](../../src/main/resources/images/issue.png) How can we include icon images into the markdown used for release notes and general knowledge export?
+			- ![Decision](../../src/main/resources/images/decision.png) We use the icon URL of github to include icon images into the markdown used for release notes and general knowledge export!
+				- ![Pro](../../src/main/resources/images/argument_pro.png) The icons can be seen also by non Jira users. Thus, the markdown text could be excluded in external systems such as release page on github.
+			- ![Alternative](../../src/main/resources/images/alternative.png) We could use the icon URL on the Jira server.
+				- ![Con](../../src/main/resources/images/argument_con.png) The icons could not be seen by non Jira users.
+		- ![Issue](../../src/main/resources/images/issue.png) How can we get the depth of an element in the markdown tree?
+			- ![Decision](../../src/main/resources/images/decision.png) We use the BreadthFirstIterator::getDepth method to get the depth of an element!
+				- ![Con](../../src/main/resources/images/argument_con.png) We build the markdown with a DepthFirstIterator which does not offer a method getDepth. We currently traverse the graph twice: first, with a breadth first and second, with a depth first iterator, which is not very efficient.
+			- ![Alternative](../../src/main/resources/images/alternative.png) We could use a shortest path algorithm (e.g. Dijkstra) to determine the link distance.
+				- ![Con](../../src/main/resources/images/argument_con.png) Might also not be very efficient.
+	- ![Issue](../../src/main/resources/images/issue.png) How to sort the exported knowledge elements?
+		- ![Decision](../../src/main/resources/images/decision.png) Sort elements by key when exporting them to Word and JSON!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Keeps the order in Jira issue text
+			- ![Con](../../src/main/resources/images/argument_con.png) Can be different to for example the order in the indented outline.
+		- ![Alternative](../../src/main/resources/images/alternative.png) We could change the REST API to return an ordered list created with e.g. a depth first iterator.
+			- ![Con](../../src/main/resources/images/argument_con.png) Would take more computation effort

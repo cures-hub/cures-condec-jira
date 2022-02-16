@@ -15,8 +15,8 @@
 		// fill dropdown to select a knowledge element
 		var jiraIssueId = JIRA.Issue.getIssueId();
 		if (jiraIssueId) {
-			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i', 
-					conDecLinkRecommendation.initKnowledgeElementDropdown);
+			conDecAPI.getKnowledgeElement(JIRA.Issue.getIssueId(), 'i',
+				conDecLinkRecommendation.initKnowledgeElementDropdown);
 		} else {
 			conDecLinkRecommendation.initKnowledgeElementDropdown();
 		}
@@ -55,7 +55,7 @@
 				"link-recommendation", (selectedElement) => {
 					conDecLinkRecommendation.selectedElement = selectedElement;
 				});
-			});
+		});
 	};
 
 	function linkConfigPage() {
@@ -123,6 +123,13 @@
 		row.appendChild(generateTableCell(`<a href="${linkRecommendation.target.url}">${linkRecommendation.target.type}</a>`, "th-key"));
 		row.appendChild(generateTableCell(linkRecommendation.target.summary, "th-name", {}));
 		let scoreCell = (generateTableCell(conDecRecommendation.buildScore(linkRecommendation.score, "link_score_" + index), "th-score", ""));
+		if (linkRecommendation.recommendationType == "DUPLICATE") {
+			scoreCell.classList = "condec-warning";
+			var icon = conDecNudgingAPI.createIcon("aui-iconfont-cross-circle");
+			icon.title = "This element might be a potential duplicate!";
+			scoreCell.appendChild(document.createTextNode(" "));
+			scoreCell.appendChild(icon);
+		}
 		row.appendChild(scoreCell);
 
 		if (linkRecommendation.isDiscarded) {
@@ -159,7 +166,7 @@
 		let target = getSelectedLinkRecommendation(index).target;
 		conDecDialog.showLinkDialog(this.selectedElement.id, this.selectedElement.documentationLocation, target.id, target.documentationLocation);
 	};
-	
+
 	function getSelectedLinkRecommendation(index) {
 		var idOfSourceElement = conDecLinkRecommendation.selectedElement.id;
 		var allRecommendationsForSourceElement = conDecLinkRecommendationAPI.currentLinkRecommendations.get(idOfSourceElement);

@@ -19,6 +19,7 @@ public class RecommendationScore {
 	private float value;
 	private String explanation;
 	private List<RecommendationScore> subScores;
+	private boolean isPotentialDuplicate;
 
 	public RecommendationScore() {
 		this.explanation = "";
@@ -126,5 +127,27 @@ public class RecommendationScore {
 	@XmlElement
 	public List<RecommendationScore> getSubScores() {
 		return subScores;
+	}
+
+	/**
+	 * @return true if the score or one of its sub-scores indicates that two
+	 *         knowledge elements might be duplicates.
+	 */
+	public boolean isPotentialDuplicate() {
+		for (RecommendationScore subScore : subScores) {
+			if (subScore.isPotentialDuplicate()) {
+				return true;
+			}
+		}
+		return isPotentialDuplicate;
+	}
+
+	/**
+	 * @param isPotentialDuplicate
+	 *            true if the score indicates that two knowledge elements might be
+	 *            duplicates.
+	 */
+	public void setPotentialDuplicate(boolean isPotentialDuplicate) {
+		this.isPotentialDuplicate = isPotentialDuplicate;
 	}
 }

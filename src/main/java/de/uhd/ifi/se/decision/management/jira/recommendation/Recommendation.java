@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
@@ -101,9 +102,20 @@ public interface Recommendation extends Comparable<Recommendation> {
 		return maxScoreValue;
 	}
 
+	/**
+	 * @return true if the recommendation was discarded by the developer, i.e. the
+	 *         recommendation is not useful. Note that this has nothing to do with
+	 *         the {@link KnowledgeStatus#DISCARDED} of alternatives.
+	 */
 	@XmlElement(name = "isDiscarded")
 	boolean isDiscarded();
 
+	/**
+	 * @param isDiscarded
+	 *            true if the recommendation was discarded by the developer, i.e.
+	 *            the recommendation is not useful. Note that this has nothing to do
+	 *            with the {@link KnowledgeStatus#DISCARDED} of alternatives.
+	 */
 	void setDiscarded(boolean isDiscarded);
 
 	/**
