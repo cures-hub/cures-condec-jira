@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -27,10 +27,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 @Path("/change-impact-analysis")
 public class ChangeImpactAnalysisRest {
 
-	@Path("/cia-configuration")
+	@Path("/configuration")
 	@POST
 	public Response setChangeImpactAnalysisConfiguration(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, ChangeImpactAnalysisConfiguration ciaConfig) {
+			@PathParam("projectKey") String projectKey, ChangeImpactAnalysisConfiguration ciaConfig) {
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
@@ -74,8 +74,8 @@ public class ChangeImpactAnalysisRest {
 	}
 
 	@GET
-	@Path("/cia-configuration")
-	public Response getChangeImpactAnalysisConfiguration(@QueryParam("projectKey") String projectKey) {
+	@Path("/configuration")
+	public Response getChangeImpactAnalysisConfiguration(@PathParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;

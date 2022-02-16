@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.rest.LinkRecommendationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -60,20 +61,28 @@ public class TestCalculator extends TestSetUp {
 
 	@Test
 	public void testCalculateChangeImpactLinkRecommendationsWithDiscardedRecommendations() {
+		// ChangeImpactAnalysisConfiguration
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		propagationRules.add(rule);
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
 		config.setAreLinkRecommendationsIncludedInCalculation(true);
-		settings.setChangeImpactAnalysisConfig(config);
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		
+		// FilterSettings & LinkRecommendationConfiguration
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-1");
 		settings.recommendLinks(true);
+		LinkRecommendationConfiguration linkConfig = new LinkRecommendationConfiguration();
+		linkConfig.setMinProbability(0.2);
+		settings.setLinkRecommendationConfig(linkConfig);
 		
 		// Discard a few recommendations
 		LinkRecommendationRest linkRecommendationRest = new LinkRecommendationRest();
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
-		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(rootElement, KnowledgeElements.getTestKnowledgeElements().get(4)));
 		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(rootElement, KnowledgeElements.getTestKnowledgeElements().get(5)));
+		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(rootElement, KnowledgeElements.getTestKnowledgeElements().get(6)));
 
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
@@ -81,17 +90,20 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertTrue(impactedElements.size() > 5);
+		assertTrue(impactedElements.size() > 10);
 	}
 
 	@Test
 	public void testCalculateChangeImpactContextNegativeRuleWeight() {
+		// ChangeImpactAnalysisConfiguration
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		rule.setWeightValue(-1.0f);
 		propagationRules.add(rule);
 		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		
+		// FilterSettings
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 

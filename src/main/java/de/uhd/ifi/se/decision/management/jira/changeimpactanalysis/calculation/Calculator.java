@@ -142,7 +142,7 @@ public class Calculator {
 				continue;
 			}
 			double ruleWeightValue = ChangePropagationRule.getWeightForRule(filterSettings, rule.getType());
-			maxAchievableScore += ruleWeightValue;
+			maxAchievableScore += Math.abs(ruleWeightValue);
 			double ruleCalculationValue = rule.getType().getFunction().isChangePropagated(filterSettings,
 					currentElement, link);
 			// Reverse rule effect if weight is negative
