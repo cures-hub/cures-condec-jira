@@ -38,7 +38,11 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	public RecommendationScore assessRelation(String textA, String textB) {
 		double similarity = calculateSimilarity(textA, textB);
 		String explanation = getName() + " (JaroWinklerDistance)";
-		return new RecommendationScore((float) similarity, explanation);
+		RecommendationScore score = new RecommendationScore((float) similarity, explanation);
+		if (similarity > 0.94) {
+			score.setPotentialDuplicate(true);
+		}
+		return score;
 	}
 
 	public double calculateSimilarity(String left, String right) {

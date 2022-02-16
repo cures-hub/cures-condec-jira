@@ -23,6 +23,7 @@ public class LinkRecommendation extends Link implements Recommendation {
 	private static final long serialVersionUID = 1L;
 	private RecommendationScore score;
 	private boolean isDiscarded;
+	private RecommendationType recommendationType;
 
 	@JsonCreator
 	public LinkRecommendation(@JsonProperty("source") KnowledgeElement baseElement,
@@ -30,6 +31,7 @@ public class LinkRecommendation extends Link implements Recommendation {
 		super(baseElement, targetElement);
 		score = new RecommendationScore();
 		setType(LinkType.RECOMMENDED);
+		recommendationType = RecommendationType.LINK;
 	}
 
 	@Override
@@ -39,7 +41,12 @@ public class LinkRecommendation extends Link implements Recommendation {
 
 	@Override
 	public RecommendationType getRecommendationType() {
-		return RecommendationType.LINK;
+		return recommendationType;
+	}
+
+	@JsonProperty
+	public void setRecommendationType(RecommendationType recommendationType) {
+		this.recommendationType = recommendationType;
 	}
 
 	@Override
