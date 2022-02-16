@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,10 +21,12 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropaga
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.rest.LinkRecommendationRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestCalculator extends TestSetUp {
 
@@ -32,9 +38,9 @@ public class TestCalculator extends TestSetUp {
 		init();
 		@SuppressWarnings("unused")
 		Calculator calculator = new Calculator();
-		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
-		rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
+		settings = new FilterSettings();
+		rootElement = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(0));
+		settings.setSelectedElementObject(rootElement);
 	}
 
 	@Test
@@ -61,6 +67,13 @@ public class TestCalculator extends TestSetUp {
 		config.setAreLinkRecommendationsIncludedInCalculation(true);
 		settings.setChangeImpactAnalysisConfig(config);
 		settings.recommendLinks(true);
+		
+		// Discard a few recommendations
+		LinkRecommendationRest linkRecommendationRest = new LinkRecommendationRest();
+		HttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(rootElement, KnowledgeElements.getTestKnowledgeElements().get(4)));
+		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(rootElement, KnowledgeElements.getTestKnowledgeElements().get(5)));
 
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
@@ -68,7 +81,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertTrue(impactedElements.size() > 10);
+		assertTrue(impactedElements.size() > 5);
 	}
 
 	@Test
@@ -88,15 +101,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertEquals(10, impactedElements.size());
-	}
-
-	@Test
-	public void testCalculatePropagationRuleImpact() {
-		KnowledgeElement element = settings.getSelectedElement();
-		Link link = element.getLinks().iterator().next();
-
-		assertEquals(0.72, Calculator.calculatePropagationRuleImpact(settings, element, link), 0.05);
+		assertTrue(impactedElements.size() > 8);
 	}
 
 	@Test

@@ -115,9 +115,17 @@ public class Calculator {
 	}
 
 	/**
-	 * Calculates the propagation rule impact as defined by the
-	 * {@link FilterSettings}.
-	 * 
+	 * @issue How should we handle the rule weight when calculating the rule impact value?
+	 * @alternative The rule weight is used to adjust the individual rule result based on
+	 * 			the outcome, e.g. with a high rule weight: relatively strong propagation values
+	 * 			are further increased while weak values are decreased. Thus, scoring "hits" during
+	 * 			rule calculation has more impact and vice versa.
+	 * @con There would be no way to increase the importance of rules in comparison to others. All
+	 * 		rules would be equal in the end, regardless of individual rule results.
+	 * @decision The rule weight is used to specify the importance of a rule in comparison
+	 * 			to all other rules.
+	 * @pro Allows more control over the overall rule based calculation.
+	 *
 	 * @return Double containing the calculated propagation rule score, value
 	 *         between 0 and 1.0
 	 */
