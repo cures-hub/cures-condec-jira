@@ -59,7 +59,7 @@ public class TestCalculator extends TestSetUp {
 	}
 
 	@Test
-	public void testCalculateChangeImpactLinkRecommendations() {
+	public void testCalculateChangeImpactLinkRecommendationsWithDiscardedRecommendations() {
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		propagationRules.add(rule);
@@ -85,7 +85,7 @@ public class TestCalculator extends TestSetUp {
 	}
 
 	@Test
-	public void testCalculateChangeImpactContext() {
+	public void testCalculateChangeImpactContextNegativeRuleWeight() {
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		rule.setWeightValue(-1.0f);
@@ -110,11 +110,17 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 1.0;
 		double ruleBasedValue = 0.5;
 		double decayValue = 0.25;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				"", 0);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to a used propagation rule."));
+
+		decayValue = 1.0;
+		explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
+
+		assertTrue(explanation.contains("mainly due to the decay value."));
+
 	}
 
 	@Test
@@ -123,9 +129,8 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 0.5;
 		double ruleBasedValue = 1.0;
 		double decayValue = 0.25;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				"", 0);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to its parent having a lowered impact score."));
 	}
@@ -136,9 +141,8 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 1.0;
 		double ruleBasedValue = 1.0;
 		double decayValue = 0.75;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				"", 0);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to the decay value."));
 	}
@@ -149,9 +153,8 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 1.0;
 		double ruleBasedValue = 1.0;
 		double decayValue = 1.0;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				LinkType.RECOMMENDED.getName(), 0.8);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, LinkType.RECOMMENDED.getName(), 0.8);
 
 		assertTrue(explanation.contains("Link Recommendation Score"));
 	}
