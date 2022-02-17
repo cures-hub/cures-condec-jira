@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -16,8 +14,6 @@ public class BoostWhenMoreOutboundLinks implements ChangePropagationFunction {
 
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
-		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
-				ChangePropagationRuleType.BOOST_WHEN_MORE_OUTBOUND_THAN_INBOUND);
 		double result;
 		int outwardLinks = 0;
 		int inwardLinks = 0;
@@ -31,13 +27,10 @@ public class BoostWhenMoreOutboundLinks implements ChangePropagationFunction {
 		if (inwardLinks == 1 && outwardLinks == 0) {
 			result = 1.0;
 		} else if (outwardLinks == 0) {
-			result = Math.pow(2, ((-1 * (double) inwardLinks) / 8));
+			result = Math.pow(2, ((-1 * (double) inwardLinks) * 0.2));
 		} else {
-			result = (double) (outwardLinks + 10) / ((inwardLinks + 10) + (outwardLinks + 10));
+			result = (double) outwardLinks / (inwardLinks + outwardLinks);
 		}
-		if (result < 0.75) {
-			result = 0.75;
-		} 
-		return ChangePropagationRule.addWeightValue(ruleWeight, result);
+		return result;
 	}
 }

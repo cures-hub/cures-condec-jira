@@ -29,7 +29,7 @@ public class TestKnowledgeTypeContextInformationProvider extends TestSetUp {
         rootElement = KnowledgeElements.getAlternative();
         RecommendationScore score = knowledgeTypeContextInformationProvider.assessRelation(rootElement, currentElement);
 		
-        assertEquals(0.75, score.getValue(), 0.00);
+        assertEquals(0.0, score.getValue(), 0.00);
         assertEquals("KnowledgeTypeContextInformationProvider", score.getExplanation());
 	}
 

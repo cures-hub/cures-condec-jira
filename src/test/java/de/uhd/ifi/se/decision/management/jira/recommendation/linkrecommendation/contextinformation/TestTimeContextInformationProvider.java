@@ -39,24 +39,24 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
         RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.75, score.getValue(), 0.00);
+        assertEquals(0.0, score.getValue(), 0.00);
         assertEquals("TimeContextInformationProvider (ms)", score.getExplanation());
 	}
 
 	@Test
-	public void testPropagationDoubleCoupling() {
+	public void testPropagationLargeCoupling() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		updateDateAndAuthor.put(new Date(1000), "FooBar");
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		updateDateAndAuthor = new TreeMap<Date, String>();
-		updateDateAndAuthor.put(new Date(2000), "FooBar");
-		updateDateAndAuthor.put(new Date(0), "FooBar");
-
+		for (int i = 0; i < 6; i++) {
+			updateDateAndAuthor.put(new Date(i * 100), "FooBar");
+		}
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.9375, score.getValue(), 0.005);
+        assertEquals(1.0, score.getValue(), 0.005);
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.75, score.getValue(), 0.00);
+        assertEquals(0.0, score.getValue(), 0.00);
 	}
 
 	@Test

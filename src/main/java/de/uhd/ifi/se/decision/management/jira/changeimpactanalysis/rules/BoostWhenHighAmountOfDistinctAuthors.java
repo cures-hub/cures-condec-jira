@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -31,13 +29,11 @@ public class BoostWhenHighAmountOfDistinctAuthors implements ChangePropagationFu
 	 */
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
-		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
-				ChangePropagationRuleType.BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS);
 		double amountOfDistinctAuthors = nextElement.getUpdateDateAndAuthor().values().stream().distinct().count();
 		if (amountOfDistinctAuthors > 0) {
-			double similarityScore = 1.0 - (0.3 / amountOfDistinctAuthors);
-			return ChangePropagationRule.addWeightValue(ruleWeight, similarityScore);
+			double similarityScore = amountOfDistinctAuthors * 0.2;
+			return similarityScore >= 1.0 ? 1.0 : similarityScore;
 		}
-		return ChangePropagationRule.addWeightValue(ruleWeight, 0.75);
+		return amountOfDistinctAuthors;
 	}
 }

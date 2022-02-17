@@ -57,8 +57,7 @@ public class KnowledgeElementWithImpact extends KnowledgeElement {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        KnowledgeElementWithImpact other = (KnowledgeElementWithImpact) obj;
-        return id == other.getId();
+        return true;
     }
     
     public double getImpactValue() {

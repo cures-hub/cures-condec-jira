@@ -47,7 +47,7 @@ public class TestComponentContextInformationProvider extends TestSetUp {
 		currentElement = KnowledgeElements.getTestKnowledgeElements().get(4);
         RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
 		
-        assertEquals(0.75, score.getValue(), 0.00);
+        assertEquals(0.0, score.getValue(), 0.00);
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class TestComponentContextInformationProvider extends TestSetUp {
 		currentElement = KnowledgeElements.getTestKnowledgeElements().get(3);
         RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
 		
-        assertEquals(0.75, score.getValue(), 0.00);
+        assertEquals(0.0, score.getValue(), 0.00);
 	}
 
 	@Test

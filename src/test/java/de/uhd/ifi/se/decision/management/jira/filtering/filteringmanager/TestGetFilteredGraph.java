@@ -25,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
 public class TestGetFilteredGraph extends TestSetUp {
@@ -154,8 +155,13 @@ public class TestGetFilteredGraph extends TestSetUp {
 	@Test
 	public void testLinkRecommendationEnabled() {
 		filterSettings.recommendLinks(true);
+		LinkRecommendationConfiguration linkConfig = new LinkRecommendationConfiguration();
+		linkConfig.setMinProbability(0.5);
+		filterSettings.setLinkRecommendationConfig(linkConfig);
+
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();
+
 		List<Recommendation> recommendations = new ContextInformation(filterSettings.getSelectedElement(),
 				filterSettings.getLinkRecommendationConfig()).getLinkRecommendations();
 		assertFalse(recommendations.isEmpty());

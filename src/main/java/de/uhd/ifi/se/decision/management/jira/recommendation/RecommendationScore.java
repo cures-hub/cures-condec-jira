@@ -56,7 +56,7 @@ public class RecommendationScore {
 	 * @param weightValue
 	 *            of the recommendation rule.
 	 */
-	public void weighValue(float weightValue) {
+	public void weightValue(float weightValue) {
 		setValue(getValue() * weightValue);
 	}
 

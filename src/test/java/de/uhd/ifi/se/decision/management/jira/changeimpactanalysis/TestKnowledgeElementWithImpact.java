@@ -43,7 +43,7 @@ public class TestKnowledgeElementWithImpact extends TestSetUp {
     }
 
     @Test
-    public void testEqualsDifferentIds() {
+    public void testEqualsSameIds() {
         KnowledgeElement element = KnowledgeElements.getDecision();
         element.setId((long) 1);
         KnowledgeElementWithImpact elementWithImpact = new KnowledgeElementWithImpact(element);

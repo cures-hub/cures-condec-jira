@@ -353,7 +353,7 @@ public class TestFilterSettings extends TestSetUp {
 	public void testCLinkRecommendationConfig() {
 		LinkRecommendationConfiguration config = filterSettings.getLinkRecommendationConfig();
 		// default value
-		assertEquals(0.85, config.getMinProbability(), 0.0);
+		assertEquals(0.75, config.getMinProbability(), 0.0);
 		config.setMinProbability(0.42);
 		config.setMaxRecommendations(3);
 		List<ContextInformationProvider> contextInformationProviders = new LinkedList<>();

@@ -38,7 +38,7 @@ public class LinkRecommendationConfiguration {
 	 */
 	@JsonCreator
 	public LinkRecommendationConfiguration() {
-		this.minProbability = 0.85;
+		this.minProbability = 0.75;
 		this.contextInformationProviders = getAllContextInformationProviders();
 		this.maxRecommendations = 5;
 	}

@@ -115,16 +115,25 @@ public class Calculator {
 	}
 
 	/**
-	 * Calculates the propagation rule impact as defined by the
-	 * {@link FilterSettings}.
-	 * 
+	 * @issue How should we handle the rule weight when calculating the rule impact value?
+	 * @alternative The rule weight is used to adjust the individual rule result based on
+	 * 			the outcome, e.g. with a high rule weight: relatively strong propagation values
+	 * 			are further increased while weak values are decreased. Thus, scoring "hits" during
+	 * 			rule calculation has more impact and vice versa.
+	 * @con There would be no way to increase the importance of rules in comparison to others. All
+	 * 		rules would be equal in the end, regardless of individual rule results.
+	 * @decision The rule weight is used to specify the importance of a rule in comparison
+	 * 			to all other rules.
+	 * @pro Allows more control over the overall rule based calculation.
+	 *
 	 * @return Double containing the calculated propagation rule score, value
 	 *         between 0 and 1.0
 	 */
 	public static double calculatePropagationRuleImpact(FilterSettings filterSettings, KnowledgeElement currentElement,
 			Link link) {
 		Map<String, Double> mapOfRules = new HashMap<>();
-		double ruleBasedValue = 1.0;
+		double ruleValueResult = 0.0;
+		double maxAchievableScore = 0.0;
 
 		// Each rule is individually mapped with its description and corresponding
 		// impact score
@@ -132,14 +141,21 @@ public class Calculator {
 			if (!rule.isActive()) {
 				continue;
 			}
+			double ruleWeightValue = ChangePropagationRule.getWeightForRule(filterSettings, rule.getType());
+			maxAchievableScore += Math.abs(ruleWeightValue);
 			double ruleCalculationValue = rule.getType().getFunction().isChangePropagated(filterSettings,
 					currentElement, link);
-			ruleBasedValue = ruleBasedValue * ruleCalculationValue;
-
+			// Reverse rule effect if weight is negative
+			if (ruleWeightValue < 0) {
+				ruleCalculationValue = 1.0 - ruleCalculationValue;
+			}
+			// Apply weight onto rule impact
+			ruleCalculationValue *= Math.abs(ruleWeightValue);
+			ruleValueResult += ruleCalculationValue;
 			mapOfRules.put(rule.getType().getDescription(), ruleCalculationValue);
 		}
 		propagationRuleResult = mapOfRules;
-		return ruleBasedValue;
+		return ruleValueResult / maxAchievableScore;
 	}
 
 	/**
@@ -156,7 +172,7 @@ public class Calculator {
 		if (Math.min(parentImpact, ruleBasedValue) == parentImpact && ((1 - parentImpact) >= decayValue)) {
 			impactExplanation = "This element has a lowered chance of being affected"
 					+ " by a change introduced in the source node, mainly due to its parent having a lowered impact score.\n";
-		} else if (Math.min(ruleBasedValue, parentImpact) == ruleBasedValue && ((1 - ruleBasedValue) >= decayValue)) {
+		} else if ((1 - ruleBasedValue) >= decayValue) {
 			impactExplanation = "This element has a lowered chance of being affected"
 					+ " by a change introduced in the source node, mainly due to a used propagation rule.\n";
 		} else {
