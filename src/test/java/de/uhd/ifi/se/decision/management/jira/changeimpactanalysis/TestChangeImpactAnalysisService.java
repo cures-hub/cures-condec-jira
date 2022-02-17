@@ -27,6 +27,8 @@ public class TestChangeImpactAnalysisService extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
+		@SuppressWarnings("unused")
+        ChangeImpactAnalysisService service = new ChangeImpactAnalysisService();
 		graph = KnowledgeGraph.getInstance("TEST");
 		element = JiraIssues.addElementToDataBase();
 		settings = new FilterSettings("TEST", "");

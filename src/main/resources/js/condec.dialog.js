@@ -61,7 +61,8 @@
 
 	function fillElementField(elementFieldName, id, documentationLocation) {
 		var elementField = document.getElementById(elementFieldName);
-		if (id !== undefined && id !== -1 && documentationLocation !== undefined && documentationLocation !== null) {
+
+		if (id !== undefined && id !== -1 && id !== 0 && documentationLocation !== undefined && documentationLocation !== null) {
 			conDecAPI.getKnowledgeElement(id, documentationLocation, function(sourceElement) {
 				elementField.value = sourceElement.type + " / " + sourceElement.summary;
 			});
@@ -119,6 +120,15 @@
 			documentationLocationOfParent = parentElement["documentationLocation"];
 		}
 		fillElementField("delete-link-dialog-target-element", idOfParent, documentationLocationOfParent);
+
+		var targetElementDiv = document.getElementById("delete-link-dialog-target-element-group");
+		// Disable the submit button in case no target link element exists
+		if (targetElementDiv.style.display === "none") {
+			document.getElementById("delete-link-dialog-submit-button").disabled = true;
+			document.getElementById("delete-link-dialog-submit-button").title = "No target element found";
+		} else {
+			document.getElementById("delete-link-dialog-submit-button").disabled = false;
+		}
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function() {
@@ -462,10 +472,18 @@
 		var submitButton = document.getElementById("export-dialog-submit-button");
 		var cancelButton = document.getElementById("export-dialog-cancel-button");
 
+		// Init filter settings
+		conDecFiltering.fillDropdownMenus("export");
+		document.getElementById("is-transitive-links-input-export").checked = true;
+		document.getElementById("is-decision-knowledge-only-input-export").checked = true;
+		conDecAPI.getKnowledgeElement(id, documentationLocation, function(element) {
+			conDecFiltering.setSelectedElement("export", element.key);
+		});
+
 		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			var exportFormat = $('input[name=form-radio-export-format]:checked').val();
-			conDecExport.exportLinkedElements(exportFormat, id, documentationLocation);
+			conDecExport.exportLinkedElements(exportFormat);
 			AJS.dialog2(exportDialog).hide();
 		};
 

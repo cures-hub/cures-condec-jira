@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules;
 
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -20,10 +18,7 @@ public class BoostWhenTimelyCoupled implements ChangePropagationFunction {
 
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
-		float ruleWeight = ChangePropagationRule.getWeightForRule(filterSettings,
-				ChangePropagationRuleType.BOOST_WHEN_TIMELY_COUPLED);
-		float similarityScore = similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
+		return similarityProvider.assessRelation(filterSettings.getSelectedElement(), nextElement)
 				.getValue();
-		return ChangePropagationRule.addWeightValue(ruleWeight, similarityScore);
 	}
 }

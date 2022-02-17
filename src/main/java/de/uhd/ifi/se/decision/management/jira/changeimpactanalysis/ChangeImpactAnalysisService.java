@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisGraph;
  * is calculated using the following equation:
  * 
  * <b>elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight *
- * ruleBasedValue</b>
+ * productofAllRuleBasedValues * recommendationScore (if element is a recommendation)</b>
  * 
  * where parentImpact is the element impact of the ancestor node in the
  * knowledge graph, decayValue is the decay per iteration step, linkTypeWeight

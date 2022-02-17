@@ -30,7 +30,7 @@
     function addOnClickEventToFilterButton () {
         conDecFiltering.addOnClickEventToFilterButton("comparison", function (filterSettings) {
             // left side
-            conDecAPI.getVis(filterSettings, function (visDataLeft) {
+            conDecViewAPI.getVis(filterSettings, function (visDataLeft) {
                 visDataLeft.nodes.sort(sortVis);
                 var containerLeft = document.getElementById('left-network');
                 var optionsLeft = conDecVis.getOptions(visDataLeft, filterSettings["isHierarchical"]);
@@ -51,7 +51,7 @@
             filterSettingsRight["startDate"] = new Date(startDatePicker.value).getTime();
             var endDatePicker = document.getElementById("end-date-picker-comparison-right");
             filterSettingsRight["endDate"] = new Date(endDatePicker.value).getTime();
-            conDecAPI.getVis(filterSettingsRight, function (visDataRight) {
+            conDecViewAPI.getVis(filterSettingsRight, function (visDataRight) {
                 visDataRight.nodes.sort(sortVis);
                 var containerRight = document.getElementById('right-network');
                 var optionsRight = conDecVis.getOptions(visDataRight, filterSettings["isHierarchical"]);

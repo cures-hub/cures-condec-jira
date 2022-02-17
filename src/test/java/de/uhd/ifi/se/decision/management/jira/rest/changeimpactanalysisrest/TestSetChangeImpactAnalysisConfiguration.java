@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.changeimpactanalysisrest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +60,13 @@ public class TestSetChangeImpactAnalysisConfiguration extends TestSetUp {
 	@Test
 	public void testProjectCiaConfigValidEmptyRules() {
 		ciaConfig.setPropagationRules(List.of());
+		assertEquals(Response.Status.OK.getStatusCode(),
+				ciaRest.setChangeImpactAnalysisConfiguration(request, "TEST", ciaConfig).getStatus());
+	}
+
+	@Test
+	public void testProjectCiaConfigValidEmptyLinkImpact() {
+		ciaConfig.setLinkImpact(new HashMap<String, Float>());
 		assertEquals(Response.Status.OK.getStatusCode(),
 				ciaRest.setChangeImpactAnalysisConfiguration(request, "TEST", ciaConfig).getStatus());
 	}

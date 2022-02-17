@@ -22,14 +22,14 @@
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.getReleaseNotesConfiguration = function() {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration?projectKey=" + projectKey);
+		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey);
 	};
 
 	/**
 	 * external references: template/settings/releaseNotesSettings.vm
 	 */
 	ConDecReleaseNotesAPI.prototype.saveReleaseNotesConfiguration = function(projectKey, releaseNotesConfig) {
-		generalApi.postJSON(this.restPrefix + "/save-configuration?projectKey=" + projectKey, releaseNotesConfig,
+		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey, releaseNotesConfig,
 			function(error) {
 				if (error === null) {
 					conDecAPI.showFlag("success", "The release notes configuration for this project was saved.");
@@ -56,8 +56,8 @@
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.proposeElements = function(relaseNotesConfiguration) {
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/propose-elements?projectKey="
-			+ projectKey, relaseNotesConfiguration);
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/propose-elements/" + projectKey,
+			relaseNotesConfiguration);
 	};
 
 	/**
@@ -85,7 +85,7 @@
 	 * external references: condec.release.notes.dialog
 	 */
 	ConDecReleaseNotesAPI.prototype.deleteReleaseNotes = function(id) {
-		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/delete/" + id, null);
+		return generalApi.deleteJSONReturnPromise(this.restPrefix + "/" + id, null);
 	};
 
 	/**

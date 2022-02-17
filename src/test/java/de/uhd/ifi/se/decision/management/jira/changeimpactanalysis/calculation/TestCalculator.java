@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,10 +21,13 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropaga
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
+import de.uhd.ifi.se.decision.management.jira.rest.LinkRecommendationRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestCalculator extends TestSetUp {
 
@@ -30,9 +37,11 @@ public class TestCalculator extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		settings = new FilterSettings("TEST", "");
-		settings.setSelectedElement("TEST-1");
-		rootElement = new KnowledgeElementWithImpact(settings.getSelectedElement());
+		@SuppressWarnings("unused")
+		Calculator calculator = new Calculator();
+		settings = new FilterSettings();
+		rootElement = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(0));
+		settings.setSelectedElementObject(rootElement);
 	}
 
 	@Test
@@ -51,15 +60,29 @@ public class TestCalculator extends TestSetUp {
 	}
 
 	@Test
-	public void testCalculateChangeImpactLinkRecommendations() {
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
-		config.setAreLinkRecommendationsIncludedInCalculation(true);
+	public void testCalculateChangeImpactLinkRecommendationsWithDiscardedRecommendations() {
+		// ChangeImpactAnalysisConfiguration
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
-		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
-		propagationRules.add(rule);
-		config.setPropagationRules(propagationRules);
-		settings.setChangeImpactAnalysisConfig(config);
+		propagationRules.add(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR));
+		propagationRules.add(new ChangePropagationRule("BOOST_IF_SOLUTION_OPTION", false, 1.0f));
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
+		config.setAreLinkRecommendationsIncludedInCalculation(true);
+		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		
+		// FilterSettings & LinkRecommendationConfiguration
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-1");
 		settings.recommendLinks(true);
+		LinkRecommendationConfiguration linkConfig = new LinkRecommendationConfiguration();
+		linkConfig.setMinProbability(0.2);
+		settings.setLinkRecommendationConfig(linkConfig);
+		
+		// Discard a few recommendations
+		LinkRecommendationRest linkRecommendationRest = new LinkRecommendationRest();
+		HttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(rootElement, KnowledgeElements.getTestKnowledgeElements().get(5)));
+		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(rootElement, KnowledgeElements.getTestKnowledgeElements().get(6)));
 
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
@@ -67,18 +90,20 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertTrue(impactedElements.size() > 7);
+		assertTrue(impactedElements.size() > 10);
 	}
 
 	@Test
-	public void testCalculateChangeImpactContext() {
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration();
-		config.setContext(1);
+	public void testCalculateChangeImpactContextNegativeRuleWeight() {
+		// ChangeImpactAnalysisConfiguration
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
+		rule.setWeightValue(-1.0f);
 		propagationRules.add(rule);
-		config.setPropagationRules(propagationRules);
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
+		
+		// FilterSettings
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 
@@ -88,15 +113,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
 				impactedElements, (long) settings.getLinkDistance());
 
-		assertEquals(10, impactedElements.size());
-	}
-
-	@Test
-	public void testCalculatePropagationRuleImpact() {
-		KnowledgeElement element = settings.getSelectedElement();
-		Link link = element.getLinks().iterator().next();
-
-		assertEquals(0.27, Calculator.calculatePropagationRuleImpact(settings, element, link), 0.05);
+		assertTrue(impactedElements.size() > 8);
 	}
 
 	@Test
@@ -105,11 +122,17 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 1.0;
 		double ruleBasedValue = 0.5;
 		double decayValue = 0.25;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				"", 0);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to a used propagation rule."));
+
+		decayValue = 1.0;
+		explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
+
+		assertTrue(explanation.contains("mainly due to the decay value."));
+
 	}
 
 	@Test
@@ -118,9 +141,8 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 0.5;
 		double ruleBasedValue = 1.0;
 		double decayValue = 0.25;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				"", 0);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to its parent having a lowered impact score."));
 	}
@@ -131,9 +153,8 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 1.0;
 		double ruleBasedValue = 1.0;
 		double decayValue = 0.75;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				"", 0);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
 
 		assertTrue(explanation.contains("mainly due to the decay value."));
 	}
@@ -144,9 +165,8 @@ public class TestCalculator extends TestSetUp {
 		double parentImpact = 1.0;
 		double ruleBasedValue = 1.0;
 		double decayValue = 1.0;
-
-		String explanation = Calculator.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
-				LinkType.RECOMMENDED.getName(), 0.8);
+		String explanation = Calculator.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, LinkType.RECOMMENDED.getName(), 0.8);
 
 		assertTrue(explanation.contains("Link Recommendation Score"));
 	}

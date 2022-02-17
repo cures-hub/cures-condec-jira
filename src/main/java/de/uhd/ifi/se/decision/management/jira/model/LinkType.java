@@ -34,7 +34,8 @@ public enum LinkType {
 	DUPLICATE("Duplicate", "duplicates", "is duplicated by", "#c0392b"), // among duplicated elements
 	TRANSITIVE("Transitive", "transitively links to", "transitively links to", "#15ceb6"), // special filtering
 	RECOMMENDED("Recommended", "recommended", "recommended", "#FF0000"), // recommended link
-	OTHER("", "other", "other", ""); // other Jira issue links, e.g. "jira_subtask_link"
+	OTHER("", "other", "other", ""), // other Jira issue links, e.g. "jira_subtask_link"
+	WRONG_LINK("Wrong", "wrongly linked to", "wrongly linked to", ""); // designates links that are wrongly linked
 
 	private String name;
 	private String outwardName;

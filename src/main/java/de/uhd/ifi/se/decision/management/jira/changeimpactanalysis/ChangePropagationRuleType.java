@@ -24,8 +24,7 @@ public enum ChangePropagationRuleType {
 
 	BOOST_WHEN_EQUAL_CREATOR("Boost when element has the same creator as the selected element",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
-					+ "in the knowledge graph has the same creator, i.e. assignee, creator, reporter.\n"
-					+ "Allows negative weights that reverse the effects of the rule.",
+					+ "in the knowledge graph has the same creator, i.e. assignee, creator, reporter.",
 			new BoostWhenEqualCreator()), //
 	IGNORE_INCOMING_LINKS("Outward links only",
 			"Rule that defines that a change impact is not propagated along an incoming link to an "
@@ -38,8 +37,7 @@ public enum ChangePropagationRuleType {
 			new BoostWhenTextualSimilar()), //
 	BOOST_WHEN_HIGH_AMOUNT_OF_DISTINCT_AUTHORS("Boost when element has a large number of distinct update authors",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
-					+ "in the knowledge graph has a large number of distinct update authors.\n"
-					+ "Allows negative weights that reverse the effects of the rule.",
+					+ "in the knowledge graph has a large number of distinct update authors.",
 			new BoostWhenHighAmountOfDistinctAuthors()), //
 	BOOST_WHEN_EQUAL_COMPONENT("Boost when element is assigned the same component",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
@@ -69,14 +67,12 @@ public enum ChangePropagationRuleType {
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph has a low average age. The average age is determined by deducing "
 					+ "the creation date from the latest update date. A high difference "
-					+ "indicates a high average age.\n"
-					+ "Allows negative weights that reverse the effects of the rule.",
+					+ "indicates a high average age.",
 			new BoostWhenLowAverageAge()), //
 	BOOST_WHEN_TIMELY_COUPLED("Boost when element is timely coupled to the selected element",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph is timely coupled to the source element. Elements are assumed "
-					+ "to be timely coupled if they have received updates in the same timeframe, i.e. within 10 minutes.\n"
-					+ "Allows negative weights that reverse the effects of the rule.",
+					+ "to be timely coupled if they have received updates in the same timeframe, i.e. within 10 minutes.",
 			new BoostWhenTimelyCoupled());
 
 	private String description;

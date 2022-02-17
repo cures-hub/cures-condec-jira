@@ -9,7 +9,7 @@
 
 	ConDecRecommendation.prototype.buildScore = function(score, ID) {
 		var scoreControl = document.getElementById("control-score-explanation");
-		scoreControl.innerText = score.value.toFixed(0) + "%";
+		scoreControl.innerText = (score.value * 100).toFixed(0) + "%";
 
 		var columns = "<tr style='background-color: #e8e8e8;'><td>" + score.explanation + "</td><td>" + score.value.toFixed(2) + "%</td></tr>";
 		score.subScores.forEach(subScore => {

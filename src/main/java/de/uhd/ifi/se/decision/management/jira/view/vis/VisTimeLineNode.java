@@ -10,6 +10,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
 
+/**
+ * Represents a {@link KnowledgeElement} in the chronology view.
+ */
 public class VisTimeLineNode {
 
 	@XmlElement

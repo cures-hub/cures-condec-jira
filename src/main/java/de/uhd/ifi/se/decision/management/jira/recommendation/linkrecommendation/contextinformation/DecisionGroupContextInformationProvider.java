@@ -22,11 +22,11 @@ public class DecisionGroupContextInformationProvider extends ContextInformationP
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		if (!baseElement.getDecisionGroups().isEmpty()) {
 			if (otherElement.getDecisionGroups().isEmpty()) {
-				return new RecommendationScore(0.75f, getName());
+				return new RecommendationScore(0.0f, getName());
 			}
 			Set<String> setOfMatchingDecisionGroups = baseElement.getDecisionGroups().stream()
 					.filter(item -> otherElement.getDecisionGroups().contains(item)).collect(Collectors.toSet());
-			double score = setOfMatchingDecisionGroups.isEmpty() ? 0.75 : 1.0;
+			double score = setOfMatchingDecisionGroups.isEmpty() ? 0.0 : 1.0;
 			return new RecommendationScore((float) score, getName());
 		}
 		return new RecommendationScore(1.0f, getName());

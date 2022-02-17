@@ -1,6 +1,5 @@
 /**
- * This module is responsible for filling the filter HTML elements and for
- * filtering functionality.
+ * Responsible for filling the filter HTML elements and for filtering functionality.
  *
  * Requires no other module
  *
@@ -44,10 +43,9 @@
 		this.fillMinimumCoverageAndMaximumLinkDistance(viewIdentifier, conDecAPI.projectKey);
 
 		// change impact highlighting
-		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.getProjectKey(), (error, config) => {
+		conDecChangeImpactAnalysisAPI.getChangeImpactAnalysisConfiguration(conDecAPI.projectKey, (error, config) => {
 			document.getElementById("decay-input-" + viewIdentifier).value = config["decayValue"];
 			document.getElementById("threshold-input-" + viewIdentifier).value = config["threshold"];
-			console.log(config["propagationRules"]);
 			var propagationRuleNames = [];
 			var selectedRules = [];
 			for (var propagationRule of config["propagationRules"]) {
@@ -387,7 +385,7 @@
 		this.initSingleSelect("select-single-element-type-" + viewIdentifier, conDecAPI.getKnowledgeTypes(), ["Issue"]);
 		this.initDropdown("status-dropdown-" + viewIdentifier, conDecAPI.knowledgeStatus);
 		this.initDropdown("documentation-location-dropdown-" + viewIdentifier, conDecAPI.documentationLocations);
-		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes());
+		this.initDropdown("link-type-dropdown-" + viewIdentifier, conDecAPI.getLinkTypes(), null, ["Wrong"]);
 		this.fillDecisionGroupSelect("select2-decision-group-" + viewIdentifier, conDecGroupingAPI.getAllDecisionGroups());
 		this.initDropdown("rationale-covered-knowledge-type-dropdown-" + viewIdentifier, conDecAPI.getKnowledgeTypesWithoutDecisionKnowledge());
 	}
@@ -410,7 +408,7 @@
 						isSelected = "";
 					}
 				}
-				if (unselectedItems !== undefined && selectedItems !== null) {
+				if (unselectedItems !== undefined && unselectedItems !== null) {
 					if (unselectedItems.includes(items[index])) {
 						isSelected = "";
 					}

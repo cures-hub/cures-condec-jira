@@ -130,44 +130,6 @@ public class ChangePropagationRule {
         }
 	}
 
-	/**
-	 * @param ruleWeightValue
-	 * 		the weight value of a specific rule.
-	 * @param score 
-	 * 		the similarity score prior to having weights being applied.
-	 * @return score with weights being applied.
-	 */
-	public static double addWeightValue(float ruleWeightValue, double score) {
-		double similarityScore = score;
-		double upperScoreBorder = 1.00;
-		double lowerScoreBorder = 0.75;
-		double result = 0;
-
-		// Reverse effects of rule result for negative weights, 0.75 -> 1.0 | 1.0 -> 0.75
-		// Works best for values between 0.75 and 1.0
-		if (ruleWeightValue < 0) {
-			similarityScore = Math.pow(2, (-1 * Math.pow(score, 3))) + 0.25;
-		}
-
-		// Increase the supplied score if equal or over the arithmetic mean, otherwise reduce it
-		if (similarityScore >= (upperScoreBorder + lowerScoreBorder) / 2) {
-			result = similarityScore * Math.abs(ruleWeightValue);
-		} else {
-			result = similarityScore * (2 - Math.abs(ruleWeightValue));
-		}
-
-		// Result has to be within the specified borders, otherwise a single rule would
-		// impact the score too much
-		if (result >= upperScoreBorder) {
-			return upperScoreBorder;
-		}
-		if (result <= lowerScoreBorder) {
-			return lowerScoreBorder;
-		}
-
-		return result;
-	}
-
 	public static List<ChangePropagationRule> getDefaultRules() {
 		List<ChangePropagationRule> defaultRules = new LinkedList<>();
 		for (ChangePropagationRuleType type : ChangePropagationRuleType.values()) {

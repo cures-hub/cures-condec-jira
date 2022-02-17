@@ -27,13 +27,13 @@ public class ComponentContextInformationProvider extends ContextInformationProvi
 				&& !baseElement.getJiraIssue().getComponents().isEmpty()) {
 			if (otherElement.getJiraIssue().getComponents() == null
 					|| otherElement.getJiraIssue().getComponents().isEmpty()) {
-				return new RecommendationScore(0.75f, getName());
+				return new RecommendationScore(0.0f, getName());
 			}
 
 			Set<ProjectComponent> setOfMatchingComponents = baseElement.getJiraIssue().getComponents().stream()
 					.filter(item -> otherElement.getJiraIssue().getComponents().contains(item))
 					.collect(Collectors.toSet());
-			double score = setOfMatchingComponents.isEmpty() ? 0.75 : 1.0;
+			double score = setOfMatchingComponents.isEmpty() ? 0.0 : 1.0;
 			return new RecommendationScore((float) score, getName());
 		}
 		return new RecommendationScore(1.0f, getName());

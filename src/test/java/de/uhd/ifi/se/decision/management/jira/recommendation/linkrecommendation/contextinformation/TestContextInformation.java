@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.After;
@@ -35,7 +36,7 @@ public class TestContextInformation extends TestSetUp {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
-		assertTrue(linkRecommendations.size() > 2);
+		assertTrue(linkRecommendations.size() > 4);
 		
 		linkRecommendationConfiguration.setMaxRecommendations(1);
 		contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
@@ -46,8 +47,22 @@ public class TestContextInformation extends TestSetUp {
 	}
 
 	@Test
+	public void testGetLinkRecommendationsNegativeRuleWeight() {
+		List<ContextInformationProvider> contextInformationProviders = new LinkedList<ContextInformationProvider>();
+		contextInformationProviders.add(new TextualSimilarityContextInformationProvider());
+
+		linkRecommendationConfiguration.setContextInformationProviders(contextInformationProviders);
+		linkRecommendationConfiguration.getContextInformationProviders().get(0).setWeightValue(-1.0f);
+		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
+				linkRecommendationConfiguration);
+		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+
+		assertTrue(linkRecommendations.size() > 0);
+	}
+
+	@Test
 	public void testFilterLinkRecommendationsByScore() {
-		linkRecommendationConfiguration.setMinProbability(0.7);
+		linkRecommendationConfiguration.setMinProbability(0.6);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();

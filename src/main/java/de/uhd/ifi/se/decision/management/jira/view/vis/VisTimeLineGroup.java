@@ -2,6 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Represents a group (developer) in the chronology view.
+ */
 public class VisTimeLineGroup {
 
 	@XmlElement

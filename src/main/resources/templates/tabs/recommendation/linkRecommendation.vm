@@ -40,7 +40,7 @@
     <button class="aui-button aui-button-primary" id="link-recommendation-button" 
     	title="Recommends new links to related knowledge elements or potential duplicates. The results are cached, so you need to empty the browser cache when changing parameters.">
         <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
-        $i18n.getText("condec.label.is.link.recommendation")
+        $i18n.getText("condec.is.link.recommendation.label")
     </button>
 </div>
     <aui-spinner id="loading-spinner" style="display:none"></aui-spinner>

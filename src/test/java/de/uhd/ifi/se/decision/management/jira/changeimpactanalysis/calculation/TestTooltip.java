@@ -25,6 +25,8 @@ public class TestTooltip extends TestSetUp {
     @Before
 	public void setUp() {
         init();
+        @SuppressWarnings("unused")
+        Tooltip tooltip = new Tooltip();
         rootElement = KnowledgeElements.getTestKnowledgeElements().get(0);
         settings = new FilterSettings("TEST", "");
         settings.setSelectedElementObject(rootElement);

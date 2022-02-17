@@ -139,7 +139,7 @@ public class Colorizer {
         return String.format("#%02x%02x%02x", blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue());
     }
 
-    private static Color blend(Color color1, Color color2, float pRatio) {
+    public static Color blend(Color color1, Color color2, float pRatio) {
         float ratio = pRatio;
         if (ratio > 1f)
             ratio = 1f;

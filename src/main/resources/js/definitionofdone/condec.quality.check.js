@@ -74,10 +74,10 @@
 			var icon;
 			if (checkResult.criterionViolated) {
 				statusCell.classList = "condec-error";
-				icon = createIcon("aui-iconfont-cross-circle");
+				icon = conDecNudgingAPI.createIcon("aui-iconfont-cross-circle");
 			} else {
 				statusCell.classList = "condec-fine";
-				icon = createIcon("aui-iconfont-check-circle");
+				icon = conDecNudgingAPI.createIcon("aui-iconfont-check-circle");
 			}			
 			statusCell.appendChild(icon);		
 			statusCell.insertAdjacentText('beforeend', " " + checkResult.explanation);
@@ -85,12 +85,6 @@
 
 			qualityCheckTableBody.appendChild(tableRow);
 		});
-	}
-	
-	function createIcon(iconType) {
-		var icon = document.createElement("span");
-		icon.classList = "aui-icon aui-icon-small " + iconType;
-		return icon;
 	}
 
 	/**

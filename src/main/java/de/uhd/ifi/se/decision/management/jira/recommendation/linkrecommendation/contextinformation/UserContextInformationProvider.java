@@ -27,13 +27,12 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 			score += isApplicationUserEqual(baseElementJiraIssue.getAssignee(), otherElementJiraIssue.getAssignee());
 			score += isApplicationUserEqual(baseElementJiraIssue.getReporter(), otherElementJiraIssue.getReporter());
 		}
-		return score >= 1.0 ? new RecommendationScore((float) 1.0, getName() + " (equalCreatorOrEqualAssignee)")
-			: new RecommendationScore((float) 0.75, getName() + " (equalCreatorOrEqualAssignee)");
+		return new RecommendationScore((float) score, getName() + " (equalCreatorOrEqualAssignee)");
 	}
 
 	public static double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
 		if (user1 != null && user1.equals(user2)) {
-			return 1.0;
+			return 0.33;
 		}
 		return 0;
 	}

@@ -14,6 +14,10 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 
+/**
+ * Creates the content for the chronology view. The chronology view is rendered
+ * with the vis timeline library.
+ */
 public class VisTimeLine {
 
 	private Set<Long> userIds;
