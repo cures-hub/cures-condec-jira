@@ -27,7 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 @Path("/change-impact-analysis")
 public class ChangeImpactAnalysisRest {
 
-	@Path("/configuration")
+	@Path("/configuration/{projectKey}")
 	@POST
 	public Response setChangeImpactAnalysisConfiguration(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey, ChangeImpactAnalysisConfiguration ciaConfig) {
@@ -74,7 +74,7 @@ public class ChangeImpactAnalysisRest {
 	}
 
 	@GET
-	@Path("/configuration")
+	@Path("/configuration/{projectKey}")
 	public Response getChangeImpactAnalysisConfiguration(@PathParam("projectKey") String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = RestParameterChecker.checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
