@@ -1,7 +1,5 @@
-<h3>Settings regarding the amount of received recommendations</h3>
-
 <div class="field-group top-label">
-    <label for="max-recommendations">Maximum amount of received recommendations (top-k)</label>
+    <label for="max-recommendations">Maximum Number of Recommendations (Top-k)</label>
     <input class="text short-field"
            data-aui-validation-field
            type="number"
@@ -10,7 +8,7 @@
            id="max-recommendations" />
     <button id="save-max-recommendations-btn" class='aui-button'>Save</button>
     <div class="description">
-        Adjusting this number restricts the number of recommendations that are displayed globally, i.e. on the link recommendation tab 
+        Restricts the number of recommendations that are displayed globally, i.e. on the link recommendation tab 
         and the various knowledge views. The following settings can be chosen:
         <br/>
         -1 = As many recommendations as possible are provided.
@@ -25,5 +23,5 @@
 	$("#save-max-recommendations-btn").click(event => {
 		event.preventDefault();
 		conDecLinkRecommendationAPI.setMaxRecommendations("$projectKey", $("#max-recommendations").val());
-    })
+    });
 </script>

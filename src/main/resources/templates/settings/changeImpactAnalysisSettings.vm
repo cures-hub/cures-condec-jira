@@ -1,4 +1,4 @@
-<h2>General Change Impact Analysis (CIA) Settings</h2>
+<h2>Change Impact Analysis (CIA) Settings</h2>
 #set($ciaConfig = $project.getChangeImpactAnalysisConfiguration())
 
 <p>On this page, the rationale manager can configure the default rules for change impact analysis.
@@ -67,7 +67,7 @@ parent/ancestor element and the current element,</p>
         	</a>
         	<aui-inline-dialog id='Weight-help' responds-to='hover'>
                 <p>Value designating the importance of a rule. A higher value indicates a rule being more important than usual 
-                and increases the impact of that rule accordingly, i.e. a value of 1.2 indicates a rule is 20% more important.
+                and increases the impact of that rule accordingly, e.g. a value of 1.2 indicates a rule is 20% more important.
                 The calculation is as follows:</p>
                 <p>ruleBasedValue = result of rule calculation * weightValue</p>
                 <p>Rules can also receive negative weights that reverse the effect of the rule, e.g. for BoostWhenTimelyCoupled: 

@@ -109,11 +109,18 @@ public class LinkRecommendationConfiguration {
 		this.contextInformationProviders = contextInformationProviders;
 	}
 
+	/**
+	 * @return maximum number of link recommendations shown to the user.
+	 */
 	@XmlElement
 	public int getMaxRecommendations() {
 		return maxRecommendations;
 	}
 
+	/**
+	 * @param maxRecommendations
+	 *            of link recommendations shown to the user.
+	 */
 	@JsonProperty
 	public void setMaxRecommendations(int maxRecommendations) {
 		this.maxRecommendations = maxRecommendations;
