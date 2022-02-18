@@ -77,7 +77,7 @@ public class RecommendationScore {
 	 * sub-score for the absolute score value of the best recommendation.
 	 * 
 	 * @param maxScoreValue
-	 *            of the best recommendation, set to 100%.
+	 *            of the best recommendation, set to 1 (i.e. 100%).
 	 */
 	public void normalizeTo(float maxScoreValue) {
 		float oldValue = getValue();
@@ -85,7 +85,7 @@ public class RecommendationScore {
 		addSubScore(new RecommendationScore(oldValue, explanation + " of this recommendation"));
 		addSubScore(new RecommendationScore(maxScoreValue, explanation + " of the best recommendation"));
 		// normalize, update score value and explanation
-		value = (oldValue * 1.0f / maxScoreValue) * 100f;
+		value = oldValue / maxScoreValue;
 		explanation = "Compared to best recommendation (normalized)";
 	}
 

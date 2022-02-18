@@ -59,7 +59,7 @@ public class TestRecommendation extends TestSetUp {
 
 		assertEquals(0.5, Recommendation.getMaxScoreValue(recommendations), 0);
 		Recommendation.normalizeRecommendationScore(recommendations);
-		assertEquals(100, Recommendation.getMaxScoreValue(recommendations), 0);
+		assertEquals(1, Recommendation.getMaxScoreValue(recommendations), 0);
 	}
 
 	@Test

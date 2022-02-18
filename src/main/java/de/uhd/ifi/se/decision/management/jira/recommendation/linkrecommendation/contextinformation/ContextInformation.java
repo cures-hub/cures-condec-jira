@@ -53,6 +53,7 @@ public class ContextInformation extends ContextInformationProvider {
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		RecommendationScore score = new RecommendationScore(0, getName());
+		float maxAchievableScore = 0.0f;
 		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
 				.getContextInformationProviders()) {
 			if (!contextInformationProvider.isActive()) {
@@ -66,10 +67,16 @@ public class ContextInformation extends ContextInformationProvider {
 			if (weightValue < 0) {
 				subScore.setValue(1 - subScore.getValue());
 			}
+
+			// Go through the selected rules and increase the max available score
+			// accordingly, used to normalize the final score
+			maxAchievableScore += Math.abs(contextInformationProvider.getWeightValue());
+
 			// Apply weight onto rule impact
 			subScore.weightValue(Math.abs(weightValue));
 			score.addSubScore(subScore);
 		}
+		score.normalizeTo(maxAchievableScore);
 		return score;
 	}
 
@@ -142,18 +149,6 @@ public class ContextInformation extends ContextInformationProvider {
 			}
 			LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 			RecommendationScore score = assessRelation(baseElement, elementToTest);
-
-			// Go through the selected rules and increase the max available score
-			// accordingly, used to normalize the final score
-			double maxAchievableScore = 0.0;
-			for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
-					.getContextInformationProviders()) {
-				if (!contextInformationProvider.isActive()) {
-					continue;
-				}
-				maxAchievableScore += Math.abs(contextInformationProvider.getWeightValue());
-			}
-			score.setValue((float) (score.getValue() / maxAchievableScore));
 			linkSuggestion.setScore(score);
 			if (score.isPotentialDuplicate()) {
 				linkSuggestion.setRecommendationType(RecommendationType.DUPLICATE);
