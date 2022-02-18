@@ -3,7 +3,7 @@
 The ConDec Jira plug-in offers a feature that **recommends new links between knowledge elements** and 
 that tries to **identify duplicated knowledge elements**.
 In particular, the feature should support developers in
-1. avoiding duplicated decision making through **identifying related decision problems and solution options** documented by others or in the past
+1. avoiding duplicated decision making through **identifying related decision problems and solution options** documented by others or in the past,
 2. detecting impacts, side, and ripple effects during changes in combination with **[change impact analysis (CIA)](change-impact-analysis.md)**, and 
 3. general knowledge sharing.
 
@@ -63,6 +63,18 @@ e.g. in the [node-link diagram](../screenshots/link_recommendation_duplicates_no
 *Node-link diagram showing the context of a user story.
 Directly and transitively linked decision problems (issues) and solution options (alternatives) are shown that match the "export" filter string. 
 The alternatives are duplicated.*
+
+## Configuration
+The rationale manager can configure the **default parameters** for the link recommendation, in particular, the
+1. maximum number of recommendations (**top-k**), 
+2. the **threshold**, and 
+3. default ruleset (context information providers). The rationale manager can enable/disable each rule and can set a weight value (similar as for [CIA](change-impact-analysis.md)). 
+
+Furthermore, the developer can change the default values during the usage of the link recommendation. 
+
+![Configuration view for link recommendation and duplicate recognition](../screenshots/link_recommendation_configuration.png)
+
+*Configuration view for link recommendation and duplicate recognition*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +17,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
@@ -50,7 +48,7 @@ public class LinkRecommendationRest {
 		}
 		ContextInformation contextInformation = new ContextInformation(filterSettings.getSelectedElementFromDatabase(),
 				filterSettings.getLinkRecommendationConfig());
-		Collection<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		return Response.ok(linkRecommendations).build();
 	}
 

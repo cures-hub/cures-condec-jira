@@ -13,7 +13,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
@@ -35,12 +34,11 @@ public class TestContextInformation extends TestSetUp {
 	public void testGetLinkRecommendations() {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
-		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 4);
-		
+
 		linkRecommendationConfiguration.setMaxRecommendations(1);
-		contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
-				linkRecommendationConfiguration);
+		contextInformation = new ContextInformation(KnowledgeElements.getDecision(), linkRecommendationConfiguration);
 		linkRecommendations = contextInformation.getLinkRecommendations();
 
 		assertTrue(linkRecommendations.size() == 1);
@@ -55,7 +53,7 @@ public class TestContextInformation extends TestSetUp {
 		linkRecommendationConfiguration.getContextInformationProviders().get(0).setWeightValue(-1.0f);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
-		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 
 		assertTrue(linkRecommendations.size() > 0);
 	}
@@ -65,7 +63,7 @@ public class TestContextInformation extends TestSetUp {
 		linkRecommendationConfiguration.setMinProbability(0.6);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
-		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 2);
 	}
 
@@ -75,7 +73,7 @@ public class TestContextInformation extends TestSetUp {
 		JiraIssues.getIrrelevantSentence();
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
-		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.size() > 4);
 	}
 
@@ -86,7 +84,7 @@ public class TestContextInformation extends TestSetUp {
 				linkRecommendationConfiguration);
 		LinkRecommendation recommendation = (LinkRecommendation) contextInformation.getLinkRecommendations().get(0);
 		DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
-		List<Recommendation> linkRecommendations = contextInformation.getLinkRecommendations();
+		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 		assertTrue(linkRecommendations.stream().filter(rec -> rec.isDiscarded()).count() > 0);
 	}
 
