@@ -144,8 +144,7 @@ public class ContextInformation extends ContextInformationProvider {
 			RecommendationScore score = assessRelation(baseElement, elementToTest);
 
 			// Go through the selected rules and increase the max available score
-			// accordingly,
-			// used to normalize the final score
+			// accordingly, used to normalize the final score
 			double maxAchievableScore = 0.0;
 			for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
 					.getContextInformationProviders()) {

@@ -136,7 +136,7 @@ public class LinkRecommendationRest {
 	 * 
 	 * @return ok if maxRecommendations was successfully saved.
 	 */
-	@Path("/configuration/{projectKey}/recommendationmaximum")
+	@Path("/configuration/{projectKey}/max-recommendations")
 	@POST
 	public Response setMaximumRecommendations(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey, int maxRecommendations) {
