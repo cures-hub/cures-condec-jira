@@ -19,13 +19,13 @@ recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>
 where `N` is the number of enabled context information providers 
 and `maxAchievableScore` is the hypothetical best score to normalize the recommendation score between 0 and 1.
 
-The `ruleWeight<sub>i</sub>` can also be negative to reverse the effect of the rule.
+The `ruleWeight`<sub>i</sub> can also be negative to reverse the effect of the rule.
 For instance, for the timely coupling context information provider (*recommend elements that are timely coupled to the source element*),
 a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.
 
 The link recommendations are sorted by their `recommendationScore`.
 
-A link to another knowledge element is only **recommended if the `recommendationScore >= threshold`** and 
+A link to another knowledge element is only recommended if the `recommendationScore >= threshold` and 
 if the link recommendation is under the **top-k recommendations**.
 
 ![Link recommendation view showing a potential duplicate](../screenshots/link_recommendation_duplicate_tooltip.png)
