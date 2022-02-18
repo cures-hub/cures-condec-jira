@@ -82,8 +82,9 @@ public class RecommendationScore {
 	public void normalizeTo(float maxScoreValue) {
 		float oldValue = getValue();
 		// keep the current explanation as a sub-score after normalizing
-		addSubScore(new RecommendationScore(oldValue, explanation + " of this recommendation"));
-		addSubScore(new RecommendationScore(maxScoreValue, explanation + " of the best recommendation"));
+		addSubScore(new RecommendationScore(oldValue, explanation + " of this recommendation (absolute value)"));
+		addSubScore(
+				new RecommendationScore(maxScoreValue, explanation + " of the best recommendation (absolute value)"));
 		// normalize, update score value and explanation
 		value = oldValue / maxScoreValue;
 		explanation = "Compared to best recommendation (normalized)";
