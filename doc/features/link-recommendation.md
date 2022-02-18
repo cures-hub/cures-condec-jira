@@ -6,18 +6,18 @@ that tries to **identify duplicated knowledge elements**.
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
 The context information is calculated from the various **context information providers, i.e. link recommendation rules** listed below.
 
-Every context information provider calculates a `ruleValue<sub>i</sub>`.
+Every context information provider calculates a <code>ruleValue<sub>i</sub></code>.
 For example, the textual similarity context information provider calculates a higher rule value for knowledge elements that are textual similar.
-Besides, every context information provider is assigned a `ruleWeight<sub>i</sub>` to determine its importance for recommendation creation.
+Besides, every context information provider is assigned a <code>ruleWeight<sub>i</sub></code> to determine its importance for recommendation creation.
 
-For every knowledge element that might be related to the selected element, a <var>recommendationScore</var> is calculated as follows:
+For every knowledge element that might be related to the selected element, a `recommendationScore` is calculated as follows:
 
 <code>recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>i</sub>) / maxAchievableScore</code>
 
 where `N` is the number of enabled context information providers 
 and `maxAchievableScore` is the hypothetical best score to normalize the recommendation score between 0 and 1.
 
-The `ruleWeight`<sub>i</sub> can also be negative to reverse the effect of the rule.
+The <code>ruleWeight`<sub>i</sub></code> can also be negative to reverse the effect of the rule.
 For instance, for the timely coupling context information provider (*recommend elements that are timely coupled to the source element*),
 a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.
 
