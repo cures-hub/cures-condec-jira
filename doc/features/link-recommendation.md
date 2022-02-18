@@ -2,15 +2,30 @@
 
 The ConDec Jira plug-in offers a feature that **recommends new links between knowledge elements** and 
 that tries to **identify duplicated knowledge elements**.
+In particular, the feature should support developers in **identifying related decision problems and solution options** documented by others or in the past to
+1) avoid duplicated decision making
+2) change impact
+3) knowledge sharing
 
 ## Calculation of the Recommendation Score
 
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
-The context information is calculated from the various **context information providers, i.e. link recommendation rules** listed below.
+The context information is calculated from the following **context information providers, i.e. link recommendation rules**:
+
+1. Recommend elements that are textual similar to the source element
+2. Recommend elements that are timely coupled to the source element
+3. Recommend elements that have the same author as the source element
+4. Recommend elements that are decision problems
+5. Recommend elements that are solution options
+6. Recommend elements that are assigned to the same decision group as the source element
+7. Recommend elements that are assigned to the same component as the source element
+8. Recommend elements that can be traced to the source element
+9. Recommend elements that are the same knowledge type as the source element.
+10. Recommend elements that are included in the same sprint
 
 Every context information provider calculates a <code>ruleValue<sub>i</sub></code>.
 For example, the textual similarity context information provider calculates a rule value based on the textual similarity of two knowledge elements. 
-The more textual similar, the higher is the rule value.
+The more textual similar, the higher is the rule value for this context information provider.
 Besides, every context information provider is assigned a <code>ruleWeight<sub>i</sub></code> to determine its importance for recommendation creation.
 
 For every knowledge element that might be related to the selected element, a `recommendationScore` is calculated as follows:
@@ -24,10 +39,13 @@ The <code>ruleWeight<sub>i</sub></code> can also be negative to reverse the effe
 For instance, for the timely coupling context information provider (*recommend elements that are timely coupled to the source element*),
 a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.
 
-The link recommendations are sorted by their `recommendationScore`.
+The link recommendations are sorted by their `recommendationScore` to determine the best (top-k) recommendations.
 
 A link to another knowledge element is only recommended if the `recommendationScore >= threshold` and 
 if the link recommendation is under the **top-k recommendations**.
+
+Many of the link recommendation rules (i.e. context information providers) are also used during **[change impact analysis (CIA)](change-impact-analysis.md)**
+as **change propagation rules**.
 
 ## Duplicate Recognition
 The textual similarity context information provider is used to **identify duplicates**.
@@ -81,3 +99,11 @@ The UI code for link recommendation can be found here:
 - [Velocity templates for configuration and evaluation](../../src/main/resources/templates/settings/linkrecommendation)
 - [Velocity templates for usage during development](../../src/main/resources/templates/tabs/recommendation)
 - [JavaScript code for link recommendation](../../src/main/resources/js/recommendation)
+
+## References
+The concept of context information providers was suggested by: 
+Miesbauer, C., & Weinreich, R. (2012). 
+Capturing and Maintaining Architectural Knowledge Using Context Information. 
+In 2012 Joint Working IEEE/IFIP Conference on Software Architecture and European Conference on Software Architecture (pp. 206–210). 
+Helsinki, Finland: IEEE. 
+https://doi.org/10.1109/WICSA-ECSA.212.30

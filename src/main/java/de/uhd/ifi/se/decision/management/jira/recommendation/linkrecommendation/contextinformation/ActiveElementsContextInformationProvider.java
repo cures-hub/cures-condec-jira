@@ -38,6 +38,6 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are assigned to the same decision group as the source element.";
+		return "Recommend elements that are included in the same sprint.";
 	}
 }
