@@ -6,7 +6,8 @@ This feature tries to identify related knowledge elements using the <b>context i
 The context information is calculated from the various <b>context information providers, i.e. link recommendation rules</b> listed below.</p>
 
 <p>Every context information provider calculates a <var>ruleValue<sub>i</sub></var>.
-For example, the textual similarity context information provider calculates a higher rule value for knowledge elements that are textual similar.
+For example, the textual similarity context information provider calculates a rule value based on the textual similarity of two knowledge elements. 
+The more textual similar, the higher is the rule value.
 Besides, every context information provider is assigned a <var>ruleWeight<sub>i</sub></var> to determine its importance for recommendation creation.
 
 For every knowledge element that might be related to the selected element, a <var>recommendationScore</var> is calculated as follows:</p>
@@ -24,6 +25,9 @@ The link recommendations are sorted by their <var>recommendationScore</var>.
 
 <p>A link to another knowledge element is only recommended if the <b><code>recommendationScore >= threshold</code></b> and 
 if the link recommendation is under the <b>top-k recommendations</b>.</p>
+
+The textual similarity context information provider is used to <b>identify duplicates</b>.
+If the text is very similar, a link recommendation is marked as a potential duplicate.
 
 <form class="aui">
 	#parse("templates/settings/linkrecommendation/maxAmountSetting.vm")
