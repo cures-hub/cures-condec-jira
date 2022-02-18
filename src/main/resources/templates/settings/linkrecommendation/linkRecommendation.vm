@@ -2,7 +2,7 @@
 #set($linkRecommendationConfig = $project.getLinkSuggestionConfiguration())
 
 <p>On this page, the rationale manager can configure the link recommendation and duplicate recognition feature.
-This feature tries to identify related knowledge elements using <b>context information</b>.
+This feature tries to identify related knowledge elements using the <b>context information</b> of knowledge elements.
 The context information is calculated from the various <b>context information providers, i.e. link recommendation rules</b> listed below.</p>
 
 <p>Every context information provider calculates a <var>ruleValue<sub>i</sub></var>.
@@ -22,7 +22,7 @@ a negative rule weight means that elements that are not timely coupled are assig
 
 The link recommendations are sorted by their <var>recommendationScore</var>.
 
-<p>A link to another knowledge elements is only recommended if the <b><code>recommendationScore >= threshold</code></b> and 
+<p>A link to another knowledge element is only recommended if the <b><code>recommendationScore >= threshold</code></b> and 
 if the link recommendation is under the <b>top-k recommendations</b>.</p>
 
 <form class="aui">

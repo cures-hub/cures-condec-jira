@@ -3,6 +3,31 @@
 The ConDec Jira plug-in offers a feature that **recommends new links between knowledge elements** and 
 that tries to **identify duplicated knowledge elements**.
 
+This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
+The context information is calculated from the various **context information providers, i.e. link recommendation rules** listed below.
+
+Every context information provider calculates a `ruleValue<sub>i</sub>`.
+For example, the textual similarity context information provider calculates a higher rule value for knowledge elements that are textual similar.
+Besides, every context information provider is assigned a `ruleWeight<sub>i</sub>` to determine its importance for recommendation creation.
+
+For every knowledge element that might be related to the selected element, a <var>recommendationScore</var> is calculated as follows:
+
+```
+recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>i</sub>) / maxAchievableScore
+```
+
+where `N` is the number of enabled context information providers 
+and `maxAchievableScore` is the hypothetical best score to normalize the recommendation score between 0 and 1.
+
+The `ruleWeight<sub>i</sub>` can also be negative to reverse the effect of the rule.
+For instance, for the timely coupling context information provider (*recommend elements that are timely coupled to the source element*),
+a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.
+
+The link recommendations are sorted by their `recommendationScore`.
+
+A link to another knowledge element is only **recommended if the `recommendationScore >= threshold`** and 
+if the link recommendation is under the **top-k recommendations**.
+
 ![Link recommendation view showing a potential duplicate](../screenshots/link_recommendation_duplicate_tooltip.png)
 
 *Link recommendation view as part of the Jira issue view showing a potential duplicated alternative*

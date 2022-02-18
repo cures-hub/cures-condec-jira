@@ -6,8 +6,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 /**
  * Uses existing tracing links between {@link KnowledgeElement}s for rating a
  * relation. This provider assumes that a {@link KnowledgeElement} that traces
- * to another element has a close relation to this element. (Miesbauer and
- * Weinreich, 2012)
+ * to another element has a close relation to this element (Miesbauer and
+ * Weinreich, 2012).
  */
 public class TracingContextInformationProvider extends ContextInformationProvider {
 

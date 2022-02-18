@@ -15,8 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
- * Provides Component in decorator pattern. Context information providers are
- * concrete decorators
+ * This class is part of the Decorator design pattern. Provides Component in
+ * decorator pattern. Context information providers are concrete decorators
  */
 public class ContextInformation extends ContextInformationProvider {
 
@@ -115,7 +115,7 @@ public class ContextInformation extends ContextInformationProvider {
 			List<KnowledgeElement> knowledgeElements) {
 
 		List<Recommendation> linkRecommendations = new ArrayList<>();
-		
+
 		for (KnowledgeElement elementToTest : knowledgeElements) {
 			if (elementToTest.getTypeAsString().equals(KnowledgeType.OTHER.toString())) {
 				// only recommend relevant decision, project, or system knowledge elements
@@ -123,8 +123,9 @@ public class ContextInformation extends ContextInformationProvider {
 			}
 			LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
 			RecommendationScore score = assessRelation(baseElement, elementToTest);
-			
-			// Go through the selected rules and increase the max available score accordingly,
+
+			// Go through the selected rules and increase the max available score
+			// accordingly,
 			// used to normalize the final score
 			double maxAchievableScore = 0.0;
 			for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
