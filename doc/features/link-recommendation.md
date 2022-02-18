@@ -2,26 +2,26 @@
 
 The ConDec Jira plug-in offers a feature that **recommends new links between knowledge elements** and 
 that tries to **identify duplicated knowledge elements**.
-In particular, the feature should support developers in **identifying related decision problems and solution options** documented by others or in the past to
-1) avoid duplicated decision making
-2) change impact
-3) knowledge sharing
+In particular, the feature should support developers in
+1. avoiding duplicated decision making through **identifying related decision problems and solution options** documented by others or in the past
+2. detecting impacts, side, and ripple effects during changes in combination with **[change impact analysis (CIA)](change-impact-analysis.md)**, and 
+3. general knowledge sharing.
 
 ## Calculation of the Recommendation Score
 
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
 The context information is calculated from the following **context information providers, i.e. link recommendation rules**:
 
-1. Recommend elements that are textual similar to the source element
-2. Recommend elements that are timely coupled to the source element
-3. Recommend elements that have the same author as the source element
-4. Recommend elements that are decision problems
-5. Recommend elements that are solution options
-6. Recommend elements that are assigned to the same decision group as the source element
-7. Recommend elements that are assigned to the same component as the source element
-8. Recommend elements that can be traced to the source element
+1. Recommend elements that are **textual similar** to the source element
+2. Recommend elements that are **timely coupled** to the source element
+3. Recommend elements that have the **same author** as the source element
+4. Recommend elements that are **decision problems**
+5. Recommend elements that are **solution options**
+6. Recommend elements that are assigned to the **same decision group** as the source element
+7. Recommend elements that are assigned to the **same component** as the source element
+8. Recommend elements that can be **traced** to the source element
 9. Recommend elements that are the same knowledge type as the source element.
-10. Recommend elements that are included in the same sprint
+10. Recommend elements that are included in the **same sprint**
 
 Every context information provider calculates a <code>ruleValue<sub>i</sub></code>.
 For example, the textual similarity context information provider calculates a rule value based on the textual similarity of two knowledge elements. 
@@ -36,7 +36,7 @@ where `N` is the number of enabled context information providers
 and `maxAchievableScore` is the hypothetical best score to normalize the recommendation score between 0 and 1.
 
 The <code>ruleWeight<sub>i</sub></code> can also be negative to reverse the effect of the rule.
-For instance, for the timely coupling context information provider (*recommend elements that are timely coupled to the source element*),
+For instance, for the time context information provider (*recommend elements that are timely coupled to the source element*),
 a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.
 
 The link recommendations are sorted by their `recommendationScore` to determine the best (top-k) recommendations.
@@ -44,7 +44,7 @@ The link recommendations are sorted by their `recommendationScore` to determine 
 A link to another knowledge element is only recommended if the `recommendationScore >= threshold` and 
 if the link recommendation is under the **top-k recommendations**.
 
-Many of the link recommendation rules (i.e. context information providers) are also used during **[change impact analysis (CIA)](change-impact-analysis.md)**
+Many of the link recommendation rules (i.e. context information providers) are also used during **[CIA](change-impact-analysis.md)**
 as **change propagation rules**.
 
 ## Duplicate Recognition
@@ -101,7 +101,7 @@ The UI code for link recommendation can be found here:
 - [JavaScript code for link recommendation](../../src/main/resources/js/recommendation)
 
 ## References
-The concept of context information providers was suggested by: 
+The concept of context information providers is taken from: 
 Miesbauer, C., & Weinreich, R. (2012). 
 Capturing and Maintaining Architectural Knowledge Using Context Information. 
 In 2012 Joint Working IEEE/IFIP Conference on Software Architecture and European Conference on Software Architecture (pp. 206–210). 
