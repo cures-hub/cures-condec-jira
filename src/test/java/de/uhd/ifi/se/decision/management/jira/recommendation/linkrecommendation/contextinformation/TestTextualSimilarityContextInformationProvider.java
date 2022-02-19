@@ -29,10 +29,37 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testCalculateSimilarityValid() {
+	public void testCalculateSimilarityOneWord() {
 		assertEquals(0.96, textualSimilarityContextInformationProvider.calculateSimilarity("MySQL", "MySQL@en"), 0.1);
-		assertEquals(1.0, textualSimilarityContextInformationProvider
+	}
+
+	@Test
+	public void testCalculateSimilarityVerySimilarSentence() {
+		assertEquals(1.42, textualSimilarityContextInformationProvider
 				.calculateSimilarity("How can we implement the feature?", "How to implement the feature?"), 0.0);
+	}
+
+	@Test
+	public void testCalculateSimilarityRelatedSentence() {
+		String firstSentence = "Which data do we export about the players?";
+		String secondSentence = "We could export it as a .txt file.";
+		assertEquals(0.9,
+				textualSimilarityContextInformationProvider.calculateSimilarity(firstSentence, secondSentence), 0.01);
+	}
+
+	@Test
+	public void testCalculateSimilarityUnrelatedSentence() {
+		String firstSentence = "In which file format do we export the team data?";
+		String secondSentence = "We could filter the exercises in the frontend";
+		String thirdSentence = "We could export it as a .txt file.";
+		String forthSentence = "Which data do we export about the players?";
+		assertEquals(0.753,
+				textualSimilarityContextInformationProvider.calculateSimilarity(firstSentence, secondSentence), 0.01);
+		assertEquals(0.83,
+				textualSimilarityContextInformationProvider.calculateSimilarity(firstSentence, thirdSentence), 0.01);
+		assertEquals(0.83,
+				textualSimilarityContextInformationProvider.calculateSimilarity(firstSentence, forthSentence), 0.01);
+
 	}
 
 	@Test
