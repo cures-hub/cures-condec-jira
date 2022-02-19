@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  *              automatic text classifier to measure the textual similarity of
  *              two texts.
  * @con Takes more computation effort.
+ * @pro Adds semantic meaning.
  */
 public class TextualSimilarityContextInformationProvider extends ContextInformationProvider {
 
@@ -63,7 +64,7 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	 */
 	public RecommendationScore assessRelation(String textA, String textB) {
 		double similarity = calculateSimilarity(textA, textB);
-		String explanation = getDescription() + " (Jaro-Winkler Similarity and number of same tokens)";
+		String explanation = getDescription() + " (using Jaro-Winkler similarity and number of same tokens)";
 		RecommendationScore score = new RecommendationScore((float) similarity, explanation);
 		if (similarity > 0.94) {
 			score.setPotentialDuplicate(true);
