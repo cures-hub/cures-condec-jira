@@ -60,20 +60,13 @@ public class ContextInformation extends ContextInformationProvider {
 				continue;
 			}
 			RecommendationScore subScore = contextInformationProvider.assessRelation(baseElement, otherElement);
-
 			float weightValue = contextInformationProvider.getWeightValue();
 
-			// Reverse rule effect if weight is negative
-			if (weightValue < 0) {
-				subScore.setValue(1 - subScore.getValue());
+			if (weightValue > 0) {
+				maxAchievableScore += contextInformationProvider.getWeightValue();
 			}
 
-			// Go through the selected rules and increase the max available score
-			// accordingly, used to normalize the final score
-			maxAchievableScore += Math.abs(contextInformationProvider.getWeightValue());
-
-			// Apply weight onto rule impact
-			subScore.weightValue(Math.abs(weightValue));
+			subScore.weightValue(weightValue); // multiplies rule value with weight value
 			score.addSubScore(subScore);
 		}
 		score.normalizeTo(maxAchievableScore);

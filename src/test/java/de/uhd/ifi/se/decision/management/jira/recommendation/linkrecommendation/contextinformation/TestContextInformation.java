@@ -55,7 +55,7 @@ public class TestContextInformation extends TestSetUp {
 				linkRecommendationConfiguration);
 		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 
-		assertTrue(linkRecommendations.size() > 0);
+		assertTrue(linkRecommendations.isEmpty());
 	}
 
 	@Test
