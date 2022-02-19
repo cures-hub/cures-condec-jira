@@ -4,11 +4,10 @@ The ConDec Jira plug-in offers a feature that **recommends new links between kno
 that tries to **identify duplicated knowledge elements**.
 In particular, the feature should support developers in
 1. **decision making through identifying related decision problems and solution options** documented by others or in the past (to prevent duplicated decision making),
-2. **creating a completely and correctly linked knowledge documentation** that can be exploited e.g. during **[change impact analysis](change-impact-analysis.md)** (to detect impacts, side, and ripple effects of changes), and
-3. general knowledge sharing and **knowledge exploitation**, since the link recommendation confronts the developers with related documented knowledge.
+2. **creating a completely and correctly linked knowledge documentation** that developers can be exploited e.g. during **[change impact analysis]** (to detect impacts, side, and ripple effects of changes), and
+3. general knowledge sharing and **knowledge exploitation**, since the link recommendation confronts the developers with related documented knowledge, which is not linked in the knowledge graph.
 
 ## Calculation of the Recommendation Score
-
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
 The context information is calculated from the following **context information providers, i.e. link recommendation rules**:
 
@@ -20,7 +19,7 @@ The context information is calculated from the following **context information p
 6. Recommend elements that are assigned to the **same decision group** as the source element
 7. Recommend elements that are assigned to the **same component** as the source element
 8. Recommend elements that can be **traced** to the source element
-9. Recommend elements that are the same knowledge type as the source element.
+9. Recommend elements that are the same knowledge type as the source element
 10. Recommend elements that are included in the **same sprint**
 
 Every context information provider calculates a <code>ruleValue<sub>i</sub></code>.
@@ -44,7 +43,7 @@ The link recommendations are sorted by their `recommendationScore` to determine 
 A link to another knowledge element is only recommended if the `recommendationScore >= threshold` and 
 if the link recommendation is under the **top-k recommendations**.
 
-Many of the link recommendation rules (i.e. context information providers) are also used during **[CIA](change-impact-analysis.md)**
+Many of the link recommendation rules (i.e. context information providers) are also used during **[change impact analysis]**
 as **change propagation rules**.
 
 ## Duplicate Recognition
@@ -68,7 +67,7 @@ The alternatives are duplicated.*
 The rationale manager can configure the **default parameters** for the link recommendation, in particular, the
 1. maximum number of recommendations (**top-k**), 
 2. the **threshold**, and 
-3. default ruleset (context information providers). The rationale manager can enable/disable each rule and can set a weight value (similar as for [CIA](change-impact-analysis.md)). 
+3. default ruleset (context information providers). The rationale manager can enable/disable each rule and can set a weight value (similar as for [change impact analysis]). 
 
 Furthermore, the developer can change the default values during the usage of the link recommendation. 
 
@@ -93,8 +92,8 @@ If they have a lower link distance, the score is higher.
 Finally, the *UserContextInformationProvider* gives a positive score if the assignee or reporter of the issue 
 where the first knowledge element is contained is the same as that of the second. 
 If the users are not the same, the score is zero.
-The class *ContextInformation* registers these four providers, and uses the information from them to create elements of the class *LinkRecommendation*.
-*LinkRecommendation* elements each have a *RecommendationScore* and inherit from the class Link, 
+The class *ContextInformation* registers these four providers, and uses the information from them to create objects of the class *LinkRecommendation*.
+*LinkRecommendation*s have a *RecommendationScore* and inherit from the class Link, 
 which means they have source and target elements, as well as a *LinkType* (not shown in the diagram).
 
 ![Overview class diagram](../diagrams/class_diagram_link_recommendation.png)
@@ -119,3 +118,5 @@ Capturing and Maintaining Architectural Knowledge Using Context Information.
 In 2012 Joint Working IEEE/IFIP Conference on Software Architecture and European Conference on Software Architecture (pp. 206-210). 
 Helsinki, Finland: IEEE. 
 https://doi.org/10.1109/WICSA-ECSA.212.30
+
+[change impact analysis]: change-impact-analysis.md
