@@ -94,7 +94,7 @@
 				let numRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations);
 				var summary = document.getElementById("link-recommendation-summary");
 				if (!numRecommendations) {
-					summary.innerHTML = "Great work! No <b>link recommendations</b> were found.";
+					summary.innerHTML = "Great work! No <b>link recommendations</b> and <b>potential duplicates</b> were found.";
 				} else {
 					summary.innerHTML = "There are <b>" + numRecommendations + "</b> "
 						+ "possibly related knowledge elements that are currently not linked. "

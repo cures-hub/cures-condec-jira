@@ -21,7 +21,7 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 	public UserContextInformationProvider() {
 		super();
 		isActive = true;
-		weightValue = -0.1f;
+		weightValue = -0.42f;
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		updateDateAndAuthor = new TreeMap<Date, String>();
-		updateDateAndAuthor.put(new Date(8000000), "FooBar");
+		updateDateAndAuthor.put(new Date(1000 * 24 * 60 * 60 + 1), "FooBar"); // > 1 day later
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 

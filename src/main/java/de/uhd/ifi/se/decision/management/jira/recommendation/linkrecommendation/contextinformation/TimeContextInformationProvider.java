@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * @issue Which time interval should be used to decide whether two knowledge
  *        elements are timely coupled?
  * @decision We assume that two elements are timely coupled if they were both
- *           modified within a time interval of 30 minutes!
+ *           modified within a time interval of 1 day!
  * @pro Easy solution to keep it simple and stupid.
  * @con Arbitrary number that should be evaluated.
  * @alternative We could enable the rationale manager to configure the interval
@@ -26,17 +26,17 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class TimeContextInformationProvider extends ContextInformationProvider {
 
-	public static int deltaTime = 30 * 60 * 1000; // ms for 30 minutes
+	public static int deltaTime = 1000 * 60 * 60 * 24; // ms for 1 day
 
 	/**
-	 * Per default, this context information provider is deactivated. Per default
-	 * (if activated), knowledge elements, which are timely coupled, are more likely
-	 * to be recommended because of the positive weight value.
+	 * Per default, this context information provider is activated and knowledge
+	 * elements, which are not timely coupled (e.g. from the past), are more likely
+	 * to be recommended because of the negative weight value.
 	 */
 	public TimeContextInformationProvider() {
 		super();
-		isActive = false;
-		weightValue = +0.1f;
+		isActive = true;
+		weightValue = -0.42f;
 	}
 
 	@Override

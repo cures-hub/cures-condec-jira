@@ -54,7 +54,6 @@ public class ContextInformation extends ContextInformationProvider {
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		RecommendationScore score = new RecommendationScore();
 		score.setExplanation(getName());
-		float maxAchievableScore = determineMaxAchievableScore();
 		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
 				.getContextInformationProviders()) {
 			if (!contextInformationProvider.isActive()) {
@@ -70,10 +69,15 @@ public class ContextInformation extends ContextInformationProvider {
 			subScore.weightValue(weightValue); // multiplies rule value with weight value
 			score.addSubScore(subScore);
 		}
+		float maxAchievableScore = determineMaxAchievableScore();
 		score.normalizeTo(maxAchievableScore);
 		return score;
 	}
 
+	/**
+	 * @return max achievable recommendation score of a hypothetical ideal
+	 *         recommendation.
+	 */
 	private float determineMaxAchievableScore() {
 		float maxAchievableScore = 0.0f;
 		boolean isKnowledgeTypeProviderIncluded = false;
@@ -90,6 +94,7 @@ public class ContextInformation extends ContextInformationProvider {
 				isKnowledgeTypeProviderIncluded = true;
 			}
 			if (contextInformationProvider.getWeightValue() > 0) {
+				// only positive weights are calculated because rule values are between [0, 1].
 				maxAchievableScore += contextInformationProvider.getWeightValue();
 			}
 		}
