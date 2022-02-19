@@ -46,7 +46,7 @@ public class ContextInformation extends ContextInformationProvider {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(element.getProject());
 		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
 		List<LinkRecommendation> recommendations = assessRelations(element, unlinkedElements);
-		recommendations = filterUselessRecommendations(recommendations);
+		recommendations = getTopKRecommendations(recommendations);
 		return markDiscardedRecommendations(recommendations);
 	}
 
@@ -82,6 +82,27 @@ public class ContextInformation extends ContextInformationProvider {
 
 	/**
 	 * @param recommendations
+	 *            all {@link LinkRecommendation}s as an unsorted collection.
+	 * @return the top-k recommendations with a {@link RecommendationScore} after
+	 *         sorting all the recommendations by their {@link RecommendationScore}.
+	 */
+	private List<LinkRecommendation> getTopKRecommendations(List<LinkRecommendation> recommendations) {
+		Set<LinkRecommendation> sortedRecommendations = new TreeSet<>(recommendations);
+		recommendations.clear();
+		int i = 0;
+		int k = linkRecommendationConfig.getMaxRecommendations(); // top k
+		for (LinkRecommendation recommendation : sortedRecommendations) {
+			if (i == k) {
+				break;
+			}
+			recommendations.add(recommendation);
+			++i;
+		}
+		return recommendations;
+	}
+
+	/**
+	 * @param recommendations
 	 *            {@link LinkRecommendation}s, sorting does not matter.
 	 * @return same {@link LinkRecommendation}s, but the recommendations that were
 	 *         discarded by the user are marked as such.
@@ -99,30 +120,6 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	/**
-	 * @param recommendations
-	 *            all {@link LinkRecommendation}s as an unsorted collection.
-	 * @return the top-k recommendations with a {@link RecommendationScore} above
-	 *         the threshold after sorting all the recommendations by their
-	 *         {@link RecommendationScore}.
-	 */
-	private List<LinkRecommendation> filterUselessRecommendations(List<LinkRecommendation> recommendations) {
-		Set<LinkRecommendation> sortedRecommendations = new TreeSet<>(recommendations);
-		recommendations.clear();
-		int i = 0;
-		int k = linkRecommendationConfig.getMaxRecommendations(); // top k
-		for (LinkRecommendation recommendation : sortedRecommendations) {
-			if (i == k) {
-				break;
-			}
-			if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability()) {
-				recommendations.add(recommendation);
-			}
-			++i;
-		}
-		return recommendations;
-	}
-
-	/**
 	 * Makes recommendations whether one {@link KnowledgeElement} should be linked
 	 * to other {@link KnowledgeElement}s that are currently not linked to it or
 	 * whether it is even a potential duplicate.
@@ -135,7 +132,9 @@ public class ContextInformation extends ContextInformationProvider {
 	 *            are not directly linked.
 	 * @return list of {@link LinkRecommendation}s. For each recommendation, the
 	 *         {@link RecommendationScore} indicates whether the element should be
-	 *         linked.
+	 *         linked. Only link recommendations with a score above the threshold
+	 *         {@link LinkRecommendationConfiguration#getMinProbability()} are
+	 *         returned.
 	 */
 	public List<LinkRecommendation> assessRelations(KnowledgeElement baseElement,
 			List<KnowledgeElement> knowledgeElements) {
@@ -147,13 +146,16 @@ public class ContextInformation extends ContextInformationProvider {
 				// only recommend relevant decision, project, or system knowledge elements
 				continue;
 			}
-			LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
+			LinkRecommendation recommendation = new LinkRecommendation(baseElement, elementToTest);
 			RecommendationScore score = assessRelation(baseElement, elementToTest);
-			linkSuggestion.setScore(score);
-			if (score.isPotentialDuplicate()) {
-				linkSuggestion.setRecommendationType(RecommendationType.DUPLICATE);
+			if (score.getValue() < linkRecommendationConfig.getMinProbability()) {
+				continue;
 			}
-			linkRecommendations.add(linkSuggestion);
+			recommendation.setScore(score);
+			if (score.isPotentialDuplicate()) {
+				recommendation.setRecommendationType(RecommendationType.DUPLICATE);
+			}
+			linkRecommendations.add(recommendation);
 		}
 		return linkRecommendations;
 	}
