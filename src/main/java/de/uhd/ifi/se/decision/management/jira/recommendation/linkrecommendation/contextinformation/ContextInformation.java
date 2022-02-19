@@ -54,7 +54,7 @@ public class ContextInformation extends ContextInformationProvider {
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		RecommendationScore score = new RecommendationScore();
 		score.setExplanation(getName());
-		float maxAchievableScore = 0.0f;
+		float maxAchievableScore = determineMaxAchievableScore();
 		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
 				.getContextInformationProviders()) {
 			if (!contextInformationProvider.isActive()) {
@@ -63,9 +63,7 @@ public class ContextInformation extends ContextInformationProvider {
 			RecommendationScore subScore = contextInformationProvider.assessRelation(baseElement, otherElement);
 			float weightValue = contextInformationProvider.getWeightValue();
 
-			if (weightValue > 0) {
-				maxAchievableScore += contextInformationProvider.getWeightValue();
-			} else {
+			if (weightValue < 0) {
 				subScore.setExplanation("Do not " + subScore.getExplanation().toLowerCase());
 			}
 
@@ -74,6 +72,28 @@ public class ContextInformation extends ContextInformationProvider {
 		}
 		score.normalizeTo(maxAchievableScore);
 		return score;
+	}
+
+	private float determineMaxAchievableScore() {
+		float maxAchievableScore = 0.0f;
+		boolean isKnowledgeTypeProviderIncluded = false;
+		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
+				.getContextInformationProviders()) {
+			if (!contextInformationProvider.isActive()) {
+				continue;
+			}
+			if (contextInformationProvider instanceof SolutionOptionContextInformationProvider
+					|| contextInformationProvider instanceof DecisionProblemContextInformationProvider) {
+				if (isKnowledgeTypeProviderIncluded) {
+					continue;
+				}
+				isKnowledgeTypeProviderIncluded = true;
+			}
+			if (contextInformationProvider.getWeightValue() > 0) {
+				maxAchievableScore += contextInformationProvider.getWeightValue();
+			}
+		}
+		return maxAchievableScore;
 	}
 
 	/**
