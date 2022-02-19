@@ -71,7 +71,7 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getExplanation() {
-		return "Assumes that knowledge elements created/updated during a similar time are related.";
+		return "Assumes that two knowledge elements are related if they were both created/updated during a time interval of one day.";
 	}
 
 	@Override

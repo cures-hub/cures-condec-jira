@@ -3,24 +3,16 @@
 The ConDec Jira plug-in offers a feature that **recommends new links between knowledge elements** and 
 that tries to **identify duplicated knowledge elements**.
 In particular, the feature should support developers in
-1. avoiding duplicated decision making through **identifying related decision problems and solution options** documented by others or in the past,
-2. detecting impacts, side, and ripple effects during changes in combination with **[change impact analysis (CIA)](change-impact-analysis.md)**, and 
-3. general knowledge sharing.
+1. **decision making through identifying related decision problems and solution options** documented by others or in the past (to prevent duplicated decision making),
+2. **creating a completely and correctly linked knowledge documentation** that can be exploited e.g. during **[change impact analysis](change-impact-analysis.md)** (to detect impacts, side, and ripple effects of changes), and
+3. general knowledge sharing and **knowledge exploitation**, since the link recommendation confronts the developers with related documented knowledge.
 
 ## Calculation of the Recommendation Score
 
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
 The context information is calculated from the following **context information providers, i.e. link recommendation rules**:
 
-| Name of Context Information Provider | Description | Inner Workings |
-|--------------------------------------|-------------|----------------|
-| Textual Similarity Context Information Provider | Recommend elements that are **textual similar** to the source element | <p>
-Assumes that textual similar knowledge elements are related. 
-First, the Strings to be compared are preprocessed as follows: 
-They are tokenized, the tokens are stemmed, and stop words are removed. 
-Then, a similarity score using Jaro-Winkler similarity and the number of same tokens is calculated.</p> |
-|--------------------------------------|-------------|----------------|
-
+1. Recommend elements that are **textual similar** to the source element
 2. Recommend elements that are **timely coupled** to the source element
 3. Recommend elements that have the **same author** as the source element
 4. Recommend elements that are **decision problems**
@@ -124,6 +116,6 @@ The UI code for link recommendation can be found here:
 The concept of context information providers is taken from: 
 Miesbauer, C., & Weinreich, R. (2012). 
 Capturing and Maintaining Architectural Knowledge Using Context Information. 
-In 2012 Joint Working IEEE/IFIP Conference on Software Architecture and European Conference on Software Architecture (pp. 206–210). 
+In 2012 Joint Working IEEE/IFIP Conference on Software Architecture and European Conference on Software Architecture (pp. 206-210). 
 Helsinki, Finland: IEEE. 
 https://doi.org/10.1109/WICSA-ECSA.212.30

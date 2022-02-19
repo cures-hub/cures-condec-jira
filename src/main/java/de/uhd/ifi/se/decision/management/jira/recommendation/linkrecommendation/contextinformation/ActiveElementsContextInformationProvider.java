@@ -17,6 +17,9 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	private List<Long> activeIssueIds;
 
+	/**
+	 * Per default, this context information provider is deactivated.
+	 */
 	public ActiveElementsContextInformationProvider() {
 		super();
 		isActive = false;

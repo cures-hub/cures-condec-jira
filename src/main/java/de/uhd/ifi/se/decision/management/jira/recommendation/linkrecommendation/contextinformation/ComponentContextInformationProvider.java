@@ -15,6 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class ComponentContextInformationProvider extends ContextInformationProvider {
 
+	/**
+	 * Per default, this context information provider is deactivated.
+	 */
 	public ComponentContextInformationProvider() {
 		super();
 		isActive = false;

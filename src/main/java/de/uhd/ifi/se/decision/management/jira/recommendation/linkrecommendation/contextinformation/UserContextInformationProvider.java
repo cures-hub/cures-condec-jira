@@ -45,7 +45,7 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getExplanation() {
-		return "Assumes that knowledge elements created or modified by the same user are related.";
+		return "Assumes that knowledge elements created or modified by the same user (creator, reporter, or assignee) are related.";
 	}
 
 	@Override
