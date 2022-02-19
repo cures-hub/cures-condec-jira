@@ -34,6 +34,11 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	private static final SimilarityScore<Double> similarityScore = new JaroWinklerDistance();
 	private static Preprocessor preprocessor = Preprocessor.getInstance();
 
+	/**
+	 * Per default, this context information provider is activated and the weight
+	 * value is 2. Thus, knowledge elements that are textual similar are more likely
+	 * to be recommended.
+	 */
 	public TextualSimilarityContextInformationProvider() {
 		super();
 		weightValue = 2;
@@ -69,7 +74,7 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 
 	/**
 	 * Preprocesses the text as stemmed tokens without stop words. Then, measures
-	 * Jaro-Winkler similarity and number of intersecting words.
+	 * Jaro-Winkler similarity and number of same tokens.
 	 * 
 	 * @param left
 	 *            text first text to be compared.
@@ -96,7 +101,10 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 
 	@Override
 	public String getExplanation() {
-		return "Assumes that textual similar knowledge elements are related.";
+		return "Assumes that textual similar knowledge elements are related. "
+				+ "First, the Strings to be compared are preprocessed as follows: "
+				+ "They are tokenized, the tokens are stemmed, and stop words are removed. "
+				+ "Then, a similarity score using Jaro-Winkler similarity and the number of same tokens is calculated.";
 	}
 
 	@Override

@@ -12,7 +12,11 @@ In particular, the feature should support developers in
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
 The context information is calculated from the following **context information providers, i.e. link recommendation rules**:
 
-1. Recommend elements that are **textual similar** to the source element
+1. Recommend elements that are **textual similar** to the source element:
+Assumes that textual similar knowledge elements are related. 
+First, the Strings to be compared are preprocessed as follows: 
+They are tokenized, the tokens are stemmed, and stop words are removed. 
+Then, a similarity score using Jaro-Winkler similarity and the number of same tokens is calculated. 
 2. Recommend elements that are **timely coupled** to the source element
 3. Recommend elements that have the **same author** as the source element
 4. Recommend elements that are **decision problems**
