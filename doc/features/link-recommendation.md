@@ -14,12 +14,12 @@ The context information is calculated from the following **context information p
 
 | Name of Context Information Provider | Description | Inner Workings |
 |--------------------------------------|-------------|----------------|
-| Textual Similarity Context Information Provider | Recommend elements that are **textual similar** to the source element |
+| Textual Similarity Context Information Provider | Recommend elements that are **textual similar** to the source element | <p>
 Assumes that textual similar knowledge elements are related. 
 First, the Strings to be compared are preprocessed as follows: 
 They are tokenized, the tokens are stemmed, and stop words are removed. 
-Then, a similarity score using Jaro-Winkler similarity and the number of same tokens is calculated. |
-
+Then, a similarity score using Jaro-Winkler similarity and the number of same tokens is calculated.</p> |
+|--------------------------------------|-------------|----------------|
 
 2. Recommend elements that are **timely coupled** to the source element
 3. Recommend elements that have the **same author** as the source element
