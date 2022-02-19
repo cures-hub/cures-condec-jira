@@ -62,6 +62,9 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		String text = getText();
 		this.setDescription(text);
 		determineOrigin();
+		updateDateAndAuthor.put(getCreationDate(), getCreator() != null ? getCreator().getDisplayName() : "");
+		updateDateAndAuthor.put(getLatestUpdatingDate(),
+				getLatestUpdateAuthor() != null ? getLatestUpdateAuthor().getDisplayName() : "");
 	}
 
 	/**
@@ -347,6 +350,14 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 			return issue.getReporter();
 		}
 		return null;
+	}
+
+	public ApplicationUser getLatestUpdateAuthor() {
+		Comment comment = getComment();
+		if (comment != null) {
+			return comment.getUpdateAuthorApplicationUser();
+		}
+		return getCreator();
 	}
 
 	/**

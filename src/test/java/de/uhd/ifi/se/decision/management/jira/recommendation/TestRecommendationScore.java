@@ -52,7 +52,7 @@ public class TestRecommendationScore extends TestSetUp {
 	}
 
 	@Test
-	public void testNormalizeToMaxValue() {
+	public void testNormalizeScoreToMaxValue() {
 		score.setValue(0.5f);
 		assertTrue(score.getSubScores().isEmpty());
 		score.normalizeTo(0.5f);

@@ -12,8 +12,21 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * Rates relations based on time of creation or modifications of elements.
  * Elements with a similar creation or modification time are stronger related
  * than elements with a quite different modification or creation time.
+ *
+ * @issue Which time interval should be used to assume whether two knowledge
+ *        elements are timely coupled?
+ * @decision We assume that two elements are timely coupled if they were both
+ *           modified within a time interval of 30 minutes!
+ * @pro Easy solution to keep it simple and stupid.
+ * @con Arbitrary number that should be evaluated.
+ * @alternative We could enable the rationale manager to configure the interval
+ *              for timely coupling.
+ * @con Might not bring a big advantage for the results of link recommendation
+ *      and CIA. Needs to be evaluated first.
  */
 public class TimeContextInformationProvider extends ContextInformationProvider {
+
+	public static int deltaTime = 30 * 60 * 1000; // ms for 30 minutes
 
 	public TimeContextInformationProvider() {
 		super();
@@ -23,20 +36,31 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		Set<Date> coupledUpdates = new HashSet<>();
+
 		for (Date rootElementUpdate : baseElement.getUpdateDateAndAuthor().keySet()) {
-			// 600000ms equals 10 minutes, as such when an element was updated either 10
-			// minutes before or after the source element coupling will be assumed
-			coupledUpdates = elementToTest.getUpdateDateAndAuthor().keySet().stream()
-					.filter(updateDate -> updateDate.getTime() > (rootElementUpdate.getTime() - 600000)
-							&& updateDate.getTime() < (rootElementUpdate.getTime() + 600000))
-					.collect(Collectors.toSet());
+			coupledUpdates.addAll(elementToTest.getUpdateDateAndAuthor().keySet().stream()
+					.filter(updateDate -> areDatesSimilar(updateDate, rootElementUpdate, deltaTime))
+					.collect(Collectors.toSet()));
 		}
-		double score = 0.0;
-		if (!coupledUpdates.isEmpty()) {
-			score = 0.3 * coupledUpdates.size();
+		float score = 0.3f * coupledUpdates.size();
+		if (score > 1.0) {
+			score = 1.0f;
 		}
-		return score >= 1.0 ? new RecommendationScore((float) 1.0, getName() + " (ms)")
-			: new RecommendationScore((float) score, getName() + " (ms)");
+		return new RecommendationScore(score, getName() + " (ms)");
+	}
+
+	/**
+	 * @param date1
+	 *            first date object.
+	 * @param date2
+	 *            second date object.
+	 * @param deltaTime
+	 *            time interval in ms.
+	 * @return true if the first date is either before or after the second date
+	 *         within the time interval.
+	 */
+	public static boolean areDatesSimilar(Date date1, Date date2, int deltaTime) {
+		return date1.getTime() >= (date2.getTime() - deltaTime) && date1.getTime() <= (date2.getTime() + deltaTime);
 	}
 
 	@Override

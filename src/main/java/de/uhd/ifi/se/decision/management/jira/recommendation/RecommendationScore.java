@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class RecommendationScore {
 
-	private float value;
+	private Float value;
 	private String explanation;
 	private List<RecommendationScore> subScores;
 	private boolean isPotentialDuplicate;
@@ -39,7 +39,7 @@ public class RecommendationScore {
 	 */
 	@XmlElement
 	public float getValue() {
-		return value != 0 ? value : getSumOfSubScores();
+		return value != null ? value : getSumOfSubScores();
 	}
 
 	/**
@@ -53,8 +53,10 @@ public class RecommendationScore {
 	}
 
 	/**
+	 * Multiplies the score value with a weight value to determine its importance.
+	 * 
 	 * @param weightValue
-	 *            of the recommendation rule.
+	 *            of the recommendation rule. Can be negative to reverse the effect.
 	 */
 	public void weightValue(float weightValue) {
 		setValue(getValue() * weightValue);
@@ -74,12 +76,16 @@ public class RecommendationScore {
 	/**
 	 * Normalizes the score value against the value of the best recommendation. Adds
 	 * a sub-score for the absolute score value of this recommendation and another
-	 * sub-score for the absolute score value of the best recommendation.
+	 * sub-score for the absolute score value of the best recommendation for
+	 * explainability.
 	 * 
 	 * @param maxScoreValue
 	 *            of the best recommendation, set to 1 (i.e. 100%).
 	 */
 	public void normalizeTo(float maxScoreValue) {
+		if (maxScoreValue == 0) {
+			return;
+		}
 		float oldValue = getValue();
 		// keep the current explanation as a sub-score after normalizing
 		addSubScore(new RecommendationScore(oldValue, explanation + " of this recommendation (absolute value)"));

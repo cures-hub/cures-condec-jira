@@ -52,7 +52,8 @@ public class ContextInformation extends ContextInformationProvider {
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
-		RecommendationScore score = new RecommendationScore(0, getName());
+		RecommendationScore score = new RecommendationScore();
+		score.setExplanation(getName());
 		float maxAchievableScore = 0.0f;
 		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
 				.getContextInformationProviders()) {
