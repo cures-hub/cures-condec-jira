@@ -43,7 +43,7 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 
 	@Test
 	public void testGetAndSetWeightValue() {
-		assertEquals(1, textualSimilarityContextInformationProvider.getWeightValue(), 0.0);
+		assertEquals(2, textualSimilarityContextInformationProvider.getWeightValue(), 0.0);
 		textualSimilarityContextInformationProvider.setWeightValue(42);
 		assertEquals(42, textualSimilarityContextInformationProvider.getWeightValue(), 0.0);
 	}

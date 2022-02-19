@@ -76,6 +76,6 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are timely coupled to the source element.";
+		return "Recommend elements that are timely coupled to the source element";
 	}
 }
