@@ -62,6 +62,14 @@ public abstract class ContextInformationProvider {
 	protected boolean isActive;
 	protected float weightValue;
 
+	/**
+	 * @issue Which link recommendation rules (context information providers) should
+	 *        be activated by default and with which weights?
+	 * @decision The default activation and default weight differ for every link
+	 *           recommendation rule! For example, the
+	 *           TextualSimilarityContextInformationProvider is activated per
+	 *           default with a weight value of 2 to increase its importance.
+	 */
 	public ContextInformationProvider() {
 		isActive = true;
 		weightValue = 1;

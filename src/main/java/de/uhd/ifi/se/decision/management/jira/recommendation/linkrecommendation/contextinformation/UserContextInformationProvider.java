@@ -13,9 +13,15 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class UserContextInformationProvider extends ContextInformationProvider {
 
+	/**
+	 * Per default, this context information provider is activated and knowledge
+	 * elements with different authors are more likely to be recommended because of
+	 * the negative weight value.
+	 */
 	public UserContextInformationProvider() {
 		super();
-		isActive = false;
+		isActive = true;
+		weightValue = -0.1f;
 	}
 
 	@Override

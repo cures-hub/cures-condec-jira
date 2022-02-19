@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  * Elements with a similar creation or modification time are stronger related
  * than elements with a quite different modification or creation time.
  *
- * @issue Which time interval should be used to assume whether two knowledge
+ * @issue Which time interval should be used to decide whether two knowledge
  *        elements are timely coupled?
  * @decision We assume that two elements are timely coupled if they were both
  *           modified within a time interval of 30 minutes!
@@ -28,9 +28,15 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 
 	public static int deltaTime = 30 * 60 * 1000; // ms for 30 minutes
 
+	/**
+	 * Per default, this context information provider is deactivated. Per default
+	 * (if activated), knowledge elements, which are timely coupled, are more likely
+	 * to be recommended because of the positive weight value.
+	 */
 	public TimeContextInformationProvider() {
 		super();
 		isActive = false;
+		weightValue = +0.1f;
 	}
 
 	@Override

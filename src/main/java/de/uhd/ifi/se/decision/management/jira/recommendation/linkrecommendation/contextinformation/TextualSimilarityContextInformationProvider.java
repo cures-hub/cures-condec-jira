@@ -18,6 +18,11 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 
 	private static final SimilarityScore<Double> similarityScore = new JaroWinklerDistance();
 
+	public TextualSimilarityContextInformationProvider() {
+		super();
+		weightValue = 2;
+	}
+
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
 		return assessRelation(baseElement.getText(), elementToTest.getText());
