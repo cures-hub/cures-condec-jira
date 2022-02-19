@@ -65,6 +65,8 @@ public class ContextInformation extends ContextInformationProvider {
 
 			if (weightValue > 0) {
 				maxAchievableScore += contextInformationProvider.getWeightValue();
+			} else {
+				subScore.setExplanation("Do not " + subScore.getExplanation().toLowerCase());
 			}
 
 			subScore.weightValue(weightValue); // multiplies rule value with weight value

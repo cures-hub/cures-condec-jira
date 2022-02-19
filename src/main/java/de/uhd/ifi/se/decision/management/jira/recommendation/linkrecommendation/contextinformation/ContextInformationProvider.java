@@ -34,25 +34,25 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY)
 @JsonSubTypes({ @JsonSubTypes.Type(value = ActiveElementsContextInformationProvider.class, //
-		name = "Recommend elements that are included in the same sprint."),
+		name = "Recommend elements that are included in the same sprint"),
 		@JsonSubTypes.Type(value = ComponentContextInformationProvider.class, //
-				name = "Recommend elements that are assigned to the same component as the source element."),
+				name = "Recommend elements that are assigned to the same component as the source element"),
 		@JsonSubTypes.Type(value = DecisionGroupContextInformationProvider.class, //
-				name = "Recommend elements that are assigned to the same decision group as the source element."),
+				name = "Recommend elements that are assigned to the same decision group as the source element"),
 		@JsonSubTypes.Type(value = TextualSimilarityContextInformationProvider.class, //
-				name = "Recommend elements that are textual similar to the source element."),
+				name = "Recommend elements that are textual similar to the source element"),
 		@JsonSubTypes.Type(value = TimeContextInformationProvider.class, //
-				name = "Recommend elements that are timely coupled to the source element."),
+				name = "Recommend elements that are timely coupled to the source element"),
 		@JsonSubTypes.Type(value = TracingContextInformationProvider.class, //
-				name = "Recommend elements that can be traced to the source element."),
+				name = "Recommend elements that can be traced to the source element"),
 		@JsonSubTypes.Type(value = UserContextInformationProvider.class, //
-				name = "Recommend elements that have the same author as the source element."),
+				name = "Recommend elements that have the same author as the source element"),
 		@JsonSubTypes.Type(value = KnowledgeTypeContextInformationProvider.class, //
-				name = "Recommend elements that are the same knowledge type as the source element."),
+				name = "Recommend elements that are the same knowledge type as the source element"),
 		@JsonSubTypes.Type(value = DecisionProblemContextInformationProvider.class, //
-				name = "Recommend elements that are decision problems."),
+				name = "Recommend elements that are decision problems"),
 		@JsonSubTypes.Type(value = SolutionOptionContextInformationProvider.class, //
-				name = "Recommend elements that are solution options.") })
+				name = "Recommend elements that are solution options") })
 public abstract class ContextInformationProvider {
 
 	/**

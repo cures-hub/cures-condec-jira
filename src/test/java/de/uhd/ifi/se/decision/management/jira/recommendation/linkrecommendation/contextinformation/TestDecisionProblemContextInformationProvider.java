@@ -11,32 +11,34 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestDecisionProblemContextInformationProvider extends TestSetUp{
-    
-    private DecisionProblemContextInformationProvider decisionProblemContextInformationProvider;
+public class TestDecisionProblemContextInformationProvider extends TestSetUp {
+
+	private DecisionProblemContextInformationProvider decisionProblemContextInformationProvider;
 	private KnowledgeElement currentElement;
 	private KnowledgeElement rootElement;
 
-    @Before
+	@Before
 	public void setUp() {
 		init();
 		decisionProblemContextInformationProvider = new DecisionProblemContextInformationProvider();
 		rootElement = KnowledgeElements.getTestKnowledgeElements().get(0);
 	}
 
-    @Test
+	@Test
 	public void testPropagationNonDecisionProblem() {
-        currentElement = KnowledgeElements.getOtherWorkItem();
-        RecommendationScore score = decisionProblemContextInformationProvider.assessRelation(rootElement, currentElement);
-		
-        assertEquals(0.0, score.getValue(), 0.00);
-        assertEquals("DecisionProblemContextInformationProvider", score.getExplanation());
+		currentElement = KnowledgeElements.getOtherWorkItem();
+		RecommendationScore score = decisionProblemContextInformationProvider.assessRelation(rootElement,
+				currentElement);
+
+		assertEquals(0.0, score.getValue(), 0.00);
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test
 	public void testPropagationDecisionProblem() {
-        currentElement = KnowledgeElements.getUnsolvedDecisionProblem();
-        RecommendationScore score = decisionProblemContextInformationProvider.assessRelation(rootElement, currentElement);
+		currentElement = KnowledgeElements.getUnsolvedDecisionProblem();
+		RecommendationScore score = decisionProblemContextInformationProvider.assessRelation(rootElement,
+				currentElement);
 
 		assertEquals(1.0, score.getValue(), 0.00);
 	}

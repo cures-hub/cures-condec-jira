@@ -52,7 +52,7 @@ public class TimeContextInformationProvider extends ContextInformationProvider {
 		if (score > 1.0) {
 			score = 1.0f;
 		}
-		return new RecommendationScore(score, getName() + " (ms)");
+		return new RecommendationScore(score, getDescription());
 	}
 
 	/**

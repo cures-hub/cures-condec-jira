@@ -32,7 +32,7 @@ public class DecisionGroupContextInformationProvider extends ContextInformationP
 					.filter(item -> otherElement.getDecisionGroups().contains(item)).collect(Collectors.toSet());
 			score = setOfMatchingDecisionGroups.size() / numberOfGroupsOfBaseElement;
 		}
-		return new RecommendationScore(score, getName());
+		return new RecommendationScore(score, getDescription());
 	}
 
 	@Override
@@ -42,6 +42,6 @@ public class DecisionGroupContextInformationProvider extends ContextInformationP
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are assigned to the same decision group as the source element.";
+		return "Recommend elements that are assigned to the same decision group as the source element";
 	}
 }

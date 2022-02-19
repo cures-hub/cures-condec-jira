@@ -25,7 +25,7 @@ public class TestActiveElementsContextInformationProvider extends TestSetUp {
 		RecommendationScore score = activeElementsContextInformationProvider
 				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
 		assertEquals(0.0, score.getValue(), 0);
-		assertEquals("ActiveElementsContextInformationProvider (same Sprint)", score.getExplanation());
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test

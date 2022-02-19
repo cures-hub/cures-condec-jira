@@ -25,7 +25,7 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 		RecommendationScore score = textualSimilarityContextInformationProvider
 				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
 		assertEquals(0.44, score.getValue(), 0.1);
-		assertEquals("TextualSimilarityContextInformationProvider (JaroWinklerDistance)", score.getExplanation());
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test

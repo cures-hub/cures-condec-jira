@@ -42,7 +42,7 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 	 */
 	public RecommendationScore assessRelation(String textA, String textB) {
 		double similarity = calculateSimilarity(textA, textB);
-		String explanation = getName() + " (JaroWinklerDistance)";
+		String explanation = getDescription() + " (JaroWinklerDistance)";
 		RecommendationScore score = new RecommendationScore((float) similarity, explanation);
 		if (similarity > 0.94) {
 			score.setPotentialDuplicate(true);
@@ -70,6 +70,6 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are textual similar to the source element.";
+		return "Recommend elements that are textual similar to the source element";
 	}
 }

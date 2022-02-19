@@ -27,8 +27,8 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
-		return new RecommendationScore((float) isActive, getName() + " (same Sprint)");
+		float isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1 : 0;
+		return new RecommendationScore(isActive, getDescription());
 	}
 
 	@Override
@@ -38,6 +38,6 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are included in the same sprint.";
+		return "Recommend elements that are included in the same sprint";
 	}
 }

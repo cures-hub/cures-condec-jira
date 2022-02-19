@@ -33,7 +33,7 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 			score += isApplicationUserEqual(baseElementJiraIssue.getAssignee(), otherElementJiraIssue.getAssignee());
 			score += isApplicationUserEqual(baseElementJiraIssue.getReporter(), otherElementJiraIssue.getReporter());
 		}
-		return new RecommendationScore((float) score, getName() + " (checks equal creator, reporter, and assignee)");
+		return new RecommendationScore((float) score, getDescription());
 	}
 
 	public static double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
@@ -50,6 +50,6 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that have the same author as the source element.";
+		return "Recommend elements that have the same author as the source element";
 	}
 }

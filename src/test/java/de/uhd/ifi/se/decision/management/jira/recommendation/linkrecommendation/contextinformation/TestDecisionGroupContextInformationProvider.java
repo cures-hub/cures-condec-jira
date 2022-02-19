@@ -30,7 +30,7 @@ public class TestDecisionGroupContextInformationProvider extends TestSetUp {
 	public void testRootNoDecisionGroups() {
 		RecommendationScore score = decisionGroupContextInformationProvider.assessRelation(rootElement, currentElement);
 		assertEquals(1.0, score.getValue(), 0.00);
-		assertEquals("DecisionGroupContextInformationProvider", score.getExplanation());
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test

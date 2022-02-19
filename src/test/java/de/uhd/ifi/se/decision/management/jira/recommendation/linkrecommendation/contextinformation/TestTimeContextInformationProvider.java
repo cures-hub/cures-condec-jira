@@ -31,7 +31,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationNoCoupling() {
+	public void testNoCoupling() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		updateDateAndAuthor.put(new Date(0), "FooBar");
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
@@ -42,11 +42,11 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
 		assertEquals(0.0, score.getValue(), 0.00);
-		assertEquals("TimeContextInformationProvider (ms)", score.getExplanation());
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test
-	public void testPropagationLargeCoupling() {
+	public void testLargeCoupling() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		updateDateAndAuthor.put(new Date(1000), "FooBar");
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
@@ -62,7 +62,7 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationNoUpdates() {
+	public void testNoUpdates() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);

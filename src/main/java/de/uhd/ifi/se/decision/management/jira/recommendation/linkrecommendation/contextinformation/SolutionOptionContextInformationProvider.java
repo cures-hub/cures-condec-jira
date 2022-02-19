@@ -23,10 +23,11 @@ public class SolutionOptionContextInformationProvider extends ContextInformation
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
+		float score = 0;
 		if (otherElement.getType().getSuperType().equals(KnowledgeType.SOLUTION)) {
-			return new RecommendationScore(1.0f, getName());
+			score = 1;
 		}
-		return new RecommendationScore(0.0f, getName());
+		return new RecommendationScore(score, getDescription());
 	}
 
 	@Override
@@ -36,6 +37,6 @@ public class SolutionOptionContextInformationProvider extends ContextInformation
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are solution options.";
+		return "Recommend elements that are solution options";
 	}
 }

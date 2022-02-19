@@ -46,6 +46,6 @@ public class ComponentContextInformationProvider extends ContextInformationProvi
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are assigned to the same component as the source element.";
+		return "Recommend elements that are assigned to the same component as the source element";
 	}
 }

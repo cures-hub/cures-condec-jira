@@ -23,10 +23,11 @@ public class DecisionProblemContextInformationProvider extends ContextInformatio
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
+		float score = 0;
 		if (otherElement.getType().getSuperType().equals(KnowledgeType.PROBLEM)) {
-			return new RecommendationScore(1.0f, getName());
+			score = 1;
 		}
-		return new RecommendationScore(0.0f, getName());
+		return new RecommendationScore(score, getDescription());
 	}
 
 	@Override
@@ -36,6 +37,6 @@ public class DecisionProblemContextInformationProvider extends ContextInformatio
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are decision problems.";
+		return "Recommend elements that are decision problems";
 	}
 }

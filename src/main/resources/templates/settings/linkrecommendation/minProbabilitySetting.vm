@@ -6,9 +6,8 @@
            step="0.05" min="0" max="1"
            id="min-probability-link" />
     <button id="save-min-probability-link-btn" class='aui-button'>Save</button>
-    <div class="description">To calculate the link suggestions, the knowledge elements of a project are used as a basis. 
-    	Set minimum <var>elementImpact</var> at which the propagation is stopped.
-    	The element is included in the impact graph if <code>elementImpact >= threshold</code>.
+    <div class="description">Sets the minimum recommendation score, i.e. the threshold to create a recommendation.
+    	An unlinked element is recommended if its <code>recommendationScore >= threshold</code>.
     </div>
 </div>
 
