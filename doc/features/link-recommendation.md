@@ -13,9 +13,9 @@ The respective nodes are highlighted and there is a dedicated *recommended* link
 Developers can use the filter possibilities in [knowledge graph views] to inspect the context of the recommended elements.
 Besides, the recommended elements can be included in [change impact analysis].
 
-![Node-link diagram with link recommendations colored in blue and link type recommended](../screenshots/link_recommendation_node_link_diagram.png)
+![Node-link diagram with link recommendations colored in blue and particular link type](../screenshots/link_recommendation_node_link_diagram.png)
 
-*Node-link diagram with link recommendations colored in blue and link type recommended*
+*Node-link diagram with link recommendations colored in blue and particular link type*
 
 Besides, ConDec offers a dedicated view for link recommendation and duplicate recognition which developers can access as follows:
 1. Developers can access the view from every Jira issue, i.e. it is included in the Jira issue view.
@@ -24,6 +24,9 @@ Besides, ConDec offers a dedicated view for link recommendation and duplicate re
 ![Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem](../screenshots/link_recommendation_view.png)
 
 *Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem*
+
+Developers can **accept (link) or discard** the recommendations.
+The discarding can be undone.
 
 ## Calculation of the Recommendation Score
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
@@ -66,11 +69,11 @@ if the link recommendation is under the **top-k recommendations**.
 Many of the link recommendation rules (i.e. context information providers) are also used during **[change impact analysis]**
 as **change propagation rules**.
 
-Developers can see an **explanation for the `recommendationScore`** of each recommendation (similar to the explanations during [change impact analysis] and [decision guidance]).
+Developers can see an **explanation for the score of each recommendation** (similar to the explanations during [change impact analysis] and [decision guidance]).
 
-![Explanation of the score for a link recommendation](../screenshots/link_recommendation_score.png)
+![Link recommendation view showing the explanation of one recommendation score and one discarded recommendation](../screenshots/link_recommendation_score.png)
 
-*Explanation of the score for a link recommendation*
+*Link recommendation view showing the explanation of one recommendation score and one discarded recommendation*
 
 ## Duplicate Recognition
 The textual similarity context information provider is used to **identify duplicates**.
@@ -88,6 +91,14 @@ e.g. in the [node-link diagram](../screenshots/link_recommendation_duplicates_no
 *Node-link diagram showing the context of a user story.
 Directly and transitively linked decision problems (issues) and solution options (alternatives) are shown that match the "export" filter string. 
 The alternatives are duplicated.*
+
+## Nudging Mechanisms
+ConDec uses the following **[nudging mechanisms](nudging.md)** to support the usage of the link recommendation and duplicate recognition feature:
+
+- **Ambient feedback:** The colored menu item indicates whether action is needed, i.e., 
+whether there are recommendations that were not yet accepted or discarded by the developers.
+- **Just-in-time prompt:** ConDec shows a [just-in-time prompt](../screenshots/nudging_prompt.png) to the developers when they change the state of a Jira issue.
+Similar to the ambient feedback nudge, the just-in-time prompt indicates whether action is needed.
 
 ## Configuration
 The rationale manager can configure the **default parameters** for the link recommendation, in particular, the

@@ -51,9 +51,9 @@ The recommendations for the decision problem *Which framework should we use as a
 Only the top-k recommendations (k=5 in the Figure) are used for the evaluation.
 
 ## Nudging Mechanisms
-ConDec uses the following [nudging mechanisms](nudging.md) to support the usage of the decision guidance feature:
+ConDec uses the following **[nudging mechanisms](nudging.md)** to support the usage of the decision guidance feature:
 
-- **Ambient feedback:** The colored menu item indicate whether action is needed, i.e., 
+- **Ambient feedback:** The colored menu item indicates whether action is needed, i.e., 
 whether there are recommendations that were not yet accepted or discarded by the developers.
 - **Just-in-time prompt:** ConDec shows a [just-in-time prompt](../screenshots/nudging_prompt.png) to the developers when they change the state of a Jira issue.
 Similar to the ambient feedback nudge, the just-in-time prompt indicates whether action is needed.
