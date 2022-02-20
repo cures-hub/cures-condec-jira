@@ -1,5 +1,8 @@
 /**
- * This module implements the link recommendation and duplicate detection.
+ * Implements the view for link recommendation and duplicate detection.
+ * 
+ * Is referenced in HTML by
+ * tabs/recommendation/linkRecommendation.vm
  */
 (function(global) {
 

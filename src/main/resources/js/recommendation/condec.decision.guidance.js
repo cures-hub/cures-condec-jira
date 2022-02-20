@@ -1,15 +1,14 @@
 /**
- * This module implements the solution option recommendation for decision problems (=decision guidance).
+ * Implements the view for solution option recommendation for decision problems (=decision guidance).
  * The recommended solution options are taken from external knowledge sources, such as
  * other Jira projects or DBPedia.
+ * 
+ * Is referenced in HTML by
+ * tabs/recommendation/decisionGuidance.vm
  */
 (function(global) {
 
-	var selectedDecisionProblem;
-
-	let ConDecDecisionGuidance = function() {
-
-	};
+	let ConDecDecisionGuidance = function() { };
 
 	ConDecDecisionGuidance.prototype.initView = function() {
 		// get all the decision problems for the dropdown and fill the dropdown

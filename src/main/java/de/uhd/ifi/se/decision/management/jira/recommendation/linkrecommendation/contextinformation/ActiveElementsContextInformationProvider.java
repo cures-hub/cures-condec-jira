@@ -15,8 +15,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class ActiveElementsContextInformationProvider extends ContextInformationProvider {
 
-	private List<Long> activeIssueIds;
+	public List<Long> activeIssueIds;
 
+	/**
+	 * Per default, this context information provider is deactivated.
+	 */
 	public ActiveElementsContextInformationProvider() {
 		super();
 		isActive = false;
@@ -27,8 +30,8 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement elementToTest) {
-		double isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1. : 0.;
-		return new RecommendationScore((float) isActive, getName() + " (same Sprint)");
+		float isActive = activeIssueIds.contains(elementToTest.getJiraIssue().getId()) ? 1 : 0;
+		return new RecommendationScore(isActive, getDescription());
 	}
 
 	@Override
@@ -38,6 +41,6 @@ public class ActiveElementsContextInformationProvider extends ContextInformation
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are assigned to the same decision group as the source element.";
+		return "Recommend elements that are included in the same sprint";
 	}
 }

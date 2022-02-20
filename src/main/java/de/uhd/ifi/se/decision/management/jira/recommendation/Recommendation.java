@@ -60,7 +60,7 @@ public interface Recommendation extends Comparable<Recommendation> {
 	 * @param recommendations
 	 *            list of {@link Recommendation}s.
 	 * @return recommendations with normalized scores against the best
-	 *         recommendation in the range of [0%, 100%].
+	 *         recommendation in the range of [0, 1].
 	 */
 	static List<Recommendation> normalizeRecommendationScore(List<Recommendation> recommendations) {
 		float maxValue = getMaxScoreValue(recommendations);
@@ -72,11 +72,11 @@ public interface Recommendation extends Comparable<Recommendation> {
 	 * sets this score to 100%.
 	 * 
 	 * @param maxValue
-	 *            is set to 100%.
+	 *            is set to 1 (i.e. 100%).
 	 * @param recommendations
 	 *            list of {@link Recommendation}s.
 	 * @return recommendations with normalized scores against the max value in the
-	 *         range of [0%, 100%].
+	 *         range of [0, 1].
 	 */
 	static List<Recommendation> normalizeRecommendationScore(float maxValue, List<Recommendation> recommendations) {
 		for (Recommendation recommendation : recommendations) {
@@ -90,7 +90,7 @@ public interface Recommendation extends Comparable<Recommendation> {
 	 *            list of {@link Recommendation}s.
 	 * @return value of the best scored {@link Recommendation}. Used to normalize
 	 *         the {@link RecommendationScore}s of all recommendations in the range
-	 *         of [0%, 100%].
+	 *         of [0, 1].
 	 */
 	static float getMaxScoreValue(List<Recommendation> recommendations) {
 		float maxScoreValue = 0;

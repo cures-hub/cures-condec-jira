@@ -148,6 +148,7 @@ public class JiraIssues {
 		issue.setReporter(user);
 		issue.setReporterId(user.getUsername());
 		issue.setAssignee(user);
+		issue.setComponent(new ArrayList<>());
 		return issue;
 	}
 
@@ -235,7 +236,8 @@ public class JiraIssues {
 	}
 
 	public static MutableIssue addTestComponentToIssue(MutableIssue issue, long id) {
-		MutableProjectComponent component = new MutableProjectComponent(id, "Feature", "Do something", "FEATURE", (long) 0, issue.getProjectId(), false);
+		MutableProjectComponent component = new MutableProjectComponent(id, "Feature", "Do something", "FEATURE",
+				(long) 0, issue.getProjectId(), false);
 		Collection<ProjectComponent> components = new ArrayList<ProjectComponent>();
 		components.add(component);
 		issue.setComponent(components);

@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
@@ -162,9 +161,9 @@ public class TestGetFilteredGraph extends TestSetUp {
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Graph<KnowledgeElement, Link> subgraph = filteringManager.getFilteredGraph();
 
-		List<Recommendation> recommendations = new ContextInformation(filterSettings.getSelectedElement(),
+		List<LinkRecommendation> recommendations = new ContextInformation(filterSettings.getSelectedElement(),
 				filterSettings.getLinkRecommendationConfig()).getLinkRecommendations();
 		assertFalse(recommendations.isEmpty());
-		assertTrue(subgraph.containsEdge((LinkRecommendation) recommendations.get(0)));
+		assertTrue(subgraph.containsEdge(recommendations.get(0)));
 	}
 }

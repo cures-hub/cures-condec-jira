@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
@@ -38,20 +37,19 @@ public class Calculator {
 			double parentImpact, FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements,
 			long context) {
 		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
-		
+
 		// Add link recommmendations to root element if setting has been selected
 		Set<Link> currentElementLinks = new HashSet<>(currentElement.getLinks());
-		if (filterSettings.getSelectedElement() == currentElement
-			&& filterSettings.areLinksRecommended() 
-			&& filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
-				ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
+		if (filterSettings.getSelectedElement() == currentElement && filterSettings.areLinksRecommended()
+				&& filterSettings.getChangeImpactAnalysisConfig().getAreLinkRecommendationsIncludedInCalculation()) {
+			ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
 					filterSettings.getLinkRecommendationConfig());
-				List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
-				for (Recommendation recommendation : linkRecommendations) {
-					if (!recommendation.isDiscarded()) {
-						currentElementLinks.add((LinkRecommendation) recommendation);
-					}
+			List<LinkRecommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
+			for (LinkRecommendation recommendation : linkRecommendations) {
+				if (!recommendation.isDiscarded()) {
+					currentElementLinks.add(recommendation);
 				}
+			}
 		}
 		// Iterating through all outgoing and incoming links of the current element
 		for (Link link : currentElementLinks) {
@@ -78,17 +76,18 @@ public class Calculator {
 			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, nextElementInPath, link);
 			double impactValue = parentImpact * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
 			String impactExplanation = "";
-			
-			// Add LinkRecommendationScore to impactExplanation if the element was a recommendation
+
+			// Add LinkRecommendationScore to impactExplanation if the element was a
+			// recommendation
 			if (link.getClass() == LinkRecommendation.class) {
 				LinkRecommendation recommendation = (LinkRecommendation) link;
 				double linkRecommendationScore = recommendation.getScore().getValue() / 100;
 				impactValue = impactValue * linkRecommendationScore;
-				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue,
-					decayValue, impactValue, linkTypeName, linkRecommendationScore);
+				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
+						linkTypeName, linkRecommendationScore);
 			} else {
-				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue,
-					decayValue, impactValue, linkTypeName, 0);
+				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
+						linkTypeName, 0);
 			}
 
 			// Add calculated impact values to new KnowledgeElementWithImpact
@@ -115,15 +114,18 @@ public class Calculator {
 	}
 
 	/**
-	 * @issue How should we handle the rule weight when calculating the rule impact value?
-	 * @alternative The rule weight is used to adjust the individual rule result based on
-	 * 			the outcome, e.g. with a high rule weight: relatively strong propagation values
-	 * 			are further increased while weak values are decreased. Thus, scoring "hits" during
-	 * 			rule calculation has more impact and vice versa.
-	 * @con There would be no way to increase the importance of rules in comparison to others. All
-	 * 		rules would be equal in the end, regardless of individual rule results.
-	 * @decision The rule weight is used to specify the importance of a rule in comparison
-	 * 			to all other rules.
+	 * @issue How should we handle the rule weight when calculating the rule impact
+	 *        value?
+	 * @alternative The rule weight is used to adjust the individual rule result
+	 *              based on the outcome, e.g. with a high rule weight: relatively
+	 *              strong propagation values are further increased while weak
+	 *              values are decreased. Thus, scoring "hits" during rule
+	 *              calculation has more impact and vice versa.
+	 * @con There would be no way to increase the importance of rules in comparison
+	 *      to others. All rules would be equal in the end, regardless of individual
+	 *      rule results.
+	 * @decision The rule weight is used to specify the importance of a rule in
+	 *           comparison to all other rules.
 	 * @pro Allows more control over the overall rule based calculation.
 	 *
 	 * @return Double containing the calculated propagation rule score, value
@@ -162,6 +164,7 @@ public class Calculator {
 	 * Generates the impact explanation by checking the minimum of each calculated
 	 * impact score. The minimum impacts the score the most, therefore the
 	 * explanation aims to give a textual reason why.
+	 * 
 	 * @param linkTypeName
 	 * 
 	 * @return String containing the the impact value explanation
@@ -188,9 +191,9 @@ public class Calculator {
 		}
 		if (linkTypeName.equalsIgnoreCase(LinkType.RECOMMENDED.getName())) {
 			impactExplanation += "\n--- --- --- --- --- --- --- --- ---"
-				+ "\nThis element is not implicitly linked to the source element but has been "
-				+ "included as a result of the link recommendation.\nLink Recommendation Score: "
-				+ String.format("%.2f", linkRecommendationScore);
+					+ "\nThis element is not implicitly linked to the source element but has been "
+					+ "included as a result of the link recommendation.\nLink Recommendation Score: "
+					+ String.format("%.2f", linkRecommendationScore);
 		}
 		return impactExplanation;
 	}

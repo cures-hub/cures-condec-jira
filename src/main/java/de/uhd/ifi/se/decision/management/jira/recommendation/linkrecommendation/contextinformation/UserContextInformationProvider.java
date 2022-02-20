@@ -13,9 +13,15 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class UserContextInformationProvider extends ContextInformationProvider {
 
+	/**
+	 * Per default, this context information provider is activated and knowledge
+	 * elements with different authors are more likely to be recommended because of
+	 * the negative weight value.
+	 */
 	public UserContextInformationProvider() {
 		super();
-		isActive = false;
+		isActive = true;
+		weightValue = -0.42f;
 	}
 
 	@Override
@@ -27,23 +33,23 @@ public class UserContextInformationProvider extends ContextInformationProvider {
 			score += isApplicationUserEqual(baseElementJiraIssue.getAssignee(), otherElementJiraIssue.getAssignee());
 			score += isApplicationUserEqual(baseElementJiraIssue.getReporter(), otherElementJiraIssue.getReporter());
 		}
-		return new RecommendationScore((float) score, getName() + " (equalCreatorOrEqualAssignee)");
+		return new RecommendationScore((float) score, getDescription());
 	}
 
 	public static double isApplicationUserEqual(ApplicationUser user1, ApplicationUser user2) {
 		if (user1 != null && user1.equals(user2)) {
-			return 0.33;
+			return 1.0 / 3;
 		}
 		return 0;
 	}
 
 	@Override
 	public String getExplanation() {
-		return "Assumes that knowledge elements created or modified by the same user are related.";
+		return "Assumes that knowledge elements created or modified by the same user (creator, reporter, or assignee) are related.";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that have the same author as the source element.";
+		return "Recommend elements that have the same author as the source element";
 	}
 }

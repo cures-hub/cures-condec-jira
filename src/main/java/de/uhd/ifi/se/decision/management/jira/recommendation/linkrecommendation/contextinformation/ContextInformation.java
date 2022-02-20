@@ -2,50 +2,143 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
- * Provides Component in decorator pattern. Context information providers are
- * concrete decorators
+ * Creates link recommendations and detects duplicates based on the context
+ * information of {@link KnowledgeElement}s.
+ * 
+ * This class is part of the Decorator design pattern. It is decorated with the
+ * {@link ContextInformationProvider}s, such as
+ * {@link TextualSimilarityContextInformationProvider} or
+ * {@link TimeContextInformationProvider}.
  */
 public class ContextInformation extends ContextInformationProvider {
 
 	private KnowledgeElement element;
 	private LinkRecommendationConfiguration linkRecommendationConfig;
 
+	/**
+	 * @param element
+	 *            selected/source element for that link recommendations should be
+	 *            made and duplicates be detected.
+	 * @param linkRecommendationConfig
+	 *            {@link LinkRecommendationConfiguration} object.
+	 */
 	public ContextInformation(KnowledgeElement element, LinkRecommendationConfiguration linkRecommendationConfig) {
 		this.element = element;
 		this.linkRecommendationConfig = linkRecommendationConfig;
 	}
 
-	public List<Recommendation> getLinkRecommendations() {
+	/**
+	 * @return the top-k {@link LinkRecommendation}s with a
+	 *         {@link RecommendationScore} above the threshold after sorting all the
+	 *         recommendations by their {@link RecommendationScore}. Discarded
+	 *         recommendations are marked as such. Potential duplicates are also
+	 *         marked as such by their {@link RecommendationType}.
+	 */
+	public List<LinkRecommendation> getLinkRecommendations() {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(element.getProject());
 		List<KnowledgeElement> unlinkedElements = graph.getUnlinkedElementsAndNotInSameJiraIssue(element);
-		List<Recommendation> recommendations = assessRelations(element, unlinkedElements);
-		recommendations = filterUselessRecommendations(recommendations);
+		List<LinkRecommendation> recommendations = assessRelations(element, unlinkedElements);
+		recommendations = getTopKRecommendations(recommendations);
 		return markDiscardedRecommendations(recommendations);
 	}
 
-	private List<Recommendation> markDiscardedRecommendations(List<Recommendation> recommendations) {
-		List<KnowledgeElement> discardedElements = DiscardedRecommendationPersistenceManager
-				.getDiscardedLinkRecommendations(element);
-		return markDiscardedRecommendations(recommendations, discardedElements);
+	@Override
+	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
+		RecommendationScore score = new RecommendationScore();
+		score.setExplanation(getDescription());
+		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
+				.getContextInformationProviders()) {
+			if (!contextInformationProvider.isActive()) {
+				continue;
+			}
+			RecommendationScore subScore = contextInformationProvider.assessRelation(baseElement, otherElement);
+			float weightValue = contextInformationProvider.getWeightValue();
+
+			if (weightValue < 0) {
+				subScore.setExplanation("Do not " + subScore.getExplanation().toLowerCase());
+			}
+
+			subScore.weightValue(weightValue); // multiplies rule value with weight value
+			score.addSubScore(subScore);
+		}
+		float maxAchievableScore = determineMaxAchievableScore();
+		score.normalizeTo(maxAchievableScore);
+		return score;
 	}
 
-	public static List<Recommendation> markDiscardedRecommendations(List<Recommendation> recommendations,
-			List<KnowledgeElement> discardedElements) {
-		for (Recommendation recommendation : recommendations) {
-			if (discardedElements.contains(((LinkRecommendation) recommendation).getTarget())) {
+	/**
+	 * @return max achievable recommendation score of a hypothetical ideal
+	 *         recommendation.
+	 */
+	private float determineMaxAchievableScore() {
+		float maxAchievableScore = 0.0f;
+		boolean isKnowledgeTypeProviderIncluded = false;
+		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
+				.getContextInformationProviders()) {
+			if (!contextInformationProvider.isActive()) {
+				continue;
+			}
+			if (contextInformationProvider instanceof SolutionOptionContextInformationProvider
+					|| contextInformationProvider instanceof DecisionProblemContextInformationProvider) {
+				if (isKnowledgeTypeProviderIncluded) {
+					continue;
+				}
+				isKnowledgeTypeProviderIncluded = true;
+			}
+			if (contextInformationProvider.getWeightValue() > 0) {
+				// only positive weights are calculated because rule values are between [0, 1].
+				maxAchievableScore += contextInformationProvider.getWeightValue();
+			}
+		}
+		return maxAchievableScore;
+	}
+
+	/**
+	 * @param recommendations
+	 *            all {@link LinkRecommendation}s as an unsorted collection.
+	 * @return the top-k recommendations with a {@link RecommendationScore} after
+	 *         sorting all the recommendations by their {@link RecommendationScore}.
+	 */
+	private List<LinkRecommendation> getTopKRecommendations(List<LinkRecommendation> recommendations) {
+		Set<LinkRecommendation> sortedRecommendations = new TreeSet<>(recommendations);
+		recommendations.clear();
+		int i = 0;
+		int k = linkRecommendationConfig.getMaxRecommendations(); // top k
+		for (LinkRecommendation recommendation : sortedRecommendations) {
+			if (i == k) {
+				break;
+			}
+			recommendations.add(recommendation);
+			++i;
+		}
+		return recommendations;
+	}
+
+	/**
+	 * @param recommendations
+	 *            {@link LinkRecommendation}s, sorting does not matter.
+	 * @return same {@link LinkRecommendation}s, but the recommendations that were
+	 *         discarded by the user are marked as such.
+	 * @see DiscardedRecommendationPersistenceManager
+	 */
+	private List<LinkRecommendation> markDiscardedRecommendations(List<LinkRecommendation> recommendations) {
+		List<KnowledgeElement> discardedElements = DiscardedRecommendationPersistenceManager
+				.getDiscardedLinkRecommendations(element);
+		for (LinkRecommendation recommendation : recommendations) {
+			if (discardedElements.contains(recommendation.getTarget())) {
 				recommendation.setDiscarded(true);
 			}
 		}
@@ -53,53 +146,9 @@ public class ContextInformation extends ContextInformationProvider {
 	}
 
 	/**
-	 * @param recommendations
-	 *            all recommendations as an unsorted collection.
-	 * @return
-	 */
-	private List<Recommendation> filterUselessRecommendations(List<Recommendation> recommendations) {
-		TreeSet<Recommendation> sortedRecommendations = new TreeSet<Recommendation>(recommendations);
-		recommendations.clear();
-		int i = 0;
-		int k = linkRecommendationConfig.getMaxRecommendations(); // top k
-		for (Recommendation recommendation : sortedRecommendations) {
-			if (i == k) {
-				break;
-			}
-			if (recommendation.getScore().getValue() >= linkRecommendationConfig.getMinProbability()) {
-				recommendations.add(recommendation);
-			}
-			++i;
-		}
-		return recommendations;
-	}
-
-	@Override
-	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
-		RecommendationScore score = new RecommendationScore(0, getName());
-		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
-				.getContextInformationProviders()) {
-			if (!contextInformationProvider.isActive()) {
-				continue;
-			}
-			RecommendationScore subScore = contextInformationProvider.assessRelation(baseElement, otherElement);
-
-			float weightValue = contextInformationProvider.getWeightValue();
-
-			// Reverse rule effect if weight is negative
-			if (weightValue < 0) {
-				subScore.setValue(1 - subScore.getValue());
-			}
-			// Apply weight onto rule impact
-			subScore.weightValue(Math.abs(weightValue));
-			score.addSubScore(subScore);
-		}
-		return score;
-	}
-
-	/**
 	 * Makes recommendations whether one {@link KnowledgeElement} should be linked
-	 * to other {@link KnowledgeElement}s that are currently not linked to it.
+	 * to other {@link KnowledgeElement}s that are currently not linked to it or
+	 * whether it is even a potential duplicate.
 	 *
 	 * @param baseElement
 	 *            {@link KnowledgeElement} for that new links should be recommended
@@ -107,40 +156,38 @@ public class ContextInformation extends ContextInformationProvider {
 	 * @param knowledgeElements
 	 *            other {@link KnowledgeElement}s in the {@link KnowledgeGraph} that
 	 *            are not directly linked.
-	 * @return list of {@link Recommendation}s. For each {@link Recommendation}, the
+	 * @return list of {@link LinkRecommendation}s. For each recommendation, the
 	 *         {@link RecommendationScore} indicates whether the element should be
-	 *         linked.
+	 *         linked. Only link recommendations with a score above the threshold
+	 *         {@link LinkRecommendationConfiguration#getMinProbability()} are
+	 *         returned.
 	 */
-	public List<Recommendation> assessRelations(KnowledgeElement baseElement,
+	public List<LinkRecommendation> assessRelations(KnowledgeElement baseElement,
 			List<KnowledgeElement> knowledgeElements) {
 
-		List<Recommendation> linkRecommendations = new ArrayList<>();
-		
+		List<LinkRecommendation> linkRecommendations = new ArrayList<>();
+
 		for (KnowledgeElement elementToTest : knowledgeElements) {
 			if (elementToTest.getTypeAsString().equals(KnowledgeType.OTHER.toString())) {
 				// only recommend relevant decision, project, or system knowledge elements
 				continue;
 			}
-			LinkRecommendation linkSuggestion = new LinkRecommendation(baseElement, elementToTest);
+			LinkRecommendation recommendation = new LinkRecommendation(baseElement, elementToTest);
 			RecommendationScore score = assessRelation(baseElement, elementToTest);
-			
-			// Go through the selected rules and increase the max available score accordingly,
-			// used to normalize the final score
-			double maxAchievableScore = 0.0;
-			for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
-					.getContextInformationProviders()) {
-				if (!contextInformationProvider.isActive()) {
-					continue;
-				}
-				maxAchievableScore += Math.abs(contextInformationProvider.getWeightValue());
+			if (score.getValue() < linkRecommendationConfig.getMinProbability()) {
+				continue;
 			}
-			score.setValue((float) (score.getValue() / maxAchievableScore));
-			linkSuggestion.setScore(score);
+			recommendation.setScore(score);
 			if (score.isPotentialDuplicate()) {
-				linkSuggestion.setRecommendationType(RecommendationType.DUPLICATE);
+				recommendation.setRecommendationType(RecommendationType.DUPLICATE);
 			}
-			linkRecommendations.add(linkSuggestion);
+			linkRecommendations.add(recommendation);
 		}
 		return linkRecommendations;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Summed context information";
 	}
 }

@@ -60,14 +60,8 @@ public class LinkRecommendationConfiguration {
 	}
 
 	/**
-	 * @return minimum {@link RecommendationScore} for link recommendation. To
-	 *         calculate the link recommendations, the knowledge elements of a
-	 *         project are used as a basis. Currently four context indicators are
-	 *         used for the calculation: User, Time, Links, and Text. For each
-	 *         indicator the values are scaled from 0.0 to 1.0. The value 1.0
-	 *         indicates the most similar regarding the current context. Lastly, the
-	 *         values are divided by the number of examined contexts to get scores
-	 *         between 0.0 and 1.0.
+	 * @return minimum {@link RecommendationScore} for link recommendation, i.e.
+	 *         threshold.
 	 */
 	@XmlElement
 	public double getMinProbability() {
@@ -76,14 +70,7 @@ public class LinkRecommendationConfiguration {
 
 	/**
 	 * @param minProbability
-	 *            minimum score for link suggestion. To calculate the link
-	 *            suggestions, the knowledge elements of a project are used as a
-	 *            basis. Currently four context indicators are used for the
-	 *            calculation: User, Time, Links, and Text. For each indicator the
-	 *            values are scaled from 0.0 to 1.0. The value 1.0 indicates the
-	 *            most similar regarding the current context. Lastly, the values are
-	 *            divided by the number of examined contexts to get scores between
-	 *            0.0 and 1.0.
+	 *            minimum score for link recommendation, i.e. threshold.
 	 */
 	@JsonProperty
 	public void setMinProbability(double minProbability) {
@@ -109,11 +96,18 @@ public class LinkRecommendationConfiguration {
 		this.contextInformationProviders = contextInformationProviders;
 	}
 
+	/**
+	 * @return maximum number of link recommendations shown to the user.
+	 */
 	@XmlElement
 	public int getMaxRecommendations() {
 		return maxRecommendations;
 	}
 
+	/**
+	 * @param maxRecommendations
+	 *            of link recommendations shown to the user.
+	 */
 	@JsonProperty
 	public void setMaxRecommendations(int maxRecommendations) {
 		this.maxRecommendations = maxRecommendations;

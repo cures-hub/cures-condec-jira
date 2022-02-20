@@ -1,8 +1,36 @@
-<h2>Settings for the link recommendation and duplicate recognition within one project</h2>
+<h2>Link Recommendation and Duplicate Recognition</h2>
 #set($linkRecommendationConfig = $project.getLinkSuggestionConfiguration())
 
+<p>On this page, the rationale manager can configure the link recommendation and duplicate recognition feature.
+This feature tries to identify related knowledge elements using the <b>context information</b> of knowledge elements.
+The context information is calculated from the various <b>context information providers, i.e. link recommendation rules</b> listed below.</p>
+
+<p>Every context information provider calculates a <var>ruleValue<sub>i</sub></var>.
+For example, the textual similarity context information provider calculates a rule value based on the textual similarity of two knowledge elements. 
+The more textual similar, the higher is the rule value.
+Besides, every context information provider is assigned a <var>ruleWeight<sub>i</sub></var> to determine its importance for recommendation creation.
+
+For every knowledge element that might be related to the selected element, a <var>recommendationScore</var> is calculated as follows:</p>
+
+<p><b><code>recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>i</sub>) / maxAchievableScore</code></b>, </p>
+
+<p>where <var>N</var> is the number of enabled context information providers</p>
+<p>and <var>maxAchievableScore</var> is the hypothetical best recommendation score to normalize the score between 0 and 1.</p>
+
+<p>The <var>ruleWeight<sub>i</sub></var> can also be negative to reverse the effect of the rule.
+For instance, for the timely coupling context information provider (<i>boost when element is timely coupled to the selected element</i>),
+a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.</p>
+
+The link recommendations are sorted by their <var>recommendationScore</var>.
+
+<p>A link to another knowledge element is only recommended if the <b><code>recommendationScore >= threshold</code></b> and 
+if the link recommendation is under the <b>top-k recommendations</b>.</p>
+
+The textual similarity context information provider is used to <b>identify duplicates</b>.
+If the text is very similar, a link recommendation is marked as a potential duplicate.
+
 <form class="aui">
+	#parse("templates/settings/linkrecommendation/maxAmountSetting.vm")
     #parse("templates/settings/linkrecommendation/minProbabilitySetting.vm")
-    #parse("templates/settings/linkrecommendation/rules.vm")
-    #parse("templates/settings/linkrecommendation/maxAmountSetting.vm")
+    #parse("templates/settings/linkrecommendation/rules.vm")    
 </form>

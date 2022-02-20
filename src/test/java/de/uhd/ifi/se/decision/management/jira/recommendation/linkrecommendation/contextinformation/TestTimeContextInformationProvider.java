@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.TreeMap;
@@ -29,22 +31,22 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationNoCoupling() {
+	public void testNoCoupling() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		updateDateAndAuthor.put(new Date(0), "FooBar");
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 
 		updateDateAndAuthor = new TreeMap<Date, String>();
-		updateDateAndAuthor.put(new Date(800000), "FooBar");
+		updateDateAndAuthor.put(new Date(1000 * 24 * 60 * 60 + 1), "FooBar"); // > 1 day later
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-        RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
+		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.0, score.getValue(), 0.00);
-        assertEquals("TimeContextInformationProvider (ms)", score.getExplanation());
+		assertEquals(0.0, score.getValue(), 0.00);
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test
-	public void testPropagationLargeCoupling() {
+	public void testLargeCoupling() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		updateDateAndAuthor.put(new Date(1000), "FooBar");
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
@@ -56,17 +58,27 @@ public class TestTimeContextInformationProvider extends TestSetUp {
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(1.0, score.getValue(), 0.005);
+		assertEquals(1.0, score.getValue(), 0.005);
 	}
 
 	@Test
-	public void testPropagationNoUpdates() {
+	public void testNoUpdates() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		rootElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
 		RecommendationScore score = timeContextInformationProvider.assessRelation(rootElement, currentElement);
 
-        assertEquals(0.0, score.getValue(), 0.00);
+		assertEquals(0.0, score.getValue(), 0.00);
+	}
+
+	@Test
+	public void testAreDatesSimilar() {
+		Date date1 = new Date(0);
+		assertTrue(TimeContextInformationProvider.areDatesSimilar(date1, date1, 0));
+
+		Date date2 = new Date(42);
+		assertFalse(TimeContextInformationProvider.areDatesSimilar(date1, date2, 0));
+		assertTrue(TimeContextInformationProvider.areDatesSimilar(date1, date2, 60000));
 	}
 
 	@Test

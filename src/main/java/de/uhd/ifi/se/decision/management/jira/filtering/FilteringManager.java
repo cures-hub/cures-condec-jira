@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.KnowledgeElementCheck;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
@@ -395,10 +394,10 @@ public class FilteringManager {
 	private KnowledgeGraph addLinkRecommendations(KnowledgeGraph filteredGraph) {
 		ContextInformation linkRecommender = new ContextInformation(filterSettings.getSelectedElement(),
 				filterSettings.getLinkRecommendationConfig());
-		List<Recommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
-		for (Recommendation recommendation : linkRecommendations) {
+		List<LinkRecommendation> linkRecommendations = linkRecommender.getLinkRecommendations();
+		for (LinkRecommendation recommendation : linkRecommendations) {
 			if (!recommendation.isDiscarded()) {
-				filteredGraph.addEdge((LinkRecommendation) recommendation);
+				filteredGraph.addEdge(recommendation);
 			}
 		}
 		return filteredGraph;
