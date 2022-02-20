@@ -35,7 +35,7 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 
 	@Test
 	public void testCalculateSimilarityVerySimilarSentence() {
-		assertEquals(1.42, textualSimilarityContextInformationProvider
+		assertEquals(1.0, textualSimilarityContextInformationProvider
 				.calculateSimilarity("How can we implement the feature?", "How to implement the feature?"), 0.0);
 	}
 
@@ -59,7 +59,6 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 				textualSimilarityContextInformationProvider.calculateSimilarity(firstSentence, thirdSentence), 0.01);
 		assertEquals(0.83,
 				textualSimilarityContextInformationProvider.calculateSimilarity(firstSentence, forthSentence), 0.01);
-
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 #set ($viewIdentifier = "link-recommendation")
-<b>Recommendation of knowledge elements to be linked to the selected knowledge element</b>
+<b>Recommendation of knowledge elements to be linked to the selected knowledge element or potential duplicates</b>
 <form class="aui">
 <div class="condec-filter">
     <select id="link-recommendation-dropdown" class="select long-field"></select>

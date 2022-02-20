@@ -4,7 +4,7 @@ The ConDec Jira plug-in offers a feature that **recommends new links between kno
 that tries to **identify duplicated knowledge elements**.
 In particular, the feature should support developers in
 1. **decision making through identifying related decision problems and solution options** documented by others or in the past (to prevent duplicated decision making),
-2. **creating a completely and correctly linked knowledge documentation** that developers can be exploited e.g. during **[change impact analysis]** (to detect impacts, side, and ripple effects of changes), and
+2. **creating a completely and correctly linked knowledge documentation** that can be exploited e.g. during **[change impact analysis]** (to detect impacts, side, and ripple effects of changes), and
 3. general knowledge sharing and **knowledge exploitation**, since the link recommendation confronts the developers with related documented knowledge, which is not linked in the knowledge graph.
 
 ## Calculation of the Recommendation Score
@@ -18,7 +18,7 @@ The context information is calculated from the following **context information p
 5. Recommend elements that are **solution options**
 6. Recommend elements that are assigned to the **same decision group** as the source element
 7. Recommend elements that are assigned to the **same component** as the source element
-8. Recommend elements that can be **traced** to the source element
+8. Recommend elements that can be **traced** to the source element (but are not directly linked)
 9. Recommend elements that are the same knowledge type as the source element
 10. Recommend elements that are included in the **same sprint**
 
@@ -46,6 +46,21 @@ if the link recommendation is under the **top-k recommendations**.
 Many of the link recommendation rules (i.e. context information providers) are also used during **[change impact analysis]**
 as **change propagation rules**.
 
+## Link Recommendations Within the Knowledge Graph Views
+Developers can see the link recommendations directly in the [knowledge graph views].
+
+![Node-link diagram with link recommendations colored in blue](../screenshots/link_recommendation_node_link_diagram.png)
+
+*Node-link diagram with link recommendations colored in blue*
+
+Besides, ConDec offers a dedicated view for link recommendation and duplicate recognition which developers can access as follows:
+1. Developers can access the view from every Jira issue, i.e. it is included in the Jira issue view.
+2. Developers can access the view from the knowledge view for the project.
+
+![Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem](../screenshots/link_recommendation_view.png)
+
+*Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem*
+
 ## Duplicate Recognition
 The textual similarity context information provider is used to **identify duplicates**.
 If the text is very similar, a link recommendation is marked as a potential duplicate.
@@ -55,9 +70,9 @@ If the text is very similar, a link recommendation is marked as a potential dupl
 *Link recommendation view as part of the Jira issue view showing a potential duplicated alternative*
 
 Developers and the rationale manager can inspect the potential duplicates in the [knowledge graph views](knowledge-visualization.md), 
-e.g. in the [node-link diagram](../screenshots/link_recommendation_duplicates_node-link_diagram.png) or in the [indented outline](../screenshots/link_recommendation_duplicates_indented_outline.png).
+e.g. in the [node-link diagram](../screenshots/link_recommendation_duplicates_node_link_diagram.png) or in the [indented outline](../screenshots/link_recommendation_duplicates_indented_outline.png).
 
-![Node-link diagram showing the context of the duplicated alternative](../screenshots/link_recommendation_duplicates_node-link_diagram.png)
+![Node-link diagram showing the context of the duplicated alternative](../screenshots/link_recommendation_duplicates_node_link_diagram.png)
 
 *Node-link diagram showing the context of a user story.
 Directly and transitively linked decision problems (issues) and solution options (alternatives) are shown that match the "export" filter string. 
@@ -120,3 +135,4 @@ Helsinki, Finland: IEEE.
 https://doi.org/10.1109/WICSA-ECSA.212.30
 
 [change impact analysis]: change-impact-analysis.md
+[knowledge graph views]: knowledge-visualization.md

@@ -96,8 +96,9 @@ public class TextualSimilarityContextInformationProvider extends ContextInformat
 		}
 		Set<String> intersection = new HashSet<>(Arrays.asList(leftTokens));
 		intersection.retainAll(new HashSet<>(Arrays.asList(rightTokens)));
-		return similarityScore.apply(Arrays.toString(leftTokens), Arrays.toString(rightTokens))
+		double similarity = similarityScore.apply(Arrays.toString(leftTokens), Arrays.toString(rightTokens))
 				+ intersection.size() * 0.42 / lengthOfLongestText;
+		return similarity > 1 ? 1 : similarity;
 	}
 
 	@Override
