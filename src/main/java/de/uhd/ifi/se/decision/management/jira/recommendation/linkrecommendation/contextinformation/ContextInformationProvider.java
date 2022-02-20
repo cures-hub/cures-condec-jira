@@ -15,10 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
- * Abstract class for different context information providers (=link
- * recommendation rules) to realize context utility functions. For example, the
- * {@link TimeContextInformationProvider} rates relations based on time of
- * creation or modifications of elements.
+ * Abstract class for various context information providers (=link
+ * recommendation rules).
  * 
  * This abstract class is part of the Decorator design pattern. It is the
  * abstract decorator and the concrete decorators are the subclasses, such as
@@ -136,7 +134,8 @@ public abstract class ContextInformationProvider {
 	}
 
 	/**
-	 * @return explanation for the link recommendation rule.
+	 * @return explanation for the link recommendation rule (should be more detailed
+	 *         than {@link #getDescription()}).
 	 */
 	@XmlElement
 	public String getExplanation() {
@@ -147,9 +146,7 @@ public abstract class ContextInformationProvider {
 	 * @return description of the link recommendation rule.
 	 */
 	@XmlElement
-	public String getDescription() {
-		return "N/A";
-	}
+	public abstract String getDescription();
 
 	/**
 	 * @return true if the name of this and the other object is the same.

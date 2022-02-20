@@ -15,8 +15,13 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 
 /**
- * This class is part of the Decorator design pattern. Provides Component in
- * decorator pattern. Context information providers are concrete decorators
+ * Creates link recommendations and detects duplicates based on the context
+ * information of {@link KnowledgeElement}s.
+ * 
+ * This class is part of the Decorator design pattern. It is decorated with the
+ * {@link ContextInformationProvider}s, such as
+ * {@link TextualSimilarityContextInformationProvider} or
+ * {@link TimeContextInformationProvider}.
  */
 public class ContextInformation extends ContextInformationProvider {
 
@@ -53,7 +58,7 @@ public class ContextInformation extends ContextInformationProvider {
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		RecommendationScore score = new RecommendationScore();
-		score.setExplanation(getName());
+		score.setExplanation(getDescription());
 		for (ContextInformationProvider contextInformationProvider : linkRecommendationConfig
 				.getContextInformationProviders()) {
 			if (!contextInformationProvider.isActive()) {
@@ -179,5 +184,10 @@ public class ContextInformation extends ContextInformationProvider {
 			linkRecommendations.add(recommendation);
 		}
 		return linkRecommendations;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Summed context information";
 	}
 }

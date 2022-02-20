@@ -104,11 +104,11 @@ Similar to the ambient feedback nudge, the just-in-time prompt indicates whether
 The rationale manager can configure the **default parameters** for the link recommendation, in particular, the
 1. maximum number of recommendations (**top-k**), 
 2. the **threshold**, and 
-3. default ruleset (context information providers). The rationale manager can enable/disable each rule and can set a weight value (similar as for [change impact analysis]). 
+3. **default rules (context information providers) and their weights** (similar as for [change impact analysis]). 
 
 Furthermore, the developer can change the default values during the usage of the link recommendation. 
 
-![Configuration view for link recommendation and duplicate recognition](../screenshots/link_recommendation_configuration.png)
+![Configuration view for link recommendation and duplicate recognition](../screenshots/config_link_recommendation.png)
 
 *Configuration view for link recommendation and duplicate recognition*
 
