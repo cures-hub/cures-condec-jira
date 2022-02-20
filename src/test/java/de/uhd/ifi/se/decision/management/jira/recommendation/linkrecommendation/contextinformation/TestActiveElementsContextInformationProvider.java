@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +28,15 @@ public class TestActiveElementsContextInformationProvider extends TestSetUp {
 				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
 		assertEquals(0.0, score.getValue(), 0);
 		assertNotNull(score.getExplanation());
+	}
+
+	@Test
+	public void testAssessRelationWithActiveJiraIssue() {
+		activeElementsContextInformationProvider.activeIssueIds = new ArrayList<>();
+		activeElementsContextInformationProvider.activeIssueIds.add(KnowledgeElements.getProArgument().getId());
+		RecommendationScore score = activeElementsContextInformationProvider
+				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
+		assertEquals(1.0, score.getValue(), 0);
 	}
 
 	@Test

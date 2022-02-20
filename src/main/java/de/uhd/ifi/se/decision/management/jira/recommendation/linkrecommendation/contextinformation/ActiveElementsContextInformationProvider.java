@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
  */
 public class ActiveElementsContextInformationProvider extends ContextInformationProvider {
 
-	private List<Long> activeIssueIds;
+	public List<Long> activeIssueIds;
 
 	/**
 	 * Per default, this context information provider is deactivated.

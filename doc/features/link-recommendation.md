@@ -45,7 +45,7 @@ The context information is calculated from the following **context information p
 
 Every context information provider calculates a <code>ruleValue<sub>i</sub></code>.
 For example, the textual similarity context information provider calculates a rule value based on the textual similarity of two knowledge elements. 
-The more textual similar, the higher is the rule value for this context information provider.
+The more similar the texts are, the higher is the rule value for this context information provider.
 Besides, every context information provider is assigned a <code>ruleWeight<sub>i</sub></code> to determine its importance for recommendation creation.
 
 For every knowledge element that might be related to the selected element, a `recommendationScore` is calculated as follows:
@@ -129,24 +129,24 @@ If they have a lower link distance, the score is higher.
 Finally, the *UserContextInformationProvider* gives a positive score if the assignee or reporter of the issue 
 where the first knowledge element is contained is the same as that of the second. 
 If the users are not the same, the score is zero.
-The class *ContextInformation* registers these four providers, and uses the information from them to create objects of the class *LinkRecommendation*.
+The class *ContextInformation* registers the ten providers and uses the information from them to create objects of the class *LinkRecommendation*.
 *LinkRecommendation*s have a *RecommendationScore* and inherit from the class Link, 
 which means they have source and target elements, as well as a *LinkType* (not shown in the diagram).
 
 ![Overview class diagram](../diagrams/class_diagram_link_recommendation.png)
 
-*Overview class diagram for the link recommendation feature*
+*Overview class diagram for the link recommendation and duplicate recognition feature*
 
-The Java code for link recommendation can be found here:
+The Java code for link recommendation and duplicate recognition can be found here:
 
-- [Java code for link recommendation](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/linkrecommendation)
-- [Java REST API for link recommendation](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/LinkRecommendationRest.java)
+- [Java code for link recommendation and duplicate recognition](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/linkrecommendation)
+- [Java REST API for link recommendation and duplicate recognition](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/LinkRecommendationRest.java)
 
 The UI code for link recommendation can be found here:
 
-- [Velocity templates for configuration and evaluation](../../src/main/resources/templates/settings/linkrecommendation)
+- [Velocity templates for configuration](../../src/main/resources/templates/settings/linkrecommendation)
 - [Velocity templates for usage during development](../../src/main/resources/templates/tabs/recommendation)
-- [JavaScript code for link recommendation](../../src/main/resources/js/recommendation)
+- [JavaScript code for link recommendation and duplicate recognition](../../src/main/resources/js/recommendation)
 
 ## References
 The concept of context information providers is taken from: 
