@@ -115,23 +115,11 @@ Furthermore, the developer can change the default values during the usage of the
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
 The class *LinkRecommendationRest* provides the interface to the frontend. 
-It uses the *LinkRecommendationConfiguration* to get the configuration information for a project when a request comes. 
-The interface *ContextInformationProvider* is implemented by five other classes: 
-the class *ContextInformation* and four different *ContextInformationProvider*s that assess different types of context 
-to find similarities between elements and ultimately suggest new links for elements. 
-Each of these assigns a score based on the similarity or dissimilarity it has calculated. 
-The *TextualSimilarityContextInformationProvider* assesses the textual similarity between two knowledge elements; 
-the more textually similar the elements, the higher the score. 
-Similarly, *TimeContextInformationProvider* assesses how close in time two elements were created. 
-The score given here is higher if the elements were created in a shorter period of time and lower if they were created further apart. 
-The *TracingContextInformationProvider* looks at how close in the knowledge graph two elements are to each other. 
-If they have a lower link distance, the score is higher. 
-Finally, the *UserContextInformationProvider* gives a positive score if the assignee or reporter of the issue 
-where the first knowledge element is contained is the same as that of the second. 
-If the users are not the same, the score is zero.
-The class *ContextInformation* registers the ten providers and uses the information from them to create objects of the class *LinkRecommendation*.
-*LinkRecommendation*s have a *RecommendationScore* and inherit from the class Link, 
-which means they have source and target elements, as well as a *LinkType* (not shown in the diagram).
+The class *LinkRecommendationConfiguration* stores the configuration information for a project. 
+The class *ContextInformation* creates *LinkRecommendation*s and detects duplicates based on the context information of *KnowledgeElement*s.
+It is decorated with the *ContextInformationProvider*s, such as the *TextualSimilarityContextInformationProvider* or *TimeContextInformationProvider*.
+*LinkRecommendation*s have a *RecommendationScore* and inherit from the class *Link*, which means that they have source and target elements, as well as a *LinkType* (recommended).
+The *RecommendationType* determines the type of the recommendation.
 
 ![Overview class diagram](../diagrams/class_diagram_link_recommendation.png)
 
