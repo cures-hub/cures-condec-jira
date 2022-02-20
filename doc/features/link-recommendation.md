@@ -7,6 +7,24 @@ In particular, the feature should support developers in
 2. **creating a completely and correctly linked knowledge documentation** that can be exploited e.g. during **[change impact analysis]** (to detect impacts, side, and ripple effects of changes), and
 3. general knowledge sharing and **knowledge exploitation**, since the link recommendation confronts the developers with related documented knowledge, which is not linked in the knowledge graph.
 
+## Link Recommendations Within the Knowledge Graph Views
+Developers can see the link recommendations directly in the [knowledge graph views].
+The respective nodes are highlighted and there is a dedicated *recommended* link type.
+Developers can use the filter possibilities in [knowledge graph views] to inspect the context of the recommended elements.
+Besides, the recommended elements can be included in [change impact analysis].
+
+![Node-link diagram with link recommendations colored in blue and link type recommended](../screenshots/link_recommendation_node_link_diagram.png)
+
+*Node-link diagram with link recommendations colored in blue and link type recommended*
+
+Besides, ConDec offers a dedicated view for link recommendation and duplicate recognition which developers can access as follows:
+1. Developers can access the view from every Jira issue, i.e. it is included in the Jira issue view.
+2. Developers can access the view from the knowledge view for the project.
+
+![Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem](../screenshots/link_recommendation_view.png)
+
+*Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem*
+
 ## Calculation of the Recommendation Score
 This feature tries to identify related knowledge elements using the **context information** of knowledge elements.
 The context information is calculated from the following **context information providers, i.e. link recommendation rules**:
@@ -38,7 +56,9 @@ The <code>ruleWeight<sub>i</sub></code> can also be negative to reverse the effe
 For instance, for the time context information provider (*recommend elements that are timely coupled to the source element*),
 a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.
 
-The link recommendations are sorted by their `recommendationScore` to determine the best (top-k) recommendations.
+The `recommendationScore` represents the predicted relevance of a recommendation, i.e., how likely the developers accept the recommendation.
+The link recommendations are sorted by their `recommendationScore` to rank the recommendations.
+The best (top-k) recommendations are determined.
 
 A link to another knowledge element is only recommended if the `recommendationScore >= threshold` and 
 if the link recommendation is under the **top-k recommendations**.
@@ -46,20 +66,11 @@ if the link recommendation is under the **top-k recommendations**.
 Many of the link recommendation rules (i.e. context information providers) are also used during **[change impact analysis]**
 as **change propagation rules**.
 
-## Link Recommendations Within the Knowledge Graph Views
-Developers can see the link recommendations directly in the [knowledge graph views].
+Developers can see an **explanation for the `recommendationScore`** of each recommendation (similar to the explanations during [change impact analysis] and [decision guidance]).
 
-![Node-link diagram with link recommendations colored in blue](../screenshots/link_recommendation_node_link_diagram.png)
+![Explanation of the score for a link recommendation](../screenshots/link_recommendation_score.png)
 
-*Node-link diagram with link recommendations colored in blue*
-
-Besides, ConDec offers a dedicated view for link recommendation and duplicate recognition which developers can access as follows:
-1. Developers can access the view from every Jira issue, i.e. it is included in the Jira issue view.
-2. Developers can access the view from the knowledge view for the project.
-
-![Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem](../screenshots/link_recommendation_view.png)
-
-*Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem*
+*Explanation of the score for a link recommendation*
 
 ## Duplicate Recognition
 The textual similarity context information provider is used to **identify duplicates**.
@@ -136,3 +147,4 @@ https://doi.org/10.1109/WICSA-ECSA.212.30
 
 [change impact analysis]: change-impact-analysis.md
 [knowledge graph views]: knowledge-visualization.md
+[decision guidance]: decision-guidance.md
