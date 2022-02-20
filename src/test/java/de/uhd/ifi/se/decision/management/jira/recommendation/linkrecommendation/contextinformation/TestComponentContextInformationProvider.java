@@ -12,12 +12,12 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestComponentContextInformationProvider extends TestSetUp {
-    
-    private ComponentContextInformationProvider componentContextInformationProvider;
-	private KnowledgeElement rootElement;
-    private KnowledgeElement currentElement;
 
-    @Before
+	private ComponentContextInformationProvider componentContextInformationProvider;
+	private KnowledgeElement rootElement;
+	private KnowledgeElement currentElement;
+
+	@Before
 	public void setUp() {
 		init();
 		componentContextInformationProvider = new ComponentContextInformationProvider();
@@ -25,37 +25,47 @@ public class TestComponentContextInformationProvider extends TestSetUp {
 		rootElement = KnowledgeElements.getTestKnowledgeElements().get(2);
 	}
 
-    @Test
-	public void testPropagationRootNoComponents() {
+	@Test
+	public void testRootNoComponents() {
 		rootElement = KnowledgeElements.getTestKnowledgeElements().get(1);
-        RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
-		
-        assertEquals(1.0, score.getValue(), 0.00);
-        assertEquals("ComponentContextInformationProvider", score.getExplanation());
+		RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
+
+		assertEquals(1.0, score.getValue(), 0.00);
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test
-	public void testPropagationEqualComponents() {
+	public void testPEqualComponents() {
 		currentElement = KnowledgeElements.getTestKnowledgeElements().get(2);
-        RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
-		
-        assertEquals(1.0, score.getValue(), 0.00);
+		RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
+
+		assertEquals(1.0, score.getValue(), 0.00);
 	}
 
 	@Test
-	public void testPropagationRootOnlyComponent() {
+	public void testRootOnlyComponent() {
 		currentElement = KnowledgeElements.getTestKnowledgeElements().get(4);
-        RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
-		
-        assertEquals(0.0, score.getValue(), 0.00);
+		RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
+
+		assertEquals(0.0, score.getValue(), 0.00);
 	}
 
 	@Test
-	public void testPropagationNoMatchingComponents() {
+	public void testNoMatchingComponents() {
 		currentElement = KnowledgeElements.getTestKnowledgeElements().get(3);
-        RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
-		
-        assertEquals(0.0, score.getValue(), 0.00);
+		RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement, currentElement);
+
+		assertEquals(0.0, score.getValue(), 0.00);
+	}
+
+	@Test
+	public void testJiraIssueNull() {
+		RecommendationScore score = componentContextInformationProvider.assessRelation(rootElement,
+				new KnowledgeElement());
+		assertEquals(1, score.getValue(), 0);
+
+		score = componentContextInformationProvider.assessRelation(new KnowledgeElement(), new KnowledgeElement());
+		assertEquals(1, score.getValue(), 0);
 	}
 
 	@Test

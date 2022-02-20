@@ -1,5 +1,6 @@
-<h3>Ruleset Parameters</h3>
-<p>Select the default ruleset and weights for individual rules.</p>
+<h3>Link Recommendation Rules (Context Information Providers)</h3>
+<p>Select the default rules and their weights. 
+The weight can be negative to reverse the effect of the rule.</p>
 
 <table class="aui aui-table-list aui-table-sortable">
 	<thead>

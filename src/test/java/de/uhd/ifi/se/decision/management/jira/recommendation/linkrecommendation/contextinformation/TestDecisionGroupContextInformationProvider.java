@@ -12,34 +12,32 @@ import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersisten
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestDecisionGroupContextInformationProvider extends TestSetUp{
-    
-    private DecisionGroupContextInformationProvider decisionGroupContextInformationProvider;
+public class TestDecisionGroupContextInformationProvider extends TestSetUp {
+
+	private DecisionGroupContextInformationProvider decisionGroupContextInformationProvider;
 	private KnowledgeElement currentElement;
 	private KnowledgeElement rootElement;
 
-    @Before
+	@Before
 	public void setUp() {
 		init();
 		decisionGroupContextInformationProvider = new DecisionGroupContextInformationProvider();
-        currentElement = KnowledgeElements.getTestKnowledgeElements().get(10);
+		currentElement = KnowledgeElements.getTestKnowledgeElements().get(10);
 		rootElement = KnowledgeElements.getTestKnowledgeElements().get(9);
 	}
 
-    @Test
-	public void testPropagationRootNoDecisionGroups() {
-        RecommendationScore score = decisionGroupContextInformationProvider.assessRelation(rootElement, currentElement);
-		
-        assertEquals(1.0, score.getValue(), 0.00);
-        assertEquals("DecisionGroupContextInformationProvider", score.getExplanation());
+	@Test
+	public void testRootNoDecisionGroups() {
+		RecommendationScore score = decisionGroupContextInformationProvider.assessRelation(rootElement, currentElement);
+		assertEquals(1.0, score.getValue(), 0.00);
+		assertNotNull(score.getExplanation());
 	}
 
 	@Test
-	public void testPropagationEqualDecisionGroups() {
+	public void testEqualDecisionGroups() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", rootElement);
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", currentElement);
-        RecommendationScore score = decisionGroupContextInformationProvider.assessRelation(rootElement, currentElement);
-
+		RecommendationScore score = decisionGroupContextInformationProvider.assessRelation(rootElement, currentElement);
 		assertEquals(1.0, score.getValue(), 0.00);
 	}
 

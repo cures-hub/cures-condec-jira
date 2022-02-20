@@ -1,5 +1,5 @@
 #set ($viewIdentifier = "link-recommendation")
-<b>Recommendation of knowledge elements to be linked to the selected knowledge element</b>
+<b>Recommendation of knowledge elements to be linked to the selected knowledge element or potential duplicates</b>
 <form class="aui">
 <div class="condec-filter">
     <select id="link-recommendation-dropdown" class="select long-field"></select>
@@ -29,16 +29,16 @@
 	
 	<a id="config-link-$viewIdentifier" 
 		title="Rule weights and the default values for the link recommendation parameters can be changed by the rationale manager." target="_blank">
-		<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> Configuration
+		<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.configuration.label')
 	</a>
-	<div class="condec-filter-criterion">
-    	<label for="clear-link-recommendation-cache-input">Clear cache?</label>
+	<div class="condec-filter-criterion" title="$i18n.getText('condec.clear.cache.explanation')">
+    	<label for="clear-link-recommendation-cache-input">$i18n.getText("condec.clear.cache")</label>
     	<input class="checkbox" type="checkbox" id="clear-link-recommendation-cache-input"/>
     </div>
 	<br/>
     <br/>    
     <button class="aui-button aui-button-primary" id="link-recommendation-button" 
-    	title="Recommends new links to related knowledge elements or potential duplicates. The results are cached, so you need to empty the browser cache when changing parameters.">
+    	title="Recommends new links to related knowledge elements or potential duplicates.">
         <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
         $i18n.getText("condec.is.link.recommendation.label")
     </button>

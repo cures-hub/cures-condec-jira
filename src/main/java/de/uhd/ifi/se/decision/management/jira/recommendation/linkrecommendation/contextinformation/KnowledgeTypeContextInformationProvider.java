@@ -17,10 +17,11 @@ public class KnowledgeTypeContextInformationProvider extends ContextInformationP
 
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
+		float score = 0;
 		if (baseElement.getType() == otherElement.getType()) {
-			return new RecommendationScore(1.0f, getName());
+			score = 1;
 		}
-		return new RecommendationScore(0.0f, getName());
+		return new RecommendationScore(score, getDescription());
 	}
 
 	@Override
@@ -30,6 +31,6 @@ public class KnowledgeTypeContextInformationProvider extends ContextInformationP
 
 	@Override
 	public String getDescription() {
-		return "Recommend elements that are the same knowledge type as the source element.";
+		return "Recommend elements that are the same knowledge type as the source element";
 	}
 }
