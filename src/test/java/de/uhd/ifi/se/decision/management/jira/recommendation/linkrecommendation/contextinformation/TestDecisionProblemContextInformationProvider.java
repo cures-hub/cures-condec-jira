@@ -25,7 +25,7 @@ public class TestDecisionProblemContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationNonDecisionProblem() {
+	public void testNoDecisionProblem() {
 		currentElement = KnowledgeElements.getOtherWorkItem();
 		RecommendationScore score = decisionProblemContextInformationProvider.assessRelation(rootElement,
 				currentElement);
@@ -35,7 +35,7 @@ public class TestDecisionProblemContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testPropagationDecisionProblem() {
+	public void testDecisionProblem() {
 		currentElement = KnowledgeElements.getUnsolvedDecisionProblem();
 		RecommendationScore score = decisionProblemContextInformationProvider.assessRelation(rootElement,
 				currentElement);

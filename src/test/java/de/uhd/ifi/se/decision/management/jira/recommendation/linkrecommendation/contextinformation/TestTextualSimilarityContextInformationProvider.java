@@ -21,11 +21,17 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testAssessRelation() {
+	public void testAssessRelationDifferentKnowledgeTypes() {
 		RecommendationScore score = textualSimilarityContextInformationProvider
 				.assessRelation(KnowledgeElements.getAlternative(), KnowledgeElements.getProArgument());
 		assertEquals(0.44, score.getValue(), 0.1);
 		assertNotNull(score.getExplanation());
+	}
+
+	@Test
+	public void testAssessRelationPotentialDuplicate() {
+		assertEquals(1.0, textualSimilarityContextInformationProvider
+				.assessRelation("How can we implement the feature?", "How to implement the feature?").getValue(), 0.0);
 	}
 
 	@Test
@@ -65,6 +71,11 @@ public class TestTextualSimilarityContextInformationProvider extends TestSetUp {
 	public void testCalculateSimilarityNull() {
 		assertEquals(0, textualSimilarityContextInformationProvider.calculateSimilarity(null, ""), 0);
 		assertEquals(0, textualSimilarityContextInformationProvider.calculateSimilarity("", null), 0);
+	}
+
+	@Test
+	public void testCalculateSimilarityEmptyText() {
+		assertEquals(0, textualSimilarityContextInformationProvider.calculateSimilarity("", ""), 0);
 	}
 
 	@Test

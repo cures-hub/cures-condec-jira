@@ -25,7 +25,7 @@ public class TestSolutionOptionContextInformationProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testNonSolutionOption() {
+	public void testNoSolutionOption() {
 		currentElement = KnowledgeElements.getOtherWorkItem();
 		RecommendationScore score = solutionOptionContextInformationProvider.assessRelation(rootElement,
 				currentElement);
