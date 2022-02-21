@@ -50,7 +50,7 @@ Besides, every context information provider is assigned a <code>ruleWeight<sub>i
 
 For every knowledge element that might be related to the selected element, a `recommendationScore` is calculated as follows:
 
-<code>recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>i</sub>) / maxAchievableScore</code>
+<code>recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> [-1 * ruleWeight<sub>i</sub>]<sub>[ruleWeight < 1]</sub>) / maxAchievableScore</code>
 
 where `N` is the number of enabled context information providers 
 and `maxAchievableScore` is the hypothetical best score to normalize the recommendation score between 0 and 1.
