@@ -48,13 +48,13 @@ For example, the textual similarity context information provider calculates a ru
 The more similar the texts are, the higher is the rule value for this context information provider.
 Besides, every context information provider is assigned a <code>ruleWeight<sub>i</sub></code> to determine its importance for recommendation creation.
 
-The <code>ruleWeight<sub>i</sub></code> can also be negative to reverse the effect of the rule.
+The <b><code>ruleWeight<sub>i</sub></code> can be negative to reverse the effect</b> of the rule.
 For instance, for the time context information provider (*recommend elements that are timely coupled to the source element*),
 a negative rule weight means that elements that are not timely coupled are more likely to be recommended.
 
 For every knowledge element that might be related to the selected element, a `recommendationScore` is calculated as follows:
 
-<code>recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 1&#12315;ruleWeight<sub>i</sub>) / maxAchievableScore</code>
+<code>recommendationScore = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 1&#12315;ruleWeight<sub>i</sub>)) / maxAchievableScore</code>
 
 where `N` is the number of enabled context information providers,
 <code>-&#12314;ruleWeight<sub>i</sub> < 1&#12315;ruleWeight<sub>i</sub></code> denotes that the subtraction is only done for negative rule weights to reverse the effect,
