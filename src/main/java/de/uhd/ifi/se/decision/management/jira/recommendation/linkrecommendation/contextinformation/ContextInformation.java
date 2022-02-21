@@ -69,6 +69,8 @@ public class ContextInformation extends ContextInformationProvider {
 
 			if (weightValue < 0) {
 				subScore.setExplanation("Do not " + subScore.getExplanation().toLowerCase());
+				subScore.setValue(1 - subScore.getValue());
+				weightValue = Math.abs(weightValue);
 			}
 
 			subScore.weightValue(weightValue); // multiplies rule value with weight value
@@ -93,15 +95,13 @@ public class ContextInformation extends ContextInformationProvider {
 			}
 			if (contextInformationProvider instanceof SolutionOptionContextInformationProvider
 					|| contextInformationProvider instanceof DecisionProblemContextInformationProvider) {
+				// an element can either be a decision problem or a solution option, not both
 				if (isKnowledgeTypeProviderIncluded) {
 					continue;
 				}
 				isKnowledgeTypeProviderIncluded = true;
 			}
-			if (contextInformationProvider.getWeightValue() > 0) {
-				// only positive weights are calculated because rule values are between [0, 1].
-				maxAchievableScore += contextInformationProvider.getWeightValue();
-			}
+			maxAchievableScore += Math.abs(contextInformationProvider.getWeightValue());
 		}
 		return maxAchievableScore;
 	}
