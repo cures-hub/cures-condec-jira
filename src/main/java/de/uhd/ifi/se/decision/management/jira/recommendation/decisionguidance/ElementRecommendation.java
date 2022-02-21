@@ -39,6 +39,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	private List<Argument> arguments;
 	private RecommendationScore score = new RecommendationScore(0, "not scored");
 	private boolean isDiscarded = false;
+	private KnowledgeElement target;
 
 	@JsonCreator
 	public ElementRecommendation() {
@@ -53,6 +54,13 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 		this.knowledgeSource = knowledgeSource;
 		this.setSummary(summary);
 		this.url = url;
+	}
+
+	public ElementRecommendation(String summary, KnowledgeElement target) {
+		this();
+		this.project = new DecisionKnowledgeProject("");
+		this.setSummary(summary);
+		this.target = target;
 	}
 
 	public ElementRecommendation(KnowledgeElement knowledgeElement) {
@@ -130,6 +138,22 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	}
 
 	/**
+	 * @return {@link KnowledgeElement} based on which this Recommendation was given
+	 */
+	@XmlElement
+	public KnowledgeElement getTarget() {
+		return this.target;
+	}
+
+	/**
+	 * @param target
+	 *            Set {@link KnowledgeElement} for which the recommendation is given
+	 */
+	public void setTarget(KnowledgeElement target) {
+		this.target = target;
+	}
+
+	/**
 	 * @param arguments
 	 *            (pro and cons) that either support or attack the recommended
 	 *            solution option.
@@ -171,11 +195,18 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 		return RecommendationType.EXTERNAL;
 	}
 
+	/**
+	 * @param isDiscarded
+	 *            Store whether a recommendation is discarded or not
+	 */
 	@Override
 	public void setDiscarded(boolean isDiscarded) {
 		this.isDiscarded = isDiscarded;
 	}
 
+	/**
+	 * @return  true if the recommendation has been discarded, otherwise false
+	 */
 	@Override
 	public boolean isDiscarded() {
 		return isDiscarded;
