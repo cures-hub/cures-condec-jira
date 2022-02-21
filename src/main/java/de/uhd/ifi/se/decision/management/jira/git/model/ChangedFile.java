@@ -142,6 +142,7 @@ public class ChangedFile extends KnowledgeElement {
 		this.project = new DecisionKnowledgeProject(databaseEntry.getProjectKey());
 		this.treeWalkPath = databaseEntry.getFileName();
 		this.setLineCount(databaseEntry.getLineCount());
+		this.setSummary(getName());
 	}
 
 	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {

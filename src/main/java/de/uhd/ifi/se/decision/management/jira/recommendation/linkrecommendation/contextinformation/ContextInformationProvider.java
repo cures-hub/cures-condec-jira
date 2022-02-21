@@ -15,10 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 
 /**
- * Abstract class for different context information providers (=link
- * recommendation rules) to realize context utility functions. For example, the
- * {@link TimeContextInformationProvider} rates relations based on time of
- * creation or modifications of elements.
+ * Abstract class for various context information providers (=link
+ * recommendation rules).
  * 
  * This abstract class is part of the Decorator design pattern. It is the
  * abstract decorator and the concrete decorators are the subclasses, such as
@@ -33,27 +31,26 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY)
-@JsonSubTypes({ @JsonSubTypes.Type(value = ActiveElementsContextInformationProvider.class,
-				name="Recommend elements that are assigned to the same decision group as the source element."),
-		@JsonSubTypes.Type(value = ComponentContextInformationProvider.class,
-				name="Recommend elements that are assigned to the same component as the source element."),
-		@JsonSubTypes.Type(value = DecisionGroupContextInformationProvider.class,
-				name="Recommend elements that are assigned to the same decision group as the source element."),
-		@JsonSubTypes.Type(value = TextualSimilarityContextInformationProvider.class,
-				name="Recommend elements that are textual similar to the source element."),
-		@JsonSubTypes.Type(value = TimeContextInformationProvider.class,
-				name="Recommend elements that are timely coupled to the source element."),
-		@JsonSubTypes.Type(value = TracingContextInformationProvider.class,
-				name="Recommend elements that can be traced to the source element."),
-		@JsonSubTypes.Type(value = UserContextInformationProvider.class,
-				name="Recommend elements that have the same author as the source element."),
-		@JsonSubTypes.Type(value = KnowledgeTypeContextInformationProvider.class,
-				name="Recommend elements that are the same knowledge type as the source element."),
-		@JsonSubTypes.Type(value = DecisionProblemContextInformationProvider.class,
-				name="Recommend elements that are decision problems."),
-		@JsonSubTypes.Type(value = SolutionOptionContextInformationProvider.class,
-				name="Recommend elements that are solution options.")
-})
+@JsonSubTypes({ @JsonSubTypes.Type(value = ActiveElementsContextInformationProvider.class, //
+		name = "Recommend elements that are included in the same sprint"),
+		@JsonSubTypes.Type(value = ComponentContextInformationProvider.class, //
+				name = "Recommend elements that are assigned to the same component as the source element"),
+		@JsonSubTypes.Type(value = DecisionGroupContextInformationProvider.class, //
+				name = "Recommend elements that are assigned to the same decision group as the source element"),
+		@JsonSubTypes.Type(value = TextualSimilarityContextInformationProvider.class, //
+				name = "Recommend elements that are textual similar to the source element"),
+		@JsonSubTypes.Type(value = TimeContextInformationProvider.class, //
+				name = "Recommend elements that are timely coupled to the source element"),
+		@JsonSubTypes.Type(value = TracingContextInformationProvider.class, //
+				name = "Recommend elements that can be traced to the source element"),
+		@JsonSubTypes.Type(value = UserContextInformationProvider.class, //
+				name = "Recommend elements that have the same author as the source element"),
+		@JsonSubTypes.Type(value = KnowledgeTypeContextInformationProvider.class, //
+				name = "Recommend elements that are the same knowledge type as the source element"),
+		@JsonSubTypes.Type(value = DecisionProblemContextInformationProvider.class, //
+				name = "Recommend elements that are decision problems"),
+		@JsonSubTypes.Type(value = SolutionOptionContextInformationProvider.class, //
+				name = "Recommend elements that are solution options") })
 public abstract class ContextInformationProvider {
 
 	/**
@@ -63,6 +60,14 @@ public abstract class ContextInformationProvider {
 	protected boolean isActive;
 	protected float weightValue;
 
+	/**
+	 * @issue Which link recommendation rules (context information providers) should
+	 *        be activated by default and with which weights?
+	 * @decision The default activation and default weight differ for every link
+	 *           recommendation rule! For example, the
+	 *           TextualSimilarityContextInformationProvider is activated per
+	 *           default with a weight value of 2 to increase its importance.
+	 */
 	public ContextInformationProvider() {
 		isActive = true;
 		weightValue = 1;
@@ -129,7 +134,8 @@ public abstract class ContextInformationProvider {
 	}
 
 	/**
-	 * @return explanation for the link recommendation rule.
+	 * @return explanation for the link recommendation rule (should be more detailed
+	 *         than {@link #getDescription()}).
 	 */
 	@XmlElement
 	public String getExplanation() {
@@ -140,9 +146,7 @@ public abstract class ContextInformationProvider {
 	 * @return description of the link recommendation rule.
 	 */
 	@XmlElement
-	public String getDescription() {
-		return "N/A";
-	}
+	public abstract String getDescription();
 
 	/**
 	 * @return true if the name of this and the other object is the same.

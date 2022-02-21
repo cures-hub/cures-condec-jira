@@ -1,22 +1,20 @@
 /**
- * This module implements the communication with the ConDec Java REST API for solution option recommendation (decision guidance).
+ * Implements the communication with the ConDec Java REST API for solution option recommendation (decision guidance).
  *
- * Is required by: conDecDecisionGuidance
+ * Is required by: conDecDecisionGuidance, conDecPrompt
  *
  * Is referenced in HTML by
  * settings/decisionguidance/*
- * tabs/recommendation/*
- * jiraIssueModule.vm
  */
 (function(global) {
 
 	var ConDecDecisionGuidanceAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/decision-guidance";
-		this.recommendationsPerProblem = new Map();
-	};
+		this.recommendationsPerProblem = new Map(); // for caching recommendations
+	}; 
 
-	/*
-	 * external references: condec.decision.guidance
+	/**
+	 * external references: condec.decision.guidance, condec.prompts
 	 */
 	ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(decisionProblem, keywords) {
 		var filterSettings = {
@@ -35,7 +33,7 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.decision.guidance
 	 */
 	ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation = function(projectKey, keyword, issueId, knowledgeSources, kResults, documentationLocation, callback) {
@@ -45,8 +43,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function(projectKey, maxNumberOfRecommendations) {
 		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/max-recommendations", maxNumberOfRecommendations,
@@ -57,8 +55,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setSimilarityThreshold = function(projectKey, threshold) {
 		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/similarity-threshold", threshold,
@@ -69,8 +67,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.createRDFKnowledgeSource = function(projectKey, rdfSource) {
 		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/create/rdf-source", rdfSource,
@@ -81,8 +79,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setAddRecommendationDirectly = function(projectKey, addRecommendationDirectly) {
 		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/add-recommendations-directly", addRecommendationDirectly,
@@ -93,8 +91,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setRDFKnowledgeSourceActivated = function(projectKey, knowledgeSourceName, isActivated) {
 		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/activate/rdf-source/" + knowledgeSourceName, isActivated,
@@ -110,8 +108,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.setProjectSource = function(projectKey, projectSourceKey, isActivated) {
 		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/activate/project-source/" + projectSourceKey, isActivated,
@@ -127,8 +125,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.deleteRDFKnowledgeSource = function(projectKey, knowledgeSourceName, callback) {
 		generalApi.deleteJSON(this.restPrefix + "/configuration/" + projectKey + "/rdf-source/" + knowledgeSourceName, null,
@@ -140,8 +138,8 @@
 			});
 	};
 
-	/*
-	 * external references: settings/decisionguidance/decisionGuidance.vm
+	/**
+	 * external references: settings/decisionguidance/
 	 */
 	ConDecDecisionGuidanceAPI.prototype.updateRDFKnowledgeSource = function(projectKey, knowledgeSourceName, knowledgeSource) {
 		generalApi.postJSON(this.restPrefix + "/configuration/" + projectKey + "/update/rdf-source/" + knowledgeSourceName, knowledgeSource,

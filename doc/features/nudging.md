@@ -42,3 +42,15 @@ This should nudge the developers to improve the quality.
 ![Overview of decision problems with quality highlighting](../screenshots/knowledge_overview_quality_highlighting.png)
 
 *Overview of decision problems with quality highlighting*
+
+## Design Details
+The Java code for the nudging configuration can be found here:
+
+- [Java classes for just-in-time prompt configuration](../../src/main/java/de/uhd/ifi/se/decision/management/jira/recommendation/prompts)
+- [Java REST API for nudging](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/NudgingRest.java)
+
+The UI code for the knowledge export feature can be found here:
+
+- [Velocity templates for just-in-time prompts](../../src/main/resources/templates/prompts)
+- [Velocity template for configuration](../../src/main/resources/templates/settings/nudgingSettings.vm)
+- [JavaScript code for nudging](../../src/main/resources/js/nudging)

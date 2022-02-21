@@ -4,6 +4,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +47,11 @@ public class TestPreprocessor extends TestSetUp {
 		String[] stemmedTokens = { "quick", "brown", "fox", "jump", "lazy", "dog" };
 		assertArrayEquals(stemmedTokens, preprocessor.getStemmedTokensWithoutStopWords(testSentence));
 		assertEquals(0, preprocessor.getStemmedTokensWithoutStopWords(null).length);
+
+		assertEquals("[filt, exerc, frontend]", Arrays.toString(
+				preprocessor.getStemmedTokensWithoutStopWords("We could filter the exercises in the frontend")));
+		assertEquals("[fil, form, export, play, dat]", Arrays.toString(
+				preprocessor.getStemmedTokensWithoutStopWords("In which file format do we export the player data?")));
 	}
 
 	@Test

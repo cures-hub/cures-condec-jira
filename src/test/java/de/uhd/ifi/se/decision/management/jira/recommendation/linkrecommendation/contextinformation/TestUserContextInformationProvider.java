@@ -48,7 +48,7 @@ public class TestUserContextInformationProvider extends TestSetUp {
 	@Test
 	public void testIsApplicationUserEqual() {
 		assertEquals(0., UserContextInformationProvider.isApplicationUserEqual(null, null), 0);
-		assertEquals(0.33, UserContextInformationProvider.isApplicationUserEqual(
+		assertEquals(1.0 / 3, UserContextInformationProvider.isApplicationUserEqual(
 				JiraUsers.SYS_ADMIN.getApplicationUser(), JiraUsers.SYS_ADMIN.getApplicationUser()), 0);
 		assertEquals(0., UserContextInformationProvider.isApplicationUserEqual(JiraUsers.SYS_ADMIN.getApplicationUser(),
 				JiraUsers.BLACK_HEAD.getApplicationUser()), 0);

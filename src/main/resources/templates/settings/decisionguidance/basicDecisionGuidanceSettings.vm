@@ -9,7 +9,7 @@
 </div>
 
 <div class="field-group">
-	<label for="max-recommendation">Maximum Number of Recommendations</label>
+	<label for="max-recommendation">Maximum Number of Recommendations (Top-k)</label>
 	<input class="text short-field" type="number" data-aui-validation-field
 		value="$decisionGuidanceConfig.getMaxNumberOfRecommendations()"
 		id="max-recommendation"/>
