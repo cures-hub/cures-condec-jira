@@ -66,14 +66,14 @@ public class ContextInformation extends ContextInformationProvider {
 			}
 			RecommendationScore subScore = contextInformationProvider.assessRelation(baseElement, otherElement);
 			float weightValue = contextInformationProvider.getWeightValue();
+			subScore.weightValue(weightValue); // multiplies rule value with weight value
 
 			if (weightValue < 0) {
+				// reverse rule for negative weights
 				subScore.setExplanation("Do not " + subScore.getExplanation().toLowerCase());
-				subScore.setValue(1 - subScore.getValue());
-				weightValue = Math.abs(weightValue);
+				subScore.setValue(subScore.getValue() - weightValue);
 			}
 
-			subScore.weightValue(weightValue); // multiplies rule value with weight value
 			score.addSubScore(subScore);
 		}
 		float maxAchievableScore = determineMaxAchievableScore();
