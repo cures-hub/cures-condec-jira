@@ -8,18 +8,19 @@ The context information is calculated from the various <b>context information pr
 <p>Every context information provider calculates a <var>ruleValue<sub>i</sub></var>.
 For example, the textual similarity context information provider calculates a rule value based on the textual similarity of two knowledge elements. 
 The more textual similar, the higher is the rule value.
-Besides, every context information provider is assigned a <var>ruleWeight<sub>i</sub></var> to determine its importance for recommendation creation.
+Besides, every context information provider is assigned a <var>ruleWeight<sub>i</sub></var> to determine its importance for recommendation creation.</p>
 
-For every knowledge element that might be related to the selected element, a <var>recommendationScore</var> is calculated as follows:</p>
+<p>The <b><var>ruleWeight<sub>i</sub></var> can be negative to reverse the effect</b> of the rule.
+For instance, for the timely coupling context information provider (<i>recommend elements that are timely coupled to the source element</i>),
+a negative rule weight means that elements that are not timely coupled are more likely to be recommended.</p>
 
-<p><b><code>recommendationScore = (&sum;<sup>N</sup> ruleValue<sub>i</sub> * ruleWeight<sub>i</sub>) / maxAchievableScore</code></b>, </p>
+<p>For every knowledge element that might be related to the selected element, a <var>recommendationScore</var> is calculated as follows:</p>
 
-<p>where <var>N</var> is the number of enabled context information providers</p>
+<p><b><code>recommendationScore = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 1&#12315;ruleWeight<sub>i</sub>)) / maxAchievableScore</code></b>, </p>
+
+<p>where <var>N</var> is the number of enabled context information providers,</p>
+<p><b><code>-&#12314;ruleWeight<sub>i</sub> < 1&#12315;ruleWeight<sub>i</sub></code></b> denotes that the subtraction is only done for negative rule weights to reverse the effect,</p>
 <p>and <var>maxAchievableScore</var> is the hypothetical best recommendation score to normalize the score between 0 and 1.</p>
-
-<p>The <var>ruleWeight<sub>i</sub></var> can also be negative to reverse the effect of the rule.
-For instance, for the timely coupling context information provider (<i>boost when element is timely coupled to the selected element</i>),
-a negative rule weight means that elements that are not timely coupled are assigned a higher recommendation score.</p>
 
 The link recommendations are sorted by their <var>recommendationScore</var>.
 

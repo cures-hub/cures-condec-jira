@@ -117,7 +117,8 @@ public abstract class ContextInformationProvider {
 	}
 
 	/**
-	 * @return the weight value of the link recommendation rule.
+	 * @return the weight value of the link recommendation rule. Determines the
+	 *         importance of the rule and can be negative to reverse the effect.
 	 */
 	@XmlElement
 	public float getWeightValue() {
@@ -126,7 +127,8 @@ public abstract class ContextInformationProvider {
 
 	/**
 	 * @param weightValue
-	 *            of the link recommendation rule.
+	 *            of the link recommendation rule. Determines the importance of the
+	 *            rule and can be negative to reverse the effect.
 	 */
 	@JsonProperty
 	public void setWeightValue(float weightValue) {
