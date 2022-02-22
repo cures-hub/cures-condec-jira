@@ -27,6 +27,7 @@
 			+ "&addGroup=" + groupName, element, function(error) {
 				if (error === null) {
 					conDecAPI.showFlag("Success", "Decision groups/levels have been assigned.");
+					conDecGroupingAPI.decisionGroups = []; // reset groups
 					callback(elementId);
 				}
 			});
@@ -55,7 +56,7 @@
 			"documentationLocation": documentationLocation,
 			"projectKey": conDecAPI.projectKey
 		};
-		generalApi.postJSON(this.restPrefix + "/groups", element,
+		generalApi.postJSON(this.restPrefix + "/groups-for-element", element,
 			function(error, decisionGroups) {
 				if (error === null) {
 					callback(decisionGroups);

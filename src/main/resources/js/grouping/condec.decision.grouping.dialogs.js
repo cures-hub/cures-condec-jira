@@ -17,7 +17,6 @@
 		// HTML elements
 		var assignDialog = document.getElementById("assign-dialog");
 		var selectLevelField = document.getElementById("assign-form-select-level");
-		var inputExistingGroupsField = document.getElementById("assign-form-input-existing");
 		var inputAddGroupField = document.getElementById("assign-form-input-add");
 		var submitButton = document.getElementById("assign-dialog-submit-button");
 		var cancelButton = document.getElementById("assign-dialog-cancel-button");
@@ -30,20 +29,21 @@
 				var level = groups[0];
 				selectLevelField.value = level;
 			}
+			var allGroupsForProject = conDecGroupingAPI.getAllDecisionGroups();
+			allGroupsForProject = allGroupsForProject.filter(group => !isDecisionLevel(group));
 			if (groups.length > 1) {
 				groups.shift();
-				inputExistingGroupsField.value = groups;
-			} else {
-				inputExistingGroupsField.value = "";
 			}
+			conDecFiltering.fillDecisionGroupSelect("select2-decision-group-dialog",
+				allGroupsForProject, groups);
 		});
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			var level = selectLevelField.value;
-			var existingGroups = inputExistingGroupsField.value;
-			var addgroup = inputAddGroupField.value;
-			conDecGroupingAPI.assignDecisionGroup(level, existingGroups, addgroup,
+			var existingGroups = conDecFiltering.getSelectedGroups("select2-decision-group-dialog");
+			var newGroups = inputAddGroupField.value;
+			conDecGroupingAPI.assignDecisionGroup(level, existingGroups, newGroups,
 				sourceId, documentationLocation, function(id) {
 					conDecObservable.notify();
 				});
@@ -90,9 +90,9 @@
 	};
 
 	function isDecisionLevel(groupName) {
-		return "High_Level".match(groupName) 
-				|| "Medium_Level".match(groupName) 
-				|| "Realization_Level".match(groupName);
+		return "High_Level".match(groupName)
+			|| "Medium_Level".match(groupName)
+			|| "Realization_Level".match(groupName);
 	}
 
 	ConDecGroupingDialog.prototype.showDeleteGroupDialog = function(groupName) {

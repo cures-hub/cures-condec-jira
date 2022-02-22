@@ -100,7 +100,7 @@ public class DecisionGroupingRest {
 	 *            requirement.
 	 * @return all decision groups/levels for one {@link KnowledgeElement}.
 	 */
-	@Path("/groups")
+	@Path("/groups-for-element")
 	@POST
 	public Response getDecisionGroupsForElement(KnowledgeElement element) {
 		if (element == null) {
