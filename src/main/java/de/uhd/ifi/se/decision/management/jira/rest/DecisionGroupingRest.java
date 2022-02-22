@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -106,7 +105,7 @@ public class DecisionGroupingRest {
 		if (element == null) {
 			return Response.ok(Collections.emptyList()).build();
 		}
-		return Response.ok(new TreeSet<>(element.getDecisionGroups())).build();
+		return Response.ok(element.getDecisionGroups()).build();
 	}
 
 	/**
@@ -170,6 +169,6 @@ public class DecisionGroupingRest {
 	@GET
 	public Response getAllDecisionGroups(@PathParam("projectKey") String projectKey) {
 		List<String> allGroupNames = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
-		return Response.ok(new TreeSet<>(allGroupNames)).build();
+		return Response.ok(allGroupNames).build();
 	}
 }

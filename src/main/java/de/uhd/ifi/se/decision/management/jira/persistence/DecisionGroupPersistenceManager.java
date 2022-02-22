@@ -153,7 +153,7 @@ public class DecisionGroupPersistenceManager {
 		for (DecisionGroupInDatabase groupInDatabase : groupsInDatabase) {
 			groups.add(groupInDatabase.getGroup());
 		}
-		return sortGroupNames(groups);
+		return sortGroupNames(groups, true);
 	}
 
 	/**
@@ -162,11 +162,11 @@ public class DecisionGroupPersistenceManager {
 	 * @return sorted List of decision groups and levels so that the levels come
 	 *         first.
 	 */
-	public static List<String> sortGroupNames(List<String> groupNames) {
+	public static List<String> sortGroupNames(List<String> groupNames, boolean isOnlyOneLevel) {
 		for (String group : groupNames) {
 			if (LEVELS.contains(group.toLowerCase())) {
 				int indexOfLevel = LEVELS.indexOf(group.toLowerCase());
-				if (groupNames.size() <= indexOfLevel) {
+				if (isOnlyOneLevel || groupNames.size() <= indexOfLevel) {
 					indexOfLevel = 0;
 				}
 				Collections.swap(groupNames, groupNames.indexOf(group), indexOfLevel);
@@ -271,7 +271,7 @@ public class DecisionGroupPersistenceManager {
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			groupNames.add(groupInDatabase.getGroup());
 		}
-		return sortGroupNames(new ArrayList<>(groupNames));
+		return sortGroupNames(new ArrayList<>(groupNames), false);
 	}
 
 	/**
