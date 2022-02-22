@@ -8,6 +8,7 @@ The required minimal amount of decisions and the maximal link distance can be co
 - criteria of the **intra-rationale completeness** for decision knowledge elements, 
 e.g. if a pro-argument is linked to the decision.
 The criteria for intra-rationale completeness can be configured by the rationale manager.
+- the assignment to **[decision levels and decision groups](decision-grouping.md)**.
 - specific aspects (*is test file?*, *number of lines of code*) for code files
 - the **quality of the directly linked knowledge elements** in the knowlegde graph, 
 i.e. if a neighbor knowledge element of the checked element violates the DoD the checked element will also violate the DoD.

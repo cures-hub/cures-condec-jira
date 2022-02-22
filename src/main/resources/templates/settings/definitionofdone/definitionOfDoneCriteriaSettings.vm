@@ -64,6 +64,12 @@
 	</ul>
 </div>
 <div class="field-group">
+    <label>Decision Level and Decision Groups:</label>
+    <ul>
+        <li>Decision problems (issues) and solution options (decisions and alternatives) are assigned to a decision level and one or more custom decision groups <input type="checkbox" disabled="disabled" checked="checked"></li>
+	</ul>
+</div>
+<div class="field-group">
     <label for="change-definition-of-done">Save Definition of Done</label>
     <button class="aui-button-primary aui-button" id="change-definition-of-done">Save</button>
     <div class="description">Saves all criteria for the definition of done.</div>

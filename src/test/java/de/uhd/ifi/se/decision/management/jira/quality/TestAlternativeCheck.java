@@ -39,7 +39,7 @@ public class TestAlternativeCheck extends TestSetUp {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		alternative = KnowledgeElements.getAlternative();
-		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level"), alternative);
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level", "UI"), alternative);
 		alternativeCheck = new AlternativeCheck(alternative);
 	}
 

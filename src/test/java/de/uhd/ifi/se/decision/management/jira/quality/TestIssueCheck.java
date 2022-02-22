@@ -33,7 +33,7 @@ public class TestIssueCheck extends TestSetUp {
 	public void setUp() {
 		init();
 		issue = KnowledgeElements.getSolvedDecisionProblem();
-		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level"), issue);
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level", "process"), issue);
 		issueCheck = new IssueCheck(issue);
 	}
 

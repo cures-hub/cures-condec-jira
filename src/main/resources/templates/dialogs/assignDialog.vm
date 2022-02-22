@@ -24,7 +24,7 @@
 				<input id="assign-form-input-add" class="text full-width-field" value="">
 			</div>   
 			<div class="field-group">
-			<div class="description"> Example: Property, Existence or Executive Decision <br/> (Separate Groups with a Comma to add Multiple) </div>  			
+			<div class="description"> Example: UI, Process, Testing, Property, Existence, or Executive Decision <br/> (Separate Groups with a Comma to add Multiple) </div>  			
 			</div> 
 		</form>
     </div>

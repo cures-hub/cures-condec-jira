@@ -30,19 +30,6 @@ public class DecisionCheck extends KnowledgeElementCheck {
 		return qualityCheckResults;
 	}
 
-	public static QualityCriterionCheckResult checkDecisionLevelAssigned(KnowledgeElement element) {
-		List<String> decisionGroups = element.getDecisionGroups();
-		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
-				QualityCriterionType.DECISION_LEVEL_ASSIGNED, false);
-		if (decisionGroups.isEmpty()) {
-			checkResult.setCriterionViolated(true);
-			return checkResult;
-		}
-		checkResult.setExplanation("The following decision level and decision groups are assigned to the "
-				+ element.getTypeAsString() + ": " + StringUtils.join(decisionGroups, ", "));
-		return checkResult;
-	}
-
 	private QualityCriterionCheckResult checkDecisionLinkedToIssue(KnowledgeElement decision) {
 		if (decision.getLinkedDecisionProblems().isEmpty()) {
 			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_ISSUE, true);
@@ -63,5 +50,21 @@ public class DecisionCheck extends KnowledgeElementCheck {
 			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, false);
 		}
 		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, true);
+	}
+
+	public static QualityCriterionCheckResult checkDecisionLevelAssigned(KnowledgeElement element) {
+		List<String> decisionGroups = element.getDecisionGroups();
+		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
+				QualityCriterionType.DECISION_LEVEL_AND_GROUPS, true);
+		if (decisionGroups.size() == 1) {
+			checkResult.setExplanation("A decision level is chosen, but at least one decision group is missing.");
+		}
+		if (decisionGroups.size() < 2) {
+			return checkResult;
+		}
+		checkResult.setCriterionViolated(false);
+		checkResult.setExplanation("The following decision level and decision group(s) are assigned to the "
+				+ element.getTypeAsString() + ": " + StringUtils.join(decisionGroups, ", "));
+		return checkResult;
 	}
 }

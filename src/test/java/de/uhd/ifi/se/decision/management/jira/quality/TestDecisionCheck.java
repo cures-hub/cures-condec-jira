@@ -35,7 +35,7 @@ public class TestDecisionCheck extends TestSetUp {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		decision = KnowledgeElements.getDecision();
-		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level"), decision);
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level", "UI"), decision);
 		decisionCheck = new DecisionCheck(decision);
 	}
 

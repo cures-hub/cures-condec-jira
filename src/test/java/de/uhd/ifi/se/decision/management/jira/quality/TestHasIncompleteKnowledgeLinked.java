@@ -39,7 +39,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
 		issue = KnowledgeElements.getSolvedDecisionProblem();
 		decision = KnowledgeElements.getDecision();
-		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level"), decision);
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level", "testing"), decision);
 		alternative = KnowledgeElements.getAlternative();
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);
