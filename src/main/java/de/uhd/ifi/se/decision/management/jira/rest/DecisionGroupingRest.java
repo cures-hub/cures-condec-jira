@@ -87,13 +87,6 @@ public class DecisionGroupingRest {
 	}
 
 	/**
-	 * @issue How can we keep the sorting of the list when passing it through the
-	 *        REST API?
-	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
-	 *           the REST API!
-	 * @pro No other java.util data structure seems to keep the sorting than
-	 *      TreeSet.
-	 * 
 	 * @param element
 	 *            {@link KnowledgeElement}, e.g., decision, code file, or
 	 *            requirement.
@@ -153,13 +146,6 @@ public class DecisionGroupingRest {
 	}
 
 	/**
-	 * @issue How can we keep the sorting of the list when passing it through the
-	 *        REST API?
-	 * @decision Cast the list to a TreeSet to keep sorting when passing it through
-	 *           the REST API!
-	 * @pro No other java.util data structure seems to keep the sorting than
-	 *      TreeSet.
-	 * 
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @return all decision groups/levels for one project sorted so that levels

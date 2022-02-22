@@ -88,5 +88,14 @@
 			});
 	};
 
+	/**
+	 * external references: condec.decision.grouping.dialogs, condec.dialog
+	 */
+	ConDecGroupingAPI.prototype.isDecisionLevel = function(groupName) {
+		return "High_Level".match(groupName)
+			|| "Medium_Level".match(groupName)
+			|| "Realization_Level".match(groupName);
+	};
+
 	global.conDecGroupingAPI = new ConDecGroupingAPI();
 })(window);

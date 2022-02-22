@@ -23,20 +23,7 @@
 
 		// Fill HTML elements
 		inputAddGroupField.value = "";
-
-		conDecGroupingAPI.getDecisionGroupsForElement(sourceId, documentationLocation, function(groups) {
-			if (groups.length > 0) {
-				var level = groups[0];
-				selectLevelField.value = level;
-			}
-			var allGroupsForProject = conDecGroupingAPI.getAllDecisionGroups();
-			allGroupsForProject = allGroupsForProject.filter(group => !isDecisionLevel(group));
-			if (groups.length > 1) {
-				groups.shift();
-			}
-			conDecFiltering.fillDecisionGroupSelect("select2-decision-group-dialog",
-				allGroupsForProject, groups);
-		});
+		this.fillDecisionGroupSelectForElement(sourceId, documentationLocation, selectLevelField, "select2-decision-group-dialog");
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function() {
@@ -58,11 +45,26 @@
 		AJS.dialog2(assignDialog).show();
 	};
 
+	ConDecGroupingDialog.prototype.fillDecisionGroupSelectForElement = function(id, documentationLocation, selectLevelField, selectGroupId) {
+		conDecGroupingAPI.getDecisionGroupsForElement(id, documentationLocation, function(groups) {
+			if (groups.length > 0) {
+				var level = groups[0];
+				selectLevelField.value = level;
+			}
+			var allGroupsForProject = conDecGroupingAPI.getAllDecisionGroups();
+			allGroupsForProject = allGroupsForProject.filter(group => !conDecGroupingAPI.isDecisionLevel(group));
+			if (groups.length > 1) {
+				groups.shift();
+			}
+			conDecFiltering.fillDecisionGroupSelect(selectGroupId, allGroupsForProject, groups);
+		});
+	};
+
 	ConDecGroupingDialog.prototype.showRenameGroupDialog = function(groupName) {
 		console.log("ConDecGroupingDialog showRenameGroupDialog");
 		// HTML elements
 		var renameGroupDialog = document.getElementById("rename-group-dialog");
-		if (isDecisionLevel(groupName)) {
+		if (conDecGroupingAPI.isDecisionLevel(groupName)) {
 			alert("You cannot rename decision levels.");
 		} else {
 			var inputGroupName = document.getElementById("rename-group-input");
@@ -89,17 +91,11 @@
 		}
 	};
 
-	function isDecisionLevel(groupName) {
-		return "High_Level".match(groupName)
-			|| "Medium_Level".match(groupName)
-			|| "Realization_Level".match(groupName);
-	}
-
 	ConDecGroupingDialog.prototype.showDeleteGroupDialog = function(groupName) {
 		console.log("ConDecGroupingDialog showDeleteGroupDialog");
 		// HTML elements
 		var deleteGroupDialog = document.getElementById("delete-group-dialog");
-		if (isDecisionLevel(groupName)) {
+		if (conDecGroupingAPI.isDecisionLevel(groupName)) {
 			alert("You cannot delete decision levels.");
 		} else {
 			var deleteMessageLabel = document.getElementById("delete-group-label");
