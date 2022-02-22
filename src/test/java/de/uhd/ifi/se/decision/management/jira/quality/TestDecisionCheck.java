@@ -110,6 +110,13 @@ public class TestDecisionCheck extends TestSetUp {
 		assertTrue(decisionCheck.isDefinitionOfDoneFulfilled());
 	}
 
+	@Test
+	@NonTransactional
+	public void testHasOnlyDecisionLevelSet() {
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level"), decision);
+		assertFalse(decisionCheck.isDefinitionOfDoneFulfilled());
+	}
+
 	@After
 	public void tearDown() {
 		// restore default
