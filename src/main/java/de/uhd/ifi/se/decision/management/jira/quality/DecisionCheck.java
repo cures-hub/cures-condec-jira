@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.quality;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -24,7 +26,21 @@ public class DecisionCheck extends KnowledgeElementCheck {
 		if (definitionOfDone.isDecisionIsLinkedToPro()) {
 			qualityCheckResults.add(checkDecisionLinkedToPro(element));
 		}
+		qualityCheckResults.add(checkDecisionLevelAssigned(element));
 		return qualityCheckResults;
+	}
+
+	public static QualityCriterionCheckResult checkDecisionLevelAssigned(KnowledgeElement element) {
+		List<String> decisionGroups = element.getDecisionGroups();
+		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
+				QualityCriterionType.DECISION_LEVEL_ASSIGNED, false);
+		if (decisionGroups.isEmpty()) {
+			checkResult.setCriterionViolated(true);
+			return checkResult;
+		}
+		checkResult.setExplanation("The following decision level and decision groups are assigned to the "
+				+ element.getTypeAsString() + ": " + StringUtils.join(decisionGroups, ", "));
+		return checkResult;
 	}
 
 	private QualityCriterionCheckResult checkDecisionLinkedToIssue(KnowledgeElement decision) {

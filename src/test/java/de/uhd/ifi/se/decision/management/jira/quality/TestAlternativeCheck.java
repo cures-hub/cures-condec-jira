@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import org.jgrapht.Graphs;
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -36,6 +39,7 @@ public class TestAlternativeCheck extends TestSetUp {
 		init();
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 		alternative = KnowledgeElements.getAlternative();
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level"), alternative);
 		alternativeCheck = new AlternativeCheck(alternative);
 	}
 

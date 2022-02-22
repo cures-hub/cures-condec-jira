@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -38,6 +39,7 @@ public class TestHasIncompleteKnowledgeLinked extends TestSetUp {
 		List<KnowledgeElement> elements = KnowledgeElements.getTestKnowledgeElements();
 		issue = KnowledgeElements.getSolvedDecisionProblem();
 		decision = KnowledgeElements.getDecision();
+		DecisionGroupPersistenceManager.setGroupAssignment(Set.of("High_Level"), decision);
 		alternative = KnowledgeElements.getAlternative();
 		workItem = elements.get(2);
 		anotherWorkItem = elements.get(1);

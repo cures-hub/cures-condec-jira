@@ -27,7 +27,8 @@ public enum QualityCriterionType {
 	ALTERNATIVE_LINKED_TO_ARGUMENT("Alternative does not have an argument!",
 			"At least one argument is documented for the alternative."), //
 	ARGUMENT_LINKED_TO_SOLUTION_OPTION("Argument does not have a decision or an alternative!",
-			"Argument is linked to a solution option.");
+			"Argument is linked to a solution option."), //
+	DECISION_LEVEL_ASSIGNED("Decision level (high, medium, realization) is missing.", "Decision level is choosen.");
 
 	private String violationDescription;
 	private String fulfillmentDescription;
