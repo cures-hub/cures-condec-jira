@@ -7,9 +7,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -118,9 +120,9 @@ public class DecisionGroupingRest {
 	 *            new name of the decision group.
 	 * @return ok if renaming was successful.
 	 */
-	@Path("/rename")
+	@Path("/{projectKey}/rename")
 	@GET
-	public Response renameDecisionGroup(@QueryParam("projectKey") String projectKey,
+	public Response renameDecisionGroup(@PathParam("projectKey") String projectKey,
 			@QueryParam("oldName") String oldGroupName, @QueryParam("newName") String newGroupName) {
 		if (DecisionGroupPersistenceManager.updateGroupName(oldGroupName, newGroupName, projectKey)) {
 			LOGGER.info("The group " + oldGroupName + " was renamed to " + newGroupName + ".");
@@ -139,9 +141,9 @@ public class DecisionGroupingRest {
 	 *            level") cannot be deleted.
 	 * @return ok if the decision group was successfully deleted.
 	 */
-	@Path("/delete")
-	@GET
-	public Response deleteDecisionGroup(@QueryParam("projectKey") String projectKey,
+	@Path("/{projectKey}")
+	@DELETE
+	public Response deleteDecisionGroup(@PathParam("projectKey") String projectKey,
 			@QueryParam("groupName") String groupName) {
 		if (DecisionGroupPersistenceManager.deleteGroup(groupName, projectKey)) {
 			LOGGER.info("The group " + groupName + " was deleted.");
@@ -164,9 +166,9 @@ public class DecisionGroupingRest {
 	 * @return all decision groups/levels for one project sorted so that levels
 	 *         (high level, medium level, realization level) come first.
 	 */
-	@Path("/all-groups")
+	@Path("/{projectKey}")
 	@GET
-	public Response getAllDecisionGroups(@QueryParam("projectKey") String projectKey) {
+	public Response getAllDecisionGroups(@PathParam("projectKey") String projectKey) {
 		List<String> allGroupNames = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
 		return Response.ok(new TreeSet<>(allGroupNames)).build();
 	}
