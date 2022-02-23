@@ -20,4 +20,9 @@
     <rule ref="category/java/codestyle.xml">
         <exclude name="LongVariable" />
     </rule>
+    <rule ref="category/java/documentation.xml/CommentSize">
+        <properties>
+            <property name="maxLines" value="10" />
+        </properties>
+    </rule>
 </ruleset>
