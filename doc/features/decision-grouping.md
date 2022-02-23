@@ -1,18 +1,22 @@
 # Decision Grouping
 
-The ConDec Jira plugin enables to group decisions and related knowledge elements.
-Developers can group decisions according to predefined levels (high, medium, and realization).
-They can also define custom groups (e.g. UI, process, design, requirements).
+The ConDec Jira plugin enables to **group decisions and related knowledge elements**.
+Developers can group decisions according to predefined **levels (high, medium, and realization)**.
+They can also define **custom groups (e.g. UI, process, design, requirements, architecture, testing, ...)**.
 Levels and custom groups can be assigned using the context menu on a specific knowledge element in a knowledge graph view.
+
+![Context menu available in all views on the knowledge graph](../screenshots/decision_grouping_context_menu.png)
+
+*Context menu available in all [views on the knowledge graph](knowledge-visualization.md)*
 
 ![Dialog to assign a level and custom groups to a decision](../screenshots/decision_grouping_assign.png)
 
 *Dialog to assign a level and custom groups to a decision*
 
-Developers and other stakeholders can filter for decision levels and groups, for example, if they only want to see decisions for a software component (here git).
+Developers and other stakeholders can **filter for decision levels and groups**, for example, if they only want to see decisions for the UI or process decisions.
 ![View elements of a specific decision group (here git)](../screenshots/decision_grouping_filter.png)
 
-*View elements of a specific decision group (here git)*
+*View elements of a specific decision group (here UI)*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
@@ -30,3 +34,5 @@ The UI code for decision grouping can be found here:
 
 - [Velocity template for decision group view](../../src/main/resources/templates/tabs/decisionGroups.vm)
 - [JavaScript code for decision grouping](../../src/main/resources/js/grouping)
+
+## Important Decisions
