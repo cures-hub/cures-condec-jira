@@ -61,7 +61,12 @@
 		let counter = 0;
 		recommendations.forEach(recommendation => {
 			counter++;
-			let tableRow = "<tr>";
+			let tableRow;
+			if (recommendation.isDiscarded) {
+				tableRow = "<tr class = \"discarded\">";
+			} else {
+				tableRow = "<tr>";
+			}
 			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></td>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSource.name + "<span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span></div></td>";
 			tableRow += "<td>" + conDecRecommendation.buildScore(recommendation.score, "score_" + counter) + "</td>";
