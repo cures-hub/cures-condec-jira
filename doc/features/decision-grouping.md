@@ -19,7 +19,7 @@ They have a high impact on the (nonfunctional) properties of the product and are
 or the usage of specific APIs. 
 These decisions are relatively easy to change, and have relative low impact on the properties of the system.
 
-## Assigment and Filtering
+## Assignment and Filtering
 Levels and custom groups can be assigned using the context menu on a specific knowledge element in a knowledge graph view.
 
 ![Context menu available in all views on the knowledge graph](../screenshots/decision_grouping_context_menu.png)
@@ -56,6 +56,14 @@ Developers can see an explanation for the DoD violation in the quality check vie
 
 *Decision problem that violates the DoD since only a decision level but no custom decision group is assigned to it.*
 
+## Renaming and Deleting Decision Groups in Overview
+ConDec offers an overview for the decision levels and decision groups assigned in a project.
+In this overview, the developers can rename and delete decision groups.
+
+![Decision groups overview with context menu to rename or delete a group](../screenshots/decision_grouping_overview.png)
+
+*Decision groups overview with context menu to rename or delete a group*
+
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
 
@@ -82,5 +90,3 @@ Montpellier, France: Springer. https://doi.org/10.1007/978-3-642-39031-9_15
 Decision groups are e.g. used in:
 van Heesch, U., Avgeriou, P., & Hilliard, R. (2012). A documentation framework for architecture decisions. 
 Journal of Systems and Software, 85(4), 795–820. https://doi.org/10.1016/j.jss.2011.10.017
-
-## Important Decisions
