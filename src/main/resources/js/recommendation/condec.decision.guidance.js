@@ -70,8 +70,12 @@
 			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></td>";
 			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSource.name + "<span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span></div></td>";
 			tableRow += "<td>" + conDecRecommendation.buildScore(recommendation.score, "score_" + counter) + "</td>";
-			tableRow += `<td><button title='${conDecDecisionGuidance.ACCEPT_DESCRIPTION}' id='row_${counter}' class='aui-button-primary aui-button accept-solution-button'>${conDecDecisionGuidance.ACCEPT_TITLE}</button>`;
-			tableRow += `<button title='${conDecDecisionGuidance.DISCARD_DESCRIPTION}' id='discard_${counter}' class='aui-button-primary aui-button accept-solution-button'>${conDecDecisionGuidance.DISCARD_TITLE}</button></td>`;
+			if (recommendation.isDiscarded) {
+				tableRow += `<td><button title='${conDecDecisionGuidance.UNDO_DESCRIPTION}' id='undo_discard_${counter}' class='aui-button-primary aui-button accept-solution-button'><span class="aui-icon aui-icon-small aui-iconfont-undo"></span>${conDecDecisionGuidance.UNDO_TITLE}</button></td>`;
+			} else {
+				tableRow += `<td><button title='${conDecDecisionGuidance.ACCEPT_DESCRIPTION}' id='row_${counter}' class='aui-button-primary aui-button accept-solution-button'>${conDecDecisionGuidance.ACCEPT_TITLE}</button>`;
+				tableRow += `<button title='${conDecDecisionGuidance.DISCARD_DESCRIPTION}' id='discard_${counter}' class='aui-button-primary aui-button accept-solution-button'><span class="aui-icon aui-icon-small aui-iconfont-trash"></span>${conDecDecisionGuidance.DISCARD_TITLE}</button></td>`;
+			}
 			tableRow += "<td><ul>";
 			recommendation.arguments.forEach(argument => {
 				if (argument) {

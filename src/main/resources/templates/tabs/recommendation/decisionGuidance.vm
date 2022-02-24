@@ -41,6 +41,8 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
         conDecDecisionGuidance.ACCEPT_TITLE = "$i18n.getText('condec.recommendation.accept_title')";
         conDecDecisionGuidance.DISCARD_DESCRIPTION = "$i18n.getText('condec.recommendation.discard_description')";
         conDecDecisionGuidance.DISCARD_TITLE = "$i18n.getText('condec.recommendation.discard')";
+        conDecDecisionGuidance.UNDO_DESCRIPTION = "$i18n.getText('condec.recommendation.undo_discard_description')";
+        conDecDecisionGuidance.UNDO_TITLE = "$i18n.getText('condec.recommendation.undo_discard_title')";
         AJS.$("#jira-issue-tabs").on("tabSelect", function(event) {
             if (!isOnceClicked && event.target.href.includes("#decision-guidance-tab")) {
                 conDecDecisionGuidance.initView();
