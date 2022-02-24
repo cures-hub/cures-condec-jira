@@ -57,7 +57,7 @@ Developers can see an explanation for the DoD violation in the quality check vie
 *Decision problem that violates the DoD since only a decision level but no custom decision group is assigned to it.*
 
 ## Renaming and Deleting Decision Groups in Overview
-ConDec offers an overview for the decision levels and decision groups assigned in a project.
+ConDec offers an **overview for the decision levels and decision groups** assigned in a project.
 In this overview, the developers can rename and delete decision groups.
 
 ![Decision groups overview with context menu to rename or delete a group](../screenshots/decision_grouping_overview.png)
@@ -78,7 +78,7 @@ The Java code for decision grouping can be found here:
 
 The UI code for decision grouping can be found here:
 
-- [Velocity template for decision group view](../../src/main/resources/templates/tabs/decisionGroups.vm)
+- [Velocity template for decision group overview](../../src/main/resources/templates/tabs/decisionGroups.vm)
 - [JavaScript code for decision grouping](../../src/main/resources/js/grouping)
 
 ## References
