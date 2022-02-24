@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.quality;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -24,6 +26,7 @@ public class DecisionCheck extends KnowledgeElementCheck {
 		if (definitionOfDone.isDecisionIsLinkedToPro()) {
 			qualityCheckResults.add(checkDecisionLinkedToPro(element));
 		}
+		qualityCheckResults.add(checkDecisionLevelAssigned(element));
 		return qualityCheckResults;
 	}
 
@@ -47,5 +50,21 @@ public class DecisionCheck extends KnowledgeElementCheck {
 			return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, false);
 		}
 		return new QualityCriterionCheckResult(QualityCriterionType.DECISION_LINKED_TO_PRO, true);
+	}
+
+	public static QualityCriterionCheckResult checkDecisionLevelAssigned(KnowledgeElement element) {
+		List<String> decisionGroups = element.getDecisionGroups();
+		QualityCriterionCheckResult checkResult = new QualityCriterionCheckResult(
+				QualityCriterionType.DECISION_LEVEL_AND_GROUPS, true);
+		if (decisionGroups.size() == 1) {
+			checkResult.setExplanation("A decision level is chosen, but at least one decision group is missing.");
+		}
+		if (decisionGroups.size() < 2) {
+			return checkResult;
+		}
+		checkResult.setCriterionViolated(false);
+		checkResult.setExplanation("The following decision level and decision group(s) are assigned to the "
+				+ element.getTypeAsString() + ": " + StringUtils.join(decisionGroups, ", "));
+		return checkResult;
 	}
 }

@@ -26,6 +26,7 @@ public class IssueCheck extends KnowledgeElementCheck {
 		if (definitionOfDone.isIssueIsLinkedToAlternative()) {
 			qualityCheckResults.add(checkIssueLinkedToAlternative(element));
 		}
+		qualityCheckResults.add(DecisionCheck.checkDecisionLevelAssigned(element));
 		return qualityCheckResults;
 	}
 

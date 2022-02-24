@@ -22,6 +22,7 @@ public class AlternativeCheck extends KnowledgeElementCheck {
 		if (definitionOfDone.isAlternativeIsLinkedToArgument()) {
 			qualityCheckResults.add(checkAlternativeLinkedToArgument(element));
 		}
+		qualityCheckResults.add(DecisionCheck.checkDecisionLevelAssigned(element));
 		return qualityCheckResults;
 	}
 

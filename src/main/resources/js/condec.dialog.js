@@ -288,7 +288,6 @@
 			var cancelButton = document.getElementById("edit-dialog-cancel-button");
 
 			var selectLevelField = document.getElementById("edit-form-select-level");
-			var inputExistingGroupsField = document.getElementById("edit-form-input-existing");
 
 			// Fill HTML elements
 			inputSummaryField.value = summary;
@@ -300,18 +299,8 @@
 				inputSummaryField.disabled = true;
 				selectLocationField.disabled = true;
 			}
-			conDecGroupingAPI.getDecisionGroupsForElement(id, documentationLocation, function(groups) {
-				if (groups.length > 0) {
-					var level = groups[0];
-					selectLevelField.value = level;
-				}
-				if (groups.length > 1) {
-					groups.shift();
-					inputExistingGroupsField.value = groups;
-				} else {
-					inputExistingGroupsField.value = "";
-				}
-			});
+			conDecGroupingDialog.fillDecisionGroupSelectForElement(id, documentationLocation, 
+					selectLevelField, "edit-form-select2-decision-group");
 
 			// Set onclick listener on buttons
 			submitButton.onclick = function() {
@@ -324,7 +313,7 @@
 						conDecObservable.notify();
 					});
 				var level = selectLevelField.value;
-				var existingGroups = inputExistingGroupsField.value;
+				var existingGroups = conDecFiltering.getSelectedGroups("edit-form-select2-decision-group");
 				var addgroup = "";
 				conDecGroupingAPI.assignDecisionGroup(level, existingGroups, addgroup,
 					id, documentationLocation, function(id) {
