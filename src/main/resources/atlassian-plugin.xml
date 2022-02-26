@@ -628,4 +628,23 @@
 		<context-provider class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
 		<amd-module>dashboard/rationaleCoverage</amd-module>
 	</dashboard-item>
+	
+	<dashboard-item key="condec-decision-groups-dashboard-item"
+		name="ConDec Dashboard for Decision Groups" configurable="true">
+		<definition>
+			<title key="condec.dashboard.groups.title" />
+			<categories>
+				<category>Jira</category>
+			</categories>
+			<author>
+				<name>ConDec team</name>
+			</author>
+			<thumbnail
+				location="/download/resources/de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources/dashboardItem.png" />
+		</definition>
+		<description key="condec.dashboard.groups.description" />
+		<resource name="view" type="velocity" location="/templates/dashboard/decisionGroups.vm" />
+		<context-provider class="de.uhd.ifi.se.decision.management.jira.view.dashboard.ConDecDashboardItem" />
+		<amd-module>dashboard/decisionGroups</amd-module>
+	</dashboard-item>
 </atlassian-plugin>

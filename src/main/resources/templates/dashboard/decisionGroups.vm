@@ -1,0 +1,19 @@
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:dashboard-item-condec-resources")
+
+#set ($viewIdentifier = "rationale-coverage")
+#parse("templates/filter/dashboardFilter.vm")
+
+<div id="condec-dashboard-contents-container-$viewIdentifier" class="condec-dashboard-contents results hidden">
+    <div class="field-group">
+        #parse("templates/dashboard/selectedProject.vm")
+    </div>
+    <div id="boxplot-IssuesPerJiraIssue" class="boxplot"></div>
+    <div id="boxplot-DecisionsPerJiraIssue" class="boxplot"></div>
+    <div id="piechartRich-IssueDocumentedForSelectedJiraIssue" class="piechart"></div>
+    <div id="piechartRich-DecisionDocumentedForSelectedJiraIssue" class="piechart"></div>
+</div>
+
+#parse("templates/dashboard/dashboardNoProject.vm")
+#parse("templates/dashboard/dashboardError.vm")
+#parse("templates/dashboard/navigationDialog.vm")
