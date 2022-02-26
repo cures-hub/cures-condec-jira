@@ -89,6 +89,16 @@
 	};
 
 	/**
+	 * external references: condec.condec.decision.groups.dashboard
+	 */
+	ConDecGroupingAPI.prototype.getDecisionGroupsMap = function(filterSettings, callback) {
+		generalApi.postJSON(this.restPrefix + "/groups-and-elements", filterSettings,
+			function(error, decisionGroupsMap) {
+				callback(error, new Map(Object.entries(decisionGroupsMap)));
+			});
+	};
+
+	/**
 	 * external references: condec.decision.grouping.dialogs, condec.dialog
 	 */
 	ConDecGroupingAPI.prototype.isDecisionLevel = function(groupName) {

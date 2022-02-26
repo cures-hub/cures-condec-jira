@@ -2,7 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
@@ -156,5 +160,21 @@ public class DecisionGroupingRest {
 	public Response getAllDecisionGroups(@PathParam("projectKey") String projectKey) {
 		List<String> allGroupNames = DecisionGroupPersistenceManager.getAllDecisionGroups(projectKey);
 		return Response.ok(allGroupNames).build();
+	}
+
+	@Path("/groups-and-elements")
+	@POST
+	public Response getDecisionGroupsMap(FilterSettings filterSettings) {
+		if (filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Filter settings are missing."))
+					.build();
+		}
+		Map<String, Set<KnowledgeElement>> decisionGroupsMap = new LinkedHashMap<>();
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		for (String group : DecisionGroupPersistenceManager.getAllDecisionGroups(filterSettings.getProjectKey())) {
+			filterSettings.setDecisionGroups(List.of(group));
+			decisionGroupsMap.put(group, filteringManager.getElementsMatchingFilterSettings());
+		}
+		return Response.ok(decisionGroupsMap).build();
 	}
 }

@@ -541,6 +541,8 @@
 		<resource type="download" name="condec.rationale.completeness.dashboard.js"
 			location="js/dashboard/condec.rationale.completeness.dashboard.js" />
 		<resource type="download" name="condec.rationale.coverage.dashboard.js"
+			location="js/dashboard/condec.decision.groups.dashboard.js" />
+		<resource type="download" name="condec.decision.groups.dashboard.js"
 			location="js/dashboard/condec.rationale.coverage.dashboard.js" />
 		<resource type="download" name="echarts.js" location="/js/lib/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/lib/echart/dataTool.js" />

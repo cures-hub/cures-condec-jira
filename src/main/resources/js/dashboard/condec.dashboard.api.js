@@ -13,7 +13,7 @@
 	ConDecDashboardAPI.prototype.getGeneralMetrics = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + "/general-metrics", filterSettings,
 			function(error, generalMetrics) {
-				convertJavaMapToJavaScriptMap(generalMetrics);
+				conDecDashboardAPI.convertJavaMapToJavaScriptMap(generalMetrics);
 				callback(error, generalMetrics);
 			});
 	};
@@ -24,7 +24,7 @@
 	ConDecDashboardAPI.prototype.getRationaleCompleteness = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + "/rationale-completeness", filterSettings,
 			function(error, rationaleCompletenessMetrics) {
-				convertJavaMapToJavaScriptMap(rationaleCompletenessMetrics);
+				conDecDashboardAPI.convertJavaMapToJavaScriptMap(rationaleCompletenessMetrics);
 				callback(error, rationaleCompletenessMetrics);
 			});
 	};
@@ -34,7 +34,7 @@
 	 */
 	ConDecDashboardAPI.prototype.getRationaleCoverage = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + "/rationale-coverage", filterSettings, function(error, rationaleCoverageMetrics) {
-			convertJavaMapToJavaScriptMap(rationaleCoverageMetrics);
+			conDecDashboardAPI.convertJavaMapToJavaScriptMap(rationaleCoverageMetrics);
 			rationaleCoverageMetrics.minimumRequiredCoverage = filterSettings.definitionOfDone.minimumDecisionsWithinLinkDistance;
 			callback(error, rationaleCoverageMetrics);
 		});
@@ -45,20 +45,21 @@
 	 */
 	ConDecDashboardAPI.prototype.getBranchMetrics = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + "/git", filterSettings, function(error, branchMetrics) {
-			convertJavaMapToJavaScriptMap(branchMetrics);
+			conDecDashboardAPI.convertJavaMapToJavaScriptMap(branchMetrics);
 			callback(error, branchMetrics);
 		});
 	};
 
 	/**
+	 * external references: condec.decision.grouping.api.js
 	 * Necessary because Java map is not recognized as a map in JavaScript.
 	 */
-	function convertJavaMapToJavaScriptMap(metrics) {
+	ConDecDashboardAPI.prototype.convertJavaMapToJavaScriptMap = function(metrics) {
 		for ([metricName, metricMap] of Object.entries(metrics)) {
 			metrics[metricName] = new Map(Object.entries(metricMap));
 		}
 		return metrics;
-	}
+	};
 
 	global.conDecDashboardAPI = new ConDecDashboardAPI();
 })(window);
