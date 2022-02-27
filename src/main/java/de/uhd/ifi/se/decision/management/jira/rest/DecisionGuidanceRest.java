@@ -410,4 +410,35 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param recommendation
+	 *            previously discarded {@link ElementRecommendation} to be restored .
+	 * @return ok if {@link ElementRecommendation} was successfully un-discarded.
+	 */
+	@Path("/undo-discard")
+	@POST
+	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {
+		System.out.println(
+				"Running public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
+		if (recommendation == null) {
+			System.out.println("Recommendation is null :/");
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation to undiscard is not valid.")).build();
+		}
+		if (!recommendation.isDiscarded()) {
+			System.out.println("Recommendation is not discarded, undiscarding is therefore not necessary");
+			return Response.serverError().build();
+		}
+		System.out.println(recommendation.getSummary());
+		System.out.println(
+				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);
+		System.out.println("Done. Calling Response.ok().build();");
+		return Response.ok().build();
+	}
+
 }

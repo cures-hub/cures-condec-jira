@@ -157,5 +157,12 @@
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/discard", recommendation);
 	};
 
+	ConDecDecisionGuidanceAPI.prototype.undoDiscardRecommendation = function(recommendation) {
+		console.log("Running ConDecDecisionGuidanceAPI.prototype.undoDiscardRecommendation");
+		recommendation.isDiscarded = false;
+		console.log("Calling generalApi.postJSONReturnPromise(this.restPrefix + \"/undo-discard\", recommendation);...");
+		return generalApi.postJSONReturnPromise(this.restPrefix + "/undo-discard", recommendation);
+	};
+
 	global.conDecDecisionGuidanceAPI = new ConDecDecisionGuidanceAPI();
 })(window);
