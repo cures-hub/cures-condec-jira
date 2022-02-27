@@ -58,9 +58,13 @@
 
 	function buildRecommendationTable(recommendations, parentElement) {
 		let tableBody = document.getElementById("recommendation-container-table-body");
+		let showDiscarded = document.getElementById("checkbox-show-discarded").checked;
 		tableBody.innerHTML = "";
 		let counter = 0;
 		recommendations.forEach(recommendation => {
+			if (!showDiscarded && recommendation.isDiscarded) {
+				return;
+			}
 			counter++;
 			let tableRow;
 			if (recommendation.isDiscarded) {

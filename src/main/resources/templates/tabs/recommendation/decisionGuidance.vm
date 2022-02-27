@@ -14,6 +14,10 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
     </button>
     <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
 </form>
+<div class="condec-filter-criterion" title="$i18n.getText('condec.recommendation.show_discarded_description')">
+    <label for="checkbox-show-discarded">$i18n.getText("condec.recommendation.show_discarded_label")</label>
+    <input class="checkbox" type="checkbox" id="checkbox-show-discarded">
+</div>
 
 <table id="recommendation-container" class="aui aui-table-list">
     <thead>
