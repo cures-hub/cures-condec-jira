@@ -58,11 +58,14 @@
 
 	function buildRecommendationTable(recommendations, parentElement) {
 		let tableBody = document.getElementById("recommendation-container-table-body");
-		let showDiscarded = document.getElementById("checkbox-show-discarded").checked;
+		let checkBoxShowDiscarded = document.getElementById("checkbox-show-discarded");
+		checkBoxShowDiscarded.onclick = function() {
+			buildRecommendationTable(recommendations, parentElement);
+		}
 		tableBody.innerHTML = "";
 		let counter = 0;
 		recommendations.forEach(recommendation => {
-			if (!showDiscarded && recommendation.isDiscarded) {
+			if (!checkBoxShowDiscarded.checked && recommendation.isDiscarded) {
 				return;
 			}
 			counter++;
