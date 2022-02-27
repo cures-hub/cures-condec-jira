@@ -1,4 +1,4 @@
-<b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b></br>
+<b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b><br>
 <b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b>
 DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;
 Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Project</span>
@@ -14,6 +14,7 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
     </button>
     <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
 </form>
+<br>
 <div class="condec-filter-criterion" title="$i18n.getText('condec.recommendation.show_discarded_description')">
     <label for="checkbox-show-discarded">$i18n.getText("condec.recommendation.show_discarded_label")</label>
     <input class="checkbox" type="checkbox" id="checkbox-show-discarded">
