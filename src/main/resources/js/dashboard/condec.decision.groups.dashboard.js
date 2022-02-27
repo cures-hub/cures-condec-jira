@@ -68,7 +68,7 @@ define('dashboard/decisionGroups', [], function() {
 		decisionLevelsMap.set("Realization Level", metrics.get("Realization_Level"));
 		conDecDashboard.createPieChartWithListOfElements(decisionLevelsMap,
 			"piechart-decision-levels",
-			"How many decisions are there per decision level?", viewId);
+			"How many elements are there per decision level?", viewId);
 	}
 	
 	function createDecisionGroupsMap(metrics) {
@@ -77,7 +77,7 @@ define('dashboard/decisionGroups', [], function() {
 		metrics.delete("Realization_Level");
 		conDecDashboard.createPieChartWithListOfElements(metrics,
 			"piechart-decision-groups",
-			"How many decisions are there per decision group?", viewId);
+			"How many elements are there per decision group?", viewId);
 	}
 
 	return ConDecDecisionGroupsDashboardItem;

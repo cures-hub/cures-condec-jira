@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -171,9 +172,10 @@ public class DecisionGroupingRest {
 		}
 		Map<String, Set<KnowledgeElement>> decisionGroupsMap = new LinkedHashMap<>();
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		Set<KnowledgeElement> elementsMatchingFilterSettings = filteringManager.getElementsMatchingFilterSettings();
 		for (String group : DecisionGroupPersistenceManager.getAllDecisionGroups(filterSettings.getProjectKey())) {
-			filterSettings.setDecisionGroups(List.of(group));
-			decisionGroupsMap.put(group, filteringManager.getElementsMatchingFilterSettings());
+			decisionGroupsMap.put(group, elementsMatchingFilterSettings.stream()
+					.filter(element -> element.getDecisionGroups().contains(group)).collect(Collectors.toSet()));
 		}
 		return Response.ok(decisionGroupsMap).build();
 	}
