@@ -436,7 +436,7 @@ public class DecisionGuidanceRest {
 		System.out.println(recommendation.getSummary());
 		System.out.println(
 				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
-		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);
+		DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation);
 		System.out.println("Done. Calling Response.ok().build();");
 		return Response.ok().build();
 	}

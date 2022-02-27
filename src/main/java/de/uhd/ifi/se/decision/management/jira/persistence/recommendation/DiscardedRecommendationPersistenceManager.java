@@ -107,6 +107,22 @@ public final class DiscardedRecommendationPersistenceManager {
     }
 
     /**
+     * Remove the database entry for a given {@link ElementRecommendation} from the database.
+     *
+     * @param recommendation The recommendation of which the database entry should be removed.
+     * @return true if a database entry has been removed, otherwise false.
+     */
+    public static boolean removeDiscardedElementRecommendation(ElementRecommendation recommendation) {
+        boolean isRemoved = false;
+        DiscardedRecommendationInDatabase[] discardedRecommendationsInDatabase = getDiscardedElementRecommendation(recommendation);
+        if (discardedRecommendationsInDatabase.length > 0) {
+            DiscardedRecommendationInDatabase.deleteDiscardedRecommendation(discardedRecommendationsInDatabase[0]);
+            isRemoved = true;
+        }
+        return isRemoved;
+    }
+
+    /**
      * Remove the database entry for a given {@link LinkRecommendation} from the database.
      *
      * @param recommendation The recommendation of which the database entry should be removed.
