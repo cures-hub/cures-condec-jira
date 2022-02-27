@@ -51,7 +51,7 @@
 	};
 
 	/**
-	 * external references: condec.decision.grouping.api.js
+	 * external references: none
 	 * Necessary because Java map is not recognized as a map in JavaScript.
 	 */
 	ConDecDashboardAPI.prototype.convertJavaMapToJavaScriptMap = function(metrics) {

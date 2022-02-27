@@ -11,24 +11,20 @@
 	};
 
 	ConDecDecisionGroups.prototype.buildMatrix = function() {
-		const groups = conDecGroupingAPI.getAllDecisionGroups();
 		const body = document.getElementById("group-table-body");
 		var knowledgeTypesWithoutCode = conDecAPI.getKnowledgeTypes();
 		var index = knowledgeTypesWithoutCode.indexOf("Code");
 		knowledgeTypesWithoutCode.splice(index, 1);
 
-		for (var i = 0; i < groups.length; i++) {
-			var filterSettings = {
-				"knowledgeTypes": knowledgeTypesWithoutCode,
-				"groups": [groups[i]]
-			};
-			conDecAPI.getKnowledgeElements(filterSettings, function(elements, filterSettings) {
-				filterSettings.knowledgeTypes = ["Code"];
-				conDecAPI.getKnowledgeElements(filterSettings, function(codeFiles, filterSettings) {
-					newTableRow(body, filterSettings.groups, elements.length, codeFiles.length);
-				});
-			});
-		}
+        var filterSettings = {
+        		"projectKey" : conDecAPI.projectKey
+        };
+		conDecGroupingAPI.getDecisionGroupsMap(filterSettings, function(error, decisionGroupsMap) {
+			for (var [group, elements] of decisionGroupsMap.entries()) {
+				codeFiles = elements.filter(element => element.type === "Code");
+				newTableRow(body, group, elements.length, codeFiles.length);
+			}
+		});
 	};
 
 	ConDecDecisionGroups.prototype.updateView = function() {
