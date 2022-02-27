@@ -87,14 +87,20 @@
 			tableRow += "</tr>";
 			tableBody.insertAdjacentHTML('beforeend', tableRow);
 
-			$("#row_" + counter).click(function() {
-				onAcceptClicked(recommendation, parentElement);
-			});
-			$("#discard_" + counter).click(function() {
-				console.log("Discard clicked...");
-				conDecDecisionGuidanceAPI.discardRecommendation(recommendation);
-				console.log("Successfully called conDecDecisionGuidanceAPI.discardRecommendation(recommendation);");
-			});
+			if (recommendation.isDiscarded) {
+				$("#undo_discard_" + counter).click(function () {
+					conDecDecisionGuidanceAPI.di(recommendation);
+				});
+			} else {
+				$("#row_" + counter).click(function () {
+					onAcceptClicked(recommendation, parentElement);
+				});
+				$("#discard_" + counter).click(function () {
+					conDecDecisionGuidanceAPI.discardRecommendation(recommendation);
+					buildRecommendationTable(recommendations, parentElement);
+				});
+			}
+
 		});
 		conDecAPI.showFlag("success", "#Recommendations: " + counter);
 	}
