@@ -57,7 +57,8 @@
 	};
 
 	function buildRecommendationTable(recommendations, parentElement) {
-		var tableBody = document.getElementById("recommendation-container-table-body");
+		let tableBody = document.getElementById("recommendation-container-table-body");
+		tableBody.innerHTML = "";
 		let counter = 0;
 		recommendations.forEach(recommendation => {
 			counter++;
