@@ -90,7 +90,8 @@
 
 			if (recommendation.isDiscarded) {
 				$("#undo_discard_" + counter).click(function () {
-					conDecDecisionGuidanceAPI.di(recommendation);
+					conDecDecisionGuidanceAPI.undoDiscardRecommendation(recommendation);
+					buildRecommendationTable(recommendations, parentElement);
 				});
 			} else {
 				$("#row_" + counter).click(function () {
