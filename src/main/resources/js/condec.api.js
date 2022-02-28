@@ -518,7 +518,7 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
@@ -526,6 +526,19 @@
 		this.getKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
 			newTab.location.href = decisionKnowledgeElement.url;
 		});
+	};
+
+	/**
+	 * external references: condec.dashboard, condec.decision.grouping
+	 */
+	ConDecAPI.prototype.createLinkToElement = function(element) {
+		var link = document.createElement("a");
+		link.classList = "navigationLink";
+		link.innerText = element.type + ": " + element.summary;
+		link.title = element.key;
+		link.href = decodeURIComponent(element.url);
+		link.target = "_blank";
+		return link;
 	};
 
 	function getIssueKey() {

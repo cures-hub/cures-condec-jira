@@ -19,7 +19,6 @@ define('dashboard/decisionGroups', [], function() {
 	 * @param preferences The user preferences saved for this dashboard item (e.g. filter id, number of results...)
 	 */
 	ConDecDecisionGroupsDashboardItem.prototype.render = function(context, preferences) {
-		preferences.definitionOfDone = {};
 		conDecDashboard.initDashboard(this, viewId, dashboardAPI, preferences);
 	};
 

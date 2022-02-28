@@ -6,7 +6,7 @@
 	ConDecDecisionGroups.prototype.initView = function() {
 		console.log("ConDecDecisionGroups initView");
 
-		conDecFiltering.fillFilterElements("decision-groups", ["Decision", "Solution", "Issue", "Problem"]);
+		conDecFiltering.fillFilterElements("decision-groups", ["Decision", "Solution"]);
 		conDecFiltering.addOnClickEventToFilterButton("decision-groups", () => conDecDecisionGroups.updateView());
 
 		conDecObservable.subscribe(this);
@@ -43,21 +43,21 @@
 			conDecContextMenu.createContextMenu(groupName, "groups", e, null);
 		}, false);
 		row.appendChild(tableRowElement);
-		
+
 		const tableRowElement2 = document.createElement("td");
 		tableRowElement2.innerHTML = elements.length;
 		row.appendChild(tableRowElement2);
-		
+
 		const tableRowElement3 = document.createElement("td");
 		for (element of elements) {
-			var link = document.createElement("a");
-			link.classList = "navigationLink";
-			link.innerText = element.type + ": " + element.summary;
-			link.title = element.key;
-			link.href = decodeURIComponent(element.url);
-			link.target = "_blank";
+			var link = conDecAPI.createLinkToElement(element);
+			link.element = element;
+			link.addEventListener("contextmenu", function(event) {
+				event.preventDefault();
+				conDecContextMenu.createContextMenu(this.element.id, this.element.documentationLocation, event);
+			});
 			tableRowElement3.appendChild(link);
-		}		
+		}
 		row.appendChild(tableRowElement3);
 		body.appendChild(row);
 	}
