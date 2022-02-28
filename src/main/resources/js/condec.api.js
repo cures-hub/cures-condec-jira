@@ -280,7 +280,7 @@
 	 * external references: condec.decision.table, condec.decision.guidance, condec.prompts
 	 */
 	ConDecAPI.prototype.getDecisionProblems = function(filterSettings, callback) {
-		var jiraIssueKey = conDecAPI.getIssueKey();
+		var jiraIssueKey = this.getIssueKey();
 		if (filterSettings === null || filterSettings === undefined) {
 			filterSettings = {};
 		}
@@ -568,10 +568,8 @@
 		return issueKey;
 	}
 
-	/*
-	 * external references: condec.export,
-	 * condec.gitdiffviewer, condec.quality.check
-	 * relatedIssuesTab.vm
+	/**
+	 * external references: condec.git.api, condec.quality.check, condec.prompts
 	 */
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
@@ -594,7 +592,7 @@
 		return projectKey;
 	}
 
-	/*
+	/**
 	 * external references: condec.quality.check
 	 */
 	ConDecAPI.prototype.getProjectKey = getProjectKey;
