@@ -22,12 +22,6 @@
 	min-height: 400px;
 }
 
-.navigationLink {
-	margin: 0.1rem 0.4rem;
-	display: inline-block;
-	cursor: pointer;
-}
-
 .boxplot {
   width: 190px;
   height: 340px;

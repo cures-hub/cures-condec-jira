@@ -6,8 +6,11 @@
 	ConDecDecisionGroups.prototype.initView = function() {
 		console.log("ConDecDecisionGroups initView");
 
+		conDecFiltering.fillFilterElements("decision-groups", ["Decision", "Solution", "Issue", "Problem"]);
+		conDecFiltering.addOnClickEventToFilterButton("decision-groups", () => conDecDecisionGroups.updateView());
+
 		conDecObservable.subscribe(this);
-		this.buildMatrix();
+		this.updateView();
 	};
 
 	ConDecDecisionGroups.prototype.buildMatrix = function() {
@@ -16,13 +19,11 @@
 		var index = knowledgeTypesWithoutCode.indexOf("Code");
 		knowledgeTypesWithoutCode.splice(index, 1);
 
-        var filterSettings = {
-        		"projectKey" : conDecAPI.projectKey
-        };
+		var filterSettings = conDecFiltering.getFilterSettings("decision-groups");
+		filterSettings["projectKey"] = conDecAPI.projectKey;
 		conDecGroupingAPI.getDecisionGroupsMap(filterSettings, function(error, decisionGroupsMap) {
 			for (var [group, elements] of decisionGroupsMap.entries()) {
-				codeFiles = elements.filter(element => element.type === "Code");
-				newTableRow(body, group, elements.length, codeFiles.length);
+				newTableRow(body, group, elements);
 			}
 		});
 	};
@@ -33,20 +34,30 @@
 		this.buildMatrix();
 	};
 
-	function newTableRow(body, row1, row2, row3) {
+	function newTableRow(body, groupName, elements) {
 		const row = document.createElement("tr");
 		const tableRowElement = document.createElement("td");
-		tableRowElement.innerHTML = row1;
+		tableRowElement.innerHTML = groupName;
 		tableRowElement.addEventListener("contextmenu", function(e) {
 			e.preventDefault();
-			conDecContextMenu.createContextMenu(row1, "groups", e, null);
+			conDecContextMenu.createContextMenu(groupName, "groups", e, null);
 		}, false);
 		row.appendChild(tableRowElement);
+		
 		const tableRowElement2 = document.createElement("td");
-		tableRowElement2.innerHTML = row2;
+		tableRowElement2.innerHTML = elements.length;
 		row.appendChild(tableRowElement2);
+		
 		const tableRowElement3 = document.createElement("td");
-		tableRowElement3.innerHTML = row3;
+		for (element of elements) {
+			var link = document.createElement("a");
+			link.classList = "navigationLink";
+			link.innerText = element.type + ": " + element.summary;
+			link.title = element.key;
+			link.href = decodeURIComponent(element.url);
+			link.target = "_blank";
+			tableRowElement3.appendChild(link);
+		}		
 		row.appendChild(tableRowElement3);
 		body.appendChild(row);
 	}

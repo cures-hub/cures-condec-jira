@@ -183,3 +183,9 @@ a:focus a:hover {
 .condec-fine, .text-field.condec-fine {
     color: forestgreen;
 }
+
+.navigationLink {
+	margin: 0.1rem 0.4rem;
+	display: inline-block;
+	cursor: pointer;
+}

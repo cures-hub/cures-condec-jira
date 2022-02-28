@@ -1,5 +1,5 @@
 #set($viewsWithChangeImpactHighlighting = ["jstree", "graph", "adjacency-matrix"])
-#set($viewsWithoutLinkVisualization = ["chronology"])
+#set($viewsWithoutLinkVisualization = ["chronology", "decision-groups"])
 #set($viewsWithVisGraph = ["graph", "rationale-backlog", "overview"])
 #set($viewsWithTreeViewer = ["rationale-backlog", "overview"])
 <div class="aui-toolbar2" role="toolbar">
