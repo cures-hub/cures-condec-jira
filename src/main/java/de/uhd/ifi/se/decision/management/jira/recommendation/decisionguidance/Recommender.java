@@ -61,15 +61,15 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 *            {@link RDFSource} or {@link ProjectSource}).
 	 * @return list of {@link ElementRecommendation}s matching the keywords.
 	 */
-	public abstract List<Recommendation> getRecommendations(String keywords);
+	public abstract List<ElementRecommendation> getRecommendations(String keywords);
 
-	public List<Recommendation> getRecommendations(KnowledgeElement decisionProblem) {
+	public List<ElementRecommendation> getRecommendations(KnowledgeElement decisionProblem) {
 		if (decisionProblem == null) {
 			return new ArrayList<>();
 		}
-		List<Recommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		for (KnowledgeElement linkedElement : decisionProblem.getLinkedSolutionOptions()) {
-			List<Recommendation> recommendationFromAlternative = getRecommendations(linkedElement.getSummary());
+			List<ElementRecommendation> recommendationFromAlternative = getRecommendations(linkedElement.getSummary());
 			recommendations.addAll(recommendationFromAlternative);
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());
@@ -80,11 +80,15 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 * @param decisionProblem
 	 * @return list of {@link ElementRecommendation}s matching the keywords.
 	 */
+	// TODO: Can it be ElementRecommendation as the documentation says? (Try out replacing Recommendation (as it has previously been) with
+	//  ElementRecommendation in this commit)
 	public List<Recommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
-		List<Recommendation> recommendations = new ArrayList<>();
-		recommendations.addAll(getRecommendations(decisionProblem));
+		List<ElementRecommendation> recommendations = new ArrayList<>(getRecommendations(decisionProblem));
 		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
 			recommendations.addAll(getRecommendations(keywords));
+		}
+		for (ElementRecommendation recommendation: recommendations) {
+			recommendation.setTarget(decisionProblem);
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
@@ -116,8 +120,6 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 *            {@link KnowledgeGraph}.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
-	 * @param projectKey
-	 *            of a Jira project.
 	 * @param recommendations
 	 *            list of recommended solution options
 	 *            ({@link ElementRecommendation}s) and recommended arguments that
