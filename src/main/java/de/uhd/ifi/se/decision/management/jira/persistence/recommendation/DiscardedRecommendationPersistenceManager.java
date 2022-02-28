@@ -102,7 +102,7 @@ public final class DiscardedRecommendationPersistenceManager {
         return ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
                 Query.select().where("SUMMARY = ? AND ORIGIN_ID = ? AND TYPE" +
                         " " + "= ?", recommendation.getSummary(),
-                        recommendation.getTarget(),
+                        recommendation.getTarget().getId(),
                         RecommendationType.EXTERNAL));
     }
 
@@ -188,6 +188,8 @@ public final class DiscardedRecommendationPersistenceManager {
                 DiscardedRecommendationInDatabase discardedElementSuggestionInDatabase = ACTIVE_OBJECTS.create(DiscardedRecommendationInDatabase.class);
                 discardedElementSuggestionInDatabase.setSummary(recommendation.getSummary());
                 discardedElementSuggestionInDatabase.setType(RecommendationType.EXTERNAL);
+                discardedElementSuggestionInDatabase.setOriginId(recommendation.getTarget().getId());
+                discardedElementSuggestionInDatabase.setProjectKey(recommendation.getProject().getProjectKey());
                 discardedElementSuggestionInDatabase.save();
                 idInDatabase = discardedElementSuggestionInDatabase.getId();
             }
