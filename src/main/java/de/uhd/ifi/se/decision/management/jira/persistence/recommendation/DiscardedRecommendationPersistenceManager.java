@@ -15,6 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import net.java.ao.Query;
+import org.apache.jena.base.Sys;
 
 /**
  * Responsible for the persistence of discarded {@link Recommendation}s.
@@ -178,6 +179,10 @@ public final class DiscardedRecommendationPersistenceManager {
      * entry in the database.
      */
     public static long saveDiscardedElementRecommendation(ElementRecommendation recommendation) {
+        System.out.print("recommendation: ");
+        System.out.println(recommendation);
+        System.out.print("recommendation.target: ");
+        System.out.println(recommendation.getTarget());
         long idInDatabase = -1;
         if (recommendation.getSummary() != null) {
             DiscardedRecommendationInDatabase[] discardedSuggestionsInDatabase = getDiscardedElementRecommendation(recommendation);
