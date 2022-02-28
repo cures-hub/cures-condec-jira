@@ -89,7 +89,7 @@ define('dashboard/rationaleCoverage', [], function() {
 		coverageMap.set("No " + targetElementType + "s reachable",
 			elementsWithNoCoverage);
 
-		var pieChart = conDecDashboard.createPieChartWithListOfElements(coverageMap, divId, title, viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(coverageMap, divId, title, viewId, colorPalette);
 	}
 
 	return ConDecRationaleCoverageDashboardItem;

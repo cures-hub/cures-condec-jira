@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -28,6 +29,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionGroupInDatabase;
 
@@ -163,6 +165,14 @@ public class DecisionGroupingRest {
 		return Response.ok(allGroupNames).build();
 	}
 
+	/**
+	 * @param filterSettings
+	 *            object of {@link FilterSettings} e.g. specifying the
+	 *            {@link KnowledgeType}s to include in the results.
+	 * @return map with decision levels and decision groups as keys and the
+	 *         respective {@link KnowledgeElement}s that are tagged with the group
+	 *         as values.
+	 */
 	@Path("/groups-and-elements")
 	@POST
 	public Response getDecisionGroupsMap(FilterSettings filterSettings) {
@@ -178,5 +188,34 @@ public class DecisionGroupingRest {
 					.filter(element -> element.getDecisionGroups().contains(group)).collect(Collectors.toSet()));
 		}
 		return Response.ok(decisionGroupsMap).build();
+	}
+
+	/**
+	 * @param filterSettings
+	 *            object of {@link FilterSettings} e.g. specifying the
+	 *            {@link KnowledgeType}s to include in the results.
+	 * @return map with coverage (i.e. number of decision levels and decision groups
+	 *         assigned) as keys and the respective {@link KnowledgeElement}s that
+	 *         are tagged with the number as values.
+	 */
+	@Path("/coverage")
+	@POST
+	public Response getDecisionGroupCoverage(FilterSettings filterSettings) {
+		if (filterSettings == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Filter settings are missing."))
+					.build();
+		}
+		Map<Integer, List<KnowledgeElement>> coverageMap = new LinkedHashMap<>();
+		FilteringManager filteringManager = new FilteringManager(filterSettings);
+		Set<KnowledgeElement> elementsMatchingFilterSettings = filteringManager.getElementsMatchingFilterSettings();
+		for (KnowledgeElement element : elementsMatchingFilterSettings) {
+			List<String> groupsOfElement = element.getDecisionGroups();
+			int numberOfGroupsOfElement = groupsOfElement.size();
+			if (!coverageMap.containsKey(numberOfGroupsOfElement)) {
+				coverageMap.put(numberOfGroupsOfElement, new ArrayList<>());
+			}
+			coverageMap.get(numberOfGroupsOfElement).add(element);
+		}
+		return Response.ok(coverageMap).build();
 	}
 }

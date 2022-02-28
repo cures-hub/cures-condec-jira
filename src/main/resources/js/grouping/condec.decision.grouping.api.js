@@ -89,12 +89,22 @@
 	};
 
 	/**
-	 * external references: condec.condec.decision.groups.dashboard
+	 * external references: condec.dashboard.api, condec.decision.grouping
 	 */
 	ConDecGroupingAPI.prototype.getDecisionGroupsMap = function(filterSettings, callback) {
 		generalApi.postJSON(this.restPrefix + "/groups-and-elements", filterSettings,
 			function(error, decisionGroupsMap) {
 				callback(error, new Map(Object.entries(decisionGroupsMap)));
+			});
+	};
+
+	/**
+	 * external references: condec.dashboard.api
+	 */
+	ConDecGroupingAPI.prototype.getDecisionGroupCoverage = function(filterSettings, callback) {
+		generalApi.postJSON(this.restPrefix + "/coverage", filterSettings,
+			function(error, coverageMap) {
+				callback(error, new Map(Object.entries(coverageMap)));
 			});
 	};
 

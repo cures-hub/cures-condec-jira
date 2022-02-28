@@ -43,7 +43,7 @@ define('dashboard/decisionGroups', [], function() {
 	 */
 	ConDecDecisionGroupsDashboardItem.prototype.getData = function(dashboardAPI, filterSettings) {
 		let self = this;
-		conDecGroupingAPI.getDecisionGroupsMap(filterSettings, function(error, result) {
+		conDecDashboardAPI.getDecisionGroupsMetrics(filterSettings, function(error, result) {
 			conDecDashboard.processData(error, result, self, viewId, dashboardAPI);
 		});
 	};
@@ -57,27 +57,52 @@ define('dashboard/decisionGroups', [], function() {
 		console.log("render data");
 		console.log(metrics);
 
-		plotDecisionLevels(metrics);
-		createDecisionGroupsMap(metrics);
+		plotDecisionLevels(metrics["groups"]);
+		plotDecisionGroups(metrics["groups"]);
+		plotCoverage(metrics["coverage"]);
 	};
 
-	function plotDecisionLevels(metrics) {
+	function plotDecisionLevels(metric) {
 		var decisionLevelsMap = new Map();
-		decisionLevelsMap.set("High Level", metrics.get("High_Level"));
-		decisionLevelsMap.set("Medium Level", metrics.get("Medium_Level"));
-		decisionLevelsMap.set("Realization Level", metrics.get("Realization_Level"));
+		decisionLevelsMap.set("High Level", metric.get("High_Level"));
+		decisionLevelsMap.set("Medium Level", metric.get("Medium_Level"));
+		decisionLevelsMap.set("Realization Level", metric.get("Realization_Level"));
 		conDecDashboard.createPieChartWithListOfElements(decisionLevelsMap,
 			"piechart-decision-levels",
 			"How many elements are there per decision level?", viewId);
 	}
 	
-	function createDecisionGroupsMap(metrics) {
-		metrics.delete("High_Level");
-		metrics.delete("Medium_Level");
-		metrics.delete("Realization_Level");
-		conDecDashboard.createPieChartWithListOfElements(metrics,
+	function plotDecisionGroups(metric) {
+		metric.delete("High_Level");
+		metric.delete("Medium_Level");
+		metric.delete("Realization_Level");
+		conDecDashboard.createPieChartWithListOfElements(metric,
 			"piechart-decision-groups",
 			"How many elements are there per decision group?", viewId);
+	}
+	
+	function plotCoverage(coverageMap) {		
+		var defaultColorPalette = ["#91cc75", "#3ba272", "#73c0de", "#5470c6", "#9a60b4", "#ea7ccc"];
+		var colorPalette = [];
+
+		for (const coverage of coverageMap.keys()) {
+			colorPalette.push(getColorForCoverage(coverage, defaultColorPalette));
+		}
+		
+		conDecDashboard.createPieChartWithListOfElements(coverageMap, "piechart-decision-groups-coverage",
+				"How many groups are assigned to the elements?", viewId, colorPalette);
+	}
+	
+	function getColorForCoverage(coverage, defaultColorPalette) {
+		switch (coverage) {
+			case "0":
+				return "#ee6666";
+			case "1":
+				return "#fc8452";
+			case "2":
+				return "#fac858";
+		}
+		return defaultColorPalette.shift();
 	}
 
 	return ConDecDecisionGroupsDashboardItem;

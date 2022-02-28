@@ -49,6 +49,20 @@
 			callback(error, branchMetrics);
 		});
 	};
+	
+	/**
+	 * external references: dashboard/condec.decision.groups.dashboard.js
+	 */
+	ConDecDashboardAPI.prototype.getDecisionGroupsMetrics = function(filterSettings, callback) {
+		conDecGroupingAPI.getDecisionGroupsMap(filterSettings, function(error, decisionGroupsMap) {
+			conDecGroupingAPI.getDecisionGroupCoverage(filterSettings, function(error, coverageMap) {
+				var metrics = new Object();
+				metrics["groups"] = decisionGroupsMap;
+				metrics["coverage"] = coverageMap;
+				callback(error, metrics);
+			});
+		});
+	};
 
 	/**
 	 * external references: none

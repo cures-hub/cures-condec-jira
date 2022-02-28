@@ -311,6 +311,9 @@
 	ConDecDashboard.prototype.createPieChartWithList = function(dataMap, divId, title, colorPalette) {
 		var data = [];
 		for (const [category, list] of dataMap.entries()) {
+			if (!list) {
+				continue;
+			}
 			entry = { "name": category, "value": list.length, "list": list }
 			data.push(entry);
 		}
