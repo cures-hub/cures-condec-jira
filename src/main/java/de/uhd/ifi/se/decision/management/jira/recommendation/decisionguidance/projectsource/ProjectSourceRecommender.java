@@ -36,11 +36,11 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 	}
 
 	@Override
-	public List<Recommendation> getRecommendations(String inputs) {
+	public List<ElementRecommendation> getRecommendations(String inputs) {
 		if (inputs == null) {
 			return new ArrayList<>();
 		}
-		List<Recommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		List<KnowledgeElement> similarElements = findSimilarElements(inputs);
 		similarElements.forEach(issue -> {
 			issue.getLinkedElements(5).stream()
@@ -56,7 +56,7 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 					});
 		});
 
-		Recommendation.normalizeRecommendationScore(recommendations);
+		ElementRecommendation.normalizeRecommendationScore(recommendations);
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
