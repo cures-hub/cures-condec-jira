@@ -93,7 +93,6 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		}
 		for (ElementRecommendation recommendation: recommendations) {
 			recommendation.setTarget(decisionProblem);
-			recommendation.setProject(decisionProblem.getProject());
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}

@@ -196,7 +196,7 @@ public final class DiscardedRecommendationPersistenceManager {
                 discardedElementSuggestionInDatabase.setSummary(recommendation.getSummary());
                 discardedElementSuggestionInDatabase.setType(RecommendationType.EXTERNAL);
                 discardedElementSuggestionInDatabase.setOriginId(recommendation.getTarget().getId());
-                discardedElementSuggestionInDatabase.setProjectKey(recommendation.getProject().getProjectKey());
+                discardedElementSuggestionInDatabase.setProjectKey(recommendation.getTarget().getProject().getProjectKey());
                 discardedElementSuggestionInDatabase.save();
                 idInDatabase = discardedElementSuggestionInDatabase.getId();
             }
