@@ -278,6 +278,7 @@ public class KnowledgeElement {
 	 *         project that is extended with settings for this plug-in, for example,
 	 *         whether the plug-in is activated for the project.
 	 */
+	@XmlElement
 	public DecisionKnowledgeProject getProject() {
 		return project;
 	}
