@@ -32,21 +32,21 @@ public class TestProjectSourceRecommender extends TestSetUp {
 
 	@Test
 	public void testKeywordsOnly() {
-		List<Recommendation> recommendations = projectSourceRecommender
+		List<ElementRecommendation> recommendations = projectSourceRecommender
 				.getRecommendations("How can we implement the feature?");
 		assertEquals(2, recommendations.size());
 	}
 
 	@Test
 	public void testKeywordsNull() {
-		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations((String) null);
+		List<ElementRecommendation> recommendations = projectSourceRecommender.getRecommendations((String) null);
 		assertEquals(0, recommendations.size());
 	}
 
 	@Test
 	public void testDecisionProblem() {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
-		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
+		List<ElementRecommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
 		assertEquals(2, recommendations.size());
 	}
 
@@ -73,9 +73,9 @@ public class TestProjectSourceRecommender extends TestSetUp {
 
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 
-		List<Recommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
+		List<ElementRecommendation> recommendations = projectSourceRecommender.getRecommendations(decisionProblem);
 		assertFalse(recommendations.isEmpty());
-		assertFalse(((ElementRecommendation) recommendations.get(0)).getArguments().isEmpty());
-		assertFalse(((ElementRecommendation) recommendations.get(1)).getArguments().isEmpty());
+		assertFalse(recommendations.get(0).getArguments().isEmpty());
+		assertFalse(recommendations.get(1).getArguments().isEmpty());
 	}
 }
