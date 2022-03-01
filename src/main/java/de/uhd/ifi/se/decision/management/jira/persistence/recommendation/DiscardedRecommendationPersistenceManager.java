@@ -183,6 +183,8 @@ public final class DiscardedRecommendationPersistenceManager {
         System.out.println(recommendation);
         System.out.print("recommendation.target: ");
         System.out.println(recommendation.getTarget());
+        System.out.print("recommendation.getProject(): ");
+        System.out.println(recommendation.getProject());
         long idInDatabase = -1;
         if (recommendation.getSummary() != null) {
             DiscardedRecommendationInDatabase[] discardedSuggestionsInDatabase = getDiscardedElementRecommendation(recommendation);
