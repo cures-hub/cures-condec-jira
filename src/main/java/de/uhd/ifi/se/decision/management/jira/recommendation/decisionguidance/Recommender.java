@@ -83,6 +83,10 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	// TODO: Can it be ElementRecommendation as the documentation says? (Try out replacing Recommendation (as it has previously been) with
 	//  ElementRecommendation in this commit)
 	public List<Recommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
+		System.out.print("Getting Recommendations for decision problem: ");
+		System.out.println(decisionProblem.getSummary());
+		System.out.print("decisionProblem.getProject(): ");
+		System.out.println(decisionProblem.getProject());
 		List<ElementRecommendation> recommendations = new ArrayList<>(getRecommendations(decisionProblem));
 		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
 			recommendations.addAll(getRecommendations(keywords));
