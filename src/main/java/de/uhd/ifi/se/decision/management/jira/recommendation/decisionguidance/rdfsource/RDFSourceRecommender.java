@@ -78,20 +78,20 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	}
 
 	@Override
-	public List<Recommendation> getRecommendations(String inputs) {
+	public List<ElementRecommendation> getRecommendations(String inputs) {
 		if (inputs == null) {
 			return new ArrayList<>();
 		}
 		// TODO: Remove as soon as the decision guidance has been improved such that it is normal to get recommendations
 		if (inputs.contains("get_dummy_decision_guidance_recommendations")) {
-			List<Recommendation> recommendations = new ArrayList<>();
+			List<ElementRecommendation> recommendations = new ArrayList<>();
 			for (int i = 0; i < 10; i++) {
 				recommendations.add(new ElementRecommendation(knowledgeSource, "Dummy recommendation No. " +
 					String.valueOf(i), "wikipedia.org"));
 			}
 			return recommendations;
 		}
-		List<Recommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 
 		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 		final List<String> combinedKeywords = this.combineKeywords(keywords);
@@ -127,8 +127,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 				recommendations.add(recommendation);
 			}
 		}
-
-		return Recommendation.normalizeRecommendationScore(recommendations);
+		return ElementRecommendation.normalizeRecommendationScore(recommendations);
 	}
 
 	private String getLabel(String resource) {
