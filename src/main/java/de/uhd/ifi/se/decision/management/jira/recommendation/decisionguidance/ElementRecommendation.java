@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -81,15 +80,12 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 *         recommendation in the range of [0, 1].
 	 */
 	public static List<ElementRecommendation> normalizeRecommendationScore(List<ElementRecommendation> recommendations) {
-		Optional<Float> optMaxValue = recommendations.stream().map(Recommendation::getScore).map(RecommendationScore::getValue).max(Float::compare);
-		if (!optMaxValue.isPresent()) {
-			throw new IllegalArgumentException("'normalizeRecommendationScore' can only be called for Lists of at least one ElementRecommendation " +
-					"containing a score.");
-		}
-		float maxValue = optMaxValue.get();
+		if (recommendations.size() > 0) {
+			float maxValue = recommendations.stream().map(Recommendation::getScore).map(RecommendationScore::getValue).max(Float::compare).get();
 
-		for (ElementRecommendation recommendation : recommendations) {
-			recommendation.getScore().normalizeTo(maxValue);
+			for (ElementRecommendation recommendation : recommendations) {
+				recommendation.getScore().normalizeTo(maxValue);
+			}
 		}
 		return recommendations;
 	}
