@@ -443,7 +443,7 @@
 	<properties>
         <jira.version>8.21.0</jira.version>
         <amps.version>8.3.0-128eead6d</amps.version>
-        <ao.version>4.0.0-m02</ao.version>
+        <ao.version>4.0.1-m09-2d2872be</ao.version>
         <jacoco-version>0.8.7</jacoco-version>
         <atlassian.spring.scanner.version>2.2.4</atlassian.spring.scanner.version>
         <!-- This key is also used in atlassian-plugin.xml -->
