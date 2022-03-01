@@ -323,6 +323,10 @@ public class DecisionGuidanceRest {
 		}
 
 		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
+		System.out.print("filterSettings.getSelectedElementFromDatabase(): ");
+		System.out.println(filterSettings.getSelectedElementFromDatabase());
+		System.out.print("filterSettings.getSelectedElementFromDatabase().getProject(): ");
+		System.out.println(filterSettings.getSelectedElementFromDatabase().getProject());
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
 				selectedElementFromDatabase, filterSettings.getSearchTerm());
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
