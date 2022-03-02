@@ -94,8 +94,11 @@ public final class DiscardedRecommendationPersistenceManager {
             for (DiscardedRecommendationInDatabase discardedRecommendation : discardedRecommendations.orElseGet(() -> new DiscardedRecommendationInDatabase[0])) {
                 System.out.print("DiscardedRecommendationInDatabase: ");
                 System.out.println(discardedRecommendation);
-                discardedSuggestions.add(new ElementRecommendation(discardedRecommendation.getSummary(),
-                        persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation())));
+                System.out.print("discardedRecommendation.getSummary(): ");
+                System.out.println(discardedRecommendation.getSummary());
+                System.out.print("persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation())): ");
+                System.out.println(persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation()));
+                discardedSuggestions.add(new ElementRecommendation(discardedRecommendation.getSummary(), origin));
             }
         }
         System.out.print("Returning: ");
