@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.recommendation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +86,11 @@ public final class DiscardedRecommendationPersistenceManager {
                     KnowledgePersistenceManager.getInstance(origin.getProject().getProjectKey());
             System.out.print("Query result: ");
             System.out.println(discardedRecommendations);
+            if (discardedRecommendations.isPresent()) {
+                System.out.println(Arrays.toString(discardedRecommendations.get()));
+            } else {
+                System.out.println("Optional is empty");
+            }
             for (DiscardedRecommendationInDatabase discardedRecommendation : discardedRecommendations.orElseGet(() -> new DiscardedRecommendationInDatabase[0])) {
                 discardedSuggestions.add(new ElementRecommendation(discardedRecommendation.getSummary(),
                         persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation())));
