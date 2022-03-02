@@ -29,6 +29,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEv
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Models a Jira project and its configuration. The Jira project is extended
  * with settings for this plug-in, for example, whether the plug-in is activated
@@ -70,6 +72,7 @@ public class DecisionKnowledgeProject {
 	/**
 	 * @return key of the Jira project.
 	 */
+	@XmlElement
 	public String getProjectKey() {
 		return jiraProject != null ? jiraProject.getKey() : "";
 	}
