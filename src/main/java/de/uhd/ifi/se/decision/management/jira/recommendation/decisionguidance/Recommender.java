@@ -121,14 +121,20 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			for (ElementRecommendation newRecommendation : newRecommendations) {
 				if (newRecommendation.getSummary().equals(discardedRecommendation.getSummary())) {
 					isNewlyGiven = true;
-					newRecommendation.setDiscarded(discardedRecommendation.isDiscarded());
+					newRecommendation.setDiscarded(true);
+					System.out.print("Updated Discarded for : ");
+					System.out.println(newRecommendations);
 				}
 			}
 			if (!isNewlyGiven) {
+				System.out.print("add to discardedButNotInNewRecommendations: ");
+				System.out.println(discardedRecommendation);
 				discardedButNotInNewRecommendations.add(discardedRecommendation);
 			}
 		}
 		newRecommendations.addAll(discardedButNotInNewRecommendations);
+		System.out.print("newRecommendations: ");
+		System.out.println(newRecommendations);
 		return newRecommendations;
 	}
 
