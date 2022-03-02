@@ -22,11 +22,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 public class RecommendationEvaluation {
 
 	private KnowledgeSource knowledgeSource;
-	private List<Recommendation> recommendations;
+	private List<ElementRecommendation> recommendations;
 	private List<EvaluationMetric> metrics;
 	private List<SolutionOption> groundTruthSolutionOptions;
 
-	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<Recommendation> recommendations,
+	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<ElementRecommendation> recommendations,
 			List<EvaluationMetric> metrics, List<SolutionOption> solutionOptions) {
 		this.knowledgeSource = knowledgeSource;
 		this.recommendations = recommendations;
@@ -55,7 +55,7 @@ public class RecommendationEvaluation {
 	 *         {@link KnowledgeSource}.
 	 */
 	@XmlElement
-	public List<Recommendation> getRecommendations() {
+	public List<ElementRecommendation> getRecommendations() {
 		return recommendations;
 	}
 
@@ -64,7 +64,7 @@ public class RecommendationEvaluation {
 	 *            number of {@link ElementRecommendation}s generated from the
 	 *            {@link KnowledgeSource}.
 	 */
-	public void setRecommendations(List<Recommendation> recommendations) {
+	public void setRecommendations(List<ElementRecommendation> recommendations) {
 		this.recommendations = recommendations;
 	}
 

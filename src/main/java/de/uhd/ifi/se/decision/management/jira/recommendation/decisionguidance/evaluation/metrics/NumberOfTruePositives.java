@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Kn
  */
 public class NumberOfTruePositives extends EvaluationMetric {
 
-	public NumberOfTruePositives(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
+	public NumberOfTruePositives(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
 

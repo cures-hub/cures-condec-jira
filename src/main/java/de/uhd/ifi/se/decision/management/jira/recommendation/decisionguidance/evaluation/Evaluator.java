@@ -49,7 +49,7 @@ public class Evaluator {
 	public static RecommendationEvaluation evaluate(KnowledgeElement decisionProblem, String keywords, int topKResults,
 			KnowledgeSource knowledgeSource) {
 		String projectKey = decisionProblem.getProject().getProjectKey();
-		List<Recommendation> recommendationsFromKnowledgeSource = Recommender
+		List<ElementRecommendation> recommendationsFromKnowledgeSource = Recommender
 				.getRecommenderForKnowledgeSource(projectKey, knowledgeSource)
 				.getRecommendations(keywords, decisionProblem);
 
@@ -58,7 +58,7 @@ public class Evaluator {
 				.sort(Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
 		Collections.reverse(recommendationsFromKnowledgeSource);
 
-		List<Recommendation> topKRecommendations = Evaluator.getTopKRecommendations(recommendationsFromKnowledgeSource,
+		List<ElementRecommendation> topKRecommendations = Evaluator.getTopKRecommendations(recommendationsFromKnowledgeSource,
 				topKResults);
 		List<EvaluationMetric> metrics = calculateMetrics(topKRecommendations, solutionOptions);
 		return new RecommendationEvaluation(knowledgeSource, recommendationsFromKnowledgeSource, metrics,
@@ -101,7 +101,7 @@ public class Evaluator {
 	 *            as the ground truth.
 	 * @return list of {@link EvaluationMetric}s such
 	 */
-	private static List<EvaluationMetric> calculateMetrics(List<Recommendation> recommendations,
+	private static List<EvaluationMetric> calculateMetrics(List<ElementRecommendation> recommendations,
 			List<SolutionOption> groundTruthSolutionOptions) {
 		List<EvaluationMetric> metrics = new ArrayList<>();
 		metrics.add(new NumberOfTruePositives(recommendations, groundTruthSolutionOptions));
@@ -124,7 +124,7 @@ public class Evaluator {
 	 * @return the top-k {@link ElementRecommendation}s with the hightest
 	 *         {@link RecommendationScore}s.
 	 */
-	public static List<Recommendation> getTopKRecommendations(List<Recommendation> allRecommendations, int k) {
+	public static List<ElementRecommendation> getTopKRecommendations(List<ElementRecommendation> allRecommendations, int k) {
 		if (k <= 0 || k >= allRecommendations.size()) {
 			return allRecommendations;
 		}
