@@ -29,6 +29,7 @@
 			.then(recommendations => {
 				recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
 				conDecDecisionGuidanceAPI.recommendationsPerProblem.set(filterSettings.selectedElementObject.id, recommendations);
+				console.log(recommendations);
 				return recommendations;
 			});
 	};
