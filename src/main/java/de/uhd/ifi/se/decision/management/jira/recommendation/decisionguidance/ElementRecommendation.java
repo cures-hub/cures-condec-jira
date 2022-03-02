@@ -231,4 +231,9 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	public boolean isDiscarded() {
 		return isDiscarded;
 	}
+
+	@Override
+	public String toString() {
+		return this.getSummary();
+	}
 }
