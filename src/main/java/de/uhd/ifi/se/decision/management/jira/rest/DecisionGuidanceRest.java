@@ -32,6 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
+import org.apache.jena.base.Sys;
 
 /**
  * REST resource for configuration and usage of decision guidance
@@ -407,6 +408,9 @@ public class DecisionGuidanceRest {
 					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
 		}
 		System.out.println(recommendation.getSummary());
+		System.out.println("in DecisionGuidanceRest.java:discardRecommendation");
+		System.out.print("recommendation.getTarget().getProject(): ");
+		System.out.println(recommendation.getTarget().getProject());
 		System.out.println(
 				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);
