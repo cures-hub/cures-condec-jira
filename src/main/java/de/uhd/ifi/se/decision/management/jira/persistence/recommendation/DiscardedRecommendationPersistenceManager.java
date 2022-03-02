@@ -71,6 +71,11 @@ public final class DiscardedRecommendationPersistenceManager {
      * @return Discarded decision guidance {@link ElementRecommendation}s for the given origin.
      */
     public static List<ElementRecommendation> getDiscardedDecisionGuidanceRecommendations(KnowledgeElement origin) {
+        System.out.print("Getting discarded recommendations for TARGET_KEY = '");
+        System.out.print(origin.getKey());
+        System.out.print("', TYPE = '");
+        System.out.print(RecommendationType.EXTERNAL);
+        System.out.println("'...");
         List<ElementRecommendation> discardedSuggestions =
                 new ArrayList<>();
         if (origin != null && origin.getProject() != null) {
@@ -78,7 +83,8 @@ public final class DiscardedRecommendationPersistenceManager {
                     Query.select().where("TARGET_KEY = ? AND TYPE = ?", origin.getKey(), RecommendationType.EXTERNAL)));
             KnowledgePersistenceManager persistenceManager =
                     KnowledgePersistenceManager.getInstance(origin.getProject().getProjectKey());
-
+            System.out.print("Query result: ");
+            System.out.println(discardedRecommendations);
             for (DiscardedRecommendationInDatabase discardedRecommendation : discardedRecommendations.orElseGet(() -> new DiscardedRecommendationInDatabase[0])) {
                 discardedSuggestions.add(new ElementRecommendation(discardedRecommendation.getSummary(),
                         persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation())));
