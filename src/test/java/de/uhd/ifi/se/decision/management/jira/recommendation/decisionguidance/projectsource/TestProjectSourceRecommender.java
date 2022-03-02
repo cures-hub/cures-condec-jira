@@ -53,7 +53,7 @@ public class TestProjectSourceRecommender extends TestSetUp {
 	@Test
 	public void testDecisionProblemAndKeywords() {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
-		List<Recommendation> recommendations = projectSourceRecommender
+		List<ElementRecommendation> recommendations = projectSourceRecommender
 				.getRecommendations("How can we implement the feature?", decisionProblem);
 		assertEquals(2, recommendations.size());
 	}
