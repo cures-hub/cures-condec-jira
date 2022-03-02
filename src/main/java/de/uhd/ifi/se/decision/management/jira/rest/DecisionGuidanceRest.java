@@ -437,10 +437,6 @@ public class DecisionGuidanceRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to undiscard is not valid.")).build();
 		}
-		if (!recommendation.isDiscarded()) {
-			System.out.println("Recommendation is not discarded, undiscarding is therefore not necessary");
-			return Response.serverError().build();
-		}
 		System.out.println(recommendation.getSummary());
 		System.out.println(
 				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
