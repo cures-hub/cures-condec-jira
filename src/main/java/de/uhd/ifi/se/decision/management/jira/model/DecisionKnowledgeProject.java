@@ -28,9 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.recommendation.prompts.PromptingEventConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
-import org.codehaus.jackson.annotate.JsonCreator;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Models a Jira project and its configuration. The Jira project is extended
@@ -57,7 +54,6 @@ public class DecisionKnowledgeProject {
 		this.jiraProject = jiraProject;
 	}
 
-	@JsonCreator
 	public DecisionKnowledgeProject(String projectKey) {
 		if (projectKey != null && !projectKey.isBlank()) {
 			this.jiraProject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
@@ -74,7 +70,6 @@ public class DecisionKnowledgeProject {
 	/**
 	 * @return key of the Jira project.
 	 */
-	@XmlElement
 	public String getProjectKey() {
 		return jiraProject != null ? jiraProject.getKey() : "";
 	}
