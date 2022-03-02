@@ -155,8 +155,6 @@
 		recommendation.isDiscarded = true;
 		console.log(`Target = '${recommendation.target}'`);
 		console.log(recommendation.target);
-		recommendation.target.projectKey = recommendation.target.projectKey.projectKey;
-		console.log(`Project = '${recommendation.project}'`);
 		console.log("Calling generalApi.postJSONReturnPromise(this.restPrefix + \"/discard\", recommendation);...");
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/discard", recommendation);
 	};
