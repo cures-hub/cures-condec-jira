@@ -21,9 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 public abstract class EvaluationMetric {
 
 	protected List<SolutionOption> groundTruthSolutionOptions;
-	protected List<Recommendation> recommendations;
+	protected List<ElementRecommendation> recommendations;
 
-	public EvaluationMetric(List<Recommendation> recommendations) {
+	public EvaluationMetric(List<ElementRecommendation> recommendations) {
 		this.recommendations = recommendations;
 	}
 
@@ -34,7 +34,7 @@ public abstract class EvaluationMetric {
 	 * @param groundTruthSolutionOptions
 	 *            gold standard/ground truth that was already documented.
 	 */
-	public EvaluationMetric(List<Recommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
+	public EvaluationMetric(List<ElementRecommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
 		this(recommendations);
 		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}

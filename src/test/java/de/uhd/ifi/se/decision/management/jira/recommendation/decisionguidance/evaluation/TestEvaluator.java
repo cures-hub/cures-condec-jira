@@ -30,7 +30,7 @@ public class TestEvaluator extends TestSetUp {
 
 	@Test
 	public void testTopKResults() {
-		List<Recommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		recommendations.add(new ElementRecommendation());
 		recommendations.add(new ElementRecommendation());
 
