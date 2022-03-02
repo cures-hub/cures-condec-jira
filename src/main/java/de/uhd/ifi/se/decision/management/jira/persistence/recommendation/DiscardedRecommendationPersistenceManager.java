@@ -98,6 +98,8 @@ public final class DiscardedRecommendationPersistenceManager {
                 System.out.println(discardedRecommendation.getSummary());
                 System.out.print("persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation())): ");
                 System.out.println(persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation()));
+                System.out.print("Adding: ");
+                System.out.println(new ElementRecommendation(discardedRecommendation.getSummary(), origin));
                 discardedSuggestions.add(new ElementRecommendation(discardedRecommendation.getSummary(), origin));
             }
         }
