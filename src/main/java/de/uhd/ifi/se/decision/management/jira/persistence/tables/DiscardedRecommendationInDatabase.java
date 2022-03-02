@@ -53,6 +53,10 @@ public interface DiscardedRecommendationInDatabase extends RawEntity<Long> {
 
 	void setSummary(String contents);
 
+	String getTargetKey();
+
+	void setTargetKey(String targetKey);
+
 	/**
 	 * Deletes the {@link DiscardedRecommendationInDatabase} object, i.e., removes
 	 * it from database.

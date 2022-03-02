@@ -74,7 +74,8 @@ public final class DiscardedRecommendationPersistenceManager {
         List<ElementRecommendation> discardedSuggestions =
                 new ArrayList<>();
         if (origin != null && origin.getProject() != null) {
-            Optional<DiscardedRecommendationInDatabase[]> discardedRecommendations = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class, Query.select().where("PROJECT_KEY = ? AND ORIGIN_ID = ? AND TYPE = ?", origin.getProject().getProjectKey(), origin.getId(), RecommendationType.EXTERNAL)));
+            Optional<DiscardedRecommendationInDatabase[]> discardedRecommendations = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
+                    Query.select().where("TARGET_KEY = ? AND TYPE = ?", origin.getKey(), RecommendationType.EXTERNAL)));
             KnowledgePersistenceManager persistenceManager =
                     KnowledgePersistenceManager.getInstance(origin.getProject().getProjectKey());
 
@@ -101,9 +102,9 @@ public final class DiscardedRecommendationPersistenceManager {
      */
     public static DiscardedRecommendationInDatabase[] getDiscardedElementRecommendation(ElementRecommendation recommendation) {
         return ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
-                Query.select().where("SUMMARY = ? AND ORIGIN_ID = ? AND TYPE" +
+                Query.select().where("SUMMARY = ? AND TARGET_KEY = ? AND TYPE" +
                         " " + "= ?", recommendation.getSummary(),
-                        recommendation.getTarget().getId(),
+                        recommendation.getTarget().getKey(),
                         RecommendationType.EXTERNAL));
     }
 
@@ -185,6 +186,8 @@ public final class DiscardedRecommendationPersistenceManager {
         System.out.println(recommendation.getTarget());
         System.out.print("recommendation.target.getProject(): ");
         System.out.println(recommendation.getTarget().getProject());
+        System.out.print("recommendation.target.getKey(): ");
+        System.out.println(recommendation.getTarget().getKey());
         System.out.print("recommendation.getProject(): ");
         System.out.println(recommendation.getProject());
         long idInDatabase = -1;
@@ -197,8 +200,7 @@ public final class DiscardedRecommendationPersistenceManager {
                 DiscardedRecommendationInDatabase discardedElementSuggestionInDatabase = ACTIVE_OBJECTS.create(DiscardedRecommendationInDatabase.class);
                 discardedElementSuggestionInDatabase.setSummary(recommendation.getSummary());
                 discardedElementSuggestionInDatabase.setType(RecommendationType.EXTERNAL);
-                discardedElementSuggestionInDatabase.setOriginId(recommendation.getTarget().getId());
-                discardedElementSuggestionInDatabase.setProjectKey(recommendation.getTarget().getProject().getProjectKey());
+                discardedElementSuggestionInDatabase.setTargetKey(recommendation.getTarget().getKey());
                 discardedElementSuggestionInDatabase.save();
                 idInDatabase = discardedElementSuggestionInDatabase.getId();
             }

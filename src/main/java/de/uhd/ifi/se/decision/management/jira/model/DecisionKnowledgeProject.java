@@ -72,7 +72,6 @@ public class DecisionKnowledgeProject {
 	/**
 	 * @return key of the Jira project.
 	 */
-	@XmlElement
 	public String getProjectKey() {
 		return jiraProject != null ? jiraProject.getKey() : "";
 	}
