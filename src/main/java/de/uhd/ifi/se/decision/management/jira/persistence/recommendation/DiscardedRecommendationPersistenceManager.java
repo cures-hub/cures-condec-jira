@@ -92,10 +92,14 @@ public final class DiscardedRecommendationPersistenceManager {
                 System.out.println("Optional is empty");
             }
             for (DiscardedRecommendationInDatabase discardedRecommendation : discardedRecommendations.orElseGet(() -> new DiscardedRecommendationInDatabase[0])) {
+                System.out.print("DiscardedRecommendationInDatabase: ");
+                System.out.println(discardedRecommendation);
                 discardedSuggestions.add(new ElementRecommendation(discardedRecommendation.getSummary(),
                         persistenceManager.getKnowledgeElement(discardedRecommendation.getOriginId(), discardedRecommendation.getOriginDocumentationLocation())));
             }
         }
+        System.out.print("Returning: ");
+        System.out.println(discardedSuggestions);
         return discardedSuggestions;
     }
 
