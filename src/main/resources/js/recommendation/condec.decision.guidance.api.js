@@ -25,6 +25,8 @@
 		if (this.recommendationsPerProblem.has(decisionProblem.id)) {
 			return this.recommendationsPerProblem.get(decisionProblem.id);
 		}
+		console.log("projectKey:");
+		console.log(conDecAPI.projectKey);
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/recommendations", filterSettings, conDecAPI.projectKey)
 			.then(recommendations => {
 				recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
@@ -157,10 +159,14 @@
 		console.log(`Target = '${recommendation.target}'`);
 		console.log(recommendation.target);
 		console.log("Calling generalApi.postJSONReturnPromise(this.restPrefix + \"/discard\", recommendation);...");
+		console.log("projectKey:");
+		console.log(conDecAPI.projectKey);
 		return generalApi.postJSONReturnPromise(this.restPrefix + "/discard", recommendation, conDecAPI.projectKey);
 	};
 
 	ConDecDecisionGuidanceAPI.prototype.undoDiscardRecommendation = function(recommendation) {
+		console.log("projectKey:");
+		console.log(conDecAPI.projectKey);
 		console.log("Running ConDecDecisionGuidanceAPI.prototype.undoDiscardRecommendation");
 		recommendation.isDiscarded = false;
 		console.log("Calling generalApi.postJSONReturnPromise(this.restPrefix + \"/undo-discard\", recommendation);...");
