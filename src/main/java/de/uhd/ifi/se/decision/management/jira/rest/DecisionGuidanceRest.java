@@ -399,7 +399,7 @@ public class DecisionGuidanceRest {
 	 */
 	@Path("/discard")
 	@POST
-	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {
+	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation, String projectKey) {
 		System.out.println(
 				"Running public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
 		if (recommendation == null) {
@@ -413,7 +413,7 @@ public class DecisionGuidanceRest {
 		System.out.println(recommendation.getTarget().getProject());
 		System.out.println(
 				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
-		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, projectKey);
 		System.out.println("Done. Calling Response.ok().build();");
 		return Response.ok().build();
 	}
@@ -429,7 +429,7 @@ public class DecisionGuidanceRest {
 	 */
 	@Path("/undo-discard")
 	@POST
-	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {
+	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation, String projectKey) {
 		System.out.println(
 				"Running public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
 		if (recommendation == null) {
@@ -440,7 +440,7 @@ public class DecisionGuidanceRest {
 		System.out.println(recommendation.getSummary());
 		System.out.println(
 				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
-		DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation);
+		DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation, projectKey);
 		System.out.println("Done. Calling Response.ok().build();");
 		return Response.ok().build();
 	}

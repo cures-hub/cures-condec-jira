@@ -16,7 +16,6 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import net.java.ao.Query;
-import org.apache.jena.base.Sys;
 
 /**
  * Responsible for the persistence of discarded {@link Recommendation}s.
@@ -81,7 +80,9 @@ public final class DiscardedRecommendationPersistenceManager {
                 new ArrayList<>();
         if (origin != null && origin.getProject() != null) {
             Optional<DiscardedRecommendationInDatabase[]> discardedRecommendations = Optional.ofNullable(ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
-                    Query.select().where("TARGET_KEY = ? AND TYPE = ?", origin.getKey(), RecommendationType.EXTERNAL)));
+                    Query.select().where("PROJECT_KEY = ? AND ORIGIN_DOCUMENTATION_LOCATION = ? AND ORIGIN_ID = ? AND TYPE = ?",
+                            origin.getProject().getProjectKey(), origin.getDocumentationLocationAsString(), origin.getId(),
+                            RecommendationType.EXTERNAL)));
             KnowledgePersistenceManager persistenceManager =
                     KnowledgePersistenceManager.getInstance(origin.getProject().getProjectKey());
             System.out.print("Query result: ");
@@ -121,11 +122,12 @@ public final class DiscardedRecommendationPersistenceManager {
      * @param recommendation The recommendation for which the database entry should be returned.
      * @return Database entry for the given discarded {@link ElementRecommendation}.
      */
-    public static DiscardedRecommendationInDatabase[] getDiscardedElementRecommendation(ElementRecommendation recommendation) {
+    public static DiscardedRecommendationInDatabase[] getDiscardedElementRecommendation(ElementRecommendation recommendation, String projectKey) {
         return ACTIVE_OBJECTS.find(DiscardedRecommendationInDatabase.class,
-                Query.select().where("SUMMARY = ? AND TARGET_KEY = ? AND TYPE" +
-                        " " + "= ?", recommendation.getSummary(),
-                        recommendation.getTarget().getKey(),
+                Query.select().where("SUMMARY = ? AND PROJECT_KEY = ? AND ORIGIN_DOCUMENTATION_LOCATION = ? AND ORIGIN_ID = ? AND TYPE = ?",
+                        recommendation.getSummary(), projectKey,
+                        recommendation.getTarget().getDocumentationLocationAsString(),
+                        recommendation.getTarget().getId(),
                         RecommendationType.EXTERNAL));
     }
 
@@ -135,9 +137,9 @@ public final class DiscardedRecommendationPersistenceManager {
      * @param recommendation The recommendation of which the database entry should be removed.
      * @return true if a database entry has been removed, otherwise false.
      */
-    public static boolean removeDiscardedElementRecommendation(ElementRecommendation recommendation) {
+    public static boolean removeDiscardedElementRecommendation(ElementRecommendation recommendation, String projectKey) {
         boolean isRemoved = false;
-        DiscardedRecommendationInDatabase[] discardedRecommendationsInDatabase = getDiscardedElementRecommendation(recommendation);
+        DiscardedRecommendationInDatabase[] discardedRecommendationsInDatabase = getDiscardedElementRecommendation(recommendation, projectKey);
         if (discardedRecommendationsInDatabase.length > 0) {
             DiscardedRecommendationInDatabase.deleteDiscardedRecommendation(discardedRecommendationsInDatabase[0]);
             isRemoved = true;
@@ -200,7 +202,7 @@ public final class DiscardedRecommendationPersistenceManager {
      * of the newly created or, in case there already was one, existing
      * entry in the database.
      */
-    public static long saveDiscardedElementRecommendation(ElementRecommendation recommendation) {
+    public static long saveDiscardedElementRecommendation(ElementRecommendation recommendation, String projectKey) {
         System.out.print("recommendation: ");
         System.out.println(recommendation);
         System.out.print("recommendation.target: ");
@@ -213,7 +215,7 @@ public final class DiscardedRecommendationPersistenceManager {
         System.out.println(recommendation.getProject());
         long idInDatabase = -1;
         if (recommendation.getSummary() != null) {
-            DiscardedRecommendationInDatabase[] discardedSuggestionsInDatabase = getDiscardedElementRecommendation(recommendation);
+            DiscardedRecommendationInDatabase[] discardedSuggestionsInDatabase = getDiscardedElementRecommendation(recommendation, projectKey);
             if (discardedSuggestionsInDatabase.length > 0) {
                 idInDatabase = discardedSuggestionsInDatabase[0].getId();
             } else {
@@ -221,7 +223,10 @@ public final class DiscardedRecommendationPersistenceManager {
                 DiscardedRecommendationInDatabase discardedElementSuggestionInDatabase = ACTIVE_OBJECTS.create(DiscardedRecommendationInDatabase.class);
                 discardedElementSuggestionInDatabase.setSummary(recommendation.getSummary());
                 discardedElementSuggestionInDatabase.setType(RecommendationType.EXTERNAL);
-                discardedElementSuggestionInDatabase.setTargetKey(recommendation.getTarget().getKey());
+                //discardedElementSuggestionInDatabase.setTargetKey(recommendation.getTarget().getKey());
+                discardedElementSuggestionInDatabase.setProjectKey(projectKey);
+                discardedElementSuggestionInDatabase.setOriginDocumentationLocation(recommendation.getTarget().getDocumentationLocationAsString());
+                discardedElementSuggestionInDatabase.setOriginId(recommendation.getTarget().getId());
                 discardedElementSuggestionInDatabase.save();
                 idInDatabase = discardedElementSuggestionInDatabase.getId();
             }
