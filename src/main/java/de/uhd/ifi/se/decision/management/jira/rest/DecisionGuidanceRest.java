@@ -400,6 +400,9 @@ public class DecisionGuidanceRest {
 	@Path("/discard")
 	@POST
 	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation, String projectKey) {
+		System.out.print("discardRecommendation got following projectKey argument: '");
+		System.out.print(projectKey);
+		System.out.println("'");
 		System.out.println(
 				"Running public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
 		if (recommendation == null) {
