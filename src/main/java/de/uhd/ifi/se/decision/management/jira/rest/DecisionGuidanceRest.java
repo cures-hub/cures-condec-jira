@@ -397,9 +397,10 @@ public class DecisionGuidanceRest {
 	 *            {@link ElementRecommendation} to be discarded.
 	 * @return ok if {@link ElementRecommendation} was successfully discarded.
 	 */
-	@Path("/discard")
+	@Path("/discard/{projectKey}")
 	@POST
-	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation, String projectKey) {
+	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
+										  @PathParam("projectKey") String projectKey) {
 		System.out.print("discardRecommendation got following projectKey argument: '");
 		System.out.print(projectKey);
 		System.out.println("'");
@@ -430,9 +431,10 @@ public class DecisionGuidanceRest {
 	 *            previously discarded {@link ElementRecommendation} to be restored .
 	 * @return ok if {@link ElementRecommendation} was successfully un-discarded.
 	 */
-	@Path("/undo-discard")
+	@Path("/undo-discard/{projectKey}")
 	@POST
-	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation, String projectKey) {
+	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
+											@PathParam("projectKey") String projectKey) {
 		System.out.println(
 				"Running public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
 		if (recommendation == null) {

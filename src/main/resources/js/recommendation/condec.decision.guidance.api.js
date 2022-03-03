@@ -161,7 +161,7 @@
 		console.log("Calling generalApi.postJSONReturnPromise(this.restPrefix + \"/discard\", recommendation);...");
 		console.log("projectKey:");
 		console.log(conDecAPI.projectKey);
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/discard", recommendation, conDecAPI.projectKey);
+		return generalApi.postJSONReturnPromise(this.restPrefix + `/discard/${conDecAPI.projectKey}`, recommendation);
 	};
 
 	ConDecDecisionGuidanceAPI.prototype.undoDiscardRecommendation = function(recommendation) {
@@ -170,7 +170,7 @@
 		console.log("Running ConDecDecisionGuidanceAPI.prototype.undoDiscardRecommendation");
 		recommendation.isDiscarded = false;
 		console.log("Calling generalApi.postJSONReturnPromise(this.restPrefix + \"/undo-discard\", recommendation);...");
-		return generalApi.postJSONReturnPromise(this.restPrefix + "/undo-discard", recommendation, conDecAPI.projectKey);
+		return generalApi.postJSONReturnPromise(this.restPrefix + `/undo-discard/${conDecAPI.projectKey}`, recommendation);
 	};
 
 	global.conDecDecisionGuidanceAPI = new ConDecDecisionGuidanceAPI();
