@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,6 +60,32 @@ public class TestDiscardRecommendation extends TestSetUp {
 		exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedRecommendation(recommendation);
 		assertEquals("Id should be -1.", -1, exceptionId);
 
+	}
+
+	@Test
+	@NonTransactional
+	public void testInsertAndGetDiscardedDecisionGuidanceSuggestion() {
+		KnowledgeElement origin = new KnowledgeElement(issues.get(0));
+		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
+			.getDiscardedDecisionGuidanceRecommendations(origin);
+
+		assertEquals("Before insertion no discarded suggestion should exist.", 0, discardedRecommendations.size());
+
+		ElementRecommendation recommendation = new ElementRecommendation("Listen to your heart", origin);
+		long id = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
+		discardedRecommendations = DiscardedRecommendationPersistenceManager
+			.getDiscardedDecisionGuidanceRecommendations(origin);
+		assertEquals("After insertion one discarded suggestion should exist.", 1, discardedRecommendations.size());
+
+		assertEquals("The discarded suggestion should be the inserted issue.", recommendation,
+			discardedRecommendations.get(0));
+
+		long sameId = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
+		assertEquals("Ids should be identical, because it represents the same link suggestion.", id, sameId);
+
+		recommendation.setTarget(null);
+		long exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
+		assertEquals("Id should be -1.", -1, exceptionId);
 	}
 
 	@Test
