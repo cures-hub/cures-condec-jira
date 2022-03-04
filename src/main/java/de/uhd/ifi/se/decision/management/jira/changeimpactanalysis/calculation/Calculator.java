@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisConfiguration;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangeImpactAnalysisService;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRule;
@@ -16,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElem
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
 
@@ -31,7 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 public class Calculator {
 
 	private static Map<String, Double> propagationRuleResult;
-	private static final Logger LOGGER = LoggerFactory.getLogger(Calculator.class);
 
 	public static List<KnowledgeElementWithImpact> calculateChangeImpact(KnowledgeElement currentElement,
 			double parentImpact, FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements,
@@ -65,11 +60,6 @@ public class Calculator {
 				nextElementInPath = link.getSource();
 			}
 
-			if (!ciaConfig.getLinkImpact().containsKey(linkTypeName)) {
-				LOGGER.warn("CIA couldn't be processed: {}", "link -> " + linkTypeName + ", source -> "
-						+ link.getSource().getId() + ", target -> " + link.getTarget().getId());
-			}
-
 			// Calculate distinct impact values
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
@@ -83,10 +73,10 @@ public class Calculator {
 				LinkRecommendation recommendation = (LinkRecommendation) link;
 				double linkRecommendationScore = recommendation.getScore().getValue() / 100;
 				impactValue = impactValue * linkRecommendationScore;
-				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
+				impactExplanation = Tooltip.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
 						linkTypeName, linkRecommendationScore);
 			} else {
-				impactExplanation = generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
+				impactExplanation = Tooltip.generateImpactExplanation(parentImpact, ruleBasedValue, decayValue, impactValue,
 						linkTypeName, 0);
 			}
 
@@ -154,47 +144,13 @@ public class Calculator {
 			// Apply weight onto rule impact
 			ruleCalculationValue *= Math.abs(ruleWeightValue);
 			ruleValueResult += ruleCalculationValue;
-			mapOfRules.put(rule.getType().getDescription(), ruleCalculationValue);
+			mapOfRules.put(
+				ruleWeightValue < 0
+					? "Do not " + rule.getType().getDescription().toLowerCase() 
+					: rule.getType().getDescription()
+				, ruleCalculationValue);
 		}
 		propagationRuleResult = mapOfRules;
 		return ruleValueResult / maxAchievableScore;
-	}
-
-	/**
-	 * Generates the impact explanation by checking the minimum of each calculated
-	 * impact score. The minimum impacts the score the most, therefore the
-	 * explanation aims to give a textual reason why.
-	 * 
-	 * @param linkTypeName
-	 * 
-	 * @return String containing the the impact value explanation
-	 */
-	public static String generateImpactExplanation(double parentImpact, double ruleBasedValue, double decayValue,
-			double impactValue, String linkTypeName, double linkRecommendationScore) {
-		String impactExplanation = "";
-		if (Math.min(parentImpact, ruleBasedValue) == parentImpact && ((1 - parentImpact) >= decayValue)) {
-			impactExplanation = "This element has a lowered chance of being affected"
-					+ " by a change introduced in the source node, mainly due to its parent having a lowered impact score.\n";
-		} else if ((1 - ruleBasedValue) >= decayValue) {
-			impactExplanation = "This element has a lowered chance of being affected"
-					+ " by a change introduced in the source node, mainly due to a used propagation rule.\n";
-		} else {
-			impactExplanation = "This element has a lowered chance of being affected"
-					+ " by a change introduced in the source node, mainly due to the decay value.\n";
-		}
-		if (impactValue >= 0.5) {
-			impactExplanation += "A high impact value generally indicates that the element is highly affected "
-					+ "by the change and might need to be changed as well.\n";
-		} else {
-			impactExplanation += "A low impact value generally indicates that the element is less likely to be affected "
-					+ "by the change and probably doesn't need to be changed as well.\n";
-		}
-		if (linkTypeName.equalsIgnoreCase(LinkType.RECOMMENDED.getName())) {
-			impactExplanation += "\n--- --- --- --- --- --- --- --- ---"
-					+ "\nThis element is not implicitly linked to the source element but has been "
-					+ "included as a result of the link recommendation.\nLink Recommendation Score: "
-					+ String.format("%.2f", linkRecommendationScore);
-		}
-		return impactExplanation;
 	}
 }

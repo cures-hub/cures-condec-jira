@@ -5,14 +5,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Rule that defines that a change impact is not propagated along an incoming
- * link to an element. With this rule activated, impacts are only propagated
- * along outgoing links from an element.
- * 
- * For example, if decision A -> decision B, the change is propageted from
- * decision A to decision B but not from decision B to decision A.
+ * Rule that defines that a change impact is stronger propagated if the
+ * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} is the link target
+ * of the link connecting this element and the selected element.
  */
-public class IgnoreIncomingLinks implements ChangePropagationFunction {
+public class BoostWhenLinkTarget implements ChangePropagationFunction {
 
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
