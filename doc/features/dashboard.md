@@ -72,6 +72,12 @@ i.e. no rationale elements documented in [code comments and commit messages of a
 
 *Dashboard item showing metrics about the knowledge in git using boxplots and pie charts*
 
+## Metrics about the Decision Levels and Decision Groups
+
+![Dashboard item showing metrics about the decision levels and decision groups](../screenshots/dashboard_groups.png)
+
+*Dashboard item showing metrics about the [decision levels and decision groups](decision-grouping.md)*
+
 ## Filtering
 All dashboard items can be filtered and the filter settings are persisted for every dashboard item.
 The filter settings are used to **filter the knowledge graph** similar to the [knowledge graph views](knowledge-visualization.md).
