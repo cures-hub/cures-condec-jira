@@ -3,6 +3,9 @@
 The ConDec Jira plugin enables to **group decisions and related knowledge elements**.
 Developers can group decisions according to predefined **levels (high, medium, and realization)**.
 They can also define **custom groups (e.g. UI, process, design, requirements, architecture, testing, ...)**.
+The differences between decision levels/groups and the Jira label mechanism are:
+- inheritance
+- also elements in comments and commit messages can be added to a group.
 
 We use the following definition for decision levels by [van der Ven and Bosch (2013)](https://doi.org/10.1007/978-3-642-39031-9_15):
 1. *High level decisions* affect the whole product, altough they are not necessarily always the decisions that are debated 
