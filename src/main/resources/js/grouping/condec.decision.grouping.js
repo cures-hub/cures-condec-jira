@@ -9,7 +9,7 @@
 		conDecFiltering.fillFilterElements("decision-groups", ["Decision", "Solution"]);
 		conDecFiltering.addOnClickEventToFilterButton("decision-groups", () => conDecDecisionGroups.updateView());
 
-		conDecObservable.subscribe(this);
+		// conDecObservable.subscribe(this);
 		this.updateView();
 	};
 
