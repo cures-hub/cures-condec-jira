@@ -8,7 +8,7 @@ The dashboard comprises five dashboard items that show the following metrics:
 3. **general metrics**, e.g., *how many rationale elements are documented per origin/documentation location?*, 
 4. **metrics on the knowledge in git**, e.g., 
 *do the rationale elements documented in [code comments and commit messages of a branch](knowledge-in-git-presentation.md) fulfill the [definition of done (DoD)](quality-checking.md)?*, and
-5. **metrics on the decision levels and decision groups**, e.g. **Which decision groups exist in the project and how many decisions are documented per group?**.
+5. **metrics on the decision levels and decision groups**, e.g. *Which decision groups are there in the project? How many decisions are documented per decision level and group?*.
 
 The metric plots are created using the [Apache ECharts library](https://echarts.apache.org).
 The four dashboard items are shown in the following sections.
@@ -74,11 +74,12 @@ i.e. no rationale elements documented in [code comments and commit messages of a
 *Dashboard item showing metrics about the knowledge in git using boxplots and pie charts*
 
 ## Metrics about the Decision Levels and Decision Groups
-This dashboard item presents an overview on the [decision levels and decision groups](decision-grouping.md) that the decision knowledge elements documented within a project belong to.
-In particular, the following metrics are shown:
-- Number of decision knowledge elements (decision problems and solution options) per decision level
-- Number of decision knowledge elements (decision problems and solution options) per decision group
-- Number of decision groups assigned to the decision knowledge elements (=decision group coverage)
+This dashboard item presents an overview on the [decision levels and decision groups](decision-grouping.md) that the 
+knowledge elements (in particular, the decision problems and solution options) documented within a project belong to.
+The following metrics are shown:
+- Number of knowledge elements per decision level
+- Number of knowledge elements per decision group
+- Number of decision groups assigned to the knowledge elements (=**decision group coverage**)
 
 ![Dashboard item showing metrics about the decision levels and decision groups](../screenshots/dashboard_groups.png)
 
