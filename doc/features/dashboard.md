@@ -8,7 +8,7 @@ The dashboard comprises five dashboard items that show the following metrics:
 3. **general metrics**, e.g., *how many rationale elements are documented per origin/documentation location?*, 
 4. **metrics on the knowledge in git**, e.g., 
 *do the rationale elements documented in [code comments and commit messages of a branch](knowledge-in-git-presentation.md) fulfill the [definition of done (DoD)](quality-checking.md)?*, and
-5. **metrics on the decision levels and decision groups**, e.g. *Which decision groups are there in the project? How many decisions are documented per decision level and group?*.
+5. **metrics on the decision levels and decision groups**, e.g. *Which decision groups are there in the project? How many decisions are documented per decision level and group?*
 
 The metric plots are created using the [Apache ECharts library](https://echarts.apache.org).
 The four dashboard items are shown in the following sections.

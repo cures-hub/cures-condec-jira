@@ -3,9 +3,13 @@
 The ConDec Jira plugin enables to **group decisions and related knowledge elements**.
 Developers can group decisions according to predefined **levels (high, medium, and realization)**.
 They can also define **custom groups (e.g. UI, process, design, requirements, architecture, testing, ...)**.
-The differences between decision levels/groups and the Jira label mechanism are:
-- inheritance
-- also elements in comments and commit messages can be added to a group.
+
+Major differences between ConDec's decision grouping and the Jira label mechanism are:
+- Decision knowledge elements (in particular, decision problems and solution options) from **[various documentation locations](documentation.md)** 
+(e.g. documented in comments and commit messages) can be gathered in decision groups.
+For example, a UI decision documented in code can accessed from a [knowledge graph view](knowledge-visualization.md) through decision group filtering.
+- The **group assignement is inherited** within the decision knowledge. 
+For example, if a developer assigns a decision to the decision group *process*, the linked decision problem and alternatives will inherit this group.
 
 We use the following definition for decision levels by [van der Ven and Bosch (2013)](https://doi.org/10.1007/978-3-642-39031-9_15):
 1. *High level decisions* affect the whole product, altough they are not necessarily always the decisions that are debated 
@@ -61,7 +65,8 @@ Developers can see an explanation for the DoD violation in the quality check vie
 
 ## Renaming and Deleting Decision Groups in Overview
 ConDec offers an **overview for the decision levels and decision groups** assigned in a project.
-In this overview, the developers can rename and delete decision groups.
+In this overview, the developers can rename and delete decision groups via a context menu on group names.
+They can also navigate to the details of the decisions and change the decision group/level assignment via a context menu on the decisions.
 
 ![Decision groups overview with context menu to rename or delete a group](../screenshots/decision_grouping_overview.png)
 
