@@ -1,5 +1,5 @@
 #set($viewsWithChangeImpactHighlighting = ["jstree", "graph", "adjacency-matrix"])
-#set($viewsWithoutLinkVisualization = ["chronology"])
+#set($viewsWithoutLinkVisualization = ["chronology", "decision-groups"])
 #set($viewsWithVisGraph = ["graph", "rationale-backlog", "overview"])
 #set($viewsWithTreeViewer = ["rationale-backlog", "overview"])
 <div class="aui-toolbar2" role="toolbar">
@@ -54,7 +54,7 @@
 			--- <a data-replace-text="$i18n.getText('condec.dialog.create')" class="aui-expander-trigger" 
 				aria-controls="element-creation-$viewIdentifier">$i18n.getText('condec.dialog.create')</a> 
 			#end
-			#if($viewIdentifier != "export")
+			#if($viewIdentifier != "export" && $viewIdentifier != "decision-groups")
 			--- <a data-replace-text="$i18n.getText('condec.label.hide.quality.highlighting.options')" class="aui-expander-trigger" 
 				aria-controls="quality-filter-$viewIdentifier">$i18n.getText('condec.label.show.quality.highlighting.options')</a>  
 			#end
