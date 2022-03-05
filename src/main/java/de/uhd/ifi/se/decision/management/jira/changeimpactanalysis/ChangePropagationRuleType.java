@@ -7,12 +7,12 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWh
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualDecisionGroup;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenEqualKnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenHighAmountOfDistinctAuthors;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenLowAverageAge;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenQuicklyFinished;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenMoreOutboundLinks;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTextualSimilar;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenTimelyCoupled;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.ChangePropagationFunction;
-import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.IgnoreIncomingLinks;
+import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.rules.BoostWhenLinkTarget;
 
 /**
  * Gathers propagation rules for rule-based change impact analysis.
@@ -26,11 +26,10 @@ public enum ChangePropagationRuleType {
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph has the same creator, i.e. assignee, creator, reporter.",
 			new BoostWhenEqualCreator()), //
-	IGNORE_INCOMING_LINKS("Outward links only",
-			"Rule that defines that a change impact is not propagated along an incoming link to an "
-					+ "element. With this rule activated, impacts are only propagated along outgoing links from "
-					+ "an element.",
-			new IgnoreIncomingLinks()), //
+	BOOST_WHEN_LINK_TARGET("Boost when element is the link target",
+			"Rule that defines that a change impact is stronger propagated if the traversed element "
+					+ "in the knowledge graph is the link target, i.e. the link is an inward link to the element.",
+			new BoostWhenLinkTarget()), //
 	BOOST_WHEN_TEXTUAL_SIMILAR("Boost when element is textual similar to the selected element",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph is textual similar to the selected element.",
@@ -63,12 +62,11 @@ public enum ChangePropagationRuleType {
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph is a solution option.",
 			new BoostIfSolutionOption()), //
-	BOOST_WHEN_LOW_AVERAGE_AGE("Boost when element has a low average age",
+	BOOST_WHEN_QUICKLY_FINISHED("Boost when element was quickly finished",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
-					+ "in the knowledge graph has a low average age. The average age is determined by deducing "
-					+ "the creation date from the latest update date. A high difference "
-					+ "indicates a high average age.",
-			new BoostWhenLowAverageAge()), //
+					+ "in the knowledge graph was quickly finished. This is determined by deducing "
+					+ "the creation date from the latest update date.",
+			new BoostWhenQuicklyFinished()), //
 	BOOST_WHEN_TIMELY_COUPLED("Boost when element is timely coupled to the selected element",
 			"Rule that defines that a change impact is stronger propagated if the traversed element "
 					+ "in the knowledge graph is timely coupled to the source element. Elements are assumed "
