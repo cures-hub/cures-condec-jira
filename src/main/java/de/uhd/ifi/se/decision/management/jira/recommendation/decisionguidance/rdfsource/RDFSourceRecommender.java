@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -67,8 +66,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	protected ResultSet queryDatabase(String queryString) {
 		try {
 			Query query = QueryFactory.create(queryString);
-			QueryExecution queryExecution = QueryExecutionFactory.sparqlService(knowledgeSource.getService(), query);
-			queryExecution.setTimeout(knowledgeSource.getTimeout(), TimeUnit.MILLISECONDS);
+			QueryExecution queryExecution = QueryExecution.service(knowledgeSource.getService()).query(query)
+					.timeout(knowledgeSource.getTimeout(), TimeUnit.MILLISECONDS).build();
 
 			ResultSet resultSet = queryExecution.execSelect();
 			return resultSet;
