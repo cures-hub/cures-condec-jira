@@ -21,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropaga
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.ChangePropagationRuleType;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
@@ -114,61 +113,6 @@ public class TestCalculator extends TestSetUp {
 				impactedElements, (long) settings.getLinkDistance());
 
 		assertTrue(impactedElements.size() > 8);
-	}
-
-	@Test
-	public void testGenerateImpactExplanationPropagationRule() {
-		double impactValue = 0.75;
-		double parentImpact = 1.0;
-		double ruleBasedValue = 0.5;
-		double decayValue = 0.25;
-		String explanation = Calculator.generateImpactExplanation(
-			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
-
-		assertTrue(explanation.contains("mainly due to a used propagation rule."));
-
-		decayValue = 1.0;
-		explanation = Calculator.generateImpactExplanation(
-			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
-
-		assertTrue(explanation.contains("mainly due to the decay value."));
-
-	}
-
-	@Test
-	public void testGenerateImpactExplanationParentImpact() {
-		double impactValue = 0.25;
-		double parentImpact = 0.5;
-		double ruleBasedValue = 1.0;
-		double decayValue = 0.25;
-		String explanation = Calculator.generateImpactExplanation(
-			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
-
-		assertTrue(explanation.contains("mainly due to its parent having a lowered impact score."));
-	}
-
-	@Test
-	public void testGenerateImpactExplanationDecayValue() {
-		double impactValue = 0.25;
-		double parentImpact = 1.0;
-		double ruleBasedValue = 1.0;
-		double decayValue = 0.75;
-		String explanation = Calculator.generateImpactExplanation(
-			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
-
-		assertTrue(explanation.contains("mainly due to the decay value."));
-	}
-
-	@Test
-	public void testGenerateImpactExplanationLinkRecommendation() {
-		double impactValue = 0.25;
-		double parentImpact = 1.0;
-		double ruleBasedValue = 1.0;
-		double decayValue = 1.0;
-		String explanation = Calculator.generateImpactExplanation(
-			parentImpact, ruleBasedValue, decayValue, impactValue, LinkType.RECOMMENDED.getName(), 0.8);
-
-		assertTrue(explanation.contains("Link Recommendation Score"));
 	}
 
 	@After

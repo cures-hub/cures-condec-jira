@@ -23,16 +23,25 @@ elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValu
 ```
 
 where `parentImpact` is the element impact of the ancestor node in the knowledge graph, 
-`decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, 
-`ruleBasedValue` is the normalized sum of all selected rule values, and `recommendationScore` is the link recommendation score of the current element, if the element was recommended.
+`decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, `ruleBasedValue` is the normalized sum of all selected rules
+
+<code>
+ruleBasedValue = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / &sum;<sup>N</sup>ruleValue<sub>i</sub>
+</code>
+
+where `N` is the number of enabled rules, and
+<code>-&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub></code> denotes that the subtraction is only done for negative rule weights to reverse the effect.
+
+In addition, `recommendationScore` is the link recommendation score of the current element, if the element was recommended.
+
 The following rules are available:
 
-1. Outward links only
+1. Boost when element is the link target
 2. Boost when element has the same creator as the selected element
 3. Boost when element is textual similar to the selected element
 4. Boost when element is assigned to the same component
 5. Boost when element is assigned to the same decision group
-6. Boost when element has a low average age
+6. Boost when element was quickly finished
 7. Boost when element has more outbound than inbound links 
 8. Boost when element has a large amount of distinct update authors
 9. Boost when element received updates in the same timeframe (i.e. is timely coupled)
@@ -64,12 +73,12 @@ To achieve CIA, `Calculator` is called first. This class calculates the change i
 
 It uses the `ChangeImpactAnalysisConfig` to get the configuration information for a project when a request is received. The configuration includes weight value, decay, threshold and a list of `ChangePropagationRule`. Each rule stores an enum `ChangePropagationRuleType` and the corresponding weight value. Each of these enums has a distinct `ChangePropagationFunction` that is implemented by twelve available classes:
 
-1. `IgnoreIncomingLinks`, implements a function that defines that a change impact is not propagated along an incoming link to an element.
+1. `BoostWhenLinkTarget`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph is the link target.
 2. `BoostIfTextualSimilar`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph is similar to the selected element.
 3. `BoostWhenEqualComponent`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph is assigned to the same component.
 4. `BoostWhenEqualDecisionGroup`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph is assigned to the same decision group.
 5. `BoostWhenMoreOutboundLinks`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph has more outbound elements than inbound elements.
-6. `BoostWhenLowAverageAge`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph has a low average age.
+6. `BoostWhenQuicklyFinished`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph was quickly finished.
 7. `BoostWhenHighAmountOfDistinctAuthors`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph has a large amount of distinct update authors.
 8. `BoostWhenTimelyCoupled`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph is coupled with the source element, i.e. if both have received updates in the same timeframe.
 9. `BoostWhenEqualCreator`, implements a function that defines that a change impact is stronger propagated if the traversed element in the knowledge graph has the same creator, reporter or assignee.

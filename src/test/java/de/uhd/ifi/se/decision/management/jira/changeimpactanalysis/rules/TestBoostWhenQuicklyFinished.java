@@ -16,35 +16,49 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-public class TestBoostWhenLowAverageAge extends TestSetUp {
+public class TestBoostWhenQuicklyFinished extends TestSetUp {
+
+	private KnowledgeElement currentElement;
+	private FilterSettings filterSettings;
 
 	@Before
 	public void setUp() {
 		init();
+		currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
+		filterSettings = new FilterSettings("TEST", "");
 	}
 
 	@Test
 	public void testDescription() {
-		assertEquals("Boost when element has a low average age",
-				ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getDescription());
+		assertEquals("Boost when element was quickly finished",
+				ChangePropagationRuleType.BOOST_WHEN_QUICKLY_FINISHED.getDescription());
 	}
 
 	@Test
 	public void testExplanation() {
-		assertTrue(ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE
-			.getExplanation().contains("average age is determined by"));
+		assertTrue(ChangePropagationRuleType.BOOST_WHEN_QUICKLY_FINISHED
+			.getExplanation().contains("was quickly finished"));
 	}
 
 	@Test
-	public void testPropagation() {
-		KnowledgeElement currentElement = KnowledgeElements.getTestKnowledgeElements().get(0);
+	public void testPropagationElementQuicklyFinished() {
+		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
+		updateDateAndAuthor.put(new Date(0), "FooBar");
+		updateDateAndAuthor.put(new Date(1000), "FooBar");
+		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
+
+		assertNotNull(ChangePropagationRuleType.BOOST_WHEN_QUICKLY_FINISHED.getFunction()
+				.isChangePropagated(filterSettings, currentElement, null));
+	}
+
+	@Test
+	public void testPropagationElementNotQuicklyFinished() {
 		TreeMap<Date, String> updateDateAndAuthor = new TreeMap<Date, String>();
 		updateDateAndAuthor.put(new Date(0), "FooBar");
 		updateDateAndAuthor.put(new Date(), "FooBar");
 		currentElement.setUpdateDateAndAuthor(updateDateAndAuthor);
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
 
-		assertNotNull(ChangePropagationRuleType.BOOST_WHEN_LOW_AVERAGE_AGE.getFunction()
+		assertNotNull(ChangePropagationRuleType.BOOST_WHEN_QUICKLY_FINISHED.getFunction()
 				.isChangePropagated(filterSettings, currentElement, null));
 	}
 }

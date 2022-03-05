@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElementWithImpact;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestTooltip extends TestSetUp {
@@ -66,4 +67,60 @@ public class TestTooltip extends TestSetUp {
         assertEquals("This element is not implicitly linked to the source element but has been included as a result of the link recommendation.",
             Tooltip.createLinkRecommendationTooltip());
     }
+
+    @Test
+	public void testGenerateImpactExplanationPropagationRule() {
+		double impactValue = 0.75;
+		double parentImpact = 1.0;
+		double ruleBasedValue = 0.5;
+		double decayValue = 0.25;
+		String explanation = Tooltip.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
+
+		assertTrue(explanation.contains("mainly due to a used propagation rule."));
+
+		decayValue = 1.0;
+		explanation = Tooltip.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
+
+		assertTrue(explanation.contains("mainly due to the decay value."));
+
+	}
+
+	@Test
+	public void testGenerateImpactExplanationParentImpact() {
+		double impactValue = 0.25;
+		double parentImpact = 0.5;
+		double ruleBasedValue = 1.0;
+		double decayValue = 0.25;
+		String explanation = Tooltip.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
+
+		assertTrue(explanation.contains("mainly due to its parent having a lowered impact score."));
+	}
+
+	@Test
+	public void testGenerateImpactExplanationDecayValue() {
+		double impactValue = 0.25;
+		double parentImpact = 1.0;
+		double ruleBasedValue = 1.0;
+		double decayValue = 0.75;
+		String explanation = Tooltip.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, "", 0);
+
+		assertTrue(explanation.contains("mainly due to the decay value."));
+	}
+
+	@Test
+	public void testGenerateImpactExplanationLinkRecommendation() {
+		double impactValue = 0.25;
+		double parentImpact = 1.0;
+		double ruleBasedValue = 1.0;
+		double decayValue = 1.0;
+		String explanation = Tooltip.generateImpactExplanation(
+			parentImpact, ruleBasedValue, decayValue, impactValue, LinkType.RECOMMENDED.getName(), 0.8);
+
+		assertTrue(explanation.contains("Link Recommendation Score"));
+	}
+
 }
