@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -67,8 +68,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		try {
 			Query query = QueryFactory.create(queryString);
 			QueryExecution queryExecution = QueryExecutionFactory.sparqlService(knowledgeSource.getService(), query);
-			// ((QueryEngineHTTP) queryExecution).addParam("timeout",
-			// knowledgeSource.getTimeout() + "");
+			queryExecution.setTimeout(knowledgeSource.getTimeout(), TimeUnit.MILLISECONDS);
 
 			ResultSet resultSet = queryExecution.execSelect();
 			return resultSet;
