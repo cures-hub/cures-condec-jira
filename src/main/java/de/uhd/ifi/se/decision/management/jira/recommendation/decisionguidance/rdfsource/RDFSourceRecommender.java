@@ -12,7 +12,6 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -68,7 +67,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		try {
 			Query query = QueryFactory.create(queryString);
 			QueryExecution queryExecution = QueryExecutionFactory.sparqlService(knowledgeSource.getService(), query);
-			((QueryEngineHTTP) queryExecution).addParam("timeout", knowledgeSource.getTimeout() + "");
+			// ((QueryEngineHTTP) queryExecution).addParam("timeout",
+			// knowledgeSource.getTimeout() + "");
 
 			ResultSet resultSet = queryExecution.execSelect();
 			return resultSet;
