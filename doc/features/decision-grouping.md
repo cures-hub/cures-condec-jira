@@ -8,7 +8,7 @@ Major differences between ConDec's decision grouping and the Jira label mechanis
 - Decision knowledge elements (in particular, decision problems and solution options) from **[various documentation locations](documentation.md)** 
 (e.g. documented in comments and commit messages) can be gathered in decision groups.
 For example, a UI decision documented in code can accessed from a [knowledge graph view](knowledge-visualization.md) through decision group filtering.
-- The **group assignement is inherited** within the decision knowledge. 
+- The **group assignment is inherited** within the decision knowledge. 
 For example, if a developer assigns a decision to the decision group *process*, the linked decision problem and alternatives will inherit this group.
 
 We use the following definition for decision levels by [van der Ven and Bosch (2013)](https://doi.org/10.1007/978-3-642-39031-9_15):
