@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import javax.xml.bind.annotation.XmlElement;
-
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -26,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * Models a recommendation of a solution option for a decision problem. The
  * recommendation is generated from an external {@link KnowledgeSource}, such as
  * DBPedia ({@link RDFSource} or another Jira project ({@link ProjectSource}).
- * 
+ *
  * The recommendation can contain a list of arguments (pro and cons) that either
  * support or attack this recommended solution option. The relevance of the
  * recommendation is represented by the {@link RecommendationScore}.
@@ -34,11 +31,34 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
 @JsonIgnoreProperties(ignoreUnknown = true) //, value = "knowledgeSource")
 public class ElementRecommendation extends KnowledgeElement implements Recommendation {
 
+	/**
+	 * Source of the recommendation, e.g. DBPedia (as {@link RDFSource}) or another Jira project (as {@link ProjectSource}).
+	 */
 	private KnowledgeSource knowledgeSource;
+
+	/**
+	 * URL to this recommendation at its source, e.g. a link to a Wikipedia page or the issue of another Jira project.
+	 */
 	private String url;
+
+	/**
+	 * Pro and Con {@link Argument}s for the recommendation.
+	 */
 	private List<Argument> arguments;
+
+	/**
+	 * Score indicating how fitting the recommendation is.
+	 */
 	private RecommendationScore score = new RecommendationScore(0, "not scored");
-	private boolean isDiscarded = false;
+
+	/**
+	 * true if the user has discarded the recommendation, otherwise false.
+	 */
+	private boolean discarded = false;
+
+	/**
+	 * {@link KnowledgeElement} for which the recommendation was given.
+	 */
 	private KnowledgeElement target;
 
 	@JsonCreator
@@ -48,26 +68,57 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 		this.type = KnowledgeType.ALTERNATIVE;
 	}
 
-	public ElementRecommendation(KnowledgeSource knowledgeSource, String summary, String url) {
+	/**
+	 * @param summary Textual summary of the recommendation.
+	 * @param target Decision issue for which the recommendation is given.
+	 * @param knowledgeSource Source of the recommendation.
+	 * @param project Project in which the recommendation is given.
+	 * @param url URL to the recommendation at its source.
+	 */
+	public ElementRecommendation(String summary, KnowledgeElement target, KnowledgeSource knowledgeSource, DecisionKnowledgeProject project,
+								 String url) {
 		this();
-		this.project = new DecisionKnowledgeProject("");
-		this.knowledgeSource = knowledgeSource;
 		this.setSummary(summary);
+		this.target = target;
+		this.knowledgeSource = knowledgeSource;
+		this.setProject(project);
 		this.url = url;
 	}
 
-	public ElementRecommendation(String summary, KnowledgeElement target) {
-		this();
-		this.project = new DecisionKnowledgeProject("");
-		this.setSummary(summary);
-		this.target = target;
+	/**
+	 * @param summary Textual summary of the recommendation.
+	 * @param target Decision issue for which the recommendation is given.
+	 * @param knowledgeSource Source of the recommendation.
+	 * @param project Project in which the recommendation is given.
+	 */
+	public ElementRecommendation(String summary, KnowledgeElement target, KnowledgeSource knowledgeSource, DecisionKnowledgeProject project) {
+		this(summary, target, knowledgeSource, project, "");
 	}
 
-	public ElementRecommendation(KnowledgeElement knowledgeElement) {
-		this();
-		this.project = knowledgeElement.getProject();
-		this.setSummary(knowledgeElement.getSummary());
-		this.url = knowledgeElement.getUrl();
+	/**
+	 * @param summary Textual summary of the recommendation.
+	 * @param target Decision issue for which the recommendation is given.
+	 * @param knowledgeSource Source of the recommendation.
+	 * @param url URL to the recommendation at its source.
+	 */
+	public ElementRecommendation(String summary, KnowledgeElement target, KnowledgeSource knowledgeSource, String url) {
+		this(summary, target, knowledgeSource, target.getProject(), url);
+	}
+
+	/**
+	 * @param knowledgeElement Decision in another Jira project to be recommended.
+	 * @param target Decision issue for which the recommendation is given.
+	 */
+	public ElementRecommendation(KnowledgeElement knowledgeElement, KnowledgeElement target) {
+		this(knowledgeElement.getSummary(), target, new ProjectSource(knowledgeElement.getProject().getProjectKey()), knowledgeElement.getUrl());
+	}
+
+	/**
+	 * @param summary Textual summary of the recommendation.
+	 * @param target Decision issue for which the recommendation is given.
+	 */
+	public ElementRecommendation(String summary, KnowledgeElement target) {
+		this(summary, target, new RDFSource(), target.getProject());
 	}
 
 	/**
@@ -80,7 +131,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 *         recommendation in the range of [0, 1].
 	 */
 	public static List<ElementRecommendation> normalizeRecommendationScore(List<ElementRecommendation> recommendations) {
-		if (recommendations.size() > 0) {
+		if (!recommendations.isEmpty()) {
 			float maxValue = recommendations.stream().map(Recommendation::getScore).map(RecommendationScore::getValue).max(Float::compare).get();
 
 			for (ElementRecommendation recommendation : recommendations) {
@@ -192,6 +243,11 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 		arguments.add(argument);
 	}
 
+	/**
+	 * @param object object to be compared to this instance.
+	 * @return true, if object is from the same class, has a {@link ElementRecommendation#knowledgeSource} with the same {@link KnowledgeSource#name}
+	 * 	       and the same {@link ElementRecommendation#getSummary()}.
+	 */
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -221,7 +277,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 */
 	@Override
 	public void setDiscarded(boolean isDiscarded) {
-		this.isDiscarded = isDiscarded;
+		this.discarded = isDiscarded;
 	}
 
 	/**
@@ -229,7 +285,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 */
 	@Override
 	public boolean isDiscarded() {
-		return isDiscarded;
+		return discarded;
 	}
 
 	@Override
