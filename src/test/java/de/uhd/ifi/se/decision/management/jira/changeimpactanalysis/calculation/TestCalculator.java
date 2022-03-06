@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.changeimpactanalysis.KnowledgeElem
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
-import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.rest.LinkRecommendationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -72,9 +71,7 @@ public class TestCalculator extends TestSetUp {
 		settings = new FilterSettings("TEST", "");
 		settings.setSelectedElement("TEST-1");
 		settings.recommendLinks(true);
-		LinkRecommendationConfiguration linkConfig = new LinkRecommendationConfiguration();
-		linkConfig.setMinProbability(0.2);
-		settings.setLinkRecommendationConfig(linkConfig);
+		settings.getLinkRecommendationConfig().setMinProbability(0.2);
 		
 		// Discard a few recommendations
 		LinkRecommendationRest linkRecommendationRest = new LinkRecommendationRest();

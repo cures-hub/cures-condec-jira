@@ -26,13 +26,11 @@ public class ComponentContextInformationProvider extends ContextInformationProvi
 	@Override
 	public RecommendationScore assessRelation(KnowledgeElement baseElement, KnowledgeElement otherElement) {
 		float score = 1;
-		if (baseElement.getJiraIssue() != null && otherElement.getJiraIssue() != null) {
-			if (!baseElement.getJiraIssue().getComponents().isEmpty()) {
-				Set<ProjectComponent> setOfMatchingComponents = baseElement.getJiraIssue().getComponents().stream()
-						.filter(item -> otherElement.getJiraIssue().getComponents().contains(item))
-						.collect(Collectors.toSet());
-				score = setOfMatchingComponents.isEmpty() ? 0 : 1;
-			}
+		if (baseElement.getJiraIssue() != null && otherElement.getJiraIssue() != null && !baseElement.getJiraIssue().getComponents().isEmpty()) {
+			Set<ProjectComponent> setOfMatchingComponents = baseElement.getJiraIssue().getComponents().stream()
+					.filter(item -> otherElement.getJiraIssue().getComponents().contains(item))
+					.collect(Collectors.toSet());
+			score = setOfMatchingComponents.isEmpty() ? 0 : 1;
 		}
 		return new RecommendationScore(score, getDescription());
 	}
