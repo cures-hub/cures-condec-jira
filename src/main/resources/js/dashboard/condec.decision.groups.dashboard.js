@@ -75,6 +75,7 @@ define('dashboard/decisionGroups', [], function() {
 		metric.delete("High_Level");
 		metric.delete("Medium_Level");
 		metric.delete("Realization_Level");
+		metric.delete("NoGroup");
 		conDecDashboard.createPieChartWithListOfElements(metric,
 			"piechart-decision-groups",
 			"How many elements are there per decision group?", viewId);
