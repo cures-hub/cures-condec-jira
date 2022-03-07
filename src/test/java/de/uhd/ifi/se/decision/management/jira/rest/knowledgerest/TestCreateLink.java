@@ -67,8 +67,8 @@ public class TestCreateLink extends TestSetUp {
 				JiraUsers.SYS_ADMIN.getApplicationUser());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest
-				.createLink(request, "TEST", sentenceIssue.getId(), "s", sentenceDecision.getId(), "s", null)
-				.getStatus());
+						.createLink(request, "TEST", sentenceIssue.getId(), "s", sentenceDecision.getId(), "s", null)
+						.getStatus());
 	}
 
 	@Test
@@ -125,8 +125,14 @@ public class TestCreateLink extends TestSetUp {
 	}
 
 	@Test
-	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementEqualsChildelement() {
+	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementEqualsChildElement() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				knowledgeRest.createLink(request, "TEST", 4, "i", 4, "i", null).getStatus());
+	}
+
+	@Test
+	public void testRequestFilledProjectKeyFilledChildElementFilledParentElementFilledLinkTypeRecommended() {
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createLink(request, "TEST", 4, "i", 1, "i", "recommended").getStatus());
 	}
 }

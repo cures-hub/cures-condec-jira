@@ -71,7 +71,8 @@ public class TestPartOfJiraIssueText extends TestSetUp {
 	public void testToString() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setDescription("This is a decision.");
-		assertEquals(sentence.toString(), "This is a decision.");
+		sentence.setType(KnowledgeType.DECISION);
+		assertEquals(sentence.toString(), "Decision: This is a decision.");
 	}
 
 	@Test

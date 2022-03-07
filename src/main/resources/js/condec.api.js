@@ -219,12 +219,12 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer, condec.decision.table
 	 */
 	ConDecAPI.prototype.createLink = function(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/createLink?projectKey=" + projectKey
-			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
+		generalApi.postJSON(this.restPrefix + "/knowledge/link/" + projectKey
+			+ "?idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function(error, link) {
 				if (error === null) {
 					showFlag("success", "Link has been created.");
@@ -233,7 +233,7 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.deleteLink = function(idOfDestinationElement, idOfSourceElement,
@@ -245,13 +245,12 @@
 			"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement,
 			"projectKey": projectKey
 		};
-		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteLink?projectKey=" + projectKey,
-			link, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been deleted.");
-					callback(link);
-				}
-			});
+		generalApi.deleteJSON(this.restPrefix + "/knowledge/link/" + projectKey, link, function(error, link) {
+			if (error === null) {
+				showFlag("success", "Link has been deleted.");
+				callback(link);
+			}
+		});
 	};
 
 	/**

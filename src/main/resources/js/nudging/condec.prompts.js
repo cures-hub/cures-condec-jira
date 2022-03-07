@@ -53,7 +53,10 @@
 									conDecPrompt.promptLinkSuggestion(projectKey);
 									document.getElementById("link-recommendation-prompt").style.display = "block";
 									document.getElementById("go-to-link-recomendation-tab").onclick =
-										() => openDetailView("link-recommendation-tab", promptDialog);
+										() => {
+											openDetailView("link-recommendation-tab", promptDialog);
+											$("#link-recommendation-button").click();
+										}
 								}
 								if (isTextClassificationActivated) {
 									conDecPrompt.promptNonValidatedElements(projectKey, jiraIssueKey);
@@ -65,7 +68,10 @@
 									conDecPrompt.promptDecisionGuidance(projectKey);
 									document.getElementById("decision-guidance-prompt").style.display = "block";
 									document.getElementById("go-to-decision-guidance-tab").onclick =
-										() => openDetailView("decision-guidance-tab", promptDialog);
+										() => {
+											openDetailView("decision-guidance-tab", promptDialog);
+											$("#recommendation-button").click();
+										}
 								}
 							});
 					}
@@ -89,6 +95,7 @@
 			},
 			"projectKey": projectKey
 		}
+		conDecLinkRecommendation.selectedElement = filterSettings.selectedElementObject;
 		Promise.resolve(conDecLinkRecommendationAPI.getLinkRecommendations(filterSettings))
 			.then(recommendations => {
 				let numRecommendations = conDecRecommendation.getNumberOfNonDiscardedRecommendations(recommendations);
@@ -158,6 +165,7 @@
 			for (decisionProblem of decisionProblems) {
 				decisionProblem.projectKey = projectKey;
 				recommendationPromises.push(conDecDecisionGuidanceAPI.getRecommendations(decisionProblem, ""));
+				conDecDecisionGuidance.selectedDecisionProblem = decisionProblem;
 			}
 			Promise.all(recommendationPromises)
 				.then(recommendationsForAllProblems => {

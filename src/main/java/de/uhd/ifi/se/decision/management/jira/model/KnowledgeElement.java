@@ -481,7 +481,7 @@ public class KnowledgeElement {
 
 	@Override
 	public String toString() {
-		return getDescription();
+		return getTypeAsString() + ": " + getSummary();
 	}
 
 	/**

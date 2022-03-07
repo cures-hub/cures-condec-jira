@@ -63,7 +63,7 @@ public enum LinkType {
 
 	/**
 	 * @return style needed to create a Jira issue link type.
-	 * @see JiraSchemeManager#createLinkType(String)
+	 * @see JiraSchemeManager#createLinkType(LinkType)
 	 */
 	public String getStyle() {
 		return "contain-style";

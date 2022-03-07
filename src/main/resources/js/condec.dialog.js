@@ -180,7 +180,7 @@
 			fillSelectElementField(selectElementField, id, documentationLocation);
 		}
 
-		fillSelectLinkTypeField(selectLinkTypeField, id, documentationLocation, linkType);
+		fillSelectLinkTypeField(selectLinkTypeField, linkType);
 
 		selectElementField.onchange = function() {
 			conDecAPI.getKnowledgeElement(id, documentationLocation,
@@ -194,9 +194,13 @@
 		submitButton.onclick = function() {
 			var idOfChild = selectElementField.value.split(":")[0];
 			var documentationLocationOfChild = selectElementField.value.split(":")[1];
-			var linkType = selectLinkTypeField.value;
+			if (linkType !== "recommended") {
+				linkType = selectLinkTypeField.value;
+			}
 			conDecAPI.createLink(id, idOfChild, documentationLocation, documentationLocationOfChild,
-				linkType, function() { conDecObservable.notify() });
+				linkType, () => {
+					conDecObservable.notify();
+				});
 			AJS.dialog2(linkDialog).hide();
 		};
 
@@ -225,7 +229,7 @@
 		AJS.$(selectField).auiSelect2();
 	}
 
-	function fillSelectLinkTypeField(selectField, id, documentationLocation, linkType) {
+	function fillSelectLinkTypeField(selectField, linkType) {
 		if (selectField === null) {
 			return;
 		}
@@ -241,7 +245,8 @@
 		selectField.insertAdjacentHTML("afterBegin", insertString);
 		if (linkType !== null && linkType !== undefined) {
 			selectField.value = linkTypes.find(type => type.toLowerCase().startsWith(linkType));
-		} else {
+		}
+		if (!selectField.value) {
 			selectField.value = "Relates";
 		}
 		AJS.$(selectField).auiSelect2();
@@ -299,8 +304,8 @@
 				inputSummaryField.disabled = true;
 				selectLocationField.disabled = true;
 			}
-			conDecGroupingDialog.fillDecisionGroupSelectForElement(id, documentationLocation, 
-					selectLevelField, "edit-form-select2-decision-group");
+			conDecGroupingDialog.fillDecisionGroupSelectForElement(id, documentationLocation,
+				selectLevelField, "edit-form-select2-decision-group");
 
 			// Set onclick listener on buttons
 			submitButton.onclick = function() {

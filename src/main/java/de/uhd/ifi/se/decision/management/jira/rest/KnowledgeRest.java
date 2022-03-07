@@ -265,9 +265,33 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 	}
 
-	@Path("/createLink")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project. Both, link source and target need to be within
+	 *            the same project.
+	 * @param idOfParent
+	 *            id of the source/parent {@link KnowledgeElement}.
+	 * @param documentationLocationOfParent
+	 *            {@link DocumentationLocation} of the source/parent
+	 *            {@link KnowledgeElement}.
+	 * @param idOfChild
+	 *            id of the target/child {@link KnowledgeElement}.
+	 * @param documentationLocationOfChild
+	 *            {@link DocumentationLocation} of the target/child
+	 *            {@link KnowledgeElement}.
+	 * @param linkTypeName
+	 *            {@link LinkType#name()}.
+	 * @return ok if the new {@link Link} was successfully created, saved in
+	 *         database, and added to the {@link KnowledgeGraph}.
+	 * 
+	 * @see KnowledgePersistenceManager#insertLink(Link, ApplicationUser)
+	 */
+	@Path("/link/{projectKey}")
 	@POST
-	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response createLink(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			@QueryParam("idOfParent") long idOfParent,
 			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
 			@QueryParam("idOfChild") long idOfChild,
@@ -305,6 +329,10 @@ public class KnowledgeRest {
 			link = Link.instantiateDirectedLink(parentElement, childElement);
 		} else {
 			LinkType linkType = LinkType.getLinkType(linkTypeName);
+			if (linkType == LinkType.RECOMMENDED) {
+				linkType = LinkType.getLinkTypeForKnowledgeType(childElement.getType());
+				LOGGER.info("Link recommendation was accepted between: " + parentElement + " and " + childElement);
+			}
 			link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 		}
 		long linkId = persistenceManager.insertLink(link, user);
@@ -312,13 +340,30 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		LOGGER.info("Link " + link + " was created.");
-		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+		LOGGER.info("Link " + link + " was created in project " + projectKey);
+		return Response.ok(ImmutableMap.of("id", linkId)).build();
 	}
 
-	@Path("/deleteLink")
+	/**
+	 * Deletes a {@link Link} in database and in the {@link KnowledgeGraph}. If the
+	 * deleted link involved a code file, a new link of type "wrong" is created.
+	 * 
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project. Both, link source and target need to be within
+	 *            the same project.
+	 * @param link
+	 *            {@link Link} to be deleted.
+	 * @return ok if the {@link Link} was successfully deleted.
+	 * 
+	 * @see KnowledgePersistenceManager#deleteLink(de.uhd.ifi.se.decision.management.jira.model.Link,
+	 *      ApplicationUser)
+	 */
+	@Path("/link/{projectKey}")
 	@DELETE
-	public Response deleteLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response deleteLink(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			Link link) {
 		if (projectKey == null || request == null || link == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
@@ -327,26 +372,15 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
-
-		// to fill knowledge types
-		link.setSourceElement(persistenceManager.getKnowledgeElement(link.getSource()));
-		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
-		LinkType linktype = LinkType.getDefaultLinkType();
-		if (link.getSource() != null && link.getTarget() != null && link.getSource().getLink(link.getTarget()) != null) {
-			linktype = link.getSource().getLink(link.getTarget()).getType();
-		}
-
 		boolean isDeleted = persistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
-			LOGGER.info("Link " + link + " was deleted.");
-			// Create new link to power wrong_link feature for code files
-			if ((link.getSource().getDocumentationLocation() == DocumentationLocation.CODE 
-				|| link.getTarget().getDocumentationLocation() == DocumentationLocation.CODE)
-				&& linktype != LinkType.WRONG_LINK) {
-					createLink(request, projectKey, link.getSource().getId(),
-						link.getSource().getDocumentationLocation().getIdentifier(), link.getTarget().getId(),
-						link.getTarget().getDocumentationLocation().getIdentifier(), LinkType.WRONG_LINK.getName());
+			LOGGER.info("Link " + link + " was deleted in project " + projectKey);
+			// Create new link of type "wrong" if deleted link involved code file
+			if (link.getBothElements().stream()
+					.anyMatch(element -> element.getDocumentationLocation() == DocumentationLocation.CODE)) {
+				link.setType(LinkType.WRONG_LINK);
+				KnowledgePersistenceManager.getInstance(projectKey).insertLink(link, user);
 			}
 			return Response.ok().build();
 		}

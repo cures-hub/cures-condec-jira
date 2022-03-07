@@ -195,8 +195,8 @@ public class KnowledgePersistenceManager {
 	}
 
 	/**
-	 * Inserts a new link into database. The link can be between any kinds of nodes
-	 * in the {@link KnowledgeGraph}.
+	 * Inserts a new link into database and in the {@link KnowledgeGraph}. The link
+	 * can be between any kinds of nodes in the {@link KnowledgeGraph}.
 	 *
 	 * @param link
 	 *            link (=edge) between a source and a destination
@@ -288,8 +288,8 @@ public class KnowledgePersistenceManager {
 	}
 
 	/**
-	 * Deletes an existing link in database. The link can be between any kinds of
-	 * nodes in the {@link KnowledgeGraph}.
+	 * Deletes an existing link in database and in the {@link KnowledgeGraph}. The
+	 * link can be between any kinds of nodes in the {@link KnowledgeGraph}.
 	 *
 	 * @param link
 	 *            link (=edge) between a source and a destination
