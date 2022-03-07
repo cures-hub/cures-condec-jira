@@ -372,23 +372,15 @@ public class KnowledgeRest {
 		// to fill knowledge types
 		link.setSourceElement(persistenceManager.getKnowledgeElement(link.getSource()));
 		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
-		LinkType linktype = LinkType.getDefaultLinkType();
-		if (link.getSource() != null && link.getTarget() != null
-				&& link.getSource().getLink(link.getTarget()) != null) {
-			linktype = link.getSource().getLink(link.getTarget()).getType();
-		}
-
 		boolean isDeleted = persistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
 			LOGGER.info("Link " + link + " was deleted.");
-			// Create new link to power wrong_link feature for code files
-			if ((link.getSource().getDocumentationLocation() == DocumentationLocation.CODE
-					|| link.getTarget().getDocumentationLocation() == DocumentationLocation.CODE)
-					&& linktype != LinkType.WRONG_LINK) {
-				createLink(request, projectKey, link.getSource().getId(),
-						link.getSource().getDocumentationLocation().getIdentifier(), link.getTarget().getId(),
-						link.getTarget().getDocumentationLocation().getIdentifier(), LinkType.WRONG_LINK.getName());
+			// Create new link of type "wrong" if deleted link involved code file
+			if (link.getBothElements().stream()
+					.anyMatch(element -> element.getDocumentationLocation() == DocumentationLocation.CODE)) {
+				link.setType(LinkType.WRONG_LINK);
+				KnowledgePersistenceManager.getInstance(projectKey).insertLink(link, user);
 			}
 			return Response.ok().build();
 		}
