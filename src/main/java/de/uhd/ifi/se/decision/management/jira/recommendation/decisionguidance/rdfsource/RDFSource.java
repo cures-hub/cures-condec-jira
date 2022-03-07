@@ -38,18 +38,14 @@ public class RDFSource extends KnowledgeSource {
 	 * Creates a default knowledge source for DBPedia.
 	 */
 	public RDFSource() {
+		super(DEFAULT_NAME, true);
 		this.service = DEFAULT_SERVICE;
 		this.query = DEFAULT_QUERY;
-		this.name = DEFAULT_NAME;
 		this.timeout = 30000;
-		this.isActivated = true;
-		this.icon = "aui-iconfont-download";
 		this.constraints = "";
 	}
 
 	/**
-	 * @param projectKey
-	 *            of the Jira project.
 	 * @param service,
 	 *            Uniform Resource Identifier (URI) to RDF graph, e.g.,
 	 *            http://dbpedia.org/sparql
@@ -61,12 +57,10 @@ public class RDFSource extends KnowledgeSource {
 	 *            in milliseconds.
 	 */
 	public RDFSource(String name, String service, String query, int timeout, String constraint) {
+		super(name, true);
 		this.service = service;
 		this.query = query;
-		this.name = name;
 		this.timeout = timeout;
-		this.isActivated = true;
-		this.icon = "aui-iconfont-download";
 		this.constraints = constraint;
 	}
 

@@ -61,8 +61,13 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 */
 	private KnowledgeElement target;
 
+	/**
+	 * Instantiate a new object without arguments, with the {@link ElementRecommendation#status} recommended and the
+	 * {@link ElementRecommendation#type} alternative.
+	 */
 	@JsonCreator
 	public ElementRecommendation() {
+		super();
 		this.arguments = new ArrayList<>();
 		this.status = KnowledgeStatus.RECOMMENDED;
 		this.type = KnowledgeType.ALTERNATIVE;
@@ -119,6 +124,25 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 */
 	public ElementRecommendation(String summary, KnowledgeElement target) {
 		this(summary, target, new RDFSource(), target.getProject());
+	}
+
+	/**
+	 * @param summary Textual summary of the recommendation.
+	 * @param knowledgeSource Source of the recommendation.
+	 * @param url URL to the recommendation at its source.
+	 */
+	public ElementRecommendation(String summary, KnowledgeSource knowledgeSource, String url) {
+		this(summary, new KnowledgeElement(), knowledgeSource, new DecisionKnowledgeProject(""), url);
+	}
+
+	/**
+	 * @param knowledgeElement Element form another Jira Project on which the recommendation is based.
+	 */
+	public ElementRecommendation(KnowledgeElement knowledgeElement) {
+		this(knowledgeElement.getSummary(), new KnowledgeElement(),
+				new ProjectSource(knowledgeElement.getProject().getProjectKey()),
+				knowledgeElement.getProject(),
+				knowledgeElement.getUrl());
 	}
 
 	/**
@@ -245,20 +269,20 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 
 	/**
 	 * @param object object to be compared to this instance.
-	 * @return true, if object is from the same class, has a {@link ElementRecommendation#knowledgeSource} with the same {@link KnowledgeSource#name}
-	 * 	       and the same {@link ElementRecommendation#getSummary()}.
+	 * @return true, if object is from the same class, has a {@link ElementRecommendation#knowledgeSource} with the
+	 *         same {@link KnowledgeSource#name} and the same {@link ElementRecommendation#getSummary()}.
 	 */
 	@Override
 	public boolean equals(Object object) {
+		boolean equality = false;
 		if (this == object) {
-			return true;
+			equality = true;
+		} else if (object != null && getClass() == object.getClass()) {
+			ElementRecommendation otherRecommendation = (ElementRecommendation) object;
+			equality = this.knowledgeSource.getName().equals(otherRecommendation.knowledgeSource.getName()) &&
+					this.getSummary().equals(otherRecommendation.getSummary());
 		}
-		if (object == null || getClass() != object.getClass()) {
-			return false;
-		}
-		ElementRecommendation otherRecommendation = (ElementRecommendation) object;
-		return this.knowledgeSource.getName().equals(otherRecommendation.knowledgeSource.getName())
-				&& this.getSummary().equals(otherRecommendation.getSummary());
+		return equality;
 	}
 
 	@Override

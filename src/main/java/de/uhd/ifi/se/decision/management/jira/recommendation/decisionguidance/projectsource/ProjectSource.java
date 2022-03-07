@@ -14,8 +14,13 @@ public class ProjectSource extends KnowledgeSource {
 
 	protected String projectKey;
 
-	private ProjectSource() {
-		this.icon = "aui-iconfont-jira";
+	/**
+	 * @param jiraProject
+	 *            other Jira project.
+	 */
+	public ProjectSource(Project jiraProject) {
+		super(jiraProject.getName(), true);
+		this.projectKey = jiraProject.getKey();
 	}
 
 	/**
@@ -23,8 +28,7 @@ public class ProjectSource extends KnowledgeSource {
 	 *            key of the other Jira project.
 	 */
 	public ProjectSource(String projectKey) {
-		this();
-		this.projectKey = projectKey;
+		this(new DecisionKnowledgeProject(projectKey).getJiraProject());
 	}
 
 	/**
@@ -35,16 +39,7 @@ public class ProjectSource extends KnowledgeSource {
 	 */
 	public ProjectSource(String projectKey, boolean isActivated) {
 		this(projectKey);
-		this.isActivated = isActivated;
-	}
-
-	/**
-	 * @param jiraProject
-	 *            other Jira project.
-	 */
-	public ProjectSource(Project jiraProject) {
-		this();
-		this.projectKey = jiraProject.getKey();
+		this.activated = isActivated;
 	}
 
 	/**
@@ -68,5 +63,10 @@ public class ProjectSource extends KnowledgeSource {
 	@XmlElement
 	public String getName() {
 		return getJiraProject().getName();
+	}
+
+	@Override
+	public String getIcon() {
+		return "aui-iconfont-jira";
 	}
 }

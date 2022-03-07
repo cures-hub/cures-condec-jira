@@ -5,24 +5,35 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
   <description>
-    Bundle of different important categories (see below)
+    Bundle of different important categories (see below) with settings according to best practises in the cures-condec-jira project
   </description>
-    <rule ref="category/java/bestpractices.xml"/>
-    <rule ref="rulesets/java/quickstart.xml"/>
+    <rule ref="category/java/bestpractices.xml">
+    </rule>
+    <rule ref="rulesets/java/quickstart.xml">
+        <exclude name="UseUtilityClass" />
+    </rule>
     <rule ref="category/java/documentation.xml"/>
     <rule ref="category/java/design.xml">
         <exclude name="LawOfDemeter" />
+        <exclude name="UseUtilityClass" />
+        <exclude name="DataClass" />
     </rule>
     <rule ref="category/java/errorprone.xml"/>
     <rule ref="category/java/multithreading.xml"/>
-    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/performance.xml">
+        <exclude name="RedundantFieldInitializer" />
+    </rule>
     <rule ref="category/java/security.xml"/>
     <rule ref="category/java/codestyle.xml">
+        <exclude name="MethodArgumentCouldBeFinal" />
+        <exclude name="LocalVariableCouldBeFinal" />
         <exclude name="LongVariable" />
+        <exclude name="ShortVariable" />
     </rule>
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>
             <property name="maxLines" value="10" />
+            <property name="maxLineLength" value="120" />
         </properties>
     </rule>
 </ruleset>
