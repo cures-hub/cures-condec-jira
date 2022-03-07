@@ -61,7 +61,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	/**
 	 * @param queryString
 	 *            in SPARQL language (SPARQL Protocol And RDF Query Language).
-	 * @return
+	 * @return {@link ResultSet} for the query.
 	 */
 	protected ResultSet queryDatabase(String queryString) {
 		try {
