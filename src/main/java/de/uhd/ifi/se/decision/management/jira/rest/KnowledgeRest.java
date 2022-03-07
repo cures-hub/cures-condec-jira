@@ -320,9 +320,9 @@ public class KnowledgeRest {
 		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 	}
 
-	@Path("/deleteLink")
+	@Path("/link/{projectKey}")
 	@DELETE
-	public Response deleteLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response deleteLink(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			Link link) {
 		if (projectKey == null || request == null || link == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
