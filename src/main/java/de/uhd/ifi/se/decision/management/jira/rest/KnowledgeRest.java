@@ -286,6 +286,7 @@ public class KnowledgeRest {
 	 *            {@link LinkType#name()}.
 	 * @return ok if the new {@link Link} was successfully created, saved in
 	 *         database, and added to the {@link KnowledgeGraph}.
+	 * 
 	 * @see KnowledgePersistenceManager#insertLink(Link, ApplicationUser)
 	 */
 	@Path("/link/{projectKey}")
@@ -339,7 +340,7 @@ public class KnowledgeRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
-		LOGGER.info("Link " + link + " was created.");
+		LOGGER.info("Link " + link + " was created in project " + projectKey);
 		return Response.ok(ImmutableMap.of("id", linkId)).build();
 	}
 
@@ -374,7 +375,7 @@ public class KnowledgeRest {
 		boolean isDeleted = persistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
-			LOGGER.info("Link " + link + " was deleted.");
+			LOGGER.info("Link " + link + " was deleted in project " + projectKey);
 			// Create new link of type "wrong" if deleted link involved code file
 			if (link.getBothElements().stream()
 					.anyMatch(element -> element.getDocumentationLocation() == DocumentationLocation.CODE)) {
