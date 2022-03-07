@@ -344,6 +344,9 @@ public class KnowledgeRest {
 	}
 
 	/**
+	 * Deletes a {@link Link} in database and in the {@link KnowledgeGraph}. If the
+	 * deleted link involved a code file, a new link of type "wrong" is created.
+	 * 
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
@@ -352,8 +355,8 @@ public class KnowledgeRest {
 	 *            the same project.
 	 * @param link
 	 *            {@link Link} to be deleted.
-	 * @return ok if the {@link Link} was successfully deleted in database and in
-	 *         the {@link KnowledgeGraph}.
+	 * @return ok if the {@link Link} was successfully deleted.
+	 * 
 	 * @see KnowledgePersistenceManager#deleteLink(de.uhd.ifi.se.decision.management.jira.model.Link,
 	 *      ApplicationUser)
 	 */
@@ -368,10 +371,6 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
-
-		// to fill knowledge types
-		link.setSourceElement(persistenceManager.getKnowledgeElement(link.getSource()));
-		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
 		boolean isDeleted = persistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
