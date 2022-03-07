@@ -8,7 +8,7 @@ In particular, the feature should support developers in
 3. general knowledge sharing and **knowledge exploitation**, since the link recommendation confronts the developers with related documented knowledge, which is not linked in the knowledge graph.
 
 ## Link Recommendations Within the Knowledge Graph Views
-Developers can see the link recommendations directly in the [knowledge graph views].
+Developers see the link recommendations directly in the [knowledge graph views].
 The respective nodes are highlighted and there is a dedicated *recommended* link type.
 Developers can use the filter possibilities in [knowledge graph views] to inspect the context of the recommended elements.
 Besides, the recommended elements can be included in [change impact analysis].
@@ -17,9 +17,9 @@ Besides, the recommended elements can be included in [change impact analysis].
 
 *Node-link diagram with link recommendations colored in blue and particular link type*
 
-Besides, ConDec offers a dedicated view for link recommendation and duplicate recognition which developers can access as follows:
-1. Developers can access the view from every Jira issue, i.e. it is included in the Jira issue view.
-2. Developers can access the view from the knowledge view for the project.
+ConDec offers a dedicated view for link recommendation and duplicate detection which developers can access as follows:
+1. Developers can access the link recommendation view from every Jira issue, i.e. it is included in the Jira issue view.
+2. Developers can access the link recommendation view from ConDec's knowledge view for the project.
 
 ![Link recommendation view as part of ConDec's knowledge view showing link recommendations and a potential duplicate for a decision problem](../screenshots/link_recommendation_view.png)
 
@@ -155,17 +155,10 @@ The knowledge was exported via [ConDec's knowledge export feature](knowledge-exp
 system function *SF: Recommend related knowledge elements (elements to be linked and duplicates)*.
 
 - SF: Recommend related knowledge elements (elements to be linked and duplicates) ([CONDEC-715](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-715))
-	- ![Issue](../../src/main/resources/images/issue.png) How do we support duplicate recognition within the knowledge documentation?
-		- ![Decision](../../src/main/resources/images/decision.png) ConDec suggests related knowledge elements to the user as part of the link recommendation feature!
-		- ![Decision](../../src/main/resources/images/decision.png) We remove the dedicated duplicate recognition functionality!
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Simplifies the plug-in
-			- ![Pro](../../src/main/resources/images/argument_pro.png) The link recommendation can also return potential duplicates
-	- ![Issue](../../src/main/resources/images/issue.png) How can we determine whether two elements are potential duplicates?
-		- ![Decision](../../src/main/resources/images/decision.png) We mark a recommendation as a potential duplicate if two elements have a very high textual similarity!
-	- ![Issue](../../src/main/resources/images/issue.png) How should we deal with discarded recommendations?
-		- ![Decision](../..//src/main/resources/images/decision.png) Enable to undo discarded recommendation!
-		- ![Decision](../../src/main/resources/images/decision.png) Add ambient feedback to link recommendation menu item, only use non-discarded recommendations to decide ambient feedback color!
-		- ![Decision](../../src/main/resources/images/decision.png) Include discarded recommendations in score calculation!
+	- ![Issue](../../src/main/resources/images/issue.png) Which elements should be suggested by the link recommendation feature?
+		- ![Alternative](../../src/main/resources/images/alternative.png) The link recommendation feature could only suggest decision knowledge elements, in particular decisions and decision problems.
+		- ![Decision](../../src/main/resources/images/decision.png) The link recommendation feature suggests any kind of knowledge elements (e.g. requirements, code files, decision knowledge, ...)!
+			- ![Con](../../src/main/resources/images/argument_con.png) It is not efficient for large projects to iterate over all knowledge elements to generate link recommendations.
 	- ![Code](../../src/main/resources/images/code.png) TimeContextInformationProvider.java
 		- ![Issue](../../src/main/resources/images/issue.png) Which time interval should be used to decide whether two knowledge elements are timely coupled?
 			- ![Decision](../../src/main/resources/images/decision.png) We assume that two elements are timely coupled if they were both modified within a time interval of 1 day!
@@ -184,7 +177,14 @@ system function *SF: Recommend related knowledge elements (elements to be linked
 	- ![Code](../../src/main/resources/images/code.png) LinkRecommendationRest.java
 		- ![Issue](../../src/main/resources/images/issue.png) How can we make sure that a new number of link recommendation rules in the backend is available to the users?
 			- ![Decision](../../src/main/resources/images/decision.png) We store all link recommendation rules if the number stored in the settings is different to them to fix inconsistency between stored config and new code!
-	- ![Issue](../../src/main/resources/images/issue.png) Which elements should be suggested by the link recommendation feature?
-		- ![Alternative](../../src/main/resources/images/alternative.png) The link recommendation feature could only suggest decision knowledge elements, in particular decisions and decision problems.
-		- ![Decision](../../src/main/resources/images/decision.png) The link recommendation feature suggests any kind of knowledge elements (e.g. requirements, code files, decision knowledge, ...)!
-			- ![Con](../../src/main/resources/images/argument_con.png) It is not efficient for large projects to iterate over all knowledge elements to generate link recommendations.
+	- ![Issue](../../src/main/resources/images/issue.png) How do we support duplicate recognition within the knowledge documentation?
+		- ![Decision](../../src/main/resources/images/decision.png) ConDec suggests related knowledge elements to the user as part of the link recommendation feature!
+		- ![Decision](../../src/main/resources/images/decision.png) We remove the dedicated duplicate recognition functionality!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Simplifies the plug-in
+			- ![Pro](../../src/main/resources/images/argument_pro.png) The link recommendation can also return potential duplicates
+	- ![Issue](../../src/main/resources/images/issue.png) How can we determine whether two elements are potential duplicates?
+		- ![Decision](../../src/main/resources/images/decision.png) We mark a recommendation as a potential duplicate if two elements have a very high textual similarity!
+	- ![Issue](../../src/main/resources/images/issue.png) How should we deal with discarded recommendations?
+		- ![Decision](../..//src/main/resources/images/decision.png) Enable to undo discarded recommendation!
+		- ![Decision](../../src/main/resources/images/decision.png) Add ambient feedback to link recommendation menu item, only use non-discarded recommendations to decide ambient feedback color!
+		- ![Decision](../../src/main/resources/images/decision.png) Include discarded recommendations in score calculation!
