@@ -265,9 +265,9 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 	}
 
-	@Path("/createLink")
+	@Path("/link/{projectKey}")
 	@POST
-	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response createLink(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
 			@QueryParam("idOfParent") long idOfParent,
 			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
 			@QueryParam("idOfChild") long idOfChild,
@@ -305,6 +305,10 @@ public class KnowledgeRest {
 			link = Link.instantiateDirectedLink(parentElement, childElement);
 		} else {
 			LinkType linkType = LinkType.getLinkType(linkTypeName);
+			if (linkType == LinkType.RECOMMENDED) {
+				linkType = LinkType.getLinkTypeForKnowledgeType(childElement.getType());
+				LOGGER.info("Link recommendation was accepted between: " + parentElement + " and " + childElement);
+			}
 			link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 		}
 		long linkId = persistenceManager.insertLink(link, user);
@@ -332,7 +336,8 @@ public class KnowledgeRest {
 		link.setSourceElement(persistenceManager.getKnowledgeElement(link.getSource()));
 		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
 		LinkType linktype = LinkType.getDefaultLinkType();
-		if (link.getSource() != null && link.getTarget() != null && link.getSource().getLink(link.getTarget()) != null) {
+		if (link.getSource() != null && link.getTarget() != null
+				&& link.getSource().getLink(link.getTarget()) != null) {
 			linktype = link.getSource().getLink(link.getTarget()).getType();
 		}
 
@@ -341,10 +346,10 @@ public class KnowledgeRest {
 		if (isDeleted) {
 			LOGGER.info("Link " + link + " was deleted.");
 			// Create new link to power wrong_link feature for code files
-			if ((link.getSource().getDocumentationLocation() == DocumentationLocation.CODE 
-				|| link.getTarget().getDocumentationLocation() == DocumentationLocation.CODE)
-				&& linktype != LinkType.WRONG_LINK) {
-					createLink(request, projectKey, link.getSource().getId(),
+			if ((link.getSource().getDocumentationLocation() == DocumentationLocation.CODE
+					|| link.getTarget().getDocumentationLocation() == DocumentationLocation.CODE)
+					&& linktype != LinkType.WRONG_LINK) {
+				createLink(request, projectKey, link.getSource().getId(),
 						link.getSource().getDocumentationLocation().getIdentifier(), link.getTarget().getId(),
 						link.getTarget().getDocumentationLocation().getIdentifier(), LinkType.WRONG_LINK.getName());
 			}

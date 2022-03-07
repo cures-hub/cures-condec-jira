@@ -37,7 +37,7 @@ The context information is calculated from the following **context information p
 3. Recommend elements that have the **same author** as the source element
 4. Recommend elements that are **decision problems**
 5. Recommend elements that are **solution options**
-6. Recommend elements that are assigned to the **same decision group** as the source element
+6. Recommend elements that are assigned to the **same [decision group](decision-grouping.md)** as the source element
 7. Recommend elements that are assigned to the **same component** as the source element
 8. Recommend elements that can be **traced** to the source element (but are not directly linked)
 9. Recommend elements that are the same knowledge type as the source element
