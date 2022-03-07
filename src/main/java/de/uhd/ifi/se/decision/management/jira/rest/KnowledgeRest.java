@@ -265,6 +265,29 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project. Both, link source and target need to be within
+	 *            the same project.
+	 * @param idOfParent
+	 *            id of the source/parent {@link KnowledgeElement}.
+	 * @param documentationLocationOfParent
+	 *            {@link DocumentationLocation} of the source/parent
+	 *            {@link KnowledgeElement}.
+	 * @param idOfChild
+	 *            id of the target/child {@link KnowledgeElement}.
+	 * @param documentationLocationOfChild
+	 *            {@link DocumentationLocation} of the target/child
+	 *            {@link KnowledgeElement}.
+	 * @param linkTypeName
+	 *            {@link LinkType#name()}.
+	 * @return ok if the new {@link Link} was successfully created, saved in
+	 *         database, and added to the {@link KnowledgeGraph}.
+	 * @see KnowledgePersistenceManager#insertLink(Link, ApplicationUser)
+	 */
 	@Path("/link/{projectKey}")
 	@POST
 	public Response createLink(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
@@ -317,9 +340,23 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
 		LOGGER.info("Link " + link + " was created.");
-		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+		return Response.ok(ImmutableMap.of("id", linkId)).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project. Both, link source and target need to be within
+	 *            the same project.
+	 * @param link
+	 *            {@link Link} to be deleted.
+	 * @return ok if the {@link Link} was successfully deleted in database and in
+	 *         the {@link KnowledgeGraph}.
+	 * @see KnowledgePersistenceManager#deleteLink(de.uhd.ifi.se.decision.management.jira.model.Link,
+	 *      ApplicationUser)
+	 */
 	@Path("/link/{projectKey}")
 	@DELETE
 	public Response deleteLink(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
