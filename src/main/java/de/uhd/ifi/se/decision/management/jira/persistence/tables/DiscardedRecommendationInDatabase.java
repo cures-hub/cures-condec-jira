@@ -70,13 +70,14 @@ public interface DiscardedRecommendationInDatabase extends RawEntity<Long> {
 	void setProjectKey(String key);
 
 	/**
-	 * @return {@link DocumentationLocation} of the {@link KnowledgeElement} for which the discarded {@link Recommendation} had been suggested.
+	 * @return {@link DocumentationLocation} of the {@link KnowledgeElement} for which the discarded
+	 *         {@link Recommendation} had been suggested.
 	 */
 	String getOriginDocumentationLocation();
 
 	/**
-	 * @param locationIdentifier {@link DocumentationLocation} of the {@link KnowledgeElement} for which the discarded {@link Recommendation}
-	 *                           had been suggested.
+	 * @param locationIdentifier {@link DocumentationLocation} of the {@link KnowledgeElement} for which the discarded
+	 *                           {@link Recommendation} had been suggested.
 	 */
 	void setOriginDocumentationLocation(String locationIdentifier);
 
@@ -119,11 +120,13 @@ public interface DiscardedRecommendationInDatabase extends RawEntity<Long> {
 	 * @return true if deletion was successful, false otherwise.
 	 */
 	static boolean deleteDiscardedRecommendation(DiscardedRecommendationInDatabase discardedRecommendationToDelete) {
+		boolean deletionSuccessful;
 		try {
 			discardedRecommendationToDelete.getEntityManager().delete(discardedRecommendationToDelete);
-			return true;
+			deletionSuccessful = true;
 		} catch (SQLException e) {
-			return false;
+			deletionSuccessful = false;
 		}
+		return deletionSuccessful;
 	}
 }

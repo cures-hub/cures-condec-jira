@@ -23,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.El
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
 
 /**
- * Queries an {@link RDFSource} (e.g. DBPedia) to generate
+ * Queries an {@link RDFSource} (e.g. DBpedia) to generate
  * {@link ElementRecommendation}s.
  */
 public class RDFSourceRecommender extends Recommender<RDFSource> {
@@ -85,8 +85,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		if (inputs.contains("get_dummy_decision_guidance_recommendations")) {
 			List<ElementRecommendation> recommendations = new ArrayList<>();
 			for (int i = 0; i < 10; i++) {
-				recommendations.add(new ElementRecommendation(knowledgeSource, "Dummy recommendation No. " +
-					String.valueOf(i), "wikipedia.org"));
+				recommendations.add(new ElementRecommendation("Dummy recommendation No. " +
+					String.valueOf(i), knowledgeSource, "wikipedia.org"));
 			}
 			return recommendations;
 		}
@@ -109,7 +109,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 
 				String label = this.getLabel(row.get("?subject").toString());
 
-				ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, label,
+				ElementRecommendation recommendation = new ElementRecommendation(label, knowledgeSource,
 						row.get("?url").toString());
 
 				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
