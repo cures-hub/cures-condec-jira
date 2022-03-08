@@ -26,7 +26,14 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  */
 public abstract class Recommender<T extends KnowledgeSource> {
 
+	/**
+	 * Key of the {@link DecisionKnowledgeProject} in which recommendations are given.
+	 */
 	protected String projectKey;
+
+	/**
+	 * Source of the recommendations, e.g. an {@link RDFSource} based on DBpedia.
+	 */
 	protected T knowledgeSource;
 
 	/**
@@ -50,10 +57,13 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 *         {@link ProjectSourceRecommender}.
 	 */
 	public static Recommender<?> getRecommenderForKnowledgeSource(String projectKey, KnowledgeSource knowledgeSource) {
+		Recommender<?> recommenderForKnowledgeSource;
 		if (knowledgeSource instanceof ProjectSource) {
-			return new ProjectSourceRecommender(projectKey, (ProjectSource) knowledgeSource);
+			recommenderForKnowledgeSource = new ProjectSourceRecommender(projectKey, (ProjectSource) knowledgeSource);
+		} else {
+			recommenderForKnowledgeSource = new RDFSourceRecommender(projectKey, (RDFSource) knowledgeSource);
 		}
-		return new RDFSourceRecommender(projectKey, (RDFSource) knowledgeSource);
+		return recommenderForKnowledgeSource;
 	}
 
 	/**
@@ -64,14 +74,23 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 */
 	public abstract List<ElementRecommendation> getRecommendations(String keywords);
 
+	/**
+	 * Get recommendations based on the textual summaries of linked solution options to the
+	 * given decision problem.
+	 *
+	 * @param decisionProblem
+	 *            Decision problem with linked solution options, based on which new
+	 *            recommendations should be given.
+	 * @return Recommendations based on solution options that are already linked to the given
+	 *         decision problem.
+	 */
 	public List<ElementRecommendation> getRecommendations(KnowledgeElement decisionProblem) {
-		if (decisionProblem == null) {
-			return new ArrayList<>();
-		}
 		List<ElementRecommendation> recommendations = new ArrayList<>();
-		for (KnowledgeElement linkedElement : decisionProblem.getLinkedSolutionOptions()) {
-			List<ElementRecommendation> recommendationFromAlternative = getRecommendations(linkedElement.getSummary());
-			recommendations.addAll(recommendationFromAlternative);
+		if (decisionProblem != null) {
+			for (KnowledgeElement linkedElement : decisionProblem.getLinkedSolutionOptions()) {
+				List<ElementRecommendation> recommendationFromAlternative = getRecommendations(linkedElement.getSummary());
+				recommendations.addAll(recommendationFromAlternative);
+			}
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
@@ -81,18 +100,10 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 * @param decisionProblem
 	 * @return list of {@link ElementRecommendation}s matching the keywords.
 	 */
-	// TODO: Can it be ElementRecommendation as the documentation says? (Try out replacing Recommendation (as it has previously been) with
-	//  ElementRecommendation in this commit)
 	public List<ElementRecommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
-		System.out.print("Getting Recommendations for decision problem: ");
-		System.out.println(decisionProblem.getSummary());
-		System.out.print("decisionProblem.getProject(): ");
-		System.out.println(decisionProblem.getProject());
 		List<ElementRecommendation> recommendations = new ArrayList<>(getRecommendations(decisionProblem));
 		List<ElementRecommendation> discardedRecommendations =
 				new ArrayList<>(DiscardedRecommendationPersistenceManager.getDiscardedDecisionGuidanceRecommendations(decisionProblem));
-		System.out.print("Got following discarded Recommendations:");
-		System.out.println(discardedRecommendations);
 
 		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
 			recommendations.addAll(getRecommendations(keywords));
@@ -105,13 +116,15 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	}
 
 	/**
-	 * For a list of new recommendations update the attribute isDiscarded for those previously discarded and add previously
+	 * For a list of new recommendations update the attribute discarded for those previously discarded and add previously
 	 * discarded ones that are not in the list of new recommendations.
 	 *
-	 * @param newRecommendations Newly given recommendations for a decision problem to be compared with the previously discarded ones.
-	 * @param discardedRecommendations Previously discarded recommendations for the same decision problem as newRecommendations.
-	 * @return list of {@link ElementRecommendation}s matching the containing all previously discarded ones, all with the correct attribute value
-	 *         'isDiscarded'.
+	 * @param newRecommendations Newly given recommendations for a decision problem to be compared with the
+	 *                           previously discarded ones.
+	 * @param discardedRecommendations Previously discarded recommendations for the same decision problem as
+	 *                                 new Recommendations.
+	 * @return list of {@link ElementRecommendation}s matching the containing all previously discarded ones, all with
+	 *         the correct attribute value for {@link ElementRecommendation#isDiscarded()}
 	 */
 	public List<ElementRecommendation> getRecommendationsWithDiscardedStatus(List<ElementRecommendation> newRecommendations,
 																			 List<ElementRecommendation> discardedRecommendations) {
@@ -122,22 +135,25 @@ public abstract class Recommender<T extends KnowledgeSource> {
 				if (newRecommendation.getSummary().equals(discardedRecommendation.getSummary())) {
 					isNewlyGiven = true;
 					newRecommendation.setDiscarded(true);
-					System.out.print("Updated Discarded for : ");
-					System.out.println(newRecommendations);
 				}
 			}
 			if (!isNewlyGiven) {
-				System.out.print("add to discardedButNotInNewRecommendations: ");
-				System.out.println(discardedRecommendation);
 				discardedButNotInNewRecommendations.add(discardedRecommendation);
 			}
 		}
 		newRecommendations.addAll(discardedButNotInNewRecommendations);
-		System.out.print("newRecommendations: ");
-		System.out.println(newRecommendations);
 		return newRecommendations;
 	}
 
+	/**
+	 * Get all available recommendations for the given decision problem and optional keywords based on the config
+	 * ({@link ConfigPersistenceManager#getDecisionGuidanceConfiguration(String)}.
+	 *
+	 * @param projectKey Key of the project in which the recommendations are given.
+	 * @param decisionProblem Issue to which the recommendations are given.
+	 * @param keywords Optional input to further specify the decision problem for better recommendations.
+	 * @return Available recommendations (from all {@link KnowledgeSource}s activated in the config)
+	 */
 	public static List<Recommendation> getAllRecommendations(String projectKey, KnowledgeElement decisionProblem,
 			String keywords) {
 		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
@@ -145,6 +161,16 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		return getAllRecommendations(projectKey, knowledgeSources, decisionProblem, keywords);
 	}
 
+	/**
+	 * Get all available recommendations for the given decision problem and optional keywords from the given knowledge
+	 * sources.
+	 *
+	 * @param projectKey Key of the project in which the recommendations are given.
+	 * @param knowledgeSources Sources from which recommendations are requested.
+	 * @param decisionProblem Issue to which the recommendations are given.
+	 * @param keywords Optional input to further specify the decision problem for better recommendations.
+	 * @return Recommendations from all given knowledge sources.
+	 */
 	public static List<Recommendation> getAllRecommendations(String projectKey, List<KnowledgeSource> knowledgeSources,
 			KnowledgeElement decisionProblem, String keywords) {
 		List<Recommendation> recommendations = new ArrayList<>();
@@ -156,18 +182,15 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	}
 
 	/**
-	 * Adds all recommendations to the knowledge graph with the status
-	 * "recommended". The recommendations will be appended to the decision problem
-	 * and written into a Jira issue description or a comment.
+	 * Adds all recommendations to the knowledge graph with the status "recommended". The recommendations will be
+	 * appended to the decision problem and written into a Jira issue description or a comment.
 	 *
 	 * @param decisionProblem
-	 *            to which the recommended solution options should be linked in the
-	 *            {@link KnowledgeGraph}.
+	 *            to which the recommended solution options should be linked in the {@link KnowledgeGraph}.
 	 * @param user
 	 *            authenticated Jira {@link ApplicationUser}.
 	 * @param recommendations
-	 *            list of recommended solution options
-	 *            ({@link ElementRecommendation}s) and recommended arguments that
+	 *            list of recommended solution options ({@link ElementRecommendation}s) and recommended arguments that
 	 *            should be linked in the {@link KnowledgeGraph}.
 	 */
 	public static void addToKnowledgeGraph(KnowledgeElement decisionProblem, ApplicationUser user,
@@ -209,5 +232,19 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 */
 	public void setKnowledgeSource(T knowledgeSource) {
 		this.knowledgeSource = knowledgeSource;
+	}
+
+	/**
+	 * @return {@link Recommender#projectKey}
+	 */
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	/**
+	 * @param projectKey {@link Recommender#projectKey}
+	 */
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
 	}
 }
