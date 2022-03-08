@@ -283,7 +283,7 @@
 			if (typeof param.seriesIndex != 'undefined' && param.data.list) {
 				var dialogContent = conDecDashboard.initDialog(viewIdentifier);
 				for (element of param.data.list) {
-					var link = createLinkToElement(element);
+					var link = conDecAPI.createLinkToElement(element);
 					dialogContent.appendChild(link);
 				}
 			}
@@ -298,19 +298,12 @@
 		return dialogContent;
 	};
 
-	function createLinkToElement(element) {
-		var link = document.createElement("a");
-		link.classList = "navigationLink";
-		link.innerText = element.type + ": " + element.summary;
-		link.title = element.key;
-		link.href = decodeURIComponent(element.url);
-		link.target = "_blank";
-		return link;
-	}
-
 	ConDecDashboard.prototype.createPieChartWithList = function(dataMap, divId, title, colorPalette) {
 		var data = [];
 		for (const [category, list] of dataMap.entries()) {
+			if (!list) {
+				continue;
+			}
 			entry = { "name": category, "value": list.length, "list": list }
 			data.push(entry);
 		}
@@ -344,7 +337,7 @@
 					return;
 				}
 				for (element of elementsForValue) {
-					var link = createLinkToElement(element);
+					var link = conDecAPI.createLinkToElement(element);
 					dialogContent.appendChild(link);
 				}
 			}

@@ -14,15 +14,19 @@
 				</select>
 			</div>  
 			<div class="field-group">
-				<label for="assign-form-input-existing">Current Groups:</label>
-				<input id="assign-form-input-existing" type="text" class="text full-width-field" value="">
+				<label for="assign-form-input-existing">Choose Existing Group(s):</label>
+				<select id="select2-decision-group-dialog" multiple placeholder="Select a Group..." 
+					class="select full-width-field">
+				</select>
 			</div>
 			<div class="field-group">
-				<label for="assign-form-input-add">Add Group:</label>
+				<label for="assign-form-input-add">Add New Group(s):</label>
 				<input id="assign-form-input-add" class="text full-width-field" value="">
 			</div>   
 			<div class="field-group">
-			<div class="description"> Example: Property, Existence or Executive Decision <br/> (Separate Groups with a Comma to add Multiple) </div>  			
+			<div class="description">
+				Example: UI, Process, Testing, Property, Existence, or Executive Decision <br/>
+				(Separate new decision groups with a comma to add multiple groups) </div>  			
 			</div> 
 		</form>
     </div>

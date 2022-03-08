@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
@@ -62,13 +61,13 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	/**
 	 * @param queryString
 	 *            in SPARQL language (SPARQL Protocol And RDF Query Language).
-	 * @return
+	 * @return {@link ResultSet} for the query.
 	 */
 	protected ResultSet queryDatabase(String queryString) {
 		try {
 			Query query = QueryFactory.create(queryString);
-			QueryExecution queryExecution = QueryExecutionFactory.sparqlService(knowledgeSource.getService(), query);
-			((QueryEngineHTTP) queryExecution).addParam("timeout", knowledgeSource.getTimeout() + "");
+			QueryExecution queryExecution = QueryExecution.service(knowledgeSource.getService()).query(query)
+					.timeout(knowledgeSource.getTimeout(), TimeUnit.MILLISECONDS).build();
 
 			ResultSet resultSet = queryExecution.execSelect();
 			return resultSet;

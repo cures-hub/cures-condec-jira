@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * 
  * @see ChangePropagationRule
  * @see StopAtSameElementType
- * @see IgnoreIncomingLinks
+ * @see BoostWhenLinkTarget
  * @see BoostWhenTextualSimilar
  */
 public interface ChangePropagationFunction {

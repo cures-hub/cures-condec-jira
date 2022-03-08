@@ -66,12 +66,14 @@ public class ContextInformation extends ContextInformationProvider {
 			}
 			RecommendationScore subScore = contextInformationProvider.assessRelation(baseElement, otherElement);
 			float weightValue = contextInformationProvider.getWeightValue();
+			subScore.weightValue(weightValue); // multiplies rule value with weight value
 
 			if (weightValue < 0) {
+				// reverse rule for negative weights
 				subScore.setExplanation("Do not " + subScore.getExplanation().toLowerCase());
+				subScore.setValue(subScore.getValue() - weightValue);
 			}
 
-			subScore.weightValue(weightValue); // multiplies rule value with weight value
 			score.addSubScore(subScore);
 		}
 		float maxAchievableScore = determineMaxAchievableScore();
@@ -93,15 +95,13 @@ public class ContextInformation extends ContextInformationProvider {
 			}
 			if (contextInformationProvider instanceof SolutionOptionContextInformationProvider
 					|| contextInformationProvider instanceof DecisionProblemContextInformationProvider) {
+				// an element can either be a decision problem or a solution option, not both
 				if (isKnowledgeTypeProviderIncluded) {
 					continue;
 				}
 				isKnowledgeTypeProviderIncluded = true;
 			}
-			if (contextInformationProvider.getWeightValue() > 0) {
-				// only positive weights are calculated because rule values are between [0, 1].
-				maxAchievableScore += contextInformationProvider.getWeightValue();
-			}
+			maxAchievableScore += Math.abs(contextInformationProvider.getWeightValue());
 		}
 		return maxAchievableScore;
 	}

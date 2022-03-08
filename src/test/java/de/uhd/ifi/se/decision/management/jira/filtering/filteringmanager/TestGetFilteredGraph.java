@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
 import org.jgrapht.Graph;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +30,9 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformation;
+import de.uhd.ifi.se.decision.management.jira.rest.LinkRecommendationRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
+import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
 public class TestGetFilteredGraph extends TestSetUp {
 
@@ -134,6 +141,7 @@ public class TestGetFilteredGraph extends TestSetUp {
 		filterSettings.recommendLinks(true);
 		filterSettings.getChangeImpactAnalysisConfig().setAreLinkRecommendationsIncludedInCalculation(true);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
+
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
 
@@ -141,10 +149,18 @@ public class TestGetFilteredGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testCIAThresholdFilteringWithoutRecommendationsIncluded() {
+	public void testCIAThresholdFilteringWithoutRecommendationsIncludedAndRecommendationsDiscarded() {
 		filterSettings.recommendLinks(true);
 		filterSettings.getChangeImpactAnalysisConfig().setAreLinkRecommendationsIncludedInCalculation(false);
+		filterSettings.getLinkRecommendationConfig().setMinProbability(0.3);
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
+
+		// Discard a few recommendations
+		LinkRecommendationRest linkRecommendationRest = new LinkRecommendationRest();
+		HttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute("user", JiraUsers.SYS_ADMIN.getApplicationUser());
+		linkRecommendationRest.discardRecommendation(request, new LinkRecommendation(filterSettings.getSelectedElement(), KnowledgeElements.getTestKnowledgeElements().get(6)));
+
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements = ChangeImpactAnalysisService.calculateImpactedKnowledgeElements(filterSettings);
 

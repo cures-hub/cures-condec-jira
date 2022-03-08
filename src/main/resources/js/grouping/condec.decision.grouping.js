@@ -6,29 +6,26 @@
 	ConDecDecisionGroups.prototype.initView = function() {
 		console.log("ConDecDecisionGroups initView");
 
-		conDecObservable.subscribe(this);
-		this.buildMatrix();
+		conDecFiltering.fillFilterElements("decision-groups", ["Decision", "Solution"]);
+		conDecFiltering.addOnClickEventToFilterButton("decision-groups", () => conDecDecisionGroups.updateView());
+
+		// conDecObservable.subscribe(this);
+		this.updateView();
 	};
 
 	ConDecDecisionGroups.prototype.buildMatrix = function() {
-		const groups = conDecGroupingAPI.getAllDecisionGroups();
 		const body = document.getElementById("group-table-body");
 		var knowledgeTypesWithoutCode = conDecAPI.getKnowledgeTypes();
 		var index = knowledgeTypesWithoutCode.indexOf("Code");
 		knowledgeTypesWithoutCode.splice(index, 1);
 
-		for (var i = 0; i < groups.length; i++) {
-			var filterSettings = {
-				"knowledgeTypes": knowledgeTypesWithoutCode,
-				"groups": [groups[i]]
-			};
-			conDecAPI.getKnowledgeElements(filterSettings, function(elements, filterSettings) {
-				filterSettings.knowledgeTypes = ["Code"];
-				conDecAPI.getKnowledgeElements(filterSettings, function(codeFiles, filterSettings) {
-					newTableRow(body, filterSettings.groups, elements.length, codeFiles.length);
-				});
-			});
-		}
+		var filterSettings = conDecFiltering.getFilterSettings("decision-groups");
+		filterSettings["projectKey"] = conDecAPI.projectKey;
+		conDecGroupingAPI.getDecisionGroupsMap(filterSettings, function(error, decisionGroupsMap) {
+			for (var [group, elements] of decisionGroupsMap.entries()) {
+				newTableRow(body, group, elements);
+			}
+		});
 	};
 
 	ConDecDecisionGroups.prototype.updateView = function() {
@@ -37,20 +34,30 @@
 		this.buildMatrix();
 	};
 
-	function newTableRow(body, row1, row2, row3) {
+	function newTableRow(body, groupName, elements) {
 		const row = document.createElement("tr");
 		const tableRowElement = document.createElement("td");
-		tableRowElement.innerHTML = row1;
+		tableRowElement.innerHTML = groupName;
 		tableRowElement.addEventListener("contextmenu", function(e) {
 			e.preventDefault();
-			conDecContextMenu.createContextMenu(row1, "groups", e, null);
+			conDecContextMenu.createContextMenu(groupName, "groups", e, null);
 		}, false);
 		row.appendChild(tableRowElement);
+
 		const tableRowElement2 = document.createElement("td");
-		tableRowElement2.innerHTML = row2;
+		tableRowElement2.innerHTML = elements.length;
 		row.appendChild(tableRowElement2);
+
 		const tableRowElement3 = document.createElement("td");
-		tableRowElement3.innerHTML = row3;
+		for (element of elements) {
+			var link = conDecAPI.createLinkToElement(element);
+			link.element = element;
+			link.addEventListener("contextmenu", function(event) {
+				event.preventDefault();
+				conDecContextMenu.createContextMenu(this.element.id, this.element.documentationLocation, event);
+			});
+			tableRowElement3.appendChild(link);
+		}
 		row.appendChild(tableRowElement3);
 		body.appendChild(row);
 	}

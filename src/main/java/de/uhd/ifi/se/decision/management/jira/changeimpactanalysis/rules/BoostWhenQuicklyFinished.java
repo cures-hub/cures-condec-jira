@@ -7,15 +7,16 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Rule that defines that a change impact is stronger propagated if the
- * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} has a low
- * average age.
+ * traversed {@link KnowledgeElement} in the {@link KnowledgeGraph} was
+ * quickly finished.
  */
-public class BoostWhenLowAverageAge implements ChangePropagationFunction {
+public class BoostWhenQuicklyFinished implements ChangePropagationFunction {
 
 	@Override
 	public double isChangePropagated(FilterSettings filterSettings, KnowledgeElement nextElement, Link link) {
 		double differenceInWeeks = (nextElement.getCreationDate().getTime()
 				- nextElement.getLatestUpdatingDate().getTime()) / (1000 * 60 * 60 * 24) / 7;
-		return Math.pow(2, (differenceInWeeks / 8));
+		double propagationRuleResult = 1 + (differenceInWeeks * 0.1);
+		return propagationRuleResult < 0 ? 0.0 : propagationRuleResult;
 	}
 }

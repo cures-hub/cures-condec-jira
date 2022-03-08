@@ -38,8 +38,10 @@
                 </select>
             </div>
             <div class="field-group">
-                <label for="edit-form-input-existing">Decision Groups:</label>
-                <input id="edit-form-input-existing" type="text" class="text full-width-field" value="">
+                <label for="edit-form-select2-decision-group">Decision Groups:</label>
+                <select id="edit-form-select2-decision-group" multiple placeholder="Select a Group..." 
+					class="select full-width-field">
+				</select>
             </div>
         </form>
     </div>

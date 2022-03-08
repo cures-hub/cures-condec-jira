@@ -219,12 +219,12 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer, condec.decision.table
 	 */
 	ConDecAPI.prototype.createLink = function(idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, linkType, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/createLink?projectKey=" + projectKey
-			+ "&idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
+		generalApi.postJSON(this.restPrefix + "/knowledge/link/" + projectKey
+			+ "?idOfParent=" + idOfParent + "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 			+ "&documentationLocationOfChild=" + documentationLocationOfChild + "&linkTypeName=" + linkType, null, function(error, link) {
 				if (error === null) {
 					showFlag("success", "Link has been created.");
@@ -233,7 +233,7 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
 	ConDecAPI.prototype.deleteLink = function(idOfDestinationElement, idOfSourceElement,
@@ -245,13 +245,12 @@
 			"documentationLocationOfDestinationElement": documentationLocationOfDestinationElement,
 			"projectKey": projectKey
 		};
-		generalApi.deleteJSON(this.restPrefix + "/knowledge/deleteLink?projectKey=" + projectKey,
-			link, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been deleted.");
-					callback(link);
-				}
-			});
+		generalApi.deleteJSON(this.restPrefix + "/knowledge/link/" + projectKey, link, function(error, link) {
+			if (error === null) {
+				showFlag("success", "Link has been deleted.");
+				callback(link);
+			}
+		});
 	};
 
 	/**
@@ -280,7 +279,7 @@
 	 * external references: condec.decision.table, condec.decision.guidance, condec.prompts
 	 */
 	ConDecAPI.prototype.getDecisionProblems = function(filterSettings, callback) {
-		var jiraIssueKey = conDecAPI.getIssueKey();
+		var jiraIssueKey = this.getIssueKey();
 		if (filterSettings === null || filterSettings === undefined) {
 			filterSettings = {};
 		}
@@ -518,7 +517,7 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.openJiraIssue = function(elementId, documentationLocation) {
@@ -526,6 +525,19 @@
 		this.getKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
 			newTab.location.href = decisionKnowledgeElement.url;
 		});
+	};
+
+	/**
+	 * external references: condec.dashboard, condec.decision.grouping
+	 */
+	ConDecAPI.prototype.createLinkToElement = function(element) {
+		var link = document.createElement("a");
+		link.classList = "navigationLink";
+		link.innerText = element.type + ": " + element.summary;
+		link.title = element.key;
+		link.href = decodeURIComponent(element.url);
+		link.target = "_blank";
+		return link;
 	};
 
 	function getIssueKey() {
@@ -555,10 +567,8 @@
 		return issueKey;
 	}
 
-	/*
-	 * external references: condec.export,
-	 * condec.gitdiffviewer, condec.quality.check
-	 * relatedIssuesTab.vm
+	/**
+	 * external references: condec.git.api, condec.quality.check, condec.prompts
 	 */
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
@@ -581,7 +591,7 @@
 		return projectKey;
 	}
 
-	/*
+	/**
 	 * external references: condec.quality.check
 	 */
 	ConDecAPI.prototype.getProjectKey = getProjectKey;

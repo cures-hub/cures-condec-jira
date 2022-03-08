@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +56,7 @@ public class TestContextInformation extends TestSetUp {
 				linkRecommendationConfiguration);
 		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
 
-		assertTrue(linkRecommendations.isEmpty());
+		assertFalse(linkRecommendations.isEmpty());
 	}
 
 	@Test

@@ -44,7 +44,14 @@
     <label>Argument (Pro or Con):</label>
     <ul>
         <li>is linked to a solution option (decision or alternative) <input type="checkbox" disabled="disabled" checked="checked"></li>
+        <li>is linked to a criterion (e.g. quality requirement or constraint such as implementation effort) <input type="checkbox" disabled="disabled"></li>
     </ul>
+</div>
+<div class="field-group">
+    <label>Decision Level and Decision Groups:</label>
+    <ul>
+        <li>Decision problems (issues) and solution options (decisions and alternatives) are assigned to a decision level and one or more custom decision groups <input type="checkbox" disabled="disabled" checked="checked"></li>
+	</ul>
 </div>
 <div class="field-group">
     <label>Code File:</label>
