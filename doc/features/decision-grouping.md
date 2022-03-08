@@ -7,7 +7,7 @@ They can also define **custom groups (e.g. UI, process, design, requirements, ar
 Major differences between ConDec's decision grouping and the Jira label mechanism are:
 - Decision knowledge elements (in particular, decision problems and solution options) from **[various documentation locations](documentation.md)** 
 (e.g. documented in comments and commit messages) can be gathered in decision groups.
-For example, a UI decision documented in code can accessed from a [knowledge graph view](knowledge-visualization.md) through decision group filtering.
+For example, developers can access a UI decision documented in code from a [knowledge graph view](knowledge-visualization.md) in Jira through decision group filtering.
 - The **group assignment is inherited** within the decision knowledge. 
 For example, if a developer assigns a decision to the decision group *process*, the linked decision problem and alternatives will inherit this group.
 
@@ -63,14 +63,20 @@ Developers can see an explanation for the DoD violation in the quality check vie
 
 *Decision problem that violates the DoD since only a decision level but no custom decision group is assigned to it.*
 
-## Renaming and Deleting Decision Groups in Overview
+## Decision Grouping Overview and Dashboard
 ConDec offers an **overview for the decision levels and decision groups** assigned in a project.
-In this overview, the developers can rename and delete decision groups via a context menu on group names.
+In this overview, the developers can **rename and delete decision groups** via a context menu on group names.
 They can also navigate to the details of the decisions and change the decision group/level assignment via a context menu on the decisions.
 
 ![Decision groups overview with context menu to rename or delete a group](../screenshots/decision_grouping_overview.png)
 
 *Decision groups overview with context menu to rename or delete a group*
+
+ConDec also offers a **[dashboard item for decision levels and decision groups](dashboard.md)**.
+
+![Dashboard item showing metrics about the decision levels and decision groups](../screenshots/dashboard_groups.png)
+
+*[Dashboard](dashboard.md) item showing metrics about the decision levels and decision groups*
 
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
@@ -88,6 +94,8 @@ The UI code for decision grouping can be found here:
 
 - [Velocity template for decision group overview](../../src/main/resources/templates/tabs/decisionGroups.vm)
 - [JavaScript code for decision grouping](../../src/main/resources/js/grouping)
+
+# Important Decisions
 
 ## References
 The concept of decision levels is taken from: 

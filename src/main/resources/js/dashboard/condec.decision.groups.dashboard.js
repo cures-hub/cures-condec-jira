@@ -56,21 +56,24 @@ define('dashboard/decisionGroups', [], function() {
 		console.log("render data");
 		console.log(metrics);
 
-		plotDecisionLevels(metrics["groups"]);
+		plotDecisionLevels(metrics["groups"], metrics["coverage"]);
 		plotDecisionGroups(metrics["groups"]);
 		plotCoverage(metrics["coverage"]);
 	};
 
-	function plotDecisionLevels(metric) {
+	function plotDecisionLevels(groupsMap, coverageMap) {
 		var decisionLevelsMap = new Map();
-		decisionLevelsMap.set("High Level", metric.get("High_Level"));
-		decisionLevelsMap.set("Medium Level", metric.get("Medium_Level"));
-		decisionLevelsMap.set("Realization Level", metric.get("Realization_Level"));
+		decisionLevelsMap.set("High Level", groupsMap.get("High_Level"));
+		decisionLevelsMap.set("Medium Level", groupsMap.get("Medium_Level"));
+		decisionLevelsMap.set("Realization Level", groupsMap.get("Realization_Level"));
+		if (coverageMap.get("0")) {
+			decisionLevelsMap.set("No Level", coverageMap.get("0"));
+		}
 		conDecDashboard.createPieChartWithListOfElements(decisionLevelsMap,
 			"piechart-decision-levels",
 			"How many elements are there per decision level?", viewId);
 	}
-	
+
 	function plotDecisionGroups(metric) {
 		metric.delete("High_Level");
 		metric.delete("Medium_Level");
@@ -80,26 +83,31 @@ define('dashboard/decisionGroups', [], function() {
 			"piechart-decision-groups",
 			"How many elements are there per decision group?", viewId);
 	}
-	
-	function plotCoverage(coverageMap) {		
+
+	function plotCoverage(coverageMap) {
+		coverageMap.delete("0"); // because we show respective elements in decision level plot
+		var decisionGroupsCoverageMap = new Map();
+
 		var defaultColorPalette = ["#91cc75", "#3ba272", "#73c0de", "#5470c6", "#9a60b4", "#ea7ccc"];
 		var colorPalette = [];
 
-		for (const coverage of coverageMap.keys()) {
-			colorPalette.push(getColorForCoverage(coverage, defaultColorPalette));
+		for (const [coverage, elements] of coverageMap) {
+			var decisionGroupsCoverage = parseInt(coverage) - 1;
+			decisionGroupsCoverageMap.set(decisionGroupsCoverage.toString(), elements);
+			colorPalette.push(getColorForCoverage(decisionGroupsCoverage, defaultColorPalette));
 		}
-		
-		conDecDashboard.createPieChartWithListOfElements(coverageMap, "piechart-decision-groups-coverage",
-				"How many groups are assigned to the elements?", viewId, colorPalette);
+
+		conDecDashboard.createPieChartWithListOfElements(decisionGroupsCoverageMap, "piechart-decision-groups-coverage",
+			"How many decision groups are assigned to the elements?", viewId, colorPalette);
 	}
-	
+
 	function getColorForCoverage(coverage, defaultColorPalette) {
 		switch (coverage) {
-			case "0":
+			case 0:
 				return "#ee6666";
-			case "1":
+			case 1:
 				return "#fc8452";
-			case "2":
+			case 2:
 				return "#fac858";
 		}
 		return defaultColorPalette.shift();
