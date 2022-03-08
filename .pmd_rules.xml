@@ -17,6 +17,7 @@
         <exclude name="LawOfDemeter" />
         <exclude name="UseUtilityClass" />
         <exclude name="DataClass" />
+        <exclude name="LoosePackageCoupling" />
     </rule>
     <rule ref="category/java/errorprone.xml"/>
     <rule ref="category/java/multithreading.xml"/>

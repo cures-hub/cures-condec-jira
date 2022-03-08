@@ -10,10 +10,10 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 /**
  * Contains basic data to identify a knowledge source. Knowledge sources can be
  * Jira projects or DBPedia.
- * 
+ *
  * The knowledge sources are used to recommend solution options for decision
  * problems to the developers for decision guidance.
- * 
+ *
  * @see ProjectSource
  * @see RDFSource
  */
@@ -27,7 +27,7 @@ public abstract class KnowledgeSource {
 	protected String name;
 
 	/**
-	 * Whether recommendations from this KnowledgeSource should be requested or not
+	 * Whether recommendations from this KnowledgeSource should be requested or not.
 	 */
 	protected boolean activated;
 
@@ -83,6 +83,6 @@ public abstract class KnowledgeSource {
 	 *         Icon Documentation</a>
 	 */
 	@XmlElement
-	abstract public String getIcon();
+	public abstract String getIcon();
 
 }
