@@ -12,7 +12,10 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Kn
  */
 public class ProjectSource extends KnowledgeSource {
 
-	protected String projectKey;
+	/**
+	 * Jira project key of the {@link DecisionKnowledgeProject} that is used as the knowledge source.
+	 */
+	protected final String projectKey;
 
 	/**
 	 * @param jiraProject
@@ -43,11 +46,10 @@ public class ProjectSource extends KnowledgeSource {
 	}
 
 	/**
-	 * @return Jira project key of the Jira project that is used as the knowledge
-	 *         source.
+	 * @return {@link ProjectSource#projectKey}
 	 */
 	public String getProjectKey() {
-		return projectKey != null ? projectKey : "";
+		return projectKey == null ? "" : projectKey;
 	}
 
 	/**
