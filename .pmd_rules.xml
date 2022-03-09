@@ -19,7 +19,9 @@
         <exclude name="DataClass" />
         <exclude name="LoosePackageCoupling" />
     </rule>
-    <rule ref="category/java/errorprone.xml"/>
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="ConstructorCallsOverridableMethod" />
+    </rule>
     <rule ref="category/java/multithreading.xml"/>
     <rule ref="category/java/performance.xml">
         <exclude name="RedundantFieldInitializer" />
