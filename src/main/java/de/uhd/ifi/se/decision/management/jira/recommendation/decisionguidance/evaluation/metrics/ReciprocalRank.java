@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
 /**
@@ -15,10 +14,15 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.El
  */
 public class ReciprocalRank extends EvaluationMetric {
 
+	/**
+	 * @param recommendations {@link EvaluationMetric#recommendations}
+	 * @param solutionOptions {@link EvaluationMetric#groundTruthSolutionOptions}
+	 */
 	public ReciprocalRank(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
-
+	@SuppressWarnings("PMD.OnlyOneReturn")  // For static code analysis: Allow multiple returns as it improves
+	// ´                                       readability.
 	@Override
 	public double calculateMetric() {
 		for (int i = 0; i < recommendations.size(); i++) {
