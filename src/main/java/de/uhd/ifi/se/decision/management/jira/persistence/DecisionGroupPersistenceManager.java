@@ -80,7 +80,7 @@ public class DecisionGroupPersistenceManager {
 			return success;
 		}
 		for (KnowledgeElement neighborElement : element.getLinkedElements(1)) {
-			if (shouldElementInheritGroupNames(groupNames, element, neighborElement)) {
+			if (shouldNeighborElementInheritGroupNames(groupNames, element, neighborElement)) {
 				success &= inheritGroups(groupNames, neighborElement, distance - 1);
 			}
 		}
@@ -92,10 +92,10 @@ public class DecisionGroupPersistenceManager {
 		return insertGroups(groupNames, element);
 	}
 
-	private static boolean shouldElementInheritGroupNames(Set<String> groupNames, KnowledgeElement element,
+	private static boolean shouldNeighborElementInheritGroupNames(Set<String> groupNames, KnowledgeElement element,
 			KnowledgeElement neighborElement) {
 		return !element.hasKnowledgeType(neighborElement.getType()) // e.g. linked decisions do not inherit groups
-				&& !neighborElement.hasKnowledgeType(KnowledgeType.OTHER, KnowledgeType.CODE)
+				&& !neighborElement.hasKnowledgeType(KnowledgeType.OTHER, KnowledgeType.CODE, KnowledgeType.CONTEXT)
 				&& !isEqual(neighborElement.getDecisionGroups(), groupNames);
 	}
 
