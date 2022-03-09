@@ -105,7 +105,7 @@ The UI code for decision grouping can be found here:
 	- ![Issue](../../src/main/resources/images/issue.png) Where do we enable the user to assign groups?
 		- ![Decision](../../src/main/resources/images/decision.png) We add a context menu entry to enable the user to group related elements!
 	- ![Issue](../../src/main/resources/images/issue.png) Which knowledge elements should inherit the assigned groups?
-		- ![Decision](../../src/main/resources/images/decision.png) All linked decision knowledge elements within a link distance of 3 inherit the group assignments!
+		- ![Decision](../../src/main/resources/images/decision.png) All linked decision knowledge elements within a link distance of 3 inherit the group assignments (except for context elements and if decisions are direct neighbors)!
 			- ![Pro](../../src/main/resources/images/argument_pro.png) Maintains consistency for connected elements
 			- ![Pro](../../src/main/resources/images/argument_pro.png) Subsequent elements can be part of groups that original issue is not part of
 		- ![Alternative](../../src/main/resources/images/alternative.png) We could do no inheritance between elements.
