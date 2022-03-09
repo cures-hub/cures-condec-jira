@@ -126,9 +126,9 @@ The UI code for decision grouping can be found here:
 ## References
 The concept of decision levels is taken from: 
 van der Ven, J. S., & Bosch, J. (2013). Making the Right Decision: Supporting Architects with Design Decision Data. 
-In 7th European Conference on Software Architecture (ECSA’13) (Vol. 7957 LNCS, pp. 176–183). 
+In 7th European Conference on Software Architecture (ECSA'13) (Vol. 7957 LNCS, pp. 176-183). 
 Montpellier, France: Springer. https://doi.org/10.1007/978-3-642-39031-9_15
 
 Decision groups are e.g. used in:
 van Heesch, U., Avgeriou, P., & Hilliard, R. (2012). A documentation framework for architecture decisions. 
-Journal of Systems and Software, 85(4), 795–820. https://doi.org/10.1016/j.jss.2011.10.017
+Journal of Systems and Software, 85(4), 795-820. https://doi.org/10.1016/j.jss.2011.10.017

@@ -93,7 +93,8 @@ public class DecisionGroupPersistenceManager {
 	}
 
 	private static boolean shouldElementInheritGroupNames(Set<String> groupNames, KnowledgeElement element) {
-		return element.getType() != KnowledgeType.OTHER && !isEqual(element.getDecisionGroups(), groupNames);
+		return !element.hasKnowledgeType(KnowledgeType.OTHER, KnowledgeType.CODE)
+				&& !isEqual(element.getDecisionGroups(), groupNames);
 	}
 
 	public static boolean isEqual(Collection<String> groups1, Collection<String> groups2) {
