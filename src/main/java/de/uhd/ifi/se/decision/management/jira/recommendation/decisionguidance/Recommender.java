@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.Argument;
@@ -206,17 +207,28 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		}
 	}
 
+	/**
+	 * Add an accepted recommendation or argument to an {@link Issue} as comment.
+	 *
+	 * @param newElement Recommendation or argument to be added.
+	 * @param parentElement Element to the issue of which the new element should be added.
+	 * @param user Authenticated Jira ApplicationUser.
+	 * @return The newly created element, which is next parent element if additional elements should be added. If the
+	 *         given parent element does not have a {@link KnowledgeElement#getJiraIssue()}, the given parent element
+	 *         is returned.
+	 */
 	private static KnowledgeElement addToJiraIssue(KnowledgeElement newElement, KnowledgeElement parentElement,
 			ApplicationUser user) {
+		KnowledgeElement newParent = parentElement;
 		DecisionKnowledgeProject project = parentElement.getProject();
 		newElement.setProject(project);
 		newElement.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		newElement.setStatus(KnowledgeStatus.RECOMMENDED);
 		if (parentElement.getJiraIssue() != null) {
-			return KnowledgePersistenceManager.getInstance(project).insertKnowledgeElement(newElement, user,
+			newParent = KnowledgePersistenceManager.getInstance(project).insertKnowledgeElement(newElement, user,
 					parentElement);
 		}
-		return parentElement;
+		return newParent;
 	}
 
 	/**
