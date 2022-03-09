@@ -197,7 +197,8 @@ public class DecisionGroupingRest {
 				decisionGroupsMap.get("NoGroup").add(element);
 			}
 			for (String group : groupsOfElement) {
-				decisionGroupsMap.get(group).add(element);
+				Set<KnowledgeElement> elementsOfGroup = decisionGroupsMap.get(group);
+				elementsOfGroup.add(element);
 			}
 		}
 		return Response.ok(decisionGroupsMap).build();

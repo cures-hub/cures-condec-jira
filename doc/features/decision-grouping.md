@@ -96,6 +96,32 @@ The UI code for decision grouping can be found here:
 - [JavaScript code for decision grouping](../../src/main/resources/js/grouping)
 
 # Important Decisions
+- SF: Group decisions ([CONDEC-692](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-692))
+	- ![Issue](../../src/main/resources/images/issue.png) How can the rationale manager and the developers see which decision groups are used in the project and which decisions are assigned to the decision levels and decision groups?
+		- ![Decision](../../src/main/resources/images/decision.png) We create a separate decision grouping view that presents the decision levels/groups and the respective knowledge elements!
+		- ![Decision](../../src/main/resources/images/decision.png) We create a dashboard item for decision levels and decision groups (using plot, in particular pie charts)!
+	- ![Issue](../../src/main/resources/images/issue.png) Where do we enable the user to assign groups?
+		- ![Decision](../../src/main/resources/images/decision.png) We add a context menu entry to enable the user to group related elements!
+	- ![Issue](../../src/main/resources/images/issue.png) Which knowledge elements should inherit the assigned groups?
+		- ![Decision](../../src/main/resources/images/decision.png) All related elements "bellow" (for example: For an issue, the decisions, alternatives, pro and contra elements) inherit the group assignments from above!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Maintain consistency for connected elements
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Subsequent elements can be part of groups that original issue is not part of
+		- ![Alternative](../../src/main/resources/images/alternative.png) We could do no inheritance between elements.
+			- ![Con](../../src/main/resources/images/argument_con.png) Problems with displaying in a filtered view
+			- ![Con](../../src/main/resources/images/argument_con.png) Loss of important relationships between the elements
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Easier to manage and implement
+	- ![Issue](../../src/main/resources/images/issue.png) Which definition of done criterion should ConDec have wrt. decision grouping?
+		- ![Alternative](../../src/main/resources/images/alternative.png) We could enable the rationale manager to configure how many decision groups need to be assigned.
+		- ![Decision](../../src/main/resources/images/decision.png) The definition of done (DoD) requires that at least a decision level and one decision group is assigned to every decision problem, decision, and alternative!
+			- ![Con](../../src/main/resources/images/argument_con.png) Not configurable
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Quite strikt, but helps us to study which types of decisions developers document
+	- ![Issue](../../src/main/resources/images/issue.png) How do we access the decision groups/level for a knowledge element?
+		- ![Decision](../../src/main/resources/images/decision.png) We query the database table to access the decision groups/level for a knowledge element!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) We don't have to propagate changes (e.g. renamed groups) to the knowledge graph object.
+			- ![Con](../../src/main/resources/images/argument_con.png) It seems not to be very efficient to query the database all the time.
+		- ![Alternative](../../src/main/resources/images/alternative.png) We could make decision groups/levels a "real" attribute of the KnowledgeElement class and only query it from database when the element is added to knowledge graph.
+			- ![Con](../../src/main/resources/images/argument_con.png) We would have to propagate changes (e.g. renamed groups) to the knowledge graph object.
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Might be more efficient.
 
 ## References
 The concept of decision levels is taken from: 

@@ -167,7 +167,7 @@ public class DecisionGroupPersistenceManager {
 	public static List<String> sortGroupNames(List<String> groupNames) {
 		Collections.sort(groupNames);
 		for (String level : LEVELS) {
-			if (groupNames.removeIf(groupName -> groupName.toLowerCase().equals(level))) {
+			if (groupNames.removeIf(groupName -> groupName.equalsIgnoreCase(level))) {
 				groupNames.add(0, WordUtils.capitalize(level, "_".toCharArray()));
 			}
 		}
