@@ -8,7 +8,6 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
@@ -32,19 +31,17 @@ public class Evaluator {
 
 	/**
 	 * @param decisionProblem
-	 *            with existing solution options (alternatives, decision, solution,
-	 *            claims) used as the ground truth/gold standard for the evaluation.
+	 *            with existing solution options (alternatives, decision, solution, claims) used as the ground
+	 *            truth/gold standard for the evaluation.
 	 * @param keywords
 	 *            additional keywords used to query the knowledge source.
 	 * @param topKResults
-	 *            number of {@link ElementRecommendation}s with the highest
-	 *            {@link RecommendationScore} that should be included in the
-	 *            evaluation. All other recommendations are ignored.
+	 *            number of {@link ElementRecommendation}s with the highest {@link RecommendationScore} that should be
+	 *            included in the evaluation. All other recommendations are ignored.
 	 * @param knowledgeSource
 	 *            {@link KnowledgeSource} that is evaluated.
-	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
-	 *         for one {@link KnowledgeSource} for a given decision problem and
-	 *         keywords.
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics for one {@link KnowledgeSource}
+	 *         for a given decision problem and keywords.
 	 */
 	public static RecommendationEvaluation evaluate(KnowledgeElement decisionProblem, String keywords, int topKResults,
 			KnowledgeSource knowledgeSource) {
@@ -125,9 +122,12 @@ public class Evaluator {
 	 *         {@link RecommendationScore}s.
 	 */
 	public static List<ElementRecommendation> getTopKRecommendations(List<ElementRecommendation> allRecommendations, int k) {
-		if (k <= 0 || k >= allRecommendations.size()) {
-			return allRecommendations;
+		List<ElementRecommendation> topKRecommendations;
+		if (k > 0 && k < allRecommendations.size()) {
+			topKRecommendations = allRecommendations.subList(0, k);
+		} else {
+			topKRecommendations = allRecommendations;
 		}
-		return allRecommendations.subList(0, k);
+		return topKRecommendations;
 	}
 }
