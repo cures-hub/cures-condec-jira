@@ -98,13 +98,15 @@ The UI code for decision grouping can be found here:
 # Important Decisions
 - SF: Group decisions ([CONDEC-692](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-692))
 	- ![Issue](../../src/main/resources/images/issue.png) How can the rationale manager and the developers see which decision groups are used in the project and which decisions are assigned to the decision levels and decision groups?
-		- ![Decision](../../src/main/resources/images/decision.png) We create a separate decision grouping view that presents the decision levels/groups and the respective knowledge elements!
 		- ![Decision](../../src/main/resources/images/decision.png) We create a dashboard item for decision levels and decision groups (using plot, in particular pie charts)!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Pie charts give a good visual overview
+		- ![Decision](../../src/main/resources/images/decision.png) We create a separate decision grouping view that presents the decision levels/groups and the respective knowledge elements!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Enables changing the group names and assigning elements
 	- ![Issue](../../src/main/resources/images/issue.png) Where do we enable the user to assign groups?
 		- ![Decision](../../src/main/resources/images/decision.png) We add a context menu entry to enable the user to group related elements!
 	- ![Issue](../../src/main/resources/images/issue.png) Which knowledge elements should inherit the assigned groups?
-		- ![Decision](../../src/main/resources/images/decision.png) All related elements "bellow" (for example: For an issue, the decisions, alternatives, pro and contra elements) inherit the group assignments from above!
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Maintain consistency for connected elements
+		- ![Decision](../../src/main/resources/images/decision.png) All linked decision knowledge elements within a link distance of 3 inherit the group assignments!
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Maintains consistency for connected elements
 			- ![Pro](../../src/main/resources/images/argument_pro.png) Subsequent elements can be part of groups that original issue is not part of
 		- ![Alternative](../../src/main/resources/images/alternative.png) We could do no inheritance between elements.
 			- ![Con](../../src/main/resources/images/argument_con.png) Problems with displaying in a filtered view
