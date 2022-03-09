@@ -23,8 +23,8 @@ public class FScore extends EvaluationMetric {
 	private final double recall;
 
 	/**
-	 * @param recommendations Recommendations to be evaluated.
-	 * @param solutionOptions Ground truth to which the given recommendations are compared.
+	 * @param recommendations {@link EvaluationMetric#recommendations}
+	 * @param solutionOptions {@link EvaluationMetric#groundTruthSolutionOptions}
 	 */
 	public FScore(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
