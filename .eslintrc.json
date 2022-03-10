@@ -23,6 +23,11 @@
         "no-unused-vars": ["error", { "args": "none" }],
         "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
         "no-plusplus": "off",
-        "implicit-arrow-linebreak": "off"
+        "implicit-arrow-linebreak": "off",
+        "quote-props": ["error", "always"],
+        "no-restricted-syntax": "off",
+        "prefer-destructuring": "warn",
+        "dot-notation": "warn",
+        "guard-for-in": "warn"
     }
 }
