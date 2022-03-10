@@ -25,6 +25,7 @@
     <rule ref="category/java/multithreading.xml"/>
     <rule ref="category/java/performance.xml">
         <exclude name="RedundantFieldInitializer" />
+        <exclude name="AvoidInstantiatingObjectsInLoops" />
     </rule>
     <rule ref="category/java/security.xml"/>
     <rule ref="category/java/codestyle.xml">

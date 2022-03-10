@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
@@ -48,7 +47,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		stringBuilder.append(first);
 		for (String second : keywords) {
 			if (!first.equals(second)) {
-				stringBuilder.append("_").append(second);
+				stringBuilder.append('_').append(second);
 				combinedKeywords.add(stringBuilder.toString());
 			}
 		}
@@ -63,34 +62,47 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	 *            in SPARQL language (SPARQL Protocol And RDF Query Language).
 	 * @return {@link ResultSet} for the query.
 	 */
+	@SuppressWarnings("PMD.NullAssignment")  // For static code analysis: If the query fails, null is expected
 	protected ResultSet queryDatabase(String queryString) {
+		ResultSet resultSet;
 		try {
 			Query query = QueryFactory.create(queryString);
 			QueryExecution queryExecution = QueryExecution.service(knowledgeSource.getService()).query(query)
 					.timeout(knowledgeSource.getTimeout(), TimeUnit.MILLISECONDS).build();
 
-			ResultSet resultSet = queryExecution.execSelect();
-			return resultSet;
+			resultSet = queryExecution.execSelect();
 		} catch (Exception e) {
+			resultSet = null;
 		}
-		return null;
+		return resultSet;
 	}
 
+	/**
+	 * Add dummy recommendations to a given list of recommendations for testing and demonstration purposes.
+	 *
+	 * @param recommendations List of recommendation to which the dummy recommendations are added.
+	 */
+	private void addDummyRecommendations(List<ElementRecommendation> recommendations) {
+		for (int i = 0; i < 10; i++) {
+			recommendations.add(new ElementRecommendation("Dummy recommendation No. " + i,
+					knowledgeSource, "wikipedia.org"));
+		}
+	}
+
+	@SuppressWarnings({"PMD.CloseResource",  // For static code analysis: ResultSet does not have a close method
+			"PMD.OnlyOneReturn",  // Multiple returns improve readability and reduce cognitive complexity in this case
+	})
 	@Override
 	public List<ElementRecommendation> getRecommendations(String inputs) {
+		List<ElementRecommendation> recommendations = new ArrayList<>();
 		if (inputs == null) {
-			return new ArrayList<>();
-		}
-		// TODO: Remove as soon as the decision guidance has been improved such that it is normal to get recommendations
-		if (inputs.contains("get_dummy_decision_guidance_recommendations")) {
-			List<ElementRecommendation> recommendations = new ArrayList<>();
-			for (int i = 0; i < 10; i++) {
-				recommendations.add(new ElementRecommendation("Dummy recommendation No. " +
-					String.valueOf(i), knowledgeSource, "wikipedia.org"));
-			}
 			return recommendations;
 		}
-		List<ElementRecommendation> recommendations = new ArrayList<>();
+
+		if (inputs.contains("get_dummy_decision_guidance_recommendations")) {
+			addDummyRecommendations(recommendations);
+			return recommendations;
+		}
 
 		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
 		final List<String> combinedKeywords = this.combineKeywords(keywords);
@@ -98,8 +110,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		for (String combinedKeyword : combinedKeywords) {
 
 			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
-			String queryStringWithInput = knowledgeSource.getQuery().replaceAll("%variable%", uri)
-					.replaceAll("[\\r\\n\\t]", " ");
+			String queryStringWithInput = knowledgeSource.getQuery().replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
 
 			ResultSet resultSet = queryDatabase(queryStringWithInput);
@@ -109,8 +120,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 
 				String label = this.getLabel(row.get("?subject").toString());
 
-				ElementRecommendation recommendation = new ElementRecommendation(label, knowledgeSource,
-						row.get("?url").toString());
+				ElementRecommendation recommendation = new ElementRecommendation(label, knowledgeSource, row.get("?url").toString());
 
 				Literal aggregatedNumberOfLinks = row.get("?callret-2").asLiteral();
 				int numberOfLinks = aggregatedNumberOfLinks.getInt();
@@ -129,6 +139,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		return ElementRecommendation.normalizeRecommendationScore(recommendations);
 	}
 
+	@SuppressWarnings("PMD.CloseResource")  // For static code analysis: ResultSet does not have a close method
 	private String getLabel(String resource) {
 
 		String query = String.format(
@@ -146,6 +157,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		return label;
 	}
 
+	@SuppressWarnings("PMD.CloseResource")  // For static code analysis: ResultSet does not have a close method
 	private List<Argument> getArgument(String resource, Map.Entry<String, String> constraint) {
 
 		String query = String.format(RDFSource.PREFIX
