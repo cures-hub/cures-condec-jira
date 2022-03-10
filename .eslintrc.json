@@ -20,6 +20,9 @@
         "function-call-argument-newline": "off",
         "no-param-reassign": "warn",
         "operator-linebreak": ["error", "after"],
-        "no-unused-vars": ["error", { "args": "none" }]
+        "no-unused-vars": ["error", { "args": "none" }],
+        "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
+        "no-plusplus": "off",
+        "implicit-arrow-linebreak": "off"
     }
 }

@@ -1,130 +1,157 @@
 /**
- * Implements the view for solution option recommendation for decision problems (=decision guidance).
+ * Implements the view for solution option recommendation for decision problems (=decision
+ * guidance).
  * The recommended solution options are taken from external knowledge sources, such as
  * other Jira projects or DBPedia.
- * 
+ *
  * Is referenced in HTML by
  * tabs/recommendation/decisionGuidance.vm
  */
+/* global conDecAPI, conDecDialog, conDecDecisionGuidanceAPI, conDecDecisionGuidance,
+   conDecRecommendation, conDecNudgingAPI, conDecObservable, conDecFiltering */
 (function(global) {
+    const ConDecDecisionGuidance = function() { };
 
-	let ConDecDecisionGuidance = function() { };
+    ConDecDecisionGuidance.prototype.initView = function() {
+        // get all the decision problems for the dropdown and fill the dropdown
+        const dropdown = document.getElementById("decision-guidance-dropdown");
+        conDecAPI.getDecisionProblems({}, (decisionProblems) =>
+            conDecFiltering.initKnowledgeElementDropdown(dropdown, decisionProblems,
+                this.selectedDecisionProblem,
+                "decision-guidance", (selectedElement) => {
+                    conDecDecisionGuidance.selectedDecisionProblem = selectedElement;
+                }));
 
-	ConDecDecisionGuidance.prototype.initView = function() {
-		// get all the decision problems for the dropdown and fill the dropdown
-		let dropdown = document.getElementById("decision-guidance-dropdown");
-		conDecAPI.getDecisionProblems({}, (decisionProblems) =>
-			conDecFiltering.initKnowledgeElementDropdown(dropdown, decisionProblems, this.selectedDecisionProblem,
-				"decision-guidance", (selectedElement) => {
-					conDecDecisionGuidance.selectedDecisionProblem = selectedElement;
-				}));
+        // add button listener
+        this.addOnClickListenerForRecommendations();
 
-		// add button listener
-		this.addOnClickListenerForRecommendations();
+        // Register/subscribe this view as an observer
+        conDecObservable.subscribe(this);
+    };
 
-		// Register/subscribe this view as an observer
-		conDecObservable.subscribe(this);
-	};
+    ConDecDecisionGuidance.prototype.updateView = function() {
+    };
 
-	ConDecDecisionGuidance.prototype.updateView = function() {
-	};
+    function onAcceptClicked(recommendation, parentElement) {
+        conDecAPI.getKnowledgeElement(parentElement.id, parentElement.documentationLocation,
+            (currentIssue) => {
+                conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation,
+                    "Alternative", recommendation.summary, "",
+                    (id, documentationLocation) => {
+                        recommendation.arguments.forEach((argument) => {
+                            conDecAPI.createDecisionKnowledgeElement(argument.summary, "",
+                                argument.type, argument.documentationLocation, id,
+                                documentationLocation,
+                                () => {
+                                    conDecAPI.showFlag("success",
+                                        "Recommendation was added successfully!");
+                                });
+                        });
+                    });
+            });
+    }
 
-	ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function() {
-		var tableBody = document.getElementById("recommendation-container-table-body");
-		$("#recommendation-button").click(function(event) {
-			event.preventDefault();
-			tableBody.innerHTML = "";
-			const spinner = $("#loading-spinner-recommendation");
-			const keywords = document.getElementById("recommendation-keywords").value;
-			spinner.show();
-			conDecDecisionGuidance.selectedDecisionProblem.projectKey = conDecAPI.projectKey;
-			Promise.resolve(conDecDecisionGuidanceAPI.getRecommendations(conDecDecisionGuidance.selectedDecisionProblem, keywords))
-				.then((recommendations) => {
-					if (recommendations.length > 0) {
-						buildRecommendationTable(recommendations, conDecDecisionGuidance.selectedDecisionProblem);
-					} else {
-						tableBody.innerHTML = "<i>No recommendations found!</i>";
-					}
-					conDecNudgingAPI.decideAmbientFeedbackForTab(recommendations.length, "menu-item-decision-guidance");
-					spinner.hide();
-				})
-				.catch(err => {
-					console.log(err)
-					spinner.hide();
-					tableBody.innerHTML = "<strong>An error occurred!</strong>";
-				});
-		});
-	};
+    function buildRecommendationTable(recommendations, parentElement) {
+        const tableBody = document.getElementById("recommendation-container-table-body");
+        const checkBoxShowDiscarded = document.getElementById("checkbox-show-discarded");
+        checkBoxShowDiscarded.onclick = function() {
+            buildRecommendationTable(recommendations, parentElement);
+        };
+        tableBody.innerHTML = "";
+        let counter = 0;
+        recommendations.forEach((recommendation) => {
+            if (!checkBoxShowDiscarded.checked && recommendation.isDiscarded) {
+                return;
+            }
+            counter++;
+            let tableRow;
+            if (recommendation.isDiscarded) {
+                tableRow = "<tr class = \"discarded\">";
+            } else {
+                tableRow = "<tr>";
+            }
+            tableRow += `<td><a class='alternative-summary' href='${recommendation.url}'>` +
+                `${recommendation.summary}</a></td>`;
+            tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" +
+                `${recommendation.knowledgeSource.name}<span class='aui-icon aui-icon-small ` +
+                `${recommendation.knowledgeSource.icon}'>Knowledge Source Type</span></div></td>`;
+            tableRow += "<td>" +  // eslint-disable-line prefer-template
+                //                    (we would have `` inside ``)
+                conDecRecommendation.buildScore(recommendation.score, `score_${counter}`) +
+                "</td>";
+            if (recommendation.isDiscarded) {
+                tableRow += `<td><button title='${conDecDecisionGuidance.UNDO_DESCRIPTION}' ` +
+                    `id='undo_discard_${counter}' ` +
+                    "class='aui-button-primary aui-button accept-solution-button'>" +
+                    "<span class='aui-icon aui-icon-small aui-iconfont-undo'></span>" +
+                    `${conDecDecisionGuidance.UNDO_TITLE}</button></td>`;
+            } else {
+                tableRow += `<td><button title='${conDecDecisionGuidance.ACCEPT_DESCRIPTION}' ` +
+                    `id='row_${counter}' ` +
+                    "class='aui-button-primary aui-button accept-solution-button'>" +
+                    `${conDecDecisionGuidance.ACCEPT_TITLE}</button>`;
+                tableRow += `<button title='${conDecDecisionGuidance.DISCARD_DESCRIPTION}' ` +
+                    `id='discard_${counter}' ` +
+                    "class='aui-button-primary aui-button accept-solution-button'>" +
+                    "<span class='aui-icon aui-icon-small aui-iconfont-trash'></span>" +
+                    `${conDecDecisionGuidance.DISCARD_TITLE}</button></td>`;
+            }
+            tableRow += "<td><ul>";
+            recommendation.arguments.forEach((argument) => {
+                if (argument) {
+                    tableRow += `<li><img src='${argument.image}'/>${argument.summary}</li>`;
+                }
+            });
+            tableRow += "</ul></td>";
+            tableRow += "</tr>";
+            tableBody.insertAdjacentHTML("beforeend", tableRow);
 
-	function buildRecommendationTable(recommendations, parentElement) {
-		let tableBody = document.getElementById("recommendation-container-table-body");
-		let checkBoxShowDiscarded = document.getElementById("checkbox-show-discarded");
-		checkBoxShowDiscarded.onclick = function() {
-			buildRecommendationTable(recommendations, parentElement);
-		}
-		tableBody.innerHTML = "";
-		let counter = 0;
-		recommendations.forEach(recommendation => {
-			if (!checkBoxShowDiscarded.checked && recommendation.isDiscarded) {
-				return;
-			}
-			counter++;
-			let tableRow;
-			if (recommendation.isDiscarded) {
-				tableRow = "<tr class = \"discarded\">";
-			} else {
-				tableRow = "<tr>";
-			}
-			tableRow += "<td><a class='alternative-summary' href='" + recommendation.url + "'>" + recommendation.summary + "</a></td>";
-			tableRow += "<td><div style='display:flex;gap:3px;align-items:center;'>" + recommendation.knowledgeSource.name + "<span class='aui-icon aui-icon-small " + recommendation.knowledgeSource.icon + "'>Knowledge Source Type</span></div></td>";
-			tableRow += "<td>" + conDecRecommendation.buildScore(recommendation.score, "score_" + counter) + "</td>";
-			if (recommendation.isDiscarded) {
-				tableRow += `<td><button title='${conDecDecisionGuidance.UNDO_DESCRIPTION}' id='undo_discard_${counter}' class='aui-button-primary aui-button accept-solution-button'><span class="aui-icon aui-icon-small aui-iconfont-undo"></span>${conDecDecisionGuidance.UNDO_TITLE}</button></td>`;
-			} else {
-				tableRow += `<td><button title='${conDecDecisionGuidance.ACCEPT_DESCRIPTION}' id='row_${counter}' class='aui-button-primary aui-button accept-solution-button'>${conDecDecisionGuidance.ACCEPT_TITLE}</button>`;
-				tableRow += `<button title='${conDecDecisionGuidance.DISCARD_DESCRIPTION}' id='discard_${counter}' class='aui-button-primary aui-button accept-solution-button'><span class="aui-icon aui-icon-small aui-iconfont-trash"></span>${conDecDecisionGuidance.DISCARD_TITLE}</button></td>`;
-			}
-			tableRow += "<td><ul>";
-			recommendation.arguments.forEach(argument => {
-				if (argument) {
-					tableRow += "<li><img src='" + argument.image + "'/>";
-					tableRow += argument.summary + "</li>";
-				}
-			});
-			tableRow += "</ul></td>";
-			tableRow += "</tr>";
-			tableBody.insertAdjacentHTML('beforeend', tableRow);
+            if (recommendation.isDiscarded) {
+                $(`#undo_discard_${counter}`).click(() => {
+                    conDecDecisionGuidanceAPI.undoDiscardRecommendation(recommendation);
+                    buildRecommendationTable(recommendations, parentElement);
+                });
+            } else {
+                $(`#row_${counter}`).click(() => {
+                    onAcceptClicked(recommendation, parentElement);
+                });
+                $(`#discard_${counter}`).click(() => {
+                    conDecDecisionGuidanceAPI.discardRecommendation(recommendation);
+                    buildRecommendationTable(recommendations, parentElement);
+                });
+            }
+        });
+        conDecAPI.showFlag("success", `#Recommendations: ${counter}`);
+    }
 
-			if (recommendation.isDiscarded) {
-				$("#undo_discard_" + counter).click(function () {
-					conDecDecisionGuidanceAPI.undoDiscardRecommendation(recommendation);
-					buildRecommendationTable(recommendations, parentElement);
-				});
-			} else {
-				$("#row_" + counter).click(function () {
-					onAcceptClicked(recommendation, parentElement);
-				});
-				$("#discard_" + counter).click(function () {
-					conDecDecisionGuidanceAPI.discardRecommendation(recommendation);
-					buildRecommendationTable(recommendations, parentElement);
-				});
-			}
+    ConDecDecisionGuidance.prototype.addOnClickListenerForRecommendations = function() {
+        const tableBody = document.getElementById("recommendation-container-table-body");
+        $("#recommendation-button").click((event) => {
+            event.preventDefault();
+            tableBody.innerHTML = "";
+            const spinner = $("#loading-spinner-recommendation");
+            const keywords = document.getElementById("recommendation-keywords").value;
+            spinner.show();
+            conDecDecisionGuidance.selectedDecisionProblem.projectKey = conDecAPI.projectKey;
+            Promise.resolve(conDecDecisionGuidanceAPI.getRecommendations(
+                conDecDecisionGuidance.selectedDecisionProblem, keywords))
+                .then((recommendations) => {
+                    if (recommendations.length > 0) {
+                        buildRecommendationTable(recommendations,
+                            conDecDecisionGuidance.selectedDecisionProblem);
+                    } else {
+                        tableBody.innerHTML = "<i>No recommendations found!</i>";
+                    }
+                    conDecNudgingAPI.decideAmbientFeedbackForTab(recommendations.length,
+                        "menu-item-decision-guidance");
+                    spinner.hide();
+                })
+                .catch((err) => {
+                    spinner.hide();
+                    tableBody.innerHTML = "<strong>An error occurred!</strong>";
+                });
+        });
+    };
 
-		});
-		conDecAPI.showFlag("success", "#Recommendations: " + counter);
-	}
-
-	function onAcceptClicked(recommendation, parentElement) {
-		conDecAPI.getKnowledgeElement(parentElement.id, parentElement.documentationLocation, (currentIssue) => {
-			conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation, "Alternative", recommendation.summary, "", function(id, documentationLocation) {
-				recommendation.arguments.forEach(argument => {
-					conDecAPI.createDecisionKnowledgeElement(argument.summary, "", argument.type, argument.documentationLocation, id, documentationLocation, function() {
-						conDecAPI.showFlag("success", "Recommendation was added successfully!");
-					});
-				});
-			});
-		});
-	}
-
-	global.conDecDecisionGuidance = new ConDecDecisionGuidance();
+    global.conDecDecisionGuidance = new ConDecDecisionGuidance();
 })(window);
