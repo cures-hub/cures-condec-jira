@@ -16,7 +16,16 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import net.java.ao.test.jdbc.NonTransactional;
 
+/**
+ * Test whether the storing of discarded {@link LinkRecommendation}s and
+ * {@link ElementRecommendation}s works as expected.
+ */
+@SuppressWarnings({"PMD.AtLeastOneConstructor",  // For static code analysis: Rules that are not
+		"PMD.BeanMembersShouldSerialize",  // necessary for a test class
+		"PMD.CommentRequired",
+        "PMD.AvoidDuplicateLiterals"})
 public class TestDiscardRecommendation extends TestSetUp {
+
 	private List<Issue> issues;
 
 	@Before

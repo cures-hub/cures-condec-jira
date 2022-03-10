@@ -8,6 +8,7 @@
     Bundle of different important categories (see below) with settings according to best practises in the cures-condec-jira project
   </description>
     <rule ref="category/java/bestpractices.xml">
+        <exclude name="JUnitTestContainsTooManyAsserts" />
     </rule>
     <rule ref="rulesets/java/quickstart.xml">
         <exclude name="UseUtilityClass" />
