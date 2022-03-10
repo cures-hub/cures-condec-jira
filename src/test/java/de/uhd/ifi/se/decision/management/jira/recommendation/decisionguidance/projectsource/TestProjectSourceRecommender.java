@@ -12,13 +12,16 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor",  // For static code analysis: Rules that are not
+		"PMD.BeanMembersShouldSerialize",  //       necessary for a test class
+		"PMD.CommentRequired",
+		"PMD.AvoidDuplicateLiterals"})
 public class TestProjectSourceRecommender extends TestSetUp {
 
 	private ProjectSourceRecommender projectSourceRecommender;
