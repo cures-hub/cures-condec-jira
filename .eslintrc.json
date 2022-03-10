@@ -14,7 +14,7 @@
         "quotes": [2, "double", { "avoidEscape": true }],
         "wrap-iife" : [0],
         "space-before-function-paren": ["error", "never"],
-        "indent": ["error", 4],
+        "indent": ["warn", 4],
         "no-var": "warn",
         "function-paren-newline": "off",
         "function-call-argument-newline": "off",
@@ -28,6 +28,7 @@
         "no-restricted-syntax": "off",
         "prefer-destructuring": "warn",
         "dot-notation": "warn",
-        "guard-for-in": "warn"
+        "guard-for-in": "warn",
+        "no-tabs": "off"
     }
 }
