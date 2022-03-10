@@ -11,6 +11,15 @@
         "ecmaVersion": 12
     },
     "rules": {
-        "quotes": [2, "double", { "avoidEscape": true }]
+        "quotes": [2, "double", { "avoidEscape": true }],
+        "wrap-iife" : [0],
+        "space-before-function-paren": ["error", "never"],
+        "indent": ["error", 4],
+        "no-var": "warn",
+        "function-paren-newline": "off",
+        "function-call-argument-newline": "off",
+        "no-param-reassign": "warn",
+        "operator-linebreak": ["error", "after"],
+        "no-unused-vars": ["error", { "args": "none" }]
     }
 }
