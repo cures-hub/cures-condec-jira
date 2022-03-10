@@ -24,7 +24,6 @@
 	};
 
 	GeneralAPI.prototype.postJSON = function(url, data, callback) {
-		console.log("Creating requrest: "+url+", "+data+", "+callback);
 		createRequest("POST", url, data, callback);
 	};
 
