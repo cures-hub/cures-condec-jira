@@ -21,7 +21,7 @@ import net.java.ao.test.jdbc.NonTransactional;
  * {@link ElementRecommendation}s works as expected.
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor",  // For static code analysis: Rules that are not
-		"PMD.BeanMembersShouldSerialize",  // necessary for a test class
+		"PMD.BeanMembersShouldSerialize",  //       necessary for a test class
 		"PMD.CommentRequired",
         "PMD.AvoidDuplicateLiterals"})
 public class TestDiscardRecommendation extends TestSetUp {

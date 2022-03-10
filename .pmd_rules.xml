@@ -9,6 +9,7 @@
   </description>
     <rule ref="category/java/bestpractices.xml">
         <exclude name="JUnitTestContainsTooManyAsserts" />
+        <exclude name="JUnitAssertionsShouldIncludeMessage" />        :
     </rule>
     <rule ref="rulesets/java/quickstart.xml">
         <exclude name="UseUtilityClass" />

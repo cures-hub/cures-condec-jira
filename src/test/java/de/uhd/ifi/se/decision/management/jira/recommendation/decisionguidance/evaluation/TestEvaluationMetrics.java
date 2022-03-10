@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.AveragePrecision;
@@ -25,6 +24,10 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor",  // For static code analysis: Rules that are not
+		"PMD.BeanMembersShouldSerialize",  //       necessary for a test class
+		"PMD.CommentRequired",
+		"PMD.AvoidDuplicateLiterals"})
 public class TestEvaluationMetrics extends TestSetUp {
 
 	protected List<ElementRecommendation> recommendations;
