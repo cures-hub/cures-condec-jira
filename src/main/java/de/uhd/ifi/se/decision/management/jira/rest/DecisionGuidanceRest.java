@@ -32,12 +32,19 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.RecommendationEvaluation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
-import org.apache.jena.base.Sys;
 
 /**
  * REST resource for configuration and usage of decision guidance
  */
 @Path("/decision-guidance")
+@SuppressWarnings({"PMD.LinguisticNaming",  // For static code analysis: 1. The special case of a REST API makes it
+	"PMD.OnlyOneReturn",  // reasonable that also setters return a response. 2. Multiple returns increase readability
+    "PMD.AvoidDuplicateLiterals",  // here, as depending on the request and the response different return values may
+	"PMD.CommentSize",  //  occur. 3. Replacing path parameters and the word "error" with constants would decrease
+    "PMD.UseObjectForClearerAPI",  // readability. 4. Many parameters justify long comments. 5. As most of the
+    "PMD.AtLeastOneConstructor"})  // parameters are either path or query parameters, using a container object for
+//                                    them is not appropriate here. 6. This class does not have any fields to be
+//                                    initialized, so a constructor does not make sense.
 public class DecisionGuidanceRest {
 
 	/**
@@ -324,10 +331,6 @@ public class DecisionGuidanceRest {
 		}
 
 		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
-		System.out.print("filterSettings.getSelectedElementFromDatabase(): ");
-		System.out.println(filterSettings.getSelectedElementFromDatabase());
-		System.out.print("filterSettings.getSelectedElementFromDatabase().getProject(): ");
-		System.out.println(filterSettings.getSelectedElementFromDatabase().getProject());
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
 				selectedElementFromDatabase, filterSettings.getSearchTerm());
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
@@ -340,28 +343,24 @@ public class DecisionGuidanceRest {
 
 	/**
 	 * @param request
-	 *            HttpServletRequest with an authorized Jira
-	 *            {@link ApplicationUser}.
+	 *            HttpServletRequest with an authorized Jira {@link ApplicationUser}.
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param keyword
 	 *            additional keywords used to query the knowledge source.
 	 * @param knowledgeSourceName
-	 *            name of the {@link KnowledgeSource} that is evaluated. It must
-	 *            exist in the {@link DecisionGuidanceConfiguration}.
+	 *            name of the {@link KnowledgeSource} that is evaluated. It must exist in the
+	 *            {@link DecisionGuidanceConfiguration}.
 	 * @param topKResults
-	 *            number of {@link ElementRecommendation}s with the highest
-	 *            {@link RecommendationScore} that should be included in the
-	 *            evaluation. All other recommendations are ignored.
+	 *            number of {@link ElementRecommendation}s with the highest {@link RecommendationScore} that should be
+	 *            included in the evaluation. All other recommendations are ignored.
 	 * @param decisionProblemId
-	 *            id of a decision problem with existing solution options
-	 *            (alternatives, decision, solution, claims) used as the ground
-	 *            truth/gold standard for the evaluation.
+	 *            id of a decision problem with existing solution options (alternatives, decision, solution, claims)
+	 *            used as the ground truth/gold standard for the evaluation.
 	 * @param documentationLocation
 	 *            of the decision problem (e.g. Jira issue text).
-	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
-	 *         for one {@link KnowledgeSource} for a given decision problem and
-	 *         keywords.
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics for one {@link KnowledgeSource}
+	 *         for a given decision problem and keywords.
 	 */
 	@Path("/evaluation/{projectKey}")
 	@GET
@@ -401,24 +400,11 @@ public class DecisionGuidanceRest {
 	@POST
 	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
 										  @PathParam("projectKey") String projectKey) {
-		System.out.print("discardRecommendation got following projectKey argument: '");
-		System.out.print(projectKey);
-		System.out.println("'");
-		System.out.println(
-				"Running public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
 		if (recommendation == null) {
-			System.out.println("Recommendation is null :/");
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
 		}
-		System.out.println(recommendation.getSummary());
-		System.out.println("in DecisionGuidanceRest.java:discardRecommendation");
-		System.out.print("recommendation.getTarget().getProject(): ");
-		System.out.println(recommendation.getTarget().getProject());
-		System.out.println(
-				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, projectKey);
-		System.out.println("Done. Calling Response.ok().build();");
 		return Response.ok().build();
 	}
 
@@ -435,18 +421,11 @@ public class DecisionGuidanceRest {
 	@POST
 	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
 											@PathParam("projectKey") String projectKey) {
-		System.out.println(
-				"Running public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation) {");
 		if (recommendation == null) {
-			System.out.println("Recommendation is null :/");
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to undiscard is not valid.")).build();
 		}
-		System.out.println(recommendation.getSummary());
-		System.out.println(
-				"Calling DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation);");
 		DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation, projectKey);
-		System.out.println("Done. Calling Response.ok().build();");
 		return Response.ok().build();
 	}
 
