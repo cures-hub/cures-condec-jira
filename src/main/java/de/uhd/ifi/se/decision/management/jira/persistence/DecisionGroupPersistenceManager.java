@@ -131,12 +131,17 @@ public class DecisionGroupPersistenceManager {
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
 			String projectKey = databaseEntry.getProjectKey();
-			KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey)
+			KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance(projectKey)
 					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
-			if (element == null || databaseEntry.getGroup().isBlank()) {
-				isGroupDeleted = true;
-				DecisionGroupInDatabase.deleteGroup(databaseEntry);
+			if (elementInDatabase != null && !databaseEntry.getGroup().isBlank()) {
+				continue;
 			}
+			KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+			if (graph != null && graph.getElementById(databaseEntry.getSourceId()) != null) {
+				continue;
+			}
+			isGroupDeleted = true;
+			DecisionGroupInDatabase.deleteGroup(databaseEntry);
 		}
 		return isGroupDeleted;
 	}
