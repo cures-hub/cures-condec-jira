@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.recommendation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -88,9 +89,11 @@ public class TestDiscardRecommendation extends TestSetUp {
 
 		assertEquals("The discarded suggestion should be the inserted issue.", recommendation,
 			discardedRecommendations.get(0));
+		assertTrue("The discarded suggestion should have the value true for its field 'discarded'.",
+				discardedRecommendations.get(0).isDiscarded());
 
 		long sameId = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
-		assertEquals("Ids should be identical, because it represents the same link suggestion.", id, sameId);
+		assertEquals("Ids should be identical, because it represents the same suggestion.", id, sameId);
 
 		recommendation.setTarget(null);
 		long exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
