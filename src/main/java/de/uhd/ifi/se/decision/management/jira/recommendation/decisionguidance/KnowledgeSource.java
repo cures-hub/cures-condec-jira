@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
@@ -19,6 +20,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
 @JsonSubTypes({@JsonSubTypes.Type(value = RDFSource.class, name = "RDFSource"), @JsonSubTypes.Type(value = ProjectSource.class, name = "ProjectSource")})
+@JsonIgnoreProperties({"icon"})
 public abstract class KnowledgeSource {
 
 	/**
