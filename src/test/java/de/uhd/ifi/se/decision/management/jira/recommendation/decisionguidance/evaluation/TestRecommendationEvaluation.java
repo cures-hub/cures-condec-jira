@@ -38,8 +38,12 @@ public class TestRecommendationEvaluation extends TestSetUp {
 
 		recommendationEvaluation.setKnowledgeSource(rdfSource);
 		recommendationEvaluation.setRecommendations(new ArrayList<>());
+		recommendationEvaluation.setMetrics(new ArrayList<>());
+		recommendationEvaluation.setGroundTruthSolutionOptions(new ArrayList<>());
 
 		assertEquals("DBPedia", recommendationEvaluation.getKnowledgeSource().getName());
 		assertEquals(0, recommendationEvaluation.getRecommendations().size());
+		assertEquals(0, recommendationEvaluation.getMetrics().size());
+		assertEquals(0, recommendationEvaluation.getGroundTruthSolutionOptions().size());
 	}
 }

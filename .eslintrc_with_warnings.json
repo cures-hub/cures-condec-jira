@@ -14,11 +14,11 @@
         "quotes": [2, "double", { "avoidEscape": true }],
         "wrap-iife" : [0],
         "space-before-function-paren": ["error", "never"],
-        "indent": "off",
-        "no-var": "off",
+        "indent": ["warn", 4],
+        "no-var": "warn",
         "function-paren-newline": "off",
         "function-call-argument-newline": "off",
-        "no-param-reassign": "off",
+        "no-param-reassign": "warn",
         "operator-linebreak": ["error", "after"],
         "no-unused-vars": ["error", { "args": "none" }],
         "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
@@ -26,10 +26,9 @@
         "implicit-arrow-linebreak": "off",
         "quote-props": ["error", "always"],
         "no-restricted-syntax": "off",
-        "prefer-destructuring": "off",
-        "dot-notation": "off",
-        "guard-for-in": "off",
-        "no-tabs": "off",
-        "func-names": "off"
+        "prefer-destructuring": "warn",
+        "dot-notation": "warn",
+        "guard-for-in": "warn",
+        "no-tabs": "off"
     }
 }

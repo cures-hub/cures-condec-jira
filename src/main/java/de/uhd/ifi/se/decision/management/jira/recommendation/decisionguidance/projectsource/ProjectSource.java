@@ -12,10 +12,22 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Kn
  */
 public class ProjectSource extends KnowledgeSource {
 
+	/**
+	 * Jira project key of the {@link DecisionKnowledgeProject} that is used as the knowledge source.
+	 */
 	protected String projectKey;
 
-	private ProjectSource() {
-		this.icon = "aui-iconfont-jira";
+	/**
+	 * @param jiraProject
+	 *            other Jira project.
+	 */
+	public ProjectSource(Project jiraProject) {
+			super(jiraProject == null ? "" : jiraProject.getName(), true);
+			if (jiraProject != null) {
+				this.projectKey = jiraProject.getKey();
+			} else {
+				this.projectKey = "";
+			}
 	}
 
 	/**
@@ -23,8 +35,10 @@ public class ProjectSource extends KnowledgeSource {
 	 *            key of the other Jira project.
 	 */
 	public ProjectSource(String projectKey) {
-		this();
-		this.projectKey = projectKey;
+		this(new DecisionKnowledgeProject(projectKey).getJiraProject());
+		if (this.projectKey.equals("")) {
+			this.projectKey = projectKey;
+		}
 	}
 
 	/**
@@ -35,24 +49,14 @@ public class ProjectSource extends KnowledgeSource {
 	 */
 	public ProjectSource(String projectKey, boolean isActivated) {
 		this(projectKey);
-		this.isActivated = isActivated;
+		this.activated = isActivated;
 	}
 
 	/**
-	 * @param jiraProject
-	 *            other Jira project.
-	 */
-	public ProjectSource(Project jiraProject) {
-		this();
-		this.projectKey = jiraProject.getKey();
-	}
-
-	/**
-	 * @return Jira project key of the Jira project that is used as the knowledge
-	 *         source.
+	 * @return {@link ProjectSource#projectKey}
 	 */
 	public String getProjectKey() {
-		return projectKey != null ? projectKey : "";
+		return projectKey == null ? "" : projectKey;
 	}
 
 	/**
@@ -68,5 +72,10 @@ public class ProjectSource extends KnowledgeSource {
 	@XmlElement
 	public String getName() {
 		return getJiraProject().getName();
+	}
+
+	@Override
+	public String getIcon() {
+		return "aui-iconfont-jira";
 	}
 }

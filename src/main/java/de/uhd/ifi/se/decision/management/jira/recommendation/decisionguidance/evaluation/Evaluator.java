@@ -8,7 +8,6 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
@@ -32,24 +31,22 @@ public class Evaluator {
 
 	/**
 	 * @param decisionProblem
-	 *            with existing solution options (alternatives, decision, solution,
-	 *            claims) used as the ground truth/gold standard for the evaluation.
+	 *            with existing solution options (alternatives, decision, solution, claims) used as the ground
+	 *            truth/gold standard for the evaluation.
 	 * @param keywords
 	 *            additional keywords used to query the knowledge source.
 	 * @param topKResults
-	 *            number of {@link ElementRecommendation}s with the highest
-	 *            {@link RecommendationScore} that should be included in the
-	 *            evaluation. All other recommendations are ignored.
+	 *            number of {@link ElementRecommendation}s with the highest {@link RecommendationScore} that should be
+	 *            included in the evaluation. All other recommendations are ignored.
 	 * @param knowledgeSource
 	 *            {@link KnowledgeSource} that is evaluated.
-	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
-	 *         for one {@link KnowledgeSource} for a given decision problem and
-	 *         keywords.
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics for one {@link KnowledgeSource}
+	 *         for a given decision problem and keywords.
 	 */
 	public static RecommendationEvaluation evaluate(KnowledgeElement decisionProblem, String keywords, int topKResults,
 			KnowledgeSource knowledgeSource) {
 		String projectKey = decisionProblem.getProject().getProjectKey();
-		List<Recommendation> recommendationsFromKnowledgeSource = Recommender
+		List<ElementRecommendation> recommendationsFromKnowledgeSource = Recommender
 				.getRecommenderForKnowledgeSource(projectKey, knowledgeSource)
 				.getRecommendations(keywords, decisionProblem);
 
@@ -58,7 +55,7 @@ public class Evaluator {
 				.sort(Comparator.comparingDouble(recommendation -> recommendation.getScore().getValue()));
 		Collections.reverse(recommendationsFromKnowledgeSource);
 
-		List<Recommendation> topKRecommendations = Evaluator.getTopKRecommendations(recommendationsFromKnowledgeSource,
+		List<ElementRecommendation> topKRecommendations = Evaluator.getTopKRecommendations(recommendationsFromKnowledgeSource,
 				topKResults);
 		List<EvaluationMetric> metrics = calculateMetrics(topKRecommendations, solutionOptions);
 		return new RecommendationEvaluation(knowledgeSource, recommendationsFromKnowledgeSource, metrics,
@@ -101,7 +98,7 @@ public class Evaluator {
 	 *            as the ground truth.
 	 * @return list of {@link EvaluationMetric}s such
 	 */
-	private static List<EvaluationMetric> calculateMetrics(List<Recommendation> recommendations,
+	private static List<EvaluationMetric> calculateMetrics(List<ElementRecommendation> recommendations,
 			List<SolutionOption> groundTruthSolutionOptions) {
 		List<EvaluationMetric> metrics = new ArrayList<>();
 		metrics.add(new NumberOfTruePositives(recommendations, groundTruthSolutionOptions));
@@ -124,10 +121,13 @@ public class Evaluator {
 	 * @return the top-k {@link ElementRecommendation}s with the hightest
 	 *         {@link RecommendationScore}s.
 	 */
-	public static List<Recommendation> getTopKRecommendations(List<Recommendation> allRecommendations, int k) {
-		if (k <= 0 || k >= allRecommendations.size()) {
-			return allRecommendations;
+	public static List<ElementRecommendation> getTopKRecommendations(List<ElementRecommendation> allRecommendations, int k) {
+		List<ElementRecommendation> topKRecommendations;
+		if (k > 0 && k < allRecommendations.size()) {
+			topKRecommendations = allRecommendations.subList(0, k);
+		} else {
+			topKRecommendations = allRecommendations;
 		}
-		return allRecommendations.subList(0, k);
+		return topKRecommendations;
 	}
 }

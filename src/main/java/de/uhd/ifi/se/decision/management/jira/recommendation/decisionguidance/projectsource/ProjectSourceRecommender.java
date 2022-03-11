@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Recommender;
@@ -21,8 +20,13 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.
  * Queries another Jira project ({@link ProjectSource}) to generate
  * {@link ElementRecommendation}s.
  */
+@SuppressWarnings("PMD.FieldNamingConventions")  // For static code analysis: Per convention in the project,
+//                                                  'similarityProvider' is not named like a constant
 public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 
+	/**
+	 * Provider used to evaluate the similarity of different texts.
+	 */
 	private static final TextualSimilarityContextInformationProvider similarityProvider = new TextualSimilarityContextInformationProvider();
 
 	/**
@@ -36,27 +40,24 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 	}
 
 	@Override
-	public List<Recommendation> getRecommendations(String inputs) {
-		if (inputs == null) {
-			return new ArrayList<>();
+	public List<ElementRecommendation> getRecommendations(String inputs) {
+		List<ElementRecommendation> recommendations = new ArrayList<>();
+		if (inputs != null) {
+			List<KnowledgeElement> similarElements = findSimilarElements(inputs);
+			similarElements.forEach(issue -> {
+				issue.getLinkedElements(5).stream().filter(element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
+						.forEach(element -> {
+							ElementRecommendation recommendation = new ElementRecommendation(element);
+							recommendation.setKnowledgeSource(knowledgeSource);
+							recommendation.addArguments(new SolutionOption(element).getArguments());
+
+							RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
+							recommendation.setScore(score);
+							recommendations.add(recommendation);
+						});
+			});
+			ElementRecommendation.normalizeRecommendationScore(recommendations);
 		}
-		List<Recommendation> recommendations = new ArrayList<>();
-		List<KnowledgeElement> similarElements = findSimilarElements(inputs);
-		similarElements.forEach(issue -> {
-			issue.getLinkedElements(5).stream()
-					.filter(element -> element.hasKnowledgeType(KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION))
-					.forEach(element -> {
-						ElementRecommendation recommendation = new ElementRecommendation(element);
-						recommendation.setKnowledgeSource(knowledgeSource);
-						recommendation.addArguments(new SolutionOption(element).getArguments());
-
-						RecommendationScore score = calculateScore(inputs, issue, recommendation.getArguments());
-						recommendation.setScore(score);
-						recommendations.add(recommendation);
-					});
-		});
-
-		Recommendation.normalizeRecommendationScore(recommendations);
 		return recommendations.stream().distinct().collect(Collectors.toList());
 	}
 
@@ -90,9 +91,12 @@ public class ProjectSourceRecommender extends Recommender<ProjectSource> {
 	}
 
 	private RecommendationScore getRecommendationScoreForArgument(Argument argument) {
+		RecommendationScore score;
 		if (argument.getType() == KnowledgeType.PRO || argument.getType() == KnowledgeType.ARGUMENT) {
-			return new RecommendationScore(.1f, argument.getType() + " : " + argument.getSummary());
+			score = new RecommendationScore(.1f, argument.getType() + " : " + argument.getSummary());
+		} else {
+			score = new RecommendationScore(-.1f, argument.getType() + " : " + argument.getSummary());
 		}
-		return new RecommendationScore(-.1f, argument.getType() + " : " + argument.getSummary());
+		return score;
 	}
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 
@@ -25,7 +24,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Kn
  */
 public class NumberOfTruePositives extends EvaluationMetric {
 
-	public NumberOfTruePositives(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
+	/**
+	 * @param recommendations {@link EvaluationMetric#recommendations}
+	 * @param solutionOptions {@link EvaluationMetric#groundTruthSolutionOptions}
+	 */
+	public NumberOfTruePositives(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
 
@@ -42,8 +45,8 @@ public class NumberOfTruePositives extends EvaluationMetric {
 	@Override
 	public double calculateMetric() {
 		int numberOfTruePositives = 0;
-		for (Recommendation recommendation : recommendations) {
-			if (countMatches(groundTruthSolutionOptions, ((ElementRecommendation) recommendation).getSummary()) > 0) {
+		for (ElementRecommendation recommendation : recommendations) {
+			if (countMatches(groundTruthSolutionOptions, recommendation.getSummary()) > 0) {
 				numberOfTruePositives++;
 			}
 		}

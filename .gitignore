@@ -22,3 +22,7 @@ pngLaTeX.*
 tikz-uml.sty
 *.model
 src/main/resources/classifier/TEST*
+env/
+node_modules/
+package-lock.json
+package.json

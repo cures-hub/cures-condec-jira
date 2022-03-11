@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
@@ -36,6 +37,14 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * REST resource for configuration and usage of decision guidance
  */
 @Path("/decision-guidance")
+@SuppressWarnings({"PMD.LinguisticNaming",  // For static code analysis: 1. The special case of a REST API makes it
+	"PMD.OnlyOneReturn",  // reasonable that also setters return a response. 2. Multiple returns increase readability
+    "PMD.AvoidDuplicateLiterals",  // here, as depending on the request and the response different return values may
+	"PMD.CommentSize",  //  occur. 3. Replacing path parameters and the word "error" with constants would decrease
+    "PMD.UseObjectForClearerAPI",  // readability. 4. Many parameters justify long comments. 5. As most of the
+    "PMD.AtLeastOneConstructor"})  // parameters are either path or query parameters, using a container object for
+//                                    them is not appropriate here. 6. This class does not have any fields to be
+//                                    initialized, so a constructor does not make sense.
 public class DecisionGuidanceRest {
 
 	/**
@@ -334,28 +343,24 @@ public class DecisionGuidanceRest {
 
 	/**
 	 * @param request
-	 *            HttpServletRequest with an authorized Jira
-	 *            {@link ApplicationUser}.
+	 *            HttpServletRequest with an authorized Jira {@link ApplicationUser}.
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param keyword
 	 *            additional keywords used to query the knowledge source.
 	 * @param knowledgeSourceName
-	 *            name of the {@link KnowledgeSource} that is evaluated. It must
-	 *            exist in the {@link DecisionGuidanceConfiguration}.
+	 *            name of the {@link KnowledgeSource} that is evaluated. It must exist in the
+	 *            {@link DecisionGuidanceConfiguration}.
 	 * @param topKResults
-	 *            number of {@link ElementRecommendation}s with the highest
-	 *            {@link RecommendationScore} that should be included in the
-	 *            evaluation. All other recommendations are ignored.
+	 *            number of {@link ElementRecommendation}s with the highest {@link RecommendationScore} that should be
+	 *            included in the evaluation. All other recommendations are ignored.
 	 * @param decisionProblemId
-	 *            id of a decision problem with existing solution options
-	 *            (alternatives, decision, solution, claims) used as the ground
-	 *            truth/gold standard for the evaluation.
+	 *            id of a decision problem with existing solution options (alternatives, decision, solution, claims)
+	 *            used as the ground truth/gold standard for the evaluation.
 	 * @param documentationLocation
 	 *            of the decision problem (e.g. Jira issue text).
-	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
-	 *         for one {@link KnowledgeSource} for a given decision problem and
-	 *         keywords.
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics for one {@link KnowledgeSource}
+	 *         for a given decision problem and keywords.
 	 */
 	@Path("/evaluation/{projectKey}")
 	@GET
@@ -382,4 +387,54 @@ public class DecisionGuidanceRest {
 
 		return Response.ok(recommendationEvaluation).build();
 	}
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param recommendation
+	 *            {@link ElementRecommendation} to be discarded.
+	 * @return ok if {@link ElementRecommendation} was successfully discarded.
+	 */
+	@Path("/discard/{projectKey}")
+	@POST
+	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
+										  @PathParam("projectKey") String projectKey) {
+		if (recommendation == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
+		}
+		long id = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, projectKey);
+		if (id == -1) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation could not be stored.")).build();
+		}
+		return Response.ok().build();
+	}
+
+
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param recommendation
+	 *            previously discarded {@link ElementRecommendation} to be restored .
+	 * @return ok if {@link ElementRecommendation} was successfully un-discarded.
+	 */
+	@Path("/undo-discard/{projectKey}")
+	@POST
+	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
+											@PathParam("projectKey") String projectKey) {
+		if (recommendation == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation to undiscard is not valid.")).build();
+		}
+		boolean removed = DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation, projectKey);
+		if (!removed) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation could not be removed from discarded recommendations.")).build();
+		}
+		return Response.ok().build();
+	}
+
 }

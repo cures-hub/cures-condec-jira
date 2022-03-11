@@ -33,7 +33,6 @@ public class TestProjectSource extends TestSetUp {
 
 	@Test
 	public void testSetAndGetIcon() {
-		projectSource.setIcon("aui-iconfont-jira");
 		assertEquals("aui-iconfont-jira", projectSource.getIcon());
 	}
 

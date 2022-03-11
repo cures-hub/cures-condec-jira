@@ -4,7 +4,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 
 /**
  * Measures the average precision (AP) within the top-k results. Takes the total
@@ -15,7 +15,11 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
  */
 public class AveragePrecision extends EvaluationMetric {
 
-	public AveragePrecision(List<Recommendation> recommendations, List<SolutionOption> solutionOptions) {
+	/**
+	 * @param recommendations Recommendations to be evaluated
+	 * @param solutionOptions Ground truth to which the recommendations should be compared
+	 */
+	public AveragePrecision(List<ElementRecommendation> recommendations, List<SolutionOption> solutionOptions) {
 		super(recommendations, solutionOptions);
 	}
 
@@ -28,12 +32,12 @@ public class AveragePrecision extends EvaluationMetric {
 		for (int i = 0; i < recommendations.size(); i++) {
 			for (KnowledgeElement solutionOption : groundTruthSolutionOptions) {
 				if (isMatching(solutionOption, recommendations.get(i))) {
-					precisionAtK += (++numberOfMatches / (i + 1.0));
+					precisionAtK += ++numberOfMatches / (i + 1.0);
 				}
 			}
 		}
 		double averagePrecision = precisionAtK / numberOfGroundTruthPositives;
-		return !Double.isNaN(averagePrecision) ? averagePrecision : 0.0;
+		return Double.isNaN(averagePrecision) ? 0.0 : averagePrecision;
 	}
 
 	@Override

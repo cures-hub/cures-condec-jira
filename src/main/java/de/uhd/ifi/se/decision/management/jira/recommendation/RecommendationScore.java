@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
  * can be used to rank/sort the recommendations.
  * 
  * The score consists of a value and an explanation. Besides, the score can be
- * composed of various sub-scores ({@link this#getComposedScores()}) for the
+ * composed of various sub-scores ({@link RecommendationScore#getSumOfSubScores()}) for the
  * criteria that were used to calculate the score.
  */
 public class RecommendationScore {

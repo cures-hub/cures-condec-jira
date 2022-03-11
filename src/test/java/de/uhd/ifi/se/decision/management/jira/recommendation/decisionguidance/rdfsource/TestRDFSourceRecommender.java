@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.r
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,6 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+
+import java.util.List;
 
 public class TestRDFSourceRecommender extends TestSetUp {
 
@@ -58,5 +61,12 @@ public class TestRDFSourceRecommender extends TestSetUp {
 		assertTrue(rdfSourceInputString.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size() > 30);
 		assertEquals(0, rdfSourceInputString.getRecommendations((String) null).size());
 		assertEquals(0, rdfSourceInputString.getRecommendations(new KnowledgeElement()).size());
+	}
+
+	@Test
+	public void testAddDummyRecommendations() {
+		RDFSourceRecommender recommender = new RDFSourceRecommender("TEST", rdfSource);
+		List<ElementRecommendation> recommendations = recommender.getRecommendations("get_dummy_decision_guidance_recommendations");
+		assertEquals(10, recommendations.size());
 	}
 }

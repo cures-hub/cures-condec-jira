@@ -5,7 +5,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.EvaluationMetric;
@@ -21,12 +20,33 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
  */
 public class RecommendationEvaluation {
 
+	/**
+	 * Source of the {@link ElementRecommendation}s to be evaluated
+	 */
 	private KnowledgeSource knowledgeSource;
-	private List<Recommendation> recommendations;
+
+	/**
+	 * Recommendations to be evaluated
+	 */
+	private List<ElementRecommendation> recommendations;
+
+	/**
+	 * Metrics to be used in the evaluation
+	 */
 	private List<EvaluationMetric> metrics;
+
+	/**
+	 * Ground truth of fitting recommendations to which the new ones are compared
+	 */
 	private List<SolutionOption> groundTruthSolutionOptions;
 
-	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<Recommendation> recommendations,
+	/**
+	 * @param knowledgeSource {@link RecommendationEvaluation#knowledgeSource}
+	 * @param recommendations {@link RecommendationEvaluation#recommendations}
+	 * @param metrics {@link RecommendationEvaluation#metrics}
+	 * @param solutionOptions {@link RecommendationEvaluation#groundTruthSolutionOptions}
+	 */
+	public RecommendationEvaluation(KnowledgeSource knowledgeSource, List<ElementRecommendation> recommendations,
 			List<EvaluationMetric> metrics, List<SolutionOption> solutionOptions) {
 		this.knowledgeSource = knowledgeSource;
 		this.recommendations = recommendations;
@@ -55,16 +75,14 @@ public class RecommendationEvaluation {
 	 *         {@link KnowledgeSource}.
 	 */
 	@XmlElement
-	public List<Recommendation> getRecommendations() {
+	public List<ElementRecommendation> getRecommendations() {
 		return recommendations;
 	}
 
 	/**
-	 * @param numberOfResults
-	 *            number of {@link ElementRecommendation}s generated from the
-	 *            {@link KnowledgeSource}.
+	 * @param recommendations {@link RecommendationEvaluation#recommendations}
 	 */
-	public void setRecommendations(List<Recommendation> recommendations) {
+	public void setRecommendations(List<ElementRecommendation> recommendations) {
 		this.recommendations = recommendations;
 	}
 
@@ -79,10 +97,27 @@ public class RecommendationEvaluation {
 	}
 
 	/**
+	 * @param metrics  all metrics to be calculated using the ground truth solution options and
+	 *         the recommendations, e.g. {@link NumberOfTruePositives} and
+	 *         {@link ReciprocalRank}.
+	 */
+	public void setMetrics(List<EvaluationMetric> metrics) {
+		this.metrics = metrics;
+	}
+
+	/**
 	 * @return gold standard/ground truth that was already documented.
 	 */
 	@XmlElement
 	public List<SolutionOption> getGroundTruthSolutionOptions() {
 		return groundTruthSolutionOptions;
+	}
+
+	/**
+	 * @param groundTruthSolutionOptions  Gold standard/ground truth that was already documented to be used by
+	 *                                    {@link EvaluationMetric}s.
+	 */
+	public void setGroundTruthSolutionOptions(List<SolutionOption> groundTruthSolutionOptions) {
+		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}
 }

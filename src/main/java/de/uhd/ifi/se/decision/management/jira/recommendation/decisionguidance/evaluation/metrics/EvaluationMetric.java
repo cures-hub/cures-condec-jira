@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -20,10 +21,20 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
  */
 public abstract class EvaluationMetric {
 
+	/**
+	 * Ground truth recommendations to which the given ones are compared
+	 */
 	protected List<SolutionOption> groundTruthSolutionOptions;
-	protected List<Recommendation> recommendations;
 
-	public EvaluationMetric(List<Recommendation> recommendations) {
+	/**
+	 * Recommendations to be evaluated
+	 */
+	protected List<ElementRecommendation> recommendations;
+
+	/**
+	 * @param recommendations {@link EvaluationMetric#recommendations}
+	 */
+	public EvaluationMetric(List<ElementRecommendation> recommendations) {
 		this.recommendations = recommendations;
 	}
 
@@ -34,7 +45,7 @@ public abstract class EvaluationMetric {
 	 * @param groundTruthSolutionOptions
 	 *            gold standard/ground truth that was already documented.
 	 */
-	public EvaluationMetric(List<Recommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
+	public EvaluationMetric(List<ElementRecommendation> recommendations, List<SolutionOption> groundTruthSolutionOptions) {
 		this(recommendations);
 		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
 	}
@@ -77,12 +88,56 @@ public abstract class EvaluationMetric {
 		return counter;
 	}
 
+	/**
+	 * Check whether the given knowledge element matches the given recommendation.
+	 * @see EvaluationMetric#isMatching(String, String) How matching of summaries is defined
+	 *
+	 * @param knowledgeElement Knowledge element, e.g. decision or alternative, to be compared to the given
+	 *                         recommendation.
+	 * @param recommendation Recommendation to be compared to the given knowledge element.
+	 * @return true, if the summaries of the given knowledge element and recommendation match, otherwise false.
+	 */
 	public static boolean isMatching(KnowledgeElement knowledgeElement, Recommendation recommendation) {
 		return isMatching(knowledgeElement.getSummary(), ((ElementRecommendation) recommendation).getSummary());
 	}
 
+	/**
+	 * Check whether the given Strings match each other.
+	 *
+	 * @param summaryA First string to be compared to the second one.
+	 * @param summaryB Second string to be compared to the first one.
+	 * @return true, if one of the Strings {@link String#contains(CharSequence)} the other one after normalization.
+	 */
 	public static boolean isMatching(String summaryA, String summaryB) {
-		return summaryA.toLowerCase().contains(summaryB.toLowerCase().trim())
-				|| summaryB.toLowerCase().contains(summaryA.toLowerCase().trim());
+		return summaryA.toLowerCase(Locale.ENGLISH).contains(summaryB.toLowerCase(Locale.ENGLISH).trim())
+				|| summaryB.toLowerCase(Locale.ENGLISH).contains(summaryA.toLowerCase(Locale.ENGLISH).trim());
+	}
+
+	/**
+	 * @return {@link EvaluationMetric#groundTruthSolutionOptions}
+	 */
+	public List<SolutionOption> getGroundTruthSolutionOptions() {
+		return groundTruthSolutionOptions;
+	}
+
+	/**
+	 * @param groundTruthSolutionOptions {@link EvaluationMetric#groundTruthSolutionOptions}
+	 */
+	public void setGroundTruthSolutionOptions(List<SolutionOption> groundTruthSolutionOptions) {
+		this.groundTruthSolutionOptions = groundTruthSolutionOptions;
+	}
+
+	/**
+	 * @return {@link EvaluationMetric#recommendations}
+	 */
+	public List<ElementRecommendation> getRecommendations() {
+		return recommendations;
+	}
+
+	/**
+	 * @param recommendations {@link EvaluationMetric#recommendations}
+	 */
+	public void setRecommendations(List<ElementRecommendation> recommendations) {
+		this.recommendations = recommendations;
 	}
 }

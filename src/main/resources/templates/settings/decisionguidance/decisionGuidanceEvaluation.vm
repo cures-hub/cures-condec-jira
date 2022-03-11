@@ -26,7 +26,7 @@
         </div>
         <div class="aui-dropdown2-section">
             <div class="aui-dropdown2-heading"><strong>Project Sources</strong></div>
-            #foreach($projectSource in $decisionGuidanceConfig.getProjectKnowledgeSources())
+            #foreach($projectSource in $decisionGuidanceConfig.addAllPossibleProjectKnowledgeSources())
             <aui-item-checkbox interactive>$projectSource.getName()</aui-item-checkbox>
             #end
         </div>

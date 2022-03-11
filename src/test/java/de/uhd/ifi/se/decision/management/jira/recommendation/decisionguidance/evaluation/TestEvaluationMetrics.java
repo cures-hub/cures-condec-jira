@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.SolutionOption;
-import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.AveragePrecision;
@@ -25,9 +24,13 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ev
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.evaluation.metrics.ReciprocalRank;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 
+@SuppressWarnings({"PMD.AtLeastOneConstructor",  // For static code analysis: Rules that are not
+		"PMD.BeanMembersShouldSerialize",  //       necessary for a test class
+		"PMD.CommentRequired",
+		"PMD.AvoidDuplicateLiterals"})
 public class TestEvaluationMetrics extends TestSetUp {
 
-	protected List<Recommendation> recommendations;
+	protected List<ElementRecommendation> recommendations;
 	protected List<SolutionOption> groundTruthSolutionOptions;
 
 	@Before
@@ -37,8 +40,8 @@ public class TestEvaluationMetrics extends TestSetUp {
 		groundTruthSolutionOptions = new ArrayList<>();
 
 		KnowledgeSource knowledgeSource = new ProjectSource("TEST");
-		Recommendation recommendation = new ElementRecommendation(knowledgeSource, "MySQL", "Test Url");
-		Recommendation recommendation2 = new ElementRecommendation(knowledgeSource, "PostgreSQL", "Test Url");
+		ElementRecommendation recommendation = new ElementRecommendation("MySQL", knowledgeSource, "Test Url");
+		ElementRecommendation recommendation2 = new ElementRecommendation("PostgreSQL", knowledgeSource, "Test Url");
 		recommendations.add(recommendation);
 		recommendations.add(recommendation2);
 
@@ -75,7 +78,17 @@ public class TestEvaluationMetrics extends TestSetUp {
 		FScore fScore = new FScore(recommendations, groundTruthSolutionOptions);
 		assertEquals(0.4, fScore.calculateMetric(), 0.0);
 		assertEquals("F-Score", fScore.getName());
+		assertEquals(0.5, fScore.getPrecision(), 0.0);
+		assertEquals(0.33, fScore.getRecall(), 0.1);
 		assertEquals(false, fScore.getDescription().isBlank());
+		assertEquals(recommendations, fScore.getRecommendations());
+		assertEquals(groundTruthSolutionOptions, fScore.getGroundTruthSolutionOptions());
+
+		fScore.setRecommendations(new ArrayList<>());
+		assertEquals(0, fScore.getRecommendations().size());
+
+		fScore.setGroundTruthSolutionOptions(new ArrayList<>());
+		assertEquals(0, fScore.getGroundTruthSolutionOptions().size());
 
 		fScore = new FScore(0.5, 0.5);
 		assertEquals(0.5, fScore.calculateMetric(), 0.0);
@@ -103,6 +116,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 		precision = new Precision(recommendations, 2);
 		assertEquals(2, recommendations.size());
 		assertEquals(1.0, precision.calculateMetric(), 0.0);
+		assertEquals(2, precision.getNumberOfTruePositives(), 0.0);
 
 		precision = new Precision(new ArrayList<>(), 0);
 		assertEquals(0.0, precision.calculateMetric(), 0.0);
@@ -122,6 +136,8 @@ public class TestEvaluationMetrics extends TestSetUp {
 		assertEquals(0.0, recall.calculateMetric(), 0.0);
 
 		recall = new Recall(5, -1);
+		assertEquals(5, recall.getNumberOfTruePositives(), 0.0);
+		assertEquals(-1, recall.getNumberOfFalseNegatives(), 0.0);
 		assertEquals(1.0, recall.calculateMetric(), 0.0);
 	}
 
