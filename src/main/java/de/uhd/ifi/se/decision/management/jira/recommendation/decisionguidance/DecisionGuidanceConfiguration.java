@@ -38,7 +38,6 @@ public class DecisionGuidanceConfiguration {
 		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
 		this.rdfKnowledgeSources = RDFSource.getDefaultDBPediaQueries();
-		System.err.println("CALLING DECISION GUIDANCE CONFIG CONSTRUCTOR");
 		this.projectKnowledgeSources = this.addAllPossibleProjectKnowledgeSources();
 	}
 
@@ -202,8 +201,6 @@ public class DecisionGuidanceConfiguration {
 	public List<ProjectSource> getProjectKnowledgeSources() {
 		if (this.projectKnowledgeSources == null) {
 			this.projectKnowledgeSources = addAllPossibleProjectKnowledgeSources();
-			System.err.println("projectKnowledgeSources WAS NULL, now it is:");
-			System.err.println(this.projectKnowledgeSources);
 		}
 		return this.projectKnowledgeSources;
 	}
@@ -224,7 +221,6 @@ public class DecisionGuidanceConfiguration {
 	 *         existing.
 	 */
 	public ProjectSource getProjectSource(String projectSourceKey) {
-		System.err.println("CALLING getProjectSource");
 		if (this.projectKnowledgeSources != null) {
 			for (ProjectSource projectSource : projectKnowledgeSources) {
 				if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {

@@ -82,7 +82,9 @@ public final class DiscardedRecommendationPersistenceManager {
                             RecommendationType.EXTERNAL)));
             for (DiscardedRecommendationInDatabase discardedRecommendation : discardedRecommendations.orElseGet(()
                     -> new DiscardedRecommendationInDatabase[0])) {
-                discardedSuggestions.add(new ElementRecommendation(discardedRecommendation.getSummary(), origin));
+                ElementRecommendation discardedSuggestion = new ElementRecommendation(discardedRecommendation.getSummary(), origin);
+                discardedSuggestion.setDiscarded(true);
+                discardedSuggestions.add(discardedSuggestion);
             }
         }
         return discardedSuggestions;

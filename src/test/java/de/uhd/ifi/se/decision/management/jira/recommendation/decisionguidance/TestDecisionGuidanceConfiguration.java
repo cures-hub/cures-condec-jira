@@ -83,8 +83,6 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 		sources.add(source);
 		config.setProjectKnowledgeSources(sources);
 		config.setRDFKnowledgeSources(new ArrayList<>());
-		System.err.print("ACTIVATED KNOWLEDGE SOURCES: ");
-		System.err.println(config.getAllActivatedKnowledgeSources());
 		assertEquals(1, config.getAllActivatedKnowledgeSources().size());
 	}
 
@@ -105,8 +103,6 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 		rdfSources.add(source2);
 		config.setRDFKnowledgeSources(rdfSources);
 		config.setProjectKnowledgeSources(new ArrayList<>());
-		System.err.print("ALL KNOWLEDGE SOURCES: ");
-		System.err.println(config.getAllKnowledgeSources());
 		assertEquals(2, config.getAllKnowledgeSources().size());
 		assertEquals(1, config.getAllActivatedKnowledgeSources().size());
 	}
