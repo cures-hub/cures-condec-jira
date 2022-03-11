@@ -179,7 +179,9 @@ public class DecisionGuidanceConfiguration {
 	 *         deactivated.
 	 */
 	public List<ProjectSource> addAllPossibleProjectKnowledgeSources() {
-		List<ProjectSource> projectSources = new ArrayList<>();
+		if (this.projectKnowledgeSources == null) {
+			this.projectKnowledgeSources = new ArrayList<>();
+		}
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			DecisionKnowledgeProject conDecProject = new DecisionKnowledgeProject(project);
 			if (!conDecProject.getBasicConfiguration().isActivated()) {
@@ -189,10 +191,9 @@ public class DecisionGuidanceConfiguration {
 			if (projectSource == null || projectSource.getProjectKey().isBlank()) {
 				projectSource = new ProjectSource(project);
 			}
-			projectSources.add(projectSource);
+			this.projectKnowledgeSources.add(projectSource);
 		}
-		projectKnowledgeSources = projectSources;
-		return projectSources;
+		return this.projectKnowledgeSources;
 	}
 
 	/**
@@ -224,9 +225,11 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public ProjectSource getProjectSource(String projectSourceKey) {
 		System.err.println("CALLING getProjectSource");
-		for (ProjectSource projectSource : projectKnowledgeSources) {
-			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
-				return projectSource;
+		if (this.projectKnowledgeSources != null) {
+			for (ProjectSource projectSource : projectKnowledgeSources) {
+				if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
+					return projectSource;
+				}
 			}
 		}
 		return null;
