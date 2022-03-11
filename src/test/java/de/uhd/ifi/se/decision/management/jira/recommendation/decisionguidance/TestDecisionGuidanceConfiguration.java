@@ -121,5 +121,8 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 		assertTrue(config.getProjectSource("TEST").isActivated());
 		config.setProjectKnowledgeSource("TEST", false);
 		assertFalse(config.getProjectSource("TEST").isActivated());
+		config.setProjectKnowledgeSources(new ArrayList<>());
+		config.setProjectKnowledgeSource("TEST", false);
+		assertFalse(config.getProjectSource("TEST").isActivated());
 	}
 }

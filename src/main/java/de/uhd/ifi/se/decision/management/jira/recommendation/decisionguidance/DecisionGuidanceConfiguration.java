@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.jena.base.Sys;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;

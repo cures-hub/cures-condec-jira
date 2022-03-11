@@ -404,7 +404,11 @@ public class DecisionGuidanceRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
 		}
-		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, projectKey);
+		long id = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, projectKey);
+		if (id == -1) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation could not be stored.")).build();
+		}
 		return Response.ok().build();
 	}
 
@@ -425,7 +429,11 @@ public class DecisionGuidanceRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to undiscard is not valid.")).build();
 		}
-		DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation, projectKey);
+		boolean removed = DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation, projectKey);
+		if (!removed) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "The recommendation could not be removed from discarded recommendations.")).build();
+		}
 		return Response.ok().build();
 	}
 
