@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.base.Sys;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -199,6 +200,8 @@ public class DecisionGuidanceConfiguration {
 	public List<ProjectSource> getProjectKnowledgeSources() {
 		if (this.projectKnowledgeSources == null) {
 			this.projectKnowledgeSources = addAllPossibleProjectKnowledgeSources();
+			System.err.println("projectKnowledgeSources WAS NULL, now it is:");
+			System.err.println(this.projectKnowledgeSources);
 		}
 		return this.projectKnowledgeSources;
 	}
