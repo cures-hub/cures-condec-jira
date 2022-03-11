@@ -136,11 +136,11 @@ Code files and decision knowledge elements that are (transitively) linked to the
 - ST: Analyze quality of documented decision knowledge and other knowledge (requirements, code) ([CONDEC-202](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-202))
 	- ![Issue](../../src/main/resources/images/issue.png) Should there be one REST API method per dashboard or per single metric?
 		- ![Alternative](../../src/main/resources/images/alternative.png) We could create one REST API method per single metric!
-			- ![Pro](../../src/main/resources/images/argument_pro.png) More complex
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Less efficient because of redundant calculations
 			- ![Con](../../src/main/resources/images/argument_con.png) More modular
 		- ![Decision](../../src/main/resources/images/decision.png) We create one REST API method per dashboard!
 			- ![Con](../../src/main/resources/images/argument_con.png) Less modular
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Less complex
+			- ![Pro](../../src/main/resources/images/argument_pro.png) More efficient because parts of calculations can be used for all metrics
 	- ![Issue](../../src/main/resources/images/issue.png) Should the rationale manager be able to change the definition of done (DoD) in the dashboard?
 		- ![Alternative](../../src/main/resources/images/alternative.png) We could make the global DoD setting static in the dashboard.
 			- ![Pro](../../src/main/resources/images/argument_pro.png) Simple solution.
