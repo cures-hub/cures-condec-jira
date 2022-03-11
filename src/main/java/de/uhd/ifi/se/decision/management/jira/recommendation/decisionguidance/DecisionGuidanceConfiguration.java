@@ -197,6 +197,9 @@ public class DecisionGuidanceConfiguration {
 	 * @return {@link DecisionGuidanceConfiguration#projectKnowledgeSources}.
 	 */
 	public List<ProjectSource> getProjectKnowledgeSources() {
+		if (this.projectKnowledgeSources == null) {
+			this.projectKnowledgeSources = addAllPossibleProjectKnowledgeSources();
+		}
 		return this.projectKnowledgeSources;
 	}
 
