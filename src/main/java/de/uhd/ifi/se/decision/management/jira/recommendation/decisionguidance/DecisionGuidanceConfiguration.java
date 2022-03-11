@@ -37,7 +37,7 @@ public class DecisionGuidanceConfiguration {
 		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
 		this.rdfKnowledgeSources = RDFSource.getDefaultDBPediaQueries();
-		this.projectKnowledgeSources = new ArrayList<>();
+		this.projectKnowledgeSources = this.addAllPossibleProjectKnowledgeSources();
 	}
 
 	/**
@@ -170,10 +170,13 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	/**
+	 * Add all available project sources as {@link DecisionGuidanceConfiguration#projectKnowledgeSources}
+	 * and return them.
+	 *
 	 * @return all possible {@link ProjectSource}s that are either activated or
 	 *         deactivated.
 	 */
-	public List<ProjectSource> getProjectKnowledgeSources() {
+	public List<ProjectSource> addAllPossibleProjectKnowledgeSources() {
 		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			DecisionKnowledgeProject conDecProject = new DecisionKnowledgeProject(project);
@@ -188,6 +191,13 @@ public class DecisionGuidanceConfiguration {
 		}
 		projectKnowledgeSources = projectSources;
 		return projectSources;
+	}
+
+	/**
+	 * @return {@link DecisionGuidanceConfiguration#projectKnowledgeSources}.
+	 */
+	public List<ProjectSource> getProjectKnowledgeSources() {
+		return this.projectKnowledgeSources;
 	}
 
 	/**
