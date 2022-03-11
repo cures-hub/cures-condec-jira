@@ -38,6 +38,7 @@ public class DecisionGuidanceConfiguration {
 		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
 		this.rdfKnowledgeSources = RDFSource.getDefaultDBPediaQueries();
+		System.err.println("CALLING DECISION GUIDANCE CONFIG CONSTRUCTOR");
 		this.projectKnowledgeSources = this.addAllPossibleProjectKnowledgeSources();
 	}
 
@@ -222,6 +223,7 @@ public class DecisionGuidanceConfiguration {
 	 *         existing.
 	 */
 	public ProjectSource getProjectSource(String projectSourceKey) {
+		System.err.println("CALLING getProjectSource");
 		for (ProjectSource projectSource : projectKnowledgeSources) {
 			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
 				return projectSource;
