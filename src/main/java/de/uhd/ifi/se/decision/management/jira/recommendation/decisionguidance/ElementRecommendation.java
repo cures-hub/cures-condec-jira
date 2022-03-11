@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationScore
 import de.uhd.ifi.se.decision.management.jira.recommendation.RecommendationType;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Models a recommendation of a solution option for a decision problem. The
@@ -28,12 +29,13 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * support or attack this recommended solution option. The relevance of the
  * recommendation is represented by the {@link RecommendationScore}.
  */
-@JsonIgnoreProperties(value={"knowledgeSource"}, ignoreUnknown = true) //, value = "knowledgeSource")
+@JsonIgnoreProperties(ignoreUnknown = true) //, value = "knowledgeSource")
 public class ElementRecommendation extends KnowledgeElement implements Recommendation {
 
 	/**
 	 * Source of the recommendation, e.g. DBPedia (as {@link RDFSource}) or another Jira project (as {@link ProjectSource}).
 	 */
+	@JsonIgnore
 	private KnowledgeSource knowledgeSource;
 
 	/**
@@ -171,6 +173,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 * @see RDFSource
 	 */
 	@XmlElement
+	@JsonProperty("knowledgeSource")
 	public KnowledgeSource getKnowledgeSource() {
 		return knowledgeSource;
 	}
