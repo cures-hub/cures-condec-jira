@@ -57,6 +57,7 @@
 				conDecContextMenu.createContextMenu(this.element.id, this.element.documentationLocation, event);
 			});
 			tableRowElement3.appendChild(link);
+			tableRowElement3.insertAdjacentText("beforeend", " "); 
 		}
 		row.appendChild(tableRowElement3);
 		body.appendChild(row);

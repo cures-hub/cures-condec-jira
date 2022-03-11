@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionGroupPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -31,6 +32,15 @@ public class TestDeleteInvalidGroups extends TestSetUp {
 	@NonTransactional
 	public void testElementValidAndGroupNameValid() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", KnowledgeElements.getDecision());
+		assertFalse(DecisionGroupPersistenceManager.deleteInvalidGroups());
+	}
+
+	@Test
+	@NonTransactional
+	public void testElementOnlyInGraphAndGroupNameValid() {
+		KnowledgeElement element = new KnowledgeElement(-42, "TEST", "s");
+		KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(element);
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
 		assertFalse(DecisionGroupPersistenceManager.deleteInvalidGroups());
 	}
 }

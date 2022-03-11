@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -181,11 +180,26 @@ public class DecisionGroupingRest {
 					.build();
 		}
 		Map<String, Set<KnowledgeElement>> decisionGroupsMap = new LinkedHashMap<>();
+
 		FilteringManager filteringManager = new FilteringManager(filterSettings);
 		Set<KnowledgeElement> elementsMatchingFilterSettings = filteringManager.getElementsMatchingFilterSettings();
-		for (String group : DecisionGroupPersistenceManager.getAllDecisionGroups(filterSettings.getProjectKey())) {
-			decisionGroupsMap.put(group, elementsMatchingFilterSettings.stream()
-					.filter(element -> element.getDecisionGroups().contains(group)).collect(Collectors.toSet()));
+		List<String> allLevelsAndGroups = DecisionGroupPersistenceManager
+				.getAllDecisionGroups(filterSettings.getProjectKey());
+		allLevelsAndGroups.add("NoGroup"); // for ungrouped elements
+
+		// init group to elements map
+		for (String group : allLevelsAndGroups) {
+			decisionGroupsMap.put(group, new HashSet<>());
+		}
+		for (KnowledgeElement element : elementsMatchingFilterSettings) {
+			List<String> groupsOfElement = element.getDecisionGroups();
+			if (groupsOfElement.size() <= 1) {
+				decisionGroupsMap.get("NoGroup").add(element);
+			}
+			for (String group : groupsOfElement) {
+				Set<KnowledgeElement> elementsOfGroup = decisionGroupsMap.get(group);
+				elementsOfGroup.add(element);
+			}
 		}
 		return Response.ok(decisionGroupsMap).build();
 	}

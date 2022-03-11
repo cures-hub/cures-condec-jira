@@ -16,13 +16,13 @@ import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetDecisionGroupCoverage extends TestSetUp {
 
-	protected DecisionGroupingRest decisionGroupingRest;
+	private DecisionGroupingRest decisionGroupingRest;
 
 	@Before
 	public void setUp() {
 		init();
 		decisionGroupingRest = new DecisionGroupingRest();
-		DecisionGroupPersistenceManager.insertGroup("TestGroup1", KnowledgeElements.getDecision());
+		DecisionGroupPersistenceManager.insertGroup("Process", KnowledgeElements.getDecision());
 	}
 
 	@Test

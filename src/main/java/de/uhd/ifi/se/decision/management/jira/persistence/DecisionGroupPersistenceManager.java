@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.text.WordUtils;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -31,7 +33,7 @@ import net.java.ao.Query;
 public class DecisionGroupPersistenceManager {
 
 	public static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
-	public static final List<String> LEVELS = List.of("high_level", "medium_level", "realization_level");
+	public static final List<String> LEVELS = List.of("realization_level", "medium_level", "high_level");
 
 	/**
 	 * @param groupName
@@ -78,7 +80,7 @@ public class DecisionGroupPersistenceManager {
 			return success;
 		}
 		for (KnowledgeElement neighborElement : element.getLinkedElements(1)) {
-			if (shouldElementInheritGroupNames(groupNames, neighborElement)) {
+			if (shouldNeighborElementInheritGroupNames(groupNames, element, neighborElement)) {
 				success &= inheritGroups(groupNames, neighborElement, distance - 1);
 			}
 		}
@@ -90,8 +92,11 @@ public class DecisionGroupPersistenceManager {
 		return insertGroups(groupNames, element);
 	}
 
-	private static boolean shouldElementInheritGroupNames(Set<String> groupNames, KnowledgeElement element) {
-		return element.getType() != KnowledgeType.OTHER && !isEqual(element.getDecisionGroups(), groupNames);
+	private static boolean shouldNeighborElementInheritGroupNames(Set<String> groupNames, KnowledgeElement element,
+			KnowledgeElement neighborElement) {
+		return !element.hasKnowledgeType(neighborElement.getType()) // e.g. linked decisions do not inherit groups
+				&& !neighborElement.hasKnowledgeType(KnowledgeType.OTHER, KnowledgeType.CODE, KnowledgeType.CONTEXT)
+				&& !isEqual(neighborElement.getDecisionGroups(), groupNames);
 	}
 
 	public static boolean isEqual(Collection<String> groups1, Collection<String> groups2) {
@@ -126,12 +131,17 @@ public class DecisionGroupPersistenceManager {
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
 			String projectKey = databaseEntry.getProjectKey();
-			KnowledgeElement element = KnowledgePersistenceManager.getInstance(projectKey)
+			KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance(projectKey)
 					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
-			if (element == null || databaseEntry.getGroup().isBlank()) {
-				isGroupDeleted = true;
-				DecisionGroupInDatabase.deleteGroup(databaseEntry);
+			if (elementInDatabase != null && !databaseEntry.getGroup().isBlank()) {
+				continue;
 			}
+			KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+			if (graph != null && graph.getElementById(databaseEntry.getSourceId()) != null) {
+				continue;
+			}
+			isGroupDeleted = true;
+			DecisionGroupInDatabase.deleteGroup(databaseEntry);
 		}
 		return isGroupDeleted;
 	}
@@ -153,23 +163,20 @@ public class DecisionGroupPersistenceManager {
 		for (DecisionGroupInDatabase groupInDatabase : groupsInDatabase) {
 			groups.add(groupInDatabase.getGroup());
 		}
-		return sortGroupNames(groups, true);
+		return sortGroupNames(groups);
 	}
 
 	/**
 	 * @param groupNames
 	 *            names of decision groups and levels as a List of Strings.
 	 * @return sorted List of decision groups and levels so that the levels come
-	 *         first.
+	 *         first and groups are sorted alphabetically.
 	 */
-	public static List<String> sortGroupNames(List<String> groupNames, boolean isOnlyOneLevel) {
-		for (String group : groupNames) {
-			if (LEVELS.contains(group.toLowerCase())) {
-				int indexOfLevel = LEVELS.indexOf(group.toLowerCase());
-				if (isOnlyOneLevel || groupNames.size() <= indexOfLevel) {
-					indexOfLevel = 0;
-				}
-				Collections.swap(groupNames, groupNames.indexOf(group), indexOfLevel);
+	public static List<String> sortGroupNames(List<String> groupNames) {
+		Collections.sort(groupNames);
+		for (String level : LEVELS) {
+			if (groupNames.removeIf(groupName -> groupName.equalsIgnoreCase(level))) {
+				groupNames.add(0, WordUtils.capitalize(level, "_".toCharArray()));
 			}
 		}
 		return groupNames;
@@ -271,7 +278,7 @@ public class DecisionGroupPersistenceManager {
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			groupNames.add(groupInDatabase.getGroup());
 		}
-		return sortGroupNames(new ArrayList<>(groupNames), false);
+		return sortGroupNames(new ArrayList<>(groupNames));
 	}
 
 	/**
