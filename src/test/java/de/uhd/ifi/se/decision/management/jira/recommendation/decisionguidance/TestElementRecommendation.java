@@ -114,4 +114,10 @@ public class TestElementRecommendation extends TestSetUp {
 		recommendation.setDiscarded(true);
 		assertTrue(recommendation.isDiscarded());
 	}
+
+	@Test
+	public void testToString() {
+		Recommendation recommendation = new ElementRecommendation("TEST", knowledgeSource, "TESTURL");
+		assertEquals("TEST", recommendation.toString());
+	}
 }

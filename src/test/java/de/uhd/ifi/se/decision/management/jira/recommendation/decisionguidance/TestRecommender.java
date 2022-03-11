@@ -63,4 +63,15 @@ public class TestRecommender extends TestSetUp {
 		recommender.setProjectKey("TEST-CHANGE");
 		assertEquals("TEST-CHANGE", recommender.getProjectKey());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetRecommendations() {
+		Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource("TEST", projectSource);
+		List<ElementRecommendation> recommendations = recommender.getRecommendations((KnowledgeElement) null);
+		assertEquals(0, recommendations.size());
+		assertEquals(projectSource, recommender.getKnowledgeSource());
+		recommender.setProjectKey("TEST-CHANGE");
+		assertEquals("TEST-CHANGE", recommender.getProjectKey());
+	}
 }

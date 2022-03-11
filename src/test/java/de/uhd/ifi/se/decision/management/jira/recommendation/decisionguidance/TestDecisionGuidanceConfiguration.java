@@ -1,10 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +9,8 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
+
+import static org.junit.Assert.*;
 
 public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
@@ -124,5 +121,20 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 		config.setProjectKnowledgeSources(new ArrayList<>());
 		config.setProjectKnowledgeSource("TEST", false);
 		assertFalse(config.getProjectSource("TEST").isActivated());
+		config.setProjectKnowledgeSources(null);
+		assertNull(config.getProjectSource(""));
+	}
+
+	@Test
+	public void testAddAllPossibleProjectKnowledgeSources() {
+		config.setProjectKnowledgeSources(null);
+		config.addAllPossibleProjectKnowledgeSources();
+		assertNotNull(config.getProjectKnowledgeSources());
+	}
+
+	@Test
+	public void testGetProjectKnowledgeSources() {
+		config.setProjectKnowledgeSources(null);
+		assertNotNull(config.getProjectKnowledgeSources());
 	}
 }
