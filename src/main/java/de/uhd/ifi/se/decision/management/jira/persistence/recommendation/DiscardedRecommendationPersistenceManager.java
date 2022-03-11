@@ -188,7 +188,7 @@ public final class DiscardedRecommendationPersistenceManager {
      */
     public static long saveDiscardedElementRecommendation(ElementRecommendation recommendation, String projectKey) {
         long idInDatabase = -1;
-        if (recommendation.getSummary() != null) {
+        if (recommendation.getSummary() != null && recommendation.getTarget() != null) {
             DiscardedRecommendationInDatabase[] discardedSuggestionsInDatabase = getDiscardedElementRecommendation(recommendation, projectKey);
             if (discardedSuggestionsInDatabase.length > 0) {
                 idInDatabase = discardedSuggestionsInDatabase[0].getId();

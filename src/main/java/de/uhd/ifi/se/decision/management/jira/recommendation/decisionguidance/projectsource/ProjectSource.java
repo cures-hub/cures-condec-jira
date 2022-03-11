@@ -22,8 +22,12 @@ public class ProjectSource extends KnowledgeSource {
 	 *            other Jira project.
 	 */
 	public ProjectSource(Project jiraProject) {
-		super(jiraProject.getName(), true);
-		this.projectKey = jiraProject.getKey();
+			super(jiraProject == null ? "" : jiraProject.getName(), true);
+			if (jiraProject != null) {
+				this.projectKey = jiraProject.getKey();
+			} else {
+				this.projectKey = "";
+			}
 	}
 
 	/**

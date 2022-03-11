@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,7 +78,11 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
 	@Test
 	public void testSetProjectKnowledgeSources() {
-		config.setProjectKnowledgeSources(new ArrayList<>());
+		ProjectSource source = new ProjectSource(null, true);
+		ArrayList<ProjectSource> sources = new ArrayList<>();
+		sources.add(source);
+		config.setProjectKnowledgeSources(sources);
+		config.setRDFKnowledgeSources(new ArrayList<>());
 		assertEquals(1, config.getAllActivatedKnowledgeSources().size());
 	}
 
@@ -89,7 +94,16 @@ public class TestDecisionGuidanceConfiguration extends TestSetUp {
 
 	@Test
 	public void testGetAllKnowledgeSources() {
-		assertTrue(config.getAllKnowledgeSources().size() > 1);
+		List<RDFSource> rdfSources = new ArrayList<>();
+		RDFSource source1 = new RDFSource("RDF Name", "service", "query", 30000, "");
+		RDFSource source2 = new RDFSource("RDF Name2", "service", "query", 30000, "");
+		source1.setActivated(true);
+		source2.setActivated(false);
+		rdfSources.add(source1);
+		rdfSources.add(source2);
+		config.setRDFKnowledgeSources(rdfSources);
+		config.setProjectKnowledgeSources(new ArrayList<>());
+		assertEquals(2, config.getAllKnowledgeSources().size());
 		assertEquals(1, config.getAllActivatedKnowledgeSources().size());
 	}
 
