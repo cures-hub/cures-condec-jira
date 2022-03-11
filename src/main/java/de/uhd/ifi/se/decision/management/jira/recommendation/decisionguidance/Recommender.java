@@ -139,6 +139,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 				}
 			}
 			if (!isNewlyGiven) {
+				discardedRecommendation.setDiscarded(true);
 				discardedButNotInNewRecommendations.add(discardedRecommendation);
 			}
 		}
