@@ -141,6 +141,12 @@ Code files and decision knowledge elements that are (transitively) linked to the
 		- ![Decision](../../src/main/resources/images/decision.png) We create one REST API method per dashboard!
 			- ![Con](../../src/main/resources/images/argument_con.png) Less modular
 			- ![Pro](../../src/main/resources/images/argument_pro.png) Less complex
+	- ![Issue](../../src/main/resources/images/issue.png) Should the rationale manager be able to change the definition of done (DoD) in the dashboard?
+		- ![Alternative](../../src/main/resources/images/alternative.png) We could make the global DoD setting static in the dashboard.
+			- ![Pro](../../src/main/resources/images/argument_pro.png) Simple solution.
+		- ![Decision](../../src/main/resources/images/decision.png) The rationale manager can change the definition of done (DoD) in the dashboard! The global setting for the DoD is used as the default!
+			- ![Con](../../src/main/resources/images/argument_con.png) More complex solution.
+			- ![Pro](../../src/main/resources/images/argument_pro.png) The rationale manager can try different DoD settings in the dashboard.
 	- ![Issue](../../src/main/resources/images/issue.png) Should the metrics for the dashboards be calculated in the frontend or the backend?
 		- ![Alternative](../../src/main/resources/images/alternative.png) We calculate dashboard metrics in the frontend!
 			- ![Con](../../src/main/resources/images/argument_con.png) No unit tests
@@ -157,16 +163,6 @@ Code files and decision knowledge elements that are (transitively) linked to the
 				- ![Pro](../../src/main/resources/images/argument_pro.png) Faster updating of metrics. The dashboard page does not need to be reloaded.
 			- ![Alternative](../../src/main/resources/images/alternative.png) We used to pass the metrics via context parameters of the Java servlet.
 				- ![Con](../../src/main/resources/images/argument_con.png) The dashboard page needs to be reloaded to update the metrics (e.g. after filtering).
-	- ![Issue](../../src/main/resources/images/issue.png) Should the threshold setting be global or separate per dashboard?
-		- ![Alternative](../../src/main/resources/images/alternative.png) A separate setting per dashboard.
-			- ![Con](../../src/main/resources/images/argument_con.png) A global setting is still required for the Definition of Done.
-			- ![Pro](../../src/main/resources/images/argument_pro.png) The user can customize his dashboards.
-		- ![Alternative](../../src/main/resources/images/alternative.png) A global setting.
-			- ![Con](../../src/main/resources/images/argument_con.png) Lacks customizability for the user.
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Setting can be used for the Definition of Done.
-		- ![Decision](../../src/main/resources/images/decision.png) A global setting for the Definition of Done and as default value and an optional seperate setting per dashboard!
-			- ![Con](../../src/main/resources/images/argument_con.png) More complex solution, requires multiple settings.
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Combines the advantages of both approaches.
 	- ![Issue](../../src/main/resources/images/issue.png) Which filter settings should be supported in the dashboard items?
 		- ![Alternative](../../src/main/resources/images/alternative.png) Only the most useful filter settings.
 			- ![Con](../../src/main/resources/images/argument_con.png) The user lacks control over his dashboard.
@@ -225,7 +221,7 @@ Code files and decision knowledge elements that are (transitively) linked to the
 				- ![Con](../../src/main/resources/images/argument_con.png) Maps are not very "speaking". It is not clear what the categories are.
 				- ![Pro](../../src/main/resources/images/argument_pro.png) Easy and similar representation for all metrics, similar treatment of metrics in UI.
 	- ![Issue](../../src/main/resources/images/issue.png) Which dashboard items does the rationale manager need?
-		- ![Decision](../../src/main/resources/images/decision.png) The rationale manager needs a 1) basic statistics dashboard that shows metrics such as #requirements in the project, #decision problems in the project, #decisions in the project, #commits per Jira issue, #comments per Jira issue, 2) a dashboard for viewing the rationale coverage status/quality of requirements/work items, 3) a dashboard for viewing the intra-rationale completeness, and 4) a dashboard for viewing the documentation status/quality of feature branches!
+		- ![Decision](../../src/main/resources/images/decision.png) The rationale manager needs a 1) basic statistics dashboard that shows metrics such as #requirements in the project, #decision problems in the project, #decisions in the project, #commits per Jira issue, #comments per Jira issue, 2) a dashboard for viewing the rationale coverage status/quality of requirements/work items, 3) a dashboard for viewing the intra-rationale completeness, 4) a dashboard for decision groups and levels, and 5) a dashboard for viewing the documentation status/quality of feature branches!
 	- ![Issue](../../src/main/resources/images/issue.png) Should the metrics be calculated in Java or JavaScript code?
 		- ![Alternative](../../src/main/resources/images/alternative.png) Move calculations to JavaScript
 		- ![Decision](../../src/main/resources/images/decision.png) Calculate metrics in Java code!
@@ -237,7 +233,7 @@ Code files and decision knowledge elements that are (transitively) linked to the
 		- ![Decision](../../src/main/resources/images/decision.png) We create different dashboard items to gather related metrics!
 			- ![Con](../../src/main/resources/images/argument_con.png) Knowledge is spread across many different views
 			- ![Pro](../../src/main/resources/images/argument_pro.png) More precise knowledge on each dashboard
-	- ![Code](../../src/main/resources/images/code.png) CommentMetricCalculator.java
 	- ![Code](../../src/main/resources/images/code.png) BranchMetricCalculator.java
 	- ![Code](../../src/main/resources/images/code.png) DashboardRest.java
 	- ![Code](../../src/main/resources/images/code.png) JiraIssueMetric.java
+	- ![Code](../../src/main/resources/images/code.png) CommentMetricCalculator.java
