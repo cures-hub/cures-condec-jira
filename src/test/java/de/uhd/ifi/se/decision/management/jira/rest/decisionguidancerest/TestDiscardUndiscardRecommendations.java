@@ -4,8 +4,10 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
@@ -49,7 +51,8 @@ public class TestDiscardUndiscardRecommendations extends TestSetUp {
 		assertEquals("If a recommendation with summary = null is given to be discarded, the response should be 'BAD_REQUEST'.",
 				Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.discardRecommendation(request, recommendationWithSummaryNull, filterSettings.getProjectKey()).getStatus());
-		ElementRecommendation recommendationWithTargetNull = new ElementRecommendation("The early bird catches the worm.", null);
+		ElementRecommendation recommendationWithTargetNull = new ElementRecommendation("The early bird catches the worm.", null,
+				new RDFSource(), new DecisionKnowledgeProject("TES"), "wikipedia.org");
 		assertEquals("If a recommendation with target = null is given to be discarded, the response should be 'BAD_REQUEST'.",
 				Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.discardRecommendation(request, recommendationWithSummaryNull, filterSettings.getProjectKey()).getStatus());
