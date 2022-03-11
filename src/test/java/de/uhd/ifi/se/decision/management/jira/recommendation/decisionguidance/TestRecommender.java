@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
+
+import static org.junit.Assert.*;
 
 public class TestRecommender extends TestSetUp {
 
@@ -73,5 +71,28 @@ public class TestRecommender extends TestSetUp {
 		assertEquals(projectSource, recommender.getKnowledgeSource());
 		recommender.setProjectKey("TEST-CHANGE");
 		assertEquals("TEST-CHANGE", recommender.getProjectKey());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetRecommendationsWithDiscardedStatus() {
+		Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource("TEST", projectSource);
+		KnowledgeSource source = new ProjectSource("TEST", true);
+		ElementRecommendation recommendationA = new ElementRecommendation("RecommendationA", source, "TESTURL");
+		ElementRecommendation recommendationB = new ElementRecommendation("RecommendationB", source, "TESTURL");
+		ElementRecommendation recommendationC = new ElementRecommendation("RecommendationC", source, "TESTURL");
+		List<ElementRecommendation> recommendations = new ArrayList<>();
+		List<ElementRecommendation> discardedRecommendations = new ArrayList<>();
+		recommendations.add(recommendationA);
+		recommendations.add(recommendationB);
+		discardedRecommendations.add(recommendationB);
+		discardedRecommendations.add(recommendationC);
+		recommendations = recommender.getRecommendationsWithDiscardedStatus(recommendations, discardedRecommendations);
+		assertEquals(3, recommendations.size());
+		assertEquals("RecommendationA", recommendations.get(0).getSummary());
+		assertEquals("RecommendationC", recommendations.get(2).getSummary());
+		assertFalse(recommendations.get(0).isDiscarded());
+		assertTrue(recommendations.get(1).isDiscarded());
+		assertTrue(recommendations.get(2).isDiscarded());
 	}
 }
