@@ -82,6 +82,7 @@ public class TestDiscardRecommendation extends TestSetUp {
 		assertEquals("Before insertion no discarded suggestion should exist.", 0, discardedRecommendations.size());
 
 		ElementRecommendation recommendation = new ElementRecommendation("Listen to your heart", origin);
+		recommendation.setDiscarded(true);
 		long id = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
 		discardedRecommendations = DiscardedRecommendationPersistenceManager
 			.getDiscardedDecisionGuidanceRecommendations(origin);
@@ -97,7 +98,12 @@ public class TestDiscardRecommendation extends TestSetUp {
 
 		recommendation.setTarget(null);
 		long exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
-		assertEquals("Id should be -1.", -1, exceptionId);
+		assertEquals("Id should be -1, because target is null.", -1, exceptionId);
+
+		recommendation.setTarget(origin);
+		recommendation.setDiscarded(false);
+		exceptionId = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, origin.getProject().getProjectKey());
+		assertEquals("Id should be -1, because discarded is false.", -1, exceptionId);
 	}
 
 	@Test

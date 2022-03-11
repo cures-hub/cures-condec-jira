@@ -15,7 +15,7 @@ public class ProjectSource extends KnowledgeSource {
 	/**
 	 * Jira project key of the {@link DecisionKnowledgeProject} that is used as the knowledge source.
 	 */
-	protected final String projectKey;
+	protected String projectKey;
 
 	/**
 	 * @param jiraProject
@@ -36,6 +36,9 @@ public class ProjectSource extends KnowledgeSource {
 	 */
 	public ProjectSource(String projectKey) {
 		this(new DecisionKnowledgeProject(projectKey).getJiraProject());
+		if (this.projectKey.equals("")) {
+			this.projectKey = projectKey;
+		}
 	}
 
 	/**
