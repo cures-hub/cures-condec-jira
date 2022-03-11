@@ -60,5 +60,7 @@ public class TestRecommender extends TestSetUp {
 	public void testRecommenderProperties() {
 		Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource("TEST", projectSource);
 		assertEquals(projectSource, recommender.getKnowledgeSource());
+		recommender.setProjectKey("TEST-CHANGE");
+		assertEquals("TEST-CHANGE", recommender.getProjectKey());
 	}
 }

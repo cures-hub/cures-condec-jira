@@ -78,7 +78,17 @@ public class TestEvaluationMetrics extends TestSetUp {
 		FScore fScore = new FScore(recommendations, groundTruthSolutionOptions);
 		assertEquals(0.4, fScore.calculateMetric(), 0.0);
 		assertEquals("F-Score", fScore.getName());
+		assertEquals(0.5, fScore.getPrecision(), 0.0);
+		assertEquals(0.33, fScore.getRecall(), 0.1);
 		assertEquals(false, fScore.getDescription().isBlank());
+		assertEquals(recommendations, fScore.getRecommendations());
+		assertEquals(groundTruthSolutionOptions, fScore.getGroundTruthSolutionOptions());
+
+		fScore.setRecommendations(new ArrayList<>());
+		assertEquals(0, fScore.getRecommendations().size());
+
+		fScore.setGroundTruthSolutionOptions(new ArrayList<>());
+		assertEquals(0, fScore.getGroundTruthSolutionOptions().size());
 
 		fScore = new FScore(0.5, 0.5);
 		assertEquals(0.5, fScore.calculateMetric(), 0.0);
@@ -106,6 +116,7 @@ public class TestEvaluationMetrics extends TestSetUp {
 		precision = new Precision(recommendations, 2);
 		assertEquals(2, recommendations.size());
 		assertEquals(1.0, precision.calculateMetric(), 0.0);
+		assertEquals(2, precision.getNumberOfTruePositives(), 0.0);
 
 		precision = new Precision(new ArrayList<>(), 0);
 		assertEquals(0.0, precision.calculateMetric(), 0.0);
@@ -125,6 +136,8 @@ public class TestEvaluationMetrics extends TestSetUp {
 		assertEquals(0.0, recall.calculateMetric(), 0.0);
 
 		recall = new Recall(5, -1);
+		assertEquals(5, recall.getNumberOfTruePositives(), 0.0);
+		assertEquals(-1, recall.getNumberOfFalseNegatives(), 0.0);
 		assertEquals(1.0, recall.calculateMetric(), 0.0);
 	}
 
