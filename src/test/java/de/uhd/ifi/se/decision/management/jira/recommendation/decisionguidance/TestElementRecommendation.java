@@ -33,7 +33,7 @@ public class TestElementRecommendation extends TestSetUp {
 
 	@Test
 	public void testRecommendation() {
-		ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, "MySQL", "TEST URL");
+		ElementRecommendation recommendation = new ElementRecommendation("MySQL", knowledgeSource, "TEST URL");
 		recommendation.setUrl("TEST URL");
 		recommendation.setScore(new RecommendationScore(123, ""));
 		assertEquals("TEST", recommendation.getKnowledgeSource().getName());
@@ -75,7 +75,7 @@ public class TestElementRecommendation extends TestSetUp {
 
 	@Test
 	public void testHashCode() {
-		ElementRecommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
+		ElementRecommendation recommendation = new ElementRecommendation("TEST", knowledgeSource, "TESTURL");
 		assertEquals(Objects.hash("TEST", "TEST"), recommendation.hashCode());
 	}
 
@@ -83,20 +83,20 @@ public class TestElementRecommendation extends TestSetUp {
 	@Test
 	public void testEquals() {
 		KnowledgeSource sourceA = new ProjectSource("TEST", true);
-		Recommendation recommendationA = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
+		Recommendation recommendationA = new ElementRecommendation("Recommendation", sourceA, "TESTURL");
 		assertTrue(recommendationA.equals(recommendationA));
 
-		Recommendation recommendationB = new ElementRecommendation(sourceA, "Recommendation", "TESTURL");
+		Recommendation recommendationB = new ElementRecommendation("Recommendation", sourceA, "TESTURL");
 		assertTrue(recommendationA.equals(recommendationB));
 
 		KnowledgeSource sourceB = new RDFSource();
-		recommendationB = new ElementRecommendation(sourceB, "Recommendation", "TESTURL");
+		recommendationB = new ElementRecommendation("Recommendation", sourceB, "TESTURL");
 		assertFalse(recommendationA.equals(recommendationB));
 
 		recommendationB = null;
 		assertFalse(recommendationA.equals(recommendationB));
 
-		recommendationB = new ElementRecommendation(sourceA, "Recommendation with other summary", "TESTURL");
+		recommendationB = new ElementRecommendation("Recommendation with other summary", sourceA, "TESTURL");
 		assertFalse(recommendationA.equals(recommendationB));
 
 		assertFalse(recommendationA.equals(new RDFSource()));
@@ -104,13 +104,13 @@ public class TestElementRecommendation extends TestSetUp {
 
 	@Test
 	public void testRecommendationType() {
-		Recommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
+		Recommendation recommendation = new ElementRecommendation("TEST", knowledgeSource, "TESTURL");
 		assertEquals(RecommendationType.EXTERNAL, recommendation.getRecommendationType());
 	}
 
 	@Test
 	public void testSetDiscarded() {
-		Recommendation recommendation = new ElementRecommendation(knowledgeSource, "TEST", "TESTURL");
+		Recommendation recommendation = new ElementRecommendation("TEST", knowledgeSource, "TESTURL");
 		recommendation.setDiscarded(true);
 		assertTrue(recommendation.isDiscarded());
 	}
