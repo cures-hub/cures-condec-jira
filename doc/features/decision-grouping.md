@@ -96,12 +96,12 @@ The UI code for decision grouping can be found here:
 - [JavaScript code for decision grouping](../../src/main/resources/js/grouping)
 
 # Important Decisions
-In the following, important knowledge elements regarding the decision grouping feature is listed.
+In the following, knowledge elements regarding the decision grouping feature are listed.
 The knowledge elements were exported via [ConDec's knowledge export feature](knowledge-export.md) starting from the 
-user sub-tasks *ST: Solve decision problems/make decisions* and *ST: Analyze quality of documented decision knowledge and other knowledge (requirements, code)*.
+user sub-tasks *ST: Continuously document decision knowledge in Jira* and *ST: Analyze quality of documented decision knowledge and other knowledge (requirements, code)*.
 System functions, code files, and decision knowledge elements that are (transitively) linked to the sub-tasks are shown.
 
-- ST: Solve decision problems/make decisions ([CONDEC-712](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-712))
+- ST: Continuously document decision knowledge in Jira ([CONDEC-188](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-188))
 	- SF: Manage decision groups ([CONDEC-693](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-693))
 		- ![Issue](../../src/main/resources/images/issue.png) How do we enable developers/the rationale manager to rename and delete decision groups?
 			- ![Decision](../../src/main/resources/images/decision.png) We add a new context menu on decision groups in the decision group overview that enables developers/the rationale manager to rename and delete decision groups!
