@@ -96,12 +96,16 @@ The UI code for decision grouping can be found here:
 - [JavaScript code for decision grouping](../../src/main/resources/js/grouping)
 
 # Important Decisions
-- SF: Group decisions ([CONDEC-692](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-692))
-	- ![Issue](../../src/main/resources/images/issue.png) How can the rationale manager and the developers see which decision groups are used in the project and which decisions are assigned to the decision levels and decision groups?
-		- ![Decision](../../src/main/resources/images/decision.png) We create a dashboard item for decision levels and decision groups (using plot, in particular pie charts)!
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Pie charts give a good visual overview
-		- ![Decision](../../src/main/resources/images/decision.png) We create a separate decision grouping view that presents the decision levels/groups and the respective knowledge elements!
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Enables changing the group names and assigning elements
+In the following, important knowledge elements regarding the decision grouping feature is listed.
+The knowledge elements were exported via [ConDec's knowledge export feature](knowledge-export.md) starting from the 
+user sub-tasks *ST: Solve decision problems/make decisions* and *ST: Analyze quality of documented decision knowledge and other knowledge (requirements, code)*.
+System functions, code files, and decision knowledge elements that are (transitively) linked to the sub-tasks are shown.
+
+- ST: Solve decision problems/make decisions ([CONDEC-712](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-712))
+	- SF: Manage decision groups ([CONDEC-693](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-693))
+		- ![Issue](../../src/main/resources/images/issue.png) How do we enable developers/the rationale manager to rename and delete decision groups?
+			- ![Decision](../../src/main/resources/images/decision.png) We add a new context menu on decision groups in the decision group overview that enables developers/the rationale manager to rename and delete decision groups!
+	- SF: Group decisions ([CONDEC-692](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-692))
 	- ![Issue](../../src/main/resources/images/issue.png) Where do we enable the user to assign groups?
 		- ![Decision](../../src/main/resources/images/decision.png) We add a context menu entry to enable the user to group related elements!
 	- ![Issue](../../src/main/resources/images/issue.png) Which knowledge elements should inherit the assigned groups?
@@ -117,13 +121,24 @@ The UI code for decision grouping can be found here:
 		- ![Decision](../../src/main/resources/images/decision.png) The definition of done (DoD) requires that at least a decision level and one decision group is assigned to every decision problem, decision, and alternative!
 			- ![Con](../../src/main/resources/images/argument_con.png) Not configurable
 			- ![Pro](../../src/main/resources/images/argument_pro.png) Quite strikt, but helps us to study which types of decisions developers document
-	- ![Issue](../../src/main/resources/images/issue.png) How do we access the decision groups/level for a knowledge element?
-		- ![Decision](../../src/main/resources/images/decision.png) We query the database table to access the decision groups/level for a knowledge element!
-			- ![Pro](../../src/main/resources/images/argument_pro.png) We don't have to propagate changes (e.g. renamed groups) to the knowledge graph object.
-			- ![Con](../../src/main/resources/images/argument_con.png) It seems not to be very efficient to query the database all the time.
-		- ![Alternative](../../src/main/resources/images/alternative.png) We could make decision groups/levels a "real" attribute of the KnowledgeElement class and only query it from database when the element is added to knowledge graph.
-			- ![Con](../../src/main/resources/images/argument_con.png) We would have to propagate changes (e.g. renamed groups) to the knowledge graph object.
-			- ![Pro](../../src/main/resources/images/argument_pro.png) Might be more efficient.
+	- ![Code](../../src/main/resources/images/code.png) DecisionGroupInDatabase.java
+	- ![Code](../../src/main/resources/images/code.png) DecisionGroupPersistenceManager.java
+	- ![Code](../../src/main/resources/images/code.png) KnowledgeElement.java
+		- ![Issue](../../src/main/resources/images/issue.png) How do we access the decision groups/level for a knowledge element?
+			- ![Alternative](../../src/main/resources/images/alternative.png) We could make decision groups/levels a "real" attribute of the KnowledgeElement class and only query it from database when the element is added to knowledge graph.
+				- ![Con](../../src/main/resources/images/argument_con.png) We would have to propagate changes (e.g. renamed groups) to the knowledge graph object.
+				- ![Pro](../../src/main/resources/images/argument_pro.png) Might be more efficient.
+			- ![Decision](../../src/main/resources/images/decision.png) We query the database table to access the decision groups/level for a knowledge element!
+				- ![Pro](../../src/main/resources/images/argument_pro.png) We don't have to propagate changes (e.g. renamed groups) to the knowledge graph object.
+				- ![Con](../../src/main/resources/images/argument_con.png) It seems not to be very efficient to query the database all the time.
+	- ![Code](../../src/main/resources/images/code.png) BoostWhenEqualDecisionGroup.java
+	- ![Code](../../src/main/resources/images/code.png) DecisionGroupingRest.java
+	- ![Code](../../src/main/resources/images/code.png) DecisionGroupContextInformationProvider.java
+- ST: Analyze quality of documented decision knowledge and other knowledge (requirements, code) ([CONDEC-202](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-202))
+	- SF: Show metrics for the decision levels and decision groups used in a project ([CONDEC-1015](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-1015))
+		- ![Issue](../../src/main/resources/images/issue.png) How can the rationale manager and the developers see which decision groups are used in the project and which decisions are assigned to the decision levels and decision groups?
+			- ![Decision](../../src/main/resources/images/decision.png) We create a dashboard item for decision levels and decision groups (using plot, in particular pie charts)!
+			- ![Decision](../../src/main/resources/images/decision.png) We create a separate decision grouping view that presents the decision levels/groups and the respective knowledge elements!
 
 ## References
 The concept of decision levels is taken from: 
