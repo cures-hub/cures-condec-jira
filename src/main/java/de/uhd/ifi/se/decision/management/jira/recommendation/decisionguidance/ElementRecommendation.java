@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * support or attack this recommended solution option. The relevance of the
  * recommendation is represented by the {@link RecommendationScore}.
  */
-@JsonIgnoreProperties(ignoreUnknown = true) //, value = "knowledgeSource")
+@JsonIgnoreProperties(value={"knowledgeSource"}, ignoreUnknown = true) //, value = "knowledgeSource")
 public class ElementRecommendation extends KnowledgeElement implements Recommendation {
 
 	/**
