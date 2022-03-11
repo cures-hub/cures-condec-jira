@@ -20,9 +20,9 @@
      */
     ConDecDecisionGuidanceAPI.prototype.getRecommendations = function(decisionProblem, keywords) {
         const filterSettings = {
-            projectKey: conDecAPI.getProjectKey(),
-            selectedElementObject: decisionProblem,
-            searchTerm: keywords,
+            "projectKey": conDecAPI.getProjectKey(),
+            "selectedElementObject": decisionProblem,
+            "searchTerm": keywords,
         };
         if (this.recommendationsPerProblem.has(decisionProblem.id)) {
             return this.recommendationsPerProblem.get(decisionProblem.id);
