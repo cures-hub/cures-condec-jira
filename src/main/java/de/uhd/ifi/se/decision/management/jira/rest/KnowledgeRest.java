@@ -383,7 +383,7 @@ public class KnowledgeRest {
 			// Create new link of type "wrong" if deleted link involved code file
 			if (link.getBothElements().stream()
 					.anyMatch(element -> element.getDocumentationLocation() == DocumentationLocation.CODE)) {
-				link.setType(LinkType.WRONG_LINK);
+				link.setType(LinkType.WRONG);
 				KnowledgePersistenceManager.getInstance(projectKey).insertLink(link, user);
 			}
 			return Response.ok().build();

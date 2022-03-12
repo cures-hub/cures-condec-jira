@@ -54,12 +54,12 @@ public class ChangeImpactAnalysisRest {
 		// Ensuring that linkTypeImpact is always up to date in case new linkTypes
 		// are added, same reasoning/problem as with the ChangePropagationRules above
 		Set<String> defaultLinkTypes = DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes();
-		defaultLinkTypes.add(LinkType.WRONG_LINK.getInwardName());
+		defaultLinkTypes.add(LinkType.WRONG.getInwardName());
 		for (String linkType : defaultLinkTypes) {
 			if (!ciaConfig.getLinkImpact().containsKey(linkType)) {
 				Map<String, Float> linkImpact = new HashMap<>();
 				defaultLinkTypes.forEach(entry -> {
-					if (entry == LinkType.WRONG_LINK.getInwardName()) {
+					if (entry == LinkType.WRONG.getInwardName()) {
 						linkImpact.put(entry, 0.0f);
 					} else {
 						linkImpact.put(entry, 1.0f);

@@ -34,7 +34,7 @@ public class ChangeImpactAnalysisConfiguration {
 		DecisionKnowledgeProject.getInwardAndOutwardNamesOfLinkTypes().forEach(entry -> {
 			linkImpact.put(entry, 1.0f);
 		});
-		linkImpact.put(LinkType.WRONG_LINK.getInwardName(), 0.0f);
+		linkImpact.put(LinkType.WRONG.getInwardName(), 0.0f);
 		context = 0;
 		propagationRules = ChangePropagationRule.getDefaultRules();
 		areLinkRecommendationsIncludedInCalculation = false;
