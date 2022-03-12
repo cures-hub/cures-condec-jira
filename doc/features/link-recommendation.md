@@ -113,14 +113,6 @@ Furthermore, the developer can change the default values during the usage of the
 
 *Configuration view for link recommendation and duplicate recognition*
 
-## References
-The concept of context information providers is taken from: 
-Miesbauer, C., & Weinreich, R. (2012). 
-Capturing and Maintaining Architectural Knowledge Using Context Information. 
-In 2012 Joint Working IEEE/IFIP Conference on Software Architecture and European Conference on Software Architecture (pp. 206-210). 
-Helsinki, Finland: IEEE. 
-https://doi.org/10.1109/WICSA-ECSA.212.30
-
 ## Design Details
 The following class diagram gives an overview of relevant backend classes for this feature.
 The class *LinkRecommendationRest* provides the interface to the frontend. 
@@ -188,3 +180,11 @@ system function *SF: Recommend related knowledge elements (elements to be linked
 		- ![Decision](../..//src/main/resources/images/decision.png) Enable to undo discarded recommendation!
 		- ![Decision](../../src/main/resources/images/decision.png) Add ambient feedback to link recommendation menu item, only use non-discarded recommendations to decide ambient feedback color!
 		- ![Decision](../../src/main/resources/images/decision.png) Include discarded recommendations in score calculation!
+		
+## References
+The concept of context information providers is taken from: 
+Miesbauer, C., & Weinreich, R. (2012). 
+Capturing and Maintaining Architectural Knowledge Using Context Information. 
+In 2012 Joint Working IEEE/IFIP Conference on Software Architecture and European Conference on Software Architecture (pp. 206-210). 
+Helsinki, Finland: IEEE. 
+https://doi.org/10.1109/WICSA-ECSA.212.30

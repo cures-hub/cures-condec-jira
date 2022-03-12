@@ -85,8 +85,6 @@ public class KnowledgeRest {
 	}
 
 	/**
-	 * TODO Sorting according to the likelihood that they should be linked.
-	 *
 	 * @param id
 	 *            of the {@link KnowledgeElement} in database.
 	 * @param documentationLocation
@@ -94,10 +92,12 @@ public class KnowledgeRest {
 	 *            {@link DocumentationLocation}.
 	 * @param projectKey
 	 *            of the Jira project, see {@link DecisionKnowledgeProject}.
-	 * @return list of unlinked elements of the knowledge element for a project.
-	 *         Sorts the elements according to their similarity and their likelihood
-	 *         that they should be linked.
-	 * @issue How can the sorting be implemented?
+	 * @return unsorted list of unlinked elements of the knowledge element for a
+	 *         project.
+	 * 
+	 * @see LinkRecommendationRest#getLinkRecommendations(HttpServletRequest,
+	 *      FilterSettings) to sort the elements according to their similarity and
+	 *      their likelihood that they should be linked.
 	 */
 	@Path("/getUnlinkedElements")
 	@GET
