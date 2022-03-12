@@ -78,15 +78,13 @@ public class KnowledgeRest {
 		}
 		if (knowledgeElement != null) {
 			LOGGER.info(knowledgeElement.getKey() + " was retrieved.");
-			return Response.ok().entity(knowledgeElement).build();
+			return Response.ok(knowledgeElement).build();
 		}
 		return Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", "Knowledge element was not found for the given id.")).build();
 	}
 
 	/**
-	 * TODO Sorting according to the likelihood that they should be linked.
-	 *
 	 * @param id
 	 *            of the {@link KnowledgeElement} in database.
 	 * @param documentationLocation
@@ -94,10 +92,12 @@ public class KnowledgeRest {
 	 *            {@link DocumentationLocation}.
 	 * @param projectKey
 	 *            of the Jira project, see {@link DecisionKnowledgeProject}.
-	 * @return list of unlinked elements of the knowledge element for a project.
-	 *         Sorts the elements according to their similarity and their likelihood
-	 *         that they should be linked.
-	 * @issue How can the sorting be implemented?
+	 * @return unsorted list of unlinked elements of the knowledge element for a
+	 *         project.
+	 * 
+	 * @see LinkRecommendationRest#getLinkRecommendations(HttpServletRequest,
+	 *      FilterSettings) to sort the elements according to their similarity and
+	 *      their likelihood that they should be linked.
 	 */
 	@Path("/getUnlinkedElements")
 	@GET
@@ -183,7 +183,7 @@ public class KnowledgeRest {
 		}
 
 		if (idOfExistingElement == 0 || existingElement == null) {
-			return Response.status(Status.OK).entity(newElementWithId).build();
+			return Response.ok(newElementWithId).build();
 		}
 		Link link = Link.instantiateDirectedLink(existingElement, newElementWithId);
 		if (link.getSource() == null || link.getTarget() == null) {
@@ -196,7 +196,7 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
 		LOGGER.info(newElementWithId.getKey() + " was created.");
-		return Response.status(Status.OK).entity(newElementWithId).build();
+		return Response.ok(newElementWithId).build();
 	}
 
 	@Path("/updateDecisionKnowledgeElement")
@@ -229,7 +229,7 @@ public class KnowledgeRest {
 		}
 
 		if (idOfParentElement == 0) {
-			return Response.status(Status.OK).build();
+			return Response.ok().build();
 		}
 		KnowledgeElement updatedElement = persistenceManager.getKnowledgeElement(element.getId(),
 				element.getDocumentationLocation());
@@ -241,7 +241,7 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
 		}
 		LOGGER.info(updatedElement.getKey() + " was updated.");
-		return Response.status(Status.OK).build();
+		return Response.ok().build();
 	}
 
 	@Path("/deleteDecisionKnowledgeElement")
@@ -258,7 +258,7 @@ public class KnowledgeRest {
 		boolean isDeleted = KnowledgePersistenceManager.getInstance(projectKey).deleteKnowledgeElement(knowledgeElement,
 				user);
 		if (isDeleted) {
-			return Response.status(Status.OK).entity(true).build();
+			return Response.ok().build();
 		}
 		LOGGER.info(knowledgeElement.getKey() + " was deleted.");
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -372,6 +372,10 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
+		// to fill knowledge types for status update
+		link.setSourceElement(persistenceManager.getKnowledgeElement(link.getSource()));
+		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
+
 		boolean isDeleted = persistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
@@ -379,7 +383,7 @@ public class KnowledgeRest {
 			// Create new link of type "wrong" if deleted link involved code file
 			if (link.getBothElements().stream()
 					.anyMatch(element -> element.getDocumentationLocation() == DocumentationLocation.CODE)) {
-				link.setType(LinkType.WRONG_LINK);
+				link.setType(LinkType.WRONG);
 				KnowledgePersistenceManager.getInstance(projectKey).insertLink(link, user);
 			}
 			return Response.ok().build();
@@ -429,7 +433,7 @@ public class KnowledgeRest {
 		Issue issue = persistenceManager.createJiraIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {
-			return Response.status(Status.OK).entity(issue).build();
+			return Response.ok(issue).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "The documentation location could not be changed.")).build();
@@ -467,7 +471,7 @@ public class KnowledgeRest {
 		sentence.setType(KnowledgeType.OTHER);
 		persistenceManager.updateElementInTextAndDatabase(sentence, AuthenticationManager.getUser(request));
 		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
-		return Response.status(Status.OK).build();
+		return Response.ok().build();
 	}
 
 	/**
@@ -513,7 +517,7 @@ public class KnowledgeRest {
 		sentence.setValidated(true);
 		persistenceManager.updateInDatabase(sentence);
 		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
-		return Response.status(Status.OK).build();
+		return Response.ok().build();
 	}
 
 	/**
@@ -555,6 +559,6 @@ public class KnowledgeRest {
 		comments.forEach(comment -> persistenceManager.updateElementsOfCommentInDatabase(comment));
 
 		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
-		return Response.status(Status.OK).entity(elements.size()).build();
+		return Response.ok(elements.size()).build();
 	}
 }

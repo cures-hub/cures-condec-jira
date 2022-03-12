@@ -73,6 +73,7 @@ The [project setting page](doc/screenshots/config_plugin.png) enables the user t
 ### Features
 ConDec offers the following features:
 - [Decision knowledge documentation in various documentation locations](doc/features/documentation.md)
+- [Knowledge management](doc/features/knowledge-management.md)
 - [Extraction and presentation of knowledge in git](doc/features/knowledge-in-git-presentation.md)
 - Knowledge graph creation comprising requirements, decision knowledge, code files, and other software artifacts
 - [Interactive knowledge visualization](doc/features/knowledge-visualization.md)

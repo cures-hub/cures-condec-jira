@@ -59,12 +59,13 @@ Developers can **filter the knowledge graph views**, e.g. to only see the knowle
 *Node-link diagram for a code class and related knowledge elements*
 
 Trace links between Jira issues and code can be wrong.
-**Wrong links hinder the exploitation** of the knowledge graph e.g. during [change impact analysis](change-impact-analysis.md).
+**Wrong links hinder the exploitation** of the knowledge graph e.g. during [change impact analysis](change-impact-analysis.md) or [transitive link creation](knowledge-visualization.md).
 A reason for wrong links can be that a commit linked to a Jira issue (via mentioning the key in the commit message) contains **tangled, i.e. unrelated changes**.
 For example, a commit could be linked to a work item (WI, also called development task) for improving a certain feature.
 This commit would be tangled if it also contains a bug fix for a totally different feature.
 In our example, the work item *WI: Improve generation and support for transitive links* is wrongly linked to the class [CommitMessageToCommentTranscriber].
 ConDec offers a simple **method to assess whether the links between a Jira issue and the code files are correct** using a package distance metric.
+[Developers can manually mark links as wrong.](knowledge-management.md)
 However, ConDec needs further extension regarding **trace link improvement and maintenance**.
 
 ![Context menu to access the code summary view that shows the probability of correct linkage](../screenshots/git_context_menu_summarization.png)

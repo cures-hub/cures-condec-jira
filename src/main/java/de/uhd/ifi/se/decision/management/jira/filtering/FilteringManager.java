@@ -140,11 +140,18 @@ public class FilteringManager {
 		for (KnowledgeElement element : filteredGraph.vertexSet()) {
 			GraphPath<KnowledgeElement, Link> path = paths.getPath(element);
 			KnowledgeElement lastValidElementOnPath = filterSettings.getSelectedElement();
-			for (KnowledgeElement elementOnPath : path.getVertexList()) {
-				if (elementOnPath.equals(lastValidElementOnPath)) {
-					// the element should not be linked to itself (loops are forbidden)
-					continue;
+
+			List<Link> edgesOnPath = path.getEdgeList();
+			List<KnowledgeElement> elementsOnPath = path.getVertexList();
+
+			// the element should not be linked to itself (loops are forbidden), thus, we
+			// start with the second element on path
+			for (int i = 1; i < elementsOnPath.size(); i++) {
+				KnowledgeElement elementOnPath = elementsOnPath.get(i);
+				if (edgesOnPath.get(i - 1).getType() == LinkType.WRONG) {
+					break;
 				}
+
 				if (!filteredGraph.vertexSet().contains(elementOnPath)) {
 					// the element on the former path is filtered out
 					continue;
