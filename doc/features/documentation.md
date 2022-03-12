@@ -1,6 +1,6 @@
 # Decision Knowledge Documentation
 
-ConDec aims to support developers to capture decision knowledge within their current development context.
+ConDec enables developers to capture decision knowledge within their current development context.
 In particular, ConDec enables the decision knowledge documentation in the issue tracking system (ITS) and version control system (VCS).
 Developers document decision knowledge when they 
 1) capture it, i.e., write it down, 
