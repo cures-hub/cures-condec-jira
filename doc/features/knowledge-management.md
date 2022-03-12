@@ -5,7 +5,7 @@ developers need to ensure that the knowledge elements and links are correctly do
 ConDec supports **manual linking between all knowledge elements** in the knowledge graph (i.e. software artifacts). 
 Besides, ConDec offers techniques to **automatically link knowledge elements** within the knowledge graph, 
 e.g., decisions to decision problems and [code to requirements via commits](knowledge-in-git-presentation.md). 
-The [link recommendations](link-recommendation.md) feature recommends new links to the developers and detects duplicates.
+The [link recommendation](link-recommendation.md) feature recommends new links to the developers and detects duplicates.
 Developers can **change and delete knowledge elements as well as links** between them. 
 
 ## Wrong Link Marking
@@ -16,6 +16,10 @@ or [transitive link creation](knowledge-visualization.md).
 ConDec enables developers to **manually mark links as wrong** as follows:
 If a developer deletes a link that involves a code file, the type of the link is set to *wrong*.
 Per default, wrong links are filtered-out, i.e. not shown in the [views on the knowledge graph](knowledge-visualization.md).
+
+![Context menu that enables to delete a wrong link between a Jira issue and a code file introduced through a tangled commit](../screenshots/knowledge_management_context_menu_code.png)
+
+*Context menu that enables to delete a wrong link between a Jira issue and a code file introduced through a tangled commit*
 
 ## Design Details
 ConDec uses both Jira issue links and custom links introduced by the plug-in.
