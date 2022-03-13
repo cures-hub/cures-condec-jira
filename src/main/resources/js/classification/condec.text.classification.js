@@ -81,7 +81,7 @@
 	};
 
 	let generateOptionButtons = function (elementID) {
-		return `<button class='aui-button aui-button-primary' onclick="conDecAPI.setValidated(${elementID}, () => conDecObservable.notify())"> <span class='aui-icon aui-icon-small aui-iconfont-link'>Validate</span> Validate </button>` +
+		return `<button class='aui-button aui-button-primary' onclick="conDecAPI.setValidated(${elementID}, () => conDecObservable.notify())"> <span class='aui-icon aui-icon-small aui-iconfont-like'>Validate</span> Validate </button>` +
 			`<button class='aui-button aui-button-removed' onclick="conDecDialog.showEditDialog(${elementID}, 's')"> <span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit</span> Edit </button>` +
 			`<button class="aui-button aui-button-removed" onclick="conDecAPI.setSentenceIrrelevant(${elementID}, () => conDecObservable.notify())"> <span class="aui-icon aui-icon-small aui-iconfont-trash">Set Irrelevant</span> Set Irrelevant </button>`;
 	};

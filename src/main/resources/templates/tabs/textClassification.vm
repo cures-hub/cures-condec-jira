@@ -4,11 +4,15 @@
         <aui-spinner></aui-spinner>
     </div>
     <aui-dropdown-menu id="issue-picker-text-classification-tab-$viewIdentifier">Choose an issue</aui-dropdown-menu>
-    <br/>
-    <button class="aui-button aui-button-primary" id="validate-all-elements-button-$viewIdentifier">Validate all elements!</button>
-    <br/>
+
+    <div style="float:right;"> 
+    	<button class="aui-button aui-button-link" id="validate-all-elements-button-$viewIdentifier">
+    		<span class="aui-icon aui-icon-small aui-iconfont-like"></span> 
+    		Validate all elements!
+    	</button>
+	</div>
     <div>
-        <table id="non-validated-table-$viewIdentifier" class="aui">
+        <table id="non-validated-table-$viewIdentifier" class="aui aui-table-list">
             <thead>
             <tr>
                 <th id="th-type">Type</th>

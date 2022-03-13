@@ -94,9 +94,9 @@
 	};
 
 	ConDecTextClassificationAPI.prototype.getNonValidatedElements = function(projectKey, issueKey) {
-		var restUrl = this.restPrefix + "/non-validated-elements/" + projectKey;
+		var restUrl = `${this.restPrefix}/non-validated-elements/${projectKey}`;
 		if (issueKey !== undefined) {
-			restUrl += "/" + issueKey;
+			restUrl += `/${issueKey}`;
 		}
 		return generalApi.getJSONReturnPromise(restUrl);
 	};
