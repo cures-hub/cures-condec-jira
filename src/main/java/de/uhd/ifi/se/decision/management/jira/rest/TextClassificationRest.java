@@ -325,7 +325,7 @@ public class TextClassificationRest {
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
 
-		LOGGER.info(knowledgeElement + " was manually approved.");
+		LOGGER.info(sentence + " was manually approved.");
 
 		sentence.setValidated(true);
 		persistenceManager.updateInDatabase(sentence);
