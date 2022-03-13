@@ -3,7 +3,7 @@
  * It is used to show the elements that were classified but not yet validated for a Jira issue or whole project.
  */
 
-/* global conDecAPI, conDecTextClassificationAPI, conDecObservable */
+/* global conDecAPI, conDecTextClassificationAPI, conDecObservable, conDecContextMenu */
 (function (global) {
 
 	let ConDecTextClassification = function () {
@@ -69,6 +69,10 @@
 		row.appendChild(generateTableCell(nonValidatedElement.type, "th-type"));
 		row.appendChild(generateTableCell(nonValidatedElement.summary, "th-name"));
 		row.appendChild(generateTableCell(generateOptionButtons(nonValidatedElement.id), "th-options"));
+		row.addEventListener("contextmenu", function(event) {
+			event.preventDefault();
+			conDecContextMenu.createContextMenu(nonValidatedElement.id, nonValidatedElement.documentationLocation, event);
+		});
 		return row;
 	};
 
