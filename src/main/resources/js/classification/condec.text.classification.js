@@ -3,7 +3,7 @@
  * It is used to show the elements that were classified but not yet validated for a Jira issue or whole project.
  */
 
-/* global conDecAPI, generalApi */
+/* global conDecAPI, generalApi, conDecTextClassificationAPI, conDecObservable */
 (function (global) {
 
 	let ConDecTextClassification = function () {

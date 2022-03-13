@@ -4,6 +4,7 @@
  *
  * Is referenced in HTML by settings/classification/*.vm
  */
+/* global conDecAPI, generalApi */
 (function(global) {
 
 	var ConDecTextClassificationAPI = function() {
@@ -104,17 +105,18 @@
 	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey,
 		callback) {
 		this.getNonValidatedElements(projectKey, issueKey).then((nonValidatedSentences) => {
-			for (let sentence of nonValidatedSentences) {
+			for (const sentence of nonValidatedSentences) {
 				this.setValidated(sentence.id, callback);
 			}
 		});
 	};
 
 	ConDecTextClassificationAPI.prototype.setValidated = function(id, callback) {
+		const projectKey = conDecAPI.projectKey;
 		const element = {
 			"id": id,
 			"documentationLocation": "s",
-			"projectKey": conDecAPI.projectKey,
+			"projectKey": projectKey
 		};
 		generalApi.postJSON(`${this.restPrefix}/validate`, element, function(error) {
 			if (error === null) {
