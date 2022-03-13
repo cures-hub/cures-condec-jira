@@ -3,8 +3,9 @@
  * automatic decision knowledge identification in Jira issue descriptions and comments.
  *
  * Is referenced in HTML by settings/classification/*.vm
+ * 
+ * global conDecAPI, generalApi 
  */
-/* global conDecAPI, generalApi */
 (function(global) {
 
 	var ConDecTextClassificationAPI = function() {
@@ -116,9 +117,9 @@
 		const element = {
 			"id": id,
 			"documentationLocation": "s",
-			"projectKey": projectKey
+			"projectKey": projectKey,
 		};
-		generalApi.postJSON(`${this.restPrefix}/validate`, element, function(error) {
+		generalApi.postJSON(`${this.restPrefix}/validate`, element, (error) => {
 			if (error === null) {
 				conDecAPI.showFlag("success", "Classified text has been manually approved.");
 				callback();

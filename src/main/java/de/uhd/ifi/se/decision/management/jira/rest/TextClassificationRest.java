@@ -240,6 +240,8 @@ public class TextClassificationRest {
 				nonValidatedElements.add(issueTextPart);
 			}
 		}
+
+		LOGGER.info("Non-validated elements were viewed for Jira issue " + jiraIssueKey);
 		return Response.ok(nonValidatedElements).build();
 	}
 
@@ -276,6 +278,8 @@ public class TextClassificationRest {
 				}
 			}
 		}
+
+		LOGGER.info("Non-validated elements were viewed for project " + projectKey);
 		return Response.ok(nonValidatedElements).build();
 	}
 
@@ -320,6 +324,8 @@ public class TextClassificationRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
+
+		LOGGER.info(knowledgeElement + " was manually approved.");
 
 		sentence.setValidated(true);
 		persistenceManager.updateInDatabase(sentence);
