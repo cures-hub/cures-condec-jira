@@ -199,4 +199,16 @@ public class TestJiraIssueTextParser extends TestSetUp {
 		assertEquals("public static", partsOfText.get(0).getDescription().trim());
 		assertEquals(KnowledgeType.DECISION, partsOfText.get(0).getType());
 	}
+
+	@Test
+	@NonTransactional
+	public void testSentenceSplittingWithLineBreak() {
+		String text = "Add github docu for knowledge management \n * Fix that wrong link creation did not work anymore\n\n\n"
+				+ "*";
+		List<PartOfJiraIssueText> partsOfText = parser.getPartsOfText(text);
+
+		assertEquals(2, partsOfText.size());
+		assertEquals("Add github docu for knowledge management", partsOfText.get(0).getDescription().trim());
+		assertEquals(KnowledgeType.OTHER, partsOfText.get(0).getType());
+	}
 }

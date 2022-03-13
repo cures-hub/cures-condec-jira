@@ -38,7 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import smile.validation.ClassificationMetrics;
 
 /**
- * REST resource for text classification and its configuration.
+ * REST resource for automatic text classification and its configuration.
  */
 @Path("/classification")
 public class TextClassificationRest {
@@ -226,7 +226,7 @@ public class TextClassificationRest {
 				nonValidatedElements.add(issueTextPart);
 			}
 		}
-		return Response.ok().entity(nonValidatedElements).build();
+		return Response.ok(nonValidatedElements).build();
 	}
 
 	/**
@@ -260,7 +260,7 @@ public class TextClassificationRest {
 				}
 			}
 		}
-		return Response.ok().entity(nonValidatedElements).build();
+		return Response.ok(nonValidatedElements).build();
 	}
 
 	@Path("/validateAllElements")
@@ -287,7 +287,7 @@ public class TextClassificationRest {
 				manager.updateInDatabase(issueTextPart);
 			}
 		}
-		return Response.status(Status.OK).build();
+		return Response.ok().build();
 
 	}
 }

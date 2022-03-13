@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -197,7 +198,7 @@ public class JiraIssueTextParser {
 	 */
 	private List<PartOfJiraIssueText> splitIntoSentences(PartOfJiraIssueText partOfText) {
 		List<PartOfJiraIssueText> sentences = new ArrayList<>();
-		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
+		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.getDefault());
 
 		// the description might be already trimmed, thus, we use the entire text
 		iterator.setText(text.substring(partOfText.getStartPosition(), partOfText.getEndPosition()));
@@ -206,8 +207,17 @@ public class JiraIssueTextParser {
 		while ((end = iterator.next()) != BreakIterator.DONE) {
 			int sentenceStartPosition = partOfText.getStartPosition() + start;
 			int sentenceEndPosition = partOfText.getStartPosition() + end;
-			PartOfJiraIssueText sentence = new PartOfJiraIssueText(sentenceStartPosition, sentenceEndPosition, text);
-			sentences.add(sentence);
+			String sentenceText = text.substring(sentenceStartPosition, sentenceEndPosition);
+			Stream<String> lines = sentenceText.lines();
+			lines.forEachOrdered(line -> {
+				int lineStartPosition = sentenceStartPosition + sentenceText.indexOf(line);
+				int lineEndPosition = lineStartPosition + line.length();
+				if (!line.isBlank() && line.length() > 2) {
+					PartOfJiraIssueText sentence = new PartOfJiraIssueText(lineStartPosition, lineEndPosition, text);
+					sentences.add(sentence);
+				}
+			});
+
 			start = end;
 		}
 		return sentences;
