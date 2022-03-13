@@ -4,6 +4,7 @@
  *
  * Is referenced in HTML by settings/classification/*.vm
  */
+/* global conDecAPI, generalApi */
 (function(global) {
 
 	var ConDecTextClassificationAPI = function() {
@@ -94,20 +95,36 @@
 	};
 
 	ConDecTextClassificationAPI.prototype.getNonValidatedElements = function(projectKey, issueKey) {
-		if (issueKey === undefined) {
-			return generalApi.getJSONReturnPromise(`${this.restPrefix}/getAllNonValidatedElements.json?projectKey=${projectKey}`);
+		var restUrl = `${this.restPrefix}/non-validated-elements/${projectKey}`;
+		if (issueKey !== undefined) {
+			restUrl += `/${issueKey}`;
 		}
-		return generalApi.getJSONReturnPromise(`${this.restPrefix}/getNonValidatedElements.json?projectKey=${projectKey}&issueKey=${issueKey}`);
+		return generalApi.getJSONReturnPromise(restUrl);
 	};
 
-	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey) {
-		return generalApi.postJSONReturnPromise(`${this.restPrefix}
-		/validateAllElements.json
-		?projectKey=${projectKey}
-		&issueKey=${issueKey}`,
-			null
-		);
-	}
+	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey,
+		callback) {
+		this.getNonValidatedElements(projectKey, issueKey).then((nonValidatedSentences) => {
+			for (const sentence of nonValidatedSentences) {
+				this.setValidated(sentence.id, callback);
+			}
+		});
+	};
+
+	ConDecTextClassificationAPI.prototype.setValidated = function(id, callback) {
+		const projectKey = conDecAPI.projectKey;
+		const element = {
+			"id": id,
+			"documentationLocation": "s",
+			"projectKey": projectKey,
+		};
+		generalApi.postJSON(`${this.restPrefix}/validate`, element, (error) => {
+			if (error === null) {
+				conDecAPI.showFlag("success", "Classified text has been manually approved.");
+				callback();
+			}
+		});
+	};
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();
 })(window);

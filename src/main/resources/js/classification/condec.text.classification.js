@@ -2,6 +2,8 @@
  * This module implements the text classification view.
  * It is used to show the elements that were classified but not yet validated for a Jira issue or whole project.
  */
+
+/* global conDecAPI, conDecTextClassificationAPI, conDecObservable, conDecContextMenu */
 (function (global) {
 
 	let ConDecTextClassification = function () {
@@ -51,8 +53,8 @@
 			if (this.viewIdentifier === "jira-issue-module") {
 				this.validateAllButton.style.display = "inline";
 				this.validateAllButton.onclick = () => {
-					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey())
-						.then(() => conDecObservable.notify());
+					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey(),
+							() => conDecObservable.notify());
 				}
 			} else {
 				this.validateAllButton.style.display = "none";
@@ -67,7 +69,10 @@
 		row.appendChild(generateTableCell(nonValidatedElement.type, "th-type"));
 		row.appendChild(generateTableCell(nonValidatedElement.summary, "th-name"));
 		row.appendChild(generateTableCell(generateOptionButtons(nonValidatedElement.id), "th-options"));
-		console.log("row", row)
+		row.addEventListener("contextmenu", function(event) {
+			event.preventDefault();
+			conDecContextMenu.createContextMenu(nonValidatedElement.id, nonValidatedElement.documentationLocation, event);
+		});
 		return row;
 	};
 
@@ -82,7 +87,7 @@
 	};
 
 	let generateOptionButtons = function (elementID) {
-		return `<button class='aui-button aui-button-primary' onclick="conDecAPI.setValidated(${elementID}, () => conDecObservable.notify())"> <span class='aui-icon aui-icon-small aui-iconfont-link'>Validate</span> Validate </button>` +
+		return `<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.setValidated(${elementID}, () => conDecObservable.notify())"> <span class='aui-icon aui-icon-small aui-iconfont-like'>Validate</span> Validate </button>` +
 			`<button class='aui-button aui-button-removed' onclick="conDecDialog.showEditDialog(${elementID}, 's')"> <span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit</span> Edit </button>` +
 			`<button class="aui-button aui-button-removed" onclick="conDecAPI.setSentenceIrrelevant(${elementID}, () => conDecObservable.notify())"> <span class="aui-icon aui-icon-small aui-iconfont-trash">Set Irrelevant</span> Set Irrelevant </button>`;
 	};

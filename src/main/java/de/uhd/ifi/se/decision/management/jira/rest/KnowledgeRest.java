@@ -34,7 +34,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
 
@@ -437,87 +436,6 @@ public class KnowledgeRest {
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "The documentation location could not be changed.")).build();
-	}
-
-	@Path("/setSentenceIrrelevant")
-	@POST
-	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
-			KnowledgeElement decisionKnowledgeElement) {
-		if (request == null || decisionKnowledgeElement == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
-					.build();
-		}
-		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
-			return Response.status(Status.SERVICE_UNAVAILABLE)
-					.entity(ImmutableMap.of("error", "Only decision knowledge elements documented in the description "
-							+ "or comments of a Jira issue can be set to irrelevant."))
-					.build();
-		}
-
-		String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
-				.getJiraIssueTextManager();
-
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager
-				.getKnowledgeElement(decisionKnowledgeElement);
-		if (sentence == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
-		}
-
-		sentence.setRelevant(false);
-		sentence.setValidated(true); // Setting an element irrelevant should automatically validate it
-		sentence.setType(KnowledgeType.OTHER);
-		persistenceManager.updateElementInTextAndDatabase(sentence, AuthenticationManager.getUser(request));
-		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
-		return Response.ok().build();
-	}
-
-	/**
-	 * @param request
-	 *            HttpServletRequest with an authorized Jira
-	 * @param knowledgeElement
-	 *            JSON object containing at least the id, documentation location
-	 * @return {@link Status.OK} if setting the sentence validated was successful
-	 * @issue How should setting a single element "validated" be handled?
-	 * @alternative Change the API of updateDecisionKnowledgeElement to allow this
-	 *              attribute!
-	 * @con This could be a breaking change
-	 * @con This would make the code confusing
-	 * @decision Make a new REST endpoint "setSentenceValidated"!
-	 * @pro This would be backwards compatible
-	 * @pro The code stays cleaner this way
-	 * @con It might be confusing that this is documented as part of the SF: Change
-	 *      decision knowledge element, but not inside the function of the same name
-	 */
-	@Path("/setSentenceValidated")
-	@POST
-	public Response setSentenceValidated(@Context HttpServletRequest request, KnowledgeElement knowledgeElement) {
-		if (request == null || knowledgeElement == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Setting element validated failed due to a bad request.")).build();
-		}
-		if (knowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
-			return Response.status(Status.SERVICE_UNAVAILABLE)
-					.entity(ImmutableMap.of("error", "Only decision knowledge elements documented in the description "
-							+ "or comments of a Jira issue can be set to validated."))
-					.build();
-		}
-
-		String projectKey = knowledgeElement.getProject().getProjectKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
-				.getJiraIssueTextManager();
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(knowledgeElement);
-		if (sentence == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
-		}
-
-		sentence.setValidated(true);
-		persistenceManager.updateInDatabase(sentence);
-		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
-		return Response.ok().build();
 	}
 
 	/**

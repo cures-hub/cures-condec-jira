@@ -174,21 +174,6 @@
 			});
 	};
 
-	ConDecAPI.prototype.setValidated = function(id, callback) {
-		const jsonData = {
-			"id": id,
-			"documentationLocation": "s",
-			"projectKey": projectKey
-		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceValidated", jsonData, function(
-			error) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been updated.");
-				callback();
-			}
-		});
-	};
-
 	/**
 	 * Updates the knowledge type of the element.
 	 *
@@ -297,18 +282,7 @@
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.setSentenceIrrelevant = function(id, callback) {
-		var jsondata = {
-			"id": id,
-			"documentationLocation": "s",
-			"projectKey": projectKey
-		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceIrrelevant", jsondata, function(
-			error) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been updated.");
-				callback();
-			}
-		});
+		this.changeKnowledgeType(id, "Other", "s", callback);
 	};
 
 	/*

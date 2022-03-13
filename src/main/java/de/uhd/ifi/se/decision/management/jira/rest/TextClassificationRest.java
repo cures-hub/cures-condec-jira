@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
@@ -28,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -38,7 +41,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import smile.validation.ClassificationMetrics;
 
 /**
- * REST resource for text classification and its configuration.
+ * REST resource for automatic text classification and its configuration.
  */
 @Path("/classification")
 public class TextClassificationRest {
@@ -203,18 +206,29 @@ public class TextClassificationRest {
 		return Response.ok().build();
 	}
 
-	@Path("/getNonValidatedElements")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param jiraIssueKey
+	 *            of a Jira issue, e.g. requirement or work item.
+	 * @return all parts of Jira issue text in the description and comments of the
+	 *         Jira issue that are not manually approved.
+	 */
+	@Path("/non-validated-elements/{projectKey}/{jiraIssueKey}")
 	@GET
 	public Response getNonValidatedElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+			@PathParam("projectKey") String projectKey, @PathParam("jiraIssueKey") String jiraIssueKey) {
 
-		if (request == null || projectKey == null || issueKey == null) {
+		if (request == null || projectKey == null || jiraIssueKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
 					.build();
 		}
 
-		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
 		long id = jiraIssue.getId();
 
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
@@ -226,20 +240,24 @@ public class TextClassificationRest {
 				nonValidatedElements.add(issueTextPart);
 			}
 		}
-		return Response.ok().entity(nonValidatedElements).build();
+
+		LOGGER.info("Non-validated elements were viewed for Jira issue " + jiraIssueKey);
+		return Response.ok(nonValidatedElements).build();
 	}
 
 	/**
-	 * if no issue key is provided, gets all the issues
-	 * 
 	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param projectKey
-	 * @return
+	 *            of a Jira project.
+	 * @return all parts of Jira issue text that are not manually approved for the
+	 *         entire project. Iterates over all Jira issues in the project.
 	 */
-	@Path("/getAllNonValidatedElements")
+	@Path("/non-validated-elements/{projectKey}")
 	@GET
 	public Response getAllNonValidatedElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+			@PathParam("projectKey") String projectKey) {
 
 		if (request == null || projectKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
@@ -260,34 +278,58 @@ public class TextClassificationRest {
 				}
 			}
 		}
-		return Response.ok().entity(nonValidatedElements).build();
+
+		LOGGER.info("Non-validated elements were viewed for project " + projectKey);
+		return Response.ok(nonValidatedElements).build();
 	}
 
-	@Path("/validateAllElements")
+	/**
+	 * @issue How should setting a single element "validated" be handled?
+	 * @alternative Change the API of updateDecisionKnowledgeElement to allow this
+	 *              attribute!
+	 * @con This could be a breaking change
+	 * @con This would make the code confusing
+	 * @decision Make a new REST endpoint "setSentenceValidated"!
+	 * @pro This would be backwards compatible
+	 * @pro The code stays cleaner this way
+	 * @con It might be confusing that this is documented as part of the SF: Change
+	 *      decision knowledge element, but not inside the function of the same name
+	 * 
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param knowledgeElement
+	 *            JSON object containing at least the id, documentation location
+	 * @return {@link Status.OK} if setting the sentence validated was successful
+	 */
+	@Path("/validate")
 	@POST
-	public Response validateAllElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
-
-		if (request == null || projectKey == null || issueKey == null) {
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Elements could not be set to validated due to a bad request."))
+	public Response setSentenceValidated(@Context HttpServletRequest request, KnowledgeElement knowledgeElement) {
+		if (request == null || knowledgeElement == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Setting element validated failed due to a bad request.")).build();
+		}
+		if (knowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error", "Only decision knowledge elements documented in the description "
+							+ "or comments of a Jira issue can be set to validated."))
 					.build();
 		}
 
-		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
-		long id = jiraIssue.getId();
-
-		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
-
-		for (KnowledgeElement element : elements) {
-			PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
-			if (!issueTextPart.isValidated()) {
-				issueTextPart.setValidated(true);
-				manager.updateInDatabase(issueTextPart);
-			}
+		String projectKey = knowledgeElement.getProject().getProjectKey();
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
+				.getJiraIssueTextManager();
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(knowledgeElement);
+		if (sentence == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
-		return Response.status(Status.OK).build();
 
+		LOGGER.info(sentence + " was manually approved.");
+
+		sentence.setValidated(true);
+		persistenceManager.updateInDatabase(sentence);
+		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
+		return Response.ok().build();
 	}
 }
