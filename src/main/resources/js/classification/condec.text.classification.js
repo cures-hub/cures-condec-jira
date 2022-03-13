@@ -2,6 +2,8 @@
  * This module implements the text classification view.
  * It is used to show the elements that were classified but not yet validated for a Jira issue or whole project.
  */
+
+/* global conDecAPI, generalApi */
 (function (global) {
 
 	let ConDecTextClassification = function () {

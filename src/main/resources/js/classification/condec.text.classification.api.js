@@ -104,7 +104,7 @@
 	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey,
 		callback) {
 		this.getNonValidatedElements(projectKey, issueKey).then((nonValidatedSentences) => {
-			for (sentence of nonValidatedSentences) {
+			for (let sentence of nonValidatedSentences) {
 				this.setValidated(sentence.id, callback);
 			}
 		});
