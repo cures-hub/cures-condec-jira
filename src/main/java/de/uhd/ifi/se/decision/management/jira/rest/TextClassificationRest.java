@@ -280,11 +280,6 @@ public class TextClassificationRest {
 	}
 
 	/**
-	 * @param request
-	 *            HttpServletRequest with an authorized Jira
-	 * @param knowledgeElement
-	 *            JSON object containing at least the id, documentation location
-	 * @return {@link Status.OK} if setting the sentence validated was successful
 	 * @issue How should setting a single element "validated" be handled?
 	 * @alternative Change the API of updateDecisionKnowledgeElement to allow this
 	 *              attribute!
@@ -295,6 +290,13 @@ public class TextClassificationRest {
 	 * @pro The code stays cleaner this way
 	 * @con It might be confusing that this is documented as part of the SF: Change
 	 *      decision knowledge element, but not inside the function of the same name
+	 * 
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param knowledgeElement
+	 *            JSON object containing at least the id, documentation location
+	 * @return {@link Status.OK} if setting the sentence validated was successful
 	 */
 	@Path("/validate")
 	@POST
