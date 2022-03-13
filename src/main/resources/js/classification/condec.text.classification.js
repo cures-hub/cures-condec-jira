@@ -67,7 +67,6 @@
 		row.appendChild(generateTableCell(nonValidatedElement.type, "th-type"));
 		row.appendChild(generateTableCell(nonValidatedElement.summary, "th-name"));
 		row.appendChild(generateTableCell(generateOptionButtons(nonValidatedElement.id), "th-options"));
-		console.log("row", row)
 		return row;
 	};
 

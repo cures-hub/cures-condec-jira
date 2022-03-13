@@ -94,10 +94,11 @@
 	};
 
 	ConDecTextClassificationAPI.prototype.getNonValidatedElements = function(projectKey, issueKey) {
-		if (issueKey === undefined) {
-			return generalApi.getJSONReturnPromise(`${this.restPrefix}/getAllNonValidatedElements.json?projectKey=${projectKey}`);
+		var restUrl = this.restPrefix + "/non-validated-elements/" + projectKey;
+		if (issueKey !== undefined) {
+			restUrl += "/" + issueKey;
 		}
-		return generalApi.getJSONReturnPromise(`${this.restPrefix}/getNonValidatedElements.json?projectKey=${projectKey}&issueKey=${issueKey}`);
+		return generalApi.getJSONReturnPromise(restUrl);
 	};
 
 	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey) {
@@ -107,7 +108,7 @@
 		&issueKey=${issueKey}`,
 			null
 		);
-	}
+	};
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();
 })(window);

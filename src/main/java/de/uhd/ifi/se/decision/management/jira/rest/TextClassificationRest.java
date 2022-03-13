@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.classification.ClassificationManagerForJiraIssueText;
@@ -203,18 +205,29 @@ public class TextClassificationRest {
 		return Response.ok().build();
 	}
 
-	@Path("/getNonValidatedElements")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @param jiraIssueKey
+	 *            of a Jira issue, e.g. requirement or work item.
+	 * @return all parts of Jira issue text in the description and comments of the
+	 *         Jira issue that are not manually approved.
+	 */
+	@Path("/non-validated-elements/{projectKey}/{jiraIssueKey}")
 	@GET
 	public Response getNonValidatedElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
+			@PathParam("projectKey") String projectKey, @PathParam("jiraIssueKey") String jiraIssueKey) {
 
-		if (request == null || projectKey == null || issueKey == null) {
+		if (request == null || projectKey == null || jiraIssueKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
 					.build();
 		}
 
-		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
+		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(jiraIssueKey);
 		long id = jiraIssue.getId();
 
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
@@ -230,16 +243,18 @@ public class TextClassificationRest {
 	}
 
 	/**
-	 * if no issue key is provided, gets all the issues
-	 * 
 	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param projectKey
-	 * @return
+	 *            of a Jira project.
+	 * @return all parts of Jira issue text that are not manually approved for the
+	 *         entire project. Iterates over all Jira issues in the project.
 	 */
-	@Path("/getAllNonValidatedElements")
+	@Path("/non-validated-elements/{projectKey}")
 	@GET
 	public Response getAllNonValidatedElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+			@PathParam("projectKey") String projectKey) {
 
 		if (request == null || projectKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
