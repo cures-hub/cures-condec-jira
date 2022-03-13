@@ -3,9 +3,8 @@
  * automatic decision knowledge identification in Jira issue descriptions and comments.
  *
  * Is referenced in HTML by settings/classification/*.vm
- * 
- * global conDecAPI, generalApi 
  */
+/* global conDecAPI, generalApi */
 (function(global) {
 
 	var ConDecTextClassificationAPI = function() {

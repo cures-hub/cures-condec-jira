@@ -212,7 +212,7 @@ public class JiraIssueTextParser {
 			lines.forEachOrdered(line -> {
 				int lineStartPosition = sentenceStartPosition + sentenceText.indexOf(line);
 				int lineEndPosition = lineStartPosition + line.length();
-				if (!line.isBlank() && line.length() > 2) {
+				if (!line.isBlank() && line.length() > 4) {
 					PartOfJiraIssueText sentence = new PartOfJiraIssueText(lineStartPosition, lineEndPosition, text);
 					sentences.add(sentence);
 				}
