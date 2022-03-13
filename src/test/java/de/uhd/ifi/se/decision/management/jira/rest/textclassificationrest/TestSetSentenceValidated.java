@@ -1,9 +1,7 @@
-package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
+package de.uhd.ifi.se.decision.management.jira.rest.textclassificationrest;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-
-
+import static org.junit.Assert.assertTrue;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -20,17 +18,19 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
-import net.java.ao.test.jdbc.NonTransactional;public class TestSetSentenceValidated extends TestSetUp {
+import net.java.ao.test.jdbc.NonTransactional;
 
-	private KnowledgeRest knowledgeRest;
+public class TestSetSentenceValidated extends TestSetUp {
+
+	private TextClassificationRest textClassificationRest;
 	private HttpServletRequest request;
 
 	@Before
 	public void setUp() {
 		init();
-		knowledgeRest = new KnowledgeRest();
+		textClassificationRest = new TextClassificationRest();
 		request = new MockHttpServletRequest();
 	}
 
@@ -38,7 +38,7 @@ import net.java.ao.test.jdbc.NonTransactional;public class TestSetSentenceValida
 	@NonTransactional
 	public void testRequestNullElementNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.setSentenceValidated(null, null).getStatus());
+				textClassificationRest.setSentenceValidated(null, null).getStatus());
 	}
 
 	@Test
@@ -47,14 +47,14 @@ import net.java.ao.test.jdbc.NonTransactional;public class TestSetSentenceValida
 		KnowledgeElement decisionKnowledgeElement = JiraIssues.getIrrelevantSentence();
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.setSentenceValidated(null, decisionKnowledgeElement).getStatus());
+				textClassificationRest.setSentenceValidated(null, decisionKnowledgeElement).getStatus());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.setSentenceValidated(request, null).getStatus());
+				textClassificationRest.setSentenceValidated(request, null).getStatus());
 	}
 
 	@Test
@@ -62,7 +62,7 @@ import net.java.ao.test.jdbc.NonTransactional;public class TestSetSentenceValida
 	public void testRequestFilledElementFilled() {
 		PartOfJiraIssueText sentence = JiraIssues.addNonValidatedElementToDataBase(120, KnowledgeType.ALTERNATIVE);
 		assertEquals(Response.Status.OK.getStatusCode(),
-				knowledgeRest.setSentenceValidated(request, sentence).getStatus());
+				textClassificationRest.setSentenceValidated(request, sentence).getStatus());
 		PartOfJiraIssueText updatedElement = (PartOfJiraIssueText) KnowledgePersistenceManager.getInstance("Test")
 				.getJiraIssueTextManager().getKnowledgeElement(sentence.getId());
 
@@ -76,7 +76,7 @@ import net.java.ao.test.jdbc.NonTransactional;public class TestSetSentenceValida
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-3");
 		KnowledgeElement decisionKnowledgeElement = new KnowledgeElement(issue);
 		assertEquals(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(),
-				knowledgeRest.setSentenceValidated(request, decisionKnowledgeElement).getStatus());
+				textClassificationRest.setSentenceValidated(request, decisionKnowledgeElement).getStatus());
 	}
 
 	@Test
@@ -85,6 +85,6 @@ import net.java.ao.test.jdbc.NonTransactional;public class TestSetSentenceValida
 		KnowledgeElement decisionKnowledgeElement = JiraIssues.getIrrelevantSentence();
 		decisionKnowledgeElement.setId(4200);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.setSentenceValidated(request, decisionKnowledgeElement).getStatus());
+				textClassificationRest.setSentenceValidated(request, decisionKnowledgeElement).getStatus());
 	}
 }

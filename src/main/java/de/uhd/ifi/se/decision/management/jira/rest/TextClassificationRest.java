@@ -30,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.classification.ClassifierType;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassificationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -278,31 +279,49 @@ public class TextClassificationRest {
 		return Response.ok(nonValidatedElements).build();
 	}
 
-	@Path("/validateAllElements")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 * @param knowledgeElement
+	 *            JSON object containing at least the id, documentation location
+	 * @return {@link Status.OK} if setting the sentence validated was successful
+	 * @issue How should setting a single element "validated" be handled?
+	 * @alternative Change the API of updateDecisionKnowledgeElement to allow this
+	 *              attribute!
+	 * @con This could be a breaking change
+	 * @con This would make the code confusing
+	 * @decision Make a new REST endpoint "setSentenceValidated"!
+	 * @pro This would be backwards compatible
+	 * @pro The code stays cleaner this way
+	 * @con It might be confusing that this is documented as part of the SF: Change
+	 *      decision knowledge element, but not inside the function of the same name
+	 */
+	@Path("/validate")
 	@POST
-	public Response validateAllElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey) {
-
-		if (request == null || projectKey == null || issueKey == null) {
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Elements could not be set to validated due to a bad request."))
+	public Response setSentenceValidated(@Context HttpServletRequest request, KnowledgeElement knowledgeElement) {
+		if (request == null || knowledgeElement == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Setting element validated failed due to a bad request.")).build();
+		}
+		if (knowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error", "Only decision knowledge elements documented in the description "
+							+ "or comments of a Jira issue can be set to validated."))
 					.build();
 		}
 
-		Issue jiraIssue = JiraIssuePersistenceManager.getJiraIssue(issueKey);
-		long id = jiraIssue.getId();
-
-		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
-
-		for (KnowledgeElement element : elements) {
-			PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
-			if (!issueTextPart.isValidated()) {
-				issueTextPart.setValidated(true);
-				manager.updateInDatabase(issueTextPart);
-			}
+		String projectKey = knowledgeElement.getProject().getProjectKey();
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
+				.getJiraIssueTextManager();
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager.getKnowledgeElement(knowledgeElement);
+		if (sentence == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
 		}
-		return Response.ok().build();
 
+		sentence.setValidated(true);
+		persistenceManager.updateInDatabase(sentence);
+		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
+		return Response.ok().build();
 	}
 }

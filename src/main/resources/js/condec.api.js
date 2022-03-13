@@ -174,21 +174,6 @@
 			});
 	};
 
-	ConDecAPI.prototype.setValidated = function(id, callback) {
-		const jsonData = {
-			"id": id,
-			"documentationLocation": "s",
-			"projectKey": projectKey
-		};
-		generalApi.postJSON(this.restPrefix + "/knowledge/setSentenceValidated", jsonData, function(
-			error) {
-			if (error === null) {
-				showFlag("success", "Decision knowledge element has been updated.");
-				callback();
-			}
-		});
-	};
-
 	/**
 	 * Updates the knowledge type of the element.
 	 *

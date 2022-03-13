@@ -101,13 +101,26 @@
 		return generalApi.getJSONReturnPromise(restUrl);
 	};
 
-	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey) {
-		return generalApi.postJSONReturnPromise(`${this.restPrefix}
-		/validateAllElements.json
-		?projectKey=${projectKey}
-		&issueKey=${issueKey}`,
-			null
-		);
+	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey, callback) {
+		this.getNonValidatedElements(projectKey, issueKey).then(nonValidatedSentences => {
+			for (var sentence of nonValidatedSentences) {
+				this.setValidated(sentence.id, callback);
+			}
+		});
+	};
+
+	ConDecTextClassificationAPI.prototype.setValidated = function(id, callback) {
+		const element = {
+			"id": id,
+			"documentationLocation": "s",
+			"projectKey": conDecAPI.projectKey
+		};
+		generalApi.postJSON(this.restPrefix + "/validate", element, function(error) {
+			if (error === null) {
+				conDecAPI.showFlag("success", "Classified text has been manually approved.");
+				callback();
+			}
+		});
 	};
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();
