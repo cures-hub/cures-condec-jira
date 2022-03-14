@@ -39,11 +39,11 @@ conDecTextClassification, AJS */
 	//			Generate table of non-validated elements
 	//-----------------------------------------
 	ConDecTextClassification.prototype.displayNonValidatedElements = function(nonValidatedElementsList) {
+		this.validateAllButton.style.display = "none";
 
 		if (nonValidatedElementsList.length === 0) {
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "<i>All elements have been validated!</i>";
-			this.validateAllButton.style.display = "none";
 		} else {
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "";
@@ -59,8 +59,6 @@ conDecTextClassification, AJS */
 					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey(),
 						() => conDecTextClassification.updateView());
 				}
-			} else {
-				this.validateAllButton.style.display = "none";
 			}
 		}
 
