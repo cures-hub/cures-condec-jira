@@ -297,7 +297,6 @@ public class TextClassifier {
 				continue;
 			}
 			if (element.getSummary().isBlank()) {
-				// Code change or commit comment
 				continue;
 			}
 			// if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText)
