@@ -3,7 +3,8 @@
  * It is used to show the elements that were classified but not yet validated for a Jira issue or whole project.
  */
 
-/* global conDecAPI, conDecTextClassificationAPI, conDecObservable, conDecContextMenu, conDecTextClassification, AJS */
+/* global conDecAPI, conDecTextClassificationAPI, conDecObservable, conDecContextMenu, 
+ * conDecTextClassification, AJS */
 (function(global) {
 
 	let ConDecTextClassification = function() {
@@ -111,7 +112,7 @@
 	}
 
 	ConDecTextClassification.prototype.linkConfigPage = function() {
-		var configLink = document.getElementById("config-link-text-classification-" + this.viewIdentifier);
+		var configLink = document.getElementById(`config-link-text-classification-${this.viewIdentifier}`);
 		configLink.href = `${AJS.contextPath()}/plugins/servlet/condec/settings?projectKey=` +
 			`${conDecAPI.projectKey}&category=classification`;
 		AJS.$(configLink).tooltip();

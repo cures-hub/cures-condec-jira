@@ -26,7 +26,7 @@
 	 * external references: settings/classification/textClassificationEvaluation.vm
 	 */
 	ConDecTextClassificationAPI.prototype.classifyText = function(text, projectKey, callback) {
-		generalApi.postJSON(this.restPrefix + "/classify/" + projectKey, text, function(error, response) {
+		generalApi.postJSON(`${this.restPrefix}/classify/${projectKey}`, text, (error, response) => {
 			if (error === null) {
 				callback(response.classificationResult);
 			}
@@ -129,13 +129,11 @@
 
 	ConDecTextClassificationAPI.prototype.classify = function(sentenceId, callback) {
 		conDecAPI.getKnowledgeElement(sentenceId, "s", (sentence) => {
-			console.log(sentence);
 			this.classifyText(sentence.summary, conDecAPI.projectKey, (classificationResult) => {
-				console.log(classificationResult);
 				if (sentence.type !== classificationResult) {
 					conDecAPI.changeKnowledgeType(sentence.id, classificationResult, "s", callback);
 				}
-				conDecAPI.showFlag("success", "Text has been automatically classified as " + classificationResult);
+				conDecAPI.showFlag("success", `Text has been automatically classified as ${classificationResult}`);
 			});
 		});
 	};
