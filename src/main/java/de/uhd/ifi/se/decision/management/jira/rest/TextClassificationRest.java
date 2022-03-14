@@ -138,6 +138,18 @@ public class TextClassificationRest {
 		return Response.ok(ImmutableMap.of("content", evaluationResultsMessage)).build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project. The trained {@link TextClassifier} of the
+	 *            project is used for classification.
+	 * @param text
+	 *            to be classified as decision knowledge or irrelevant wrt. decision
+	 *            knowledge.
+	 * @return {@link KnowledgeType}, "other" for irrelevant.
+	 */
 	@Path("/classify/{projectKey}")
 	@POST
 	public Response classifyText(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
