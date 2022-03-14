@@ -3,15 +3,15 @@
  * It is used to show the elements that were classified but not yet validated for a Jira issue or whole project.
  */
 
-/* global conDecAPI, conDecTextClassificationAPI, conDecObservable, conDecContextMenu */
-(function (global) {
+/* global conDecAPI, conDecTextClassificationAPI, conDecObservable, conDecContextMenu, conDecTextClassification, AJS */
+(function(global) {
 
-	let ConDecTextClassification = function () {
+	let ConDecTextClassification = function() {
 		this.projectKey = conDecAPI.getProjectKey();
 		this.currentNonValidatedElements = [];
 	};
 
-	ConDecTextClassification.prototype.init = function (isJiraIssueView = false) {
+	ConDecTextClassification.prototype.init = function(isJiraIssueView = false) {
 		if (isJiraIssueView) {
 			this.viewIdentifier = "jira-issue-module";
 		} else {
@@ -25,27 +25,25 @@
 		this.nonValidatedTableContentElement = document.getElementById(`non-validated-table-content-${this.viewIdentifier}`);
 		this.loadingSpinnerElement = document.getElementById(`classification-loading-spinner-${this.viewIdentifier}`);
 		this.validateAllButton = document.getElementById(`validate-all-elements-button-${this.viewIdentifier}`);
-		this.classifyAllButton = document.getElementById(`classify-all-elements-button-${this.viewIdentifier}`);
-		
+
 		this.linkConfigPage();
-		
+
 		conDecObservable.subscribe(this);
 		this.loadData();
 	}
-	
-	ConDecTextClassification.prototype.updateView = function () {
+
+	ConDecTextClassification.prototype.updateView = function() {
 		this.loadData();
 	}
 	//-----------------------------------------
 	//			Generate table of non-validated elements
 	//-----------------------------------------
-	ConDecTextClassification.prototype.displayNonValidatedElements = function (nonValidatedElementsList) {
+	ConDecTextClassification.prototype.displayNonValidatedElements = function(nonValidatedElementsList) {
 
 		if (nonValidatedElementsList.length === 0) {
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "<i>All elements have been validated!</i>";
 			this.validateAllButton.style.display = "none";
-			this.classifyAllButton.style.display = "none";
 		} else {
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "";
@@ -59,23 +57,17 @@
 				this.validateAllButton.style.display = "inline";
 				this.validateAllButton.onclick = () => {
 					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey(),
-							() => conDecTextClassification.updateView());
-				}
-				this.classifyAllButton.style.display = "inline";
-				this.classifyAllButton.onclick = () => {
-					conDecTextClassificationAPI.classifyAllElements(this.projectKey, conDecAPI.getIssueKey(),
-							() => conDecTextClassification.updateView());
+						() => conDecTextClassification.updateView());
 				}
 			} else {
 				this.validateAllButton.style.display = "none";
-				this.classifyAllButton.style.display = "none";
 			}
 		}
 
 		conDecNudgingAPI.decideAmbientFeedbackForTab(nonValidatedElementsList.length, `menu-item-text-classification`);
 	};
 
-	let generateTableRow = function (nonValidatedElement) {
+	let generateTableRow = function(nonValidatedElement) {
 		let row = document.createElement("tr");
 		row.appendChild(generateTableCell(nonValidatedElement.type, "th-type"));
 		row.appendChild(generateTableCell(nonValidatedElement.summary, "th-name"));
@@ -87,7 +79,7 @@
 		return row;
 	};
 
-	let generateTableCell = function (content, headersId, attributes) {
+	let generateTableCell = function(content, headersId, attributes) {
 		let tableCell = document.createElement("td");
 		tableCell.headers = headersId;
 		tableCell.innerHTML = content;
@@ -97,7 +89,7 @@
 		return tableCell
 	};
 
-	let generateOptionButtons = function (elementID) {
+	let generateOptionButtons = function(elementID) {
 		return `<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.setValidated(${elementID}, () => conDecTextClassification.updateView())"> <span class='aui-icon aui-icon-small aui-iconfont-like'>Validate</span> Validate </button>` +
 			`<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.classify(${elementID}, () => conDecTextClassification.updateView())"> <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Classify Automatically</span> Auto-Classify </button>` +
 			`<button class='aui-button aui-button-removed' onclick="conDecDialog.showEditDialog(${elementID}, 's')"> <span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit</span> Edit </button>` +
@@ -105,11 +97,11 @@
 	};
 
 
-//-----------------------------------------
-// Load data and call display logic.
-//-----------------------------------------
+	//-----------------------------------------
+	// Load data and call display logic.
+	//-----------------------------------------
 
-	ConDecTextClassification.prototype.loadData = function () {
+	ConDecTextClassification.prototype.loadData = function() {
 		startLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement);
 		conDecTextClassificationAPI.getNonValidatedElements(this.projectKey, this.issueKey)
 			.then((nonValidatedElements) => this.displayNonValidatedElements(nonValidatedElements))
@@ -117,7 +109,7 @@
 			.finally(() => stopLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement)
 			);
 	}
-	
+
 	ConDecTextClassification.prototype.linkConfigPage = function() {
 		var configLink = document.getElementById("config-link-text-classification-" + this.viewIdentifier);
 		configLink.href = `${AJS.contextPath()}/plugins/servlet/condec/settings?projectKey=` +
@@ -125,9 +117,9 @@
 		AJS.$(configLink).tooltip();
 	}
 
-//-----------------------------------------
-//		General purpose functions
-//-----------------------------------------
+	//-----------------------------------------
+	//		General purpose functions
+	//-----------------------------------------
 
 	function displayErrorMessage(error) {
 		conDecAPI.showFlag("error", "Something went wrong! <br/>" + error)
@@ -144,5 +136,4 @@
 	}
 
 	global.conDecTextClassification = new ConDecTextClassification();
-})
-(window);
+})(window);
