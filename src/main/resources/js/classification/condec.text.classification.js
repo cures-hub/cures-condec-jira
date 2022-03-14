@@ -25,10 +25,14 @@
 		this.nonValidatedTableContentElement = document.getElementById(`non-validated-table-content-${this.viewIdentifier}`);
 		this.loadingSpinnerElement = document.getElementById(`classification-loading-spinner-${this.viewIdentifier}`);
 		this.validateAllButton = document.getElementById(`validate-all-elements-button-${this.viewIdentifier}`);
-
+		this.classifyAllButton = document.getElementById(`classify-all-elements-button-${this.viewIdentifier}`);
+		
+		this.linkConfigPage();
+		
 		conDecObservable.subscribe(this);
 		this.loadData();
 	}
+	
 	ConDecTextClassification.prototype.updateView = function () {
 		this.loadData();
 	}
@@ -41,6 +45,7 @@
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "<i>All elements have been validated!</i>";
 			this.validateAllButton.style.display = "none";
+			this.classifyAllButton.style.display = "none";
 		} else {
 			//reset table content to empty
 			this.nonValidatedTableContentElement.innerHTML = "";
@@ -54,10 +59,16 @@
 				this.validateAllButton.style.display = "inline";
 				this.validateAllButton.onclick = () => {
 					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey(),
-							() => conDecObservable.notify());
+							() => conDecTextClassification.updateView());
+				}
+				this.classifyAllButton.style.display = "inline";
+				this.classifyAllButton.onclick = () => {
+					conDecTextClassificationAPI.classifyAllElements(this.projectKey, conDecAPI.getIssueKey(),
+							() => conDecTextClassification.updateView());
 				}
 			} else {
 				this.validateAllButton.style.display = "none";
+				this.classifyAllButton.style.display = "none";
 			}
 		}
 
@@ -87,7 +98,8 @@
 	};
 
 	let generateOptionButtons = function (elementID) {
-		return `<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.setValidated(${elementID}, () => conDecObservable.notify())"> <span class='aui-icon aui-icon-small aui-iconfont-like'>Validate</span> Validate </button>` +
+		return `<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.setValidated(${elementID}, () => conDecTextClassification.updateView())"> <span class='aui-icon aui-icon-small aui-iconfont-like'>Validate</span> Validate </button>` +
+			`<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.classify(${elementID}, () => conDecTextClassification.updateView())"> <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Classify Automatically</span> Auto-Classify </button>` +
 			`<button class='aui-button aui-button-removed' onclick="conDecDialog.showEditDialog(${elementID}, 's')"> <span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit</span> Edit </button>` +
 			`<button class="aui-button aui-button-removed" onclick="conDecAPI.setSentenceIrrelevant(${elementID}, () => conDecObservable.notify())"> <span class="aui-icon aui-icon-small aui-iconfont-trash">Set Irrelevant</span> Set Irrelevant </button>`;
 	};
@@ -104,6 +116,13 @@
 			.catch((error) => displayErrorMessage(error))
 			.finally(() => stopLoadingVisualization(this.nonValidatedTableElement, this.loadingSpinnerElement)
 			);
+	}
+	
+	ConDecTextClassification.prototype.linkConfigPage = function() {
+		var configLink = document.getElementById("config-link-text-classification-" + this.viewIdentifier);
+		configLink.href = `${AJS.contextPath()}/plugins/servlet/condec/settings?projectKey=` +
+			`${conDecAPI.projectKey}&category=classification`;
+		AJS.$(configLink).tooltip();
 	}
 
 //-----------------------------------------

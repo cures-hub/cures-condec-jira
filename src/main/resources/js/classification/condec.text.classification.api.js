@@ -126,5 +126,29 @@
 		});
 	};
 
+	ConDecTextClassificationAPI.prototype.classifyAllElements = function(projectKey, issueKey,
+		callback) {
+		this.getNonValidatedElements(projectKey, issueKey).then((nonValidatedSentences) => {
+			for (const sentence of nonValidatedSentences) {
+				this.classify(sentence.id, callback);
+			}
+		});
+	};
+
+	ConDecTextClassificationAPI.prototype.classify = function(id, callback) {
+		const projectKey = conDecAPI.projectKey;
+		const element = {
+			"id": id,
+			"documentationLocation": "s",
+			"projectKey": projectKey,
+		};
+		generalApi.postJSON(`${this.restPrefix}/validate`, element, (error) => {
+			if (error === null) {
+				conDecAPI.showFlag("success", "Classified text has been manually approved.");
+				callback();
+			}
+		});
+	};
+
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();
 })(window);
