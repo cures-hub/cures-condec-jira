@@ -179,8 +179,10 @@ public class TextClassifier {
 
 		if (k > 1) {
 			LOGGER.info("Train and evaluate on the same data using k-fold cross-validation, k is set to: " + k);
-			resultsMap.putAll(binaryClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData, binaryClassifierType));
-			resultsMap.putAll(fineGrainedClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData, fineGrainedClassifierType));
+			resultsMap.putAll(
+					binaryClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData, binaryClassifierType));
+			resultsMap.putAll(fineGrainedClassifier.evaluateUsingKFoldCrossValidation(k, groundTruthData,
+					fineGrainedClassifierType));
 		} else {
 			LOGGER.info(
 					"Evaluate the trained classifier on different data than it was trained on (cross-project validation)");
@@ -208,6 +210,7 @@ public class TextClassifier {
 	public boolean train(String fileName, ClassifierType binaryClassifierType,
 			ClassifierType fineGrainedClassifierType) {
 		if (fileName == null || fileName.isEmpty()) {
+			LOGGER.error("The classifier could not be trained because file name is invalid.");
 			return false;
 		}
 		groundTruthData = new GroundTruthData(fileName);
@@ -291,6 +294,9 @@ public class TextClassifier {
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE
 					&& element.getType() == KnowledgeType.OTHER) {
+				continue;
+			}
+			if (element.getSummary().isBlank()) {
 				continue;
 			}
 			// if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText)

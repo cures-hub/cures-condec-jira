@@ -22,13 +22,15 @@
 			});
 	};
 
+	/**
+	 * external references: settings/classification/textClassificationEvaluation.vm
+	 */
 	ConDecTextClassificationAPI.prototype.classifyText = function(text, projectKey, callback) {
-		generalApi.postJSON(this.restPrefix + "/classifyText?projectKey=" + projectKey + "&text=" + text,
-			null, function(error, response) {
-				if (error === null) {
-					callback(response.classificationResult);
-				}
-			});
+		generalApi.postJSON(`${this.restPrefix}/classify/${projectKey}`, text, (error, response) => {
+			if (error === null) {
+				callback(response.classificationResult);
+			}
+		});
 	};
 
 	ConDecTextClassificationAPI.prototype.classifyWholeProject = function(projectKey, animatedElement) {
@@ -112,17 +114,27 @@
 	};
 
 	ConDecTextClassificationAPI.prototype.setValidated = function(id, callback) {
-		const projectKey = conDecAPI.projectKey;
 		const element = {
 			"id": id,
 			"documentationLocation": "s",
-			"projectKey": projectKey,
+			"projectKey": conDecAPI.projectKey,
 		};
 		generalApi.postJSON(`${this.restPrefix}/validate`, element, (error) => {
 			if (error === null) {
 				conDecAPI.showFlag("success", "Classified text has been manually approved.");
 				callback();
 			}
+		});
+	};
+
+	ConDecTextClassificationAPI.prototype.classify = function(sentenceId, callback) {
+		conDecAPI.getKnowledgeElement(sentenceId, "s", (sentence) => {
+			this.classifyText(sentence.summary, conDecAPI.projectKey, (classificationResult) => {
+				if (sentence.type !== classificationResult) {
+					conDecAPI.changeKnowledgeType(sentence.id, classificationResult, "s", callback);
+				}
+				conDecAPI.showFlag("success", `Text has been automatically classified as ${classificationResult}`);
+			});
 		});
 	};
 

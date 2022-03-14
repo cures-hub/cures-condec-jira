@@ -138,20 +138,33 @@ public class TextClassificationRest {
 		return Response.ok(ImmutableMap.of("content", evaluationResultsMessage)).build();
 	}
 
-	@Path("/classifyText")
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project. The trained {@link TextClassifier} of the
+	 *            project is used for classification.
+	 * @param text
+	 *            to be classified as decision knowledge or irrelevant wrt. decision
+	 *            knowledge.
+	 * @return {@link KnowledgeType}, "other" for irrelevant.
+	 */
+	@Path("/classify/{projectKey}")
 	@POST
-	public Response classifyText(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("text") String text) {
+	public Response classifyText(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey,
+			String text) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		TextClassifier classifier = TextClassifier.getInstance(projectKey);
+		String classificationResult = KnowledgeType.OTHER.toString();
+
 		boolean isRelevant = classifier.getBinaryClassifier().predict(text);
-		String classificationResult = isRelevant ? "Relevant" : "Irrelevant";
 		if (isRelevant) {
 			KnowledgeType type = classifier.getFineGrainedClassifier().predict(text);
-			classificationResult += ": " + type.toString();
+			classificationResult = type.toString();
 		}
 		return Response.ok(ImmutableMap.of("classificationResult", classificationResult)).build();
 	}
@@ -299,8 +312,8 @@ public class TextClassificationRest {
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
 	 * @param knowledgeElement
-	 *            JSON object containing at least the id, documentation location
-	 * @return {@link Status.OK} if setting the sentence validated was successful
+	 *            JSON object containing at least the id, documentation location.
+	 * @return ok if setting the sentence validated was successful
 	 */
 	@Path("/validate")
 	@POST

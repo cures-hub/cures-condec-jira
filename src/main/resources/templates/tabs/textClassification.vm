@@ -10,6 +10,10 @@
     		<span class="aui-icon aui-icon-small aui-iconfont-like"></span> 
     		Validate all elements!
     	</button>
+    	<a id="config-link-text-classification-$viewIdentifier" 
+			title="Classifier can be retrained by the rationale manager." target="_blank">
+		<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.configuration.label')
+	</a>
 	</div>
     <div>
         <table id="non-validated-table-$viewIdentifier" class="aui aui-table-list">
