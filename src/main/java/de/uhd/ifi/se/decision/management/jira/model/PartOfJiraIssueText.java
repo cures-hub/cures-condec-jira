@@ -386,6 +386,6 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	}
 
 	public boolean isCodeChangeExplanation() {
-		return getSummary().startsWith("In class ") && getSummary().contains("the following methods");
+		return getSummary().startsWith("The following classes were changed:");
 	}
 }

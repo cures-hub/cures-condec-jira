@@ -95,4 +95,22 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());
 	}
 
+	@Test
+	@NonTransactional
+	public void testCommitReferenceNotClassified() {
+		sentences = JiraIssues.getSentencesForCommentText("Commit Hash: 42");
+		sentences = classificationManager.classifySentencesBinary(sentences);
+		assertFalse(sentences.get(0).isRelevant());
+		assertFalse(sentences.get(0).isTagged());
+	}
+
+	@Test
+	@NonTransactional
+	public void testCodeChangeExplanationNotClassified() {
+		sentences = JiraIssues.getSentencesForCommentText("In class TextClassifier.java the following methods");
+		sentences = classificationManager.classifySentencesBinary(sentences);
+		assertFalse(sentences.get(0).isRelevant());
+		assertFalse(sentences.get(0).isTagged());
+	}
+
 }
