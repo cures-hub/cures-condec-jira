@@ -20,13 +20,13 @@ The results might differ a little bit because of the random undersampling that w
 Basic descriptive statistics on ground truth files can be calculated using the R file [training-data-analysis.r](training-data-analysis.r).
 
 ## Usage During Development
-The classifier predicts whether the textual parts in the Jira issue description, comments, or commit messages are relevant decision knowledge elements and
--if yes-it annotates the parts accordingly.
-ConDec performs the automatic annotation directly in the text of the Jira issue description and comments when developers save textual changes.
-Besides, ConDec offers a dedicated view for text classification.
-In the text classification view, developers manually approve the classification result, i.e., 
+The classifier predicts whether the textual parts in the Jira issue description, comments, or commit messages are relevant decision knowledge elements and, 
+if yes, it annotates the parts accordingly.
+ConDec performs the **automatic annotation** directly **in the text of the Jira issue description and comments** when developers save textual changes.
+Besides, ConDec offers a dedicated **view for text classification**.
+In the text classification view, developers **manually approve the classification result**, i.e., 
 developers decide whether the annotations are correct or not.
-Developers can trigger the automatic text classification.
+Developers can trigger the automatic text classification using the *Auto-Classify* button.
 
 ![Text classification view with three sentences not yet manually approved/validated](../screenshots/text_classification_view.png)
 

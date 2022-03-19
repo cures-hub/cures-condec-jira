@@ -294,18 +294,19 @@ public class TextClassifier {
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE
 					&& element.getType() == KnowledgeType.OTHER) {
+				// titles of work items, bug reports and so on are not used for training
 				continue;
 			}
 			if (element.getSummary().isBlank()) {
 				continue;
 			}
-			// if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText)
-			// element).isValidated()) {
-			// continue;
-			// }
+			if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isValidated()) {
+				// elements that were not manually approved are excluded
+				continue;
+			}
 			if (element.getSummary().startsWith("In class ") && element.getSummary().contains("the following methods")
 					|| element.getSummary().contains("Commit Hash:")) {
-				// Code change or commit comment
+				// code change or commit comments are excluded
 				continue;
 			}
 			knowledgeElements.add(element);
