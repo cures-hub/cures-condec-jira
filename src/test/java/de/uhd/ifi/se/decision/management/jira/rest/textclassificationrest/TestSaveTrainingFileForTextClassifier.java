@@ -68,6 +68,14 @@ public class TestSaveTrainingFileForTextClassifier extends TestSetUp {
 		commitReference.setSummary("Commit Hash:");
 		KnowledgeGraph.getInstance("TEST").addVertex(commitReference);
 
+		PartOfJiraIssueText codeChangeExplanation = new PartOfJiraIssueText();
+		codeChangeExplanation.setProject("TEST");
+		codeChangeExplanation.setId(4242);
+		codeChangeExplanation.setValidated(true);
+		codeChangeExplanation.setType(KnowledgeType.OTHER);
+		codeChangeExplanation.setSummary("The following classes were changed:");
+		KnowledgeGraph.getInstance("TEST").addVertex(codeChangeExplanation);
+
 		JiraIssues.addElementToDataBase();
 
 		assertEquals(Status.OK.getStatusCode(),
