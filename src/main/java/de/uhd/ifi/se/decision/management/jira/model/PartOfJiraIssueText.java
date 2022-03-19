@@ -381,10 +381,17 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		return getComment() != null;
 	}
 
+	/**
+	 * @return true if the part of text contains a reference to a commit (because
+	 *         ConDec transcribes commit messages into Jira issue comments).
+	 */
 	public boolean isTranscribedCommitReference() {
 		return getSummary().contains("Commit Hash:");
 	}
 
+	/**
+	 * @return true if the part of text contains a summary of code changes.
+	 */
 	public boolean isCodeChangeExplanation() {
 		return getSummary().startsWith("The following classes were changed:");
 	}

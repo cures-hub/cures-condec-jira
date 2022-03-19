@@ -176,7 +176,7 @@ public class ClassificationManagerForJiraIssueText {
 	 *         input for fine grained classification.
 	 */
 	private static boolean isSentenceQualifiedForFineGrainedClassification(PartOfJiraIssueText sentence) {
-		return sentence.isRelevant() && isSentenceQualifiedForBinaryClassification(sentence);
+		return sentence.isRelevant();
 	}
 
 	private List<PartOfJiraIssueText> updateSentencesWithFineGrainedClassificationResult(
