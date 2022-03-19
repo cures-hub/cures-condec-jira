@@ -88,9 +88,6 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public List<PartOfJiraIssueText> classifySentencesBinary(List<PartOfJiraIssueText> sentences) {
-		if (sentences == null) {
-			return new ArrayList<PartOfJiraIssueText>();
-		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
 		List<String> stringsToBeClassified = sentencesRelevantForBinaryClf.stream()
 				.map(PartOfJiraIssueText::getDescription).collect(Collectors.toList());
