@@ -124,7 +124,7 @@ public class TextClassifier {
 	 *            true if the classifier should be updated whenever a manually
 	 *            approved {@link PartOfJiraIssueText} is created or updated.
 	 * 
-	 * @see {@link #update(PartOfJiraIssueText)}
+	 * @see TextClassifier#update(PartOfJiraIssueText)
 	 */
 	public void activateOnlineLearning(boolean isOnlineLearningActivated) {
 		TextClassificationConfiguration config = ConfigPersistenceManager
@@ -294,19 +294,19 @@ public class TextClassifier {
 			}
 			if (element.getDocumentationLocation() == DocumentationLocation.JIRAISSUE
 					&& element.getType() == KnowledgeType.OTHER) {
+				// titles of work items, bug reports and so on are not used for training
 				continue;
 			}
 			if (element.getSummary().isBlank()) {
 				continue;
 			}
-			// if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText)
-			// element).isValidated()) {
-			// continue;
-			// }
-			if (element.getSummary().startsWith("In class ") && element.getSummary().contains("the following methods")
-					|| element.getSummary().contains("Commit Hash:")) {
-				// Code change or commit comment
-				continue;
+			if (element instanceof PartOfJiraIssueText) {
+				PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
+				if (!sentence.isValidated() || sentence.isTranscribedCommitReference()
+						|| sentence.isCodeChangeExplanation()) {
+					// elements not manually approved, code change or commit comments are excluded
+					continue;
+				}
 			}
 			knowledgeElements.add(element);
 		}

@@ -67,20 +67,15 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public void classifyComments(List<Comment> comments) {
-		if (comments == null || comments.isEmpty()) {
-			return;
-		}
 		for (Comment comment : comments) {
 			classifyComment(comment);
 		}
 	}
 
 	public void classifyComment(Comment comment) {
-		List<PartOfJiraIssueText> sentences = new ArrayList<>();
 		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateElementsOfCommentInDatabase(comment);
-		sentences.addAll(sentencesOfComment);
-		classifySentencesBinary(sentences);
-		classifySentencesFineGrained(sentences);
+		classifySentencesBinary(sentencesOfComment);
+		classifySentencesFineGrained(sentencesOfComment);
 	}
 
 	public static List<Comment> getComments(Issue issue) {
@@ -88,9 +83,6 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public List<PartOfJiraIssueText> classifySentencesBinary(List<PartOfJiraIssueText> sentences) {
-		if (sentences == null) {
-			return new ArrayList<PartOfJiraIssueText>();
-		}
 		List<PartOfJiraIssueText> sentencesRelevantForBinaryClf = getSentencesForBinaryClassification(sentences);
 		List<String> stringsToBeClassified = sentencesRelevantForBinaryClf.stream()
 				.map(PartOfJiraIssueText::getDescription).collect(Collectors.toList());
@@ -118,8 +110,9 @@ public class ClassificationManagerForJiraIssueText {
 	 *         input for binary classification. It is qualified if its type is not
 	 *         yet validated.
 	 */
-	private static boolean isSentenceQualifiedForBinaryClassification(PartOfJiraIssueText sentence) {
-		return !sentence.isValidated();
+	public static boolean isSentenceQualifiedForBinaryClassification(PartOfJiraIssueText sentence) {
+		return !sentence.isValidated() && !sentence.isTranscribedCommitReference()
+				&& !sentence.isCodeChangeExplanation();
 	}
 
 	private List<PartOfJiraIssueText> updateSentencesWithBinaryClassificationResult(boolean[] classificationResult,
@@ -140,9 +133,6 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public List<PartOfJiraIssueText> classifySentencesFineGrained(List<PartOfJiraIssueText> sentences) {
-		if (sentences == null) {
-			return new ArrayList<PartOfJiraIssueText>();
-		}
 		List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
 		List<String> stringsToBeClassified = sentencesToBeClassified.stream().map(PartOfJiraIssueText::getDescription)
 				.collect(Collectors.toList());
@@ -175,7 +165,7 @@ public class ClassificationManagerForJiraIssueText {
 	 *         input for fine grained classification.
 	 */
 	private static boolean isSentenceQualifiedForFineGrainedClassification(PartOfJiraIssueText sentence) {
-		return sentence.isRelevant() && isSentenceQualifiedForBinaryClassification(sentence);
+		return sentence.isRelevant();
 	}
 
 	private List<PartOfJiraIssueText> updateSentencesWithFineGrainedClassificationResult(

@@ -166,6 +166,7 @@ public class TextClassificationRest {
 			KnowledgeType type = classifier.getFineGrainedClassifier().predict(text);
 			classificationResult = type.toString();
 		}
+		LOGGER.info("Automatic text classification result is " + classificationResult + " for sentence " + text);
 		return Response.ok(ImmutableMap.of("classificationResult", classificationResult)).build();
 	}
 

@@ -1,7 +1,7 @@
 # Automatic Text Classification/Rationale Identification
 
-The ConDec Jira plug-in offers a feature that automatically classifies text either as relevant decision knowledge elements or as irrelevant.
-The text classifier consists of a binary and a fine-grained classifier.
+The ConDec Jira plug-in offers a feature that **automatically classifies text** either as relevant decision knowledge elements or as irrelevant.
+The text classifier consists of a **binary** and a **fine-grained classifier**.
 
 ## Ground Truth Data
 Ground truth data is needed to train and evaluate the text classifier.
@@ -13,9 +13,24 @@ To reproduce the results from the [**NLP4RE'21 paper**](http://ceur-ws.org/Vol-2
 - Choose the training file [CONDEC-NLP4RE2021.csv](../../src/main/resources/classifier/CONDEC-NLP4RE2021.csv).
 - Set the machine-learning algorithm to Logistic Regression for both the binary and fine-grained classifiers.
 - Run 10-fold cross-validation (you need to set k to 10).
-- ConDec writes evaluation results to a text file. The output file should be similar to [evaluation-results-CONDEC-NLP4RE2021-LR-10fold](evaluation-results-CONDEC-NLP4RE2021-LR-10fold.txt). The results might differ a little bit because of the random undersampling that we did to balance the training data.
+- ConDec writes evaluation results to a text file. 
+The output file will be similar to [evaluation-results-CONDEC-NLP4RE2021-LR-10fold](evaluation-results-CONDEC-NLP4RE2021-LR-10fold.txt). 
+The results might differ a little bit because of the random undersampling that we did to balance the training data.
 
 Basic descriptive statistics on ground truth files can be calculated using the R file [training-data-analysis.r](training-data-analysis.r).
+
+## Usage During Development
+The classifier predicts whether the textual parts in the Jira issue description, comments, or commit messages are relevant decision knowledge elements and, 
+if yes, it annotates the parts accordingly.
+ConDec performs the **automatic annotation** directly **in the text of the Jira issue description and comments** when developers save textual changes.
+Besides, ConDec offers a dedicated **view for text classification**.
+In the text classification view, developers **manually approve the classification result**, i.e., 
+developers decide whether the annotations are correct or not.
+Developers can trigger the automatic text classification using the *Auto-Classify* button.
+
+![Text classification view with three sentences not yet manually approved/validated](../screenshots/text_classification_view.png)
+
+*Text classification view with three sentences not yet manually approved/validated*
 
 ## Activation and Configuration
 The text classifier can be trained and evaluated directly in Jira.
@@ -46,3 +61,9 @@ The UI code for the automatic text classification can be found here:
 - [Velocity templates for configuration and evaluation](../../src/main/resources/templates/settings/classification)
 - [Velocity template for text classification view](../../src/main/resources/templates/tabs/textClassification.vm)
 - [JavaScript code for text classification](../../src/main/resources/js/classification)
+
+## Publication
+Kleebaum, A., Paech, B., Johanssen, J. O., & Bruegge, B. (2021). 
+Continuous Rationale Identification in Issue Tracking and Version Control Systems. 
+In REFSQ-2021 Workshops, OpenRE, Posters and Tools Track, and Doctoral Symposium (p. 9). 
+Essen/Virtual: CEUR-WS.org. https://doi.org/10.11588/heidok.00029966
