@@ -124,7 +124,7 @@ public class TextClassifier {
 	 *            true if the classifier should be updated whenever a manually
 	 *            approved {@link PartOfJiraIssueText} is created or updated.
 	 * 
-	 * @see {@link #update(PartOfJiraIssueText)}
+	 * @see TextClassifier#update(PartOfJiraIssueText)
 	 */
 	public void activateOnlineLearning(boolean isOnlineLearningActivated) {
 		TextClassificationConfiguration config = ConfigPersistenceManager

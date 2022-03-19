@@ -68,7 +68,7 @@ public class TextClassificationConfiguration {
 	 * @return true if the classifier should be updated whenever a manually approved
 	 *         {@link PartOfJiraIssueText} is created or updated.
 	 * 
-	 * @see {@link TextClassifier#update(PartOfJiraIssueText)}
+	 * @see TextClassifier#update(PartOfJiraIssueText)
 	 */
 	public boolean isOnlineLearningActivated() {
 		return isOnlineLearningActivated;
@@ -79,7 +79,7 @@ public class TextClassificationConfiguration {
 	 *            true if the classifier should be updated whenever a manually
 	 *            approved {@link PartOfJiraIssueText} is created or updated.
 	 * 
-	 * @see {@link TextClassifier#update(PartOfJiraIssueText)}
+	 * @see TextClassifier#update(PartOfJiraIssueText)
 	 */
 	@JsonProperty("isOnlineLearningActivated")
 	public void setOnlineLearningActivated(boolean isOnlineLearningActivated) {
