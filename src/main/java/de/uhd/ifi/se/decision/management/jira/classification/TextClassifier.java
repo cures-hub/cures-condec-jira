@@ -300,14 +300,13 @@ public class TextClassifier {
 			if (element.getSummary().isBlank()) {
 				continue;
 			}
-			if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isValidated()) {
-				// elements that were not manually approved are excluded
-				continue;
-			}
-			if (element.getSummary().startsWith("In class ") && element.getSummary().contains("the following methods")
-					|| element.getSummary().contains("Commit Hash:")) {
-				// code change or commit comments are excluded
-				continue;
+			if (element instanceof PartOfJiraIssueText) {
+				PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
+				if (!sentence.isValidated() || sentence.isTranscribedCommitReference()
+						|| sentence.isCodeChangeExplanation()) {
+					// elements not manually approved, code change or commit comments are excluded
+					continue;
+				}
 			}
 			knowledgeElements.add(element);
 		}

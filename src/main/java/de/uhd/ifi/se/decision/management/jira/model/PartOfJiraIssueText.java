@@ -380,4 +380,12 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 		}
 		return getComment() != null;
 	}
+
+	public boolean isTranscribedCommitReference() {
+		return getSummary().contains("Commit Hash:");
+	}
+
+	public boolean isCodeChangeExplanation() {
+		return getSummary().startsWith("In class ") && getSummary().contains("the following methods");
+	}
 }

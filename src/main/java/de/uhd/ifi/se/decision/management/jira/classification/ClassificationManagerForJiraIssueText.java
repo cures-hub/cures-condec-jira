@@ -118,8 +118,9 @@ public class ClassificationManagerForJiraIssueText {
 	 *         input for binary classification. It is qualified if its type is not
 	 *         yet validated.
 	 */
-	private static boolean isSentenceQualifiedForBinaryClassification(PartOfJiraIssueText sentence) {
-		return !sentence.isValidated();
+	public static boolean isSentenceQualifiedForBinaryClassification(PartOfJiraIssueText sentence) {
+		return !sentence.isValidated() && !sentence.isTranscribedCommitReference()
+				&& !sentence.isCodeChangeExplanation();
 	}
 
 	private List<PartOfJiraIssueText> updateSentencesWithBinaryClassificationResult(boolean[] classificationResult,
