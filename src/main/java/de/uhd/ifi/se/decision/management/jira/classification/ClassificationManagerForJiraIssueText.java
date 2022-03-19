@@ -67,9 +67,6 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public void classifyComments(List<Comment> comments) {
-		if (comments == null || comments.isEmpty()) {
-			return;
-		}
 		for (Comment comment : comments) {
 			classifyComment(comment);
 		}

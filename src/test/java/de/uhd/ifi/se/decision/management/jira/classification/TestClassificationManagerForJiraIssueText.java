@@ -9,6 +9,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
@@ -39,9 +41,10 @@ public class TestClassificationManagerForJiraIssueText extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testClassifyDescriptionAndAllComments() {
-		classificationManager.classifyDescriptionAndAllComments(JiraIssues.getTestJiraIssues().get(0));
-		List<PartOfJiraIssueText> sentences = persistenceManager
-				.getElementsInDescription(JiraIssues.getTestJiraIssues().get(0).getId());
+		Issue jiraIssue = JiraIssues.getTestJiraIssues().get(0);
+		JiraIssues.getSentencesForCommentText("I am an irrelevant comment.", jiraIssue.getKey());
+		classificationManager.classifyDescriptionAndAllComments(jiraIssue);
+		List<PartOfJiraIssueText> sentences = persistenceManager.getElementsInDescription(jiraIssue.getId());
 		assertFalse(sentences.isEmpty());
 		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(0).getType());
 	}
