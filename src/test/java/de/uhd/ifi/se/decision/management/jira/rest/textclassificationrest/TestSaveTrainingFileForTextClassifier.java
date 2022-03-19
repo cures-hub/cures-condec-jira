@@ -11,9 +11,9 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
@@ -53,11 +53,23 @@ public class TestSaveTrainingFileForTextClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestValidProjectKeyExists() {
-		KnowledgeElement emptyElement = new KnowledgeElement(42, "TEST", "s");
+		PartOfJiraIssueText emptyElement = new PartOfJiraIssueText();
+		emptyElement.setProject("TEST");
+		emptyElement.setId(42);
 		emptyElement.setType(KnowledgeType.OTHER);
 		emptyElement.setSummary("");
 		KnowledgeGraph.getInstance("TEST").addVertex(emptyElement);
+
+		PartOfJiraIssueText commitReference = new PartOfJiraIssueText();
+		commitReference.setProject("TEST");
+		commitReference.setId(23);
+		commitReference.setValidated(true);
+		commitReference.setType(KnowledgeType.OTHER);
+		commitReference.setSummary("Commit Hash:");
+		KnowledgeGraph.getInstance("TEST").addVertex(commitReference);
+
 		JiraIssues.addElementToDataBase();
+
 		assertEquals(Status.OK.getStatusCode(),
 				classificationRest.saveTrainingFileForTextClassifier(request, "TEST").getStatus());
 	}
