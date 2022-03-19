@@ -76,11 +76,9 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public void classifyComment(Comment comment) {
-		List<PartOfJiraIssueText> sentences = new ArrayList<>();
 		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateElementsOfCommentInDatabase(comment);
-		sentences.addAll(sentencesOfComment);
-		classifySentencesBinary(sentences);
-		classifySentencesFineGrained(sentences);
+		classifySentencesBinary(sentencesOfComment);
+		classifySentencesFineGrained(sentencesOfComment);
 	}
 
 	public static List<Comment> getComments(Issue issue) {
@@ -138,9 +136,6 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public List<PartOfJiraIssueText> classifySentencesFineGrained(List<PartOfJiraIssueText> sentences) {
-		if (sentences == null) {
-			return new ArrayList<PartOfJiraIssueText>();
-		}
 		List<PartOfJiraIssueText> sentencesToBeClassified = getSentencesForFineGrainedClassification(sentences);
 		List<String> stringsToBeClassified = sentencesToBeClassified.stream().map(PartOfJiraIssueText::getDescription)
 				.collect(Collectors.toList());
