@@ -9,6 +9,7 @@
 
 	var ConDecTextClassificationAPI = function() {
 		this.restPrefix = AJS.contextPath() + "/rest/condec/latest/classification";
+		this.nonValidatedElements = [];
 	};
 
 	ConDecTextClassificationAPI.prototype.setTextClassifierEnabled = function(isTextClassifierEnabled, projectKey) {
@@ -97,20 +98,28 @@
 	};
 
 	ConDecTextClassificationAPI.prototype.getNonValidatedElements = function(projectKey, issueKey) {
+		if (!issueKey && this.nonValidatedElements.length > 0) {
+			// return cached elements to speed up
+			return Promise.resolve(this.nonValidatedElements);
+		}
 		var restUrl = `${this.restPrefix}/non-validated-elements/${projectKey}`;
 		if (issueKey !== undefined) {
 			restUrl += `/${issueKey}`;
 		}
-		return generalApi.getJSONReturnPromise(restUrl);
+		return generalApi.getJSONReturnPromise(restUrl).then((nonValidatedElements) => {
+			conDecTextClassificationAPI.nonValidatedElements = nonValidatedElements;
+			return nonValidatedElements;
+		});
 	};
 
 	ConDecTextClassificationAPI.prototype.validateAllElements = function(projectKey, issueKey,
 		callback) {
-		this.getNonValidatedElements(projectKey, issueKey).then((nonValidatedSentences) => {
-			for (const sentence of nonValidatedSentences) {
-				this.setValidated(sentence.id, callback);
-			}
-		});
+		this.getNonValidatedElements(projectKey, issueKey)
+			.then((nonValidatedSentences) => {
+				for (const sentence of nonValidatedSentences) {
+					this.setValidated(sentence.id, callback);
+				}
+			});
 	};
 
 	ConDecTextClassificationAPI.prototype.setValidated = function(id, callback) {
@@ -122,6 +131,8 @@
 		generalApi.postJSON(`${this.restPrefix}/validate`, element, (error) => {
 			if (error === null) {
 				conDecAPI.showFlag("success", "Classified text has been manually approved.");
+				conDecTextClassificationAPI.nonValidatedElements = 
+						conDecTextClassificationAPI.nonValidatedElements.filter((sentence) => sentence.id !== element.id);
 				callback();
 			}
 		});
@@ -132,10 +143,19 @@
 			this.classifyText(sentence.summary, conDecAPI.projectKey, (classificationResult) => {
 				if (sentence.type !== classificationResult) {
 					conDecAPI.changeKnowledgeType(sentence.id, classificationResult, "s", callback);
+					conDecTextClassificationAPI.nonValidatedElements = [];
 				}
 				conDecAPI.showFlag("success", `Text has been automatically classified as ${classificationResult}`);
 			});
 		});
+	};
+	
+	/**
+	 * external references: condec.context.menu, condec.text.classification
+	 */
+	ConDecTextClassificationAPI.prototype.setSentenceIrrelevant = function(id, callback) {
+		conDecAPI.changeKnowledgeType(id, "Other", "s", callback);
+		conDecTextClassificationAPI.nonValidatedElements = [];
 	};
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();

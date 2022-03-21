@@ -91,7 +91,7 @@ conDecTextClassification, AJS */
 		return `<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.setValidated(${elementID}, () => conDecTextClassification.updateView())"> <span class='aui-icon aui-icon-small aui-iconfont-like'>Validate</span> Validate </button>` +
 			`<button class='aui-button aui-button-primary' onclick="conDecTextClassificationAPI.classify(${elementID}, () => conDecTextClassification.updateView())"> <span class="aui-icon aui-icon-small aui-iconfont-lightbulb">Classify Automatically</span> Auto-Classify </button>` +
 			`<button class='aui-button aui-button-removed' onclick="conDecDialog.showEditDialog(${elementID}, 's')"> <span class="aui-icon aui-icon-small aui-iconfont-edit-filled">Edit</span> Edit </button>` +
-			`<button class="aui-button aui-button-removed" onclick="conDecAPI.setSentenceIrrelevant(${elementID}, () => conDecObservable.notify())"> <span class="aui-icon aui-icon-small aui-iconfont-trash">Set Irrelevant</span> Set Irrelevant </button>`;
+			`<button class="aui-button aui-button-removed" onclick="conDecTextClassificationAPI.setSentenceIrrelevant(${elementID}, () => conDecObservable.notify())"> <span class="aui-icon aui-icon-small aui-iconfont-trash">Set Irrelevant</span> Set Irrelevant </button>`;
 	};
 
 
