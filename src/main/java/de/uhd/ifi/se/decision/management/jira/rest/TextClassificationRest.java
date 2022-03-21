@@ -286,9 +286,10 @@ public class TextClassificationRest {
 		for (Issue jiraIssue : jiraIssuesPerProject) {
 			List<KnowledgeElement> elements = manager.getElementsInJiraIssue(jiraIssue.getId());
 			for (KnowledgeElement element : elements) {
-				PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
-				if (!issueTextPart.isValidated()) {
-					nonValidatedElements.add(issueTextPart);
+				PartOfJiraIssueText jiraIssueTextPart = (PartOfJiraIssueText) element;
+				if (!jiraIssueTextPart.isValidated() && !jiraIssueTextPart.isTranscribedCommitReference()
+						&& !jiraIssueTextPart.isCodeChangeExplanation()) {
+					nonValidatedElements.add(jiraIssueTextPart);
 				}
 			}
 		}
