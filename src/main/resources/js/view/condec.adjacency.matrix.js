@@ -163,12 +163,8 @@
 		}
 		AJS.$(tableRowCell).tooltip();
 		tableRowCell.addEventListener("click", function(event) {
-			if (linkType === "transitive") {
-				conDecAPI.showFlag("warning", "Transitive links should not be persisted.");
-			} else {
-				conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation,
-					targetElement.id, targetElement.documentationLocation, linkType);
-			}
+			conDecDialog.showLinkDialog(sourceElement.id, sourceElement.documentationLocation,
+				targetElement.id, targetElement.documentationLocation, linkType);
 		});
 
 		tableRowCell.addEventListener("contextmenu", function(event) {
