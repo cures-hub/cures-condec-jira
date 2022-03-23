@@ -21,6 +21,24 @@ Besides, wrong links are not traversed during [transitive link creation] and [ch
 
 *Context menu that enables to delete a wrong link between a Jira issue and a code file introduced through a tangled commit*
 
+Wrong links can also be set to improve knowledge exploitation.
+In particular, during transitive linking: 
+
+![Indented outline showing a decision problems (issues) reachable from an epic](../screenshots/indented_outline_epic_ise2021.png)
+
+*Indented outline showing a decision problems (issues) reachable from an epic*
+
+![Context menu that enables to delete a wrong transitive link between between an epic and a decision problem (issue)](../screenshots/knowledge_management_context_menu_delete_transitive_link.png)
+
+*Context menu that enables to delete a wrong transitive link between between an epic and a decision problem (issue)*
+
+![Node-link diagram showing a wrong link between an epic and a decision problem (issue)](../screenshots/node_link_diagram_with_wrong_link.png)
+
+*Node-link diagram showing a wrong link between an epic and a decision problem (issue)*
+
+
+
+
 ## Design Details
 ConDec uses both Jira issue links and custom links introduced by the plug-in.
 For example, the custom links are used to link
