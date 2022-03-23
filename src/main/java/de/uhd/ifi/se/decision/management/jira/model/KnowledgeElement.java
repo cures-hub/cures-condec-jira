@@ -823,4 +823,8 @@ public class KnowledgeElement {
 		}
 		return false;
 	}
+
+	public boolean isTransitivelyLinkedTo(KnowledgeElement target, int maxDistance) {
+		return getLinkedElements(maxDistance).contains(target);
+	}
 }

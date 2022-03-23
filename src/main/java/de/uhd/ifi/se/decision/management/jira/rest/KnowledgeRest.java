@@ -376,11 +376,14 @@ public class KnowledgeRest {
 		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
 
 		boolean isDeleted = persistenceManager.deleteLink(link, user);
-
-		if (isDeleted) {
+		if (!isDeleted && link.getSource().isTransitivelyLinkedTo(link.getTarget(), 7)) {
+			link.setType(LinkType.TRANSITIVE);
+		}
+		if (isDeleted || link.getType() == LinkType.TRANSITIVE) {
 			LOGGER.info("Link " + link + " was deleted in project " + projectKey);
-			// Create new link of type "wrong" if deleted link involved code file
-			if (link.getBothElements().stream()
+			// Create new link of type "wrong" if deleted link involved code file or was a
+			// transitive link
+			if (link.getType() == LinkType.TRANSITIVE || link.getBothElements().stream()
 					.anyMatch(element -> element.getDocumentationLocation() == DocumentationLocation.CODE)) {
 				link.setType(LinkType.WRONG);
 				KnowledgePersistenceManager.getInstance(projectKey).insertLink(link, user);
