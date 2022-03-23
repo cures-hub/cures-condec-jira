@@ -72,7 +72,7 @@
     html += "current link type scheme. You can remove and rename link types in the Jira admin page.<br/><br/></p>";
     document.getElementById("additional-link-types-header").insertAdjacentHTML('afterend', html);
 
-    var additionalLinkTypes = ["Supports", "Attacks", "Duplicate", "Forbids", "Constraints", "Enables",
+    var additionalLinkTypes = ["Wrong", "Supports", "Attacks", "Duplicate", "Forbids", "Constraints", "Enables",
         "Comprises", "Subsumes", "Relates", "Overrides", "Replaces"];
     var typeLinkToggles = [];
     for (i in additionalLinkTypes) {

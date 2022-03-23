@@ -680,6 +680,21 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @param otherElement
+	 *            object of {@link KnowledgeElement}.
+	 * @param maxDistance
+	 *            maximal link distance that the {@link KnowledgeGraph} is travered
+	 *            to search for the other {@link KnowledgeElement} starting from
+	 *            this element.
+	 * @return true if the other element is reachable from this element within the
+	 *         maximal link distance. Uses the {@link DijkstraShortestPath}
+	 *         algorithm. Assumes that the graph is undirected.
+	 */
+	public boolean isTransitivelyLinkedTo(KnowledgeElement otherElement, int maxDistance) {
+		return getLinkedElements(maxDistance).contains(otherElement);
+	}
+
+	/**
 	 * @param targetElement
 	 *            object of {@link KnowledgeElement}.
 	 * @return {@link Link} object if there exists an outgoing link (= edge or
