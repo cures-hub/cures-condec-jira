@@ -376,7 +376,7 @@ public class KnowledgeRest {
 		link.setDestinationElement(persistenceManager.getKnowledgeElement(link.getTarget()));
 
 		boolean isDeleted = persistenceManager.deleteLink(link, user);
-		if (!isDeleted && link.getSource().isTransitivelyLinkedTo(link.getTarget(), 7)) {
+		if (!isDeleted && link.getSource() != null && link.getSource().isTransitivelyLinkedTo(link.getTarget(), 7)) {
 			link.setType(LinkType.TRANSITIVE);
 		}
 		if (isDeleted || link.getType() == LinkType.TRANSITIVE) {
