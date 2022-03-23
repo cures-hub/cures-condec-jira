@@ -6,7 +6,8 @@ ConDec supports **manual linking between all knowledge elements** in the knowled
 Besides, ConDec offers techniques to **automatically link knowledge elements** within the knowledge graph, 
 e.g., decisions to decision problems and [code to requirements via commits](knowledge-in-git-presentation.md). 
 The [link recommendation](link-recommendation.md) feature recommends new links to the developers and detects duplicates.
-Developers can **change and delete knowledge elements as well as links** between them. 
+Developers can **change and delete knowledge elements as well as links** between them, 
+e.g., via a **context menu** and **Drag&Drop** in the knowledge graph views or via **changing the Jira issue text**. 
 
 ## Wrong Link Marking
 Trace links between Jira issues and code can be wrong (see example 
@@ -17,23 +18,22 @@ If a developer deletes a link that involves a code file, ConDec sets the type of
 Per default, wrong links are filtered-out, i.e. not shown in the [views on the knowledge graph](knowledge-visualization.md).
 Besides, wrong links are not traversed during [transitive link creation] and [change impact analysis].
 
-![Context menu that enables to delete a wrong link between a Jira issue and a code file introduced through a tangled commit. 
-(The class ConDecEventListener.java has nothing to do with transitive linking.)](../screenshots/knowledge_management_context_menu_code.png)
+![Context menu that enables to delete a wrong link between a Jira issue and a code file introduced through a tangled commit](../screenshots/knowledge_management_context_menu_code.png)
 
-*Context menu that enables to delete a wrong link between a Jira issue and a code file introduced through a tangled commit*
+*Context menu that enables to delete a wrong link between a Jira issue and a code file introduced through a tangled commit.
+(The class ConDecEventListener.java has nothing to do with transitive linking.)*
 
 Wrong links can also be added to the knowledge graph to **improve knowledge exploitation**,
 i.e. to **explicitly state that a link is not useful**.
 In the following example, the epic *E: Player Administration and Rating* (requirement) is indirectly linked to the 
 decision problem *How should we implement the login?* 
-via the user story *US: Edit player information* and the user role *R: Coach*.
- 
+via the user story *US: Edit player information* and the user role *R: Coach*. 
 
 ![Indented outline showing knowledge elements reachable from an epic](../screenshots/indented_outline_epic_ise2021.png)
 
-*Indented outline showing knowledge elements directly and indirectly linked to, i.e. reachable from an epic*
+*Indented outline showing knowledge elements directly and indirectly linked to the epic, i.e. reachable from the epic*
 
-To understand the decisions related to the epics, developers can filter the knowledge graph view so that it only shows decision knowledge 
+To understand the decisions related to the epic, developers can filter the knowledge graph view so that it only shows decision knowledge 
 that is directly or indirectly (i.e. transitively) linked to the epic.
 However, the developers rated the decision problem *How should we implement the login?* as not useful to understand the epic.
 To exclude the link between the epic and the decision problem *How should we implement the login?*  from being visualized, 
