@@ -4,7 +4,7 @@
  *
  * Is referenced in HTML by settings/classification/*.vm
  */
-/* global conDecAPI, generalApi */
+/* global conDecAPI, generalApi, conDecTextClassificationAPI */
 (function(global) {
 
 	var ConDecTextClassificationAPI = function() {
@@ -131,8 +131,9 @@
 		generalApi.postJSON(`${this.restPrefix}/validate`, element, (error) => {
 			if (error === null) {
 				conDecAPI.showFlag("success", "Classified text has been manually approved.");
-				conDecTextClassificationAPI.nonValidatedElements = 
-						conDecTextClassificationAPI.nonValidatedElements.filter((sentence) => sentence.id !== element.id);
+				conDecTextClassificationAPI.nonValidatedElements
+					= conDecTextClassificationAPI.nonValidatedElements.filter(
+						(sentence) => sentence.id !== element.id);
 				callback();
 			}
 		});
@@ -149,7 +150,7 @@
 			});
 		});
 	};
-	
+
 	/**
 	 * external references: condec.context.menu, condec.text.classification
 	 */

@@ -72,7 +72,7 @@ that are directly and indirectly (transitively) linked to the sub-tasks are show
 
 - ST: Continuously document decision knowledge in Jira ([CONDEC-188](https://jira-se.ifi.uni-heidelberg.de/browse/CONDEC-188))
 	- ![Issue](../../src/main/resources/images/issue.png) How to manually classify text as an decision knowledge element?
-		- ![Decision](../../src/main/resources/images/decision.png) Annotate/tag text with Jira macros or icons/emojis to classify it as an decision knowledge element! Automatically replace icons with macro tags, e.g. "\(!\) How to...?" is replaced with "\ How to...? \"!
+		- ![Decision](../../src/main/resources/images/decision.png) Annotate/tag text with Jira macros or icons/emojis to classify it as an decision knowledge element! Automatically replace icons with macro tags, e.g. "\(!\) How to...?" is replaced with "{issue} How to...? {issue}"!
 	- ![Issue](../../src/main/resources/images/issue.png) How to enable the user to manually classify parts/sentences of Jira issue comments and description into the knowledge types activated for the project?
 		- ![Decision](../../src/main/resources/images/decision.png) We enable the user to manually classify parts/sentences of Jira issue comments and description using annotations/tags!
 	- ![Issue](../../src/main/resources/images/issue.png) How can we update knowledge elements from Jira issue text after the text was edited by the user?
