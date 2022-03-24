@@ -131,8 +131,8 @@
 		generalApi.postJSON(`${this.restPrefix}/validate`, element, (error) => {
 			if (error === null) {
 				conDecAPI.showFlag("success", "Classified text has been manually approved.");
-				conDecTextClassificationAPI.nonValidatedElements
-					= conDecTextClassificationAPI.nonValidatedElements.filter(
+				conDecTextClassificationAPI.nonValidatedElements =
+					conDecTextClassificationAPI.nonValidatedElements.filter(
 						(sentence) => sentence.id !== element.id);
 				callback();
 			}
