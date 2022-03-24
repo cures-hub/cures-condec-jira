@@ -246,14 +246,7 @@ public class TextClassificationRest {
 		long id = jiraIssue.getId();
 
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		List<KnowledgeElement> elements = manager.getElementsInJiraIssue(id);
-		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();
-		for (KnowledgeElement element : elements) {
-			PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
-			if (!issueTextPart.isValidated()) {
-				nonValidatedElements.add(issueTextPart);
-			}
-		}
+		List<KnowledgeElement> nonValidatedElements = manager.getNonValidatedElementsInJiraIssue(id);
 
 		LOGGER.info("Non-validated elements were viewed for Jira issue " + jiraIssueKey);
 		return Response.ok(nonValidatedElements).build();
@@ -284,13 +277,7 @@ public class TextClassificationRest {
 		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();
 
 		for (Issue jiraIssue : jiraIssuesPerProject) {
-			List<KnowledgeElement> elements = manager.getElementsInJiraIssue(jiraIssue.getId());
-			for (KnowledgeElement element : elements) {
-				PartOfJiraIssueText issueTextPart = (PartOfJiraIssueText) element;
-				if (!issueTextPart.isValidated()) {
-					nonValidatedElements.add(issueTextPart);
-				}
-			}
+			nonValidatedElements.addAll(manager.getNonValidatedElementsInJiraIssue(jiraIssue.getId()));
 		}
 
 		LOGGER.info("Non-validated elements were viewed for project " + projectKey);

@@ -175,10 +175,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Returns all relevant decision knowledge elements documented in the
-	 * description or comments of a Jira issue. Does also return irrelevant
-	 * sentences/parts of text.
-	 *
 	 * @param jiraIssueId
 	 *            id of the Jira issue that the decision knowledge elements are
 	 *            documented in.
@@ -196,9 +192,27 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
-	 * Returns all decision knowledge elements documented in a certain comment of a
-	 * Jira issue.
-	 *
+	 * @param jiraIssueId
+	 *            id of the Jira issue that the decision knowledge elements and
+	 *            irrelevant textual parts are documented in.
+	 * @return list of all decision knowledge elements documented in the description
+	 *         or comments of a Jira issue that are NOT validated by a user (i.e.
+	 *         not manually approved after automatic text classification). Does also
+	 *         return non-validated irrelevant sentences/parts of text.
+	 */
+	public List<KnowledgeElement> getNonValidatedElementsInJiraIssue(long jiraIssueId) {
+		List<KnowledgeElement> nonValidatedElements = new ArrayList<KnowledgeElement>();
+		for (KnowledgeElement element : getElementsInJiraIssue(jiraIssueId)) {
+			PartOfJiraIssueText jiraIssueTextPart = (PartOfJiraIssueText) element;
+			if (!jiraIssueTextPart.isValidated() && !jiraIssueTextPart.isTranscribedCommitReference()
+					&& !jiraIssueTextPart.isCodeChangeExplanation()) {
+				nonValidatedElements.add(jiraIssueTextPart);
+			}
+		}
+		return nonValidatedElements;
+	}
+
+	/**
 	 * @param commentId
 	 *            id of the comment that the decision knowledge element(s) is/are
 	 *            documented in.

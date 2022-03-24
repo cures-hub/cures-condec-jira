@@ -171,7 +171,7 @@
 
 		// only for decision knowledge in the description or comments of Jira issues
 		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function () {
-			conDecAPI.setSentenceIrrelevant(id, function () {
+			conDecTextClassificationAPI.setSentenceIrrelevant(id, function () {
 				conDecObservable.notify();
 			});
 		};

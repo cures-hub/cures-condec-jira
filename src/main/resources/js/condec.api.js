@@ -281,13 +281,6 @@
 	/*
 	 * external references: condec.context.menu
 	 */
-	ConDecAPI.prototype.setSentenceIrrelevant = function(id, callback) {
-		this.changeKnowledgeType(id, "Other", "s", callback);
-	};
-
-	/*
-	 * external references: condec.context.menu
-	 */
 	ConDecAPI.prototype.createJiraIssueFromSentence = function(id, callback) {
 		var jsondata = {
 			"id": id,

@@ -386,7 +386,8 @@ public class PartOfJiraIssueText extends KnowledgeElement {
 	 *         ConDec transcribes commit messages into Jira issue comments).
 	 */
 	public boolean isTranscribedCommitReference() {
-		return getSummary().contains("Commit Hash:");
+		return getSummary().startsWith("Commit Hash:") || getSummary().startsWith("Author:")
+				|| getSummary().startsWith("Repository and Branch:");
 	}
 
 	/**
