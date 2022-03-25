@@ -170,10 +170,10 @@ public class TextClassificationRest {
 		return Response.ok(ImmutableMap.of("classificationResult", classificationResult)).build();
 	}
 
-	@Path("/saveTrainingFile")
-	@POST
+	@Path("/training-file/{projectKey}")
+	@GET
 	public Response saveTrainingFileForTextClassifier(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+			@PathParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
