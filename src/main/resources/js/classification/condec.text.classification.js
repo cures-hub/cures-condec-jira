@@ -53,9 +53,9 @@ conDecTextClassification, AJS */
 				let row = generateTableRow(nonValidatedElementsList[i]);
 				this.nonValidatedTableContentElement.appendChild(row);
 			}
-			if (this.viewIdentifier === "jira-issue-module") {
-				this.validateAllButton.style.display = "inline";
-				this.validateAllButton.onclick = () => {
+			this.validateAllButton.style.display = "inline";
+			this.validateAllButton.onclick = () => {
+				if (confirm("Are you sure you want to validate all elements? This cannot be reverted!")) {
 					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey(),
 						() => conDecTextClassification.updateView());
 				}

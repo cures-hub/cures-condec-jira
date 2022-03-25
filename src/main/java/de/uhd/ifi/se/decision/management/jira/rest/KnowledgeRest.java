@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
-import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
@@ -475,9 +474,7 @@ public class KnowledgeRest {
 				.getJiraIssueTextManager();
 
 		persistenceManager.deleteElementsInJiraIssue(jiraIssue);
-		persistenceManager.updateElementsOfDescriptionInDatabase(jiraIssue);
-		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
-		comments.forEach(comment -> persistenceManager.updateElementsOfCommentInDatabase(comment));
+		persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue);
 
 		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 		return Response.ok(elements.size()).build();

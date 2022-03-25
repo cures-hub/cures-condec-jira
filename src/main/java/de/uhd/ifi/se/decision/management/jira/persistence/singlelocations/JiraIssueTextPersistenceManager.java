@@ -542,6 +542,25 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            Jira {@link ApplicationUser}.
 	 * @return true if any element was deleted.
 	 */
+	public boolean cleanDatabase(ApplicationUser user) {
+		boolean isAnyElementDeleted = false;
+		for (KnowledgeElement element : getKnowledgeElements()) {
+			if (!((PartOfJiraIssueText) element).isValid()) {
+				deleteKnowledgeElement(element, user);
+				isAnyElementDeleted = true;
+			}
+		}
+		return isAnyElementDeleted;
+	}
+
+	/**
+	 * Deletes elements in database that are broken (are neither stored in
+	 * description nor in a comment or have zero length).
+	 *
+	 * @param user
+	 *            Jira {@link ApplicationUser}.
+	 * @return true if any element was deleted.
+	 */
 	public boolean deleteInvalidElements(ApplicationUser user) {
 		boolean isAnyElementDeleted = false;
 		for (KnowledgeElement element : getKnowledgeElements()) {
@@ -594,6 +613,25 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
+	 * Updates the decision knowledge elements and parts of irrelevant text within
+	 * the description and all comments of a Jira issue. Splits the
+	 * description/comment into parts (substrings) and inserts these parts into the
+	 * database table. Does not update the description/comment itself since that was
+	 * already done by the user.
+	 * 
+	 * @param jiraIssue
+	 *            Jira issue with decision knowledge elements in its description and
+	 *            comments.
+	 */
+	public void updateElementsOfJiraIssueInDatabase(Issue jiraIssue) {
+		updateElementsOfDescriptionInDatabase(jiraIssue);
+		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
+		for (Comment comment : comments) {
+			updateElementsOfCommentInDatabase(comment);
+		}
+	}
+
+	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within a
 	 * comment of a Jira issue. Splits the comment into parts (substrings) and
 	 * inserts these parts into the database table. Does not update the description
@@ -612,7 +650,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment) {
 		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(comment.getBody());
-		partsOfComment.forEach(sentence -> sentence.setComment(comment));
+		for (PartOfJiraIssueText sentence : partsOfComment) {
+			sentence.setComment(comment);
+		}
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInComment(comment.getId());
 
 		if (partsOfComment.size() != elementsInDatabase.size()) {
@@ -636,7 +676,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue) {
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
-		partsOfDescription.forEach(sentence -> sentence.setJiraIssue(jiraIssue));
+		for (PartOfJiraIssueText sentence : partsOfDescription) {
+			sentence.setJiraIssue(jiraIssue);
+		}
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
 
 		if (elementsInDatabase.size() != partsOfDescription.size()) {
