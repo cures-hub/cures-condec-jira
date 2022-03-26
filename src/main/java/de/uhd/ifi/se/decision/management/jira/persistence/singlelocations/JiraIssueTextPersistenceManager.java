@@ -640,6 +640,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @param comment
 	 *            of a Jira issue with decision knowledge elements.
 	 * @param isUpdatedEvenIfSameSize
+	 *            if true the parts of text in the database are updated even if the
+	 *            same amount of was parsed as before (e.g. useful after changing
+	 *            the summary of an element).
 	 * @return list of identified knowledge elements.
 	 * 
 	 * @issue Elements used to be deleted and new ones were created afterwards. How
@@ -675,6 +678,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * 
 	 * @param jiraIssue
 	 *            Jira issue with decision knowledge elements in its description.
+	 * @param isUpdatedEvenIfSameSize
+	 *            if true the parts of text in the database are updated even if the
+	 *            same amount of was parsed as before (e.g. useful after changing
+	 *            the summary of an element).
 	 * @return list of identified knowledge elements.
 	 */
 	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue,
