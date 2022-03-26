@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
+package de.uhd.ifi.se.decision.management.jira.rest.textclassificationrest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,39 +11,42 @@ import org.junit.Test;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
+import de.uhd.ifi.se.decision.management.jira.rest.TextClassificationRest;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestResetDecisionKnowledgeFromText extends TestSetUp {
-	private KnowledgeRest knowledgeRest;
+	private TextClassificationRest textClassificationRest;
 	private HttpServletRequest request;
 
 	@Before
 	public void setUp() {
 		init();
-		knowledgeRest = new KnowledgeRest();
+		textClassificationRest = new TextClassificationRest();
 		request = new MockHttpServletRequest();
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestValidJiraIssueValid() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.resetDecisionKnowledgeFromText(request, 1L).getStatus());
+		assertEquals(Status.OK.getStatusCode(),
+				textClassificationRest.resetDecisionKnowledgeFromText(request, 1L).getStatus());
 	}
 
 	@Test
 	public void testRequestValidJiraIssueNotExisting() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.resetDecisionKnowledgeFromText(request, 119283L).getStatus());
+				textClassificationRest.resetDecisionKnowledgeFromText(request, 119283L).getStatus());
 	}
 
 	@Test
 	public void testRequestValidJiraIssueNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.resetDecisionKnowledgeFromText(request, null).getStatus());
+				textClassificationRest.resetDecisionKnowledgeFromText(request, null).getStatus());
 	}
 
 	@Test
 	public void testRequestNullJiraIssueValid() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
-				knowledgeRest.resetDecisionKnowledgeFromText(null, 1L).getStatus());
+				textClassificationRest.resetDecisionKnowledgeFromText(null, 1L).getStatus());
 	}
 }

@@ -297,19 +297,6 @@
 	};
 
 	/*
-	 * external references: jiraIssueModule.vm
-	 */
-	ConDecAPI.prototype.resetDecisionKnowledgeFromText = function(jiraIssueId, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/resetDecisionKnowledgeFromText", jiraIssueId,
-			function(error, numberOfElements) {
-				if (error === null) {
-					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
-					callback();
-				}
-			});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
 	 */

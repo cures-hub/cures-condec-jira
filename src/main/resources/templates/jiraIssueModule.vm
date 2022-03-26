@@ -112,7 +112,7 @@ $(document).ready(function () {
 		event.stopPropagation();
 		if (confirm("Are you sure you want to reset the decision knowledge elements extracted from the description and comments of this Jira issue? "
 			+ "This will reset all links in the knowledge graph of these elements.")) {
-				conDecAPI.resetDecisionKnowledgeFromText(JIRA.Issue.getIssueId(), function () {
+				conDecTextClassificationAPI.resetDecisionKnowledgeFromText(JIRA.Issue.getIssueId(), function () {
 				conDecObservable.notify();
 			});
 		}

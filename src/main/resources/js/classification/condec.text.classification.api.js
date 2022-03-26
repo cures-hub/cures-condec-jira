@@ -157,6 +157,19 @@
 		conDecAPI.changeKnowledgeType(id, "Other", "s", callback);
 		conDecTextClassificationAPI.nonValidatedElements = [];
 	};
+	
+	/**
+	 * external references: jiraIssueModule.vm
+	 */
+	ConDecTextClassificationAPI.prototype.resetDecisionKnowledgeFromText = function(jiraIssueId, callback) {
+		generalApi.postJSON(this.restPrefix + "/reset", jiraIssueId,
+			function(error, numberOfElements) {
+				if (error === null) {
+					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
+					callback();
+				}
+			});
+	};
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();
 })(window);
