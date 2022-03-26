@@ -126,11 +126,13 @@ public class DecisionGroupPersistenceManager {
 	 *
 	 * @return true if at least one group was deleted.
 	 */
-	public static boolean deleteInvalidGroups() {
+	public static boolean deleteInvalidGroups(String projectKey) {
 		boolean isGroupDeleted = false;
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
-			String projectKey = databaseEntry.getProjectKey();
+			if (!databaseEntry.getProjectKey().equals(projectKey)) {
+				continue;
+			}
 			KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance(projectKey)
 					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
 			if (elementInDatabase != null && !databaseEntry.getGroup().isBlank()) {

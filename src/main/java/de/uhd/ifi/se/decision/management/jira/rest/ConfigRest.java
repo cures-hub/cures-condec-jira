@@ -307,7 +307,7 @@ public class ConfigRest {
 
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		persistenceManager.createLinksForNonLinkedElements();
-		DecisionGroupPersistenceManager.deleteInvalidGroups();
+		DecisionGroupPersistenceManager.deleteInvalidGroups(projectKey);
 		return Response.ok().build();
 	}
 }
