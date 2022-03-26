@@ -225,9 +225,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
-		if (elements.size() > 0 && elements.get(0).toString().isBlank()) {
-			return new ArrayList<>();
-		}
 		return elements;
 	}
 
@@ -349,7 +346,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
+		KnowledgeElement existingElement = getKnowledgeElement(element);
 		if (existingElement != null) {
 			return existingElement;
 		}
@@ -364,13 +361,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			KnowledgeGraph.getInstance(projectKey).addVertex(sentence);
 		}
 		return sentence;
-	}
-
-	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		if (element.getDocumentationLocation() != documentationLocation) {
-			return null;
-		}
-		return getKnowledgeElement(element);
 	}
 
 	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
@@ -542,25 +532,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            Jira {@link ApplicationUser}.
 	 * @return true if any element was deleted.
 	 */
-	public boolean cleanDatabase(ApplicationUser user) {
-		boolean isAnyElementDeleted = false;
-		for (KnowledgeElement element : getKnowledgeElements()) {
-			if (!((PartOfJiraIssueText) element).isValid()) {
-				deleteKnowledgeElement(element, user);
-				isAnyElementDeleted = true;
-			}
-		}
-		return isAnyElementDeleted;
-	}
-
-	/**
-	 * Deletes elements in database that are broken (are neither stored in
-	 * description nor in a comment or have zero length).
-	 *
-	 * @param user
-	 *            Jira {@link ApplicationUser}.
-	 * @return true if any element was deleted.
-	 */
 	public boolean deleteInvalidElements(ApplicationUser user) {
 		boolean isAnyElementDeleted = false;
 		for (KnowledgeElement element : getKnowledgeElements()) {
@@ -622,6 +593,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @param jiraIssue
 	 *            Jira issue with decision knowledge elements in its description and
 	 *            comments.
+	 * @param isUpdatedEvenIfSameSize
+	 *            if true the parts of text in the database are updated even if the
+	 *            same amount of was parsed as before (e.g. useful after changing
+	 *            the summary of an element).
 	 */
 	public void updateElementsOfJiraIssueInDatabase(Issue jiraIssue, boolean isUpdatedEvenIfSameSize) {
 		updateElementsOfDescriptionInDatabase(jiraIssue, isUpdatedEvenIfSameSize);
