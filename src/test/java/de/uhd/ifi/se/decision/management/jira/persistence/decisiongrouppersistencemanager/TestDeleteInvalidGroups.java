@@ -22,17 +22,20 @@ public class TestDeleteInvalidGroups extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testElementNullAndGroupNameValid() {
-		KnowledgeElement element = new KnowledgeElement(42, "UNKNOWNPROJECT", "s");
-		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
-		assertTrue(DecisionGroupPersistenceManager.deleteInvalidGroups());
+	public void testElementInvalidAndGroupNameValid() {
+		KnowledgeElement elementWithInvalidId = new KnowledgeElement(-1, "TEST", "s");
+		DecisionGroupPersistenceManager.insertGroup("TestGroup", elementWithInvalidId);
+
+		KnowledgeElement elementWithOtherProject = new KnowledgeElement(42, "CONDEC", "s");
+		DecisionGroupPersistenceManager.insertGroup("TestGroup2", elementWithOtherProject);
+		assertTrue(DecisionGroupPersistenceManager.deleteInvalidGroups("TEST"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementValidAndGroupNameValid() {
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", KnowledgeElements.getDecision());
-		assertFalse(DecisionGroupPersistenceManager.deleteInvalidGroups());
+		assertFalse(DecisionGroupPersistenceManager.deleteInvalidGroups("TEST"));
 	}
 
 	@Test
@@ -41,6 +44,6 @@ public class TestDeleteInvalidGroups extends TestSetUp {
 		KnowledgeElement element = new KnowledgeElement(-42, "TEST", "s");
 		KnowledgeGraph.getInstance("TEST").addVertexNotBeingInDatabase(element);
 		DecisionGroupPersistenceManager.insertGroup("TestGroup", element);
-		assertFalse(DecisionGroupPersistenceManager.deleteInvalidGroups());
+		assertFalse(DecisionGroupPersistenceManager.deleteInvalidGroups("TEST"));
 	}
 }

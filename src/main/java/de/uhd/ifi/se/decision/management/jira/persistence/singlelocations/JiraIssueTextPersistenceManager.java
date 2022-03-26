@@ -225,9 +225,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
-		if (elements.size() > 0 && elements.get(0).toString().isBlank()) {
-			return new ArrayList<>();
-		}
 		return elements;
 	}
 
@@ -349,7 +346,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 
 	@Override
 	public KnowledgeElement insertKnowledgeElement(KnowledgeElement element, ApplicationUser user) {
-		KnowledgeElement existingElement = checkIfElementExistsInDatabase(element);
+		KnowledgeElement existingElement = getKnowledgeElement(element);
 		if (existingElement != null) {
 			return existingElement;
 		}
@@ -364,13 +361,6 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			KnowledgeGraph.getInstance(projectKey).addVertex(sentence);
 		}
 		return sentence;
-	}
-
-	private KnowledgeElement checkIfElementExistsInDatabase(KnowledgeElement element) {
-		if (element.getDocumentationLocation() != documentationLocation) {
-			return null;
-		}
-		return getKnowledgeElement(element);
 	}
 
 	public KnowledgeElement getKnowledgeElement(KnowledgeElement element) {
@@ -594,6 +584,29 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	}
 
 	/**
+	 * Updates the decision knowledge elements and parts of irrelevant text within
+	 * the description and all comments of a Jira issue. Splits the
+	 * description/comment into parts (substrings) and inserts these parts into the
+	 * database table. Does not update the description/comment itself since that was
+	 * already done by the user.
+	 * 
+	 * @param jiraIssue
+	 *            Jira issue with decision knowledge elements in its description and
+	 *            comments.
+	 * @param isUpdatedEvenIfSameSize
+	 *            if true the parts of text in the database are updated even if the
+	 *            same amount of was parsed as before (e.g. useful after changing
+	 *            the summary of an element).
+	 */
+	public void updateElementsOfJiraIssueInDatabase(Issue jiraIssue, boolean isUpdatedEvenIfSameSize) {
+		updateElementsOfDescriptionInDatabase(jiraIssue, isUpdatedEvenIfSameSize);
+		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
+		for (Comment comment : comments) {
+			updateElementsOfCommentInDatabase(comment, isUpdatedEvenIfSameSize);
+		}
+	}
+
+	/**
 	 * Updates the decision knowledge elements and parts of irrelevant text within a
 	 * comment of a Jira issue. Splits the comment into parts (substrings) and
 	 * inserts these parts into the database table. Does not update the description
@@ -601,6 +614,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * 
 	 * @param comment
 	 *            of a Jira issue with decision knowledge elements.
+	 * @param isUpdatedEvenIfSameSize
+	 *            if true the parts of text in the database are updated even if the
+	 *            same amount of was parsed as before (e.g. useful after changing
+	 *            the summary of an element).
 	 * @return list of identified knowledge elements.
 	 * 
 	 * @issue Elements used to be deleted and new ones were created afterwards. How
@@ -609,18 +626,23 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @con If a new knowledge element is inserted at the beginning of the text, the
 	 *      links in the knowledge graph might be wrong.
 	 */
-	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment) {
+	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment,
+			boolean isUpdatedEvenIfSameSize) {
 		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(comment.getBody());
-		partsOfComment.forEach(sentence -> sentence.setComment(comment));
+		for (PartOfJiraIssueText sentence : partsOfComment) {
+			sentence.setComment(comment);
+		}
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInComment(comment.getId());
 
 		if (partsOfComment.size() != elementsInDatabase.size()) {
 			deleteElementsInComment(comment);
 			return insertKnowledgeElements(partsOfComment);
 		}
-
-		return updateKnowledgeElements(partsOfComment, elementsInDatabase);
+		if (isUpdatedEvenIfSameSize) {
+			return updateKnowledgeElements(partsOfComment, elementsInDatabase);
+		}
+		return elementsInDatabase;
 	}
 
 	/**
@@ -631,20 +653,29 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * 
 	 * @param jiraIssue
 	 *            Jira issue with decision knowledge elements in its description.
+	 * @param isUpdatedEvenIfSameSize
+	 *            if true the parts of text in the database are updated even if the
+	 *            same amount of was parsed as before (e.g. useful after changing
+	 *            the summary of an element).
 	 * @return list of identified knowledge elements.
 	 */
-	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue) {
+	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue,
+			boolean isUpdatedEvenIfSameSize) {
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
-		partsOfDescription.forEach(sentence -> sentence.setJiraIssue(jiraIssue));
+		for (PartOfJiraIssueText sentence : partsOfDescription) {
+			sentence.setJiraIssue(jiraIssue);
+		}
 		List<PartOfJiraIssueText> elementsInDatabase = getElementsInDescription(jiraIssue.getId());
 
 		if (elementsInDatabase.size() != partsOfDescription.size()) {
 			deleteElementsInDescription(jiraIssue);
 			return insertKnowledgeElements(partsOfDescription);
 		}
-
-		return updateKnowledgeElements(partsOfDescription, elementsInDatabase);
+		if (isUpdatedEvenIfSameSize) {
+			return updateKnowledgeElements(partsOfDescription, elementsInDatabase);
+		}
+		return elementsInDatabase;
 	}
 
 	/**

@@ -41,7 +41,13 @@ public class TestGetAllNonValidatedElements extends TestSetUp {
 	}
 
 	@Test
-	public void testValidRequestNullProjectKeyNullIssueKey() {
+	public void testValidRequestNullProjectKeyNull() {
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				classificationRest.getAllNonValidatedElements(null, null).getStatus());
+	}
+
+	@Test
+	public void testValidRequestValidProjectKeyNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
 				classificationRest.getAllNonValidatedElements(request, null).getStatus());
 	}

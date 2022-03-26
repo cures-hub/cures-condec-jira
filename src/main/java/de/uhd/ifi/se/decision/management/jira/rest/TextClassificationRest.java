@@ -21,6 +21,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
@@ -41,7 +42,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIs
 import smile.validation.ClassificationMetrics;
 
 /**
- * REST resource for automatic text classification and its configuration.
+ * REST resource for manual and automatic text classification and its
+ * configuration.
  */
 @Path("/classification")
 public class TextClassificationRest {
@@ -170,10 +172,10 @@ public class TextClassificationRest {
 		return Response.ok(ImmutableMap.of("classificationResult", classificationResult)).build();
 	}
 
-	@Path("/saveTrainingFile")
-	@POST
+	@Path("/training-file/{projectKey}")
+	@GET
 	public Response saveTrainingFileForTextClassifier(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey) {
+			@PathParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -235,7 +237,6 @@ public class TextClassificationRest {
 	@GET
 	public Response getNonValidatedElements(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey, @PathParam("jiraIssueKey") String jiraIssueKey) {
-
 		if (request == null || projectKey == null || jiraIssueKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
@@ -265,7 +266,6 @@ public class TextClassificationRest {
 	@GET
 	public Response getAllNonValidatedElements(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey) {
-
 		if (request == null || projectKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
@@ -332,5 +332,45 @@ public class TextClassificationRest {
 		persistenceManager.updateInDatabase(sentence);
 		persistenceManager.createLinksForNonLinkedElements(sentence.getJiraIssue());
 		return Response.ok().build();
+	}
+
+	/**
+	 * Rereads all decision knowledge elements documented within the description and
+	 * comments of a Jira issue. For example, this might be useful if linkage
+	 * between knowledge elements was destroyed.
+	 *
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param jiraIssueId
+	 *            of the {@link Issue} with decision knowledge elements documented
+	 *            within its description and comments (e.g. a user story,
+	 *            development task, ...).
+	 * @return ok if rereading was successful.
+	 */
+	@Path("/reset")
+	@POST
+	public Response resetDecisionKnowledgeFromText(@Context HttpServletRequest request, Long jiraIssueId) {
+		if (request == null || jiraIssueId == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
+					.build();
+		}
+		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
+		if (jiraIssue == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Resetting decision knowledge documented in the description and comments of a Jira issue failed "
+							+ "because the Jira issue could not be found."))
+					.build();
+		}
+		String projectKey = jiraIssue.getProjectObject().getKey();
+		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
+				.getJiraIssueTextManager();
+
+		persistenceManager.deleteElementsInJiraIssue(jiraIssue);
+		persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue, true);
+
+		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
+		return Response.ok(elements.size()).build();
 	}
 }

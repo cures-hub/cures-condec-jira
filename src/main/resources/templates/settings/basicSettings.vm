@@ -49,11 +49,10 @@
 </div>
 
 <div class="field-group">
-<label for="cleanDatabases">Clean Databases?</label>
-<input type="button" class="aui-button" id="cleanDatabases"
-       value="Clean Databases"/>
+<label for="cleanDatabases">Clean Database?</label>
+<input type="button" class="aui-button" id="cleanDatabase" value="Clean Database"/>
 <div class="description">Removes non-existing elements and invalid links (with non-existing source or target elements) 
-	from the databases and checks if all existing elements are linked.
+	from the database tables and checks if all existing elements are linked.
 </div>
 </div>
 	
@@ -66,8 +65,11 @@
 		conDecAPI.setJiraIssueDocumentationLocationActivated(this.checked, this.value);
 	});
 	
-    var cleanDatabasesButton = document.getElementById("cleanDatabases");
-    cleanDatabasesButton.addEventListener("click", function () {
-        conDecAPI.cleanDatabases("$projectKey");
+    var cleanDatabaseButton = document.getElementById("cleanDatabase");
+    cleanDatabaseButton.addEventListener("click", function () {
+        if (window.confirm("Are you sure you want to clean the database? "
+        		+ "Make sure that the knowledge graph is loaded and git knowledge is extracted before you confirm!")) {
+        	conDecAPI.cleanDatabase("$projectKey");
+        }
     });
 </script>

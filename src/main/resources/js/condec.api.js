@@ -10,6 +10,7 @@
  * Is referenced in HTML by settingsForAllProjects.vm
  * settingsForSingleProject.vm
  */
+/* global generalApi */
 (function(global) {
 
 	var projectKey = null;
@@ -297,19 +298,6 @@
 	};
 
 	/*
-	 * external references: jiraIssueModule.vm
-	 */
-	ConDecAPI.prototype.resetDecisionKnowledgeFromText = function(jiraIssueId, callback) {
-		generalApi.postJSON(this.restPrefix + "/knowledge/resetDecisionKnowledgeFromText", jiraIssueId,
-			function(error, numberOfElements) {
-				if (error === null) {
-					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
-					callback();
-				}
-			});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
 	 */
@@ -472,16 +460,15 @@
 			});
 	};
 
-	/*
+	/**
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.cleanDatabases = function(projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/cleanDatabases?projectKey="
-			+ projectKey, null, function(error, response) {
-				if (error === null) {
-					showFlag("success", "The databases have been cleaned.");
-				}
-			});
+	ConDecAPI.prototype.cleanDatabase = function(projectKey) {
+		generalApi.postJSON(`${this.restPrefix}/config/clean-database/${projectKey}`, null, (error) => {
+			if (error === null) {
+				showFlag("success", "The database tables have been cleaned.");
+			}
+		});
 	};
 
 	/**

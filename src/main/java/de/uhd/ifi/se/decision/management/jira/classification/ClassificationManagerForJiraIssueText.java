@@ -61,7 +61,7 @@ public class ClassificationManagerForJiraIssueText {
 	 */
 	public void classifyDescription(Issue issue) {
 		List<PartOfJiraIssueText> partsOfDescriptionWithIdInDatabase = persistenceManager
-				.updateElementsOfDescriptionInDatabase(issue);
+				.updateElementsOfDescriptionInDatabase(issue, true);
 		classifySentencesBinary(partsOfDescriptionWithIdInDatabase);
 		classifySentencesFineGrained(partsOfDescriptionWithIdInDatabase);
 	}
@@ -73,7 +73,8 @@ public class ClassificationManagerForJiraIssueText {
 	}
 
 	public void classifyComment(Comment comment) {
-		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateElementsOfCommentInDatabase(comment);
+		List<PartOfJiraIssueText> sentencesOfComment = persistenceManager.updateElementsOfCommentInDatabase(comment,
+				true);
 		classifySentencesBinary(sentencesOfComment);
 		classifySentencesFineGrained(sentencesOfComment);
 	}

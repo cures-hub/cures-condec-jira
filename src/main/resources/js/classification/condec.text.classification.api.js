@@ -87,14 +87,13 @@
 	};
 
 	ConDecTextClassificationAPI.prototype.saveTrainingFile = function(projectKey, callback) {
-		generalApi.postJSON(this.restPrefix + "/saveTrainingFile.json?projectKey=" + projectKey, null,
-			function(error, response) {
-				if (error === null) {
-					conDecAPI.showFlag("success", "The training file was successfully created and saved in "
-						+ response["trainingFile"] + ".");
-					callback(response["content"]);
-				}
-			});
+		generalApi.getJSON(this.restPrefix + "/training-file/" + projectKey, (error, response) => {
+			if (error === null) {
+				conDecAPI.showFlag("success", "The training file was successfully created and saved in "
+					+ response["trainingFile"] + ".");
+				callback(response["content"]);
+			}
+		});
 	};
 
 	ConDecTextClassificationAPI.prototype.getNonValidatedElements = function(projectKey, issueKey) {
@@ -157,6 +156,18 @@
 	ConDecTextClassificationAPI.prototype.setSentenceIrrelevant = function(id, callback) {
 		conDecAPI.changeKnowledgeType(id, "Other", "s", callback);
 		conDecTextClassificationAPI.nonValidatedElements = [];
+	};
+
+	/**
+	 * external references: jiraIssueModule.vm
+	 */
+	ConDecTextClassificationAPI.prototype.rereadText = function(jiraIssueId, callback) {
+		generalApi.postJSON(`${this.restPrefix}/reset`, jiraIssueId, (error, numberOfElements) => {
+			if (error === null) {
+				conDecAPI.showFlag("success", `${numberOfElements} decision knowledge elements in the text were found and linked in the knowledge graph.`);
+				callback();
+			}
+		});
 	};
 
 	global.conDecTextClassificationAPI = new ConDecTextClassificationAPI();

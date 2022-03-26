@@ -109,7 +109,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 		} else {
 			MutableComment comment = (MutableComment) ComponentAccessor.getCommentManager()
 					.getCommentById(issueEvent.getComment().getId());
-			persistenceManager.updateElementsOfCommentInDatabase(comment);
+			persistenceManager.updateElementsOfCommentInDatabase(comment, true);
 		}
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}
@@ -137,7 +137,7 @@ public class JiraIssueTextExtractionEventListener implements IssueEventListener,
 			// TODO This seems not to work for manual classified sentences. Check and fix
 			new ClassificationManagerForJiraIssueText(projectKey).classifyDescription(issueEvent.getIssue());
 		} else {
-			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue());
+			persistenceManager.updateElementsOfDescriptionInDatabase(issueEvent.getIssue(), true);
 		}
 		persistenceManager.createLinksForNonLinkedElements(issueEvent.getIssue());
 	}

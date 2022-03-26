@@ -30,6 +30,8 @@
         "dot-notation": "off",
         "guard-for-in": "off",
         "no-tabs": "off",
-        "func-names": "off"
+        "func-names": "off",
+        "linebreak-style": 0,
+        "no-use-before-define": "off"
     }
 }

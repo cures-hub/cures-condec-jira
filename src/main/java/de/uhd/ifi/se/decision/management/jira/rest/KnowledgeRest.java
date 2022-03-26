@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
-import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
@@ -439,47 +438,5 @@ public class KnowledgeRest {
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "The documentation location could not be changed.")).build();
-	}
-
-	/**
-	 * Rereads all decision knowledge elements documented within the description and
-	 * comments of a Jira issue. For example, this might be useful if linkage
-	 * between knowledge elements was destroyed.
-	 *
-	 * @param request
-	 *            HttpServletRequest with an authorized Jira
-	 *            {@link ApplicationUser}.
-	 * @param jiraIssueId
-	 *            of the {@link Issue} with decision knowledge elements documented
-	 *            within its description and comments (e.g. a user story,
-	 *            development task, ...).
-	 * @return {@link Status.OK} if rereading was successful.
-	 */
-	@Path("/resetDecisionKnowledgeFromText")
-	@POST
-	public Response resetDecisionKnowledgeFromText(@Context HttpServletRequest request, Long jiraIssueId) {
-		if (request == null || jiraIssueId == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Resetting decision knowledge documented in the description and comments of a Jira issue failed due to a bad request."))
-					.build();
-		}
-		Issue jiraIssue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueId);
-		if (jiraIssue == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Resetting decision knowledge documented in the description and comments of a Jira issue failed "
-							+ "because the Jira issue could not be found."))
-					.build();
-		}
-		String projectKey = jiraIssue.getProjectObject().getKey();
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
-				.getJiraIssueTextManager();
-
-		persistenceManager.deleteElementsInJiraIssue(jiraIssue);
-		persistenceManager.updateElementsOfDescriptionInDatabase(jiraIssue);
-		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
-		comments.forEach(comment -> persistenceManager.updateElementsOfCommentInDatabase(comment));
-
-		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
-		return Response.ok(elements.size()).build();
 	}
 }

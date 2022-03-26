@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
@@ -284,9 +285,9 @@ public class ConfigRest {
 	 * Removes invalid entries e.g. of knowledge elements, links, and decision
 	 * groups from the database tables.
 	 */
-	@Path("/cleanDatabases")
+	@Path("/clean-database/{projectKey}")
 	@POST
-	public Response cleanDatabases(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+	public Response cleanDatabases(@Context HttpServletRequest request, @PathParam("projectKey") String projectKey) {
 		Response isValidDataResponse = RestParameterChecker.checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -295,11 +296,18 @@ public class ConfigRest {
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getJiraIssueTextManager();
 		ApplicationUser user = AuthenticationManager.getUser(request);
+
 		persistenceManager.deleteInvalidElements(user);
 		GenericLinkManager.deleteInvalidLinks();
+
+		for (Issue jiraIssue : KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
+				.getAllJiraIssuesForProject()) {
+			persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue, false);
+		}
+
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		persistenceManager.createLinksForNonLinkedElements();
-		DecisionGroupPersistenceManager.deleteInvalidGroups();
+		DecisionGroupPersistenceManager.deleteInvalidGroups(projectKey);
 		return Response.ok().build();
 	}
 }
