@@ -128,11 +128,9 @@ public class DecisionGroupPersistenceManager {
 	 */
 	public static boolean deleteInvalidGroups(String projectKey) {
 		boolean isGroupDeleted = false;
-		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class);
+		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey));
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
-			if (!databaseEntry.getProjectKey().equals(projectKey)) {
-				continue;
-			}
 			KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance(projectKey)
 					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
 			if (elementInDatabase != null && !databaseEntry.getGroup().isBlank()) {
