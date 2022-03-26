@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
@@ -299,11 +300,10 @@ public class ConfigRest {
 		persistenceManager.deleteInvalidElements(user);
 		GenericLinkManager.deleteInvalidLinks();
 
-		// for (Issue jiraIssue :
-		// KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
-		// .getAllJiraIssuesForProject()) {
-		// persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue);
-		// }
+		for (Issue jiraIssue : KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
+				.getAllJiraIssuesForProject()) {
+			persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue, false);
+		}
 
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		persistenceManager.createLinksForNonLinkedElements();

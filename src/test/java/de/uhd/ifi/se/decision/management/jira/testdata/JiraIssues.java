@@ -221,7 +221,7 @@ public class JiraIssues {
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
 		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance("TEST")
 				.getJiraIssueTextManager();
-		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment);
+		List<PartOfJiraIssueText> sentences = persistenceManager.updateElementsOfCommentInDatabase(comment, true);
 		return sentences;
 	}
 

@@ -623,11 +623,11 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            Jira issue with decision knowledge elements in its description and
 	 *            comments.
 	 */
-	public void updateElementsOfJiraIssueInDatabase(Issue jiraIssue) {
-		updateElementsOfDescriptionInDatabase(jiraIssue);
+	public void updateElementsOfJiraIssueInDatabase(Issue jiraIssue, boolean isUpdatedEvenIfSameSize) {
+		updateElementsOfDescriptionInDatabase(jiraIssue, isUpdatedEvenIfSameSize);
 		List<Comment> comments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
 		for (Comment comment : comments) {
-			updateElementsOfCommentInDatabase(comment);
+			updateElementsOfCommentInDatabase(comment, isUpdatedEvenIfSameSize);
 		}
 	}
 
@@ -639,6 +639,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * 
 	 * @param comment
 	 *            of a Jira issue with decision knowledge elements.
+	 * @param isUpdatedEvenIfSameSize
 	 * @return list of identified knowledge elements.
 	 * 
 	 * @issue Elements used to be deleted and new ones were created afterwards. How
@@ -647,7 +648,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 * @con If a new knowledge element is inserted at the beginning of the text, the
 	 *      links in the knowledge graph might be wrong.
 	 */
-	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment) {
+	public List<PartOfJiraIssueText> updateElementsOfCommentInDatabase(Comment comment,
+			boolean isUpdatedEvenIfSameSize) {
 		List<PartOfJiraIssueText> partsOfComment = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(comment.getBody());
 		for (PartOfJiraIssueText sentence : partsOfComment) {
@@ -659,8 +661,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			deleteElementsInComment(comment);
 			return insertKnowledgeElements(partsOfComment);
 		}
-
-		return updateKnowledgeElements(partsOfComment, elementsInDatabase);
+		if (isUpdatedEvenIfSameSize) {
+			return updateKnowledgeElements(partsOfComment, elementsInDatabase);
+		}
+		return elementsInDatabase;
 	}
 
 	/**
@@ -673,7 +677,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            Jira issue with decision knowledge elements in its description.
 	 * @return list of identified knowledge elements.
 	 */
-	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue) {
+	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue,
+			boolean isUpdatedEvenIfSameSize) {
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
 		for (PartOfJiraIssueText sentence : partsOfDescription) {
@@ -685,8 +690,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 			deleteElementsInDescription(jiraIssue);
 			return insertKnowledgeElements(partsOfDescription);
 		}
-
-		return updateKnowledgeElements(partsOfDescription, elementsInDatabase);
+		if (isUpdatedEvenIfSameSize) {
+			return updateKnowledgeElements(partsOfDescription, elementsInDatabase);
+		}
+		return elementsInDatabase;
 	}
 
 	/**

@@ -165,7 +165,7 @@
 		generalApi.postJSON(this.restPrefix + "/reset", jiraIssueId,
 			function(error, numberOfElements) {
 				if (error === null) {
-					showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
+					conDecAPI.showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
 					callback();
 				}
 			});

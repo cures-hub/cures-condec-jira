@@ -348,9 +348,9 @@ public class TextClassificationRest {
 	 *            of the {@link Issue} with decision knowledge elements documented
 	 *            within its description and comments (e.g. a user story,
 	 *            development task, ...).
-	 * @return {@link Status.OK} if rereading was successful.
+	 * @return ok if rereading was successful.
 	 */
-	@Path("/resetDecisionKnowledgeFromText")
+	@Path("/reset")
 	@POST
 	public Response resetDecisionKnowledgeFromText(@Context HttpServletRequest request, Long jiraIssueId) {
 		if (request == null || jiraIssueId == null) {
@@ -370,7 +370,7 @@ public class TextClassificationRest {
 				.getJiraIssueTextManager();
 
 		persistenceManager.deleteElementsInJiraIssue(jiraIssue);
-		persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue);
+		persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue, true);
 
 		List<KnowledgeElement> elements = persistenceManager.getElementsInJiraIssue(jiraIssue.getId());
 		return Response.ok(elements.size()).build();
