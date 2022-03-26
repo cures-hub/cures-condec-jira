@@ -464,7 +464,7 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.cleanDatabase = function(projectKey) {
-		generalApi.postJSON(this.restPrefix + "/config/clean-database/" + projectKey, null, (error) => {
+		generalApi.postJSON(`${this.restPrefix}/config/clean-database/${projectKey}`, null, (error) => {
 			if (error === null) {
 				showFlag("success", "The database tables have been cleaned.");
 			}

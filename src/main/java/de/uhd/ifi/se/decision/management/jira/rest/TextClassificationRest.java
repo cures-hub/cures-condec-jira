@@ -237,7 +237,6 @@ public class TextClassificationRest {
 	@GET
 	public Response getNonValidatedElements(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey, @PathParam("jiraIssueKey") String jiraIssueKey) {
-
 		if (request == null || projectKey == null || jiraIssueKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
@@ -267,7 +266,6 @@ public class TextClassificationRest {
 	@GET
 	public Response getAllNonValidatedElements(@Context HttpServletRequest request,
 			@PathParam("projectKey") String projectKey) {
-
 		if (request == null || projectKey == null) {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Non-validated elements could not be found due to a bad request."))
