@@ -55,7 +55,7 @@ conDecTextClassification, AJS */
 			}
 			this.validateAllButton.style.display = "inline";
 			this.validateAllButton.onclick = () => {
-				if (confirm("Are you sure you want to validate all elements? This cannot be reverted!")) {
+				if (window.confirm("Are you sure you want to validate all elements? This cannot be reverted!")) {
 					conDecTextClassificationAPI.validateAllElements(this.projectKey, conDecAPI.getIssueKey(),
 						() => conDecTextClassification.updateView());
 				}

@@ -67,8 +67,8 @@
 	
     var cleanDatabaseButton = document.getElementById("cleanDatabase");
     cleanDatabaseButton.addEventListener("click", function () {
-        if (confirm("Are you sure you want to clean the database? "
-        			+ "Make sure that the knowledge graph is loaded and git knowledge is extracted before you confirm!")) {
+        if (window.confirm("Are you sure you want to clean the database? "
+        		+ "Make sure that the knowledge graph is loaded and git knowledge is extracted before you confirm!")) {
         	conDecAPI.cleanDatabase("$projectKey");
         }
     });

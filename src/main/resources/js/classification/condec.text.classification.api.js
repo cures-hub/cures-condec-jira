@@ -161,10 +161,10 @@
 	/**
 	 * external references: jiraIssueModule.vm
 	 */
-	ConDecTextClassificationAPI.prototype.resetDecisionKnowledgeFromText = function(jiraIssueId, callback) {
+	ConDecTextClassificationAPI.prototype.rereadText = function(jiraIssueId, callback) {
 		generalApi.postJSON(`${this.restPrefix}/reset`, jiraIssueId, (error, numberOfElements) => {
 			if (error === null) {
-				conDecAPI.showFlag("success", numberOfElements + " decision knowledge elements in the text were found and linked in the knowledge graph.");
+				conDecAPI.showFlag("success", `${numberOfElements} decision knowledge elements in the text were found and linked in the knowledge graph.`);
 				callback();
 			}
 		});
