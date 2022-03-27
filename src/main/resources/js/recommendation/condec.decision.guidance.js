@@ -169,6 +169,7 @@
      */
     ConDecDecisionGuidance.prototype.addOnClickListenerForManageDiscarded = function() {
         const tableBody = document.getElementById("recommendation-container-table-body");
+        const checkboxShowDiscarded = document.getElementById("checkbox-show-discarded");
         $("#manage-discarded-button").click((event) => {
             event.preventDefault();
             tableBody.innerHTML = "";
@@ -190,6 +191,7 @@
                     spinner.hide();
                     tableBody.innerHTML = "<strong>An error occurred!</strong>";
                 });
+            checkboxShowDiscarded.click();
         });
     };
 
