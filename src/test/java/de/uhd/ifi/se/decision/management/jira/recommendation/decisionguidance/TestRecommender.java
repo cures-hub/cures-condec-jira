@@ -88,11 +88,10 @@ public class TestRecommender extends TestSetUp {
 		discardedRecommendations.add(recommendationB);
 		discardedRecommendations.add(recommendationC);
 		recommendations = recommender.getRecommendationsWithDiscardedStatus(recommendations, discardedRecommendations);
-		assertEquals(3, recommendations.size());
+		assertEquals(2, recommendations.size());
 		assertEquals("RecommendationA", recommendations.get(0).getSummary());
-		assertEquals("RecommendationC", recommendations.get(2).getSummary());
+		assertEquals("RecommendationB", recommendations.get(1).getSummary());
 		assertFalse(recommendations.get(0).isDiscarded());
 		assertTrue(recommendations.get(1).isDiscarded());
-		assertTrue(recommendations.get(2).isDiscarded());
 	}
 }
