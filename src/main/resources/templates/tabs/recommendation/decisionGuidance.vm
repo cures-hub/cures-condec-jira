@@ -13,6 +13,10 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
         $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
     </button>
     <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
+    <button class="aui-button aui-button-primary" id="manage-discarded-button">
+        <span class="aui-icon aui-icon-small aui-iconfont-preferences"></span>
+        $i18n.getText("condec.decision.guidance.manage.discarded.recommendations")
+    </button>
 </form>
 <br>
 <div class="condec-filter-criterion" title="$i18n.getText('condec.recommendation.show_discarded_description')">

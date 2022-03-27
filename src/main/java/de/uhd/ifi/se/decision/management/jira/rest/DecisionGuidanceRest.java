@@ -320,6 +320,7 @@ public class DecisionGuidanceRest {
 	@Path("/recommendations")
 	@POST
 	public Response getRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
+
 		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Invalid filter settings given. Decision guidance recommendation cannot be made.")).build();
@@ -338,6 +339,38 @@ public class DecisionGuidanceRest {
 			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request),
 					recommendations);
 		}
+		return Response.ok(recommendations).build();
+	}
+
+	/**
+	 * Get all discarded recommendations from the database for a decision problem given as
+	 * {@link FilterSettings#getSelectedElementFromDatabase()}.
+	 *
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param filterSettings
+	 *            including the selected decision problem and the projectKey.
+	 * @return {@link ElementRecommendation}s for the given decision problem that have been stored
+	 *         as discarded in the database.
+	 */
+	@Path("/discarded-recommendations")
+	@POST
+	public Response getDiscardedRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
+
+		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Invalid filter settings given. Database access not possible.")).build();
+		}
+		String projectKey = filterSettings.getProjectKey();
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+
+		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
+		List<ElementRecommendation> recommendations = DiscardedRecommendationPersistenceManager
+				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
 		return Response.ok(recommendations).build();
 	}
 
