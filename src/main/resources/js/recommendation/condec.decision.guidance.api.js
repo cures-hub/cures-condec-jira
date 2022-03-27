@@ -48,15 +48,10 @@
             "projectKey": conDecAPI.getProjectKey(),
             "selectedElementObject": decisionProblem
         };
-        if (this.recommendationsPerProblem.has(decisionProblem.id)) {
-            return this.recommendationsPerProblem.get(decisionProblem.id);
-        }
         return generalApi.postJSONReturnPromise(`${this.restPrefix}/discarded-recommendations`,
             filterSettings, conDecAPI.projectKey)
             .then((recommendations) => {
                 recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
-                conDecDecisionGuidanceAPI.recommendationsPerProblem.set(
-                    filterSettings.selectedElementObject.id, recommendations);
                 return recommendations;
             });
     };
