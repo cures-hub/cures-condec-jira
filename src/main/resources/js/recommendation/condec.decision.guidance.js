@@ -191,7 +191,9 @@
                     spinner.hide();
                     tableBody.innerHTML = "<strong>An error occurred!</strong>";
                 });
-            checkboxShowDiscarded.click();
+            if (!checkboxShowDiscarded.checked) {
+                checkboxShowDiscarded.click();
+            }
         });
     };
 
