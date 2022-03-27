@@ -123,9 +123,11 @@
                 });
             }
         });
+        const spanCountHidden = document.getElementById("count-hidden-recommendations");
         if (counterHidden > 0) {
-            const spanCountHidden = document.getElementById("count-hidden-recommendations");
             spanCountHidden.innerHTML = `(${counterHidden})`;
+        } else{
+            spanCountHidden.innerHTML = "";
         }
         conDecAPI.showFlag("success", `#Recommendations: ${counter}`);
     }
