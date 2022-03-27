@@ -59,8 +59,10 @@
         };
         tableBody.innerHTML = "";
         let counter = 0;
+        let counterHidden = 0;
         recommendations.forEach((recommendation) => {
             if (!checkBoxShowDiscarded.checked && recommendation.isDiscarded) {
+                counterHidden++;
                 return;
             }
             counter++;
@@ -121,6 +123,10 @@
                 });
             }
         });
+        if (counterHidden > 0) {
+            const spanCountHidden = document.getElementById("count-hidden-recommendations");
+            spanCountHidden.innerHTML = `(${counterHidden})`;
+        }
         conDecAPI.showFlag("success", `#Recommendations: ${counter}`);
     }
 

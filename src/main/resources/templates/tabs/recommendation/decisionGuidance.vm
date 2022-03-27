@@ -16,7 +16,10 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
 </form>
 <br>
 <div class="condec-filter-criterion" title="$i18n.getText('condec.recommendation.show_discarded_description')">
-    <label for="checkbox-show-discarded">$i18n.getText("condec.recommendation.show_discarded_label")</label>
+    <label for="checkbox-show-discarded">
+        $i18n.getText("condec.recommendation.show_discarded_label")
+        <span id="count-hidden-recommendations"></span>
+    </label>
     <input class="checkbox" type="checkbox" id="checkbox-show-discarded">
 </div>
 
