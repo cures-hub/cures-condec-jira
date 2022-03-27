@@ -168,6 +168,7 @@
      * show the obtained discarded recommendations in the recommendation table.
      */
     ConDecDecisionGuidance.prototype.addOnClickListenerForManageDiscarded = function() {
+        const tableBody = document.getElementById("recommendation-container-table-body");
         $("#manage-discarded-button").click((event) => {
             event.preventDefault();
             tableBody.innerHTML = "";
