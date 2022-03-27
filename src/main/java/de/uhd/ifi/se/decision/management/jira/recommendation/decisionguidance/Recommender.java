@@ -129,21 +129,13 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 */
 	public List<ElementRecommendation> getRecommendationsWithDiscardedStatus(List<ElementRecommendation> newRecommendations,
 																			 List<ElementRecommendation> discardedRecommendations) {
-		List<ElementRecommendation> discardedButNotInNewRecommendations = new ArrayList<>();
 		for (ElementRecommendation discardedRecommendation : discardedRecommendations) {
-			boolean isNewlyGiven = false;
 			for (ElementRecommendation newRecommendation : newRecommendations) {
 				if (newRecommendation.getSummary().equals(discardedRecommendation.getSummary())) {
-					isNewlyGiven = true;
 					newRecommendation.setDiscarded(true);
 				}
 			}
-			if (!isNewlyGiven) {
-				discardedRecommendation.setDiscarded(true);
-				discardedButNotInNewRecommendations.add(discardedRecommendation);
-			}
 		}
-		newRecommendations.addAll(discardedButNotInNewRecommendations);
 		return newRecommendations;
 	}
 
