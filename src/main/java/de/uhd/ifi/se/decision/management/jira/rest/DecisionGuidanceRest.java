@@ -334,6 +334,12 @@ public class DecisionGuidanceRest {
 		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
 				selectedElementFromDatabase, filterSettings.getSearchTerm());
+
+		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
+		if (recommendations.size() > maxNrRecommendations) {
+			recommendations = recommendations.subList(0, maxNrRecommendations);
+		}
+
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
 			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request),
