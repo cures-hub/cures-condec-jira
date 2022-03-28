@@ -330,12 +330,19 @@ public class DecisionGuidanceRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-
 		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
+
+		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
+		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
+				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
+		if (discardedRecommendations.size() >= maxNrRecommendations) {
+			return Response.ok(discardedRecommendations).build();
+		}
+
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
 				selectedElementFromDatabase, filterSettings.getSearchTerm());
 
-		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
+
 		if (recommendations.size() > maxNrRecommendations) {
 			recommendations = recommendations.subList(0, maxNrRecommendations);
 		}
