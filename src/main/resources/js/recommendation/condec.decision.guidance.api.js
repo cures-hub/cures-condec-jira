@@ -70,10 +70,10 @@
             });
         };
 
-     /**
-     * external references: settings/decisionguidance/
-     */
-    ConDecDecisionGuidanceAPI.prototype.setMaxRecommendations = function(projectKey, maxRecommendations) {
+    /**
+    * external references: settings/decisionguidance/
+    */
+    ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations = function(projectKey, maxRecommendations) {
         generalApi.postJSONReturnPromise(this.restPrefix + "/configuration/" + projectKey + "/max-recommendations", maxRecommendations)
             .then(() => conDecAPI.showFlag("success", "Maximum number of recommendations was successfully updated!"));
     };
