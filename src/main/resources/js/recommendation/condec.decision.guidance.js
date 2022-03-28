@@ -22,8 +22,9 @@
                     conDecDecisionGuidance.selectedDecisionProblem = selectedElement;
                 }));
 
-        // add button listener
+        // add button listeners
         this.addOnClickListenerForRecommendations();
+        this.addOnClickListenerForManageDiscarded();
 
         // Register/subscribe this view as an observer
         conDecObservable.subscribe(this);
@@ -59,8 +60,10 @@
         };
         tableBody.innerHTML = "";
         let counter = 0;
+        let counterHidden = 0;
         recommendations.forEach((recommendation) => {
             if (!checkBoxShowDiscarded.checked && recommendation.isDiscarded) {
+                counterHidden++;
                 return;
             }
             counter++;
@@ -121,6 +124,12 @@
                 });
             }
         });
+        const spanCountHidden = document.getElementById("count-hidden-recommendations");
+        if (counterHidden > 0) {
+            spanCountHidden.innerHTML = `(${counterHidden})`;
+        } else{
+            spanCountHidden.innerHTML = "";
+        }
         conDecAPI.showFlag("success", `#Recommendations: ${counter}`);
     }
 
@@ -150,6 +159,41 @@
                     spinner.hide();
                     tableBody.innerHTML = "<strong>An error occurred!</strong>";
                 });
+        });
+    };
+
+    /**
+     * Set on-click behaviour for button "manage discarded recommendations":
+     * Send request to get all discarded recommendations for the selected decision problem and
+     * show the obtained discarded recommendations in the recommendation table.
+     */
+    ConDecDecisionGuidance.prototype.addOnClickListenerForManageDiscarded = function() {
+        const tableBody = document.getElementById("recommendation-container-table-body");
+        const checkboxShowDiscarded = document.getElementById("checkbox-show-discarded");
+        $("#manage-discarded-button").click((event) => {
+            event.preventDefault();
+            tableBody.innerHTML = "";
+            const spinner = $("#loading-spinner-recommendation");
+            spinner.show();
+            conDecDecisionGuidance.selectedDecisionProblem.projectKey = conDecAPI.projectKey;
+            Promise.resolve(conDecDecisionGuidanceAPI.getDiscardedRecommendations(
+                conDecDecisionGuidance.selectedDecisionProblem))
+                .then((recommendations) => {
+                    if (recommendations.length > 0) {
+                        buildRecommendationTable(recommendations,
+                            conDecDecisionGuidance.selectedDecisionProblem);
+                    } else {
+                        tableBody.innerHTML = "<i>No recommendations found!</i>";
+                    }
+                    spinner.hide();
+                })
+                .catch((err) => {
+                    spinner.hide();
+                    tableBody.innerHTML = "<strong>An error occurred!</strong>";
+                });
+            if (!checkboxShowDiscarded.checked) {
+                checkboxShowDiscarded.click();
+            }
         });
     };
 

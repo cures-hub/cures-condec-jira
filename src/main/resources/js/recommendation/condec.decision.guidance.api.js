@@ -38,6 +38,25 @@
     };
 
     /**
+     * Get all discarded recommendations for a decision problem from the database
+     *
+     * @param decisionProblem
+     * @returns {Promise<unknown>|unknown}
+     */
+    ConDecDecisionGuidanceAPI.prototype.getDiscardedRecommendations = function(decisionProblem) {
+        const filterSettings = {
+            "projectKey": conDecAPI.getProjectKey(),
+            "selectedElementObject": decisionProblem
+        };
+        return generalApi.postJSONReturnPromise(`${this.restPrefix}/discarded-recommendations`,
+            filterSettings, conDecAPI.projectKey)
+            .then((recommendations) => {
+                recommendations = recommendations.sort((a, b) => b.score.value - a.score.value);
+                return recommendations;
+            });
+    };
+
+    /**
      * external references: condec.decision.guidance
      */
     ConDecDecisionGuidanceAPI.prototype.getRecommendationEvaluation =
