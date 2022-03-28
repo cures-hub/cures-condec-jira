@@ -336,6 +336,9 @@ public class DecisionGuidanceRest {
 		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
 				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
 		if (discardedRecommendations.size() >= maxNrRecommendations) {
+			if (discardedRecommendations.size() > maxNrRecommendations) {
+				discardedRecommendations = discardedRecommendations.subList(0, maxNrRecommendations);
+			}
 			return Response.ok(discardedRecommendations).build();
 		}
 
