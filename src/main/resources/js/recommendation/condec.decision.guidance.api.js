@@ -38,7 +38,8 @@
     };
 
     /**
-     * Get all discarded recommendations for a decision problem from the database
+     * Get all discarded recommendations for a decision problem from the database and delete all
+     * cached recommendations to allow editing their status
      *
      * @param decisionProblem
      * @returns {Promise<unknown>|unknown}
@@ -48,6 +49,7 @@
             "projectKey": conDecAPI.getProjectKey(),
             "selectedElementObject": decisionProblem
         };
+        conDecDecisionGuidanceAPI.recommendationsPerProblem.delete(filterSettings.selectedElementObject.id);
         return generalApi.postJSONReturnPromise(`${this.restPrefix}/discarded-recommendations`,
             filterSettings, conDecAPI.projectKey)
             .then((recommendations) => {
