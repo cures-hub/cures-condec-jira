@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.Discard
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
+import org.apache.jena.base.Sys;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -125,6 +126,10 @@ public class TestGetRecommendations extends TestSetUp {
 		ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").setMaxNumberOfRecommendations(1);
 
 		Response response = decisionGuidanceRest.getRecommendations(request, new FilterSettings("TEST", target.getSummary()));
+		System.out.println(response.getEntity());
+		System.out.println(response.getStatus());
+		System.out.println(response.getMetadata());
+		System.out.println(response.getEntity().getClass());
 		List<ElementRecommendation> recommendations = (List<ElementRecommendation>) response.getEntity();
 
 		assertEquals(1,	recommendations.size());
