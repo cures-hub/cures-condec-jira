@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.issue.Issue;
@@ -13,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
@@ -172,7 +174,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			Recommender<?> recommender = Recommender.getRecommenderForKnowledgeSource(projectKey, knowledgeSource);
 			recommendations.addAll(recommender.getRecommendations(keywords, decisionProblem));
 		}
-		return recommendations.stream().distinct().collect(Collectors.toList());
+		return getRecommendationsNotAlreadyAccepted(recommendations.stream().distinct().collect(Collectors.toList()), decisionProblem);
 	}
 
 	/**
@@ -222,6 +224,42 @@ public abstract class Recommender<T extends KnowledgeSource> {
 					parentElement);
 		}
 		return newParent;
+	}
+
+	/**
+	 * Get all {@link Recommendation}s without already accepted ones, i.e. without the ones for which decisions or
+	 * alternatives with the same summary exist.
+	 *
+	 * @param recommendations Recommendations that should be returned after removing those, which are already accepted.
+	 * @param knowledgeElement Element for which the recommendations have been given.
+	 * @return All given recommendations without those who already exist as linked {@link KnowledgeType#ALTERNATIVE}s
+	 *         or {@link KnowledgeType#DECISION}s for the given element.
+	 */
+	private static List<Recommendation> getRecommendationsNotAlreadyAccepted(List<Recommendation> recommendations,
+			KnowledgeElement knowledgeElement) {
+		Set<KnowledgeElement> existingElements = knowledgeElement.getNeighborsOfType(KnowledgeType.ALTERNATIVE);
+		existingElements.addAll(knowledgeElement.getNeighborsOfType(KnowledgeType.DECISION));
+
+		List<Recommendation> notAcceptedRecommendations = new ArrayList<>();
+		for (Recommendation recommendation : recommendations) {
+			if (! (recommendation instanceof ElementRecommendation)) {
+				notAcceptedRecommendations.add(recommendation);
+				continue;
+			}
+			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
+			boolean alreadyAccepted = false;
+			for (KnowledgeElement existingElement : existingElements) {
+				if (existingElement.getSummary().equals(elementRecommendation.getSummary())) {
+					alreadyAccepted = true;
+					break;
+				}
+			}
+			if (!alreadyAccepted) {
+				notAcceptedRecommendations.add(recommendation);
+			}
+		}
+
+		return notAcceptedRecommendations;
 	}
 
 	/**
