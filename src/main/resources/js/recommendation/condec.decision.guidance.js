@@ -36,6 +36,7 @@
     function onAcceptClicked(recommendation, parentElement) {
         conDecAPI.getKnowledgeElement(parentElement.id, parentElement.documentationLocation,
             (currentIssue) => {
+                console.log(recommendation);
                 conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation,
                     "Alternative", recommendation.summary, "",
                     (id, documentationLocation) => {
