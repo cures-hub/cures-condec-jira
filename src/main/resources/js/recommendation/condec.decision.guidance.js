@@ -36,7 +36,8 @@
     function onAcceptClicked(recommendation, parentElement) {
         conDecAPI.getKnowledgeElement(parentElement.id, parentElement.documentationLocation,
             (currentIssue) => {
-                console.log(recommendation);
+                const description = "(Originally recommended from source: " +
+                    `${recommendation.knowledgeSource.name}' under URL: '${recommendation.url}')`
                 conDecDialog.showCreateDialog(currentIssue.id, currentIssue.documentationLocation,
                     "Alternative", recommendation.summary, "",
                     (id, documentationLocation) => {
