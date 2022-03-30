@@ -145,4 +145,45 @@ public class TestGetRecommendations extends TestSetUp {
 		assertEquals(1, recommendations.size());
 		assertEquals("Dummy recommendation 1", recommendations.get(0).getSummary());
 	}
+
+	@Test
+	@NonTransactional
+	public void testAsManyDiscardedRecommendationsAsMaxLimit() {
+		KnowledgeElement target = new KnowledgeElement(issues.get(0));
+		ElementRecommendation recommendation1 = new ElementRecommendation("Dummy recommendation 1", target);
+		ElementRecommendation recommendation2 = new ElementRecommendation("Dummy recommendation 2", target);
+		recommendation1.setDiscarded(true);
+		recommendation2.setDiscarded(true);
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation1,
+				target.getProject().getProjectKey());
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation2,
+				target.getProject().getProjectKey());
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(
+				target.getProject().getProjectKey());
+		config.setMaxNumberOfRecommendations(2);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(target.getProject().getProjectKey(), config);
+		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(), "");
+		filterSettings.setSelectedElementObject(target);
+		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
+		List<ElementRecommendation> recommendations = (List<ElementRecommendation>) response.getEntity();
+		assertEquals(2, recommendations.size());
+		assertEquals("Dummy recommendation 1", recommendations.get(0).getSummary());
+		assertEquals("Dummy recommendation 2", recommendations.get(1).getSummary());
+	}
+
+	@Test
+	@NonTransactional
+	public void testMoreRecommendationsThanMaxLimit() {
+		KnowledgeElement target = new KnowledgeElement(issues.get(0));
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(
+				target.getProject().getProjectKey());
+		config.setMaxNumberOfRecommendations(2);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(target.getProject().getProjectKey(), config);
+		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(),
+				"get_dummy_decision_guidance_recommendations");
+		filterSettings.setSelectedElementObject(target);
+		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
+		List<ElementRecommendation> recommendations = (List<ElementRecommendation>) response.getEntity();
+		assertEquals(2, recommendations.size());
+	}
 }
