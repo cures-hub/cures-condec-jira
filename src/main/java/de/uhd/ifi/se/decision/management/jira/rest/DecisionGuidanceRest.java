@@ -335,6 +335,10 @@ public class DecisionGuidanceRest {
 		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
 		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
 				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
+		System.out.println("Following discarded Recommendations retrieved:");
+		System.out.println(discardedRecommendations);
+		System.out.print("Size: ");
+		System.out.println(discardedRecommendations.size());
 		if (discardedRecommendations.size() >= maxNrRecommendations) {
 			if (discardedRecommendations.size() > maxNrRecommendations) {
 				discardedRecommendations = discardedRecommendations.subList(0, maxNrRecommendations);
