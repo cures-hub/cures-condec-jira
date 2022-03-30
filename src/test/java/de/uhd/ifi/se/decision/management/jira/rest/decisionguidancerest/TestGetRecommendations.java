@@ -124,12 +124,13 @@ public class TestGetRecommendations extends TestSetUp {
 
 	@Test
 	public void testMoreDiscardedRecommendationsThanMaxLimit() {
-		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", false);
 		KnowledgeElement target = new KnowledgeElement(issues.get(0));
-		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 1", target), "TEST");
-		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 2", target), "TEST");
-		ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").setMaxNumberOfRecommendations(1);
-		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 1", target),
+				target.getProject().getProjectKey());
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 2", target),
+				target.getProject().getProjectKey());
+		ConfigPersistenceManager.getDecisionGuidanceConfiguration(target.getProject().getProjectKey()).setMaxNumberOfRecommendations(1);
+		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(), "");
 		filterSettings.setSelectedElementObject(target);
 		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
 		System.out.println(response.getEntity());
