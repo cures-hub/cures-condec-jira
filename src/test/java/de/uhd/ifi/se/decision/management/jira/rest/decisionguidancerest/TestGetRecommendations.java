@@ -134,26 +134,15 @@ public class TestGetRecommendations extends TestSetUp {
 				target.getProject().getProjectKey());
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation2,
 				target.getProject().getProjectKey());
-		System.out
-				.println(DiscardedRecommendationPersistenceManager.getDiscardedDecisionGuidanceRecommendations(target));
-		System.out.println("Project Test: ");
-		System.out.println(target.getProject().getProjectKey());
-		DecisionGuidanceConfiguration config = ConfigPersistenceManager
-				.getDecisionGuidanceConfiguration(target.getProject().getProjectKey());
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(
+				target.getProject().getProjectKey());
 		config.setMaxNumberOfRecommendations(1);
 		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(target.getProject().getProjectKey(), config);
-		System.out.print("MaxNr Test: ");
-		System.out.println(ConfigPersistenceManager
-				.getDecisionGuidanceConfiguration(target.getProject().getProjectKey()).getMaxNumberOfRecommendations());
 		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(), "");
 		filterSettings.setSelectedElementObject(target);
 		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
-		System.out.println(response.getEntity());
-		System.out.println(response.getStatus());
-		System.out.println(response.getMetadata());
-		System.out.println(response.getEntity().getClass());
 		List<ElementRecommendation> recommendations = (List<ElementRecommendation>) response.getEntity();
-
 		assertEquals(1, recommendations.size());
+		assertEquals("Dummy recommendation 1", recommendations.get(0).getSummary());
 	}
 }
