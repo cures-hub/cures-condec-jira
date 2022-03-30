@@ -125,10 +125,13 @@ public class TestGetRecommendations extends TestSetUp {
 	@Test
 	public void testMoreDiscardedRecommendationsThanMaxLimit() {
 		KnowledgeElement target = new KnowledgeElement(issues.get(0));
-		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 1", target),
-				target.getProject().getProjectKey());
-		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 2", target),
-				target.getProject().getProjectKey());
+		ElementRecommendation recommendation1 = new ElementRecommendation("Dummy recommendation 1", target);
+		ElementRecommendation recommendation2 = new ElementRecommendation("Dummy recommendation 2", target);
+		recommendation1.setDiscarded(true);
+		recommendation2.setDiscarded(true);
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation1, target.getProject().getProjectKey());
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation2, target.getProject().getProjectKey());
+		System.out.println(DiscardedRecommendationPersistenceManager.getDiscardedDecisionGuidanceRecommendations(target));
 		ConfigPersistenceManager.getDecisionGuidanceConfiguration(target.getProject().getProjectKey()).setMaxNumberOfRecommendations(1);
 		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(), "");
 		filterSettings.setSelectedElementObject(target);
