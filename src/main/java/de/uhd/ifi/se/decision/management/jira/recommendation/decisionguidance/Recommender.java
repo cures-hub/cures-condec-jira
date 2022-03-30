@@ -159,7 +159,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 
 	/**
 	 * Get all available recommendations for the given decision problem and optional keywords from the given knowledge
-	 * sources.
+	 * sources that have not been accepted yet.
 	 *
 	 * @param projectKey Key of the project in which the recommendations are given.
 	 * @param knowledgeSources Sources from which recommendations are requested.
