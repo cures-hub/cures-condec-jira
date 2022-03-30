@@ -132,7 +132,11 @@ public class TestGetRecommendations extends TestSetUp {
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation1, target.getProject().getProjectKey());
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation2, target.getProject().getProjectKey());
 		System.out.println(DiscardedRecommendationPersistenceManager.getDiscardedDecisionGuidanceRecommendations(target));
+		System.out.print("Project Test: ");
+		System.out.println(target.getProject().getProjectKey());
 		ConfigPersistenceManager.getDecisionGuidanceConfiguration(target.getProject().getProjectKey()).setMaxNumberOfRecommendations(1);
+		System.out.print("MaxNr Test: ");
+		System.out.println(ConfigPersistenceManager.getDecisionGuidanceConfiguration(target.getProject().getProjectKey()).getMaxNumberOfRecommendations());
 		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(), "");
 		filterSettings.setSelectedElementObject(target);
 		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
