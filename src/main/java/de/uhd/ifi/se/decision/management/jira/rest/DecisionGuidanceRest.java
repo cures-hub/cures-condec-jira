@@ -330,10 +330,26 @@ public class DecisionGuidanceRest {
 		if (response.getStatus() != Status.OK.getStatusCode()) {
 			return response;
 		}
-
 		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
+
+		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
+		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
+				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
+		if (discardedRecommendations.size() >= maxNrRecommendations) {
+			if (discardedRecommendations.size() > maxNrRecommendations) {
+				discardedRecommendations = discardedRecommendations.subList(0, maxNrRecommendations);
+			}
+			return Response.ok(discardedRecommendations).build();
+		}
+
 		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
 				selectedElementFromDatabase, filterSettings.getSearchTerm());
+
+
+		if (recommendations.size() > maxNrRecommendations) {
+			recommendations = recommendations.subList(0, maxNrRecommendations);
+		}
+
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
 			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request),

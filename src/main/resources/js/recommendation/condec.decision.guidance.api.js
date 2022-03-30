@@ -73,20 +73,15 @@
         };
 
     /**
-     * external references: settings/decisionguidance/
-     */
+    * external references: settings/decisionguidance/
+    */
     ConDecDecisionGuidanceAPI.prototype.setMaxNumberOfRecommendations =
-        function(projectKey, maxNumberOfRecommendations) {
-            generalApi.postJSON(`${this.restPrefix}/configuration/${projectKey}` +
-            `/max-recommendations${maxNumberOfRecommendations}`,
-            (error, response) => {
-                if (error === null) {
-                    conDecAPI.showFlag("success",
-                        "Maximum number of results are updated to: " +
-                        `${maxNumberOfRecommendations}`);
-                }
-            });
-        };
+        function(projectKey, maxRecommendations) {
+        generalApi.postJSONReturnPromise(`${this.restPrefix}/configuration/${projectKey}` +
+            "/max-recommendations", maxRecommendations)
+            .then(() => conDecAPI.showFlag("success", "Maximum number of " +
+                "recommendations was successfully updated!"));
+    };
 
     /**
      * external references: settings/decisionguidance/

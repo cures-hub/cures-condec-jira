@@ -2,27 +2,38 @@ package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionGuidanceRest;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
+import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestGetRecommendations extends TestSetUp {
 
 	private DecisionGuidanceRest decisionGuidanceRest;
 	private HttpServletRequest request;
 	private FilterSettings filterSettings;
+	private List<Issue> issues;
 
 	@Before
 	public void setUp() {
@@ -33,6 +44,7 @@ public class TestGetRecommendations extends TestSetUp {
 		request.setAttribute("user", user);
 		filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setSelectedElementObject(KnowledgeElements.getSolvedDecisionProblem());
+		issues = JiraIssues.getTestJiraIssues();
 	}
 
 	@Test
@@ -63,12 +75,14 @@ public class TestGetRecommendations extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testFilterSettingsNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, null).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testSelectedElementNull() {
 		filterSettings.setSelectedElementObject((KnowledgeElement) null);
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
@@ -76,12 +90,14 @@ public class TestGetRecommendations extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(null, filterSettings).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testNoKnowledgeSourceConfigured() {
 		filterSettings.setProjectKey("Project does not exist");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),
@@ -89,6 +105,7 @@ public class TestGetRecommendations extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testAddRecommendationsDirectly() {
 		decisionGuidanceRest.setAddRecommendationDirectly(request, "TEST", true);
 		assertEquals(Status.OK.getStatusCode(),
@@ -97,10 +114,76 @@ public class TestGetRecommendations extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testNoKnowledgeSourceNotConfigured() {
 		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", false);
 		assertEquals(Status.OK.getStatusCode(),
 				decisionGuidanceRest.getRecommendations(request, filterSettings).getStatus());
 		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", true);
+	}
+
+	@Test
+	@NonTransactional
+	public void testMoreDiscardedRecommendationsThanMaxLimit() {
+		KnowledgeElement target = new KnowledgeElement(issues.get(0));
+		ElementRecommendation recommendation1 = new ElementRecommendation("Dummy recommendation 1", target);
+		ElementRecommendation recommendation2 = new ElementRecommendation("Dummy recommendation 2", target);
+		recommendation1.setDiscarded(true);
+		recommendation2.setDiscarded(true);
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation1,
+				target.getProject().getProjectKey());
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation2,
+				target.getProject().getProjectKey());
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(
+				target.getProject().getProjectKey());
+		config.setMaxNumberOfRecommendations(1);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(target.getProject().getProjectKey(), config);
+		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(), "");
+		filterSettings.setSelectedElementObject(target);
+		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
+		List<ElementRecommendation> recommendations = (List<ElementRecommendation>) response.getEntity();
+		assertEquals(1, recommendations.size());
+		assertEquals("Dummy recommendation 1", recommendations.get(0).getSummary());
+	}
+
+	@Test
+	@NonTransactional
+	public void testAsManyDiscardedRecommendationsAsMaxLimit() {
+		KnowledgeElement target = new KnowledgeElement(issues.get(0));
+		ElementRecommendation recommendation1 = new ElementRecommendation("Dummy recommendation 1", target);
+		ElementRecommendation recommendation2 = new ElementRecommendation("Dummy recommendation 2", target);
+		recommendation1.setDiscarded(true);
+		recommendation2.setDiscarded(true);
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation1,
+				target.getProject().getProjectKey());
+		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation2,
+				target.getProject().getProjectKey());
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(
+				target.getProject().getProjectKey());
+		config.setMaxNumberOfRecommendations(2);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(target.getProject().getProjectKey(), config);
+		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(), "");
+		filterSettings.setSelectedElementObject(target);
+		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
+		List<ElementRecommendation> recommendations = (List<ElementRecommendation>) response.getEntity();
+		assertEquals(2, recommendations.size());
+		assertEquals("Dummy recommendation 1", recommendations.get(0).getSummary());
+		assertEquals("Dummy recommendation 2", recommendations.get(1).getSummary());
+	}
+
+	@Test
+	@NonTransactional
+	public void testMoreRecommendationsThanMaxLimit() {
+		KnowledgeElement target = new KnowledgeElement(issues.get(0));
+		DecisionGuidanceConfiguration config = ConfigPersistenceManager.getDecisionGuidanceConfiguration(
+				target.getProject().getProjectKey());
+		config.setMaxNumberOfRecommendations(2);
+		ConfigPersistenceManager.saveDecisionGuidanceConfiguration(target.getProject().getProjectKey(), config);
+		FilterSettings filterSettings = new FilterSettings(target.getProject().getProjectKey(),
+				"get_dummy_decision_guidance_recommendations");
+		filterSettings.setSelectedElementObject(target);
+		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
+		List<ElementRecommendation> recommendations = (List<ElementRecommendation>) response.getEntity();
+		assertEquals(2, recommendations.size());
 	}
 }
