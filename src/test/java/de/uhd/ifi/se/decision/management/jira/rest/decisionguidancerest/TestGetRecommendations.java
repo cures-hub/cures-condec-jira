@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest.decisionguidancerest;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -124,8 +125,9 @@ public class TestGetRecommendations extends TestSetUp {
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 1", target), "TEST");
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 2", target), "TEST");
 		ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").setMaxNumberOfRecommendations(1);
-
-		Response response = decisionGuidanceRest.getRecommendations(request, new FilterSettings("TEST", target.getSummary()));
+		FilterSettings filterSettings = new FilterSettings("TEST", "");
+		filterSettings.setSelectedElementObject(target);
+		Response response = decisionGuidanceRest.getRecommendations(request, filterSettings);
 		System.out.println(response.getEntity());
 		System.out.println(response.getStatus());
 		System.out.println(response.getMetadata());
