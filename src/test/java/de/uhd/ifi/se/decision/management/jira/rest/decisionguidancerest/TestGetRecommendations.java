@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -15,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.Discard
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.KnowledgeSource;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import org.apache.jena.base.Sys;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +38,8 @@ public class TestGetRecommendations extends TestSetUp {
 	private DecisionGuidanceRest decisionGuidanceRest;
 	private HttpServletRequest request;
 	private FilterSettings filterSettings;
+	private List<Issue> issues;
+
 
 	@Before
 	public void setUp() {
@@ -46,6 +50,7 @@ public class TestGetRecommendations extends TestSetUp {
 		request.setAttribute("user", user);
 		filterSettings = new FilterSettings("TEST", "");
 		filterSettings.setSelectedElementObject(KnowledgeElements.getSolvedDecisionProblem());
+		issues = JiraIssues.getTestJiraIssues();
 	}
 
 	@Test
@@ -120,8 +125,7 @@ public class TestGetRecommendations extends TestSetUp {
 	@Test
 	public void testMoreDiscardedRecommendationsThanMaxLimit() {
 		decisionGuidanceRest.setProjectSource(request, "TEST", "TEST", false);
-		KnowledgeElement target = new KnowledgeElement(0, "Dummy Target", "Dummy Description", KnowledgeType.ISSUE, "TEST",
-				"Dummy key", DocumentationLocation.UNKNOWN, KnowledgeStatus.UNRESOLVED);
+		KnowledgeElement target = new KnowledgeElement(issues.get(0));
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 1", target), "TEST");
 		DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(new ElementRecommendation("Dummy recommendation 2", target), "TEST");
 		ConfigPersistenceManager.getDecisionGuidanceConfiguration("TEST").setMaxNumberOfRecommendations(1);
