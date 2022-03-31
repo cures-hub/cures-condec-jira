@@ -249,7 +249,10 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
 			boolean alreadyAccepted = false;
 			for (KnowledgeElement existingElement : existingElements) {
-				if (existingElement.getSummary().equals(elementRecommendation.getSummary())) {
+				if (existingElement.getSummary().equals(elementRecommendation.getSummary())
+						|| existingElement.getSummary().contains(elementRecommendation.getSummary())
+						|| elementRecommendation.getSummary().contains(existingElement.getSummary())
+				   ) {
 					alreadyAccepted = true;
 					break;
 				}
