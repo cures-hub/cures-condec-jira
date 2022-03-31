@@ -63,8 +63,9 @@ public class TestCalculator extends TestSetUp {
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		propagationRules.add(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR));
 		propagationRules.add(new ChangePropagationRule("BOOST_IF_SOLUTION_OPTION", false, 1.0f));
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 2, propagationRules);
 		config.setAreLinkRecommendationsIncludedInCalculation(true);
+		config.setContext(2);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
 		
 		// FilterSettings & LinkRecommendationConfiguration
@@ -84,7 +85,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements.add(rootElement);
 
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
-				impactedElements, 0);
+				impactedElements, 2);
 
 		assertTrue(impactedElements.size() > 5);
 	}
@@ -96,7 +97,7 @@ public class TestCalculator extends TestSetUp {
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		rule.setWeightValue(-1.0f);
 		propagationRules.add(rule);
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 2, propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
 		
 		// FilterSettings
@@ -107,7 +108,7 @@ public class TestCalculator extends TestSetUp {
 		impactedElements.add(rootElement);
 
 		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
-				impactedElements, 0);
+				impactedElements, 2);
 
 		assertTrue(impactedElements.size() > 5);
 	}
