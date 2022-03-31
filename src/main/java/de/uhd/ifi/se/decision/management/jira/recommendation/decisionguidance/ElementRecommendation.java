@@ -46,6 +46,7 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	/**
 	 * Pro and Con {@link Argument}s for the recommendation.
 	 */
+	@JsonIgnore
 	private List<Argument> arguments;
 
 	/**
