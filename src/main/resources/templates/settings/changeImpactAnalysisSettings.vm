@@ -11,13 +11,12 @@ The impact value of an element (<var>elementImpact</var>) is calculated using th
 
 <p>where <var>decayValue</var> is the decay per iteration step,</p>
 <p><var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the
-parent/ancestor element and the current element,</p>
-<p><var>ruleBasedValue</var> is the normalized sum of all enabled rules
+parent/ancestor element and the current element, and</p>
+<p><var>ruleBasedValue</var> is the normalized sum of all enabled rules:
 
-<p><b><code>ruleBasedValue = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / &sum;<sup>N</sup>ruleWeight<sub>i</sub></code></b>, </p>
+<p><b><code>ruleBasedValue = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / &sum;<sup>N</sup>ruleWeight<sub>i</sub></code></b></p>
 
-<p>, where <var>N</var> is the number of enabled rules,</p>
-<p><b><code>-&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub></code></b> denotes that the subtraction is only done for negative rule weights to reverse the effect.</p>
+<p>, where <var>N</var> is the number of enabled rules and <b><code>-&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub></code></b> denotes that the subtraction is only done for negative rule weights to reverse the effect.</p>
 <p>In addition, <var>recommendationScore</var> is the link recommendation score of the current element, if the element was recommended.</p>
 
 <p>The element is included in the impact graph if <b><code>elementImpact >= threshold</code></b>.</p>
