@@ -100,7 +100,7 @@ public class Calculator {
 				impactedElements.set(impactedElements.indexOf(nextElement), nextElement);
 				calculateChangeImpact(nextElementInPath, filterSettings, impactedElements, context);
 			}
-		} else if (filterSettings.getChangeImpactAnalysisConfig().getContext() > 0 && context > 0 && !impactedElements.contains(nextElement)) {
+		} else if (context > 0 && !impactedElements.contains(nextElement)) {
 			nextElement.setImpactExplanation(
 					"This element is below the set threshold but has been included due to the selected context setting.");
 			impactedElements.add(nextElement);
