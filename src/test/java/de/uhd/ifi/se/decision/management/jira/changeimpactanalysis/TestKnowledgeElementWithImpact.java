@@ -31,7 +31,7 @@ public class TestKnowledgeElementWithImpact extends TestSetUp {
         Map<String, Double> ruleMap = new HashMap<>();
 
         KnowledgeElementWithImpact elementWithImpactChild = new KnowledgeElementWithImpact(
-            element, 0.375, 0.75, 1.0, 1.0, ruleMap, "");   
+            element, 0.375, 1.0, 1.0, ruleMap, "");   
 		assertEquals(elementWithImpact, elementWithImpactChild);
         assertEquals(element, elementWithImpactChild);
         assertEquals(element, elementWithImpact);
@@ -71,9 +71,6 @@ public class TestKnowledgeElementWithImpact extends TestSetUp {
         
         elementWithImpact.setLinkTypeWeight(0.72);
         assertEquals(0.72, elementWithImpact.getLinkTypeWeight(), 0.05);
-
-        elementWithImpact.setParentImpact(0.72);
-        assertEquals(0.72, elementWithImpact.getParentImpact(), 0.05);
 
         Map<String, Double> propagationRules = new HashMap<>();
         propagationRules.put("BarFoo", 0.72);

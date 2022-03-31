@@ -89,7 +89,7 @@ public class ChangeImpactAnalysisService {
 		impactedElements.add(rootElement);
 
 		// Calculate impacted elements
-		impactedElements = Calculator.calculateChangeImpact(filterSettings.getSelectedElement(), 1.0,
+		impactedElements = Calculator.calculateChangeImpact(filterSettings.getSelectedElement(),
 			filterSettings, impactedElements, (long) filterSettings.getLinkDistance());
 		LOGGER.info("ConDec change impact analysis estimated {} impacted elements.", impactedElements.size());
 		return impactedElements;

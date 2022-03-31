@@ -47,11 +47,10 @@ public class TestCalculator extends TestSetUp {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
 
-		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
+		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
 				impactedElements, (long) settings.getLinkDistance());
 
 		assertEquals(1.0, impactedElements.get(0).getImpactValue(), 0.05);
-		assertEquals(1.0, impactedElements.get(0).getParentImpact(), 0.05);
 		assertEquals(1.0, impactedElements.get(0).getLinkTypeWeight(), 0.05);
 		assertEquals(1.0, impactedElements.get(0).getRuleBasedValue(), 0.05);
 		assertEquals(0, impactedElements.get(0).getPropagationRules().size());
@@ -83,7 +82,7 @@ public class TestCalculator extends TestSetUp {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
 
-		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
+		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
 				impactedElements, (long) settings.getLinkDistance());
 
 		assertTrue(impactedElements.size() > 10);
@@ -106,7 +105,7 @@ public class TestCalculator extends TestSetUp {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
 
-		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
+		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
 				impactedElements, (long) settings.getLinkDistance());
 
 		assertTrue(impactedElements.size() > 8);

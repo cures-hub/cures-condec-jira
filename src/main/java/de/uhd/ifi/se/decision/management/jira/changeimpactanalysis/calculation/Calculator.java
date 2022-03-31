@@ -29,8 +29,7 @@ public class Calculator {
 	private static Map<String, Double> propagationRuleResult;
 
 	public static List<KnowledgeElementWithImpact> calculateChangeImpact(KnowledgeElement currentElement,
-			double parentImpact, FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements,
-			long context) {
+			FilterSettings filterSettings, List<KnowledgeElementWithImpact> impactedElements, long context) {
 		ChangeImpactAnalysisConfiguration ciaConfig = filterSettings.getChangeImpactAnalysisConfig();
 
 		// Add link recommmendations to root element if setting has been selected
@@ -64,7 +63,7 @@ public class Calculator {
 			double linkTypeWeight = ciaConfig.getLinkImpact().getOrDefault(linkTypeName, 1.0f);
 			double decayValue = ciaConfig.getDecayValue();
 			double ruleBasedValue = calculatePropagationRuleImpact(filterSettings, nextElementInPath, link);
-			double impactValue = 1.0 * linkTypeWeight * (1 - decayValue) * ruleBasedValue;
+			double impactValue = linkTypeWeight * (1 - decayValue) * ruleBasedValue;
 			String impactExplanation = "";
 
 			// Add LinkRecommendationScore to impactExplanation if the element was a
@@ -73,31 +72,31 @@ public class Calculator {
 				LinkRecommendation recommendation = (LinkRecommendation) link;
 				double linkRecommendationScore = recommendation.getScore().getValue() / 100;
 				impactValue = impactValue * linkRecommendationScore;
-				impactExplanation = Tooltip.generateImpactExplanation(1.0, ruleBasedValue, decayValue, impactValue,
+				impactExplanation = Tooltip.generateImpactExplanation(ruleBasedValue, decayValue, impactValue,
 						linkTypeName, linkRecommendationScore);
 			} else {
-				impactExplanation = Tooltip.generateImpactExplanation(1.0, ruleBasedValue, decayValue, impactValue,
+				impactExplanation = Tooltip.generateImpactExplanation(ruleBasedValue, decayValue, impactValue,
 						linkTypeName, 0);
 			}
 
 			// Add calculated impact values to new KnowledgeElementWithImpact
 			KnowledgeElementWithImpact nextElement = new KnowledgeElementWithImpact(nextElementInPath, impactValue,
-					1.0, linkTypeWeight, ruleBasedValue, propagationRuleResult, impactExplanation);
+					linkTypeWeight, ruleBasedValue, propagationRuleResult, impactExplanation);
 
 			// Check whether element should be added to list of impacted elements
 			if (impactValue >= ciaConfig.getThreshold()) {
 				if (!impactedElements.contains(nextElement)) {
 					impactedElements.add(nextElement);
-					calculateChangeImpact(nextElementInPath, impactValue, filterSettings, impactedElements, context);
+					calculateChangeImpact(nextElementInPath, filterSettings, impactedElements, context);
 				} else if (impactedElements.get(impactedElements.indexOf(nextElement)).getImpactValue() < impactValue) {
 					impactedElements.set(impactedElements.indexOf(nextElement), nextElement);
-					calculateChangeImpact(nextElementInPath, impactValue, filterSettings, impactedElements, context);
+					calculateChangeImpact(nextElementInPath, filterSettings, impactedElements, context);
 				}
 			} else if (ciaConfig.getContext() > 0 && context > 0 && !impactedElements.contains(nextElement)) {
 				nextElement.setImpactExplanation(
 						"This element is below the set threshold but has been included due to the selected context setting.");
 				impactedElements.add(nextElement);
-				calculateChangeImpact(nextElementInPath, 0.0, filterSettings, impactedElements, context - 1);
+				calculateChangeImpact(nextElementInPath, filterSettings, impactedElements, context - 1);
 			}
 		}
 		return impactedElements;
