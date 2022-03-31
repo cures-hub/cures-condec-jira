@@ -127,7 +127,7 @@
         const spanCountHidden = document.getElementById("count-hidden-recommendations");
         if (counterHidden > 0) {
             spanCountHidden.innerHTML = `(${counterHidden})`;
-        } else{
+        } else {
             spanCountHidden.innerHTML = "";
         }
         conDecAPI.showFlag("success", `#Recommendations: ${counter}`);

@@ -47,7 +47,7 @@
     ConDecDecisionGuidanceAPI.prototype.getDiscardedRecommendations = function(decisionProblem) {
         const filterSettings = {
             "projectKey": conDecAPI.getProjectKey(),
-            "selectedElementObject": decisionProblem
+            "selectedElementObject": decisionProblem,
         };
         conDecDecisionGuidanceAPI.recommendationsPerProblem.delete(filterSettings.selectedElementObject.id);
         return generalApi.postJSONReturnPromise(`${this.restPrefix}/discarded-recommendations`,
