@@ -130,18 +130,18 @@ public class DecisionGroupPersistenceManager {
 		boolean isGroupDeleted = false;
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey));
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
-			KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance(projectKey)
-					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
+			KnowledgeElement elementInDatabase = persistenceManager.getKnowledgeElement(databaseEntry.getSourceId(),
+					databaseEntry.getSourceDocumentationLocation());
 			if (elementInDatabase != null && !databaseEntry.getGroup().isBlank()) {
 				continue;
 			}
-			KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
-			if (graph != null && graph.getElementById(databaseEntry.getSourceId()) != null) {
+			if (graph.getElementById(databaseEntry.getSourceId()) != null) {
 				continue;
 			}
-			isGroupDeleted = true;
-			DecisionGroupInDatabase.deleteGroup(databaseEntry);
+			isGroupDeleted = DecisionGroupInDatabase.deleteGroup(databaseEntry);
 		}
 		return isGroupDeleted;
 	}
