@@ -135,11 +135,10 @@ public class DecisionGroupPersistenceManager {
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
 			KnowledgeElement elementInDatabase = persistenceManager.getKnowledgeElement(databaseEntry.getSourceId(),
 					databaseEntry.getSourceDocumentationLocation());
-			if ((elementInDatabase != null || graph.getElementById(databaseEntry.getSourceId()) != null)
-					&& !databaseEntry.getGroup().isBlank()) {
-				continue;
+			if ((elementInDatabase == null && graph.getElementById(databaseEntry.getSourceId()) == null)
+					|| databaseEntry.getGroup().isBlank()) {
+				isGroupDeleted = DecisionGroupInDatabase.deleteGroupAssigment(databaseEntry);
 			}
-			isGroupDeleted = DecisionGroupInDatabase.deleteGroupAssigment(databaseEntry);
 		}
 		return isGroupDeleted;
 	}
