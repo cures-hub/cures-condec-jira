@@ -198,6 +198,10 @@ public class DecisionGroupingRest {
 			}
 			for (String group : groupsOfElement) {
 				Set<KnowledgeElement> elementsOfGroup = decisionGroupsMap.get(group);
+				if (elementsOfGroup == null) {
+					LOGGER.error("Invalid group: " + group);
+					continue;
+				}
 				elementsOfGroup.add(element);
 			}
 		}

@@ -662,6 +662,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 */
 	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue,
 			boolean isUpdatedEvenIfSameSize) {
+		LOGGER.debug(jiraIssue.getDescription());
 		List<PartOfJiraIssueText> partsOfDescription = new JiraIssueTextParser(projectKey)
 				.getPartsOfText(jiraIssue.getDescription());
 		for (PartOfJiraIssueText sentence : partsOfDescription) {
