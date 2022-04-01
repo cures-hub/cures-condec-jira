@@ -75,7 +75,7 @@ public interface DecisionGroupInDatabase extends RawEntity<Long> {
 	 *            {@link DecisionGroupInDatabase} object.
 	 * @return true if deletion was successful, false otherwise.
 	 */
-	static boolean deleteGroup(DecisionGroupInDatabase groupAssignmentToDelete) {
+	static boolean deleteGroupAssigment(DecisionGroupInDatabase groupAssignmentToDelete) {
 		try {
 			groupAssignmentToDelete.getEntityManager().delete(groupAssignmentToDelete);
 			return true;
