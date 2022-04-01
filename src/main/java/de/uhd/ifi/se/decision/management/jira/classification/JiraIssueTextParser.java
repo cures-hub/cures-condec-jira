@@ -103,7 +103,7 @@ public class JiraIssueTextParser {
 	 *         substrings) that include the macro.
 	 */
 	private List<PartOfJiraIssueText> findMacroTextOfType(String macro) {
-		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
+		List<PartOfJiraIssueText> partsOfText = new ArrayList<>();
 		Pattern pattern = Pattern.compile("\\{" + macro + ":?.*?\\}.*?\\{" + macro + "\\}",
 				Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		Matcher matcher = pattern.matcher(text);

@@ -222,7 +222,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<PartOfJiraIssueText> getElementsInComment(long commentId) {
 		List<PartOfJiraIssueText> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId))) {
+				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId).order("ID ASC"))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
 		return elements;
@@ -239,8 +239,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<PartOfJiraIssueText> getElementsInDescription(long jiraIssueId) {
 		List<PartOfJiraIssueText> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = 0", projectKey,
-						jiraIssueId))) {
+				Query.select()
+						.where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = 0", projectKey, jiraIssueId)
+						.order("ID ASC"))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
 		return elements;
