@@ -34,7 +34,7 @@ public class JiraIssueTextParser {
 	private List<PartOfJiraIssueText> partsOfText;
 	private String projectKey;
 
-	private static final String[] JIRA_MACROS = { "code", "quote", "noformat", "color", "panel" };
+	private static final String[] JIRA_MACROS = { "code", "quote", "noformat", "color", "panel", "codesummarization" };
 
 	public JiraIssueTextParser(String projectKey) {
 		this.projectKey = projectKey;
