@@ -222,7 +222,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	public List<PartOfJiraIssueText> getElementsInComment(long commentId) {
 		List<PartOfJiraIssueText> elements = new ArrayList<>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId).order("ID ASC"))) {
+				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", projectKey, commentId)
+						.order("START_POSITION ASC"))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
 		return elements;
@@ -241,7 +242,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select()
 						.where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = 0", projectKey, jiraIssueId)
-						.order("ID ASC"))) {
+						.order("START_POSITION ASC"))) {
 			elements.add(new PartOfJiraIssueText(databaseEntry));
 		}
 		return elements;
@@ -375,9 +376,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 		PartOfJiraIssueText sentence = (PartOfJiraIssueText) element;
 		PartOfJiraIssueText sentenceInDatabase = null;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
-						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndPosition(),
-						sentence.getStartPosition()))) {
+				Query.select().where(
+						"PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
+						sentence.getProject().getProjectKey(), sentence.getJiraIssue().getId(), sentence.getCommentId(),
+						sentence.getEndPosition(), sentence.getStartPosition()))) {
 			sentenceInDatabase = new PartOfJiraIssueText(databaseEntry);
 		}
 		return sentenceInDatabase;
