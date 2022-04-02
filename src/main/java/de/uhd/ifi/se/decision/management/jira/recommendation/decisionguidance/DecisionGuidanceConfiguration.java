@@ -37,7 +37,7 @@ public class DecisionGuidanceConfiguration {
 		this.setMaxNumberOfRecommendations(100);
 		this.setSimilarityThreshold(0.85);
 		this.rdfKnowledgeSources = RDFSource.getDefaultDBPediaQueries();
-		this.projectKnowledgeSources = this.addAllPossibleProjectKnowledgeSources();
+		this.projectKnowledgeSources = new ArrayList<>();
 	}
 
 	/**
@@ -170,16 +170,11 @@ public class DecisionGuidanceConfiguration {
 	}
 
 	/**
-	 * Add all available project sources as {@link DecisionGuidanceConfiguration#projectKnowledgeSources}
-	 * and return them.
-	 *
 	 * @return all possible {@link ProjectSource}s that are either activated or
 	 *         deactivated.
 	 */
-	public List<ProjectSource> addAllPossibleProjectKnowledgeSources() {
-		if (this.projectKnowledgeSources == null) {
-			this.projectKnowledgeSources = new ArrayList<>();
-		}
+	public List<ProjectSource> getProjectKnowledgeSources() {
+		List<ProjectSource> projectSources = new ArrayList<>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			DecisionKnowledgeProject conDecProject = new DecisionKnowledgeProject(project);
 			if (!conDecProject.getBasicConfiguration().isActivated()) {
@@ -189,19 +184,10 @@ public class DecisionGuidanceConfiguration {
 			if (projectSource == null || projectSource.getProjectKey().isBlank()) {
 				projectSource = new ProjectSource(project);
 			}
-			this.projectKnowledgeSources.add(projectSource);
+			projectSources.add(projectSource);
 		}
-		return this.projectKnowledgeSources;
-	}
-
-	/**
-	 * @return {@link DecisionGuidanceConfiguration#projectKnowledgeSources}.
-	 */
-	public List<ProjectSource> getProjectKnowledgeSources() {
-		if (this.projectKnowledgeSources == null) {
-			this.projectKnowledgeSources = addAllPossibleProjectKnowledgeSources();
-		}
-		return this.projectKnowledgeSources;
+		projectKnowledgeSources = projectSources;
+		return projectSources;
 	}
 
 	/**
@@ -220,11 +206,9 @@ public class DecisionGuidanceConfiguration {
 	 *         existing.
 	 */
 	public ProjectSource getProjectSource(String projectSourceKey) {
-		if (this.projectKnowledgeSources != null) {
-			for (ProjectSource projectSource : projectKnowledgeSources) {
-				if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
-					return projectSource;
-				}
+		for (ProjectSource projectSource : projectKnowledgeSources) {
+			if (projectSource.getProjectKey().equalsIgnoreCase(projectSourceKey)) {
+				return projectSource;
 			}
 		}
 		return null;

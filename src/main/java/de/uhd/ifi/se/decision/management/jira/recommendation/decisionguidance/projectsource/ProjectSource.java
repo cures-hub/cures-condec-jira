@@ -13,7 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.Kn
 public class ProjectSource extends KnowledgeSource {
 
 	/**
-	 * Jira project key of the {@link DecisionKnowledgeProject} that is used as the knowledge source.
+	 * Jira project key of the {@link DecisionKnowledgeProject} that is used as the
+	 * knowledge source.
 	 */
 	protected String projectKey;
 
@@ -22,12 +23,12 @@ public class ProjectSource extends KnowledgeSource {
 	 *            other Jira project.
 	 */
 	public ProjectSource(Project jiraProject) {
-			super(jiraProject == null ? "" : jiraProject.getName(), true);
-			if (jiraProject != null) {
-				this.projectKey = jiraProject.getKey();
-			} else {
-				this.projectKey = "";
-			}
+		super(jiraProject == null ? "" : jiraProject.getName(), false);
+		if (jiraProject != null) {
+			this.projectKey = jiraProject.getKey();
+		} else {
+			this.projectKey = "";
+		}
 	}
 
 	/**
