@@ -34,7 +34,7 @@ public class JiraIssueTextParser {
 	private List<PartOfJiraIssueText> partsOfText;
 	private String projectKey;
 
-	private static final String[] JIRA_MACROS = { "code", "quote", "noformat", "color", "panel" };
+	private static final String[] JIRA_MACROS = { "code", "quote", "noformat", "color", "panel", "codesummarization" };
 
 	public JiraIssueTextParser(String projectKey) {
 		this.projectKey = projectKey;
@@ -49,9 +49,9 @@ public class JiraIssueTextParser {
 	 */
 	public List<PartOfJiraIssueText> getPartsOfText(String text) {
 		if (text == null || text.isBlank()) {
-			return new ArrayList<PartOfJiraIssueText>();
+			return new ArrayList<>();
 		}
-		this.partsOfText = new ArrayList<PartOfJiraIssueText>();
+		this.partsOfText = new ArrayList<>();
 		this.text = text;
 
 		// 1) identify parts of text with tagged decision knowledge elements
@@ -103,7 +103,7 @@ public class JiraIssueTextParser {
 	 *         substrings) that include the macro.
 	 */
 	private List<PartOfJiraIssueText> findMacroTextOfType(String macro) {
-		List<PartOfJiraIssueText> partsOfText = new ArrayList<PartOfJiraIssueText>();
+		List<PartOfJiraIssueText> partsOfText = new ArrayList<>();
 		Pattern pattern = Pattern.compile("\\{" + macro + ":?.*?\\}.*?\\{" + macro + "\\}",
 				Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		Matcher matcher = pattern.matcher(text);
@@ -134,7 +134,7 @@ public class JiraIssueTextParser {
 	 * @return sentences before, in between, and after any macros.
 	 */
 	private List<PartOfJiraIssueText> findRemainingParts() {
-		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<>();
 		newPartsOfText.addAll(findPartsAtTheBeginning());
 		newPartsOfText.addAll(findPartsInBetween());
 		newPartsOfText.addAll(findPartsAtTheEnd());
@@ -147,7 +147,7 @@ public class JiraIssueTextParser {
 	private List<PartOfJiraIssueText> findPartsAtTheBeginning() {
 		PartOfJiraIssueText newFirstPart = new PartOfJiraIssueText(0, partsOfText.get(0).getStartPosition(), text);
 		if (newFirstPart.getDescription().isBlank()) {
-			return new ArrayList<PartOfJiraIssueText>();
+			return new ArrayList<>();
 		}
 		return splitIntoSentences(newFirstPart);
 	}
@@ -156,7 +156,7 @@ public class JiraIssueTextParser {
 	 * @return sentences in between macros.
 	 */
 	private List<PartOfJiraIssueText> findPartsInBetween() {
-		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<PartOfJiraIssueText>();
+		List<PartOfJiraIssueText> newPartsOfText = new ArrayList<>();
 		for (int i = 0; i < partsOfText.size() - 1; i++) {
 			int tempStartPosition = partsOfText.get(i).getEndPosition();
 			int tempEndPosition = partsOfText.get(i + 1).getStartPosition();
@@ -179,7 +179,7 @@ public class JiraIssueTextParser {
 		PartOfJiraIssueText lastPart = partsOfText.get(partsOfText.size() - 1);
 		PartOfJiraIssueText newLastPart = new PartOfJiraIssueText(lastPart.getEndPosition(), text.length(), text);
 		if (newLastPart.getDescription().isBlank()) {
-			return new ArrayList<PartOfJiraIssueText>();
+			return new ArrayList<>();
 		}
 		return splitIntoSentences(newLastPart);
 	}

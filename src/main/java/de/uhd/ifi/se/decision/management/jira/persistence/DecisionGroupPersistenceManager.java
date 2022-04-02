@@ -51,7 +51,7 @@ public class DecisionGroupPersistenceManager {
 		boolean isDeleted = false;
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("GROUP = ? AND PROJECT_KEY = ?", groupName, projectKey))) {
-			isDeleted = DecisionGroupInDatabase.deleteGroup(groupInDatabase);
+			isDeleted = DecisionGroupInDatabase.deleteGroupAssigment(groupInDatabase);
 		}
 		return isDeleted;
 	}
@@ -115,7 +115,7 @@ public class DecisionGroupPersistenceManager {
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
 						element.getDocumentationLocation().getIdentifier()))) {
-			isDeleted &= DecisionGroupInDatabase.deleteGroup(groupInDatabase);
+			isDeleted &= DecisionGroupInDatabase.deleteGroupAssigment(groupInDatabase);
 		}
 		return isDeleted;
 	}
@@ -130,18 +130,15 @@ public class DecisionGroupPersistenceManager {
 		boolean isGroupDeleted = false;
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey));
+		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
 		for (DecisionGroupInDatabase databaseEntry : groupsInDatabase) {
-			KnowledgeElement elementInDatabase = KnowledgePersistenceManager.getInstance(projectKey)
-					.getKnowledgeElement(databaseEntry.getSourceId(), databaseEntry.getSourceDocumentationLocation());
-			if (elementInDatabase != null && !databaseEntry.getGroup().isBlank()) {
-				continue;
+			KnowledgeElement elementInDatabase = persistenceManager.getKnowledgeElement(databaseEntry.getSourceId(),
+					databaseEntry.getSourceDocumentationLocation());
+			if ((elementInDatabase == null && graph.getElementById(databaseEntry.getSourceId()) == null)
+					|| databaseEntry.getGroup().isBlank()) {
+				isGroupDeleted = DecisionGroupInDatabase.deleteGroupAssigment(databaseEntry);
 			}
-			KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
-			if (graph != null && graph.getElementById(databaseEntry.getSourceId()) != null) {
-				continue;
-			}
-			isGroupDeleted = true;
-			DecisionGroupInDatabase.deleteGroup(databaseEntry);
 		}
 		return isGroupDeleted;
 	}
