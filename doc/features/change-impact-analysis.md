@@ -19,11 +19,10 @@ High impact values indicate that the element is highly affected by the change an
 The impact value of an element (`elementImpact`) is calculated using the following equation:
 
 ```
-elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore
+elementImpact = (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore
 ```
 
-where `parentImpact` is the element impact of the ancestor node in the knowledge graph, 
-`decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, `ruleBasedValue` is the normalized sum of all selected rules
+where `decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, `ruleBasedValue` is the normalized sum of all enabled rules
 
 <code>
 ruleBasedValue = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / &sum;<sup>N</sup>ruleWeight<sub>i</sub>

@@ -46,12 +46,12 @@ public class TestCalculator extends TestSetUp {
 	public void testCalculateChangeImpact() {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
+		settings.getChangeImpactAnalysisConfig().setContext(2);
 
-		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
-				impactedElements, (long) settings.getLinkDistance());
+		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
+				impactedElements, 2);
 
 		assertEquals(1.0, impactedElements.get(0).getImpactValue(), 0.05);
-		assertEquals(1.0, impactedElements.get(0).getParentImpact(), 0.05);
 		assertEquals(1.0, impactedElements.get(0).getLinkTypeWeight(), 0.05);
 		assertEquals(1.0, impactedElements.get(0).getRuleBasedValue(), 0.05);
 		assertEquals(0, impactedElements.get(0).getPropagationRules().size());
@@ -63,8 +63,9 @@ public class TestCalculator extends TestSetUp {
 		List<ChangePropagationRule> propagationRules = new LinkedList<ChangePropagationRule>();
 		propagationRules.add(new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR));
 		propagationRules.add(new ChangePropagationRule("BOOST_IF_SOLUTION_OPTION", false, 1.0f));
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 2, propagationRules);
 		config.setAreLinkRecommendationsIncludedInCalculation(true);
+		config.setContext(2);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
 		
 		// FilterSettings & LinkRecommendationConfiguration
@@ -83,10 +84,10 @@ public class TestCalculator extends TestSetUp {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
 
-		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
-				impactedElements, (long) settings.getLinkDistance());
+		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
+				impactedElements, 2);
 
-		assertTrue(impactedElements.size() > 10);
+		assertTrue(impactedElements.size() > 5);
 	}
 
 	@Test
@@ -96,7 +97,7 @@ public class TestCalculator extends TestSetUp {
 		ChangePropagationRule rule = new ChangePropagationRule(ChangePropagationRuleType.BOOST_WHEN_TEXTUAL_SIMILAR);
 		rule.setWeightValue(-1.0f);
 		propagationRules.add(rule);
-		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 1, propagationRules);
+		ChangeImpactAnalysisConfiguration config = new ChangeImpactAnalysisConfiguration(0.2f, 0.2f, (long) 2, propagationRules);
 		ConfigPersistenceManager.saveChangeImpactAnalysisConfiguration("TEST", config);
 		
 		// FilterSettings
@@ -106,10 +107,10 @@ public class TestCalculator extends TestSetUp {
 		List<KnowledgeElementWithImpact> impactedElements = new ArrayList<>();
 		impactedElements.add(rootElement);
 
-		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), 1.0, settings,
-				impactedElements, (long) settings.getLinkDistance());
+		impactedElements = Calculator.calculateChangeImpact(settings.getSelectedElement(), settings,
+				impactedElements, 2);
 
-		assertTrue(impactedElements.size() > 8);
+		assertTrue(impactedElements.size() > 5);
 	}
 
 	@After

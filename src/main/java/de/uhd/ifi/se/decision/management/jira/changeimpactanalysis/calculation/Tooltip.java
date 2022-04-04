@@ -32,7 +32,6 @@ public class Tooltip {
         // Tooltip Construction
         String tooltip = "Overall CIA Impact Factor: " + String.format("%.2f", element.getImpactValue()) +
         "\n--- --- --- --- --- --- --- --- ---" +
-        "\nParent Node Impact: " + String.format("%.2f", element.getParentImpact()) +
         "\nLink Type Weight: " + String.format("%.2f", element.getLinkTypeWeight()) +
         propagationRuleSummary +
         "\n--- --- --- --- --- --- --- --- ---" +
@@ -57,13 +56,10 @@ public class Tooltip {
 	 *  
 	 * @return String containing the impact value explanation
 	 */
-	public static String generateImpactExplanation(double parentImpact, double ruleBasedValue, double decayValue,
+	public static String generateImpactExplanation(double ruleBasedValue, double decayValue,
             double impactValue, String linkTypeName, double linkRecommendationScore) {
         String impactExplanation = "";
-        if (Math.min(parentImpact, ruleBasedValue) == parentImpact && ((1 - parentImpact) >= decayValue)) {
-            impactExplanation = "This element has a lowered chance of being affected"
-                    + " by a change introduced in the source node, mainly due to its parent having a lowered impact score.\n";
-        } else if ((1 - ruleBasedValue) >= decayValue) {
+        if ((1 - ruleBasedValue) >= decayValue) {
             impactExplanation = "This element has a lowered chance of being affected"
                     + " by a change introduced in the source node, mainly due to a used propagation rule.\n";
         } else {

@@ -16,10 +16,10 @@ a negative rule weight means that elements that are not timely coupled are more 
 
 <p>For every knowledge element that might be related to the selected element, a <var>recommendationScore</var> is calculated as follows:</p>
 
-<p><b><code>recommendationScore = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 1&#12315;ruleWeight<sub>i</sub>)) / maxAchievableScore</code></b>, </p>
+<p><b><code>recommendationScore = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / maxAchievableScore</code></b>, </p>
 
 <p>where <var>N</var> is the number of enabled context information providers,</p>
-<p><b><code>-&#12314;ruleWeight<sub>i</sub> < 1&#12315;ruleWeight<sub>i</sub></code></b> denotes that the subtraction is only done for negative rule weights to reverse the effect,</p>
+<p><b><code>-&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub></code></b> denotes that the subtraction is only done for negative rule weights to reverse the effect,</p>
 <p>and <var>maxAchievableScore</var> is the hypothetical best recommendation score to normalize the score between 0 and 1.</p>
 
 The link recommendations are sorted by their <var>recommendationScore</var>.

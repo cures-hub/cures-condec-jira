@@ -14,18 +14,16 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 public class KnowledgeElementWithImpact extends KnowledgeElement {
 
     private double impactValue;
-    private double parentImpact;
     private double linkTypeWeight;
     private double propagationRuleValue;
     private Map<String, Double> propagationRules;
     private String impactExplanation;
 
     public KnowledgeElementWithImpact(KnowledgeElement element, double impactValue,
-            double parentImpact, double linkTypeWeight, double propagationRuleValue,
+            double linkTypeWeight, double propagationRuleValue,
             Map<String, Double> propagationRule, String impactExplanation) {
         this(element);
         this.impactValue = impactValue;
-        this.parentImpact = parentImpact;
         this.linkTypeWeight = linkTypeWeight;
         this.propagationRuleValue = propagationRuleValue;
         this.propagationRules = propagationRule;
@@ -42,7 +40,6 @@ public class KnowledgeElementWithImpact extends KnowledgeElement {
         this.setKey(element.getKey());
 
         this.impactValue = 1.0;
-        this.parentImpact = 1.0;
         this.linkTypeWeight = 1.0;
         this.propagationRuleValue = 1.0;
         this.propagationRules = new HashMap<>();
@@ -80,14 +77,6 @@ public class KnowledgeElementWithImpact extends KnowledgeElement {
 
     public void setLinkTypeWeight(double linkTypeWeight) {
         this.linkTypeWeight = linkTypeWeight;
-    }
-
-    public double getParentImpact() {
-        return parentImpact;
-    }
-
-    public void setParentImpact(double parentImpact) {
-        this.parentImpact = parentImpact;
     }
 
     public Map<String, Double> getPropagationRules() {

@@ -7,14 +7,17 @@ links are being recommended, these elements are also included in the used knowle
 High impact values indicate that the element is highly affected by the change and needs to be changed as well.
 The impact value of an element (<var>elementImpact</var>) is calculated using the following equation:</p>
 
-<p><b><code>elementImpact = parentImpact * (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore</code></b>, </p>
+<p><b><code>elementImpact = (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendationScore</code></b>, </p>
 
-<p>where <var>parentImpact</var> is the element impact of the ancestor node in the knowledge graph,</p>
-<p><var>decayValue</var> is the decay per iteration step,</p>
+<p>where <var>decayValue</var> is the decay per iteration step,</p>
 <p><var>linkTypeWeight</var> is a link type specific decay value between 0 and 1 of the traversed edge between the
-parent/ancestor element and the current element,</p>
-<p><var>ruleBasedValue</var> is the normalized sum of all selected rule values, and</p>
-<p><var>recommendationScore</var> is the link recommendation score of the current element, if the element was recommended.</p>
+parent/ancestor element and the current element, and</p>
+<p><var>ruleBasedValue</var> is the normalized sum of all enabled rules:
+
+<p><b><code>ruleBasedValue = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / &sum;<sup>N</sup>ruleWeight<sub>i</sub></code></b></p>
+
+<p>, where <var>N</var> is the number of enabled rules and <b><code>-&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub></code></b> denotes that the subtraction is only done for negative rule weights to reverse the effect.</p>
+<p>In addition, <var>recommendationScore</var> is the link recommendation score of the current element, if the element was recommended.</p>
 
 <p>The element is included in the impact graph if <b><code>elementImpact >= threshold</code></b>.</p>
 
