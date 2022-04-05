@@ -69,6 +69,7 @@
             counter++;
             let tableRow;
             if (recommendation.isDiscarded) {
+                recommendation.arguments = [];  // Ignore arguments of discarded recommendations
                 tableRow = "<tr class = \"discarded\">";
             } else {
                 tableRow = "<tr>";
