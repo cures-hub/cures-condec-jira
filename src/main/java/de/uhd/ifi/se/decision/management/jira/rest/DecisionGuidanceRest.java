@@ -332,6 +332,8 @@ public class DecisionGuidanceRest {
 		}
 		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
 
+		// Optimization: If there are already as many recommendations discarded as the set maximum number, load
+		// these discarded ones directly instead of requesting all knowledge sources.
 		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
 		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
 				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
@@ -342,13 +344,8 @@ public class DecisionGuidanceRest {
 			return Response.ok(discardedRecommendations).build();
 		}
 
-		List<Recommendation> recommendations = Recommender.getAllRecommendations(projectKey,
-				selectedElementFromDatabase, filterSettings.getSearchTerm());
-
-
-		if (recommendations.size() > maxNrRecommendations) {
-			recommendations = recommendations.subList(0, maxNrRecommendations);
-		}
+		List<Recommendation> recommendations = Recommender.getTopKRecommendations(projectKey,
+				selectedElementFromDatabase, filterSettings.getSearchTerm(), maxNrRecommendations);
 
 		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
 				.isRecommendationAddedToKnowledgeGraph()) {
