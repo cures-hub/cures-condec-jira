@@ -45,7 +45,11 @@ public class TestRecommender extends TestSetUp {
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance("TEST");
 
 		int nrKnowledgeElements = manager.getKnowledgeElements().size();
+		System.out.print("Elements before adding: ");
+		System.out.println(manager.getKnowledgeElements());
 		Recommender.addToKnowledgeGraph(decisionProblem, JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
+		System.out.print("Elements after adding: ");
+		System.out.println(manager.getKnowledgeElements());
 		assertEquals(nrKnowledgeElements + 2, manager.getKnowledgeElements().size());
 	}
 
