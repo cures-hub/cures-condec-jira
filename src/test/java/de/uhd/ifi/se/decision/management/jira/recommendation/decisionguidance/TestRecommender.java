@@ -35,22 +35,18 @@ public class TestRecommender extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testAddToKnowledgeGraph() {
-		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
-		knowledgeSources.add(projectSource);
-		knowledgeSources.add(rdfSource);
-
+		KnowledgeSource source = new ProjectSource("TEST", true);
+		ElementRecommendation recommendationA = new ElementRecommendation("RecommendationA", source, "TESTURL");
+		ElementRecommendation recommendationB = new ElementRecommendation("RecommendationB", source, "TESTURL");
+		List<Recommendation> recommendations = new ArrayList<>();
+		recommendations.add(recommendationA);
+		recommendations.add(recommendationB);
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
-		assertNotNull(decisionProblem);
-		assertNotNull(decisionProblem.getJiraIssue());
-
-		List<Recommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
-				decisionProblem, "");
-		assertEquals(2, recommendations.size());
-
 		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance("TEST");
-		Recommender.addToKnowledgeGraph(decisionProblem, JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
 
-		assertTrue(manager.getKnowledgeElements().size() > 17);
+		int nrKnowledgeElements = manager.getKnowledgeElements().size();
+		Recommender.addToKnowledgeGraph(decisionProblem, JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
+		assertEquals(nrKnowledgeElements + 2, manager.getKnowledgeElements().size());
 	}
 
 	@Test
