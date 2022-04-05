@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.issue.Issue;
@@ -173,6 +175,34 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			recommendations.addAll(recommender.getRecommendations(keywords, decisionProblem));
 		}
 		return recommendations.stream().distinct().collect(Collectors.toList());
+	}
+
+	/**
+	 * Get the k highest scored recommendations for the given decision problem and optional keywords
+	 * based on the config
+	 * ({@link ConfigPersistenceManager#getDecisionGuidanceConfiguration(String)}.
+	 *
+	 * @param projectKey Key of the project in which the recommendations are given.
+	 * @param decisionProblem Issue to which the recommendations are given.
+	 * @param keywords Optional input to further specify the decision problem for better recommendations.
+	 * @param k Maximum number of recommendations to be returned
+	 * @return Max. k highest scoring recommendations (from all {@link KnowledgeSource}s activated in the
+	 *         config)
+	 */
+	public static List<Recommendation> getTopKRecommendations(String projectKey, KnowledgeElement decisionProblem,
+															  String keywords, int k) {
+		Set<Recommendation> sortedRecommendations = new TreeSet<>(getAllRecommendations(projectKey,
+				decisionProblem, keywords));
+		List <Recommendation> recommendations = new ArrayList<>();
+		int i = 0;
+		for (Recommendation recommendation : sortedRecommendations) {
+			if (i == k) {
+				break;
+			}
+			recommendations.add(recommendation);
+			++i;
+		}
+		return recommendations;
 	}
 
 	/**
