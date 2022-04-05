@@ -218,7 +218,8 @@
      */
     ConDecDecisionGuidanceAPI.prototype.undoDiscardRecommendation = function(recommendation) {
         recommendation.isDiscarded = false;
-        recommendation.arguments = [];  // Arguments of discarded recommendations are ignored as they are not stored
+        recommendation.arguments = [];  // Arguments of discarded recommendations are ignored as
+        //                                 they are not stored
         return generalApi.postJSONReturnPromise(`${this.restPrefix}` +
             `/undo-discard/${conDecAPI.projectKey}`, recommendation);
     };
