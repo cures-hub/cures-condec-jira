@@ -160,7 +160,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 
 	/**
 	 * Get all available recommendations for the given decision problem and optional keywords from the given knowledge
-	 * sources that have not been accepted yet.
+	 * sources.
 	 *
 	 * @param projectKey Key of the project in which the recommendations are given.
 	 * @param knowledgeSources Sources from which recommendations are requested.
@@ -278,10 +278,7 @@ public abstract class Recommender<T extends KnowledgeSource> {
 			ElementRecommendation elementRecommendation = (ElementRecommendation) recommendation;
 			boolean alreadyAccepted = false;
 			for (KnowledgeElement existingElement : existingElements) {
-				if (existingElement.getSummary().equals(elementRecommendation.getSummary())
-						|| existingElement.getSummary().contains(elementRecommendation.getSummary())
-						|| elementRecommendation.getSummary().contains(existingElement.getSummary())
-				   ) {
+				if (existingElement.getSummary().equals(elementRecommendation.getSummary())) {
 					alreadyAccepted = true;
 					break;
 				}
