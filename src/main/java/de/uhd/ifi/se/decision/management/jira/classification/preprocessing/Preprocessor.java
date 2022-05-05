@@ -241,27 +241,15 @@ public class Preprocessor {
 		if (sentence.strip().length() == 0) {
 			return new String[]{};
 		}
-		System.out.println("Getting chunks for...");
-		System.out.println(sentence);
 		String[] splitAtTags = {"V.*", "IN", "MD", "."};
 		String[] keepWithTags = {"N.*", "LS"};  // Some named entities are misclassified as list markers by Smile
-		System.out.println("Tokenizing");
 		String[] words = tokenize(sentence);
-		System.out.println("POS-Tagging");
-		System.out.println(words.length);
 		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
 				.map(PennTreebankPOS::toString)
 				.toArray(String[]::new);
-		for (String tag: posTags) {
-			System.out.println(tag);
-		}
 		List<String> chunks = new ArrayList<String>();
 		StringBuilder currentChunk = new StringBuilder();
 		List<String> currentTags = new ArrayList<String>();
-		System.out.println("Size words:");
-		System.out.println(words.length);
-		System.out.println("Size posTags:");
-		System.out.println(posTags.length);
 		for (int i=0; i < words.length; i++) {
 			if (matchesAnyRegEx(posTags[i], splitAtTags)){
 				if (currentChunk.length() > 0) {
@@ -296,13 +284,11 @@ public class Preprocessor {
 	 * @return Noun chunks from the given text.
 	 */
 	public String[] getNounChunksForText(String text) {
-		System.out.println("Starting chunks for Text");
 		String[] sentences = SimpleSentenceSplitter.getInstance().split(text);
 		List<String> chunks = new ArrayList<>();
 		for (String sentence : sentences) {
 			chunks.addAll(Arrays.asList(getNounChunksForSentence(sentence)));
 		}
-		System.out.println("Returning Chunks for Text");
 		return chunks.toArray(String[]::new);
 	}
 

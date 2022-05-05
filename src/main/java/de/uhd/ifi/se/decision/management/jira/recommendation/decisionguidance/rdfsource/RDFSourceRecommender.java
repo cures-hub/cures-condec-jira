@@ -64,30 +64,15 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	 * @return Search terms based on the noun chunks of the given text.
 	 */
 	public static Set<String> getSearchTerms(String input) {
-		System.out.println("Getting search terms for...");
-		System.out.println(input);
 		Preprocessor preprocessor = Preprocessor.getInstance();
-		System.out.println("Got instance of preprocessor");
 		String[] chunks = preprocessor.getNounChunksForText(input);
-		System.out.println("Retrieved chunks:");
-		for (String chunk : chunks) {
-			System.out.println(chunk);
-		}
 
 		String[] cleanedChunks = preprocessor.removeStopWordsFromTexts(chunks);
-		System.out.println("Cleaned chunks:");
-		for (String chunk : cleanedChunks) {
-			System.out.println(chunk);
-		}
 
 		List<String> searchTerms = new ArrayList<>();
 		for (String chunk: cleanedChunks) {
 			List<String> keywords = Arrays.asList(chunk.trim().split(" "));
 			searchTerms.addAll(combineKeywords(keywords));
-		}
-		System.out.println("Returning following search terms:");
-		for (String term : searchTerms) {
-			System.out.println(term);
 		}
 		return new HashSet<>(searchTerms);
 	}
@@ -129,8 +114,6 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	})
 	@Override
 	public List<ElementRecommendation> getRecommendations(String inputs) {
-		System.out.println("Getting recommendations for...");
-		System.out.println(inputs);
 		List<ElementRecommendation> recommendations = new ArrayList<>();
 		if (inputs == null) {
 			return recommendations;
@@ -142,11 +125,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		}
 
 		Set<String> searchTerms = getSearchTerms(inputs);
-		System.out.println("Obtained searchTerms ...");
-		System.out.println("Size of search Terms:");
-		System.out.println(searchTerms.size());
 		for (String combinedKeyword : searchTerms) {
-			System.out.println("Iterating over searchTerms ...");
 			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
 			String queryStringWithInput = knowledgeSource.getQuery().replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
@@ -174,7 +153,6 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 				recommendations.add(recommendation);
 			}
 		}
-		System.out.println("Normalizing Recommendation Score ...");
 		return ElementRecommendation.normalizeRecommendationScore(recommendations);
 	}
 

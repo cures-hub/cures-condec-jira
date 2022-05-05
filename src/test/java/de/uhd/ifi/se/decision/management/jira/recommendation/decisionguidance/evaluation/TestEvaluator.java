@@ -57,8 +57,6 @@ public class TestEvaluator extends TestSetUp {
 		RDFSource rdfSource = new RDFSource();
 		rdfSource.setName("DBPedia");
 		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(decisionProblem, "MySQL", 5, rdfSource);
-		System.out.println("testEvaluate...");
-		System.out.println(recommendationEvaluation.getRecommendations());
 		assertEquals("DBPedia", recommendationEvaluation.getKnowledgeSource().getName());
 		assertTrue(recommendationEvaluation.getRecommendations().size() > 30);
 	}

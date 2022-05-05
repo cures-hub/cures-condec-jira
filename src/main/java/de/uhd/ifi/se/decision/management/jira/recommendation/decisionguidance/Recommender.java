@@ -104,24 +104,15 @@ public abstract class Recommender<T extends KnowledgeSource> {
 	 * @return list of {@link ElementRecommendation}s matching the keywords.
 	 */
 	public List<ElementRecommendation> getRecommendations(String keywords, KnowledgeElement decisionProblem) {
-		System.out.println("Retrieving recommendations for keywords");
-		System.out.println(keywords);
-		System.out.println("and decision problem");
-		System.out.println(decisionProblem.getSummary());
 		List<ElementRecommendation> recommendations = new ArrayList<>(getRecommendations(decisionProblem));
-		System.out.println("Accessing discarded recommendations...");
 		List<ElementRecommendation> discardedRecommendations =
 				new ArrayList<>(DiscardedRecommendationPersistenceManager.getDiscardedDecisionGuidanceRecommendations(decisionProblem));
-		System.out.println("Get Recommendations for keywords");
 		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
-			System.out.println("Not equal");
 			recommendations.addAll(getRecommendations(keywords));
 		}
-		System.out.println("Set Targets");
 		for (ElementRecommendation recommendation: recommendations) {
 			recommendation.setTarget(decisionProblem);
 		}
-		System.out.println("Returning with discarded status recommendations...");
 		return getRecommendationsWithDiscardedStatus(recommendations.stream().distinct().collect(Collectors.toList()), discardedRecommendations);
 	}
 

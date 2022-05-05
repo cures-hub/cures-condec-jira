@@ -158,14 +158,12 @@ public class ElementRecommendation extends KnowledgeElement implements Recommend
 	 */
 	public static List<ElementRecommendation> normalizeRecommendationScore(List<ElementRecommendation> recommendations) {
 		if (!recommendations.isEmpty()) {
-			System.out.println("Is not empty");
 			float maxValue = recommendations.stream().map(Recommendation::getScore).map(RecommendationScore::getValue).max(Float::compare).get();
 
 			for (ElementRecommendation recommendation : recommendations) {
 				recommendation.getScore().normalizeTo(maxValue);
 			}
 		}
-		System.out.println("Return recommendations");
 		return recommendations;
 	}
 
