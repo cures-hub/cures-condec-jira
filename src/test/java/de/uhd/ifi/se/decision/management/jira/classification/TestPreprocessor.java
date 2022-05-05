@@ -130,8 +130,8 @@ public class TestPreprocessor extends TestSetUp {
 
 	@Test
 	public void testRemoveStopWordsFromTexts() {
-		String[] texts = {"Which system database computer system", "IBM"};
-		String[] expectedCleanedTexts = {"system database computer system", "IBM"};
+		String[] texts = {"Which database system", "IBM"};
+		String[] expectedCleanedTexts = {"database system", "IBM"};
 		assertArrayEquals(expectedCleanedTexts, Preprocessor.getInstance().removeStopWordsFromTexts(texts));
 	}
 }
