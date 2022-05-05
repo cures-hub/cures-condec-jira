@@ -1,7 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,6 +210,59 @@ public class Preprocessor {
 		for (String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES) {
 			FileManager.copyDataToFile(currentPreprocessingFileName);
 		}
+	}
+
+	/**
+	 * Check whether a given text matches any of a list of given regex patterns.
+	 * @param text Text to be matched.
+	 * @param patterns RegEx patterns.
+	 * @return true if at least one pattern matches the given text, otherwise false.
+	 */
+	private boolean matchesAnyRegEx(String text, String[] patterns) {
+		for (String patternString : patterns) {
+			Pattern pattern = Pattern.compile(patternString);
+			Matcher matcher = pattern.matcher(text);
+			if (matcher.matches()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Get noun chunks for a given sentence.
+	 *
+	 * @param sentence Sentence of which the noun chunks should be retrieved.
+	 * @return Noun chunks of the sentence.
+	 */
+	public String[] getNounChunksForSentence(String sentence) {
+		String[] splitAtTags = {"V.*", "IN"};
+		String[] keepWithTags = {"NN.*"};
+		String[] words = tokenize(sentence);
+		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
+				.map(PennTreebankPOS::toString)
+				.toArray(String[]::new);
+		List<String> chunks = new ArrayList<String>();
+		StringBuilder currentChunk = new StringBuilder();
+		List<String> currentTags = new ArrayList<String>();
+		for (int i=0; i < words.length; i++) {
+			if (matchesAnyRegEx(posTags[i], splitAtTags)){
+				if (currentChunk.length() > 0) {
+					for (String currentTag: currentTags) {
+						if (matchesAnyRegEx(currentTag, keepWithTags)) {
+							chunks.add(currentChunk.toString().strip());
+							currentChunk = new StringBuilder();
+							currentTags.clear();
+							break;
+							}
+						}
+					}
+					continue;
+				}
+				currentChunk.append(" "+words[i]);
+				currentTags.add(posTags[i]);
+			}
+		return chunks.toArray(String[]::new);
 	}
 
 	public PreTrainedGloVe getGlove() {
