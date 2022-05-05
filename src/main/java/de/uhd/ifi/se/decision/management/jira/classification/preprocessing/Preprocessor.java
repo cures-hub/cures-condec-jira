@@ -19,6 +19,7 @@ import smile.nlp.pos.POSTagger;
 import smile.nlp.pos.PennTreebankPOS;
 import smile.nlp.stemmer.LancasterStemmer;
 import smile.nlp.stemmer.Stemmer;
+import smile.nlp.tokenizer.SimpleSentenceSplitter;
 import smile.nlp.tokenizer.SimpleTokenizer;
 import smile.nlp.tokenizer.Tokenizer;
 
@@ -268,6 +269,21 @@ public class Preprocessor {
 					chunks.add(currentChunk.toString().strip());
 				}
 			}
+		}
+		return chunks.toArray(String[]::new);
+	}
+
+	/**
+	 * Get noun chunks for a given text, i.e. one or more sentences.
+	 *
+	 * @param text Text of which the noun chunks should be obtained.
+	 * @return Noun chunks from the given text.
+	 */
+	public String[] getNounChunksForText(String text) {
+		String[] sentences = SimpleSentenceSplitter.getInstance().split(text);
+		List<String> chunks = new ArrayList<>();
+		for (String sentence : sentences) {
+			chunks.addAll(Arrays.asList(getNounChunksForSentence(sentence)));
 		}
 		return chunks.toArray(String[]::new);
 	}
