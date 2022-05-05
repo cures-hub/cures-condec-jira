@@ -245,6 +245,7 @@ public class Preprocessor {
 		System.out.println("Tokenizing");
 		String[] words = tokenize(sentence);
 		System.out.println("POS-Tagging");
+		System.out.println(words.length);
 		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
 				.map(PennTreebankPOS::toString)
 				.toArray(String[]::new);
