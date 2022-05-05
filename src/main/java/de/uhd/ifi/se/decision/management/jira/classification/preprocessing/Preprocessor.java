@@ -297,13 +297,14 @@ public class Preprocessor {
 	 * @return Texts without stop words
 	 */
 	public String[] removeStopWordsFromTexts(String[] texts) {
+		List<String> whiteList = new ArrayList<>(Arrays.asList("system"));
 		List<String> cleanedTexts = new ArrayList<>();
 		for (String text: texts) {
 			String[] sentences = SimpleSentenceSplitter.getInstance().split(text);
 			Tokenizer tokenizer = new SimpleTokenizer(true);
 			Optional<String> cleanedText = Arrays.stream(sentences).flatMap(s -> Arrays.stream(tokenizer.split(s)))
-					.filter(w -> !(EnglishStopWords.DEFAULT.contains(
-							w.toLowerCase()) || EnglishPunctuations.getInstance().contains(w)))
+					.filter(w -> !(!whiteList.contains(w.toLowerCase()) && (EnglishStopWords.DEFAULT.contains(
+							w.toLowerCase()) || EnglishPunctuations.getInstance().contains(w))))
 					.reduce((a, b) -> a+" "+b);
 			if (cleanedText.isPresent() && cleanedText.get().strip().length() > 0) {
 				cleanedTexts.add(cleanedText.get().strip());
