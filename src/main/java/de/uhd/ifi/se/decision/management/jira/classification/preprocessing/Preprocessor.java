@@ -238,12 +238,17 @@ public class Preprocessor {
 	 * @return Noun chunks of the sentence.
 	 */
 	public String[] getNounChunksForSentence(String sentence) {
+		System.out.println("Getting chunks for...");
+		System.out.println(sentence);
 		String[] splitAtTags = {"V.*", "IN", "MD", "."};
 		String[] keepWithTags = {"N.*"};
 		String[] words = tokenize(sentence);
 		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
 				.map(PennTreebankPOS::toString)
 				.toArray(String[]::new);
+		for (String tag: posTags) {
+			System.out.println(tag);
+		}
 		List<String> chunks = new ArrayList<String>();
 		StringBuilder currentChunk = new StringBuilder();
 		List<String> currentTags = new ArrayList<String>();
