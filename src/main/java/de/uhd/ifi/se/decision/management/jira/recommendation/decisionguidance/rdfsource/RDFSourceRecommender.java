@@ -69,17 +69,25 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		Preprocessor preprocessor = Preprocessor.getInstance();
 		String[] chunks = preprocessor.getNounChunksForText(input);
 		System.out.println("Retrieved chunks:");
-		System.out.println(chunks);
+		for (String chunk : chunks) {
+			System.out.println(chunk);
+		}
+
 		String[] cleanedChunks = preprocessor.removeStopWordsFromTexts(chunks);
 		System.out.println("Cleaned chunks:");
-		System.out.println(cleanedChunks);
+		for (String chunk : cleanedChunks) {
+			System.out.println(chunk);
+		}
+
 		List<String> searchTerms = new ArrayList<>();
 		for (String chunk: cleanedChunks) {
 			List<String> keywords = Arrays.asList(chunk.trim().split(" "));
 			searchTerms.addAll(combineKeywords(keywords));
 		}
 		System.out.println("Returning following search terms:");
-		System.out.println(searchTerms);
+		for (String term : searchTerms) {
+			System.out.println(term);
+		}
 		return new HashSet<>(searchTerms);
 	}
 
