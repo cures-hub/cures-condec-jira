@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -286,6 +287,29 @@ public class Preprocessor {
 			chunks.addAll(Arrays.asList(getNounChunksForSentence(sentence)));
 		}
 		return chunks.toArray(String[]::new);
+	}
+
+	/**
+	 * From an array of texts remove all stop words, strip white spaces and delete all entries that
+	 * are empty after this removal, i.e. only contained stop words.
+	 *
+	 * @param texts Texts of which the stop words should be removed
+	 * @return Texts without stop words
+	 */
+	public String[] removeStopWordsFromTexts(String[] texts) {
+		List<String> cleanedTexts = new ArrayList<>();
+		for (String text: texts) {
+			String[] sentences = SimpleSentenceSplitter.getInstance().split(text);
+			Tokenizer tokenizer = new SimpleTokenizer(true);
+			Optional<String> cleanedText = Arrays.stream(sentences).flatMap(s -> Arrays.stream(tokenizer.split(s)))
+					.filter(w -> !(EnglishStopWords.DEFAULT.contains(
+							w.toLowerCase()) || EnglishPunctuations.getInstance().contains(w)))
+					.reduce((a, b) -> a+" "+b);
+			if (cleanedText.isPresent() && cleanedText.get().strip().length() > 0) {
+				cleanedTexts.add(cleanedText.get().strip());
+			}
+		}
+		return cleanedTexts.toArray(String[]::new);
 	}
 
 	public PreTrainedGloVe getGlove() {
