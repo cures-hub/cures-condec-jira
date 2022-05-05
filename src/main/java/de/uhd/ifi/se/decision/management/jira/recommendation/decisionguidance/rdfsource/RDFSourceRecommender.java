@@ -128,6 +128,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 	})
 	@Override
 	public List<ElementRecommendation> getRecommendations(String inputs) {
+		System.out.println("Getting recommendations for...");
+		System.out.println(inputs);
 		List<ElementRecommendation> recommendations = new ArrayList<>();
 		if (inputs == null) {
 			return recommendations;
@@ -139,9 +141,9 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		}
 
 		Set<String> searchTerms = getSearchTerms(inputs);
-
+		System.out.println("Obtained searchTerms ...");
 		for (String combinedKeyword : searchTerms) {
-
+			System.out.println("Iterating over searchTerms ...");
 			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
 			String queryStringWithInput = knowledgeSource.getQuery().replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());
@@ -169,6 +171,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 				recommendations.add(recommendation);
 			}
 		}
+		System.out.println("Normalizing Recommendation Score ...");
 		return ElementRecommendation.normalizeRecommendationScore(recommendations);
 	}
 
