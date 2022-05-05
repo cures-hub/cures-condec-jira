@@ -67,6 +67,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		System.out.println("Getting search terms for...");
 		System.out.println(input);
 		Preprocessor preprocessor = Preprocessor.getInstance();
+		System.out.println("Got instance of preprocessor");
 		String[] chunks = preprocessor.getNounChunksForText(input);
 		System.out.println("Retrieved chunks:");
 		for (String chunk : chunks) {
