@@ -238,6 +238,9 @@ public class Preprocessor {
 	 * @return Noun chunks of the sentence.
 	 */
 	public String[] getNounChunksForSentence(String sentence) {
+		if (sentence.strip().length() == 0) {
+			return new String[]{};
+		}
 		System.out.println("Getting chunks for...");
 		System.out.println(sentence);
 		String[] splitAtTags = {"V.*", "IN", "MD", "."};
