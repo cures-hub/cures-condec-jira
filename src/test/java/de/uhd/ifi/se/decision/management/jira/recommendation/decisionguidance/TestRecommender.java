@@ -35,6 +35,7 @@ public class TestRecommender extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testAddToKnowledgeGraph() {
+		System.out.println("START ADD TO KNOWLEDGE GRAPH");
 		List<KnowledgeSource> knowledgeSources = new ArrayList<>();
 		knowledgeSources.add(projectSource);
 		knowledgeSources.add(rdfSource);
@@ -42,7 +43,7 @@ public class TestRecommender extends TestSetUp {
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 		assertNotNull(decisionProblem);
 		assertNotNull(decisionProblem.getJiraIssue());
-
+		System.out.println("CRITICAL PART...");
 		List<Recommendation> recommendations = Recommender.getAllRecommendations("TEST", knowledgeSources,
 				decisionProblem, "");
 		assertEquals(2, recommendations.size());
@@ -51,6 +52,7 @@ public class TestRecommender extends TestSetUp {
 		Recommender.addToKnowledgeGraph(decisionProblem, JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
 
 		assertTrue(manager.getKnowledgeElements().size() > 17);
+		System.out.println("FINISH ADD TO KNOWLEDGE GRAPH");
 	}
 
 	@Test
