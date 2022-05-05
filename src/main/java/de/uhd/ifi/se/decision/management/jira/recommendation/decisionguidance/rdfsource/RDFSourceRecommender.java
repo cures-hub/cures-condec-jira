@@ -142,6 +142,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 
 		Set<String> searchTerms = getSearchTerms(inputs);
 		System.out.println("Obtained searchTerms ...");
+		System.out.println("Size of search Terms:");
+		System.out.println(searchTerms.size());
 		for (String combinedKeyword : searchTerms) {
 			System.out.println("Iterating over searchTerms ...");
 			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
