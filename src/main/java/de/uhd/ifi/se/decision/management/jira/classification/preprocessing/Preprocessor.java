@@ -236,8 +236,8 @@ public class Preprocessor {
 	 * @return Noun chunks of the sentence.
 	 */
 	public String[] getNounChunksForSentence(String sentence) {
-		String[] splitAtTags = {"V.*", "IN"};
-		String[] keepWithTags = {"NN.*"};
+		String[] splitAtTags = {"V.*", "IN", "MD"};
+		String[] keepWithTags = {"N.*"};
 		String[] words = tokenize(sentence);
 		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
 				.map(PennTreebankPOS::toString)
@@ -257,14 +257,21 @@ public class Preprocessor {
 							currentChunk = new StringBuilder();
 							currentTags.clear();
 							break;
-							}
 						}
 					}
-					continue;
 				}
-				currentChunk.append(" "+words[i]);
-				currentTags.add(posTags[i]);
+				continue;
 			}
+			currentChunk.append(" "+words[i]);
+			currentTags.add(posTags[i]);
+		}
+		if (currentChunk.length() > 0) {
+			for (String currentTag: currentTags) {
+				if (matchesAnyRegEx(currentTag, keepWithTags)) {
+					chunks.add(currentChunk.toString().strip());
+				}
+			}
+		}
 		return chunks.toArray(String[]::new);
 	}
 
