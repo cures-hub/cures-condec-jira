@@ -242,9 +242,6 @@ public class Preprocessor {
 		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
 				.map(PennTreebankPOS::toString)
 				.toArray(String[]::new);
-		for (String tag: posTags) {
-			System.out.println(tag);
-		}
 		List<String> chunks = new ArrayList<String>();
 		StringBuilder currentChunk = new StringBuilder();
 		List<String> currentTags = new ArrayList<String>();

@@ -110,10 +110,6 @@ public class TestPreprocessor extends TestSetUp {
 		String sentence = "Which database system should we use for the backend?";
 		String[] chunks = preprocessor.getNounChunksForSentence(sentence);
 		String[] expectedChunks = {"Which database system", "the backend"};
-
-		for (String chunk : chunks) {
-			System.out.println(chunk);
-		}
 		assertArrayEquals(expectedChunks, chunks);
 	}
 
