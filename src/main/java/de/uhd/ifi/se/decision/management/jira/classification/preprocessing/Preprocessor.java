@@ -241,7 +241,7 @@ public class Preprocessor {
 		System.out.println("Getting chunks for...");
 		System.out.println(sentence);
 		String[] splitAtTags = {"V.*", "IN", "MD", "."};
-		String[] keepWithTags = {"N.*"};
+		String[] keepWithTags = {"N.*", "LS"};  // Some named entities are misclassified as list markers by Smile
 		String[] words = tokenize(sentence);
 		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
 				.map(PennTreebankPOS::toString)
