@@ -112,10 +112,12 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		System.out.println("Accessing discarded recommendations...");
 		List<ElementRecommendation> discardedRecommendations =
 				new ArrayList<>(DiscardedRecommendationPersistenceManager.getDiscardedDecisionGuidanceRecommendations(decisionProblem));
-
+		System.out.println("Get Recommendations for keywords");
 		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
+			System.out.println("Not equal");
 			recommendations.addAll(getRecommendations(keywords));
 		}
+		System.out.println("Set Targets");
 		for (ElementRecommendation recommendation: recommendations) {
 			recommendation.setTarget(decisionProblem);
 		}
