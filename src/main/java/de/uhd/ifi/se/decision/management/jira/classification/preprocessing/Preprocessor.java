@@ -254,11 +254,11 @@ public class Preprocessor {
 					for (String currentTag: currentTags) {
 						if (matchesAnyRegEx(currentTag, keepWithTags)) {
 							chunks.add(currentChunk.toString().strip());
-							currentChunk = new StringBuilder();
-							currentTags.clear();
 							break;
 						}
 					}
+					currentChunk = new StringBuilder();
+					currentTags.clear();
 				}
 				continue;
 			}
