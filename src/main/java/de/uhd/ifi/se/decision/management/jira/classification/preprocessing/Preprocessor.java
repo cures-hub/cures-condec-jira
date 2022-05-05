@@ -236,7 +236,7 @@ public class Preprocessor {
 	 * @return Noun chunks of the sentence.
 	 */
 	public String[] getNounChunksForSentence(String sentence) {
-		String[] splitAtTags = {"V.*", "IN", "MD"};
+		String[] splitAtTags = {"V.*", "IN", "MD", "."};
 		String[] keepWithTags = {"N.*"};
 		String[] words = tokenize(sentence);
 		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
