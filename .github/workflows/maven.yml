@@ -2,7 +2,7 @@ name: Continuous integration
 on: [push]
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 17
@@ -14,7 +14,7 @@ jobs:
     - name: Install Atlassian SDK
       uses: rodrigo-nogues/github-action-install-atlassian-sdk@v1
     - name: Cache local Maven repository
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
