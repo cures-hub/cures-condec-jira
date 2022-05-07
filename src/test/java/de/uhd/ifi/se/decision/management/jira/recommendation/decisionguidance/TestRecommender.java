@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.model.Argument;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
@@ -37,6 +38,7 @@ public class TestRecommender extends TestSetUp {
 		KnowledgeSource source = new ProjectSource("TEST", true);
 		ElementRecommendation recommendationA = new ElementRecommendation("RecommendationA", source, "TESTURL");
 		ElementRecommendation recommendationB = new ElementRecommendation("RecommendationB", source, "TESTURL");
+		recommendationB.addArgument(new Argument(KnowledgeElements.getProArgument()));
 		List<Recommendation> recommendations = new ArrayList<>();
 		recommendations.add(recommendationA);
 		recommendations.add(recommendationB);
