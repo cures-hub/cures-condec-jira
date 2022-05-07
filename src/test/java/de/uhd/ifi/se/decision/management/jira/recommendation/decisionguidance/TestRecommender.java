@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,28 +12,23 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.recommendation.Recommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.projectsource.ProjectSource;
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraProjects;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
-import static org.junit.Assert.*;
-
 public class TestRecommender extends TestSetUp {
 
 	private ProjectSource projectSource;
-	private RDFSource rdfSource;
 
 	@Before
 	public void setUp() {
 		init();
 		// search for solutions in the same project
 		projectSource = new ProjectSource(JiraProjects.getTestProject().getKey(), true);
-		rdfSource = new RDFSource();
 	}
 
 	@Test
@@ -42,15 +41,10 @@ public class TestRecommender extends TestSetUp {
 		recommendations.add(recommendationA);
 		recommendations.add(recommendationB);
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
-		KnowledgePersistenceManager manager = KnowledgePersistenceManager.getInstance("TEST");
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
 
-		int nrKnowledgeElements = manager.getKnowledgeElements().size();
-		System.out.print("Elements before adding: ");
-		System.out.println(manager.getKnowledgeElements());
 		Recommender.addToKnowledgeGraph(decisionProblem, JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
-		System.out.print("Elements after adding: ");
-		System.out.println(manager.getKnowledgeElements());
-		assertEquals(nrKnowledgeElements + 2, manager.getKnowledgeElements().size());
+		assertTrue(graph.vertexSet().size() > 10);
 	}
 
 	@Test
