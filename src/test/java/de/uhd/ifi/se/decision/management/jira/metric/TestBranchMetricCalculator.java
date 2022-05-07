@@ -31,16 +31,6 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	public void testGitConnectionDisabled() {
-		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
-		config.setActivated(false);
-		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
-		BranchMetricCalculator branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
-		assertNull(branchMetricsCalculator.getBranchesForProject());
-	}
-
-	@Test
-	@NonTransactional
 	public void testBranchStatusMap() {
 		assertEquals(3, branchMetricsCalculator.getBranchStatusMap().size());
 	}
@@ -67,4 +57,13 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 		assertEquals(1, branchMetricsCalculator.getNumberOfConsMap().size());
 	}
 
+	@Test
+	@NonTransactional
+	public void testGitConnectionDisabled() {
+		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
+		config.setActivated(false);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
+		BranchMetricCalculator branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
+		assertNull(branchMetricsCalculator.getBranchesForProject());
+	}
 }
