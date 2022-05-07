@@ -302,14 +302,14 @@ public abstract class Recommender<T extends KnowledgeSource> {
 
 		List<Recommendation> notAcceptedRecommendations = new ArrayList<>();
 		for (ElementRecommendation recommendation : recommendations) {
-			boolean alreadyAccepted = false;
+			boolean isRecommendationAlreadyAccepted = false;
 			for (KnowledgeElement existingElement : existingElements) {
-				if (existingElement.getSummary().equals(recommendation.getSummary())) {
-					alreadyAccepted = true;
+				if (existingElement.getSummary().equalsIgnoreCase(recommendation.getSummary())) {
+					isRecommendationAlreadyAccepted = true;
 					break;
 				}
 			}
-			if (!alreadyAccepted) {
+			if (!isRecommendationAlreadyAccepted) {
 				notAcceptedRecommendations.add(recommendation);
 			}
 		}
