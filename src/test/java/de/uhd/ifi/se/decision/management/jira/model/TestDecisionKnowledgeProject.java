@@ -25,7 +25,7 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	@Before
 	public void setUp() {
 		init();
-		this.project = new DecisionKnowledgeProject(JiraProjects.getTestProject());
+		project = new DecisionKnowledgeProject(JiraProjects.getTestProject());
 	}
 
 	@Test
