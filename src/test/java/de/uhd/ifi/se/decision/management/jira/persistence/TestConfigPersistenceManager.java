@@ -5,10 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.releasenotes.ReleaseNotesConfiguration;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 
@@ -35,7 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Before
-	public void setUpBeforeClass() {
+	public void setUp() {
 		init();
 	}
 
@@ -128,9 +129,14 @@ public class TestConfigPersistenceManager extends TestSetUp {
 		assertFalse(webhookConfig.isActivated());
 	}
 
-	@After
-	public void tearDown() {
-		// reset plugin settings to default settings
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
+	@Test
+	public void testGetAndSaveLinkRecommendationConfiguration() {
+		LinkRecommendationConfiguration linkRecommendationConfig = ConfigPersistenceManager
+				.getLinkRecommendationConfiguration("TEST");
+		assertEquals(9, linkRecommendationConfig.getContextInformationProviders().size());
+		linkRecommendationConfig.setContextInformationProviders(new ArrayList<>());
+		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", linkRecommendationConfig);
+		linkRecommendationConfig = ConfigPersistenceManager.getLinkRecommendationConfiguration("TEST");
+		assertEquals(0, linkRecommendationConfig.getContextInformationProviders().size());
 	}
 }

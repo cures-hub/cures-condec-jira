@@ -15,7 +15,6 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
-import org.junit.After;
 import org.junit.Before;
 
 import com.atlassian.jira.issue.Issue;
@@ -25,8 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 
@@ -65,7 +62,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	public static void mockGitRepository() {
 		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
-				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()) {
+				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()
+				&& !gitClient.getGitClientsForSingleRepo(GIT_URI).getRefs().isEmpty()) {
 			// git client already exists
 			return;
 		}
@@ -288,10 +286,5 @@ public abstract class TestSetUpGit extends TestSetUp {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@After
-	public void tidyUp() {
-		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 }
