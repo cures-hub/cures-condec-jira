@@ -7,12 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.recommendation.DiscardedRecommendationPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
@@ -26,9 +24,9 @@ public class TestContextInformation extends TestSetUp {
 
 	@Before
 	public void setUp() {
+		init();
 		linkRecommendationConfiguration = new LinkRecommendationConfiguration();
 		linkRecommendationConfiguration.setMinProbability(0.3);
-		init();
 	}
 
 	@Test
@@ -101,11 +99,5 @@ public class TestContextInformation extends TestSetUp {
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		assertNotNull(contextInformation.getDescription());
-	}
-
-	@After
-	public void tearDown() {
-		// reset plugin settings to default settings
-		ConfigPersistenceManager.saveLinkRecommendationConfiguration("TEST", new LinkRecommendationConfiguration());
 	}
 }
