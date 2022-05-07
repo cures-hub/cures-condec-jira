@@ -16,9 +16,9 @@ jobs:
     - name: Cache local Maven repository
       uses: actions/cache@v3
       with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-maven
     - name: Build with Atlassian SDK
       run: atlas-mvn package -P jacoco -q -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
     - name: Report test coverage via Codecov
