@@ -223,7 +223,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>4.4.0</version>
+			<version>4.5.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -445,7 +445,7 @@
         <amps.version>8.3.0-128eead6d</amps.version>
         <ao.version>4.0.0-m02</ao.version>
         <jacoco-version>0.8.8</jacoco-version>
-        <atlassian.spring.scanner.version>3.0.0</atlassian.spring.scanner.version>
+        <atlassian.spring.scanner.version>3.0.1</atlassian.spring.scanner.version>
         <!-- This key is also used in atlassian-plugin.xml -->
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
