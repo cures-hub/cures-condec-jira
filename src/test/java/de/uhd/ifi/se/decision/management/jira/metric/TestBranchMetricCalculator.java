@@ -22,10 +22,10 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 	public void setUp() {
 		super.setUp();
 		CodeFiles.addCodeFilesToKnowledgeGraph();
-		filterSettings = new FilterSettings("TEST", "");
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
+		filterSettings = new FilterSettings("TEST", "");
 		branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
 	}
 
@@ -35,7 +35,7 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(false);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
-		branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
+		BranchMetricCalculator branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
 		assertNull(branchMetricsCalculator.getBranchesForProject());
 	}
 

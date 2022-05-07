@@ -59,7 +59,6 @@ public class TestContextInformation extends TestSetUp {
 
 	@Test
 	public void testFilterLinkRecommendationsByScore() {
-		linkRecommendationConfiguration.setMinProbability(0.5);
 		ContextInformation contextInformation = new ContextInformation(KnowledgeElements.getDecision(),
 				linkRecommendationConfiguration);
 		List<LinkRecommendation> linkRecommendations = contextInformation.getLinkRecommendations();
