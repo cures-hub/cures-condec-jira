@@ -28,7 +28,7 @@ public class MockPluginSettings implements PluginSettings {
 	 */
 	public static Map<String, Object> getDefaultSettings() {
 		// String subfix = ComponentGetter.PLUGIN_KEY + ".";
-		Map<String, Object> settings = new HashMap<String, Object>();
+		Map<String, Object> settings = new HashMap<>();
 		return settings;
 	}
 

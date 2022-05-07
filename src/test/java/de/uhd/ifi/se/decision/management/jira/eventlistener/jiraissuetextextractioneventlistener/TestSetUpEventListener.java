@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener.jiraissuetextextrac
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 
 import com.atlassian.event.api.EventPublisher;
@@ -20,6 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 
 public abstract class TestSetUpEventListener extends TestSetUp {
@@ -34,7 +34,7 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 		init();
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new ConDecEventListener(publisher);
-		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
+		jiraIssue = (MutableIssue) JiraIssues.getTestJiraIssues().get(3);
 		user = JiraUsers.SYS_ADMIN.getApplicationUser();
 	}
 
@@ -70,10 +70,5 @@ public abstract class TestSetUpEventListener extends TestSetUp {
 			return elements.get(0);
 		}
 		return null;
-	}
-
-	@After
-	public void tearDown() {
-		jiraIssue.setDescription("");
 	}
 }
