@@ -26,4 +26,9 @@ public class TestInterfaceAndAbstractClassAdapter {
 		interfaceAndAbstractClassAdapter.deserialize(new JsonObject(), getClass(), null);
 	}
 
+	@Test(expected = Exception.class)
+	public void testSerializeNotWorking() {
+		interfaceAndAbstractClassAdapter.serialize(new JsonObject(), getClass(), null);
+	}
+
 }
