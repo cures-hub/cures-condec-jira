@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
@@ -21,7 +20,8 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		super.setUp();
+		init();
+		super.mockGitRepository();
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
@@ -45,12 +45,14 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 	@Test
 	@NonTransactional
 	public void testJiraIssueMap() {
+		super.mockGitRepository();
 		assertEquals(1, branchMetricsCalculator.getJiraIssueMap().size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testNumberOfElementsOfTypeMap() {
+		super.mockGitRepository();
 		assertEquals(2, branchMetricsCalculator.getNumberOfIssuesMap().size());
 		assertEquals(2, branchMetricsCalculator.getNumberOfDecisionsMap().size());
 		assertEquals(2, branchMetricsCalculator.getNumberOfAlternativesMap().size());
@@ -60,7 +62,6 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testGitConnectionDisabled() {
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(false);
