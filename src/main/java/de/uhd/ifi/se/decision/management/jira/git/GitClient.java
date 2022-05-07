@@ -46,7 +46,7 @@ public class GitClient {
 	 * Instances of {@link GitClient}s that are identified by the project key (uses
 	 * the multiton pattern).
 	 */
-	public static Map<String, GitClient> instances = new HashMap<String, GitClient>();
+	public static Map<String, GitClient> instances = new HashMap<>();
 
 	/**
 	 * Retrieves an existing {@link GitClient} instance or creates a new instance if
