@@ -34,7 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConfiguration;
 public class TestConfigPersistenceManager extends TestSetUp {
 
 	@Before
-	public void setUpBeforeClass() {
+	public void setUp() {
 		init();
 	}
 
