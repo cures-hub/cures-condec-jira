@@ -20,7 +20,6 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 
 	@Before
 	public void setUp() {
-		TestSetUpGit.gitClient = null;
 		super.setUp();
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(true);
