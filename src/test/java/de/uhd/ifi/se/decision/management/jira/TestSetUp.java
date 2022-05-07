@@ -11,6 +11,8 @@ import com.atlassian.jira.component.ComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.classification.TextClassifier;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDatabase;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettings;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssueLinks;
@@ -86,6 +88,9 @@ public abstract class TestSetUp {
 		JiraIssues.jiraIssues.clear();
 		JiraIssueLinks.jiraIssueLinks.clear();
 		KnowledgeGraph.instances.clear();
+
+		// reset plugin settings to default settings
+		MockPluginSettingsFactory.pluginSettings = new MockPluginSettings();
 	}
 
 	/**
