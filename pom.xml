@@ -444,7 +444,7 @@
         <jira.version>8.21.0</jira.version>
         <amps.version>8.3.0-128eead6d</amps.version>
         <ao.version>4.0.3</ao.version>
-        <jacoco-version>0.8.7</jacoco-version>
+        <jacoco-version>0.8.8</jacoco-version>
         <atlassian.spring.scanner.version>3.0.0</atlassian.spring.scanner.version>
         <!-- This key is also used in atlassian-plugin.xml -->
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>

@@ -101,7 +101,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		if (issueEvent == null) {
 			return;
 		}
-		this.issueEventListeners.forEach(issueEventListener -> issueEventListener.onIssueEvent(issueEvent));
+		issueEventListeners.forEach(issueEventListener -> issueEventListener.onIssueEvent(issueEvent));
 	}
 
 	@EventListener
