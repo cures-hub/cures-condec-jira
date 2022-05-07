@@ -59,6 +59,7 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testGitConnectionDisabled() {
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(false);
