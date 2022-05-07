@@ -62,7 +62,8 @@ public abstract class TestSetUpGit extends TestSetUp {
 
 	public static void mockGitRepository() {
 		if (gitClient != null && gitClient.getGitClientsForSingleRepo(GIT_URI) != null
-				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()) {
+				&& gitClient.getGitClientsForSingleRepo(GIT_URI).getGitDirectory().exists()
+				&& !gitClient.getGitClientsForSingleRepo(GIT_URI).getRefs().isEmpty()) {
 			// git client already exists
 			return;
 		}

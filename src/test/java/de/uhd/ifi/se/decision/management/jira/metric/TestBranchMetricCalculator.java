@@ -21,10 +21,10 @@ public class TestBranchMetricCalculator extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		CodeFiles.addCodeFilesToKnowledgeGraph();
 		GitConfiguration config = ConfigPersistenceManager.getGitConfiguration("TEST");
 		config.setActivated(true);
 		ConfigPersistenceManager.saveGitConfiguration("TEST", config);
+		CodeFiles.addCodeFilesToKnowledgeGraph();
 		filterSettings = new FilterSettings("TEST", "");
 		branchMetricsCalculator = new BranchMetricCalculator(filterSettings);
 	}
