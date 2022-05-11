@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-import java.util.List;
+import java.util.*;
 
 public class TestRDFSourceRecommender extends TestSetUp {
 
@@ -68,5 +68,13 @@ public class TestRDFSourceRecommender extends TestSetUp {
 		RDFSourceRecommender recommender = new RDFSourceRecommender("TEST", rdfSource);
 		List<ElementRecommendation> recommendations = recommender.getRecommendations("get_dummy_decision_guidance_recommendations");
 		assertEquals(10, recommendations.size());
+	}
+
+	@Test
+	public void testGetSearchTerms() {
+		String inputs = "Which database system should we use? Should we use something from IBM?";
+		Set<String> searchTerms = RDFSourceRecommender.getSearchTerms(inputs);
+		Set<String> expectedSearchTerms = new HashSet<>(Arrays.asList("database", "system", "database_system", "IBM"));
+		assertEquals(expectedSearchTerms, searchTerms);
 	}
 }

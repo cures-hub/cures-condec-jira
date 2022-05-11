@@ -1,7 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.classification.preprocessing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +20,7 @@ import smile.nlp.pos.POSTagger;
 import smile.nlp.pos.PennTreebankPOS;
 import smile.nlp.stemmer.LancasterStemmer;
 import smile.nlp.stemmer.Stemmer;
+import smile.nlp.tokenizer.SimpleSentenceSplitter;
 import smile.nlp.tokenizer.SimpleTokenizer;
 import smile.nlp.tokenizer.Tokenizer;
 
@@ -207,6 +212,108 @@ public class Preprocessor {
 		for (String currentPreprocessingFileName : PREPROCESSOR_FILE_NAMES) {
 			FileManager.copyDataToFile(currentPreprocessingFileName);
 		}
+	}
+
+	/**
+	 * Check whether a given text matches any of a list of given regex patterns.
+	 * @param text Text to be matched.
+	 * @param patterns RegEx patterns.
+	 * @return true if at least one pattern matches the given text, otherwise false.
+	 */
+	private boolean matchesAnyRegEx(String text, String[] patterns) {
+		for (String patternString : patterns) {
+			Pattern pattern = Pattern.compile(patternString);
+			Matcher matcher = pattern.matcher(text);
+			if (matcher.matches()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Get noun chunks for a given sentence.
+	 *
+	 * @param sentence Sentence of which the noun chunks should be retrieved.
+	 * @return Noun chunks of the sentence.
+	 */
+	public String[] getNounChunksForSentence(String sentence) {
+		if (sentence.strip().length() == 0) {
+			return new String[]{};
+		}
+		String[] splitAtTags = {"V.*", "IN", "MD", "."};
+		String[] keepWithTags = {"N.*", "LS"};  // Some named entities are misclassified as list markers by Smile
+		String[] words = tokenize(sentence);
+		String[] posTags = Arrays.stream(calculatePosTags(Arrays.asList(words)))
+				.map(PennTreebankPOS::toString)
+				.toArray(String[]::new);
+		List<String> chunks = new ArrayList<String>();
+		StringBuilder currentChunk = new StringBuilder();
+		List<String> currentTags = new ArrayList<String>();
+		for (int i=0; i < words.length; i++) {
+			if (matchesAnyRegEx(posTags[i], splitAtTags)){
+				if (currentChunk.length() > 0) {
+					for (String currentTag: currentTags) {
+						if (matchesAnyRegEx(currentTag, keepWithTags)) {
+							chunks.add(currentChunk.toString().strip());
+							break;
+						}
+					}
+					currentChunk = new StringBuilder();
+					currentTags.clear();
+				}
+				continue;
+			}
+			currentChunk.append(" "+words[i]);
+			currentTags.add(posTags[i]);
+		}
+		if (currentChunk.length() > 0) {
+			for (String currentTag: currentTags) {
+				if (matchesAnyRegEx(currentTag, keepWithTags)) {
+					chunks.add(currentChunk.toString().strip());
+				}
+			}
+		}
+		return chunks.toArray(String[]::new);
+	}
+
+	/**
+	 * Get noun chunks for a given text, i.e. one or more sentences.
+	 *
+	 * @param text Text of which the noun chunks should be obtained.
+	 * @return Noun chunks from the given text.
+	 */
+	public String[] getNounChunksForText(String text) {
+		String[] sentences = SimpleSentenceSplitter.getInstance().split(text);
+		List<String> chunks = new ArrayList<>();
+		for (String sentence : sentences) {
+			chunks.addAll(Arrays.asList(getNounChunksForSentence(sentence)));
+		}
+		return chunks.toArray(String[]::new);
+	}
+
+	/**
+	 * From an array of texts remove all stop words, strip white spaces and delete all entries that
+	 * are empty after this removal, i.e. only contained stop words.
+	 *
+	 * @param texts Texts of which the stop words should be removed
+	 * @return Texts without stop words
+	 */
+	public String[] removeStopWordsFromTexts(String[] texts) {
+		List<String> whiteList = new ArrayList<>(Arrays.asList("system"));
+		List<String> cleanedTexts = new ArrayList<>();
+		for (String text: texts) {
+			String[] sentences = SimpleSentenceSplitter.getInstance().split(text);
+			Tokenizer tokenizer = new SimpleTokenizer(true);
+			Optional<String> cleanedText = Arrays.stream(sentences).flatMap(s -> Arrays.stream(tokenizer.split(s)))
+					.filter(w -> !(!whiteList.contains(w.toLowerCase()) && (EnglishStopWords.DEFAULT.contains(
+							w.toLowerCase()) || EnglishPunctuations.getInstance().contains(w))))
+					.reduce((a, b) -> a+" "+b);
+			if (cleanedText.isPresent() && cleanedText.get().strip().length() > 0) {
+				cleanedTexts.add(cleanedText.get().strip());
+			}
+		}
+		return cleanedTexts.toArray(String[]::new);
 	}
 
 	public PreTrainedGloVe getGlove() {

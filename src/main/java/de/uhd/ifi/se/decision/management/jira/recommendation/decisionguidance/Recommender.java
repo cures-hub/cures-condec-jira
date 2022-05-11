@@ -110,7 +110,6 @@ public abstract class Recommender<T extends KnowledgeSource> {
 		List<ElementRecommendation> recommendations = new ArrayList<>(getRecommendations(decisionProblem));
 		List<ElementRecommendation> discardedRecommendations = new ArrayList<>(
 				DiscardedRecommendationPersistenceManager.getDiscardedDecisionGuidanceRecommendations(decisionProblem));
-
 		if (!keywords.equalsIgnoreCase(decisionProblem.getSummary())) {
 			recommendations.addAll(getRecommendations(keywords));
 		}

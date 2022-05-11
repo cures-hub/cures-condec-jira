@@ -1,11 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
@@ -37,7 +35,7 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		super(projectKey, rdfSource);
 	}
 
-	private List<String> combineKeywords(List<String> keywords) {
+	private static List<String> combineKeywords(List<String> keywords) {
 		List<String> combinedKeywords = new ArrayList<>();
 		combinedKeywords.addAll(keywords);
 
@@ -55,6 +53,28 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 		stringBuilder.setLength(0);
 
 		return combinedKeywords;
+	}
+
+	/**
+	 * Get search terms to be included in potential RDFsource URIs (e.g. "Which database system
+	 * should we use? Should we use something from IBM?" -> {"database", "system",
+	 * "database_system", "IBM"}.
+	 *
+	 * @param input Text based on which the search terms are generated.
+	 * @return Search terms based on the noun chunks of the given text.
+	 */
+	public static Set<String> getSearchTerms(String input) {
+		Preprocessor preprocessor = Preprocessor.getInstance();
+		String[] chunks = preprocessor.getNounChunksForText(input);
+
+		String[] cleanedChunks = preprocessor.removeStopWordsFromTexts(chunks);
+
+		List<String> searchTerms = new ArrayList<>();
+		for (String chunk: cleanedChunks) {
+			List<String> keywords = Arrays.asList(chunk.trim().split(" "));
+			searchTerms.addAll(combineKeywords(keywords));
+		}
+		return new HashSet<>(searchTerms);
 	}
 
 	/**
@@ -104,11 +124,8 @@ public class RDFSourceRecommender extends Recommender<RDFSource> {
 			return recommendations;
 		}
 
-		final List<String> keywords = Arrays.asList(inputs.trim().split(" "));
-		final List<String> combinedKeywords = this.combineKeywords(keywords);
-
-		for (String combinedKeyword : combinedKeywords) {
-
+		Set<String> searchTerms = getSearchTerms(inputs);
+		for (String combinedKeyword : searchTerms) {
 			final String uri = "<http://dbpedia.org/resource/" + combinedKeyword + ">";
 			String queryStringWithInput = knowledgeSource.getQuery().replaceAll("%variable%", uri).replaceAll("[\\r\\n\\t]", " ");
 			queryStringWithInput = String.format("%s LIMIT %d", queryStringWithInput, this.getLimit());

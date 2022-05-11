@@ -44,7 +44,6 @@ public class TestRecommender extends TestSetUp {
 		recommendations.add(recommendationB);
 		KnowledgeElement decisionProblem = KnowledgeElements.getSolvedDecisionProblem();
 		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
-
 		Recommender.addToKnowledgeGraph(decisionProblem, JiraUsers.SYS_ADMIN.getApplicationUser(), recommendations);
 		assertTrue(graph.vertexSet().size() > 10);
 	}

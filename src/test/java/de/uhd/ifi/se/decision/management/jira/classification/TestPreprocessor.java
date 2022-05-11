@@ -105,4 +105,33 @@ public class TestPreprocessor extends TestSetUp {
 		assertNotNull(preprocessing[0][0]);
 	}
 
+	@Test
+	public void testGetNounChunksForSentence() {
+		String sentence = "Which database system should we use for the backend?";
+		String[] chunks = preprocessor.getNounChunksForSentence(sentence);
+		String[] expectedChunks = {"Which database system", "the backend"};
+		assertArrayEquals(expectedChunks, chunks);
+	}
+
+	@Test
+	public void testGetNounChunksForSentenceNoNoun() {
+		String sentence = "Asking and asking so much";
+		String[] chunks = preprocessor.getNounChunksForSentence(sentence);
+		assertEquals(0, chunks.length);
+	}
+
+	@Test
+	public void testGetNounChunksForText() {
+		String text = "Which database system should we use for the backend? Should we maybe use a system from IBM? We should go for it!";
+		String[] chunks = preprocessor.getNounChunksForText(text);
+		String[] expectedChunks = {"Which database system", "the backend", "a system", "IBM"};
+		assertArrayEquals(expectedChunks, chunks);
+	}
+
+	@Test
+	public void testRemoveStopWordsFromTexts() {
+		String[] texts = {"Which database system", "IBM"};
+		String[] expectedCleanedTexts = {"database system", "IBM"};
+		assertArrayEquals(expectedCleanedTexts, Preprocessor.getInstance().removeStopWordsFromTexts(texts));
+	}
 }
