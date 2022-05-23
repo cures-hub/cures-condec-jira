@@ -28,7 +28,7 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
     </label>
     <input class="checkbox" type="checkbox" id="checkbox-show-discarded">
 </div>
-
+<br>
 <div class="condec-filter-criterion">
     <label for="threshold-input" id="threshold-input-label">
         $i18n.getText("condec.threshold.label")
@@ -44,7 +44,7 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
     <input type="number" id="max-amount-input" value="5" min="-1" step="1" max="1000"
            class="text short-field">
 </div>
-
+<br>
 <button class="aui-button aui-button-secondary" id="btn-apply-threshold-max-nr">
     <span class="aui-icon aui-icon-small aui-iconfont-check"></span>
     $i18n.getText("condec.decision.guidance.apply.threshold.max.nr")
