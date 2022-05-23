@@ -77,6 +77,7 @@
             if (counter >= parseInt(inputMaxNr.value)) {
                 return;
             }
+            console.log(recommendation.score);
             console.log(`Comparing threshold '${parseInt(inputThreshold.value)}' with score '${recommendation.score}'`);
             if(recommendation.score < parseInt(inputThreshold.value)) {
                 console.log("Filtered");
