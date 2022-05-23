@@ -79,7 +79,7 @@
             }
             console.log(recommendation.score);
             console.log(`Comparing threshold '${parseInt(inputThreshold.value)}' with score '${recommendation.score}'`);
-            if(recommendation.score < parseInt(inputThreshold.value)) {
+            if(recommendation.score.value < parseInt(inputThreshold.value)) {
                 console.log("Filtered");
                 return;
             }
