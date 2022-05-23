@@ -59,15 +59,13 @@
         const checkBoxShowDiscarded = document.getElementById("checkbox-show-discarded");
         const inputMaxNr = document.getElementById("max-amount-input");
         const inputThreshold = document.getElementById("threshold-input");
-        checkBoxShowDiscarded.onclick = function() {
+        const btnApplyThresholdMaxNr = document.getElementById("btn-apply-threshold-max-nr");
+        checkBoxShowDiscarded.onclick = () => {
             buildRecommendationTable(recommendations, parentElement);
         };
-        inputMaxNr.addEventListener('input', (evt) => {
+        btnApplyThresholdMaxNr.onclick = () => {
             buildRecommendationTable(recommendations, parentElement);
-        });
-        inputThreshold.addEventListener('input', (evt) => {
-            buildRecommendationTable(recommendations, parentElement);
-        });
+        };
         tableBody.innerHTML = "";
         let counter = 0;
         let counterHidden = 0;
@@ -79,9 +77,12 @@
             if (counter >= parseInt(inputMaxNr.value)) {
                 return;
             }
+            console.log(`Comparing threshold '${parseInt(inputThreshold.value)}' with score '${recommendation.score}'`);
             if(recommendation.score < parseInt(inputThreshold.value)) {
+                console.log("Filtered");
                 return;
             }
+            console.log("Not filtered")
 
             counter++;
             let tableRow;
