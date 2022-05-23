@@ -57,9 +57,17 @@
     function buildRecommendationTable(recommendations, parentElement) {
         const tableBody = document.getElementById("recommendation-container-table-body");
         const checkBoxShowDiscarded = document.getElementById("checkbox-show-discarded");
+        const inputMaxNr = document.getElementById("max-amount-input");
+        const inputThreshold = document.getElementById("threshold-input");
         checkBoxShowDiscarded.onclick = function() {
             buildRecommendationTable(recommendations, parentElement);
         };
+        inputMaxNr.addEventListener('input', (evt) => {
+            buildRecommendationTable(recommendations, parentElement);
+        });
+        inputThreshold.addEventListener('input', (evt) => {
+            buildRecommendationTable(recommendations, parentElement);
+        });
         tableBody.innerHTML = "";
         let counter = 0;
         let counterHidden = 0;
@@ -68,6 +76,13 @@
                 counterHidden++;
                 return;
             }
+            if (counter >= parseInt(inputMaxNr.value)) {
+                return;
+            }
+            if(recommendation.score < parseInt(inputThreshold.value)) {
+                return;
+            }
+
             counter++;
             let tableRow;
             if (recommendation.isDiscarded) {
