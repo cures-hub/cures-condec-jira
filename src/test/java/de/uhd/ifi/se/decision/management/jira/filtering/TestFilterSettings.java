@@ -27,6 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.DecisionGroupContextInformationProvider;
@@ -342,7 +343,7 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testLinkRecommendation() {
+	public void testAreLinksRecommended() {
 		// default value
 		assertFalse(filterSettings.areLinksRecommended());
 		filterSettings.recommendLinks(true);
@@ -350,10 +351,11 @@ public class TestFilterSettings extends TestSetUp {
 	}
 
 	@Test
-	public void testCLinkRecommendationConfig() {
+	public void testLinkRecommendationConfig() {
 		LinkRecommendationConfiguration config = filterSettings.getLinkRecommendationConfig();
 		// default value
 		assertEquals(0.75, config.getMinProbability(), 0.0);
+
 		config.setMinProbability(0.42);
 		config.setMaxRecommendations(3);
 		List<ContextInformationProvider> contextInformationProviders = new LinkedList<>();
@@ -363,6 +365,17 @@ public class TestFilterSettings extends TestSetUp {
 		assertEquals(0.42, filterSettings.getLinkRecommendationConfig().getMinProbability(), 0.0);
 		assertEquals(3, filterSettings.getLinkRecommendationConfig().getMaxRecommendations(), 0.0);
 		assertTrue(filterSettings.getLinkRecommendationConfig().getContextInformationProviders().size() == 1);
+	}
+
+	@Test
+	public void testDecisionGuidanceConfig() {
+		DecisionGuidanceConfiguration config = filterSettings.getDecisionGuidanceConfig();
+		// default value
+		assertEquals(10, config.getMaxNumberOfRecommendations());
+
+		config.setMaxNumberOfRecommendations(42);
+		filterSettings.setDecisionGuidanceConfig(config);
+		assertEquals(42, filterSettings.getDecisionGuidanceConfig().getMaxNumberOfRecommendations());
 	}
 
 	@Test

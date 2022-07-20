@@ -338,8 +338,7 @@ public class DecisionGuidanceRest {
 		// Optimization: If there are already as many recommendations discarded as the
 		// set maximum number, load
 		// these discarded ones directly instead of requesting all knowledge sources.
-		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-				.getMaxNumberOfRecommendations();
+		int maxNrRecommendations = filterSettings.getDecisionGuidanceConfig().getMaxNumberOfRecommendations();
 		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
 				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
 		if (discardedRecommendations.size() >= maxNrRecommendations) {

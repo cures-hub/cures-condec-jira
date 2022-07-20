@@ -23,6 +23,10 @@
 			"selectedElementObject": decisionProblem,
 			"searchTerm": keywords,
 			"isCacheCleared": document.getElementById("clear-decision-guidance-cache-input").checked,
+			"decisionGuidanceConfig": {
+				"similarityThreshold": 0.5,
+				"maxNumberOfRecommendations": 3,
+			},
 		};
 		if (!filterSettings.isCacheCleared && this.recommendationsPerProblem.has(decisionProblem.id)) {
 			return this.recommendationsPerProblem.get(decisionProblem.id);
