@@ -25,6 +25,7 @@
         // add button listeners
         this.addOnClickListenerForRecommendations();
         this.addOnClickListenerForManageDiscarded();
+        linkConfigPage();
 
         // Register/subscribe this view as an observer
         conDecObservable.subscribe(this);
@@ -32,6 +33,13 @@
 
     ConDecDecisionGuidance.prototype.updateView = function() {
     };
+    
+	function linkConfigPage() {
+		var configLink = document.getElementById("config-link-decision-guidance");
+		configLink.href = `${AJS.contextPath()}/plugins/servlet/condec/settings?projectKey=` +
+			`${conDecAPI.projectKey}&category=decisionGuidance`;
+		AJS.$(configLink).tooltip();
+	}
 
     function onAcceptClicked(recommendation, parentElement) {
         conDecAPI.getKnowledgeElement(parentElement.id, parentElement.documentationLocation,

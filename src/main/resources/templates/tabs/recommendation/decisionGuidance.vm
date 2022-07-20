@@ -1,3 +1,4 @@
+#set ($viewIdentifier = "decision-guidance")
 <b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b><br>
 <b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b>
 DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;
@@ -20,6 +21,11 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
     	<input type="number" id="max-amount-input" value="5" min="-1" step="1" max="1000"
 			class="text short-field">
 	</div>
+	
+	<a id="config-link-$viewIdentifier" 
+		title="The decision guidance configuration can be changed by the rationale manager." target="_blank">
+		<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.configuration.label')
+	</a>
 	
 	<div class="condec-filter-criterion" title="$i18n.getText('condec.clear.cache.explanation')">
     	<label for="clear-decision-guidance-cache-input">$i18n.getText("condec.clear.cache")</label>
