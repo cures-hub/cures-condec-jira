@@ -23,8 +23,9 @@
             "projectKey": conDecAPI.getProjectKey(),
             "selectedElementObject": decisionProblem,
             "searchTerm": keywords,
+            "isCacheCleared": document.getElementById("clear-decision-guidance-cache-input").checked
         };
-        if (this.recommendationsPerProblem.has(decisionProblem.id)) {
+        if (!filterSettings.isCacheCleared && this.recommendationsPerProblem.has(decisionProblem.id)) {
             return this.recommendationsPerProblem.get(decisionProblem.id);
         }
         return generalApi.postJSONReturnPromise(`${this.restPrefix}/recommendations`,
