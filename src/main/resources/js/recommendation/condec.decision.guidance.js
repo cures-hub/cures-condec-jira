@@ -156,7 +156,7 @@
 			event.preventDefault();
 
 			if (!conDecDecisionGuidance.selectedDecisionProblem) {
-				alert("You need to add and select a decision problem!");
+				conDecAPI.showFlag("error", "You need to add and select a decision problem!");
 				return;
 			}
 
@@ -179,9 +179,8 @@
 					spinner.hide();
 				})
 				.catch((err) => {
-					console.log(err);
 					spinner.hide();
-					tableBody.innerHTML = "<strong>An error occurred!</strong>";
+					tableBody.innerHTML = `<strong>An error occurred: ${err}</strong>`;
 				});
 		});
 	};
@@ -198,7 +197,7 @@
 			event.preventDefault();
 
 			if (!conDecDecisionGuidance.selectedDecisionProblem) {
-				window.alert("You need to add and select a decision problem!");
+				conDecAPI.showFlag("error", "You need to add and select a decision problem!");
 				return;
 			}
 

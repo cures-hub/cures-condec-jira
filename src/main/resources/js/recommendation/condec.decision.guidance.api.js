@@ -8,7 +8,6 @@
  * settings/decisionguidance/*
  */
 /* global AJS, conDecAPI, generalApi, conDecDecisionGuidanceAPI */
-
 (function(global) {
 	var ConDecDecisionGuidanceAPI = function() {
 		this.restPrefix = `${AJS.contextPath()}/rest/condec/latest/decision-guidance`;
@@ -23,7 +22,7 @@
 			"projectKey": conDecAPI.getProjectKey(),
 			"selectedElementObject": decisionProblem,
 			"searchTerm": keywords,
-			"isCacheCleared": document.getElementById("clear-decision-guidance-cache-input").checked
+			"isCacheCleared": document.getElementById("clear-decision-guidance-cache-input").checked,
 		};
 		if (!filterSettings.isCacheCleared && this.recommendationsPerProblem.has(decisionProblem.id)) {
 			return this.recommendationsPerProblem.get(decisionProblem.id);
@@ -77,7 +76,7 @@
 	 * external references: condec.decision.guidance
 	 */
 	ConDecDecisionGuidanceAPI.prototype.getDecisionGuidanceConfig = function() {
-		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration/" + conDecAPI.projectKey);
+		return generalApi.getJSONReturnPromise(`${this.restPrefix}/configuration/${conDecAPI.projectKey}`);
 	};
 
 	/**
