@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -749,6 +750,7 @@ public class FilterSettings implements Cloneable {
 		}
 	}
 
+	@JsonIgnore
 	public DecisionGuidanceConfiguration getDecisionGuidanceConfig() {
 		return decisionGuidanceConfig;
 	}

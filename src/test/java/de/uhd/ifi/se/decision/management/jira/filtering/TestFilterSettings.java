@@ -31,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.De
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.DecisionGroupContextInformationProvider;
+import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -42,7 +43,8 @@ public class TestFilterSettings extends TestSetUp {
 	public void setUp() {
 		init();
 		createDate = -1;
-		filterSettings = new FilterSettings("TEST", "?jql=project%20%3D%20CONDEC", null);
+		filterSettings = new FilterSettings("TEST", "?jql=project%20%3D%20CONDEC",
+				JiraUsers.SYS_ADMIN.getApplicationUser());
 	}
 
 	@Test
