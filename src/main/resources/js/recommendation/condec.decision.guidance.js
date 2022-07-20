@@ -7,7 +7,7 @@
  * Is referenced in HTML by
  * tabs/recommendation/decisionGuidance.vm
  */
-/* global conDecAPI, conDecDialog, conDecDecisionGuidanceAPI, conDecDecisionGuidance,
+/* global AJS, conDecAPI, conDecDialog, conDecDecisionGuidanceAPI, conDecDecisionGuidance,
    conDecRecommendation, conDecNudgingAPI, conDecObservable, conDecFiltering */
 (function(global) {
 	const ConDecDecisionGuidance = function() { };
