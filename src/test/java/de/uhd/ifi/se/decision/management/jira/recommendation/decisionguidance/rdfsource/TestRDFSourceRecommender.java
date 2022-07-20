@@ -3,7 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.r
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,9 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.ElementRecommendation;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
-
-import java.util.*;
 
 public class TestRDFSourceRecommender extends TestSetUp {
 
@@ -39,7 +42,8 @@ public class TestRDFSourceRecommender extends TestSetUp {
 	public void testRDFSourceWithStringInput() {
 		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender("TEST", rdfSource);
 		rdfSourceInputString.setKnowledgeSource(new RDFSource(NAME, SERVICE, QUERY, TIMEOUT, "Lizenz=dbo:license"));
-		assertTrue(rdfSourceInputString.getRecommendations("MySQL").size() > 30);
+		// max amount of recommendations is set to 10 per default
+		assertTrue(rdfSourceInputString.getRecommendations("MySQL").size() == 10);
 		assertEquals(0, rdfSourceInputString.getRecommendations("").size());
 		assertEquals(0, rdfSourceInputString.getRecommendations((String) null).size());
 
@@ -58,7 +62,8 @@ public class TestRDFSourceRecommender extends TestSetUp {
 		graph.addEdge(link);
 		RDFSourceRecommender rdfSourceInputString = new RDFSourceRecommender("TEST", rdfSource);
 		rdfSourceInputString.setKnowledgeSource(new RDFSource(NAME, SERVICE, QUERY, TIMEOUT, ""));
-		assertTrue(rdfSourceInputString.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size() > 30);
+		// max amount of recommendations is set to 10 per default
+		assertTrue(rdfSourceInputString.getRecommendations(KnowledgeElements.getTestKnowledgeElement()).size() == 10);
 		assertEquals(0, rdfSourceInputString.getRecommendations((String) null).size());
 		assertEquals(0, rdfSourceInputString.getRecommendations(new KnowledgeElement()).size());
 	}
@@ -66,7 +71,8 @@ public class TestRDFSourceRecommender extends TestSetUp {
 	@Test
 	public void testAddDummyRecommendations() {
 		RDFSourceRecommender recommender = new RDFSourceRecommender("TEST", rdfSource);
-		List<ElementRecommendation> recommendations = recommender.getRecommendations("get_dummy_decision_guidance_recommendations");
+		List<ElementRecommendation> recommendations = recommender
+				.getRecommendations("get_dummy_decision_guidance_recommendations");
 		assertEquals(10, recommendations.size());
 	}
 

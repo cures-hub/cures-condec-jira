@@ -1,31 +1,65 @@
+#set ($viewIdentifier = "decision-guidance")
 <b>$i18n.getText("condec.decision.guidance.recommendsolutionoptions")</b><br>
 <b>$i18n.getText("condec.decision.guidance.knowledgesources"):</b>
 DBPedia <span class='aui-icon aui-icon-small aui-iconfont-download'>DBPedia</span>;
 Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Project</span>
 
 <form class="aui">
+<div class="condec-filter">
     <select id="decision-guidance-dropdown" class="select long-field"></select>
     <input id="recommendation-keywords" class="text medium-long-field" value="" placeholder="optional additional keywords" required/>
     <br/>
     <br/>
+    <div class="condec-filter-criterion"
+		title="A recommendation is created if elementScore >= threshold.">
+		<label for="threshold-input-$viewIdentifier" id="threshold-input-label-$viewIdentifier">
+			$i18n.getText("condec.threshold.label")
+		</label>
+		<input type="number" id="threshold-input-$viewIdentifier" value="0.85" min="0" step="0.01" max="1"
+			class="text short-field" placeholder="Enter threshold">
+	</div>
+
+	<div class="condec-filter-criterion"
+		title="Only the given amount of recommendations are provided.">
+		<label for="max-amount-input-$viewIdentifier">
+			$i18n.getText("condec.max.recommendation.label")
+		</label>
+		<input type="number" id="max-amount-input-$viewIdentifier" value="5" min="-1" step="1" max="1000"
+			class="text short-field">
+	</div>
+	
+	<a id="config-link-$viewIdentifier" 
+		title="The decision guidance configuration can be changed by the rationale manager." target="_blank">
+		<span class="aui-icon aui-icon-small aui-iconfont-settings"></span> $i18n.getText('condec.configuration.label')
+	</a>
+	
+	<div class="condec-filter-criterion" title="$i18n.getText('condec.clear.cache.explanation')">
+    	<label for="clear-decision-guidance-cache-input">$i18n.getText("condec.clear.cache")</label>
+    	<input class="checkbox" type="checkbox" id="clear-decision-guidance-cache-input"/>
+    </div>
+
     <button class="aui-button aui-button-primary" id="recommendation-button">
         <span class="aui-icon aui-icon-small aui-iconfont-lightbulb"></span>
         $i18n.getText("condec.decision.guidance.recommendsolutionoptions")
     </button>
+
     <aui-spinner id="loading-spinner-recommendation" style="display:none"></aui-spinner>
+
     <button class="aui-button aui-button-primary" id="manage-discarded-button">
         <span class="aui-icon aui-icon-small aui-iconfont-preferences"></span>
         $i18n.getText("condec.decision.guidance.manage.discarded.recommendations")
     </button>
-</form>
-<br>
-<div class="condec-filter-criterion" title="$i18n.getText('condec.recommendation.show_discarded_description')">
-    <label for="checkbox-show-discarded">
-        $i18n.getText("condec.recommendation.show_discarded_label")
-        <span id="count-hidden-recommendations"></span>
-    </label>
-    <input class="checkbox" type="checkbox" id="checkbox-show-discarded">
+    
+    <br>
+	<div class="condec-filter-criterion" title="$i18n.getText('condec.recommendation.show_discarded_description')">
+    	<label for="checkbox-show-discarded">
+        	$i18n.getText("condec.recommendation.show_discarded_label")
+        	<span id="count-hidden-recommendations"></span>
+    	</label>
+    	<input class="checkbox" type="checkbox" id="checkbox-show-discarded">
+	</div>
 </div>
+</form>
 
 <table id="recommendation-container" class="aui aui-table-list">
     <thead>

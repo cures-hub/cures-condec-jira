@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -37,6 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceMa
 import de.uhd.ifi.se.decision.management.jira.persistence.singlelocations.AbstractPersistenceManagerForSingleLocation;
 import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDone;
 import de.uhd.ifi.se.decision.management.jira.quality.KnowledgeElementCheck;
+import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.DecisionGuidanceConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendation;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.LinkRecommendationConfiguration;
 import de.uhd.ifi.se.decision.management.jira.recommendation.linkrecommendation.contextinformation.ContextInformationProvider;
@@ -79,6 +81,7 @@ public class FilterSettings implements Cloneable {
 	private ChangeImpactAnalysisConfiguration changeImpactAnalysisConfig;
 	private boolean areLinksRecommended;
 	private LinkRecommendationConfiguration linkRecommendationConfig;
+	private DecisionGuidanceConfiguration decisionGuidanceConfig;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterSettings.class);
 
@@ -103,6 +106,7 @@ public class FilterSettings implements Cloneable {
 		this.areChangeImpactsHighlighted = false;
 		this.changeImpactAnalysisConfig = new ChangeImpactAnalysisConfiguration();
 		this.linkRecommendationConfig = new LinkRecommendationConfiguration();
+		this.decisionGuidanceConfig = new DecisionGuidanceConfiguration();
 	}
 
 	@JsonCreator
@@ -116,6 +120,7 @@ public class FilterSettings implements Cloneable {
 		this.definitionOfDone = ConfigPersistenceManager.getDefinitionOfDone(projectKey);
 		this.changeImpactAnalysisConfig = ConfigPersistenceManager.getChangeImpactAnalysisConfiguration(projectKey);
 		this.linkRecommendationConfig = ConfigPersistenceManager.getLinkRecommendationConfiguration(projectKey);
+		this.decisionGuidanceConfig = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey);
 	}
 
 	public FilterSettings(String projectKey, String query, ApplicationUser user) {
@@ -743,6 +748,20 @@ public class FilterSettings implements Cloneable {
 				rule.setActive(false);
 			}
 		}
+	}
+
+	@JsonIgnore
+	public DecisionGuidanceConfiguration getDecisionGuidanceConfig() {
+		return decisionGuidanceConfig;
+	}
+
+	@JsonProperty
+	public void setDecisionGuidanceConfig(DecisionGuidanceConfiguration decisionGuidanceConfig) {
+		// only the following criteria can be set during filtering currently, all other
+		// criteria are fixed, thus, not the entire object can be overwritten
+		this.decisionGuidanceConfig
+				.setMaxNumberOfRecommendations(decisionGuidanceConfig.getMaxNumberOfRecommendations());
+		this.decisionGuidanceConfig.setSimilarityThreshold(decisionGuidanceConfig.getSimilarityThreshold());
 	}
 
 	@Override

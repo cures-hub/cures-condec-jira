@@ -17,10 +17,9 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.pr
 import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rdfsource.RDFSource;
 import de.uhd.ifi.se.decision.management.jira.testdata.KnowledgeElements;
 
-@SuppressWarnings({"PMD.AtLeastOneConstructor",  // For static code analysis: Rules that are not
-		"PMD.BeanMembersShouldSerialize",  //       necessary for a test class
-		"PMD.CommentRequired",
-		"PMD.AvoidDuplicateLiterals"})
+@SuppressWarnings({ "PMD.AtLeastOneConstructor", // For static code analysis: Rules that are not
+		"PMD.BeanMembersShouldSerialize", // necessary for a test class
+		"PMD.CommentRequired", "PMD.AvoidDuplicateLiterals" })
 public class TestEvaluator extends TestSetUp {
 
 	private KnowledgeElement decisionProblem;
@@ -58,7 +57,8 @@ public class TestEvaluator extends TestSetUp {
 		rdfSource.setName("DBPedia");
 		RecommendationEvaluation recommendationEvaluation = Evaluator.evaluate(decisionProblem, "MySQL", 5, rdfSource);
 		assertEquals("DBPedia", recommendationEvaluation.getKnowledgeSource().getName());
-		assertTrue(recommendationEvaluation.getRecommendations().size() > 30);
+		// max amount of recommendations is set to 10 per default
+		assertTrue(recommendationEvaluation.getRecommendations().size() == 10);
 	}
 
 	@Test

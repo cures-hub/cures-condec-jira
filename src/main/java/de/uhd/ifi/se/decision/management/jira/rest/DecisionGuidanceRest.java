@@ -37,14 +37,17 @@ import de.uhd.ifi.se.decision.management.jira.recommendation.decisionguidance.rd
  * REST resource for configuration and usage of decision guidance
  */
 @Path("/decision-guidance")
-@SuppressWarnings({"PMD.LinguisticNaming",  // For static code analysis: 1. The special case of a REST API makes it
-	"PMD.OnlyOneReturn",  // reasonable that also setters return a response. 2. Multiple returns increase readability
-    "PMD.AvoidDuplicateLiterals",  // here, as depending on the request and the response different return values may
-	"PMD.CommentSize",  //  occur. 3. Replacing path parameters and the word "error" with constants would decrease
-    "PMD.UseObjectForClearerAPI",  // readability. 4. Many parameters justify long comments. 5. As most of the
-    "PMD.AtLeastOneConstructor"})  // parameters are either path or query parameters, using a container object for
-//                                    them is not appropriate here. 6. This class does not have any fields to be
-//                                    initialized, so a constructor does not make sense.
+@SuppressWarnings({ "PMD.LinguisticNaming", // For static code analysis: 1. The special case of a REST API makes it
+		"PMD.OnlyOneReturn", // reasonable that also setters return a response. 2. Multiple returns increase
+								// readability
+		"PMD.AvoidDuplicateLiterals", // here, as depending on the request and the response different return values
+										// may
+		"PMD.CommentSize", // occur. 3. Replacing path parameters and the word "error" with constants would
+							// decrease
+		"PMD.UseObjectForClearerAPI", // readability. 4. Many parameters justify long comments. 5. As most of the
+		"PMD.AtLeastOneConstructor" }) // parameters are either path or query parameters, using a container object for
+// them is not appropriate here. 6. This class does not have any fields to be
+// initialized, so a constructor does not make sense.
 public class DecisionGuidanceRest {
 
 	/**
@@ -331,10 +334,12 @@ public class DecisionGuidanceRest {
 			return response;
 		}
 		KnowledgeElement selectedElementFromDatabase = filterSettings.getSelectedElementFromDatabase();
+		DecisionGuidanceConfiguration decisionGuidanceConfig = filterSettings.getDecisionGuidanceConfig();
 
-		// Optimization: If there are already as many recommendations discarded as the set maximum number, load
+		// Optimization: If there are already as many recommendations discarded as the
+		// set maximum number, load
 		// these discarded ones directly instead of requesting all knowledge sources.
-		int maxNrRecommendations = ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey).getMaxNumberOfRecommendations();
+		int maxNrRecommendations = decisionGuidanceConfig.getMaxNumberOfRecommendations();
 		List<ElementRecommendation> discardedRecommendations = DiscardedRecommendationPersistenceManager
 				.getDiscardedDecisionGuidanceRecommendations(selectedElementFromDatabase);
 		if (discardedRecommendations.size() >= maxNrRecommendations) {
@@ -347,8 +352,7 @@ public class DecisionGuidanceRest {
 		List<Recommendation> recommendations = Recommender.getTopKRecommendations(projectKey,
 				selectedElementFromDatabase, filterSettings.getSearchTerm(), maxNrRecommendations);
 
-		if (ConfigPersistenceManager.getDecisionGuidanceConfiguration(projectKey)
-				.isRecommendationAddedToKnowledgeGraph()) {
+		if (decisionGuidanceConfig.isRecommendationAddedToKnowledgeGraph()) {
 			Recommender.addToKnowledgeGraph(selectedElementFromDatabase, AuthenticationManager.getUser(request),
 					recommendations);
 		}
@@ -356,24 +360,25 @@ public class DecisionGuidanceRest {
 	}
 
 	/**
-	 * Get all discarded recommendations from the database for a decision problem given as
-	 * {@link FilterSettings#getSelectedElementFromDatabase()}.
+	 * Get all discarded recommendations from the database for a decision problem
+	 * given as {@link FilterSettings#getSelectedElementFromDatabase()}.
 	 *
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
 	 * @param filterSettings
 	 *            including the selected decision problem and the projectKey.
-	 * @return {@link ElementRecommendation}s for the given decision problem that have been stored
-	 *         as discarded in the database.
+	 * @return {@link ElementRecommendation}s for the given decision problem that
+	 *         have been stored as discarded in the database.
 	 */
 	@Path("/discarded-recommendations")
 	@POST
 	public Response getDiscardedRecommendations(@Context HttpServletRequest request, FilterSettings filterSettings) {
 
 		if (filterSettings == null || filterSettings.getSelectedElement() == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Invalid filter settings given. Database access not possible.")).build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Invalid filter settings given. Database access not possible."))
+					.build();
 		}
 		String projectKey = filterSettings.getProjectKey();
 		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
@@ -389,24 +394,28 @@ public class DecisionGuidanceRest {
 
 	/**
 	 * @param request
-	 *            HttpServletRequest with an authorized Jira {@link ApplicationUser}.
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
 	 * @param projectKey
 	 *            of a Jira project.
 	 * @param keyword
 	 *            additional keywords used to query the knowledge source.
 	 * @param knowledgeSourceName
-	 *            name of the {@link KnowledgeSource} that is evaluated. It must exist in the
-	 *            {@link DecisionGuidanceConfiguration}.
+	 *            name of the {@link KnowledgeSource} that is evaluated. It must
+	 *            exist in the {@link DecisionGuidanceConfiguration}.
 	 * @param topKResults
-	 *            number of {@link ElementRecommendation}s with the highest {@link RecommendationScore} that should be
-	 *            included in the evaluation. All other recommendations are ignored.
+	 *            number of {@link ElementRecommendation}s with the highest
+	 *            {@link RecommendationScore} that should be included in the
+	 *            evaluation. All other recommendations are ignored.
 	 * @param decisionProblemId
-	 *            id of a decision problem with existing solution options (alternatives, decision, solution, claims)
-	 *            used as the ground truth/gold standard for the evaluation.
+	 *            id of a decision problem with existing solution options
+	 *            (alternatives, decision, solution, claims) used as the ground
+	 *            truth/gold standard for the evaluation.
 	 * @param documentationLocation
 	 *            of the decision problem (e.g. Jira issue text).
-	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics for one {@link KnowledgeSource}
-	 *         for a given decision problem and keywords.
+	 * @return {@link RecommendationEvaluation} that contains the evaluation metrics
+	 *         for one {@link KnowledgeSource} for a given decision problem and
+	 *         keywords.
 	 */
 	@Path("/evaluation/{projectKey}")
 	@GET
@@ -445,12 +454,13 @@ public class DecisionGuidanceRest {
 	@Path("/discard/{projectKey}")
 	@POST
 	public Response discardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
-										  @PathParam("projectKey") String projectKey) {
+			@PathParam("projectKey") String projectKey) {
 		if (recommendation == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to discard is not valid.")).build();
 		}
-		long id = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation, projectKey);
+		long id = DiscardedRecommendationPersistenceManager.saveDiscardedElementRecommendation(recommendation,
+				projectKey);
 		if (id == -1) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation could not be stored.")).build();
@@ -458,29 +468,51 @@ public class DecisionGuidanceRest {
 		return Response.ok().build();
 	}
 
-
 	/**
 	 * @param request
 	 *            HttpServletRequest with an authorized Jira
 	 *            {@link ApplicationUser}.
 	 * @param recommendation
-	 *            previously discarded {@link ElementRecommendation} to be restored .
+	 *            previously discarded {@link ElementRecommendation} to be restored
+	 *            .
 	 * @return ok if {@link ElementRecommendation} was successfully un-discarded.
 	 */
 	@Path("/undo-discard/{projectKey}")
 	@POST
 	public Response undiscardRecommendation(@Context HttpServletRequest request, ElementRecommendation recommendation,
-											@PathParam("projectKey") String projectKey) {
+			@PathParam("projectKey") String projectKey) {
 		if (recommendation == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "The recommendation to undiscard is not valid.")).build();
 		}
-		boolean removed = DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation, projectKey);
+		boolean removed = DiscardedRecommendationPersistenceManager.removeDiscardedElementRecommendation(recommendation,
+				projectKey);
 		if (!removed) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "The recommendation could not be removed from discarded recommendations.")).build();
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "The recommendation could not be removed from discarded recommendations."))
+					.build();
 		}
 		return Response.ok().build();
 	}
 
+	/**
+	 * @param request
+	 *            HttpServletRequest with an authorized Jira
+	 *            {@link ApplicationUser}.
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return saved {@link DecisionGuidanceConfiguration} object for the project.
+	 */
+	@Path("/configuration/{projectKey}")
+	@GET
+	public Response getDecisionGuidanceConfiguration(@Context HttpServletRequest request,
+			@PathParam("projectKey") String projectKey) {
+		Response response = RestParameterChecker.checkIfDataIsValid(request, projectKey);
+		if (response.getStatus() != Status.OK.getStatusCode()) {
+			return response;
+		}
+		DecisionGuidanceConfiguration decisionGuidanceConfiguration = ConfigPersistenceManager
+				.getDecisionGuidanceConfiguration(projectKey);
+		return Response.ok(decisionGuidanceConfiguration).build();
+	}
 }
