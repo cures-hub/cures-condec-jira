@@ -61,11 +61,6 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
 </div>
 </form>
 
-<button class="aui-button aui-button-secondary" id="btn-apply-threshold-max-nr">
-    <span class="aui-icon aui-icon-small aui-iconfont-check"></span>
-    $i18n.getText("condec.decision.guidance.apply.threshold.max.nr")
-</button>
-
 <table id="recommendation-container" class="aui aui-table-list">
     <thead>
     <tr>
