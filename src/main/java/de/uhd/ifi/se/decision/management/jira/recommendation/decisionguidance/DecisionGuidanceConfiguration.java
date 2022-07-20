@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -34,7 +36,7 @@ public class DecisionGuidanceConfiguration {
 	 */
 	public DecisionGuidanceConfiguration() {
 		this.setRecommendationAddedToKnowledgeGraph(false);
-		this.setMaxNumberOfRecommendations(100);
+		this.setMaxNumberOfRecommendations(10);
 		this.setSimilarityThreshold(0.85);
 		this.rdfKnowledgeSources = RDFSource.getDefaultDBPediaQueries();
 		this.projectKnowledgeSources = new ArrayList<>();
@@ -63,6 +65,7 @@ public class DecisionGuidanceConfiguration {
 	 * @return maximum number of recommendations from an external knowledge source
 	 *         that is shown to the user.
 	 */
+	@XmlElement
 	public int getMaxNumberOfRecommendations() {
 		return maxNumberOfRecommendations;
 	}
@@ -80,6 +83,7 @@ public class DecisionGuidanceConfiguration {
 	/**
 	 * @return minimum textual similarity necessary to create a recommendation.
 	 */
+	@XmlElement
 	public double getSimilarityThreshold() {
 		return similarityThreshold;
 	}

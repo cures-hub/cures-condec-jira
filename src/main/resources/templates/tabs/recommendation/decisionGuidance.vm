@@ -10,15 +10,21 @@ Jira Project <span class='aui-icon aui-icon-small aui-iconfont-jira'>Jira Projec
     <input id="recommendation-keywords" class="text medium-long-field" value="" placeholder="optional additional keywords" required/>
     <br/>
     <br/>
-    <div class="condec-filter-criterion">
-    	<label for="threshold-input" id="threshold-input-label">$i18n.getText("condec.threshold.label")</label>
-    	<input type="number" id="threshold-input" value="0.85" min="0" step="0.01" max="1"
+    <div class="condec-filter-criterion"
+		title="A recommendation is created if elementScore >= threshold.">
+		<label for="threshold-input-$viewIdentifier" id="threshold-input-label-$viewIdentifier">
+			$i18n.getText("condec.threshold.label")
+		</label>
+		<input type="number" id="threshold-input-$viewIdentifier" value="0.85" min="0" step="0.01" max="1"
 			class="text short-field" placeholder="Enter threshold">
 	</div>
 
-	<div class="condec-filter-criterion">
-    	<label for="max-amount-input">$i18n.getText("condec.max.recommendation.displayed.label")</label>
-    	<input type="number" id="max-amount-input" value="5" min="-1" step="1" max="1000"
+	<div class="condec-filter-criterion"
+		title="Only the given amount of recommendations are provided.">
+		<label for="max-amount-input-$viewIdentifier">
+			$i18n.getText("condec.max.recommendation.label")
+		</label>
+		<input type="number" id="max-amount-input-$viewIdentifier" value="5" min="-1" step="1" max="1000"
 			class="text short-field">
 	</div>
 	

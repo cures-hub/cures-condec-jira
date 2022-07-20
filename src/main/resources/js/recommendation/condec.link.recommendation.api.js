@@ -48,7 +48,7 @@
 	};
 
 	/**
-	 * external references: settings/linkrecommendation/
+	 * external usage: condec.link.recommendation.js
 	 */
 	ConDecLinkRecommendationAPI.prototype.getLinkRecommendationConfig = function() {
 		return generalApi.getJSONReturnPromise(this.restPrefix + "/configuration/" + conDecAPI.projectKey);

@@ -21,6 +21,12 @@
                 "decision-guidance", (selectedElement) => {
                     conDecDecisionGuidance.selectedDecisionProblem = selectedElement;
                 }));
+        
+		// fill decision guidance parameters from current configuration
+		conDecDecisionGuidanceAPI.getDecisionGuidanceConfig().then((config) => {
+			document.getElementById("threshold-input-decision-guidance").value = config.similarityThreshold;
+			document.getElementById("max-amount-input-decision-guidance").value = config.maxNumberOfRecommendations;
+		});
 
         // add button listeners
         this.addOnClickListenerForRecommendations();
