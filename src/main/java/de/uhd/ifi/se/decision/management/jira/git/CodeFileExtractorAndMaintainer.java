@@ -56,6 +56,12 @@ public class CodeFileExtractorAndMaintainer {
 	 */
 	public void extractAllChangedFiles(Diff diff) {
 		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
+		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName()).toList();
+		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
+			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
+				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
+			}
+		}
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			if (!changedFile.isCodeFileToExtract()) {
 				continue;
