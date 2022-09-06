@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.diff.DiffEntry;
 
@@ -56,6 +57,13 @@ public class CodeFileExtractorAndMaintainer {
 	 */
 	public void extractAllChangedFiles(Diff diff) {
 		maintainChangedFilesInDatabase(diff);
+		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName())
+				.collect(Collectors.toList());
+		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
+			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
+				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
+			}
+		}
 	}
 
 	/**
@@ -101,6 +109,10 @@ public class CodeFileExtractorAndMaintainer {
 		case DELETE:
 			codeFilePersistenceManager.deleteKnowledgeElement(changedFile, null);
 			break;
+		case RENAME:
+			codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
+			break;
+		default:
 		case MODIFY:
 			// rationale elements in code comments could have been added
 			// no break after modify to fall through
@@ -108,13 +120,10 @@ public class CodeFileExtractorAndMaintainer {
 			List<DecisionKnowledgeElementInCodeComment> decisionKnowledgeInCodeComments = changedFile
 					.getRationaleElementsFromCodeComments();
 			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-			graph.updateElement(source);
+			if (!graph.updateElement(source)) {
+				graph.addVertex(source);
+			}
 			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
-			break;
-		case RENAME:
-			codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
-			break;
-		default:
 			break;
 		}
 	}

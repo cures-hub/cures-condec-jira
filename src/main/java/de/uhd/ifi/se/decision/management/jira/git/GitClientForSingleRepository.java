@@ -26,7 +26,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
+import org.eclipse.jgit.util.io.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,6 +192,7 @@ public class GitClientForSingleRepository {
 					}
 				}
 			}
+
 		}
 		return diff;
 	}
@@ -269,7 +270,7 @@ public class GitClientForSingleRepository {
 	 *         entry and contains the respective edit list.
 	 */
 	public DiffForSingleRef getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		DiffFormatter diffFormatter = getDiffFormater();
+		DiffFormatter diffFormatter = getDiffFormatter();
 		List<DiffEntry> diffEntries = getDiffEntries(firstCommit, lastCommit, diffFormatter);
 		ObjectId treeId = lastCommit.getTree().getId();
 		DiffForSingleRef diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
@@ -293,7 +294,7 @@ public class GitClientForSingleRepository {
 		try {
 			if (firstCommit.getParentCount() > 0) {
 				RevCommit parentCommit = firstCommit.getParent(0);
-				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
+				diffEntries = diffFormatter.scan(parentCommit, lastCommit);
 			}
 		} catch (IOException e) {
 			LOGGER.debug("Git diff could not be retrieved. Message: " + e.getMessage());
@@ -302,7 +303,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<DiffEntry> getDiffEntries(RevCommit commit) {
-		DiffFormatter diffFormatter = getDiffFormater();
+		DiffFormatter diffFormatter = getDiffFormatter();
 		List<DiffEntry> diffEntries = getDiffEntries(commit, commit, diffFormatter);
 		diffFormatter.close();
 		return diffEntries;
@@ -326,8 +327,8 @@ public class GitClientForSingleRepository {
 		return diff;
 	}
 
-	private DiffFormatter getDiffFormater() {
-		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+	private DiffFormatter getDiffFormatter() {
+		DiffFormatter diffFormatter = new DiffFormatter(NullOutputStream.INSTANCE);
 		Repository repository = git.getRepository();
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
@@ -380,7 +381,7 @@ public class GitClientForSingleRepository {
 	public Ref getDefaultRef() {
 		List<Ref> refs = getRefs();
 		for (Ref ref : refs) {
-			if (ref.getName().contains(gitRepositoryConfiguration.getDefaultBranch())) {
+			if (ref.getName().endsWith(gitRepositoryConfiguration.getDefaultBranch())) {
 				return ref;
 			}
 		}
