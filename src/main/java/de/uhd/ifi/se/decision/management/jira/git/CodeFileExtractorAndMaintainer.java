@@ -30,13 +30,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
  */
 public class CodeFileExtractorAndMaintainer {
 
-	private String projectKey;
 	private CodeClassPersistenceManager codeFilePersistenceManager;
+	private KnowledgeGraph graph;
 
 	public CodeFileExtractorAndMaintainer(String projectKey) {
-		this.projectKey = projectKey;
 		this.codeFilePersistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getCodeClassPersistenceTextManager();
+		this.graph = KnowledgeGraph.getInstance(projectKey);
 	}
 
 	/**
@@ -55,23 +55,7 @@ public class CodeFileExtractorAndMaintainer {
 	 *           the respective Jira issues (e.g., work items or requirements)!
 	 */
 	public void extractAllChangedFiles(Diff diff) {
-		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
-		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName()).toList();
-		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
-			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
-				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
-			}
-		}
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (!changedFile.isCodeFileToExtract()) {
-				continue;
-			}
-			List<DecisionKnowledgeElementInCodeComment> decisionKnowledgeInCodeComments = changedFile
-					.getRationaleElementsFromCodeComments();
-			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-			graph.updateElement(source);
-			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
-		}
+		maintainChangedFilesInDatabase(diff);
 	}
 
 	/**
@@ -111,19 +95,24 @@ public class CodeFileExtractorAndMaintainer {
 		if (!changedFile.isCodeFileToExtract()) {
 			return;
 		}
+
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
-		case ADD:
-			codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-			break;
-		case MODIFY:
-			// new links could have been added
-			// same as rename, thus, no break after add to fall through
-		case RENAME:
-			codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
-			break;
 		case DELETE:
 			codeFilePersistenceManager.deleteKnowledgeElement(changedFile, null);
+			break;
+		case MODIFY:
+			// rationale elements in code comments could have been added
+			// no break after modify to fall through
+		case ADD:
+			List<DecisionKnowledgeElementInCodeComment> decisionKnowledgeInCodeComments = changedFile
+					.getRationaleElementsFromCodeComments();
+			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+			graph.updateElement(source);
+			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
+			break;
+		case RENAME:
+			codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
 			break;
 		default:
 			break;
