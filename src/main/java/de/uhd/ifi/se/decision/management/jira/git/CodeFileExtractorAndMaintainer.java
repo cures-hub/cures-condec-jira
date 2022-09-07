@@ -137,10 +137,10 @@ public class CodeFileExtractorAndMaintainer {
 	public boolean deleteOldFiles(Diff diff) {
 		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName())
 				.collect(Collectors.toList());
-		if (fileNamesInDiff.isEmpty()) {
-			return false;
-		}
 		boolean isAnyFileDeleted = false;
+		if (fileNamesInDiff.isEmpty()) {
+			return isAnyFileDeleted;
+		}
 		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
 			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
 				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
