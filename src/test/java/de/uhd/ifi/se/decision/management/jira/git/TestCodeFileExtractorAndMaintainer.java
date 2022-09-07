@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.git;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -96,5 +97,16 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 
 		ConfigPersistenceManager.saveGitConfiguration("TEST", new GitConfiguration());
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteOldFiles() {
+		ChangedFile oldFile = new ChangedFile();
+		oldFile.setId(42);
+		oldFile.setProject("TEST");
+		oldFile.setSummary("FileFromThePastAlreadyDeleted.java");
+		codeClassPersistenceManager.insertKnowledgeElement(oldFile, null);
+		assertTrue(CodeFileExtractorAndMaintainer.deleteOldFiles("TEST", gitClient));
 	}
 }

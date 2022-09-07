@@ -124,7 +124,10 @@ public class CodeFileExtractorAndMaintainer {
 		if (projectKey.equals("TEST")) {
 			return false;
 		}
-		GitClient gitClient = GitClient.getInstance(projectKey);
+		return deleteOldFiles(projectKey, GitClient.getInstance(projectKey));
+	}
+
+	public static boolean deleteOldFiles(String projectKey, GitClient gitClient) {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		return new CodeFileExtractorAndMaintainer(projectKey).deleteOldFiles(diff);
 	}
