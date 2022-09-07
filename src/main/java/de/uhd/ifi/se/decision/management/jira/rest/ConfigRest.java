@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.BasicConfiguration;
 import de.uhd.ifi.se.decision.management.jira.config.JiraSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraQueryHandler;
+import de.uhd.ifi.se.decision.management.jira.git.CodeFileExtractorAndMaintainer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -308,8 +309,7 @@ public class ConfigRest {
 		// If there are some "lonely" sentences, link them to their Jira issues.
 		jiraIssueTextManager.createLinksForNonLinkedElements();
 
-		// CodeFileExtractorAndMaintainer.deleteOldFiles(projectKey);
-
+		CodeFileExtractorAndMaintainer.deleteOldFiles(projectKey);
 		DecisionGroupPersistenceManager.deleteInvalidGroups(projectKey);
 
 		return Response.ok().build();
