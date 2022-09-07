@@ -77,9 +77,9 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	public void testExtractAllChangedFilesTwice() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		assertEquals(5, diff.getChangedFiles().size());
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
+		codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		assertEquals(5, codeClassPersistenceManager.getKnowledgeElements().size());
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
+		codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		assertEquals(5, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
@@ -92,7 +92,7 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		assertNull(gitConfig.getFileTypeForEnding(".java"));
 
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
+		codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 
 		ConfigPersistenceManager.saveGitConfiguration("TEST", new GitConfiguration());

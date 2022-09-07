@@ -87,7 +87,7 @@ public class GitClient {
 		}
 		if (extractAllCodeKnowledge) {
 			Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-			new CodeFileExtractorAndMaintainer(projectKey).extractAllChangedFiles(diff);
+			new CodeFileExtractorAndMaintainer(projectKey).maintainChangedFilesInDatabase(diff);
 		}
 		return gitClient;
 	}
@@ -246,4 +246,5 @@ public class GitClient {
 		}
 		return diffForDefaultBranches;
 	}
+
 }

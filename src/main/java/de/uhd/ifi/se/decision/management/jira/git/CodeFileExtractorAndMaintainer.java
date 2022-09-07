@@ -28,6 +28,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
  * improvement and maintenance by developers. Developers can manually change
  * links. 3) Automatic trace link maintenance during git fetch based on recent
  * changes.
+ * 
+ * @issue Which files should be integrated into the knowledge graph?
+ * @decision Integrate all Java files into the knowledge graph and link them to
+ *           the respective Jira issues (e.g., work items or requirements)!
  */
 public class CodeFileExtractorAndMaintainer {
 
@@ -41,35 +45,15 @@ public class CodeFileExtractorAndMaintainer {
 	}
 
 	/**
-	 * Extracts all code files and the decision knowledge from code comments within
-	 * the {@link Diff}. Links the files to the respective Jira Jira issues (e.g.,
-	 * work items or requirements). Extracting means: 1) Adding code files to the
-	 * {@link CodeClassInDatabase}, 2) adding links to the {@link LinkInDatabase},
-	 * 3) adding code files and links to the {@link KnowledgeGraph}.
-	 * 
-	 * @param diff
-	 *            {@link Diff} object with added, updated, or deleted
-	 *            {@link ChangedFile}s.
-	 * 
-	 * @issue Which files should be integrated into the knowledge graph?
-	 * @decision Integrate all Java files into the knowledge graph and link them to
-	 *           the respective Jira issues (e.g., work items or requirements)!
-	 */
-	public void extractAllChangedFiles(Diff diff) {
-		maintainChangedFilesInDatabase(diff);
-		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName())
-				.collect(Collectors.toList());
-		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
-			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
-				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
-			}
-		}
-	}
-
-	/**
 	 * Either inserts, updates, or deletes the code files in the diff in the
 	 * database depending on its change type (see {@link ChangedFile#getDiffEntry()}
-	 * and {@link DiffEntry#getChangeType()}.
+	 * and {@link DiffEntry#getChangeType()}. Also extracts the decision knowledge
+	 * from code comments within the {@link Diff}. Links the files to the respective
+	 * Jira issues (e.g., work items or requirements).
+	 * 
+	 * Code extraction means: 1) Adding code files to the
+	 * {@link CodeClassInDatabase}, 2) adding links to the {@link LinkInDatabase},
+	 * 3) adding code files and links to the {@link KnowledgeGraph}.
 	 * 
 	 * @param diff
 	 *            {@link Diff} object with recently added, updated, or deleted
@@ -126,5 +110,22 @@ public class CodeFileExtractorAndMaintainer {
 			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
 			break;
 		}
+	}
+
+	public static boolean deleteOldFiles(String projectKey) {
+		GitClient gitClient = GitClient.getInstance(projectKey);
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+		return new CodeFileExtractorAndMaintainer(projectKey).deleteOldFiles(diff);
+	}
+
+	public boolean deleteOldFiles(Diff diff) {
+		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName())
+				.collect(Collectors.toList());
+		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
+			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
+				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
+			}
+		}
+		return false;
 	}
 }
