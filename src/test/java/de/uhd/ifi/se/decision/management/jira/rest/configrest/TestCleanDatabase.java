@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
@@ -44,7 +43,6 @@ public class TestCleanDatabase extends TestSetUpGit {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testRequestExistsProjectKeyExists() {
 		JiraIssues.addComment(JiraIssues.getTestJiraIssues().get(2));
 		JiraIssues.addCommentsToIssue(JiraIssues.getTestJiraIssues().get(0), "Commit Hash: 42\n Author: dev0");

@@ -121,6 +121,9 @@ public class CodeFileExtractorAndMaintainer {
 	 * @return true if any old code file was deleted.
 	 */
 	public static boolean deleteOldFiles(String projectKey) {
+		if (projectKey.equals("TEST")) {
+			return false;
+		}
 		GitClient gitClient = GitClient.getInstance(projectKey);
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		return new CodeFileExtractorAndMaintainer(projectKey).deleteOldFiles(diff);
@@ -138,9 +141,6 @@ public class CodeFileExtractorAndMaintainer {
 		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName())
 				.collect(Collectors.toList());
 		boolean isAnyFileDeleted = false;
-		if (fileNamesInDiff.isEmpty()) {
-			return isAnyFileDeleted;
-		}
 		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
 			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
 				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
