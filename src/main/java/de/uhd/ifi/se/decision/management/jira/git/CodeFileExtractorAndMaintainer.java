@@ -112,20 +112,38 @@ public class CodeFileExtractorAndMaintainer {
 		}
 	}
 
+	/**
+	 * Deletes code files from database and the knowledge graph that do not exist in
+	 * the latest version (tagged with HEAD) in the git repository anymore.
+	 * 
+	 * @param projectKey
+	 *            of a Jira project.
+	 * @return true if any old code file was deleted.
+	 */
 	public static boolean deleteOldFiles(String projectKey) {
 		GitClient gitClient = GitClient.getInstance(projectKey);
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		return new CodeFileExtractorAndMaintainer(projectKey).deleteOldFiles(diff);
 	}
 
+	/**
+	 * Deletes code files from database and the knowledge graph that do not exist in
+	 * the latest version (tagged with HEAD) in the git repository anymore.
+	 * 
+	 * @param diff
+	 *            for the current version in git.
+	 * @return true if any old code file was deleted.
+	 */
 	public boolean deleteOldFiles(Diff diff) {
 		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName())
 				.collect(Collectors.toList());
+		boolean isAnyFileDeleted = false;
 		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
 			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
 				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
+				isAnyFileDeleted = true;
 			}
 		}
-		return false;
+		return isAnyFileDeleted;
 	}
 }

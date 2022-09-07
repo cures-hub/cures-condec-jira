@@ -10,13 +10,13 @@ import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCleanDatabase extends TestSetUp {
+public class TestCleanDatabase extends TestSetUpGit {
 
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
