@@ -132,7 +132,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(String fileContent) {
 		this();
 		this.fileContent = fileContent;
-		this.setLineCount(this.countNumberOfNonEmptyLines());
+		this.setLineCount(countNumberOfNonEmptyLines(fileContent));
 		this.methodDeclarations = parseMethods();
 	}
 
@@ -148,7 +148,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
 		this();
 		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
-		this.setLineCount(this.countNumberOfNonEmptyLines());
+		this.setLineCount(countNumberOfNonEmptyLines(fileContent));
 		this.diffEntry = diffEntry;
 		this.editList = editList;
 		this.methodDeclarations = parseMethods();
@@ -365,8 +365,7 @@ public class ChangedFile extends KnowledgeElement {
 		return diffEntry.getChangeType() != ChangeType.DELETE;
 	}
 
-	public int countNumberOfNonEmptyLines() {
-		// return fileContent.split("\n").length;
+	public static int countNumberOfNonEmptyLines(String fileContent) {
 		if (fileContent == null) {
 			return 0;
 		}
