@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -112,13 +113,18 @@ public class GeneralMetricCalculator {
 		}
 		Map<Integer, List<KnowledgeElement>> numberOfLinkedJiraIssuesPerCodeFile = new HashMap<>();
 		for (KnowledgeElement codeFile : codeFiles) {
-			int numberOfLinkedJiraIssues = codeFile.getLinks().size();
+			int numberOfLinkedJiraIssues = (int) codeFile.getLinks().stream().filter(link -> isLinkToJiraIssue(link))
+					.count();
 			if (!numberOfLinkedJiraIssuesPerCodeFile.containsKey(numberOfLinkedJiraIssues)) {
 				numberOfLinkedJiraIssuesPerCodeFile.put(numberOfLinkedJiraIssues, new ArrayList<>());
 			}
 			numberOfLinkedJiraIssuesPerCodeFile.get(numberOfLinkedJiraIssues).add(codeFile);
 		}
 		return numberOfLinkedJiraIssuesPerCodeFile;
+	}
+
+	public static boolean isLinkToJiraIssue(Link link) {
+		return link.getBothElements().stream().anyMatch(element -> element.getType() == KnowledgeType.OTHER);
 	}
 
 	/**
