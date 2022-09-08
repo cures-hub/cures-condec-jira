@@ -57,12 +57,23 @@ define("dashboard/generalMetrics", [], function() {
 	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
 		var colorPalette = ["#EE6666", "#91CC75"];
 
-		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue",
+		let commentsSum = 0;
+		for (const [commentsCount, elements] of generalMetrics.numberOfCommentsPerJiraIssueMap) {
+			commentsSum += parseInt(commentsCount) * elements.length;
+		}
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue",
+			`#Comments per Jira Issue\n Sum: ${commentsSum}`,
 			generalMetrics.numberOfCommentsPerJiraIssueMap, viewId);
-		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue\n Transcribed into Comments",
+
+		let commitsSum = 0;
+		for (const [commitsCount, elements] of generalMetrics.numberOfCommitsPerJiraIssueMap) {
+			commitsSum += parseInt(commitsCount) * elements.length;
+		}
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue",
+			`#Commits per Jira Issue\n Transcribed into Comments\n Sum: ${commitsSum}`,
 			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
 
-		let numberOfUnlinkedFiles = generalMetrics.numberOfLinkedJiraIssuesForCodeMap.get("0").length;
+		const numberOfUnlinkedFiles = generalMetrics.numberOfLinkedJiraIssuesForCodeMap.get("0").length;
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinkedJiraIssuesPerCodeFile",
 			`#Linked Jira Issues\n Per Code File\n #Unlinked Files: ${numberOfUnlinkedFiles}`,
 			generalMetrics.numberOfLinkedJiraIssuesForCodeMap, viewId);

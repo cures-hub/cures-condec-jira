@@ -32,6 +32,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.git.parser.MethodVisitor;
@@ -212,7 +213,7 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public String getFileEnding() {
-		return this.getName().substring(getName().lastIndexOf(".") + 1).toLowerCase();
+		return GitConfiguration.getFileEnding(getName());
 	}
 
 	@Override

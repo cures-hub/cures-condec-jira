@@ -87,7 +87,11 @@ public class GitClient {
 		}
 		if (extractAllCodeKnowledge) {
 			Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-			new CodeFileExtractorAndMaintainer(projectKey).maintainChangedFilesInDatabase(diff);
+			CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer(
+					projectKey);
+			codeFileExtractorAndMaintainer.deleteOldFiles(diff);
+			System.out.println("old files deleted");
+			codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		}
 		return gitClient;
 	}

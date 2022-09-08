@@ -188,4 +188,21 @@ public class GitConfiguration {
 		}
 		return null;
 	}
+
+	public FileType getFileTypeForName(String name) {
+		return getFileTypeForEnding(getFileEnding(name));
+	}
+
+	public boolean shouldFileBeExtracted(String name) {
+		for (FileType fileTypeToExtract : fileTypesToExtract) {
+			if (fileTypeToExtract.equals(getFileTypeForName(name))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static String getFileEnding(String name) {
+		return name.substring(name.lastIndexOf(".") + 1).toLowerCase();
+	}
 }

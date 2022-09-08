@@ -33,11 +33,13 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
+import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Retrieves commits and code changes ({@link ChangedFile}s) from one git
@@ -55,6 +57,7 @@ public class GitClientForSingleRepository {
 
 	private Git git;
 	private String projectKey;
+	private GitConfiguration gitConfiguration;
 	private GitRepositoryConfiguration gitRepositoryConfiguration;
 	private GitRepositoryFileSystemManager fileSystemManager;
 
@@ -63,6 +66,7 @@ public class GitClientForSingleRepository {
 	public GitClientForSingleRepository(String projectKey, GitRepositoryConfiguration gitRepositoryConfiguration) {
 		this.projectKey = projectKey;
 		this.gitRepositoryConfiguration = gitRepositoryConfiguration;
+		this.gitConfiguration = ConfigPersistenceManager.getGitConfiguration(projectKey);
 		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitRepositoryConfiguration.getRepoUri());
 		fetchOrClone();
 	}
@@ -183,17 +187,18 @@ public class GitClientForSingleRepository {
 	}
 
 	private DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
-		for (RevCommit commit : commits) {
-			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
-			for (DiffEntry diffEntry : diffEntriesInCommit) {
-				for (ChangedFile file : diff.getChangedFiles()) {
-					if (diffEntry.getNewPath().contains(file.getName())) {
+		for (ChangedFile file : diff.getChangedFiles()) {
+			for (RevCommit commit : commits) {
+				List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
+				for (DiffEntry diffEntry : diffEntriesInCommit) {
+					String diffEntryPath = diffEntry.getNewPath();
+					if (diffEntryPath.endsWith(file.getName())) {
 						file.addCommit(commit);
 					}
 				}
 			}
-
 		}
+
 		return diff;
 	}
 
@@ -313,6 +318,9 @@ public class GitClientForSingleRepository {
 			ObjectId treeId) {
 		DiffForSingleRef diff = new DiffForSingleRef();
 		for (DiffEntry diffEntry : diffEntries) {
+			if (!gitConfiguration.shouldFileBeExtracted(diffEntry.getNewPath())) {
+				continue;
+			}
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, git.getRepository());
@@ -333,6 +341,7 @@ public class GitClientForSingleRepository {
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
+		diffFormatter.setBinaryFileThreshold(2042);
 		return diffFormatter;
 	}
 
@@ -381,7 +390,8 @@ public class GitClientForSingleRepository {
 	public Ref getDefaultRef() {
 		List<Ref> refs = getRefs();
 		for (Ref ref : refs) {
-			if (ref.getName().endsWith(gitRepositoryConfiguration.getDefaultBranch())) {
+			if (ref.getName().equalsIgnoreCase(gitRepositoryConfiguration.getDefaultBranch())
+					|| ref.getName().endsWith("/" + gitRepositoryConfiguration.getDefaultBranch())) {
 				return ref;
 			}
 		}
@@ -549,8 +559,12 @@ public class GitClientForSingleRepository {
 			return new DiffForSingleRef();
 		}
 		DiffForSingleRef diff = getDiff(commits.get(1), commits.get(commits.size() - 1));
+		System.out.println("Diff calculated");
 		diff.setCommits(commits);
-		addCommitsToChangedFiles(diff, commits);
+
+		addCommitsToChangedFiles(diff,
+				commits.stream().filter(commit -> !(commit.getParentCount() > 1)).collect(Collectors.toList()));
+		System.out.println("Added commits");
 		return diff;
 	}
 }
