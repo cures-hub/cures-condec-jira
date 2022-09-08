@@ -26,7 +26,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.eclipse.jgit.util.io.NullOutputStream;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -328,7 +328,7 @@ public class GitClientForSingleRepository {
 	}
 
 	private DiffFormatter getDiffFormatter() {
-		DiffFormatter diffFormatter = new DiffFormatter(NullOutputStream.INSTANCE);
+		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
 		Repository repository = git.getRepository();
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
@@ -451,14 +451,29 @@ public class GitClientForSingleRepository {
 	 */
 	public Diff getDiffForFeatureBranchWithName(String branchName) {
 		Diff diff = new Diff();
-		List<Ref> refsWithName = getRefs().stream()
-				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
+		List<Ref> refsWithName = getRefs().stream().filter(ref -> isRefWithName(ref, branchName))
 				.collect(Collectors.toList());
 		for (Ref ref : refsWithName) {
 			DiffForSingleRef diffForSingleRef = getDiffForFeatureBranch(ref);
 			diff.add(diffForSingleRef);
 		}
 		return diff;
+	}
+
+	/**
+	 * @param ref
+	 *            feature branch as a {@link Ref} object.
+	 * @param branchName
+	 *            of a feature branch with or without Jira issue key.
+	 * @return if the {@link Ref} object is the branch with the given name (can be a
+	 *         Jira issue key).
+	 */
+	public static boolean isRefWithName(Ref ref, String branchName) {
+		boolean isRefWithName = ref.getName().toUpperCase().contains(branchName.toUpperCase());
+		String ticketKey = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(ref.getName().toUpperCase());
+		// check whether Jira issue key is exactly the same if there is a Jira issue key
+		isRefWithName &= ticketKey.isBlank() || ticketKey.equalsIgnoreCase(branchName);
+		return isRefWithName;
 	}
 
 	public DiffForSingleRef getDiffForFeatureBranch(Ref ref) {
