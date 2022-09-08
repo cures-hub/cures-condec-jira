@@ -73,8 +73,6 @@ public class CodeFileExtractorAndMaintainer {
 		for (ChangedFile changedFile : diff.getChangedFiles()) {
 			addUpdateOrDeleteChangedFileInDatabase(changedFile);
 		}
-
-		System.out.println("Maintained code in database");
 	}
 
 	/**

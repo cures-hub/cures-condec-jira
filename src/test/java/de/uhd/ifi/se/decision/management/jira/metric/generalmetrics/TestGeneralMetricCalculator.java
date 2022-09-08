@@ -138,4 +138,25 @@ public class TestGeneralMetricCalculator extends TestSetUpGit {
 		assertEquals(1, graph.getElements(KnowledgeType.CODE).size());
 		assertTrue(new GeneralMetricCalculator(filterSettings).getNumberOfLinkedJiraIssuesForCodeMap().size() > 0);
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetLinesOfCode() {
+		assertEquals(0, calculator.getNumberOfLinkedJiraIssuesForCodeMap().size());
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setActivated(true);
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		ChangedFile codeFile = new ChangedFile();
+		codeFile.setId(42);
+		codeFile.setSummary("GodClass.java");
+		codeFile.setLineCount(42);
+		codeFile.setProject("TEST");
+		KnowledgeGraph graph = KnowledgeGraph.getInstance("TEST");
+		Link link = new Link(KnowledgeElements.getTestKnowledgeElement(), codeFile);
+		graph.addEdge(link);
+		filterSettings.setKnowledgeTypes(Set.of("Code"));
+
+		assertEquals(1, graph.getElements(KnowledgeType.CODE).size());
+		assertTrue(new GeneralMetricCalculator(filterSettings).getLinesOfCodeMap().size() > 0);
+	}
 }

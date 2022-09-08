@@ -187,10 +187,13 @@ public class GitClientForSingleRepository {
 	}
 
 	private DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
-		for (ChangedFile file : diff.getChangedFiles()) {
-			for (RevCommit commit : commits) {
-				List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
-				for (DiffEntry diffEntry : diffEntriesInCommit) {
+		for (RevCommit commit : commits) {
+			if (commit.getParentCount() > 1) {
+				continue;
+			}
+			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
+			for (DiffEntry diffEntry : diffEntriesInCommit) {
+				for (ChangedFile file : diff.getChangedFiles()) {
 					String diffEntryPath = diffEntry.getNewPath();
 					if (diffEntryPath.endsWith(file.getName())) {
 						file.addCommit(commit);
@@ -559,12 +562,9 @@ public class GitClientForSingleRepository {
 			return new DiffForSingleRef();
 		}
 		DiffForSingleRef diff = getDiff(commits.get(1), commits.get(commits.size() - 1));
-		System.out.println("Diff calculated");
 		diff.setCommits(commits);
 
-		addCommitsToChangedFiles(diff,
-				commits.stream().filter(commit -> !(commit.getParentCount() > 1)).collect(Collectors.toList()));
-		System.out.println("Added commits");
+		addCommitsToChangedFiles(diff, commits);
 		return diff;
 	}
 }

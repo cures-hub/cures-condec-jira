@@ -73,7 +73,10 @@ define("dashboard/generalMetrics", [], function() {
 			`#Commits per Jira Issue\n Transcribed into Comments\n Sum: ${commitsSum}`,
 			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
 
-		const numberOfUnlinkedFiles = generalMetrics.numberOfLinkedJiraIssuesForCodeMap.get("0").length;
+		let numberOfUnlinkedFiles = 0;
+		if (generalMetrics.numberOfLinkedJiraIssuesForCodeMap.has("0")) {
+			numberOfUnlinkedFiles = generalMetrics.numberOfLinkedJiraIssuesForCodeMap.get("0").length;
+		}
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinkedJiraIssuesPerCodeFile",
 			`#Linked Jira Issues\n Per Code File\n #Unlinked Files: ${numberOfUnlinkedFiles}`,
 			generalMetrics.numberOfLinkedJiraIssuesForCodeMap, viewId);
