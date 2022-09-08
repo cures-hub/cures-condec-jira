@@ -74,7 +74,16 @@ public class GitClientForSingleRepository {
 		for (FileType fileType : ConfigPersistenceManager.getGitConfiguration(projectKey).getFileTypesToExtract()) {
 			singleFileEndingFilters.add(PathSuffixFilter.create("." + fileType.getFileEnding()));
 		}
-		fileEndingsFilter = OrTreeFilter.create(singleFileEndingFilters);
+		switch (singleFileEndingFilters.size()) {
+		case 0:
+			fileEndingsFilter = PathSuffixFilter.create("");
+			break;
+		case 1:
+			fileEndingsFilter = singleFileEndingFilters.get(0);
+			break;
+		default:
+			fileEndingsFilter = OrTreeFilter.create(singleFileEndingFilters);
+		}
 		fetchOrClone();
 	}
 
