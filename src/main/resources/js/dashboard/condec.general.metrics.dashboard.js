@@ -59,7 +59,7 @@ define("dashboard/generalMetrics", [], function() {
 
 		let commentsSum = 0;
 		for (const [commentsCount, elements] of generalMetrics.numberOfCommentsPerJiraIssueMap) {
-			commentsSum += parseInt(commentsCount) * elements.length;
+			commentsSum += parseInt(commentsCount, 10) * elements.length;
 		}
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue",
 			`#Comments per Jira Issue\n Sum: ${commentsSum}`,
@@ -67,7 +67,7 @@ define("dashboard/generalMetrics", [], function() {
 
 		let commitsSum = 0;
 		for (const [commitsCount, elements] of generalMetrics.numberOfCommitsPerJiraIssueMap) {
-			commitsSum += parseInt(commitsCount) * elements.length;
+			commitsSum += parseInt(commitsCount, 10) * elements.length;
 		}
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue",
 			`#Commits per Jira Issue\n Transcribed into Comments\n Sum: ${commitsSum}`,
@@ -83,7 +83,7 @@ define("dashboard/generalMetrics", [], function() {
 
 		let linesOfCodeSum = 0;
 		for (const [linesOfCode, elements] of generalMetrics.linesOfCodeMap) {
-			linesOfCodeSum += parseInt(linesOfCode) * elements.length;
+			linesOfCodeSum += parseInt(linesOfCode, 10) * elements.length;
 		}
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinesOfCode",
 			`#Lines\n Per Code File\n Sum: ${linesOfCodeSum}`,

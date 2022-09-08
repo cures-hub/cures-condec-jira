@@ -109,9 +109,6 @@ public class GeneralMetricCalculator {
 	 */
 	@XmlElement
 	public Map<Integer, List<KnowledgeElement>> getNumberOfLinkedJiraIssuesForCodeMap() {
-		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
-			return new HashMap<>();
-		}
 		Map<Integer, List<KnowledgeElement>> numberOfLinkedJiraIssuesPerCodeFile = new HashMap<>();
 		for (KnowledgeElement codeFile : codeFiles) {
 			int numberOfLinkedJiraIssues = (int) codeFile.getLinks().stream().filter(link -> isLinkToJiraIssue(link))
@@ -134,9 +131,6 @@ public class GeneralMetricCalculator {
 	 */
 	@XmlElement
 	public Map<Integer, List<KnowledgeElement>> getLinesOfCodeMap() {
-		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
-			return new HashMap<>();
-		}
 		Map<Integer, List<KnowledgeElement>> linesOfCodeMap = new HashMap<>();
 		for (KnowledgeElement codeFile : codeFiles) {
 			if (!(codeFile instanceof ChangedFile)) {
