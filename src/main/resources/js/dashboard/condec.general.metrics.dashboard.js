@@ -61,8 +61,19 @@ define("dashboard/generalMetrics", [], function() {
 			generalMetrics.numberOfCommentsPerJiraIssueMap, viewId);
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue\n Transcribed into Comments",
 			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
-		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinkedJiraIssuesPerCodeFile", "#Linked Jira Issues\n Per Code File",
+		
+		let numberOfUnlinkedFiles = generalMetrics.numberOfLinkedJiraIssuesForCodeMap.get("0").length;
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinkedJiraIssuesPerCodeFile",
+			"#Linked Jira Issues\n Per Code File\n #Unlinked Files: " + numberOfUnlinkedFiles,
 			generalMetrics.numberOfLinkedJiraIssuesForCodeMap, viewId);
+
+		let linesOfCodeSum = 0;
+		for (const [linesOfCode, elements] of generalMetrics.linesOfCodeMap) {
+			linesOfCodeSum += parseInt(linesOfCode);
+		}
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinesOfCode",
+			"#Lines\n Per Code File\n Sum: " + linesOfCodeSum,
+			generalMetrics.linesOfCodeMap, viewId);
 
 		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFilesMap,
 			"piechartRich-ReqCodeSummary", "#Requirements and Code Files", viewId);

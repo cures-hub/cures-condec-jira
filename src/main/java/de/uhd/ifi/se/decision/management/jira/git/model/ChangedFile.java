@@ -132,7 +132,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(String fileContent) {
 		this();
 		this.fileContent = fileContent;
-		this.setLineCount(this.getNumberOfLines());
+		this.setLineCount(this.countNumberOfNonEmptyLines());
 		this.methodDeclarations = parseMethods();
 	}
 
@@ -148,7 +148,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
 		this();
 		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
-		this.setLineCount(this.getNumberOfLines());
+		this.setLineCount(this.countNumberOfNonEmptyLines());
 		this.diffEntry = diffEntry;
 		this.editList = editList;
 		this.methodDeclarations = parseMethods();
@@ -365,8 +365,28 @@ public class ChangedFile extends KnowledgeElement {
 		return diffEntry.getChangeType() != ChangeType.DELETE;
 	}
 
-	public int getNumberOfLines() {
-		return fileContent.split("\n").length;
+	public int countNumberOfNonEmptyLines() {
+		// return fileContent.split("\n").length;
+		if (fileContent == null) {
+			return 0;
+		}
+		int lines = 0;
+		boolean onEmptyLine = true;
+		final char[] chars = fileContent.toCharArray();
+		for (char aChar : chars) {
+			if (aChar == '\n' || aChar == '\r') {
+				if (!onEmptyLine) {
+					lines++;
+					onEmptyLine = true;
+				}
+			} else if (aChar != ' ' && aChar != '\t') {
+				onEmptyLine = false;
+			}
+		}
+		if (!onEmptyLine) {
+			lines++;
+		}
+		return lines;
 	}
 
 	/**

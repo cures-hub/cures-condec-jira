@@ -17,6 +17,7 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
@@ -125,6 +126,30 @@ public class GeneralMetricCalculator {
 
 	public static boolean isLinkToJiraIssue(Link link) {
 		return link.getBothElements().stream().anyMatch(element -> element.getType() == KnowledgeType.OTHER);
+	}
+
+	/**
+	 * @return map with lines of code per code file as keys and elements (code
+	 *         files) that have the respective number as map values.
+	 */
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getLinesOfCodeMap() {
+		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
+			return new HashMap<>();
+		}
+		Map<Integer, List<KnowledgeElement>> linesOfCodeMap = new HashMap<>();
+		for (KnowledgeElement codeFile : codeFiles) {
+			if (!(codeFile instanceof ChangedFile)) {
+				continue;
+			}
+
+			int linesOfCode = ((ChangedFile) codeFile).getLineCount();
+			if (!linesOfCodeMap.containsKey(linesOfCode)) {
+				linesOfCodeMap.put(linesOfCode, new ArrayList<>());
+			}
+			linesOfCodeMap.get(linesOfCode).add(codeFile);
+		}
+		return linesOfCodeMap;
 	}
 
 	/**
