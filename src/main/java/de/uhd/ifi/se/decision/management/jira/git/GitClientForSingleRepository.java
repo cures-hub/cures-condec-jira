@@ -26,6 +26,9 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.treewalk.filter.OrTreeFilter;
+import org.eclipse.jgit.treewalk.filter.PathSuffixFilter;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +36,11 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.Lists;
 
-import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
+import de.uhd.ifi.se.decision.management.jira.git.model.FileType;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -57,17 +60,21 @@ public class GitClientForSingleRepository {
 
 	private Git git;
 	private String projectKey;
-	private GitConfiguration gitConfiguration;
 	private GitRepositoryConfiguration gitRepositoryConfiguration;
 	private GitRepositoryFileSystemManager fileSystemManager;
+	private TreeFilter fileEndingsFilter;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
 	public GitClientForSingleRepository(String projectKey, GitRepositoryConfiguration gitRepositoryConfiguration) {
 		this.projectKey = projectKey;
 		this.gitRepositoryConfiguration = gitRepositoryConfiguration;
-		this.gitConfiguration = ConfigPersistenceManager.getGitConfiguration(projectKey);
 		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitRepositoryConfiguration.getRepoUri());
+		List<TreeFilter> singleFileEndingFilters = new ArrayList<>();
+		for (FileType fileType : ConfigPersistenceManager.getGitConfiguration(projectKey).getFileTypesToExtract()) {
+			singleFileEndingFilters.add(PathSuffixFilter.create("." + fileType.getFileEnding()));
+		}
+		fileEndingsFilter = OrTreeFilter.create(singleFileEndingFilters);
 		fetchOrClone();
 	}
 
@@ -321,9 +328,6 @@ public class GitClientForSingleRepository {
 			ObjectId treeId) {
 		DiffForSingleRef diff = new DiffForSingleRef();
 		for (DiffEntry diffEntry : diffEntries) {
-			if (!gitConfiguration.shouldFileBeExtracted(diffEntry.getNewPath())) {
-				continue;
-			}
 			try {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				ChangedFile changedFile = new ChangedFile(diffEntry, editList, treeId, git.getRepository());
@@ -345,6 +349,7 @@ public class GitClientForSingleRepository {
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
 		diffFormatter.setBinaryFileThreshold(2042);
+		diffFormatter.setPathFilter(fileEndingsFilter);
 		return diffFormatter;
 	}
 

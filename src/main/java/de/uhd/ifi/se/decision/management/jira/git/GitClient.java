@@ -90,7 +90,6 @@ public class GitClient {
 			CodeFileExtractorAndMaintainer codeFileExtractorAndMaintainer = new CodeFileExtractorAndMaintainer(
 					projectKey);
 			codeFileExtractorAndMaintainer.deleteOldFiles(diff);
-			System.out.println("old files deleted");
 			codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		}
 		return gitClient;
