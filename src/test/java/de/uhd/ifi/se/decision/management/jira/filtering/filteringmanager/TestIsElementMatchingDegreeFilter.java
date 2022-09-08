@@ -53,4 +53,11 @@ public class TestIsElementMatchingDegreeFilter extends TestSetUp {
 		assertTrue(filteringManager.isElementMatchingDegreeFilter(element));
 	}
 
+	@Test
+	public void testMinDegreeAndMaxDegreeZero() {
+		filteringManager.getFilterSettings().setMinDegree(0);
+		filteringManager.getFilterSettings().setMaxDegree(0);
+		assertFalse(filteringManager.isElementMatchingDegreeFilter(element));
+	}
+
 }

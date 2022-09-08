@@ -62,6 +62,7 @@ public class GeneralMetricCalculator {
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
 	private Set<KnowledgeElement> knowledgeElements;
+	private List<KnowledgeElement> codeFiles;
 	private CommentMetricCalculator commentMetricCalculator;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
@@ -74,6 +75,7 @@ public class GeneralMetricCalculator {
 		this.jiraIssues = KnowledgePersistenceManager.getInstance(filterSettings.getProjectKey()).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
+		this.codeFiles = graph.getElements(KnowledgeType.CODE);
 	}
 
 	/**
@@ -96,6 +98,27 @@ public class GeneralMetricCalculator {
 			return new HashMap<>();
 		}
 		return commentMetricCalculator.getNumberOfCommitsPerJiraIssueMap();
+	}
+
+	/**
+	 * @return map with number of linked Jira issues per code file as keys and
+	 *         elements (code files) that have the respective number of Jira issues
+	 *         linked as map values.
+	 */
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getNumberOfLinkedJiraIssuesForCodeMap() {
+		if (!ConfigPersistenceManager.getGitConfiguration(filterSettings.getProjectKey()).isActivated()) {
+			return new HashMap<>();
+		}
+		Map<Integer, List<KnowledgeElement>> numberOfLinkedJiraIssuesPerCodeFile = new HashMap<>();
+		for (KnowledgeElement codeFile : codeFiles) {
+			int numberOfLinkedJiraIssues = codeFile.getLinks().size();
+			if (!numberOfLinkedJiraIssuesPerCodeFile.containsKey(numberOfLinkedJiraIssues)) {
+				numberOfLinkedJiraIssuesPerCodeFile.put(numberOfLinkedJiraIssues, new ArrayList<>());
+			}
+			numberOfLinkedJiraIssuesPerCodeFile.get(numberOfLinkedJiraIssues).add(codeFile);
+		}
+		return numberOfLinkedJiraIssuesPerCodeFile;
 	}
 
 	/**
@@ -135,7 +158,7 @@ public class GeneralMetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", requirements);
-		summaryMap.put("Code Files", graph.getElements(KnowledgeType.CODE));
+		summaryMap.put("Code Files", codeFiles);
 		return summaryMap;
 	}
 

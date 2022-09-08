@@ -60,6 +60,9 @@ define("dashboard/generalMetrics", [], function() {
 			generalMetrics.numberOfCommentsPerJiraIssueMap, viewId);
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue\n Transcribed into Comments",
 			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinkedJiraIssuesPerCodeFile", "#Linked Jira Issues\n Per Code File",
+				generalMetrics.numberOfLinkedJiraIssuesForCodeMap, viewId);
+		
 		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFilesMap,
 			"piechartRich-ReqCodeSummary", "#Requirements and Code Files", viewId);
 		conDecDashboard.createPieChartWithListOfElements(generalMetrics.originMap,
