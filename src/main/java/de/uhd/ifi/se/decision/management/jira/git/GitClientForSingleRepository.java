@@ -470,9 +470,11 @@ public class GitClientForSingleRepository {
 	 */
 	public static boolean isRefWithName(Ref ref, String branchName) {
 		boolean isRefWithName = ref.getName().toUpperCase().contains(branchName.toUpperCase());
-		String ticketKey = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(ref.getName().toUpperCase());
+		String ticketKeyInRefName = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(ref.getName());
+		String ticketKeyInGivenBranchName = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(branchName);
 		// check whether Jira issue key is exactly the same if there is a Jira issue key
-		isRefWithName &= ticketKey.isBlank() || ticketKey.equalsIgnoreCase(branchName);
+		isRefWithName &= ticketKeyInGivenBranchName.isBlank()
+				|| ticketKeyInRefName.equalsIgnoreCase(ticketKeyInGivenBranchName);
 		return isRefWithName;
 	}
 
