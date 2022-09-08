@@ -4,6 +4,7 @@
  * Requires
  * condec.dashboard.js
  */
+/* global conDecDashboard */
 define("dashboard/generalMetrics", [], function() {
 	var dashboardAPI;
 	const viewId = "general-metrics";
@@ -61,8 +62,8 @@ define("dashboard/generalMetrics", [], function() {
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue\n Transcribed into Comments",
 			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
 		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinkedJiraIssuesPerCodeFile", "#Linked Jira Issues\n Per Code File",
-				generalMetrics.numberOfLinkedJiraIssuesForCodeMap, viewId);
-		
+			generalMetrics.numberOfLinkedJiraIssuesForCodeMap, viewId);
+
 		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFilesMap,
 			"piechartRich-ReqCodeSummary", "#Requirements and Code Files", viewId);
 		conDecDashboard.createPieChartWithListOfElements(generalMetrics.originMap,
