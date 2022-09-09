@@ -418,7 +418,17 @@ public class ChangedFile extends KnowledgeElement {
 	 * @return true if this file is a test class (e.g. for unit testing).
 	 */
 	public boolean isTestCodeFile() {
-		return getSummary().contains("Test");
+		return isTestCodeFile(getDescription());
+	}
+
+	/**
+	 * @param path
+	 *            file path.
+	 * @return true if the file path indicates that the file is a test class (e.g.
+	 *         for unit testing).
+	 */
+	public static boolean isTestCodeFile(String path) {
+		return path.matches("(\\S+)?((Test)|(test\\.)|(test\\/))(\\S+)?");
 	}
 
 	/**
@@ -549,7 +559,7 @@ public class ChangedFile extends KnowledgeElement {
 
 	@Override
 	public String getDescription() {
-		return getTreeWalkPath();
+		return getTreeWalkPath() != null ? getTreeWalkPath() : getSummary();
 	}
 
 	public String getFileContent() {
@@ -610,10 +620,19 @@ public class ChangedFile extends KnowledgeElement {
 		return commits.add(revCommit);
 	}
 
+	/**
+	 * @return number of lines of code (LOC) calculated without empty lines and with
+	 *         comments.
+	 */
 	public int getLineCount() {
 		return lineCount;
 	}
 
+	/**
+	 * @param lineCount
+	 *            number of lines of code (LOC) calculated without empty lines and
+	 *            with comments.
+	 */
 	public void setLineCount(int lineCount) {
 		this.lineCount = lineCount;
 	}

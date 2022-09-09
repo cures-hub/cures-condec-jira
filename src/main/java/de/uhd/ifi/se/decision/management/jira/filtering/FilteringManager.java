@@ -357,7 +357,7 @@ public class FilteringManager {
 		if (element.getType() != KnowledgeType.CODE) {
 			return true;
 		}
-		return filterSettings.isTestCodeShown() || !element.getSummary().contains("Test");
+		return filterSettings.isTestCodeShown() || !ChangedFile.isTestCodeFile(element.getSummary());
 	}
 
 	/**
