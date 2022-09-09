@@ -449,7 +449,7 @@ public class ChangedFile extends KnowledgeElement {
 	 * @return all {@link CodeComment}s of this code file.
 	 */
 	public List<CodeComment> getCodeComments() {
-		if (fileContent != null && isCodeFileToExtract()) {
+		if (fileContent != null) {
 			CodeCommentParser commentParser = new CodeCommentParser();
 			return commentParser.getComments(this);
 		}

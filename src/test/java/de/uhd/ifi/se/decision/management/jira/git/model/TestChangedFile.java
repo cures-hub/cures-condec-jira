@@ -148,6 +148,7 @@ public class TestChangedFile extends TestSetUpGit {
 	@Test
 	public void testGetCodeCommentsEmpty() {
 		assertEquals(0, changedFile.getCodeComments().size());
+		assertEquals(0, new ChangedFile().getCodeComments().size());
 	}
 
 	@Test
