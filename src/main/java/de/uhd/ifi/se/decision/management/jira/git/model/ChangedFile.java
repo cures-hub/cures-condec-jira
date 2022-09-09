@@ -428,7 +428,7 @@ public class ChangedFile extends KnowledgeElement {
 	 *         for unit testing).
 	 */
 	public static boolean isTestCodeFile(String path) {
-		return path.matches("(\\S+)?((Test)|(test\\.)|(test\\/))(\\S+)?");
+		return path.matches("(\\S+)?((Test)|(test(s)?(\\.|\\/)))(\\S+)?");
 	}
 
 	/**

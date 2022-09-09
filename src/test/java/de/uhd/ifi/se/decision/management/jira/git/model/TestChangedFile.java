@@ -219,5 +219,6 @@ public class TestChangedFile extends TestSetUpGit {
 		assertFalse(ChangedFile.isTestCodeFile("/src/analytics.spec.ts"));
 		assertTrue(ChangedFile.isTestCodeFile("/src/analytics.spec.test.ts"));
 		assertTrue(ChangedFile.isTestCodeFile("/test/analytics.spec.ts"));
+		assertTrue(ChangedFile.isTestCodeFile("master/tests/unit/manageTags.spec.ts"));
 	}
 }
