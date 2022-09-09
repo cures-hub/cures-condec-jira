@@ -4,11 +4,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.git.GitClientForSingleRepository;
+import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfiguration;
+import de.uhd.ifi.se.decision.management.jira.git.model.FileType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class TestGitClientsForSingleRepos extends TestSetUpGit {
 
@@ -37,4 +43,21 @@ public class TestGitClientsForSingleRepos extends TestSetUpGit {
 				.fetchOrClone());
 	}
 
+	@Test
+	public void testNoFileTypesConfigured() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setFileTypesToExtract(new ArrayList<>());
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		assertNotNull(new GitClientForSingleRepository("TEST",
+				new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", "")));
+	}
+
+	@Test
+	public void testTwoFileTypesConfigured() {
+		GitConfiguration gitConfig = ConfigPersistenceManager.getGitConfiguration("TEST");
+		gitConfig.setFileTypesToExtract(List.of(FileType.java(), FileType.javascript()));
+		ConfigPersistenceManager.saveGitConfiguration("TEST", gitConfig);
+		assertNotNull(new GitClientForSingleRepository("TEST",
+				new GitRepositoryConfiguration(GIT_URI, "master", "NONE", "", "")));
+	}
 }
