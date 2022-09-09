@@ -116,26 +116,6 @@ public class CodeFileExtractorAndMaintainer {
 	 * Deletes code files from database and the knowledge graph that do not exist in
 	 * the latest version (tagged with HEAD) in the git repository anymore.
 	 * 
-	 * @param projectKey
-	 *            of a Jira project.
-	 * @return true if any old code file was deleted.
-	 */
-	public static boolean deleteOldFiles(String projectKey) {
-		if (projectKey.equals("TEST")) {
-			return false;
-		}
-		return deleteOldFiles(projectKey, GitClient.getInstance(projectKey));
-	}
-
-	public static boolean deleteOldFiles(String projectKey, GitClient gitClient) {
-		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		return new CodeFileExtractorAndMaintainer(projectKey).deleteOldFiles(diff);
-	}
-
-	/**
-	 * Deletes code files from database and the knowledge graph that do not exist in
-	 * the latest version (tagged with HEAD) in the git repository anymore.
-	 * 
 	 * @param diff
 	 *            for the current version in git.
 	 * @return true if any old code file was deleted.

@@ -201,4 +201,11 @@ public class TestChangedFile extends TestSetUpGit {
 	public void testCreatorName() {
 		assertEquals("", changedFile.getCreatorName());
 	}
+
+	@Test
+	public void testCountNumberOfNonEmptyLines() {
+		assertEquals(0, ChangedFile.countNumberOfNonEmptyLines(null));
+		assertEquals(0, ChangedFile.countNumberOfNonEmptyLines(""));
+		assertEquals(2, ChangedFile.countNumberOfNonEmptyLines("public class GodClass {\n \r\n \t\n }"));
+	}
 }

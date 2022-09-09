@@ -45,11 +45,16 @@ In particular, metrics are shown to answer the following questions:
 This dashboard item presents the following **metrics on the knowledge graph data structure** after the graph was filtered with the given filter settings: 
 - Number of comments per Jira issue
 - Number of commits per Jira issue
+- Number of linked Jira issues per code file (via commits with a Jira issue key in the commit message), number of unlinked code files that are not reachable from Jira tickets
+- Number of lines of code (LOC) per code file and total number of lines of code
 - Number of code files and requirements in the project
 - Number of rationale elements per origin/documentation location
 - Number of comments with and without decision knowledge
 - Number of decision knowledge elements per decision knowledge type
 - Number of knowledge elements fulfilling and violating the definition of done (DoD)
+
+The metrics involving code files work on those files that are added to the knowledge graph.
+The rationale manager can configure which file types (e.g. java, js, ts, ...) to include in the knowledge graph.
 
 ![General metrics dashboard item](../screenshots/dashboard_general_metrics.png)
 

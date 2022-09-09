@@ -76,7 +76,7 @@ public class GitClientForSingleRepository {
 		}
 		switch (singleFileEndingFilters.size()) {
 		case 0:
-			fileEndingsFilter = PathSuffixFilter.create("");
+			fileEndingsFilter = PathSuffixFilter.ALL.negate();
 			break;
 		case 1:
 			fileEndingsFilter = singleFileEndingFilters.get(0);
@@ -314,7 +314,7 @@ public class GitClientForSingleRepository {
 	 * @con Git blame is hard to use since a treeWalk path is needed for it.
 	 */
 	public List<DiffEntry> getDiffEntries(RevCommit firstCommit, RevCommit lastCommit, DiffFormatter diffFormatter) {
-		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+		List<DiffEntry> diffEntries = new ArrayList<>();
 		try {
 			if (firstCommit.getParentCount() > 0) {
 				RevCommit parentCommit = firstCommit.getParent(0);

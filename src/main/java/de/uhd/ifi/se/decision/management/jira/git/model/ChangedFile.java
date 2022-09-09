@@ -366,6 +366,21 @@ public class ChangedFile extends KnowledgeElement {
 		return diffEntry.getChangeType() != ChangeType.DELETE;
 	}
 
+	/**
+	 * @issue How to count the lines of code (LOC) of a code file?
+	 * @alternative Split the file content by their line endings to calculate the
+	 *              LOC: fileContent.split("\n").length;
+	 * @pro Simple to implement.
+	 * @con Does count empty lines without code.
+	 * @decision Use a method of the MetricsReloaded IDE plug-in to calculate the
+	 *           LOC!
+	 * @pro Does not count empty lines without code.
+	 * 
+	 * @param fileContent
+	 *            text as a String.
+	 * @return number of lines of code (LOC) including comments and without empty
+	 *         lines.
+	 */
 	public static int countNumberOfNonEmptyLines(String fileContent) {
 		if (fileContent == null) {
 			return 0;

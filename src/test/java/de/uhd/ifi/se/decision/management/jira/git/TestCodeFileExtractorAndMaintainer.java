@@ -107,6 +107,8 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		oldFile.setProject("TEST");
 		oldFile.setSummary("FileFromThePastAlreadyDeleted.java");
 		codeClassPersistenceManager.insertKnowledgeElement(oldFile, null);
-		assertTrue(CodeFileExtractorAndMaintainer.deleteOldFiles("TEST", gitClient));
+		GitClient.instances.put("TEST", gitClient);
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+		assertTrue(codeFileExtractorAndMaintainer.deleteOldFiles(diff));
 	}
 }
