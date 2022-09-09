@@ -72,6 +72,9 @@ public class VisTimeLine {
 
 	public boolean addElement(KnowledgeElement element) {
 		String userName = element.getCreatorName();
+		if (isPlacedAtUpdatingDate) {
+			userName = element.getLatestAuthorName();
+		}
 		if (userName == null) {
 			return false;
 		}
