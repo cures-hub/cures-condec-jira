@@ -148,6 +148,7 @@ public class TestChangedFile extends TestSetUpGit {
 	@Test
 	public void testGetCodeCommentsEmpty() {
 		assertEquals(0, changedFile.getCodeComments().size());
+		assertEquals(0, new ChangedFile().getCodeComments().size());
 	}
 
 	@Test
@@ -173,6 +174,7 @@ public class TestChangedFile extends TestSetUpGit {
 	@Test
 	public void testDescription() {
 		assertEquals("Tangled2.java", changedFile.getDescription());
+		assertEquals("", new ChangedFile().getDescription());
 	}
 
 	@Test
@@ -200,5 +202,23 @@ public class TestChangedFile extends TestSetUpGit {
 	@Test
 	public void testCreatorName() {
 		assertEquals("", changedFile.getCreatorName());
+	}
+
+	@Test
+	public void testCountNumberOfNonEmptyLines() {
+		assertEquals(0, ChangedFile.countNumberOfNonEmptyLines(null));
+		assertEquals(0, ChangedFile.countNumberOfNonEmptyLines(""));
+		assertEquals(2, ChangedFile.countNumberOfNonEmptyLines("public class GodClass {\n \r\n \t\n }"));
+	}
+
+	@Test
+	public void testIsTestCodeFile() {
+		assertFalse(ChangedFile.isTestCodeFile("GodClass.java"));
+		assertTrue(ChangedFile.isTestCodeFile("GodClassTest.java"));
+		assertTrue(ChangedFile.isTestCodeFile("TestGodClass.java"));
+		assertFalse(ChangedFile.isTestCodeFile("/src/analytics.spec.ts"));
+		assertTrue(ChangedFile.isTestCodeFile("/src/analytics.spec.test.ts"));
+		assertTrue(ChangedFile.isTestCodeFile("/test/analytics.spec.ts"));
+		assertTrue(ChangedFile.isTestCodeFile("master/tests/unit/manageTags.spec.ts"));
 	}
 }

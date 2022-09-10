@@ -26,6 +26,9 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.treewalk.filter.OrTreeFilter;
+import org.eclipse.jgit.treewalk.filter.PathSuffixFilter;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +40,9 @@ import de.uhd.ifi.se.decision.management.jira.git.config.GitRepositoryConfigurat
 import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.git.model.Diff;
 import de.uhd.ifi.se.decision.management.jira.git.model.DiffForSingleRef;
+import de.uhd.ifi.se.decision.management.jira.git.model.FileType;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Retrieves commits and code changes ({@link ChangedFile}s) from one git
@@ -57,6 +62,7 @@ public class GitClientForSingleRepository {
 	private String projectKey;
 	private GitRepositoryConfiguration gitRepositoryConfiguration;
 	private GitRepositoryFileSystemManager fileSystemManager;
+	private TreeFilter fileEndingsFilter;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientForSingleRepository.class);
 
@@ -64,6 +70,20 @@ public class GitClientForSingleRepository {
 		this.projectKey = projectKey;
 		this.gitRepositoryConfiguration = gitRepositoryConfiguration;
 		fileSystemManager = new GitRepositoryFileSystemManager(projectKey, gitRepositoryConfiguration.getRepoUri());
+		List<TreeFilter> singleFileEndingFilters = new ArrayList<>();
+		for (FileType fileType : ConfigPersistenceManager.getGitConfiguration(projectKey).getFileTypesToExtract()) {
+			singleFileEndingFilters.add(PathSuffixFilter.create("." + fileType.getFileEnding()));
+		}
+		switch (singleFileEndingFilters.size()) {
+		case 0:
+			fileEndingsFilter = PathSuffixFilter.ALL.negate();
+			break;
+		case 1:
+			fileEndingsFilter = singleFileEndingFilters.get(0);
+			break;
+		default:
+			fileEndingsFilter = OrTreeFilter.create(singleFileEndingFilters);
+		}
 		fetchOrClone();
 	}
 
@@ -184,15 +204,20 @@ public class GitClientForSingleRepository {
 
 	private DiffForSingleRef addCommitsToChangedFiles(DiffForSingleRef diff, List<RevCommit> commits) {
 		for (RevCommit commit : commits) {
+			if (commit.getParentCount() > 1) {
+				continue;
+			}
 			List<DiffEntry> diffEntriesInCommit = getDiffEntries(commit);
 			for (DiffEntry diffEntry : diffEntriesInCommit) {
 				for (ChangedFile file : diff.getChangedFiles()) {
-					if (diffEntry.getNewPath().contains(file.getName())) {
+					String diffEntryPath = diffEntry.getNewPath();
+					if (diffEntryPath.endsWith(file.getName())) {
 						file.addCommit(commit);
 					}
 				}
 			}
 		}
+
 		return diff;
 	}
 
@@ -269,7 +294,7 @@ public class GitClientForSingleRepository {
 	 *         entry and contains the respective edit list.
 	 */
 	public DiffForSingleRef getDiff(RevCommit firstCommit, RevCommit lastCommit) {
-		DiffFormatter diffFormatter = getDiffFormater();
+		DiffFormatter diffFormatter = getDiffFormatter();
 		List<DiffEntry> diffEntries = getDiffEntries(firstCommit, lastCommit, diffFormatter);
 		ObjectId treeId = lastCommit.getTree().getId();
 		DiffForSingleRef diff = getDiffWithChangedFiles(diffEntries, diffFormatter, treeId);
@@ -289,11 +314,11 @@ public class GitClientForSingleRepository {
 	 * @con Git blame is hard to use since a treeWalk path is needed for it.
 	 */
 	public List<DiffEntry> getDiffEntries(RevCommit firstCommit, RevCommit lastCommit, DiffFormatter diffFormatter) {
-		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+		List<DiffEntry> diffEntries = new ArrayList<>();
 		try {
 			if (firstCommit.getParentCount() > 0) {
 				RevCommit parentCommit = firstCommit.getParent(0);
-				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
+				diffEntries = diffFormatter.scan(parentCommit, lastCommit);
 			}
 		} catch (IOException e) {
 			LOGGER.debug("Git diff could not be retrieved. Message: " + e.getMessage());
@@ -302,7 +327,7 @@ public class GitClientForSingleRepository {
 	}
 
 	public List<DiffEntry> getDiffEntries(RevCommit commit) {
-		DiffFormatter diffFormatter = getDiffFormater();
+		DiffFormatter diffFormatter = getDiffFormatter();
 		List<DiffEntry> diffEntries = getDiffEntries(commit, commit, diffFormatter);
 		diffFormatter.close();
 		return diffEntries;
@@ -326,12 +351,14 @@ public class GitClientForSingleRepository {
 		return diff;
 	}
 
-	private DiffFormatter getDiffFormater() {
+	private DiffFormatter getDiffFormatter() {
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
 		Repository repository = git.getRepository();
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
+		diffFormatter.setBinaryFileThreshold(2042);
+		diffFormatter.setPathFilter(fileEndingsFilter);
 		return diffFormatter;
 	}
 
@@ -380,7 +407,8 @@ public class GitClientForSingleRepository {
 	public Ref getDefaultRef() {
 		List<Ref> refs = getRefs();
 		for (Ref ref : refs) {
-			if (ref.getName().contains(gitRepositoryConfiguration.getDefaultBranch())) {
+			if (ref.getName().equalsIgnoreCase(gitRepositoryConfiguration.getDefaultBranch())
+					|| ref.getName().endsWith("/" + gitRepositoryConfiguration.getDefaultBranch())) {
 				return ref;
 			}
 		}
@@ -450,14 +478,31 @@ public class GitClientForSingleRepository {
 	 */
 	public Diff getDiffForFeatureBranchWithName(String branchName) {
 		Diff diff = new Diff();
-		List<Ref> refsWithName = getRefs().stream()
-				.filter(ref -> ref.getName().toUpperCase().contains(branchName.toUpperCase()))
+		List<Ref> refsWithName = getRefs().stream().filter(ref -> isRefWithName(ref, branchName))
 				.collect(Collectors.toList());
 		for (Ref ref : refsWithName) {
 			DiffForSingleRef diffForSingleRef = getDiffForFeatureBranch(ref);
 			diff.add(diffForSingleRef);
 		}
 		return diff;
+	}
+
+	/**
+	 * @param ref
+	 *            feature branch as a {@link Ref} object.
+	 * @param branchName
+	 *            of a feature branch with or without Jira issue key.
+	 * @return if the {@link Ref} object is the branch with the given name (can be a
+	 *         Jira issue key).
+	 */
+	public static boolean isRefWithName(Ref ref, String branchName) {
+		boolean isRefWithName = ref.getName().toUpperCase().contains(branchName.toUpperCase());
+		String ticketKeyInRefName = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(ref.getName());
+		String ticketKeyInGivenBranchName = JiraIssueKeyFromCommitMessageParser.getFirstJiraIssueKey(branchName);
+		// check whether Jira issue key is exactly the same if there is a Jira issue key
+		isRefWithName &= ticketKeyInGivenBranchName.isBlank()
+				|| ticketKeyInRefName.equalsIgnoreCase(ticketKeyInGivenBranchName);
+		return isRefWithName;
 	}
 
 	public DiffForSingleRef getDiffForFeatureBranch(Ref ref) {
@@ -532,6 +577,7 @@ public class GitClientForSingleRepository {
 		}
 		DiffForSingleRef diff = getDiff(commits.get(1), commits.get(commits.size() - 1));
 		diff.setCommits(commits);
+
 		addCommitsToChangedFiles(diff, commits);
 		return diff;
 	}

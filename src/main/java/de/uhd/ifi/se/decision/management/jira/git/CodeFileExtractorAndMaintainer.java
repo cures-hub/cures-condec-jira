@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.git;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.diff.DiffEntry;
 
@@ -27,51 +28,32 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
  * improvement and maintenance by developers. Developers can manually change
  * links. 3) Automatic trace link maintenance during git fetch based on recent
  * changes.
+ * 
+ * @issue Which files should be integrated into the knowledge graph?
+ * @decision Integrate all Java files into the knowledge graph and link them to
+ *           the respective Jira issues (e.g., work items or requirements)!
  */
 public class CodeFileExtractorAndMaintainer {
 
-	private String projectKey;
 	private CodeClassPersistenceManager codeFilePersistenceManager;
+	private KnowledgeGraph graph;
 
 	public CodeFileExtractorAndMaintainer(String projectKey) {
-		this.projectKey = projectKey;
 		this.codeFilePersistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
 				.getCodeClassPersistenceTextManager();
-	}
-
-	/**
-	 * Extracts all code files and the decision knowledge from code comments within
-	 * the {@link Diff}. Links the files to the respective Jira Jira issues (e.g.,
-	 * work items or requirements). Extracting means: 1) Adding code files to the
-	 * {@link CodeClassInDatabase}, 2) adding links to the {@link LinkInDatabase},
-	 * 3) adding code files and links to the {@link KnowledgeGraph}.
-	 * 
-	 * @param diff
-	 *            {@link Diff} object with added, updated, or deleted
-	 *            {@link ChangedFile}s.
-	 * 
-	 * @issue Which files should be integrated into the knowledge graph?
-	 * @decision Integrate all Java files into the knowledge graph and link them to
-	 *           the respective Jira issues (e.g., work items or requirements)!
-	 */
-	public void extractAllChangedFiles(Diff diff) {
-		KnowledgeGraph graph = KnowledgeGraph.getInstance(projectKey);
-		for (ChangedFile changedFile : diff.getChangedFiles()) {
-			if (!changedFile.isCodeFileToExtract()) {
-				continue;
-			}
-			List<DecisionKnowledgeElementInCodeComment> decisionKnowledgeInCodeComments = changedFile
-					.getRationaleElementsFromCodeComments();
-			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-			graph.updateElement(source);
-			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
-		}
+		this.graph = KnowledgeGraph.getInstance(projectKey);
 	}
 
 	/**
 	 * Either inserts, updates, or deletes the code files in the diff in the
 	 * database depending on its change type (see {@link ChangedFile#getDiffEntry()}
-	 * and {@link DiffEntry#getChangeType()}.
+	 * and {@link DiffEntry#getChangeType()}. Also extracts the decision knowledge
+	 * from code comments within the {@link Diff}. Links the files to the respective
+	 * Jira issues (e.g., work items or requirements).
+	 * 
+	 * Code extraction means: 1) Adding code files to the
+	 * {@link CodeClassInDatabase}, 2) adding links to the {@link LinkInDatabase},
+	 * 3) adding code files and links to the {@link KnowledgeGraph}.
 	 * 
 	 * @param diff
 	 *            {@link Diff} object with recently added, updated, or deleted
@@ -105,22 +87,49 @@ public class CodeFileExtractorAndMaintainer {
 		if (!changedFile.isCodeFileToExtract()) {
 			return;
 		}
+
 		DiffEntry diffEntry = changedFile.getDiffEntry();
 		switch (diffEntry.getChangeType()) {
-		case ADD:
-			codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
-			break;
-		case MODIFY:
-			// new links could have been added
-			// same as rename, thus, no break after add to fall through
-		case RENAME:
-			codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
-			break;
 		case DELETE:
 			codeFilePersistenceManager.deleteKnowledgeElement(changedFile, null);
 			break;
+		case RENAME:
+			codeFilePersistenceManager.updateKnowledgeElement(changedFile, null);
+			break;
 		default:
+		case MODIFY:
+			// rationale elements in code comments could have been added
+			// no break after modify to fall through
+		case ADD:
+			List<DecisionKnowledgeElementInCodeComment> decisionKnowledgeInCodeComments = changedFile
+					.getRationaleElementsFromCodeComments();
+			KnowledgeElement source = codeFilePersistenceManager.insertKnowledgeElement(changedFile, null);
+			if (!graph.updateElement(source)) {
+				graph.addVertex(source);
+			}
+			graph.addElementsNotInDatabase(source, decisionKnowledgeInCodeComments);
 			break;
 		}
+	}
+
+	/**
+	 * Deletes code files from database and the knowledge graph that do not exist in
+	 * the latest version (tagged with HEAD) in the git repository anymore.
+	 * 
+	 * @param diff
+	 *            for the current version in git.
+	 * @return true if any old code file was deleted.
+	 */
+	public boolean deleteOldFiles(Diff diff) {
+		List<String> fileNamesInDiff = diff.getChangedFiles().stream().map(file -> file.getName())
+				.collect(Collectors.toList());
+		boolean isAnyFileDeleted = false;
+		for (KnowledgeElement codeFileInDatabase : codeFilePersistenceManager.getKnowledgeElements()) {
+			if (!fileNamesInDiff.contains(codeFileInDatabase.getSummary())) {
+				codeFilePersistenceManager.deleteKnowledgeElement(codeFileInDatabase, null);
+				isAnyFileDeleted = true;
+			}
+		}
+		return isAnyFileDeleted;
 	}
 }

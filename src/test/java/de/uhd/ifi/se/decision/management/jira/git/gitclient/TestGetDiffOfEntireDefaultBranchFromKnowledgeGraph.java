@@ -14,7 +14,7 @@ public class TestGetDiffOfEntireDefaultBranchFromKnowledgeGraph extends TestSetU
 	@NonTransactional
 	public void testKnowledgeGraphContainsCodeElements() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		new CodeFileExtractorAndMaintainer("TEST").extractAllChangedFiles(diff);
+		new CodeFileExtractorAndMaintainer("TEST").maintainChangedFilesInDatabase(diff);
 
 		diff = gitClient.getDiffOfEntireDefaultBranchFromKnowledgeGraph();
 		assertTrue(diff.getCodeElements().size() > 0);

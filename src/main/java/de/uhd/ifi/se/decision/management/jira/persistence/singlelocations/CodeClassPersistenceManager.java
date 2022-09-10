@@ -163,6 +163,7 @@ public class CodeClassPersistenceManager extends AbstractPersistenceManagerForSi
 			updateKnowledgeElement(knowledgeElement, user);
 			existingElement = (ChangedFile) getKnowledgeElementByName(changedFile.getName());
 			existingElement.setCommits(changedFile.getCommits());
+			existingElement.setTreeWalkPath(changedFile.getTreeWalkPath());
 			createLinksToJiraIssues(existingElement, user);
 			return existingElement;
 		}

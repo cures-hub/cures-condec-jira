@@ -17,10 +17,12 @@ import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilterSettings;
 import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.git.model.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Origin;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.KnowledgePersistenceManager;
@@ -62,6 +64,7 @@ public class GeneralMetricCalculator {
 	private List<Issue> jiraIssues;
 	private KnowledgeGraph graph;
 	private Set<KnowledgeElement> knowledgeElements;
+	private List<KnowledgeElement> codeFiles;
 	private CommentMetricCalculator commentMetricCalculator;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(GeneralMetricCalculator.class);
@@ -74,6 +77,7 @@ public class GeneralMetricCalculator {
 		this.jiraIssues = KnowledgePersistenceManager.getInstance(filterSettings.getProjectKey()).getJiraIssueManager()
 				.getAllJiraIssuesForProject();
 		this.commentMetricCalculator = new CommentMetricCalculator(jiraIssues);
+		this.codeFiles = graph.getElements(KnowledgeType.CODE);
 	}
 
 	/**
@@ -96,6 +100,50 @@ public class GeneralMetricCalculator {
 			return new HashMap<>();
 		}
 		return commentMetricCalculator.getNumberOfCommitsPerJiraIssueMap();
+	}
+
+	/**
+	 * @return map with number of linked Jira issues per code file as keys and
+	 *         elements (code files) that have the respective number of Jira issues
+	 *         linked as map values.
+	 */
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getNumberOfLinkedJiraIssuesForCodeMap() {
+		Map<Integer, List<KnowledgeElement>> numberOfLinkedJiraIssuesPerCodeFile = new HashMap<>();
+		for (KnowledgeElement codeFile : codeFiles) {
+			int numberOfLinkedJiraIssues = (int) codeFile.getLinks().stream().filter(link -> isLinkToJiraIssue(link))
+					.count();
+			if (!numberOfLinkedJiraIssuesPerCodeFile.containsKey(numberOfLinkedJiraIssues)) {
+				numberOfLinkedJiraIssuesPerCodeFile.put(numberOfLinkedJiraIssues, new ArrayList<>());
+			}
+			numberOfLinkedJiraIssuesPerCodeFile.get(numberOfLinkedJiraIssues).add(codeFile);
+		}
+		return numberOfLinkedJiraIssuesPerCodeFile;
+	}
+
+	public static boolean isLinkToJiraIssue(Link link) {
+		return link.getBothElements().stream().anyMatch(element -> element.getType() == KnowledgeType.OTHER);
+	}
+
+	/**
+	 * @return map with lines of code per code file as keys and elements (code
+	 *         files) that have the respective number as map values.
+	 */
+	@XmlElement
+	public Map<Integer, List<KnowledgeElement>> getLinesOfCodeMap() {
+		Map<Integer, List<KnowledgeElement>> linesOfCodeMap = new HashMap<>();
+		for (KnowledgeElement codeFile : codeFiles) {
+			if (!(codeFile instanceof ChangedFile)) {
+				continue;
+			}
+
+			int linesOfCode = ((ChangedFile) codeFile).getLineCount();
+			if (!linesOfCodeMap.containsKey(linesOfCode)) {
+				linesOfCodeMap.put(linesOfCode, new ArrayList<>());
+			}
+			linesOfCodeMap.get(linesOfCode).add(codeFile);
+		}
+		return linesOfCodeMap;
 	}
 
 	/**
@@ -135,7 +183,7 @@ public class GeneralMetricCalculator {
 			}
 		}
 		summaryMap.put("Requirements", requirements);
-		summaryMap.put("Code Files", graph.getElements(KnowledgeType.CODE));
+		summaryMap.put("Code Files", codeFiles);
 		return summaryMap;
 	}
 

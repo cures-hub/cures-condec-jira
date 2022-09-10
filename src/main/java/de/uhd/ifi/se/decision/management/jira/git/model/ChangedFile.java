@@ -32,6 +32,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import de.uhd.ifi.se.decision.management.jira.git.config.GitConfiguration;
 import de.uhd.ifi.se.decision.management.jira.git.parser.CodeCommentParser;
 import de.uhd.ifi.se.decision.management.jira.git.parser.JiraIssueKeyFromCommitMessageParser;
 import de.uhd.ifi.se.decision.management.jira.git.parser.MethodVisitor;
@@ -132,7 +133,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(String fileContent) {
 		this();
 		this.fileContent = fileContent;
-		this.setLineCount(this.getNumberOfLines());
+		this.setLineCount(countNumberOfNonEmptyLines(fileContent));
 		this.methodDeclarations = parseMethods();
 	}
 
@@ -148,7 +149,7 @@ public class ChangedFile extends KnowledgeElement {
 	public ChangedFile(DiffEntry diffEntry, EditList editList, ObjectId treeId, Repository repository) {
 		this();
 		this.fileContent = readFileContentFromDiffEntry(diffEntry, treeId, repository);
-		this.setLineCount(this.getNumberOfLines());
+		this.setLineCount(countNumberOfNonEmptyLines(fileContent));
 		this.diffEntry = diffEntry;
 		this.editList = editList;
 		this.methodDeclarations = parseMethods();
@@ -212,7 +213,7 @@ public class ChangedFile extends KnowledgeElement {
 	}
 
 	public String getFileEnding() {
-		return this.getName().substring(getName().lastIndexOf(".") + 1).toLowerCase();
+		return GitConfiguration.getFileEnding(getName());
 	}
 
 	@Override
@@ -365,8 +366,42 @@ public class ChangedFile extends KnowledgeElement {
 		return diffEntry.getChangeType() != ChangeType.DELETE;
 	}
 
-	public int getNumberOfLines() {
-		return fileContent.split("\n").length;
+	/**
+	 * @issue How to count the lines of code (LOC) of a code file?
+	 * @alternative Split the file content by their line endings to calculate the
+	 *              LOC: fileContent.split("\n").length;
+	 * @pro Simple to implement.
+	 * @con Does count empty lines without code.
+	 * @decision Use a method of the MetricsReloaded IDE plug-in to calculate the
+	 *           LOC!
+	 * @pro Does not count empty lines without code.
+	 * 
+	 * @param fileContent
+	 *            text as a String.
+	 * @return number of lines of code (LOC) including comments and without empty
+	 *         lines.
+	 */
+	public static int countNumberOfNonEmptyLines(String fileContent) {
+		if (fileContent == null) {
+			return 0;
+		}
+		int lines = 0;
+		boolean onEmptyLine = true;
+		final char[] chars = fileContent.toCharArray();
+		for (char aChar : chars) {
+			if (aChar == '\n' || aChar == '\r') {
+				if (!onEmptyLine) {
+					lines++;
+					onEmptyLine = true;
+				}
+			} else if (aChar != ' ' && aChar != '\t') {
+				onEmptyLine = false;
+			}
+		}
+		if (!onEmptyLine) {
+			lines++;
+		}
+		return lines;
 	}
 
 	/**
@@ -383,7 +418,17 @@ public class ChangedFile extends KnowledgeElement {
 	 * @return true if this file is a test class (e.g. for unit testing).
 	 */
 	public boolean isTestCodeFile() {
-		return getSummary().contains("Test");
+		return isTestCodeFile(getDescription());
+	}
+
+	/**
+	 * @param path
+	 *            file path.
+	 * @return true if the file path indicates that the file is a test class (e.g.
+	 *         for unit testing).
+	 */
+	public static boolean isTestCodeFile(String path) {
+		return path.matches("(\\S+)?((Test)|(test(s)?(\\.|\\/)))(\\S+)?");
 	}
 
 	/**
@@ -414,7 +459,7 @@ public class ChangedFile extends KnowledgeElement {
 	 * @return all {@link CodeComment}s of this code file.
 	 */
 	public List<CodeComment> getCodeComments() {
-		if (fileContent != null && isCodeFileToExtract()) {
+		if (fileContent != null) {
 			CodeCommentParser commentParser = new CodeCommentParser();
 			return commentParser.getComments(this);
 		}
@@ -514,7 +559,7 @@ public class ChangedFile extends KnowledgeElement {
 
 	@Override
 	public String getDescription() {
-		return getTreeWalkPath();
+		return getTreeWalkPath() != null ? getTreeWalkPath() : getSummary();
 	}
 
 	public String getFileContent() {
@@ -575,10 +620,19 @@ public class ChangedFile extends KnowledgeElement {
 		return commits.add(revCommit);
 	}
 
+	/**
+	 * @return number of lines of code (LOC) calculated without empty lines and with
+	 *         comments.
+	 */
 	public int getLineCount() {
 		return lineCount;
 	}
 
+	/**
+	 * @param lineCount
+	 *            number of lines of code (LOC) calculated without empty lines and
+	 *            with comments.
+	 */
 	public void setLineCount(int lineCount) {
 		this.lineCount = lineCount;
 	}

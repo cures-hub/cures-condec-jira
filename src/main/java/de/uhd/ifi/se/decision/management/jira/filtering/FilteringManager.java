@@ -340,7 +340,7 @@ public class FilteringManager {
 	 *         minDegree and maxDegree in the {@link FilterSettings}.
 	 */
 	public boolean isElementMatchingDegreeFilter(KnowledgeElement element) {
-		if (filterSettings.getMinDegree() > 0) {
+		if (filterSettings.getMinDegree() > 0 || filterSettings.getMaxDegree() == 0) {
 			int degree = element.getLinks().size();
 			return degree >= filterSettings.getMinDegree() && degree <= filterSettings.getMaxDegree();
 		}
@@ -357,7 +357,7 @@ public class FilteringManager {
 		if (element.getType() != KnowledgeType.CODE) {
 			return true;
 		}
-		return filterSettings.isTestCodeShown() || !element.getSummary().contains("Test");
+		return filterSettings.isTestCodeShown() || !ChangedFile.isTestCodeFile(element.getDescription());
 	}
 
 	/**

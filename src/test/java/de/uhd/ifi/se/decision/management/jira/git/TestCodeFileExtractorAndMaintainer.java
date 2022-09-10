@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.git;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -77,9 +78,9 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 	public void testExtractAllChangedFilesTwice() {
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
 		assertEquals(5, diff.getChangedFiles().size());
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
+		codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		assertEquals(5, codeClassPersistenceManager.getKnowledgeElements().size());
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
+		codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		assertEquals(5, codeClassPersistenceManager.getKnowledgeElements().size());
 	}
 
@@ -92,9 +93,22 @@ public class TestCodeFileExtractorAndMaintainer extends TestSetUpGit {
 		assertNull(gitConfig.getFileTypeForEnding(".java"));
 
 		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
-		codeFileExtractorAndMaintainer.extractAllChangedFiles(diff);
+		codeFileExtractorAndMaintainer.maintainChangedFilesInDatabase(diff);
 		assertEquals(0, codeClassPersistenceManager.getKnowledgeElements().size());
 
 		ConfigPersistenceManager.saveGitConfiguration("TEST", new GitConfiguration());
+	}
+
+	@Test
+	@NonTransactional
+	public void testDeleteOldFiles() {
+		ChangedFile oldFile = new ChangedFile();
+		oldFile.setId(42);
+		oldFile.setProject("TEST");
+		oldFile.setSummary("FileFromThePastAlreadyDeleted.java");
+		codeClassPersistenceManager.insertKnowledgeElement(oldFile, null);
+		GitClient.instances.put("TEST", gitClient);
+		Diff diff = gitClient.getDiffOfEntireDefaultBranch();
+		assertTrue(codeFileExtractorAndMaintainer.deleteOldFiles(diff));
 	}
 }

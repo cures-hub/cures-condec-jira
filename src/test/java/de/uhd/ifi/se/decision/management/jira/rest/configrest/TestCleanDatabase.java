@@ -10,13 +10,13 @@ import org.junit.Test;
 
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.git.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraIssues;
 import de.uhd.ifi.se.decision.management.jira.testdata.JiraUsers;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCleanDatabase extends TestSetUp {
+public class TestCleanDatabase extends TestSetUpGit {
 
 	protected HttpServletRequest request;
 	protected ConfigRest configRest;
@@ -30,11 +30,13 @@ public class TestCleanDatabase extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNullProjectKeyNull() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.cleanDatabases(null, null).getStatus());
 	}
 
 	@Test
+	@NonTransactional
 	public void testRequestNullProjectKeyValid() {
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.cleanDatabases(null, "TEST").getStatus());
 	}
@@ -51,6 +53,7 @@ public class TestCleanDatabase extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testUserUnauthorized() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", JiraUsers.BLACK_HEAD.getApplicationUser());
@@ -58,6 +61,7 @@ public class TestCleanDatabase extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testUserNull() {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("user", null);

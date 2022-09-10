@@ -293,21 +293,23 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 
-		JiraIssueTextPersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey)
-				.getJiraIssueTextManager();
+		KnowledgePersistenceManager persistenceManager = KnowledgePersistenceManager.getInstance(projectKey);
+
+		JiraIssueTextPersistenceManager jiraIssueTextManager = persistenceManager.getJiraIssueTextManager();
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		persistenceManager.deleteInvalidElements(user);
+		jiraIssueTextManager.deleteInvalidElements(user);
 		GenericLinkManager.deleteInvalidLinks();
 
-		for (Issue jiraIssue : KnowledgePersistenceManager.getInstance(projectKey).getJiraIssueManager()
-				.getAllJiraIssuesForProject()) {
-			persistenceManager.updateElementsOfJiraIssueInDatabase(jiraIssue, false);
+		for (Issue jiraIssue : persistenceManager.getJiraIssueManager().getAllJiraIssuesForProject()) {
+			jiraIssueTextManager.updateElementsOfJiraIssueInDatabase(jiraIssue, false);
 		}
 
 		// If there are some "lonely" sentences, link them to their Jira issues.
-		persistenceManager.createLinksForNonLinkedElements();
+		jiraIssueTextManager.createLinksForNonLinkedElements();
+
 		DecisionGroupPersistenceManager.deleteInvalidGroups(projectKey);
+
 		return Response.ok().build();
 	}
 }

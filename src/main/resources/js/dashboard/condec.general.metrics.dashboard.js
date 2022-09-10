@@ -4,6 +4,7 @@
  * Requires
  * condec.dashboard.js
  */
+/* global conDecDashboard */
 define("dashboard/generalMetrics", [], function() {
 	var dashboardAPI;
 	const viewId = "general-metrics";
@@ -56,10 +57,38 @@ define("dashboard/generalMetrics", [], function() {
 	ConDecGeneralMetricsDashboardItem.prototype.renderData = function(generalMetrics) {
 		var colorPalette = ["#EE6666", "#91CC75"];
 
-		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue", "#Comments per Jira Issue",
+		let commentsSum = 0;
+		for (const [commentsCount, elements] of generalMetrics.numberOfCommentsPerJiraIssueMap) {
+			commentsSum += parseInt(commentsCount, 10) * elements.length;
+		}
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommentsPerJiraIssue",
+			`#Comments per Jira Issue\n Sum: ${commentsSum}`,
 			generalMetrics.numberOfCommentsPerJiraIssueMap, viewId);
-		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue", "#Commits per Jira Issue\n Transcribed into Comments",
+
+		let commitsSum = 0;
+		for (const [commitsCount, elements] of generalMetrics.numberOfCommitsPerJiraIssueMap) {
+			commitsSum += parseInt(commitsCount, 10) * elements.length;
+		}
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-CommitsPerJiraIssue",
+			`#Commits per Jira Issue\n Transcribed into Comments\n Sum: ${commitsSum}`,
 			generalMetrics.numberOfCommitsPerJiraIssueMap, viewId);
+
+		let numberOfUnlinkedFiles = 0;
+		if (generalMetrics.numberOfLinkedJiraIssuesForCodeMap.has("0")) {
+			numberOfUnlinkedFiles = generalMetrics.numberOfLinkedJiraIssuesForCodeMap.get("0").length;
+		}
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinkedJiraIssuesPerCodeFile",
+			`#Linked Jira Issues\n Per Code File\n #Unlinked Files: ${numberOfUnlinkedFiles}`,
+			generalMetrics.numberOfLinkedJiraIssuesForCodeMap, viewId);
+
+		let linesOfCodeSum = 0;
+		for (const [linesOfCode, elements] of generalMetrics.linesOfCodeMap) {
+			linesOfCodeSum += parseInt(linesOfCode, 10) * elements.length;
+		}
+		conDecDashboard.createBoxPlotWithListOfElements("boxplot-LinesOfCode",
+			`#Lines\n Per Code File\n Sum: ${linesOfCodeSum}`,
+			generalMetrics.linesOfCodeMap, viewId);
+
 		conDecDashboard.createPieChartWithListOfElements(generalMetrics.requirementsAndCodeFilesMap,
 			"piechartRich-ReqCodeSummary", "#Requirements and Code Files", viewId);
 		conDecDashboard.createPieChartWithListOfElements(generalMetrics.originMap,

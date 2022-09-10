@@ -197,6 +197,7 @@ public class KnowledgeGraph extends DirectedWeightedMultigraph<KnowledgeElement,
 			newLinks.add(new Link(edge.getSource(), replace, edge.getType()));
 		}
 		removeVertex(vertex);
+		addVertex(replace);
 		for (Link link : newLinks) {
 			addEdge(link);
 		}

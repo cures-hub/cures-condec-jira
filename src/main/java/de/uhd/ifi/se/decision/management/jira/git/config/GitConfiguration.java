@@ -188,4 +188,8 @@ public class GitConfiguration {
 		}
 		return null;
 	}
+
+	public static String getFileEnding(String name) {
+		return name.substring(name.lastIndexOf(".") + 1).toLowerCase();
+	}
 }
