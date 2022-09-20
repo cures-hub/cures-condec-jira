@@ -90,7 +90,7 @@
 		table += "</table>";
 
 		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
-		var htmlString = $("<html>").html("<head><style>" + styleString + "</style></head><body>" + table + "</body>")
+		var htmlString = $("<html>").html(`<head><style> ${styleString} </style></head><body> ${table} </body>`)
 			.html();
 		return htmlString;
 	}
