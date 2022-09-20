@@ -71,7 +71,7 @@
 		table += "<th>Type</th><th>Summary</th><th>Description</th><th>Decision Groups</th><th>Status</th>";
 		table += "<th>Creator</th><th>Creation Date</th><th>Latest Author</th><th>Latest Update</th>";
 		table += "<th>Documentation Origin</th><th>Key</th></tr>";
-		for (element of elements) {
+		for (let element of elements) {
 			table += "<tr color='#FF0000'>";
 			table += "<td>" + element["type"] + "</td>";
 			table += "<td>" + element["summary"] + "</td>";

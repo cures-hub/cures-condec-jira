@@ -388,6 +388,16 @@ public class KnowledgeElement {
 	}
 
 	/**
+	 * @return {@link Origin} that indicates the source of a knowledge element. The
+	 *         origin might be different from the current
+	 *         {@link DocumentationLocation}.
+	 */
+	@XmlElement(name = "origin")
+	public String getOriginAsString() {
+		return origin == Origin.DOCUMENTATION_LOCATION ? documentationLocation.name() : origin.name();
+	}
+
+	/**
 	 * @return an URL of the knowledge element as String.
 	 */
 	@XmlElement
