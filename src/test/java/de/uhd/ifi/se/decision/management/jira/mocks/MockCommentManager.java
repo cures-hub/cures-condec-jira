@@ -66,11 +66,8 @@ public class MockCommentManager implements CommentManager {
 	}
 
 	@Override
-	public Comment create(Issue issue, ApplicationUser applicationUser, String string, boolean dispatchEvent) {
-		Comment comment = new MockComment((long) 1337, applicationUser.getName(), string, null, null, new Date(),
-				issue);
-		comments.add(comment);
-		return comment;
+	public Comment create(Issue issue, ApplicationUser applicationUser, String commentBody, boolean dispatchEvent) {
+		return create(issue, applicationUser, commentBody, null, null, new Date(), dispatchEvent);
 	}
 
 	@Override
@@ -89,9 +86,12 @@ public class MockCommentManager implements CommentManager {
 	}
 
 	@Override
-	public Comment create(Issue issue, ApplicationUser applicationUser, String s, String s1, Long aLong, Date date,
-			boolean b) {
-		return null;
+	public Comment create(Issue issue, ApplicationUser applicationUser, String commentBody, String groupLevel,
+			Long roleLevelId, Date date, boolean dispatchEvent) {
+		Comment comment = new MockComment((long) 1337, applicationUser.getName(), commentBody, groupLevel, roleLevelId,
+				date, issue);
+		comments.add(comment);
+		return comment;
 	}
 
 	@Override
