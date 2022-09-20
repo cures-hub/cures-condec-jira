@@ -110,14 +110,9 @@ public class CommitMessageToCommentTranscriber {
 			return null;
 		}
 		for (Comment alreadyWrittenComment : commentManager.getComments(jiraIssue)) {
-			// if the hash of a commit is present in a comment, only post it if wrong dates
+			// do not post commit if the hash of a commit is present in a comment
 			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
-				if (commit.getAuthorIdent().getWhen().equals(alreadyWrittenComment.getCreated())) {
-					return null;
-				}
-				commentText = alreadyWrittenComment.getBody();
-				commentManager.delete(alreadyWrittenComment);
-				break;
+				return null;
 			}
 		}
 		ApplicationUser user = getUser();
