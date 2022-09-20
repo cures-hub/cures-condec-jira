@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.git.model.DecisionKnowledgeElementInCommitMessage;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeStatus;
@@ -139,6 +140,12 @@ public class TestKnowledgeElementStrings extends TestSetUp {
 	@Test
 	public void testGetOrigin() {
 		assertEquals(Origin.DOCUMENTATION_LOCATION, element.getOrigin());
+	}
+
+	@Test
+	public void testGetOriginAsString() {
+		assertEquals("JIRAISSUE", element.getOriginAsString());
+		assertEquals("COMMIT", new DecisionKnowledgeElementInCommitMessage().getOriginAsString());
 	}
 
 	@Test
