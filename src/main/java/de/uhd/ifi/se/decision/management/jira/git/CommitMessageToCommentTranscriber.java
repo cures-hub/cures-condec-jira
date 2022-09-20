@@ -13,6 +13,7 @@ import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.exception.PermissionException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.UserDetails;
 
@@ -102,19 +103,25 @@ public class CommitMessageToCommentTranscriber {
 	 *         already posted.
 	 */
 	private Comment postCommitIntoJiraIssueComment(RevCommit commit, Ref branch, String uri) {
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		String commentText = generateCommentString(commit, branch, uri);
 		if (commentText.isBlank()) {
 			LOGGER.warn("Commit messages cannot be posted to Jira issue comment because comment text would be blank.");
 			return null;
 		}
-		for (Comment alreadyWrittenComment : ComponentAccessor.getCommentManager().getComments(jiraIssue)) {
-			// if the hash of a commit is present in a comment, do not post it again
+		for (Comment alreadyWrittenComment : commentManager.getComments(jiraIssue)) {
+			// if the hash of a commit is present in a comment, only post it if wrong dates
 			if (alreadyWrittenComment.getBody().contains(commit.getName())) {
-				return null;
+				if (commit.getAuthorIdent().getWhen().equals(alreadyWrittenComment.getCreated())) {
+					return null;
+				}
+				commentText = alreadyWrittenComment.getBody();
+				commentManager.delete(alreadyWrittenComment);
+				break;
 			}
 		}
 		ApplicationUser user = getUser();
-		return ComponentAccessor.getCommentManager().create(jiraIssue, user, commentText, true);
+		return commentManager.create(jiraIssue, user, commentText, null, null, commit.getAuthorIdent().getWhen(), true);
 	}
 
 	/**
