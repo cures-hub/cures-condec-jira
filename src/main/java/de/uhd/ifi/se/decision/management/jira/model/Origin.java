@@ -40,5 +40,4 @@ public enum Origin {
 		}
 		return DOCUMENTATION_LOCATION;
 	}
-
 }

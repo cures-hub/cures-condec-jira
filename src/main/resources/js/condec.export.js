@@ -70,7 +70,7 @@
 		var table = "<table><tr>";
 		table += "<th>Type</th><th>Summary</th><th>Description</th><th>Decision Groups</th><th>Status</th>";
 		table += "<th>Creator</th><th>Creation Date</th><th>Latest Author</th><th>Latest Update</th>";
-		table += "<th>Key</th></tr>";
+		table += "<th>Documentation Origin</th><th>Key</th></tr>";
 		for (element of elements) {
 			table += "<tr color='#FF0000'>";
 			table += "<td>" + element["type"] + "</td>";
@@ -83,6 +83,7 @@
 			table += "<td>" + new Date(element["creationDate"]) + "</td>";
 			table += "<td>" + element["latestAuthor"] + "</td>";
 			table += "<td>" + new Date(element["latestUpdatingDate"]) + "</td>";
+			table += "<td>" + element["origin"] + "</td>";
 			table += "<td><a href='" + element["url"] + "'>" + element["key"] + "</a></td>";
 			table += "</tr>";
 		}
