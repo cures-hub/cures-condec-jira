@@ -155,7 +155,8 @@ public class DecisionGroupPersistenceManager {
 		}
 		List<String> groups = new LinkedList<>();
 		DecisionGroupInDatabase[] groupsInDatabase = ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
+				Query.select().where("PROJECT_KEY = ? AND SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
+						element.getProject().getProjectKey(), element.getId(),
 						element.getDocumentationLocation().getIdentifier()));
 		for (DecisionGroupInDatabase groupInDatabase : groupsInDatabase) {
 			groups.add(groupInDatabase.getGroup());

@@ -12,7 +12,7 @@ For example, developers can access a UI decision documented in code from a [know
 For example, if a developer assigns a decision to the decision group *process*, the linked decision problem and alternatives will inherit this group.
 
 We use the following definition for decision levels by [van der Ven and Bosch (2013)](https://doi.org/10.1007/978-3-642-39031-9_15):
-1. *High level decisions* affect the whole product, altough they are not necessarily always the decisions that are debated 
+1. *High level decisions* affect the whole product, although they are not necessarily always the decisions that are debated 
 or thought through the most. 
 Often, people that are not involved in the realization of the project (e.g. management or enterprise architects) heavily affect these decisions. 
 Typical examples of high-level decisions are the choice to adopt an architectural style, 
@@ -27,7 +27,8 @@ or the usage of specific APIs.
 These decisions are relatively easy to change, and have relative low impact on the properties of the system.
 
 ## Assignment and Filtering
-Levels and custom groups can be assigned using the context menu on a specific knowledge element in a knowledge graph view.
+Developers can assign decision levels and custom groups using the context menu on a specific knowledge element in a knowledge graph view.
+The following figure shows how a decision and the related decision knowledge to apply a certain git workflow is classified as a *process* decision.
 
 ![Context menu available in all views on the knowledge graph](../screenshots/decision_grouping_context_menu.png)
 
@@ -37,7 +38,7 @@ Levels and custom groups can be assigned using the context menu on a specific kn
 
 *Dialog to assign a level and custom groups to a decision*
 
-Developers (and other stakeholders) can **filter for decision levels and groups**, for example, if they only want to see decisions for the UI or process decisions.
+Developers (and other stakeholders) can **filter for decision levels and groups**, for example, if they only want to see decisions for the *UI* or *process* decisions.
 
 ![View elements of a specific decision group (here git)](../screenshots/decision_grouping_filter.png)
 
@@ -59,9 +60,9 @@ The **quality check view and the tooltip explain why the DoD is fulfilled or vio
 *Decision problem that violates the DoD since no decision level and no custom decision group is assigned to it.
 Developers can see an explanation for the DoD violation in the quality check view and in the tooltip.*
 
-![Decision problem that violates the DoD since only a decision level but no custom decision group is assigned to it.](../screenshots/decision_grouping_dod_violated_level_only.png)
+![Decision problem that violates the DoD since only a decision level but no custom decision group are assigned to it.](../screenshots/decision_grouping_dod_violated_level_only.png)
 
-*Decision problem that violates the DoD since only a decision level but no custom decision group is assigned to it.*
+*Decision problem that violates the DoD since only a decision level but no custom decision group are assigned to it.*
 
 ## Decision Grouping Overview and Dashboard
 ConDec offers an **overview for the decision levels and decision groups** assigned in a project.
