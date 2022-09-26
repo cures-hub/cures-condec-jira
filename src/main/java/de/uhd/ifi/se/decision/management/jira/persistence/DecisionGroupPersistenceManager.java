@@ -113,7 +113,8 @@ public class DecisionGroupPersistenceManager {
 	public static boolean deleteAllGroupAssignments(KnowledgeElement element) {
 		boolean isDeleted = true;
 		for (DecisionGroupInDatabase groupInDatabase : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(),
+				Query.select().where("PROJECT_KEY = ? AND SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
+						element.getProject().getProjectKey(), element.getId(),
 						element.getDocumentationLocation().getIdentifier()))) {
 			isDeleted &= DecisionGroupInDatabase.deleteGroupAssigment(groupInDatabase);
 		}
@@ -258,8 +259,10 @@ public class DecisionGroupPersistenceManager {
 	private static DecisionGroupInDatabase getDecisionGroupInDatabase(String groupName, KnowledgeElement element) {
 		DecisionGroupInDatabase groupInDatabase = null;
 		for (DecisionGroupInDatabase databaseEntry : ACTIVE_OBJECTS.find(DecisionGroupInDatabase.class,
-				Query.select().where("GROUP = ? AND SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", groupName,
-						element.getId(), element.getDocumentationLocation().getIdentifier()))) {
+				Query.select().where(
+						"GROUP = ? AND PROJECT_KEY = ? AND SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?",
+						groupName, element.getProject().getProjectKey(), element.getId(),
+						element.getDocumentationLocation().getIdentifier()))) {
 			groupInDatabase = databaseEntry;
 		}
 		return groupInDatabase;
