@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
@@ -44,7 +45,8 @@ import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
  * @see KnowledgeGraph
  * @see Link
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(value = { "groups", "origin" }, ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class KnowledgeElement {
 
 	protected long id;
