@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
@@ -45,8 +45,7 @@ import de.uhd.ifi.se.decision.management.jira.quality.DefinitionOfDoneChecker;
  * @see KnowledgeGraph
  * @see Link
  */
-@JsonIgnoreProperties(value = { "groups", "origin" }, ignoreUnknown = true)
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KnowledgeElement {
 
 	protected long id;
@@ -57,6 +56,7 @@ public class KnowledgeElement {
 	private String key;
 	protected TreeMap<Date, String> updateDateAndAuthor;
 	protected DocumentationLocation documentationLocation;
+	@JsonIgnore
 	protected Origin origin;
 	protected KnowledgeStatus status;
 
@@ -272,6 +272,11 @@ public class KnowledgeElement {
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
 		return DecisionGroupPersistenceManager.getGroupsForElement(this);
+	}
+
+	@JsonProperty("groups")
+	public void setDecisionGroups(List<String> groups) {
+		// currently not implemented but necessary to prevent JsonMappingException
 	}
 
 	/**
