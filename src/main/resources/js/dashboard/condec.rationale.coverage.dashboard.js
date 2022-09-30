@@ -74,7 +74,7 @@ define('dashboard/rationaleCoverage', [], function() {
 		for (const [coverage, elements] of metric.entries()) {
 			if (coverage == 0) {
 				elementsWithNoCoverage = elementsWithNoCoverage.concat(elements);
-			} else if (coverage < minimumRequiredCoverage) {
+			} else if (parseInt(coverage, 10) < minimumRequiredCoverage) {
 				elementsWithLowCoverage = elementsWithLowCoverage.concat(elements);
 			} else {
 				elementsWithHighCoverage = elementsWithHighCoverage.concat(elements);
