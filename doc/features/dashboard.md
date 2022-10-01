@@ -11,7 +11,7 @@ The dashboard comprises five dashboard items that show the following metrics:
 5. **metrics on the decision levels and decision groups**, e.g. *Which decision groups are there in the project? How many decisions are documented per decision level and group?*
 
 The metric plots are created using the [Apache ECharts library](https://echarts.apache.org).
-The four dashboard items are shown in the following sections.
+The five dashboard items are shown in the following sections.
 
 ## Rationale Coverage
 This dashboard item shows the **coverage of requirements, code, and other software artifacts (=knowledge elements) 
@@ -30,6 +30,7 @@ dedicated metrics for intra-rationale completeness (see below).
 This dashboard item presents **metrics regarding the intra-rationale completeness**.
 In particular, metrics are shown to answer the following questions:
 - How many **issues (=decision problems) are solved by a decision**? How many issues are not solved by a decision?
+- How many **issues have at least one alternative** documented? How many issues have no alternatives documented?
 - For how many **decisions is the issue (=decision problem) documented**? For how many decisions is no issue documented?
 - How many **decisions have at least one pro-argument** documented? How many decisions have no pro-arguments documented?
 - How many **decisions have at least one con-argument** documented? How many decisions have no con-arguments documented?

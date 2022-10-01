@@ -58,6 +58,9 @@ define('dashboard/rationaleCompleteness', [], function() {
 		conDecDashboard.createPieChartWithListOfElements(metrics.issuesSolvedByDecisionMap,
 			"piechartRich-IssuesSolvedByDecision",
 			"How many issues (=decision problems) are solved by a decision?", viewId, colorPalette);
+		conDecDashboard.createPieChartWithListOfElements(metrics.alternativeDocumentedForIssueMap,
+			"piechartRich-AlternativeDocumentedForIssue",
+			"How many issues have at least one alternative documented?", viewId, colorPalette);
 		conDecDashboard.createPieChartWithListOfElements(metrics.decisionsSolvingIssuesMap,
 			"piechartRich-DecisionsSolvingIssues",
 			"For how many decisions is the issue (=decision problem) documented?", viewId, colorPalette);

@@ -56,4 +56,10 @@ public class TestRationaleCompletenessCalculator extends TestSetUp {
 	public void testGetConArgumentDocumentedForDecision() {
 		assertEquals(2, calculator.getConArgumentDocumentedForDecisionMap().size());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetAlternativeDocumentedForIssue() {
+		assertEquals(2, calculator.getAlternativeDocumentedForIssueMap().size());
+	}
 }
