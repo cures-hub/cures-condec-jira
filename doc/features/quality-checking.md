@@ -10,13 +10,13 @@ e.g. if a pro-argument is linked to the decision.
 The criteria for intra-rationale completeness can be configured by the rationale manager.
 - the assignment to **[decision levels and decision groups](decision-grouping.md)**.
 - specific aspects (*is test file?*, *number of lines of code*) for code files
-- the **quality of the directly linked knowledge elements** in the knowlegde graph, 
+- the **quality of the directly linked knowledge elements** in the knowledge graph, 
 i.e. if a neighbor knowledge element of the checked element violates the DoD the checked element will also violate the DoD.
-DoD violations are propagated to neighbor elements in the knowlegde graph as a means of [nudging](nudging.md),
+DoD violations are propagated to neighbor elements in the knowledge graph as a means of [nudging](nudging.md),
 i.e., to continuously motivate the developers to improve the knowledge documentation.
 
 ConDec displays the result of the quality/DoD checking in the following ways:
-- in a **quality check view** accessable from every knowledge element in the knowledge graph (see section below)
+- in a **quality check view** accessible from every knowledge element in the knowledge graph (see section below)
 - using **[red text color](nudging.md) in knowledge graph views** if the DoD is violated. An explanation is given using a tooltip.
 - in a **[just-in-time prompt](nudging.md)** that is shown during status changes (as automated quality checks integrated into the development workflow, e.g., when finishing a requirement)
 - in the **[rationale backlog](rationale-backlog.md)**, which is a dedicated view for knowledge elements that violate the DoD

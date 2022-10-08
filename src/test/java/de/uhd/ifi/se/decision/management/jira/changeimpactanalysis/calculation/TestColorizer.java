@@ -20,176 +20,185 @@ import de.uhd.ifi.se.decision.management.jira.view.vis.VisNode;
 
 public class TestColorizer extends TestSetUp {
 
-    private FilterSettings settings;
-    private List<KnowledgeElementWithImpact> impactedElements;
+	private FilterSettings settings;
+	private List<KnowledgeElementWithImpact> impactedElements;
 
-    @Before
+	@Before
 	public void setUp() {
-        init();
-        @SuppressWarnings("unused")
-        Colorizer colorizer = new Colorizer();
-        settings = new FilterSettings("TEST", "");
-        settings.setSelectedElement("TEST-1");
-        impactedElements = new ArrayList<>();
+		init();
+		@SuppressWarnings("unused")
+		Colorizer colorizer = new Colorizer();
+		settings = new FilterSettings("TEST", "");
+		settings.setSelectedElement("TEST-1");
+		impactedElements = new ArrayList<>();
 	}
 
-    @Test
-    public void testColorizeTreeRootNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
+	@Test
+	public void testColorizeTreeRootNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
 		impactedElements.add(element);
 
-        TreeViewerNode node = new TreeViewerNode(settings.getSelectedElement(), settings);
-        TreeViewerNode childNode = new TreeViewerNode(KnowledgeElements.getTestKnowledgeElements().get(1), settings);
-        List<TreeViewerNode> children = new ArrayList<>();
-        children.add(childNode);
-        node.setChildren(children);
-        node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
+		TreeViewerNode node = new TreeViewerNode(settings.getSelectedElement(), settings);
+		TreeViewerNode childNode = new TreeViewerNode(KnowledgeElements.getTestKnowledgeElements().get(1), settings);
+		List<TreeViewerNode> children = new ArrayList<>();
+		children.add(childNode);
+		node.setChildren(children);
+		node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
 
-        assertEquals("background-color:#FFFFFF", node.getLiAttr().get("style"));
-    }
+		assertEquals("background-color:#FFFFFF", node.getLiAttr().get("style"));
+	}
 
-    @Test
-    public void testColorizeTreeContextNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
-        element.setImpactExplanation("context");
-        impactedElements.add(element);
+	@Test
+	public void testColorizeTreeContextNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
+		element.setImpactExplanation("context");
+		impactedElements.add(element);
 
-        TreeViewerNode node = new TreeViewerNode(element, settings);
-        node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
+		TreeViewerNode node = new TreeViewerNode(element, settings);
+		node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
 
-        assertEquals("background-color:#ce93d8", node.getLiAttr().get("style"));
-    }
+		assertEquals("background-color:#ce93d8", node.getLiAttr().get("style"));
+	}
 
-    @Test
-    public void testColorizeTreeLinkRecommendationNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
+	@Test
+	public void testColorizeTreeLinkRecommendationNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
 
-        TreeViewerNode node = new TreeViewerNode(element, settings);
-        node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
+		TreeViewerNode node = new TreeViewerNode(element, settings);
+		node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
 
-        assertEquals("background-color:#90caf9", node.getLiAttr().get("style"));
-    }
+		assertEquals("background-color:#90caf9", node.getLiAttr().get("style"));
+	}
 
-    @Test
-    public void testColorizeTreeNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
-        element.setImpactValue(0.5);
-        impactedElements.add(element);
+	@Test
+	public void testColorizeTreeNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
+		element.setImpactValue(0.5);
+		impactedElements.add(element);
 
-        TreeViewerNode node = new TreeViewerNode(element, settings);
-        node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
+		TreeViewerNode node = new TreeViewerNode(element, settings);
+		node = Colorizer.colorizeTreeNode(impactedElements, node, settings);
 
-        assertEquals("background-color:#7f7f00", node.getLiAttr().get("style"));
-    }
+		assertEquals("background-color:#eab18b", node.getLiAttr().get("style"));
+	}
 
-    @Test
-    public void testColorizeVisRootNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
-        element.setImpactValue(0.5);
-        impactedElements.add(element);
+	@Test
+	public void testColorizeVisRootNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
+		element.setImpactValue(0.5);
+		impactedElements.add(element);
 
 		VisNode node = new VisNode(settings.getSelectedElement(), settings);
-        node = Colorizer.colorizeVisNode(impactedElements, node, settings);
+		node = Colorizer.colorizeVisNode(impactedElements, node, settings);
 
-        assertEquals("#FFFFFF", node.getColor());
-        assertEquals("black", node.getFont().get("color"));
-    }
+		assertEquals("#FFFFFF", node.getColor());
+		assertEquals("black", node.getFont().get("color"));
+	}
 
-    @Test
-    public void testColorizeVisContextNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
-        element.setImpactExplanation("context");
-        impactedElements.add(element);
-
-		VisNode node = new VisNode(element, settings);
-        node = Colorizer.colorizeVisNode(impactedElements, node, settings);
-
-        assertEquals("#ce93d8", node.getColor());
-        assertEquals("black", node.getFont().get("color"));
-    }
-
-    @Test
-    public void testColorizeVisLinkRecommendationNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
+	@Test
+	public void testColorizeVisContextNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
+		element.setImpactExplanation("context");
+		impactedElements.add(element);
 
 		VisNode node = new VisNode(element, settings);
-        node = Colorizer.colorizeVisNode(impactedElements, node, settings);
+		node = Colorizer.colorizeVisNode(impactedElements, node, settings);
 
-        assertEquals("#90caf9", node.getColor());
-    }
+		assertEquals("#ce93d8", node.getColor());
+		assertEquals("black", node.getFont().get("color"));
+	}
 
-    @Test
-    public void testColorizeVisNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
-        element.setImpactValue(0.5);
-        impactedElements.add(element);
+	@Test
+	public void testColorizeVisLinkRecommendationNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
 
 		VisNode node = new VisNode(element, settings);
-        node = Colorizer.colorizeVisNode(impactedElements, node, settings);
+		node = Colorizer.colorizeVisNode(impactedElements, node, settings);
 
-        assertEquals("#7f7f00", node.getColor());
-        assertEquals("black", node.getFont().get("color"));
-    }
+		assertEquals("#90caf9", node.getColor());
+	}
 
-    @Test
-    public void testColorizeMatrixRootNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
-        impactedElements.add(element);
+	@Test
+	public void testColorizeVisNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
+		element.setImpactValue(0.5);
+		impactedElements.add(element);
+
+		VisNode node = new VisNode(element, settings);
+		node = Colorizer.colorizeVisNode(impactedElements, node, settings);
+
+		assertEquals("#eab18b", node.getColor());
+		assertEquals("black", node.getFont().get("color"));
+	}
+
+	@Test
+	public void testColorizeMatrixRootNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(settings.getSelectedElement());
+		impactedElements.add(element);
 
 		MatrixNode node = new MatrixNode(settings.getSelectedElement());
-        node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
+		node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
 
-        assertEquals("#FFFFFF", node.getChangeImpactColor());
-    }
+		assertEquals("#FFFFFF", node.getChangeImpactColor());
+	}
 
-    @Test
-    public void testColorizeMatrixContextNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
-        element.setImpactExplanation("context");
-        impactedElements.add(element);
-
-		MatrixNode node = new MatrixNode(element);
-        node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
-
-        assertEquals("#ce93d8", node.getChangeImpactColor());
-    }
-
-    @Test
-    public void testColorizeMatrixLinkRecommendationNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
+	@Test
+	public void testColorizeMatrixContextNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
+		element.setImpactExplanation("context");
+		impactedElements.add(element);
 
 		MatrixNode node = new MatrixNode(element);
-        node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
+		node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
 
-        assertEquals("#90caf9", node.getChangeImpactColor());
-    }
+		assertEquals("#ce93d8", node.getChangeImpactColor());
+	}
 
-    @Test
-    public void testColorizeMatrixNode() {
-        KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(KnowledgeElements.getTestKnowledgeElements().get(4));
-        element.setImpactValue(0.5);
-        impactedElements.add(element);
+	@Test
+	public void testColorizeMatrixLinkRecommendationNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
 
 		MatrixNode node = new MatrixNode(element);
-        node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
+		node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
 
-        assertEquals("#7f7f00", node.getChangeImpactColor());
-    }
+		assertEquals("#90caf9", node.getChangeImpactColor());
+	}
 
-    @Test
-    public void testColorForImpact() {
-        double impactValue = 0.45;
-        String color = Colorizer.colorForImpact(impactValue);
-        assertEquals("#728c00", color);
+	@Test
+	public void testColorizeMatrixNode() {
+		KnowledgeElementWithImpact element = new KnowledgeElementWithImpact(
+				KnowledgeElements.getTestKnowledgeElements().get(4));
+		element.setImpactValue(0.5);
+		impactedElements.add(element);
 
-        impactValue = 0.99;
-        color = Colorizer.colorForImpact(impactValue);
-        assertEquals("#fc0200", color);
-    }
-    
-    @Test
-    public void testBlend() {
-        assertNotNull(Colorizer.blend(Color.RED, Color.BLUE, 2.0f));
-        assertNotNull(Colorizer.blend(Color.RED, Color.BLUE, -0.2f));
-    }
+		MatrixNode node = new MatrixNode(element);
+		node = Colorizer.colorizeMatrixNode(impactedElements, node, settings);
+
+		assertEquals("#eab18b", node.getChangeImpactColor());
+	}
+
+	@Test
+	public void testColorForImpact() {
+		double impactValue = 0.45;
+		String color = Colorizer.colorForImpact(impactValue);
+		assertEquals("#ecb896", color);
+
+		impactValue = 0.99;
+		color = Colorizer.colorForImpact(impactValue);
+		assertEquals("#d56419", color);
+	}
+
+	@Test
+	public void testBlend() {
+		assertNotNull(Colorizer.blend(Color.RED, Color.BLUE, 2.0f));
+		assertNotNull(Colorizer.blend(Color.RED, Color.BLUE, -0.2f));
+	}
 }
