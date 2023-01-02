@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import smile.classification.Classifier;
-import smile.classification.OnlineClassifier;
 import smile.validation.ClassificationMetrics;
 
 /**
@@ -126,10 +125,10 @@ public abstract class AbstractClassifier {
 	 */
 	public void update(double[][] trainingSample, int trainingLabel) {
 		isCurrentlyTraining = true;
-		if (model instanceof OnlineClassifier) {
+		if (model.online()) {
 			int[] trainingLabelArray = new int[trainingSample.length];
 			Arrays.fill(trainingLabelArray, trainingLabel);
-			((OnlineClassifier<double[]>) model).update(trainingSample, trainingLabelArray);
+			model.update(trainingSample, trainingLabelArray);
 		}
 		isCurrentlyTraining = false;
 	}

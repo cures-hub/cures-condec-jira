@@ -123,7 +123,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			double scoreTime) {
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
-				model, truth, prediction, fitTime, scoreTime);
+				model, fitTime, scoreTime, truth, prediction);
 		resultsMap.put("Fine-grained Overall " + model.getClass().getName(), validationOverall.metrics);
 
 		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
@@ -131,8 +131,8 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			int[] binaryTruth = mapFineGrainedToBinaryResults(truth, classLabel);
 			int[] binaryPredictions = mapFineGrainedToBinaryResults(prediction, classLabel);
 
-			ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
-					model, binaryTruth, binaryPredictions, fitTime, scoreTime);
+			ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<>(model, fitTime,
+					scoreTime, binaryTruth, binaryPredictions);
 
 			resultsMap.put("Fine-grained " + type.toString(), validation.metrics);
 		}

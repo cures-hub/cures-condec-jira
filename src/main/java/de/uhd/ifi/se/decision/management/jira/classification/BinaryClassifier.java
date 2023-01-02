@@ -85,8 +85,8 @@ public class BinaryClassifier extends AbstractClassifier {
 				predictionForFold[i] = predict(sentences[i]) ? 1 : 0;
 			}
 			double scoreTime = (System.nanoTime() - start) / 1E6;
-			validations.add(new ClassificationValidation<Classifier<double[]>>(model, truthForFold, predictionForFold,
-					fitTime, scoreTime));
+			validations.add(new ClassificationValidation<Classifier<double[]>>(model, fitTime, scoreTime, truthForFold,
+					predictionForFold));
 		}
 		Map<String, ClassificationMetrics> binaryEvaluationResult = Map.of("Binary " + model.getClass().getName(),
 				new ClassificationValidations<Classifier<double[]>>(validations).avg);
@@ -106,7 +106,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		}
 		double scoreTime = (System.nanoTime() - start) / 1E6;
 		ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
-				model, truth, prediction, fitTime, scoreTime);
+				model, fitTime, scoreTime, truth, prediction);
 		return Map.of("Binary " + model.getClass().getName(), validation.metrics);
 	}
 

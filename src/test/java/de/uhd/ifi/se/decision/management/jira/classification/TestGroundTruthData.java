@@ -69,14 +69,14 @@ public class TestGroundTruthData extends TestSetUp {
 	@NonTransactional
 	public void testGetDataFrame() {
 		assertNotNull(groundTruthData.getDataFrame());
-		assertEquals(0, groundTruthData.getDataFrame().columnIndex("isAlternative"));
+		assertEquals(0, groundTruthData.getDataFrame().indexOf("isAlternative"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateGroundTruthDataFromKnowledgeElements() {
 		DataFrame dataFrame = new GroundTruthData(KnowledgeElements.getTestKnowledgeElements()).getDataFrame();
-		assertEquals(5, dataFrame.columnIndex("sentence"));
+		assertEquals(5, dataFrame.indexOf("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}
 
@@ -92,7 +92,7 @@ public class TestGroundTruthData extends TestSetUp {
 	@NonTransactional
 	public void testCreateGroundTruthDataFromFileName() {
 		DataFrame dataFrame = new GroundTruthData("defaultTrainingData.csv").getDataFrame();
-		assertEquals(5, dataFrame.columnIndex("sentence"));
+		assertEquals(5, dataFrame.indexOf("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}
 
@@ -100,7 +100,7 @@ public class TestGroundTruthData extends TestSetUp {
 	@NonTransactional
 	public void testCreateGroundTruthDataFromDafaultFile() {
 		DataFrame dataFrame = new GroundTruthData().getDataFrame();
-		assertEquals(5, dataFrame.columnIndex("sentence"));
+		assertEquals(5, dataFrame.indexOf("sentence"));
 		assertTrue(dataFrame.size() > 1);
 	}
 
