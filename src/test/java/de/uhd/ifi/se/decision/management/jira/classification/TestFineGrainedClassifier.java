@@ -86,4 +86,9 @@ public class TestFineGrainedClassifier extends TestSetUp {
 		fineGrainedClassificationResult[2] = 4;
 		assertEquals(4, AbstractClassifier.mode(fineGrainedClassificationResult));
 	}
+
+	@Test
+	public void testGetNumClasses() {
+		assertEquals(5, fineGrainedClassifier.getNumClasses());
+	}
 }
