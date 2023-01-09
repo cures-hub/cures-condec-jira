@@ -99,10 +99,13 @@ public class TestTextClassifier extends TestSetUp {
 		classifier.train();
 		assertEquals(KnowledgeType.ALTERNATIVE,
 				classifier.getFineGrainedClassifier().predict("Increases extensibility"));
+		assertTrue(classifier.getBinaryClassifier().model.online());
+		assertTrue(classifier.getFineGrainedClassifier().model.online());
 
 		// test steps: update classifier with new part of text
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setDescription("Increases extensibility");
+		sentence.setSummary("Increases extensibility");
 		sentence.setRelevant(true);
 		sentence.setType(KnowledgeType.PRO);
 		sentence.setValidated(true);

@@ -9,9 +9,13 @@ import org.apache.commons.io.FilenameUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import smile.base.mlp.Layer;
+import smile.base.mlp.OutputFunction;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.classification.MLP;
 import smile.classification.SVM;
+import smile.math.TimeFunction;
 import smile.math.kernel.GaussianKernel;
 import smile.validation.ClassificationMetrics;
 import smile.validation.ClassificationValidation;
@@ -61,9 +65,16 @@ public class BinaryClassifier extends AbstractClassifier {
 		switch (classifierType) {
 		case SVM:
 			return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
+		case MLP:
+			MLP mlp = new MLP(Layer.sigmoid(10), Layer.mle(1, OutputFunction.SIGMOID));
+			mlp.setLearningRate(TimeFunction.constant(0.1));
+			mlp.setMomentum(TimeFunction.constant(0.1));
+			mlp.update(trainingSamples, trainingLabels);
+			return mlp;
 		default:
 			return LogisticRegression.binomial(trainingSamples, trainingLabels);
 		}
+
 	}
 
 	@Override

@@ -14,10 +14,14 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
+import smile.base.mlp.Layer;
+import smile.base.mlp.OutputFunction;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
+import smile.classification.MLP;
 import smile.classification.OneVersusRest;
 import smile.classification.SVM;
+import smile.math.TimeFunction;
 import smile.math.kernel.GaussianKernel;
 import smile.validation.ClassificationMetrics;
 import smile.validation.ClassificationValidation;
@@ -69,6 +73,14 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		case SVM:
 			return OneVersusRest.fit(trainingSamples, trainingLabels,
 					(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+		case MLP:
+			return OneVersusRest.fit(trainingSamples, trainingLabels, (x, y) -> {
+				MLP mlp = new MLP(Layer.input(5), Layer.sigmoid(10), Layer.mle(2, OutputFunction.SOFTMAX));
+				mlp.setLearningRate(TimeFunction.linear(0.2, 10000, 0.1));
+				mlp.setMomentum(TimeFunction.constant(0.5));
+				mlp.update(x, y);
+				return mlp;
+			});
 		default:
 			return LogisticRegression.multinomial(trainingSamples, trainingLabels);
 		}

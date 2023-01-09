@@ -64,4 +64,10 @@ public class TestTrainClassifier extends TestSetUp {
 		assertEquals(Status.OK.getStatusCode(), classificationRest
 				.trainClassifier(request, "TEST", "defaultTrainingData.csv", "LR", "SVM").getStatus());
 	}
+
+	@Test
+	public void testRequestValidProjectKeyExistsTrainingFileExistentClassifierTypesSelectedMLP() {
+		assertEquals(Status.OK.getStatusCode(), classificationRest
+				.trainClassifier(request, "TEST", "defaultTrainingData.csv", "MLP", "MLP").getStatus());
+	}
 }
