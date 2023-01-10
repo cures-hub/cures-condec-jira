@@ -161,4 +161,10 @@ public class TestTextClassifier extends TestSetUp {
 	public void testIsTrained() {
 		assertTrue(classifier.isTrained());
 	}
+
+	@Test
+	@NonTransactional
+	public void testTrainNaiveBayes() {
+		assertTrue(classifier.train(ClassifierType.NB, ClassifierType.NB));
+	}
 }

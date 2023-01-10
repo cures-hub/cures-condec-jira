@@ -10,15 +10,11 @@ import org.apache.commons.io.FilenameUtils;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Preprocessor;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
-import smile.base.mlp.Layer;
-import smile.base.mlp.OutputFunction;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
-import smile.classification.MLP;
 import smile.classification.NaiveBayes;
 import smile.classification.SVM;
 import smile.math.MathEx;
-import smile.math.TimeFunction;
 import smile.math.kernel.GaussianKernel;
 import smile.stat.distribution.Distribution;
 import smile.stat.distribution.GaussianMixture;
@@ -55,24 +51,30 @@ public class BinaryClassifier extends AbstractClassifier {
 
 	@Override
 	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
-		isCurrentlyTraining = true;
-		namePrefix = FilenameUtils.getBaseName(trainingData.getFileName());
-		long start = System.nanoTime();
-		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels(), classifierType);
-		fitTime = (System.nanoTime() - start) / 1E6;
-		isCurrentlyTraining = false;
-		saveToFile();
+		try {
+			isCurrentlyTraining = true;
+			namePrefix = FilenameUtils.getBaseName(trainingData.getFileName());
+			long start = System.nanoTime();
+			PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
+			model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels(),
+					classifierType);
+			fitTime = (System.nanoTime() - start) / 1E6;
+			isCurrentlyTraining = false;
+			saveToFile();
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	@Override
 	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
+		int p = trainingSamples[0].length; // vector length 150 per 3-gram
+		int k = MathEx.max(trainingLabels) + 1; // number of classes is 2, labels are -1 and +1
+
 		switch (classifierType) {
 		case SVM:
 			return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
 		case NB:
-			int p = trainingSamples[0].length; // vector length 150 per 3-gram
-			int k = MathEx.max(trainingLabels) + 1; // number of classes is 2, labels are -1 and +1
 			int n = trainingSamples.length; // number of 3-grams for training
 			double[] priori = new double[k];
 			Distribution[][] condprob = new Distribution[k][p];
@@ -87,16 +89,9 @@ public class BinaryClassifier extends AbstractClassifier {
 				}
 			}
 			return new NaiveBayes(priori, condprob);
-		case MLP:
-			MLP mlp = new MLP(Layer.sigmoid(10), Layer.mle(1, OutputFunction.SIGMOID));
-			mlp.setLearningRate(TimeFunction.constant(0.1));
-			mlp.setMomentum(TimeFunction.constant(0.1));
-			mlp.update(trainingSamples, trainingLabels);
-			return mlp;
 		default:
 			return LogisticRegression.binomial(trainingSamples, trainingLabels);
 		}
-
 	}
 
 	@Override
