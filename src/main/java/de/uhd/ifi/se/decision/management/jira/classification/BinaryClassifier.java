@@ -13,9 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
 import smile.classification.NaiveBayes;
-import smile.classification.SVM;
 import smile.math.MathEx;
-import smile.math.kernel.GaussianKernel;
 import smile.stat.distribution.Distribution;
 import smile.stat.distribution.GaussianMixture;
 import smile.validation.ClassificationMetrics;
@@ -68,7 +66,7 @@ public class BinaryClassifier extends AbstractClassifier {
 
 		switch (classifierType) {
 		case SVM:
-			return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
+			return TextClassifier.fitSVM(trainingSamples, trainingLabels);
 		case NB:
 			int n = trainingSamples.length; // number of 3-grams for training
 			double[] priori = new double[k];

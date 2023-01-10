@@ -19,10 +19,7 @@ import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
 import smile.classification.NaiveBayes;
 import smile.classification.OneVersusOne;
-import smile.classification.OneVersusRest;
-import smile.classification.SVM;
 import smile.math.MathEx;
-import smile.math.kernel.GaussianKernel;
 import smile.stat.distribution.Distribution;
 import smile.stat.distribution.GaussianMixture;
 import smile.validation.ClassificationMetrics;
@@ -71,10 +68,11 @@ public class FineGrainedClassifier extends AbstractClassifier {
 
 	@Override
 	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
+		// MathEx.max(trainingLabels) is 4 because of 5 classes
 		switch (classifierType) {
 		case SVM:
-			return OneVersusRest.fit(trainingSamples, trainingLabels,
-					(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+			return OneVersusOne.fit(trainingSamples, trainingLabels,
+					(x, y) -> TextClassifier.fitSVM(trainingSamples, trainingLabels));
 		case NB:
 			return OneVersusOne.fit(trainingSamples, trainingLabels, (x, y) -> {
 				int p = x[0].length; // vector length 150 per 3-gram

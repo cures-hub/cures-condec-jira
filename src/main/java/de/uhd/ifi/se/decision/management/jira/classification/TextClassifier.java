@@ -19,6 +19,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import smile.classification.Classifier;
+import smile.classification.SVM;
+import smile.math.MathEx;
+import smile.math.kernel.GaussianKernel;
 import smile.validation.ClassificationMetrics;
 
 /**
@@ -149,7 +153,7 @@ public class TextClassifier {
 		try {
 			double[][] features = Preprocessor.getInstance().preprocess(sentence.getSummary());
 			// classifier needs numerical value
-			int labelIsRelevant = sentence.isRelevant() ? 1 : 0;
+			int labelIsRelevant = sentence.isRelevant() ? 1 : -1;
 			binaryClassifier.update(features, labelIsRelevant);
 			if (sentence.isRelevant()) {
 				fineGrainedClassifier.update(features, sentence.getType());
@@ -311,5 +315,26 @@ public class TextClassifier {
 			knowledgeElements.add(element);
 		}
 		return knowledgeElements;
+	}
+
+	public static Classifier<double[]> fitSVM(double[][] trainingSamples, int[] trainingLabels) {
+		int p = trainingSamples[0].length; // vector length 150 per 3-gram
+		int k = MathEx.max(trainingLabels) + 1; // number of classes (2 or 5)
+
+		int maxSentences = 1000;
+		System.out.println(trainingSamples.length);
+		if (trainingSamples.length > maxSentences) {
+			double[][] lessTrainingSamples = new double[maxSentences][p];
+			int[] lessTrainingLabels = new int[maxSentences];
+			for (int i = 0; i < maxSentences; i++) {
+				lessTrainingLabels[i] = trainingLabels[i];
+				for (int j = 0; j < p; j++) {
+					lessTrainingSamples[i][j] = trainingSamples[i][j];
+				}
+			}
+			trainingSamples = lessTrainingSamples;
+			trainingLabels = lessTrainingLabels;
+		}
+		return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), k, 0.5);
 	}
 }
