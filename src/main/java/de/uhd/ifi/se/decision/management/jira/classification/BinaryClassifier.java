@@ -51,19 +51,14 @@ public class BinaryClassifier extends AbstractClassifier {
 
 	@Override
 	public void train(GroundTruthData trainingData, ClassifierType classifierType) {
-		try {
-			isCurrentlyTraining = true;
-			namePrefix = FilenameUtils.getBaseName(trainingData.getFileName());
-			long start = System.nanoTime();
-			PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
-			model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels(),
-					classifierType);
-			fitTime = (System.nanoTime() - start) / 1E6;
-			isCurrentlyTraining = false;
-			saveToFile();
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
+		isCurrentlyTraining = true;
+		namePrefix = FilenameUtils.getBaseName(trainingData.getFileName());
+		long start = System.nanoTime();
+		PreprocessedData preprocessedData = new PreprocessedData(trainingData, false);
+		model = train(preprocessedData.preprocessedSentences, preprocessedData.getIsRelevantLabels(), classifierType);
+		fitTime = (System.nanoTime() - start) / 1E6;
+		isCurrentlyTraining = false;
+		saveToFile();
 	}
 
 	@Override

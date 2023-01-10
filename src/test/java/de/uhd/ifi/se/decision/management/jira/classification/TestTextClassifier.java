@@ -96,7 +96,7 @@ public class TestTextClassifier extends TestSetUp {
 	@NonTransactional
 	public void testUpdateOnlineLearningEnabled() {
 		// precondition: classifier freshly trained
-		classifier.train();
+		classifier.train(ClassifierType.LR, ClassifierType.LR);
 		assertEquals(KnowledgeType.ALTERNATIVE,
 				classifier.getFineGrainedClassifier().predict("Increases extensibility"));
 		assertTrue(classifier.getBinaryClassifier().model.online());
@@ -166,5 +166,11 @@ public class TestTextClassifier extends TestSetUp {
 	@NonTransactional
 	public void testTrainNaiveBayes() {
 		assertTrue(classifier.train(ClassifierType.NB, ClassifierType.NB));
+	}
+
+	@Test
+	@NonTransactional
+	public void testTrainSVM() {
+		assertTrue(classifier.train(ClassifierType.SVM, ClassifierType.SVM));
 	}
 }
