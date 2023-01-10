@@ -71,8 +71,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 		// MathEx.max(trainingLabels) is 4 because of 5 classes
 		switch (classifierType) {
 		case SVM:
-			return OneVersusOne.fit(trainingSamples, trainingLabels,
-					(x, y) -> TextClassifier.fitSVM(trainingSamples, trainingLabels));
+			return OneVersusOne.fit(trainingSamples, trainingLabels, (x, y) -> TextClassifier.fitSVM(x, y));
 		case NB:
 			return OneVersusOne.fit(trainingSamples, trainingLabels, (x, y) -> {
 				int p = x[0].length; // vector length 150 per 3-gram

@@ -19,7 +19,6 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeGraph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import smile.classification.Classifier;
 import smile.classification.SVM;
 import smile.math.MathEx;
 import smile.math.kernel.GaussianKernel;
@@ -317,11 +316,12 @@ public class TextClassifier {
 		return knowledgeElements;
 	}
 
-	public static Classifier<double[]> fitSVM(double[][] trainingSamples, int[] trainingLabels) {
+	public static SVM<double[]> fitSVM(double[][] trainingSamples, int[] trainingLabels) {
 		int p = trainingSamples[0].length; // vector length 150 per 3-gram
 		int k = MathEx.max(trainingLabels) + 1; // number of classes (2 or 5)
 
 		int maxSentences = 1000;
+		LOGGER.error("length: " + trainingSamples.length);
 		System.out.println(trainingSamples.length);
 		if (trainingSamples.length > maxSentences) {
 			double[][] lessTrainingSamples = new double[maxSentences][p];
