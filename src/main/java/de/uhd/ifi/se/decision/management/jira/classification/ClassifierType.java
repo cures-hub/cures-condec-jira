@@ -25,6 +25,7 @@ public enum ClassifierType {
 
 	SVM, // support vector machine
 	LR, // logistic regression
+	NB, // naive bayes
 	MLP; // multilayer perceptron neural network
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClassifierType.class);

@@ -14,12 +14,14 @@
     <select id="select-classifier-type-binary" class="select medium-field">
     	<option value="LR" selected>Logistic Regression</option>
     	<option value="SVM">Support Vector Machine</option>
+    	<option value="NB">Naive Bayes</option>
     	<option value="MLP">Multilayer Perceptron Neural Network</option>
     </select>
     Fine-grained:
     <select id="select-classifier-type-fine-grained" class="select medium-field">
     	<option value="LR">Logistic Regression</option>
     	<option value="SVM">Support Vector Machine</option>
+    	<option value="NB">Naive Bayes</option>
     	<option value="MLP">Multilayer Perceptron Neural Network</option>
     </select>
     <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
