@@ -1,4 +1,4 @@
-isAlternative,isPro,isCon,isDecisions,isIssue,sentence
+isAlternative,isPro,isCon,isDecision,isIssue,sentence
 0,0,0,0,1,How can we implement?
 0,0,0,0,1,Where should the view be shown?
 0,0,0,0,1,Which algorithm to choose?
