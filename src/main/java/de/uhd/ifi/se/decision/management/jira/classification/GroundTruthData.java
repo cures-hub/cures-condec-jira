@@ -334,11 +334,11 @@ public class GroundTruthData {
 	}
 
 	public Map<GroundTruthData, GroundTruthData> splitForBinaryKFoldCrossValidation(int k) {
-		return splitForKFoldCrossValidation(k, getBalancedKnowledgeElementsWrtRelevance(false));
+		return splitForKFoldCrossValidation(k, getBalancedKnowledgeElementsWrtRelevance(true));
 	}
 
 	public Map<GroundTruthData, GroundTruthData> splitForFineGrainedKFoldCrossValidation(int k) {
-		return splitForKFoldCrossValidation(k, getBalancedDecisionKnowledgeElements(false));
+		return splitForKFoldCrossValidation(k, getBalancedDecisionKnowledgeElements(true));
 	}
 
 	public String getFileName() {
