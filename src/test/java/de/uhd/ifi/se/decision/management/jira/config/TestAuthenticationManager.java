@@ -34,6 +34,7 @@ public class TestAuthenticationManager {
 
 	@Test
 	public void testIsProjectAdminByRequestSuccess() {
+		new AuthenticationManager(); // for coverage
 		assertTrue(AuthenticationManager.isProjectAdmin(request));
 	}
 
