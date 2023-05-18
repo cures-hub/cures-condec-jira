@@ -4,6 +4,7 @@
  * Requires
  * condec.dashboard.js
  */
+/* global conDecDashboard */
 define('dashboard/rationaleCompleteness', [], function() {
 	var dashboardAPI;
 	const viewId = "rationale-completeness";
