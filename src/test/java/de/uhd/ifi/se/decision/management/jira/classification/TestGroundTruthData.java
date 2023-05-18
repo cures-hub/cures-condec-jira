@@ -140,6 +140,12 @@ public class TestGroundTruthData extends TestSetUp {
 		assertTrue(file.exists());
 	}
 
+	@Test
+	@NonTransactional
+	public void testToString() {
+		assertNotNull(groundTruthData.toString());
+	}
+
 	/**
 	 * @issue Which parts of text should we use to train and evaluate the classifier
 	 *        during unit testing?

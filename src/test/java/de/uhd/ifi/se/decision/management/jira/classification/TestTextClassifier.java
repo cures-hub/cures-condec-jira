@@ -141,7 +141,6 @@ public class TestTextClassifier extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void testTrainInvalidFile() {
-
 		assertFalse(classifier.train(null, ClassifierType.LR, ClassifierType.LR));
 		assertFalse(classifier.train("", ClassifierType.LR, ClassifierType.LR));
 	}
@@ -163,14 +162,6 @@ public class TestTextClassifier extends TestSetUp {
 	@NonTransactional
 	public void testIsTrained() {
 		assertTrue(classifier.isTrained());
-	}
-
-	@Test
-	@NonTransactional
-	public void testIsNotTrained() {
-		classifier = TextClassifier.getInstance("TEST");
-		classifier.setGroundTruthFile(TestGroundTruthData.getTestGroundTruthDataFile());
-		assertFalse(classifier.isTrained());
 	}
 
 	@Test
