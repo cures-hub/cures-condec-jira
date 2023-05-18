@@ -316,9 +316,13 @@ public class TextClassifier {
 	}
 
 	public static SVM<double[]> fitSVM(double[][] trainingSamples, int[] trainingLabels) {
+		return fitSVM(trainingSamples, trainingLabels, 6000);
+	}
+
+	public static SVM<double[]> fitSVM(double[][] trainingSamples, int[] trainingLabels,
+			int maxNumberOfTrainingSamples) {
 		int p = trainingSamples[0].length; // vector length 150 per 3-gram
 
-		int maxNumberOfTrainingSamples = 6000;
 		if (trainingSamples.length > maxNumberOfTrainingSamples) {
 			double[][] lessTrainingSamples = new double[maxNumberOfTrainingSamples][p];
 			int[] lessTrainingLabels = new int[maxNumberOfTrainingSamples];
