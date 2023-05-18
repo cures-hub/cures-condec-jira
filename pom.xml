@@ -441,7 +441,7 @@
     </profiles>
 
 	<properties>
-        <jira.version>9.8.1</jira.version>
+        <jira.version>8.21.0</jira.version>
         <amps.version>8.9.1</amps.version>
         <ao.version>4.0.0-m02</ao.version>
         <jacoco-version>0.8.8</jacoco-version>
