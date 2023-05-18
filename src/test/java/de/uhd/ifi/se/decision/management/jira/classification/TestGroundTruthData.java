@@ -38,6 +38,12 @@ public class TestGroundTruthData extends TestSetUp {
 
 	@Test
 	@NonTransactional
+	public void testGroundTruthDataDataFrameNull() {
+		assertNotNull(new GroundTruthData((DataFrame) null));
+	}
+
+	@Test
+	@NonTransactional
 	public void testGetAllSentences() {
 		assertEquals(41, groundTruthData.getAllSentences().length);
 		assertEquals(41, groundTruthData.getRelevanceLabelsForAllSentences().length);
