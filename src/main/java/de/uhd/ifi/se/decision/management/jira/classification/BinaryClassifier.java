@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -11,8 +12,10 @@ import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.Prepr
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
-import smile.classification.SVM;
-import smile.math.kernel.GaussianKernel;
+import smile.classification.NaiveBayes;
+import smile.math.MathEx;
+import smile.stat.distribution.Distribution;
+import smile.stat.distribution.GaussianMixture;
 import smile.validation.ClassificationMetrics;
 import smile.validation.ClassificationValidation;
 import smile.validation.ClassificationValidations;
@@ -58,9 +61,27 @@ public class BinaryClassifier extends AbstractClassifier {
 
 	@Override
 	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
+		int p = trainingSamples[0].length; // vector length 150 per 3-gram
+		int k = MathEx.max(trainingLabels) + 1; // number of classes is 2, labels are -1 and +1
+
 		switch (classifierType) {
 		case SVM:
-			return SVM.fit(trainingSamples, trainingLabels, new GaussianKernel(1.0), 2, 0.5);
+			return TextClassifier.fitSVM(trainingSamples, trainingLabels);
+		case NB:
+			int n = trainingSamples.length; // number of 3-grams for training
+			double[] priori = new double[k];
+			Distribution[][] condprob = new Distribution[k][p];
+			for (int i = 0; i < k; i++) {
+				priori[i] = 1.0 / k;
+				final int c = i == 0 ? -1 : i; // labels are -1 and +1
+				for (int j = 0; j < p; j++) {
+					final int f = j;
+					double[] xi = IntStream.range(0, n).filter(l -> trainingLabels[l] == c)
+							.mapToDouble(l -> trainingSamples[l][f]).toArray();
+					condprob[i][j] = GaussianMixture.fit(3, xi);
+				}
+			}
+			return new NaiveBayes(priori, condprob);
 		default:
 			return LogisticRegression.binomial(trainingSamples, trainingLabels);
 		}
@@ -85,8 +106,8 @@ public class BinaryClassifier extends AbstractClassifier {
 				predictionForFold[i] = predict(sentences[i]) ? 1 : 0;
 			}
 			double scoreTime = (System.nanoTime() - start) / 1E6;
-			validations.add(new ClassificationValidation<Classifier<double[]>>(model, truthForFold, predictionForFold,
-					fitTime, scoreTime));
+			validations.add(new ClassificationValidation<Classifier<double[]>>(model, fitTime, scoreTime, truthForFold,
+					predictionForFold));
 		}
 		Map<String, ClassificationMetrics> binaryEvaluationResult = Map.of("Binary " + model.getClass().getName(),
 				new ClassificationValidations<Classifier<double[]>>(validations).avg);
@@ -106,7 +127,7 @@ public class BinaryClassifier extends AbstractClassifier {
 		}
 		double scoreTime = (System.nanoTime() - start) / 1E6;
 		ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
-				model, truth, prediction, fitTime, scoreTime);
+				model, fitTime, scoreTime, truth, prediction);
 		return Map.of("Binary " + model.getClass().getName(), validation.metrics);
 	}
 

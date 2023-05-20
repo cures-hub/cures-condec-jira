@@ -135,4 +135,15 @@ public class RationaleCompletenessCalculator {
 	public Map<String, List<KnowledgeElement>> getConArgumentDocumentedForDecisionMap() {
 		return calculateCompletenessMetric(KnowledgeType.DECISION, KnowledgeType.CON);
 	}
+
+	/**
+	 * @return map with two keys "issue has alternative" and "issue has no
+	 *         alternative" and the respective alternatives as map values. Enables
+	 *         to answer the question "How many issues have at least one alternative
+	 *         documented?".
+	 */
+	@XmlElement
+	public Map<String, List<KnowledgeElement>> getAlternativeDocumentedForIssueMap() {
+		return calculateCompletenessMetric(KnowledgeType.ISSUE, KnowledgeType.ALTERNATIVE);
+	}
 }

@@ -18,6 +18,7 @@ public class TestActivationCondition {
 	public static void setUp() {
 		TestSetUp.init();
 		condition = new ActivationCondition();
+		condition.init(null); // only for coverage
 	}
 
 	@Test

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.classification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.classification.preprocessing.PreprocessedData;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -96,13 +98,16 @@ public class TestTextClassifier extends TestSetUp {
 	@NonTransactional
 	public void testUpdateOnlineLearningEnabled() {
 		// precondition: classifier freshly trained
-		classifier.train();
+		classifier.train(ClassifierType.LR, ClassifierType.LR);
 		assertEquals(KnowledgeType.ALTERNATIVE,
 				classifier.getFineGrainedClassifier().predict("Increases extensibility"));
+		assertTrue(classifier.getBinaryClassifier().model.online());
+		assertTrue(classifier.getFineGrainedClassifier().model.online());
 
 		// test steps: update classifier with new part of text
 		PartOfJiraIssueText sentence = new PartOfJiraIssueText();
 		sentence.setDescription("Increases extensibility");
+		sentence.setSummary("Increases extensibility");
 		sentence.setRelevant(true);
 		sentence.setType(KnowledgeType.PRO);
 		sentence.setValidated(true);
@@ -157,5 +162,25 @@ public class TestTextClassifier extends TestSetUp {
 	@NonTransactional
 	public void testIsTrained() {
 		assertTrue(classifier.isTrained());
+	}
+
+	@Test
+	@NonTransactional
+	public void testTrainNaiveBayes() {
+		assertTrue(classifier.train(ClassifierType.NB, ClassifierType.NB));
+	}
+
+	@Test
+	@NonTransactional
+	public void testTrainSVM() {
+		assertTrue(classifier.train(ClassifierType.SVM, ClassifierType.SVM));
+	}
+
+	@Test
+	@NonTransactional
+	public void testfitSVMmaxNumberOfTrainingSamplesReached() {
+		PreprocessedData preprocessedData = new PreprocessedData(classifier.getGroundTruthData(), false);
+		assertNotNull(TextClassifier.fitSVM(preprocessedData.preprocessedSentences,
+				preprocessedData.getIsRelevantLabels(), 1));
 	}
 }

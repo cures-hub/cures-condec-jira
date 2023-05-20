@@ -22,6 +22,11 @@ public class TestInterfaceAndAbstractClassAdapter {
 	}
 
 	@Test(expected = Exception.class)
+	public void testGetObjectClassUnknown() {
+		interfaceAndAbstractClassAdapter.getObjectClass("UnknownClass");
+	}
+
+	@Test(expected = Exception.class)
 	public void testDeserializeNotWorking() {
 		interfaceAndAbstractClassAdapter.deserialize(new JsonObject(), getClass(), null);
 	}

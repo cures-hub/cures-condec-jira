@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -16,9 +17,11 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.PartOfJiraIssueText;
 import smile.classification.Classifier;
 import smile.classification.LogisticRegression;
-import smile.classification.OneVersusRest;
-import smile.classification.SVM;
-import smile.math.kernel.GaussianKernel;
+import smile.classification.NaiveBayes;
+import smile.classification.OneVersusOne;
+import smile.math.MathEx;
+import smile.stat.distribution.Distribution;
+import smile.stat.distribution.GaussianMixture;
 import smile.validation.ClassificationMetrics;
 import smile.validation.ClassificationValidation;
 
@@ -65,10 +68,28 @@ public class FineGrainedClassifier extends AbstractClassifier {
 
 	@Override
 	public Classifier<double[]> train(double[][] trainingSamples, int[] trainingLabels, ClassifierType classifierType) {
+		// MathEx.max(trainingLabels) is 4 because of 5 classes
 		switch (classifierType) {
 		case SVM:
-			return OneVersusRest.fit(trainingSamples, trainingLabels,
-					(x, y) -> SVM.fit(x, y, new GaussianKernel(1.0), 5, 0.5));
+			return OneVersusOne.fit(trainingSamples, trainingLabels, (x, y) -> TextClassifier.fitSVM(x, y));
+		case NB:
+			return OneVersusOne.fit(trainingSamples, trainingLabels, (x, y) -> {
+				int p = x[0].length; // vector length 150 per 3-gram
+				int k = MathEx.max(y) + 1; // number of classes is 2, labels are 0 and +1
+				int n = x.length; // number of 3-grams for training
+				double[] priori = new double[k];
+				Distribution[][] condprob = new Distribution[k][p];
+				for (int i = 0; i < k; i++) {
+					priori[i] = 1.0 / k;
+					final int c = i == 0 ? -1 : i; // labels are -1 and +1
+					for (int j = 0; j < p; j++) {
+						final int f = j;
+						double[] xi = IntStream.range(0, n).filter(l -> y[l] == c).mapToDouble(l -> x[l][f]).toArray();
+						condprob[i][j] = GaussianMixture.fit(3, xi);
+					}
+				}
+				return new NaiveBayes(priori, condprob);
+			});
 		default:
 			return LogisticRegression.multinomial(trainingSamples, trainingLabels);
 		}
@@ -123,7 +144,7 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			double scoreTime) {
 		Map<String, ClassificationMetrics> resultsMap = new LinkedHashMap<>();
 		ClassificationValidation<Classifier<double[]>> validationOverall = new ClassificationValidation<Classifier<double[]>>(
-				model, truth, prediction, fitTime, scoreTime);
+				model, fitTime, scoreTime, truth, prediction);
 		resultsMap.put("Fine-grained Overall " + model.getClass().getName(), validationOverall.metrics);
 
 		for (int classLabel = 0; classLabel < numClasses; classLabel++) {
@@ -131,11 +152,11 @@ public class FineGrainedClassifier extends AbstractClassifier {
 			int[] binaryTruth = mapFineGrainedToBinaryResults(truth, classLabel);
 			int[] binaryPredictions = mapFineGrainedToBinaryResults(prediction, classLabel);
 
-			ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<Classifier<double[]>>(
-					model, binaryTruth, binaryPredictions, fitTime, scoreTime);
-
+			ClassificationValidation<Classifier<double[]>> validation = new ClassificationValidation<>(model, fitTime,
+					scoreTime, binaryTruth, binaryPredictions);
 			resultsMap.put("Fine-grained " + type.toString(), validation.metrics);
 		}
+
 		return resultsMap;
 	}
 

@@ -37,12 +37,12 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueKeyEmpty() {
-		assertEquals("", summarizer.createSummary(null, 0));
+		assertEquals("", summarizer.createSummary(JiraIssues.getJiraIssueByKey(""), 0));
 	}
 
 	@Test
 	public void testJiraIssueExisting() {
-		String summary = summarizer.createSummary(JiraIssues.getJiraIssueByKey("TEST-4"), 0);
+		String summary = summarizer.createSummary(JiraIssues.getJiraIssueByKey("TEST-30"), -1);
 		assertTrue(summary.startsWith("<table"));
 		assertFalse(summary.contains("readMe"));
 	}

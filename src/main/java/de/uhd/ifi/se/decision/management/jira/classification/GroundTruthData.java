@@ -233,7 +233,7 @@ public class GroundTruthData {
 		StructField column1 = new StructField("isAlternative", DataTypes.IntegerType);
 		StructField column2 = new StructField("isPro", DataTypes.IntegerType);
 		StructField column3 = new StructField("isCon", DataTypes.IntegerType);
-		StructField column4 = new StructField("isDecisions", DataTypes.IntegerType);
+		StructField column4 = new StructField("isDecision", DataTypes.IntegerType);
 		StructField column5 = new StructField("isIssue", DataTypes.IntegerType);
 		StructField column6 = new StructField("sentence", DataType.of(String.class));
 		return new StructType(column1, column2, column3, column4, column5, column6);

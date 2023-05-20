@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jgrapht.GraphPath;
@@ -55,6 +56,7 @@ public class KnowledgeElement {
 	private String key;
 	protected TreeMap<Date, String> updateDateAndAuthor;
 	protected DocumentationLocation documentationLocation;
+	@JsonIgnore
 	protected Origin origin;
 	protected KnowledgeStatus status;
 
@@ -270,6 +272,11 @@ public class KnowledgeElement {
 	@XmlElement(name = "groups")
 	public List<String> getDecisionGroups() {
 		return DecisionGroupPersistenceManager.getGroupsForElement(this);
+	}
+
+	@JsonProperty("groups")
+	public void setDecisionGroups(List<String> groups) {
+		// currently not implemented but necessary to prevent JsonMappingException
 	}
 
 	/**

@@ -1,4 +1,4 @@
-isAlternative,isPro,isCon,isDecisions,isIssue,sentence
+isAlternative,isPro,isCon,isDecision,isIssue,sentence
 0,1,0,0,0,It is working quite well.
 0,0,1,0,0,I just tried to use the 2012 Version of safari for windows but it keeps crashing.
 1,0,0,0,0,"The link for the project setting page could be shown for every project."
@@ -319,8 +319,8 @@ https://community.atlassian.com/t5/Jira-questions/How-to-pass-an-argument-to-a-w
 0,1,0,0,0,"When you send webhooks inline, all your code is in one place."
 1,0,0,0,0,"You can use open source scalable queueing solutions like RabbitMQ or a service like Amazon Simple Queuing Service."
 1,0,0,0,0,"And if you need to retry a notification, just keep it marked active until it succeeds or is called the maximum number of times."
-0,1,0,0,0,"This way, your interaction is limited to adding and removing Äúmessages,Äù which tell you what webhooks to call."
-0,1,0,0,0,"In addition to using a tool designed for this purpose, a proper queue also saves database resources for what it does bestÄìproviding data to your primary application."
+0,1,0,0,0,"This way, your interaction is limited to adding and removing ÔøΩÔøΩmessages,ÔøΩÔøΩ which tell you what webhooks to call."
+0,1,0,0,0,"In addition to using a tool designed for this purpose, a proper queue also saves database resources for what it does bestÔøΩÔøΩproviding data to your primary application."
 0,0,0,1,0,"I created a onclick event for the Submission of the url and the secret:"
 0,0,0,0,1,How can we see the logs?
 1,0,0,0,0,You can have log files if you provide a time frame to them.
