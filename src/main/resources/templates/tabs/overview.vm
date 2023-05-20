@@ -10,6 +10,7 @@
 </div>
 <script>
 $(document).ready(function () {
+	conDecAPI.checkIfProjectKeyIsValid();
 #if(!$codeFileName && !$knowledgeType)
 	/* Adds the on click listener on tab opening */
 	var isOnceClicked = false;
