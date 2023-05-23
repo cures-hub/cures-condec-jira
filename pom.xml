@@ -18,24 +18,7 @@
         a feature, or bug reports.
     </description>
 	<developers>
-		<!-- sorted alphabetically by id, these are currently active developers 
-			you can contact, see the version history for former developers -->
-		<developer>
-			<id>aaaailuj</id>
-			<name>Julia Baum</name>
-		</developer>
-		<developer>
-            <id>mboerner</id>
-            <name>Markus Boerner</name>
-        </developer>
-		<developer>
-			<id>LukasB-Git</id>
-			<name>Lukas Bendl</name>
-		</developer>
-		<developer>
-			<id>mruder</id>
-			<name>Marvin A. Ruder</name>
-		</developer>
+		<!-- see the version history for developers -->
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 

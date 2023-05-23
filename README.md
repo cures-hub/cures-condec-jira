@@ -6,12 +6,14 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/cures-hub/cures-condec-jira.svg)](https://github.com/cures-hub/cures-condec-jira/graphs/contributors)
 
 The ConDec Jira plug-in enables the user to capture and explore decision knowledge in [Jira](https://de.atlassian.com/software/jira).
-Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to Jira issues such as features, tasks to implement a feature, or bug reports.
-The plug-in supports four documentation locations for decision knowledge: entire Jira issues with distinct types, comments and the description of existing Jira issues, commit messages, and code comments.
+Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). 
+The documented decision knowledge can be linked to Jira tickets such as features, tasks to implement a feature, or bug reports.
+The plug-in supports four documentation locations for decision knowledge: entire Jira tickets with distinct types, comments and the description of Jira tickets, commit messages, and code comments.
 
 ## Installation
 
 ### Prerequisites
+The plug-in works for Jira server and data center instances.
 The following prerequisites are necessary to compile the plug-in from source code:
 - Java 11 JDK
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
@@ -93,15 +95,15 @@ ConDec offers the following features:
 ## Implementation Details
 
 ### Model
-The [model interfaces and classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
+The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
 
-![Model](doc/diagrams/model.png)
-*Model interfaces and classes*
+![Model](doc/diagrams/class_diagram_model_detailed.png)
+*Model classes*
 
 ### Persistence Strategies
 The Jira ConDec plug-in supports two strategies to [persist decision knowledge in Jira](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
 
-![Persistence strategies](doc/diagrams/decision_storage_strategies.png)
+![Persistence strategies](doc/diagrams/class_diagram_persistence_overview.png)
 *Persistence strategies*
 
 The issue strategy represents decision knowledge elements as Jira issues.
