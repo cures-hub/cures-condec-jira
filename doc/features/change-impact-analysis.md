@@ -88,7 +88,7 @@ It uses the `ChangeImpactAnalysisConfig` to get the configuration information fo
 Once the calculation completes, either a `VisGraph`, `Matrix` or `TreeViewer` *view* object is created using the results. Then, `Colorizer` is called. This class utilizes the impact score to colorize each `VisNode`, `MatrixNode` or `TreeViewerNode` of the previously created object accordingly.
 Once complete, `Tooltip` is called. This class utilizes all gathered information to generate and attach a distinct tooltip to each node. `ChangeImpactAnalysisService` then returns the *view* object, therefore concluding the CIA process.
 
-![Overview class diagram](../screenshots/change_impact_analysis_class_diagram.png)
+![Overview class diagram](../diagrams/class_diagram_change_impact_analysis.png)
 
 *Overview class diagram for the change impact analysis*
 
