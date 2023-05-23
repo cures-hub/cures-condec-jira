@@ -77,8 +77,7 @@ ConDec offers the following features:
 - [Decision knowledge documentation in various documentation locations](doc/features/documentation.md)
 - [Knowledge management](doc/features/knowledge-management.md)
 - [Extraction and presentation of knowledge in git](doc/features/knowledge-in-git-presentation.md)
-- Knowledge graph creation comprising requirements, decision knowledge, code files, and other software artifacts
-- [Interactive knowledge visualization](doc/features/knowledge-visualization.md)
+- [Interactive knowledge visualization based on a knowledge graph containing requirements, decision knowledge, code files, and other software artifacts](doc/features/knowledge-visualization.md)
 - [Change impact analysis](doc/features/change-impact-analysis.md)
 - [Definition of done checking to support high quality of the knowledge documentation](doc/features/quality-checking.md)
 - [Rationale backlog listing knowledge elements that violate the definition of done](doc/features/rationale-backlog.md)
@@ -92,13 +91,18 @@ ConDec offers the following features:
 - [Knowledge export](doc/features/knowledge-export.md)
 - [Webhook to inform a receiver system about changed knowledge](doc/features/webhook.md)
 
-## Implementation Details
+## Design and Implementation Details
+
+### Overview
+![Overview class diagram](doc/diagrams/class_diagram_overview.png)
+*Overview class diagram*
+
 
 ### Model
 The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
 
 ![Model](doc/diagrams/class_diagram_model_detailed.png)
-*Model classes*
+*Model classes and associations (UML class diagram)*
 
 ### Persistence Strategies
 The Jira ConDec plug-in supports two strategies to [persist decision knowledge in Jira](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
