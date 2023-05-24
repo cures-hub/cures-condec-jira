@@ -93,13 +93,29 @@ ConDec offers the following features:
 
 ## Design and Implementation Details
 
-### Overview
+### Overview and Model
+The plug-in consists of a frontend and backend component.
+[The backend is implemented in Java code organized into 15 packages.](src/main/java/de/uhd/ifi/se/decision/management/jira)
+The following class diagram gives an overview of important classes.
+
 ![Overview class diagram](doc/diagrams/class_diagram_overview.png)
 *Overview class diagram*
 
+The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) represent decision knowledge and other software artifacts in Jira (data model). 
+The class *KnowledgeElement* represents decision knowledge (e.g., issues (decision problems), alternatives, decisions, pro and con arguments) and other software artifacts (e.g., requirements and code).
+Each knowledge element has an attribute that describes where it is documented (*DocumentationLocation*), as well as one for its knowledge status (*KnowledgeStatus*), and one for its type (*KnowledgeType*), whereby the possibilities for the knowledge status depend on the type of the knowledge element.
+The *documentationLocation* attribute describes where an element is documented, for example if it is documented as a whole Jira ticket, in the description or comments of a Jira ticket, or in code.
+Each knowledge element also has an attribute origin. 
+By default, the *documentationLocation* and origin of an element are the same, but for knowledge elements that originated in commit messages, the *documentationLocation* is the text in a comment of a Jira ticket, but the origin is a commit message.
+This is due to the fact that ConDec parses the decision knowledge from commit messages by automatically posting them as comments on the related Jira tickets.
 
-### Model
-The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
+The [classes in the rest package](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) provide representational state transfer (REST) endpoints for communication between the frontend and backend. 
+They provide methods that are called by the Javascript code in the frontend to get the data from the backend for the respective feature. 
+
+The [view classes](src/main/java/de/uhd/ifi/se/decision/management/jira/view) store information on the views. 
+The [filtering classes](src/main/java/de/uhd/ifi/se/decision/management/jira/filtering) provides ways to filter the knowledge graph.
+The [config classes](src/main/java/de/uhd/ifi/se/decision/management/jira/config) store the configuration options and settings. 
+The [classification classes](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) deal with automatic text classification and extracting decision knowledge from the various knowledge sources.
 
 ![Model](doc/diagrams/class_diagram_model_detailed.png)
 *Model classes and associations (UML class diagram)*
