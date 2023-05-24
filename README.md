@@ -109,29 +109,32 @@ Each knowledge element also has an attribute origin.
 By default, the *documentationLocation* and origin of an element are the same, but for knowledge elements that originated in commit messages, the *documentationLocation* is the text in a comment of a Jira ticket, but the origin is a commit message.
 This is due to the fact that ConDec parses the decision knowledge from commit messages by automatically posting them as comments on the related Jira tickets.
 
-The [classes in the rest package](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) provide representational state transfer (REST) endpoints for communication between the frontend and backend. 
-They provide methods that are called by the Javascript code in the frontend to get the data from the backend for the respective feature. 
-
-The [view classes](src/main/java/de/uhd/ifi/se/decision/management/jira/view) store information on the views. 
-The [filtering classes](src/main/java/de/uhd/ifi/se/decision/management/jira/filtering) provides ways to filter the knowledge graph.
-The [config classes](src/main/java/de/uhd/ifi/se/decision/management/jira/config) store the configuration options and settings. 
-The [classification classes](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) deal with automatic text classification and extracting decision knowledge from the various knowledge sources.
-
 ![Model](doc/diagrams/class_diagram_model_detailed.png)
 *Model classes and associations (UML class diagram)*
 
-### Persistence Strategies
-The Jira ConDec plug-in supports two strategies to [persist decision knowledge in Jira](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
+The [classes in the rest package](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) provide representational state transfer (REST) endpoints for communication between the frontend and backend. 
+They provide methods that are called by the Javascript code in the frontend to get the data from the backend for the respective feature. 
 
-![Persistence strategies](doc/diagrams/class_diagram_persistence_overview.png)
-*Persistence strategies*
+The [persistence classes](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence) manage the storage of decision knowledge in relation to other software artifacts.
+The *KnowledgePersistenceManager* is the central class responsible for knowledge storage.
+The *JiraIssuePersistenceManager* manages the storage of decision knowledge elements as Jira tickets.
+Jira issue links are used to link decision knowledge elements documented as entire tickets to each other and to Jira tickets of other types such as requirements.
+The *JiraIssueTextPersistenceManager* manages the storage of decision knowledge elements in the description and comments of Jira tickets.
+The *GenericLinkManager* manages linking of the decision knowledge elements in the description and comments and the *AutomaticLinkCreator* performs automatic linking.
 
-The issue strategy represents decision knowledge elements as Jira issues.
-Jira issue links are used to link decision knowledge elements to each other and to Jira issues of other types such as feature tasks.
-The advantage of this strategy is that all features available for Jira issues can be used to manage decision knowledge, e.g., searching for a decision in the list of issues.
-The disadvantage is that the dedicated issue type scheme needs to be assigned to the Jira project.
-To overcome this disadvantage, the active object strategy uses distinct model classes for decision knowledge elements and their links.
-This strategy uses object-relational mapping to communicate with Jira's internal database.
+![Overview of classes for knowledge persistence](doc/diagrams/class_diagram_persistence_overview.png)
+*Overview of classes for knowledge persistence*
+
+The [git classes](src/main/java/de/uhd/ifi/se/decision/management/jira/git) deal with the extraction and presentation of code changes and decision knowledge from [git](https://git-scm.com).
+
+The [view classes](src/main/java/de/uhd/ifi/se/decision/management/jira/view) represent the views on the knowledge graph. 
+The [filtering classes](src/main/java/de/uhd/ifi/se/decision/management/jira/filtering) provides ways to filter the knowledge graph.
+The [config classes](src/main/java/de/uhd/ifi/se/decision/management/jira/config) store the configuration options and settings. 
+The [classification classes](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) deal with automatic text classification to extract decision knowledge from various knowledge sources.
+
+The [quality classes](src/main/java/de/uhd/ifi/se/decision/management/jira/quality) check whether the knowledge documentation fulfills the definition of done.
+The [metric classes](src/main/java/de/uhd/ifi/se/decision/management/jira/metric) calculate metrics on the knowledge graph data structure. 
+The metrics are presented in the knowledge dashboard.
 
 ### REST API
 This plug-in provides a [representational state transfer (REST) application programming interface (API)](src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
