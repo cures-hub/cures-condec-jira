@@ -101,19 +101,20 @@ The following class diagram gives an overview of important classes.
 ![Overview class diagram](doc/diagrams/class_diagram_overview.png)
 *Overview class diagram*
 
-The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) represent decision knowledge and other software artifacts in Jira (data model). 
-The class *KnowledgeElement* represents decision knowledge (e.g., issues (decision problems), alternatives, decisions, pro and con arguments) and other software artifacts (e.g., requirements and code).
-Each knowledge element has an attribute that describes where it is documented (*DocumentationLocation*), as well as one for its knowledge status (*KnowledgeStatus*), and one for its type (*KnowledgeType*), whereby the possibilities for the knowledge status depend on the type of the knowledge element.
-The *documentationLocation* attribute describes where an element is documented, for example if it is documented as a whole Jira ticket, in the description or comments of a Jira ticket, or in code.
+The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) represent the data model of decision knowledge and other software artifacts in Jira. 
+The class *KnowledgeGraph* contains *KnowledgeElement*s and *Link*s.
+The class *KnowledgeElement* represents decision knowledge (e.g., decision problems, alternatives, decisions, pro and con arguments) and other software artifacts (e.g., requirements and code).
+Each knowledge element has attributes to describe its location (*DocumentationLocation*), its knowledge status (*KnowledgeStatus*), and its type (*KnowledgeType*), whereby the possibilities for the knowledge status depend on the type of the knowledge element.
+The *documentationLocation* attribute describes where an element is documented, for example, if it is documented as an entire Jira ticket, in the description or comments of a Jira ticket, or in code.
 Each knowledge element also has an attribute origin. 
-By default, the *documentationLocation* and origin of an element are the same, but for knowledge elements that originated in commit messages, the *documentationLocation* is the text in a comment of a Jira ticket, but the origin is a commit message.
-This is due to the fact that ConDec parses the decision knowledge from commit messages by automatically posting them as comments on the related Jira tickets.
+By default, the *documentationLocation* and *origin* of an element are the same, but for knowledge elements that originated in commit messages, the *documentationLocation* is the text in a comment of a Jira ticket, but the origin is a commit message.
+This is due to the fact that ConDec parses the decision knowledge from commit messages and automatically posts them as comments on the related Jira tickets.
 
 ![Model](doc/diagrams/class_diagram_model_detailed.png)
 *Model classes and associations (UML class diagram)*
 
 The [classes in the rest package](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) provide representational state transfer (REST) endpoints for communication between the frontend and backend. 
-They provide methods that are called by the Javascript code in the frontend to get the data from the backend for the respective feature. 
+They provide methods that are called by the JavaScript code in the frontend to get the data from the backend for the respective feature (see next section). 
 
 The [persistence classes](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence) manage the storage of decision knowledge in relation to other software artifacts.
 The *KnowledgePersistenceManager* is the central class responsible for knowledge storage.
@@ -143,7 +144,7 @@ These services can be accessed via the following link:
 
 **Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decision-guidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
-The Jira ConDec plug-in uses the REST services in the [REST Java Script client](src/main/resources/js/condec.api.js) from the user interface.
+The Jira ConDec plug-in uses the REST services in the [REST JavaScript client](src/main/resources/js/condec.api.js) from the user interface.
 
 ### Logging and Monitoring
 The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 

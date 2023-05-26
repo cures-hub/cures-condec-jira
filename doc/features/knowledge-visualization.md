@@ -9,6 +9,15 @@ ConDec enables the developers to **exploit transitive links between knowledge el
 For example, the developers developers can examine all decisions made in the context of a requirement. 
 The decisions can be documented in work items, commit messages, and code files reachable from the requirement.
 
+## Design Details
+The following class diagrams give an overview of relevant backend classes for knowledge visualization and filtering.
+
+![Overview of classes in view package](doc/diagrams/class_diagram_view_overview.png)
+*Overview of classes in view package*
+
+![Filtering classes and associations](doc/diagrams/class_diagram_filtering_detailed.png)
+*Filtering classes and associations (UML class diagram)*
+
 ## Publication
 Kleebaum, A., Paech, B., Johanssen, J. O., & Bruegge, B. (2021). Continuous Rationale Visualization. 
 In 2021 Working Conference on Software Visualization (VISSOFT) (pp. 33-43). 
