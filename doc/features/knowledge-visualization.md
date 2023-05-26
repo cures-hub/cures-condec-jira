@@ -1,4 +1,4 @@
-# Knowledge Visualization
+# Knowledge Visualization and Filtering
 
 Requirements engineers and developers use the integrated knowledge visualization 
 to understand the requirements of a software system along with decisions related to 
@@ -43,6 +43,19 @@ Filter criteria are:
 
 ![Filtering classes and associations](../diagrams/class_diagram_filtering_detailed.png)
 *Filtering classes and associations (UML class diagram)*
+
+The Java code for the knowledge visualization and filtering can be found here:
+
+- [Java code for knowledge visualization](../../src/main/java/de/uhd/ifi/se/decision/management/jira/view)
+- [Java code for filtering](../../src/main/java/de/uhd/ifi/se/decision/management/jira/filtering)
+- [Java REST API for knowledge visualization](../../src/main/java/de/uhd/ifi/se/decision/management/jira/rest/ViewRest.java)
+
+The UI code for the knowledge visualization and filtering can be found here:
+
+- [Velocity template for views](../../src/main/resources/templates/tabs)
+- [JavaScript code for views](../../src/main/resources/js/view)
+- [Velocity templates for faceted filters](../../src/main/resources/templates/filter)
+- [JavaScript code for filtering](../../src/main/resources/js/condec.filtering.js)
 
 ## Publication
 Kleebaum, A., Paech, B., Johanssen, J. O., & Bruegge, B. (2021). Continuous Rationale Visualization. 
