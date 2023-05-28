@@ -2,7 +2,7 @@
 
 ## Version 1.0
 
-This end user license agreement dated 16 January 2019 is between the user of the ConDec JIRA Plugin for Continuous Decision Documentation and Exploration and the Software Engineering Research Group, Heidelberg University. This agreement may be modified from time to time. This will be mentioned in the update news. 
+This end user license agreement dated 16 January 2019 is between the user of the ConDec Jira Plugin for Continuous Decision Documentation and Exploration and the Software Engineering Research Group, Heidelberg University. This agreement may be modified from time to time. This will be mentioned in the update news. 
 
 ## License Grant
 

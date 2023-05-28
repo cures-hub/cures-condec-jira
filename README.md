@@ -6,14 +6,16 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/cures-hub/cures-condec-jira.svg)](https://github.com/cures-hub/cures-condec-jira/graphs/contributors)
 
 The ConDec Jira plug-in enables the user to capture and explore decision knowledge in [Jira](https://de.atlassian.com/software/jira).
-Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to Jira issues such as features, tasks to implement a feature, or bug reports.
-The plug-in supports four documentation locations for decision knowledge: entire Jira issues with distinct types, comments and the description of existing Jira issues, commit messages, and code comments.
+Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). 
+The documented decision knowledge can be linked to Jira tickets such as features, tasks to implement a feature, or bug reports.
+The plug-in supports four documentation locations for decision knowledge: entire Jira tickets with distinct types, comments and the description of Jira tickets, commit messages, and code comments.
 
 ## Installation
 
 ### Prerequisites
+The plug-in works for Jira server and data center instances.
 The following prerequisites are necessary to compile the plug-in from source code:
-- Java 11 JDK
+- Java 11 JDK or higher
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
 ### Compilation via Terminal
@@ -46,37 +48,38 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 - Activate the plug-in for the specific project in the [setting page.](doc/screenshots/config_plugin.png)
 
 ## ConDec Views and Features
+ConDec adds several views and features to the issue tracking system Jira.
+The [user interface structure diagram](doc/diagrams/user_interface_structure.png) provides an overview of the views and features.
 
-### Decision Knowledge Page
-Jira ConDec provides a *TreeViewer* that lists all documented knowledge elements.
-The user can choose the type of the top level knowledge element, e.g., to understand which decisions were made or which issues (decision problems) were addressed during the project.
-The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
+### Knowledge Overviews
+The ConDec Jira plug-in adds knowledge overviews in a separate page.
+The *indented outline* lists all documented knowledge elements.
+The user can choose the type of the top level knowledge element, e.g., to understand which decisions were made or which issues (decision problems) were addressed in the project.
 Decision knowledge elements can be selected and the related elements can be viewed and selected as well.
 
-![Jira ConDec plug-in](doc/screenshots/example_radargrammetry.png)
-*TreeViewer (left) and tree view of a single decision (right)*
+![ConDec Jira plug-in](doc/screenshots/example_radargrammetry.png)
+*Knowledge overview page showing the indented outline (left) and a node-link tree diagram of a single decision (right)*
 
-The *Tree* view enables the user to explore decision knowledge related to the selected decision knowledge element.
-The tree view was implemented using the [Treant.js library](http://fperucic.github.io/treant-js).
+The *node-link tree diagram* enables the user to explore decision knowledge related to the selected decision knowledge element.
 
 The user can [filter the decision knowledge](doc/screenshots/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_context_menu.png).
 
-### Jira Issue Module
-Jira ConDec provides a [Jira issue module that enables the user to explore decision knowledge related to Jira issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
+### Jira Issue Detail View
+The ConDec Jira plug-in provides a [Jira issue module that enables the user to explore decision knowledge related to a specific Jira ticket such as a requirement](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
 
 ### Configuration
 The [project setting page](doc/screenshots/config_plugin.png) enables the user to:
 - Activate the plug-in for the specific project.
-- Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
-- Configure the features listed below
+- Activate whether decision knowledge can be stored in entire Jira tickets. If activated, the plug-in automatically adds decision knowledge types to the issue type scheme of the project.
+- [Configure the rationale model.](doc/screenshots/config_rationale_model.png)
+- Configure the features listed below.
 
 ### Features
 ConDec offers the following features:
 - [Decision knowledge documentation in various documentation locations](doc/features/documentation.md)
 - [Knowledge management](doc/features/knowledge-management.md)
 - [Extraction and presentation of knowledge in git](doc/features/knowledge-in-git-presentation.md)
-- Knowledge graph creation comprising requirements, decision knowledge, code files, and other software artifacts
-- [Interactive knowledge visualization](doc/features/knowledge-visualization.md)
+- [Interactive knowledge visualization based on a knowledge graph containing requirements, decision knowledge, code files, and other software artifacts](doc/features/knowledge-visualization.md)
 - [Change impact analysis](doc/features/change-impact-analysis.md)
 - [Definition of done checking to support high quality of the knowledge documentation](doc/features/quality-checking.md)
 - [Rationale backlog listing knowledge elements that violate the definition of done](doc/features/rationale-backlog.md)
@@ -90,26 +93,51 @@ ConDec offers the following features:
 - [Knowledge export](doc/features/knowledge-export.md)
 - [Webhook to inform a receiver system about changed knowledge](doc/features/webhook.md)
 
-## Implementation Details
+## Design and Implementation Details
 
-### Model
-The [model interfaces and classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in Jira.
+### Overview and Model
+The plug-in consists of a frontend and backend component.
+[The backend is implemented in Java code organized into 15 packages.](src/main/java/de/uhd/ifi/se/decision/management/jira)
+The following class diagram gives an overview of important classes (only ten packages are included).
 
-![Model](doc/diagrams/model.png)
-*Model interfaces and classes*
+![Overview class diagram](doc/diagrams/class_diagram_overview.png)
+*Overview of important backend classes (UML class diagram)*
 
-### Persistence Strategies
-The Jira ConDec plug-in supports two strategies to [persist decision knowledge in Jira](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
+The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) represent the data model of decision knowledge and other software artifacts in Jira. 
+The class *KnowledgeGraph* contains *KnowledgeElement*s and *Link*s.
+The class *KnowledgeElement* represents decision knowledge (e.g., decision problems, alternatives, decisions, pro and con arguments) and other software artifacts (e.g., requirements and code).
+Each knowledge element has attributes to describe its location (*DocumentationLocation*), its knowledge status (*KnowledgeStatus*), and its type (*KnowledgeType*), whereby the possibilities for the knowledge status depend on the type of the knowledge element.
+The *documentationLocation* attribute describes where an element is documented, for example, if it is documented as an entire Jira ticket, in the description or comments of a Jira ticket, or in code.
+Each knowledge element also has an attribute origin. 
+By default, the *documentationLocation* and *origin* of an element are the same, but for knowledge elements that originated in commit messages, the *documentationLocation* is the text in a comment of a Jira ticket, but the origin is a commit message.
+This is due to the fact that ConDec parses the decision knowledge from commit messages and automatically posts them as comments on the related Jira tickets.
 
-![Persistence strategies](doc/diagrams/decision_storage_strategies.png)
-*Persistence strategies*
+![Model](doc/diagrams/class_diagram_model_detailed.png)
+*Model classes and associations (UML class diagram)*
 
-The issue strategy represents decision knowledge elements as Jira issues.
-Jira issue links are used to link decision knowledge elements to each other and to Jira issues of other types such as feature tasks.
-The advantage of this strategy is that all features available for Jira issues can be used to manage decision knowledge, e.g., searching for a decision in the list of issues.
-The disadvantage is that the dedicated issue type scheme needs to be assigned to the Jira project.
-To overcome this disadvantage, the active object strategy uses distinct model classes for decision knowledge elements and their links.
-This strategy uses object-relational mapping to communicate with Jira's internal database.
+The [classes in the rest package](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) provide representational state transfer (REST) endpoints for communication between the frontend and backend. 
+They provide methods that are called by the JavaScript code in the frontend to get the data from the backend for the respective feature (see next section). 
+
+The [persistence classes](src/main/java/de/uhd/ifi/se/decision/management/jira/persistence) manage the storage of decision knowledge in relation to other software artifacts.
+The *KnowledgePersistenceManager* is the central class responsible for knowledge storage.
+The *JiraIssuePersistenceManager* manages the storage of decision knowledge elements as Jira tickets.
+Jira issue links are used to link decision knowledge elements documented as entire tickets to each other and to Jira tickets of other types such as requirements.
+The *JiraIssueTextPersistenceManager* manages the storage of decision knowledge elements in the description and comments of Jira tickets.
+The *GenericLinkManager* manages linking of the decision knowledge elements in the description and comments and the *AutomaticLinkCreator* performs automatic linking.
+
+![Overview of classes for knowledge persistence](doc/diagrams/class_diagram_persistence_overview.png)
+*Overview of classes for knowledge persistence*
+
+The [git classes](src/main/java/de/uhd/ifi/se/decision/management/jira/git) deal with the extraction and presentation of code changes and decision knowledge from [git](https://git-scm.com).
+
+The [view classes](src/main/java/de/uhd/ifi/se/decision/management/jira/view) represent the views on the knowledge graph. 
+The [filtering classes](src/main/java/de/uhd/ifi/se/decision/management/jira/filtering) provides ways to filter the knowledge graph.
+The [config classes](src/main/java/de/uhd/ifi/se/decision/management/jira/config) store the configuration options and settings. 
+The [classification classes](src/main/java/de/uhd/ifi/se/decision/management/jira/rest) deal with automatic text classification to extract decision knowledge from various knowledge sources.
+
+The [quality classes](src/main/java/de/uhd/ifi/se/decision/management/jira/quality) check whether the knowledge documentation fulfills the definition of done.
+The [metric classes](src/main/java/de/uhd/ifi/se/decision/management/jira/metric) calculate metrics on the knowledge graph data structure. 
+The metrics are presented in the knowledge dashboard.
 
 ### REST API
 This plug-in provides a [representational state transfer (REST) application programming interface (API)](src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
@@ -118,7 +146,7 @@ These services can be accessed via the following link:
 
 **Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decision-guidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
-The Jira ConDec plug-in uses the REST services in the [REST Java Script client](src/main/resources/js/condec.api.js) from the user interface.
+The Jira ConDec plug-in uses the REST services in the [REST JavaScript client](src/main/resources/js/condec.api.js) from the user interface.
 
 ### Logging and Monitoring
 The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 

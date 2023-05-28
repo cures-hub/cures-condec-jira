@@ -34,17 +34,14 @@
 </div>
 
 <div class="field-group">
-	<label for="isIssueStrategy-toggle">Store in Jira Issues?</label>
+	<label for="isIssueStrategy-toggle">Store in Jira Tickets?</label>
 	<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"	label="Store in Jira Issues?"
 		#if($project.getBasicConfiguration().isJiraIssueDocumentationLocationActivated())
 			checked
 		#end
 	></aui-toggle>
-	<div class="description">Sets the persistence strategy for this
-		project (either Jira issue strategy or active object strategy). If
-		enabled, decision knowledge can be stored in entire Jira issues. If you choose
-		the issue strategy, you need to make sure that the project is associated with the
-		decision knowledge issue type scheme (should be done automatically by the plug-in).
+	<div class="description">Activates that decision knowledge can be stored in entire Jira tickets. 
+		The plug-in automatically adds decision knowledge types to the issue type scheme of the project.
 	</div>
 </div>
 
