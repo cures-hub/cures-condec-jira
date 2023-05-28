@@ -3,14 +3,17 @@
 Developers can exploit the knowledge documentation during changes, to estimate change impacts.
 The [node-link diagram, tree, list, and matrix views](knowledge-visualization.md) can be used for **change impact analysis (CIA)**.
 ConDec colors the knowledge elements in these views according to the likelihood that they are affected by a change in the selected element.
-The [knowledge graph visualization](knowledge-visualization.md) and change impact analysis should support the developers to make new decisions consistent with the requirements and former decisions.
+Darker elements have a high estimated impact value, whereas bright
+elements have a low impact value.
+The [knowledge graph visualization](knowledge-visualization.md) and change impact analysis supports the developers to make new decisions consistent with the requirements and former decisions.
 
-![Node-link diagram with change impact highlighting](../screenshots/change_impact_analysis_user_story_ise2020_graph.png)
+![Node-link diagram with change impact highlighting](../screenshots/change_impact_analysis_treeview_tooltip_epic_ise2020.png)
 
-*Node-link diagram with change impact highlighting. 
-Decision problems (issues), solution options (decisions and alternatives), requirements, and code files are shown that might be impacted by a change in the epic. 
+*Knowledge tree (indented outline) with change impact highlighting. 
+Issues and decisions are shown that a change in the root element (starting impact set) might impact. 
 The color indicates the likelihood of change impacts: 
-red elements are probably more impacted by a change than green elements.*
+A change probably impacts darker elements more. 
+The tooltip explains the estimated impact value.*
 
 ## Calculation of the Estimated Impact Set (EIS)
 
@@ -24,14 +27,13 @@ elementImpact = (1 - decayValue) * linkTypeWeight * ruleBasedValue * recommendat
 
 where `decayValue` is the decay per iteration step, `linkTypeWeight` is a link type specific decay value between 0 and 1 of the traversed edge between the parent/ancestor element and the current element, `ruleBasedValue` is the normalized sum of all enabled rules
 
-<code>
-ruleBasedValue = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / &sum;<sup>N</sup>ruleWeight<sub>i</sub>
+<code>ruleBasedValue = (&sum;<sup>N</sup>(ruleValue<sub>i</sub> * ruleWeight<sub>i</sub> -&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub>)) / &sum;<sup>N</sup>ruleWeight<sub>i</sub>
 </code>
 
 where `N` is the number of enabled rules, and
 <code>-&#12314;ruleWeight<sub>i</sub> < 0&#12315;ruleWeight<sub>i</sub></code> denotes that the subtraction is only done for negative rule weights to reverse the effect.
 
-In addition, `recommendationScore` is the link recommendation score of the current element, if the element was recommended.
+The variable `recommendationScore` is the link recommendation score of the current element, if the element was recommended.
 
 The following rules are available:
 
@@ -51,12 +53,10 @@ The following rules are available:
 The element is included in the **estimated impact set (EIS)** if `elementImpact >= threshold`.
 Developers can see an **explanation for the impact factor** of each node via a tooltip.
 
-![JSTree diagram with change impact highlighting](../screenshots/change_impact_analysis_treeview_tooltip.png)
-
-*JSTree diagram with change impact hightlighting*
-
 ## Configuration
-The rationale manager can set the default parameters for the change impact analysis, e.g. the decay value, threshold and default ruleset. In addition, they can set a weight value for each rule. A high weight value indicates a rule being more important than usual and increases the impact of that rule accordingly.
+The rationale manager can set the default parameters for the change impact analysis, e.g. the decay value, threshold and default ruleset. 
+In addition, they can set a weight value for each rule. 
+A high weight value indicates a rule being more important than usual and increases the impact of that rule accordingly.
 Furthermore, the developer can change the default values during the usage of change impact analysis. If [new links are being recommended](link-recommendation.md), developers can further adjust whether recommendations are being included in CIA.
 
 ![Change impact analysis configuration page](../screenshots/change_impact_analysis_configuration.png)
@@ -103,7 +103,6 @@ The UI code for the change impact analysis can be found here:
 - [Velocity template for the configuration](../../src/main/resources/templates/settings/changeImpactAnalysisSettings.vm)
 
 ## Important Decisions
-
 The knowledge was exported via [ConDec's knowledge export feature](knowledge-export.md).
 
 - ![Issue](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/issue.png) Which metrics/rules do we use for change impact analysis (CIA)?
@@ -120,5 +119,5 @@ The knowledge was exported via [ConDec's knowledge export feature](knowledge-exp
 	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Textual similarity
 	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Number of distinct update authors
 	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Outbound links only
-	- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) discarded: Likelihood
+	- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) discarded: Number of changes to the artifact compared to total number of changes to all artifacts.
 		- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) Time-consuming calculation due to iteration over all elements in a project
