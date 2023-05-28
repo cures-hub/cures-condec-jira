@@ -15,7 +15,7 @@ The plug-in supports four documentation locations for decision knowledge: entire
 ### Prerequisites
 The plug-in works for Jira server and data center instances.
 The following prerequisites are necessary to compile the plug-in from source code:
-- Java 11 JDK
+- Java 11 JDK or higher
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
 ### Compilation via Terminal
@@ -51,20 +51,21 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 ConDec adds several views and features to the issue tracking system Jira.
 The [user interface structure diagram](doc/diagrams/user_interface_structure.png) provides an overview of the views and features.
 
-### Knowledge Management Page
-Jira ConDec provides a page for knowledge management.
+### Knowledge Overviews
+The ConDec Jira plug-in adds knowledge overviews in a separate page.
 The *indented outline* lists all documented knowledge elements.
 The user can choose the type of the top level knowledge element, e.g., to understand which decisions were made or which issues (decision problems) were addressed in the project.
 Decision knowledge elements can be selected and the related elements can be viewed and selected as well.
 
-![Jira ConDec plug-in](doc/screenshots/example_radargrammetry.png)
-*Knowledge management page showing the indented outline (left) and a node-link tree diagram of a single decision (right)*
+![ConDec Jira plug-in](doc/screenshots/example_radargrammetry.png)
+*Knowledge overview page showing the indented outline (left) and a node-link tree diagram of a single decision (right)*
+
 The *node-link tree diagram* enables the user to explore decision knowledge related to the selected decision knowledge element.
 
 The user can [filter the decision knowledge](doc/screenshots/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_context_menu.png).
 
-### Jira Ticket View
-Jira ConDec provides a [Jira issue module that enables the user to explore decision knowledge related to Jira tickets such as requirements](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
+### Jira Issue Detail View
+The ConDec Jira plug-in provides a [Jira issue module that enables the user to explore decision knowledge related to a specific Jira ticket such as a requirement](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
 
 ### Configuration
 The [project setting page](doc/screenshots/config_plugin.png) enables the user to:
@@ -97,10 +98,10 @@ ConDec offers the following features:
 ### Overview and Model
 The plug-in consists of a frontend and backend component.
 [The backend is implemented in Java code organized into 15 packages.](src/main/java/de/uhd/ifi/se/decision/management/jira)
-The following class diagram gives an overview of important classes.
+The following class diagram gives an overview of important classes (only ten packages are included).
 
 ![Overview class diagram](doc/diagrams/class_diagram_overview.png)
-*Overview class diagram*
+*Overview of important backend classes (UML class diagram)*
 
 The [model classes](src/main/java/de/uhd/ifi/se/decision/management/jira/model) represent the data model of decision knowledge and other software artifacts in Jira. 
 The class *KnowledgeGraph* contains *KnowledgeElement*s and *Link*s.

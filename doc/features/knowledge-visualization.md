@@ -13,6 +13,7 @@ The decisions can be documented in work items, commit messages, and code files r
 The following class diagrams give an overview of relevant backend classes for visualization and filtering of the knowledge graph.
 
 ![Overview of classes in view package](../diagrams/class_diagram_view_overview.png)
+
 *Overview of classes in view package*
 
 The class *FilteringManager* is used to filter the knowledge graph. 
@@ -23,7 +24,7 @@ It provides two methods for filtering:
 The class *FilterSettings* contains the filter criteria. 
 Filter criteria are:
 - Selected knowledge element, e.g., currently selected work item.
-- Types of knowledge elements, e.g., issue, decision, alternative, ...
+- Types of knowledge elements, e.g., issue, decision, alternative, work items, ...
 - Status of the knowledge elements (*KnowledgeStatus*). e.g., unresolved issues
 - Documentation location (*DocumentationLocation*)
 - Time period for creation and modification of knowledge elements specified by *startDate* and *endDate*
@@ -42,6 +43,7 @@ Filter criteria are:
 - Selection of whether [link recommendations](link-recommendation.md) should be displayed
 
 ![Filtering classes and associations](../diagrams/class_diagram_filtering_detailed.png)
+
 *Filtering classes and associations (UML class diagram)*
 
 The Java code for the knowledge visualization and filtering can be found here:
