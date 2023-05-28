@@ -69,8 +69,9 @@ Jira ConDec provides a [Jira issue module that enables the user to explore decis
 ### Configuration
 The [project setting page](doc/screenshots/config_plugin.png) enables the user to:
 - Activate the plug-in for the specific project.
-- Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
-- Configure the features listed below
+- Activate whether decision knowledge can be stored in entire Jira tickets. If activated, the plug-in automatically adds decision knowledge types to the issue type scheme of the project.
+- [Configure the rationale model.](doc/screenshots/config_rationale_model.png)
+- Configure the features listed below.
 
 ### Features
 ConDec offers the following features:

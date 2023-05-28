@@ -17,7 +17,8 @@ The tooltip explains the estimated impact value.*
 
 ## Calculation of the Estimated Impact Set (EIS)
 
-During change impact analysis, each knowledge element (i.e. node/vertex) in the knowledge graph is given an **impact value** (i.e. impact factor). If [new links are being recommended](link-recommendation.md), developers can choose to also include these new elements in the CIA calculation.
+During change impact analysis, each knowledge element (i.e. node/vertex) in the knowledge graph is given an **impact value** (i.e. impact factor). 
+Developers can choose to include [new links recommended by ConDec](link-recommendation.md) in the CIA calculation.
 High impact values indicate that the element is highly affected by the change and needs to be changed as well. 
 The impact value of an element (`elementImpact`) is calculated using the following equation:
 
@@ -119,5 +120,5 @@ The knowledge was exported via [ConDec's knowledge export feature](knowledge-exp
 	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Textual similarity
 	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Number of distinct update authors
 	- ![Decision](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/decision.png) Outbound links only
-	- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) discarded: Number of changes to the artifact compared to total number of changes to all artifacts.
+	- ![Alternative](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/alternative.png) discarded: Number of changes to the artifact compared to total number of changes to all artifacts
 		- ![Con](https://raw.githubusercontent.com/cures-hub/cures-condec-jira/master/src/main/resources/images/argument_con.png) Time-consuming calculation due to iteration over all elements in a project
