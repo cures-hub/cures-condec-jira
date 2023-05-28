@@ -48,23 +48,23 @@ Alternatively, the plug-in can be installed via uploading the .jar file to your 
 - Activate the plug-in for the specific project in the [setting page.](doc/screenshots/config_plugin.png)
 
 ## ConDec Views and Features
+ConDec adds several views and features to the issue tracking system Jira.
+The [user interface structure diagram](doc/diagrams/user_interface_structure.png) provides an overview of the views and features.
 
-### Decision Knowledge Page
-Jira ConDec provides a *TreeViewer* that lists all documented knowledge elements.
-The user can choose the type of the top level knowledge element, e.g., to understand which decisions were made or which issues (decision problems) were addressed during the project.
-The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
+### Knowledge Management Page
+Jira ConDec provides a page for knowledge management.
+The *indented outline* lists all documented knowledge elements.
+The user can choose the type of the top level knowledge element, e.g., to understand which decisions were made or which issues (decision problems) were addressed in the project.
 Decision knowledge elements can be selected and the related elements can be viewed and selected as well.
 
 ![Jira ConDec plug-in](doc/screenshots/example_radargrammetry.png)
-*TreeViewer (left) and tree view of a single decision (right)*
-
-The *Tree* view enables the user to explore decision knowledge related to the selected decision knowledge element.
-The tree view was implemented using the [Treant.js library](http://fperucic.github.io/treant-js).
+*Knowledge management page showing the indented outline (left) and a node-link tree diagram of a single decision (right)*
+The *node-link tree diagram* enables the user to explore decision knowledge related to the selected decision knowledge element.
 
 The user can [filter the decision knowledge](doc/screenshots/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_context_menu.png).
 
-### Jira Issue Module
-Jira ConDec provides a [Jira issue module that enables the user to explore decision knowledge related to Jira issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
+### Jira Ticket View
+Jira ConDec provides a [Jira issue module that enables the user to explore decision knowledge related to Jira tickets such as requirements](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/screenshots/example_radargrammetry_issue_module.png).
 
 ### Configuration
 The [project setting page](doc/screenshots/config_plugin.png) enables the user to:

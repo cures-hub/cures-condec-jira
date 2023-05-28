@@ -57,6 +57,9 @@ The UI code for the knowledge visualization and filtering can be found here:
 - [Velocity templates for faceted filters](../../src/main/resources/templates/filter)
 - [JavaScript code for filtering](../../src/main/resources/js/condec.filtering.js)
 
+## Important Decisions
+For knowledge graph visualization, ConDec uses the [jsTree](https://www.jstree.com), [Treant.js](http://fperucic.github.io/treant-js), vis.js network, vis.js timeline, and Apache ECharts JavaScript libraries as they are open source.
+
 ## Publication
 Kleebaum, A., Paech, B., Johanssen, J. O., & Bruegge, B. (2021). Continuous Rationale Visualization. 
 In 2021 Working Conference on Software Visualization (VISSOFT) (pp. 33-43). 
