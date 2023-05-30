@@ -150,7 +150,7 @@ The Jira ConDec plug-in uses the REST services in the [REST JavaScript client](s
 
 ## Testing
 This repository contains [unit tests](src/test) that are automatically executed when calling `atlas-package`.
-The repository [*cures-condec-jira-system-tests*](../cures-condec-jira-system-tests) contains automated system tests that require a running Jira instance with the ConDec Jira plug-in installed.
+The repository [*cures-condec-jira-system-tests*](https://github.com/cures-hub/cures-condec-jira-system-tests) contains automated system tests that require a running Jira instance with the ConDec Jira plug-in installed.
 The static code quality is tested with various source code analyzers, such as PMD and ESLint.
 
 ## Logging and Monitoring
