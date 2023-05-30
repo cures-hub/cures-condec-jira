@@ -96,7 +96,7 @@ ConDec offers the following features:
 ## Design and Implementation Details
 
 ### Overview and Model
-The plug-in consists of a frontend and backend component.
+The plug-in consists of a [frontend](src/main/resources) and [backend](src/main/java/de/uhd/ifi/se/decision/management/jira) component.
 [The backend is implemented in Java code organized into 15 packages.](src/main/java/de/uhd/ifi/se/decision/management/jira)
 The following class diagram gives an overview of important classes (only ten packages are included).
 
@@ -140,13 +140,13 @@ The [metric classes](src/main/java/de/uhd/ifi/se/decision/management/jira/metric
 The metrics are presented in the knowledge dashboard.
 
 ### REST API
-This plug-in provides a [representational state transfer (REST) application programming interface (API)](src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
+The ConDec Jira plug-in provides a [representational state transfer (REST) application programming interface (API)](src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
 e.g., to retrieve, insert, update, and delete decision knowledge in Jira.
 These services can be accessed via the following link:
 
 **Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decision-guidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
-The Jira ConDec plug-in uses the REST services in the [REST JavaScript client](src/main/resources/js/condec.api.js) from the user interface.
+The [frontend component of the ConDec Jira plug-in](src/main/resources) uses the REST services in the [REST JavaScript client](src/main/resources/js/condec.api.js).
 
 ## Testing
 This repository contains [unit tests](src/test) that are automatically executed when calling `atlas-package`.
