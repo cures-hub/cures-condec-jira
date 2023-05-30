@@ -15,7 +15,7 @@ The plug-in supports four documentation locations for decision knowledge: entire
 ### Prerequisites
 The plug-in works for Jira server and data center instances.
 The following prerequisites are necessary to compile the plug-in from source code:
-- Java 11 JDK or higher
+- Java 11 JDK
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
 ### Compilation via Terminal
@@ -148,7 +148,12 @@ These services can be accessed via the following link:
 
 The Jira ConDec plug-in uses the REST services in the [REST JavaScript client](src/main/resources/js/condec.api.js) from the user interface.
 
-### Logging and Monitoring
+## Testing
+This repository contains [unit tests](src/test) that are automatically executed when calling `atlas-package`.
+The repository [*cures-condec-jira-system-tests*](../cures-condec-jira-system-tests) contains automated system tests that require a running Jira instance with the ConDec Jira plug-in installed.
+The static code quality is tested with various source code analyzers, such as PMD and ESLint.
+
+## Logging and Monitoring
 The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 
 e.g. to evaluate which views the users prefer.
 You need to configure the `log4j.properties` so that `LOGGER.info()` statements are logged.
