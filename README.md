@@ -155,6 +155,6 @@ The static code quality is tested with various source code analyzers, such as PM
 
 ## Logging and Monitoring
 The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 
-e.g. to evaluate which views the users prefer.
+e.g., to evaluate which views the users prefer.
 You need to configure the `log4j.properties` so that `LOGGER.info()` statements are logged.
 More infos on usage data analysis can be found [here](doc/logging/).
