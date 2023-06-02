@@ -23,7 +23,7 @@ jobs:
     - name: Build with Atlassian SDK
       run: atlas-package -P jacoco -q -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true
     - name: Report test coverage via Codecov
-      uses: codecov/codecov-action@v1.5.2
+      uses: codecov/codecov-action@v3
       with:
         files: target/site/jacoco/jacoco.xml
     - name: Get the version
