@@ -15,7 +15,7 @@ The plug-in supports four documentation locations for decision knowledge: entire
 ### Prerequisites
 The plug-in works for Jira server and data center instances.
 The following prerequisites are necessary to compile the plug-in from source code:
-- Java 11 JDK or higher
+- Java 11 JDK
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
 ### Compilation via Terminal
@@ -96,7 +96,7 @@ ConDec offers the following features:
 ## Design and Implementation Details
 
 ### Overview and Model
-The plug-in consists of a frontend and backend component.
+The plug-in consists of a [frontend](src/main/resources) and [backend](src/main/java/de/uhd/ifi/se/decision/management/jira) component.
 [The backend is implemented in Java code organized into 15 packages.](src/main/java/de/uhd/ifi/se/decision/management/jira)
 The following class diagram gives an overview of important classes (only ten packages are included).
 
@@ -140,16 +140,21 @@ The [metric classes](src/main/java/de/uhd/ifi/se/decision/management/jira/metric
 The metrics are presented in the knowledge dashboard.
 
 ### REST API
-This plug-in provides a [representational state transfer (REST) application programming interface (API)](src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
+The ConDec Jira plug-in provides a [representational state transfer (REST) application programming interface (API)](src/main/java/de/uhd/ifi/se/decision/management/jira/rest), 
 e.g., to retrieve, insert, update, and delete decision knowledge in Jira.
 These services can be accessed via the following link:
 
 **Jira base URL**/rest/condec/latest/**knowledge|config|view|dashboard|grouping|dodchecking|git|decision-guidance|linkrecommendation|nudging|classification|releasenotes|webhook**/**REST service**
 
-The Jira ConDec plug-in uses the REST services in the [REST JavaScript client](src/main/resources/js/condec.api.js) from the user interface.
+The [frontend component of the ConDec Jira plug-in](src/main/resources) uses the REST services in the [REST JavaScript client](src/main/resources/js/condec.api.js).
 
-### Logging and Monitoring
+## Testing
+This repository contains [unit tests](src/test) that are automatically executed when calling `atlas-package`.
+The repository [*cures-condec-jira-system-tests*](https://github.com/cures-hub/cures-condec-jira-system-tests) contains automated system tests that require a running Jira instance with the ConDec Jira plug-in installed.
+The static code quality is tested with various source code analyzers, such as PMD and ESLint.
+
+## Logging and Monitoring
 The backend (Java) code of the plug-in contains `LOGGER.info()` statements that can be used to monitor the plug-in usage, 
-e.g. to evaluate which views the users prefer.
+e.g., to evaluate which views the users prefer.
 You need to configure the `log4j.properties` so that `LOGGER.info()` statements are logged.
 More infos on usage data analysis can be found [here](doc/logging/).

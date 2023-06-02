@@ -658,8 +658,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManagerF
 	 *            Jira issue with decision knowledge elements in its description.
 	 * @param isUpdatedEvenIfSameSize
 	 *            if true the parts of text in the database are updated even if the
-	 *            same amount of was parsed as before (e.g. useful after changing
-	 *            the summary of an element).
+	 *            same amount of text was parsed as before (e.g. useful after
+	 *            changing the summary of an element).
 	 * @return list of identified knowledge elements.
 	 */
 	public List<PartOfJiraIssueText> updateElementsOfDescriptionInDatabase(Issue jiraIssue,
